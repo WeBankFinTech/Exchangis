@@ -1,0 +1,151 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.user.dao.UserInfoDao">
+    <resultMap id="resultUser" type="UserInfo">
+        <result property="id" column="id"/>
+        <result property="userName" column="username"/>
+        <result property="password" column="password"/>
+        <result property="orgCode" column="org_code"/>
+        <result property="deptCode" column="dept_code"/>
+        <result property="userType" column="user_type"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    <sql id="columns">
+        id,username,org_code,dept_code,user_type,update_time,create_time
+    </sql>
+    <sql id="detail_columns">
+        id,username,password,org_code,dept_code,user_type,update_time,create_time
+    </sql>
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+
+        INSERT INTO exchangis_user_info (
+         username,password,org_code,dept_code,user_type,update_time,create_time
+        ) VALUES (
+         #{userName} ,
+         #{password} ,
+         #{orgCode} ,
+         #{deptCode} ,
+         #{userType} ,
+         now(),
+         now()
+        )
+
+        ]]>
+    </insert>
+
+    <update id="update">
+        UPDATE exchangis_user_info SET
+        username = #{userName},
+        org_code = #{orgCode},
+        dept_code = #{deptCode},
+        user_type = #{userType},
+        update_time = now()
+        WHERE
+        id = #{id}
+    </update>
+
+    <update id="resetPassword">
+        UPDATE exchangis_user_info SET password = #{password}
+        WHERE id = #{id};
+    </update>
+    <delete id="delete">
+        DELETE FROM exchangis_user_info WHERE
+        id in (
+        <foreach collection="ids" item="value" separator=",">
+            ${value}
+        </foreach>
+        )
+
+    </delete>
+
+    <select id="selectOne" resultMap="resultUser">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+      FROM exchangis_user_info
+         WHERE
+          id = #{id}
+     ]]>
+    </select>
+    <select id="selectByUsername" resultMap="resultUser">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+      FROM exchangis_user_info
+         WHERE
+          username = #{userName}
+     ]]>
+    </select>
+
+    <select id="selectDetailByUsername" resultMap="resultUser">
+        SELECT
+        <include refid="detail_columns"/>
+        <![CDATA[ FROM exchangis_user_info WHERE username = #{userName};]]>
+    </select>
+    <select id="selectByUsernameList" parameterType="java.util.List" resultMap="resultUser">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_user_info
+        WHERE username IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="findPageWhere">
+        <where>
+            <if test="userName != null and userName != ''">
+                AND username like CONCAT('%',#{userName},'%')
+            </if>
+            <if test="userType != null and userType != ''">
+                AND user_type = #{userType}
+            </if>
+            <if test="createTimeBegin != null and createTimeBegin != ''">
+                AND create_time &gt;= #{createTimeBegin}
+            </if>
+            <if test="createTimeEnd != null and createTimeEnd != ''">
+                AND create_time &lt;= #{createTimeEnd}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAllList" resultMap="resultUser">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_user_info
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT count(*) FROM exchangis_user_info
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="findPage" resultMap="resultUser">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_user_info
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insertOrUpdateOne" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[INSERT INTO `exchangis_user_info`
+  (username, org_code, dept_code, update_time)
+  VALUES(#{userName}, #{orgCode}, #{deptCode}, #{updateTime})
+  ON DUPLICATE KEY UPDATE org_code = #{orgCode}, dept_code = #{deptCode}, update_time = #{updateTime}]]>
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        <foreach collection="list" item="user" open="" close="" separator="">
+            <![CDATA[INSERT INTO `exchangis_user_info`(username, org_code, dept_code, update_time)
+            VALUES(#{user.userName}, #{user.orgCode}, #{user.deptCode}, #{user.updateTime})
+            ON DUPLICATE KEY UPDATE update_time = #{user.updateTime};
+          ]]>
+        </foreach>
+    </insert>
+</mapper>

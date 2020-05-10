@@ -1,0 +1,94 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.webank.wedatasphere.exchangis.datasource.dao.DataSourceOwnerDao">
+    <resultMap id="result" type="DataSourceOwner">
+        <result property="id" column="ID"/>
+        <result property="ownerName" column="owner_name"/>
+        <result property="ownerDesc" column="owner_desc"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyUser" column="modify_user"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+    <sql id="columns">
+        ID,owner_name,owner_desc,create_user,create_time,modify_user,modify_time
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+
+        INSERT INTO exchangis_data_source_owner (
+         ID,owner_name,owner_desc,create_user,create_time,modify_user,modify_time
+        ) VALUES (
+         #{id} ,
+         #{ownerName} ,
+         #{ownerDesc,jdbcType=VARCHAR} ,
+         #{createUser} ,
+         now(),
+         #{modifyUser},
+         now()
+        )
+
+        ]]>
+    </insert>
+
+    <update id="update">
+        UPDATE exchangis_data_source_owner SET
+        owner_name = #{ownerName},
+        owner_desc = #{ownerDesc,jdbcType=VARCHAR},
+        modify_user = #{modifyUser},
+        MODIFY_TIME = now()
+        WHERE
+        ID = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM exchangis_data_source_owner WHERE
+        ID in (
+        <foreach collection="ids" item="value" separator=",">
+            ${value}
+        </foreach>
+        )
+
+    </delete>
+
+    <select id="selectOne" resultMap="result">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+      FROM exchangis_data_source_owner
+         WHERE
+          ID = #{id}
+     ]]>
+    </select>
+    <select id="getByName" resultMap="result">
+        SELECT <include refid="columns"/>
+        <![CDATA[FROM exchangis_data_source_owner WHERE owner_name = #{ownerName};]]>
+    </select>
+    <sql id="findPageWhere">
+        <where>
+            <if test="ownerName != null and ownerName != ''">
+                AND owner_name like CONCAT(#{ownerName}, '%')
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAllList" resultMap="result">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_data_source_owner
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT count(*) FROM exchangis_data_source_owner
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="findPage" resultMap="result">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_data_source_owner
+        <include refid="findPageWhere"/>
+    </select>
+</mapper>

@@ -1,0 +1,195 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.dao.JobInfoDao">
+    <resultMap id="resultJobInfo" type="JobInfo">
+        <result property="id" column="ID"/>
+        <result property="jobName" column="job_name"/>
+        <result property="jobCorn" column="job_cron"/>
+        <result property="jobDesc" column="job_desc"/>
+        <result property="createUser" column="create_user"/>
+        <result property="alarmUser" column="alarm_user"/>
+        <result property="alarmLevel" column="alarm_level"/>
+        <result property="failReteryCount" column="fail_retery_count"/>
+        <result property="projectId" column="project_id"/>
+        <result property="dataSrcId" column="data_src_id"/>
+        <result property="dataDestId" column="data_dst_id"/>
+        <result property="dataSrcType" column="data_src_type"/>
+        <result property="dataDestType" column="data_dst_type"/>
+        <result property="dataSrcOwner" column="data_src_owner"/>
+        <result property="dataDestOwner" column="data_dest_owner"/>
+        <result property="jobConfig" column="job_config"/>
+        <result property="timeout" column="timeout"/>
+        <result property="execUser" column="exec_user"/>
+        <result property="sync" column="sync"/>
+        <result property="lastTriggerTime" column="last_trigger_time"/>
+        <result property="disposable" column="disposable"/>
+        <result property="engineType" column="engine_type"/>
+        <result property="modifyUser" column="modify_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+    <sql id="columns">
+        `id`, `job_name`, `job_cron`, `job_desc`, `create_user`, `alarm_user`,`alarm_level`, `fail_retery_count`, `project_id`,
+        `data_src_id`, `data_dst_id`, `data_src_type`, `data_dst_type`, `data_src_owner`, `data_dest_owner`, `job_config`,
+        `timeout`, `exec_user`, `sync`, `last_trigger_time`, `modify_user`, `create_time`, `modify_time`, `disposable`,
+        `engine_type`
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+
+        INSERT INTO exchangis_job_info (
+         `id`, `job_name`, `job_cron`, `job_desc`, `create_user`, `alarm_user`,`alarm_level`, `fail_retery_count`, `project_id`,
+          `data_src_id`, `data_dst_id`, `data_src_type`, `data_dst_type`,`data_src_owner`, `data_dest_owner`, `job_config`,
+           `timeout`, `exec_user`, `sync`, `disposable`, `engine_type`, `modify_user`, `create_time`, `modify_time`
+        ) VALUES (
+         #{id} ,
+         #{jobName} ,
+         #{jobCorn} ,
+         #{jobDesc} ,
+         #{createUser} ,
+         #{alarmUser},
+         #{alarmLevel},
+         #{failReteryCount},
+         #{projectId},
+         #{dataSrcId},
+         #{dataDestId},
+         #{dataSrcType},
+         #{dataDestType},
+         #{dataSrcOwner},
+         #{dataDestOwner},
+         #{jobConfig},
+         #{timeout},
+         #{execUser,jdbcType=VARCHAR},
+         #{sync},
+         #{disposable},
+         #{engineType},
+         #{modifyUser},
+         now(),
+         now()
+        )
+
+        ]]>
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE exchangis_job_info SET
+        job_name = #{jobName},
+        job_cron = #{jobCorn},
+        job_desc = #{jobDesc},
+        alarm_user = #{alarmUser},
+        alarm_level = #{alarmLevel},
+        fail_retery_count=#{failReteryCount},
+        project_id=#{projectId},
+        data_src_id=#{dataSrcId},
+        data_dst_id=#{dataDestId},
+        data_src_type=#{dataSrcType},
+        data_dst_type=#{dataDestType},
+        data_src_owner=#{dataSrcOwner},
+        data_dest_owner=#{dataDestOwner},
+        job_config=#{jobConfig},
+        timeout=#{timeout},
+        exec_user=#{execUser},
+        sync=#{sync},
+        disposable=#{disposable},
+        engine_type=#{engineType},
+        last_trigger_time=#{lastTriggerTime},
+        modify_user = #{modifyUser},
+        MODIFY_TIME = now()
+        WHERE
+        ID = #{id} AND modify_time <= #{modifyTime}
+        ]]>
+    </update>
+    <delete id="delete">
+        DELETE FROM exchangis_job_info WHERE
+        ID in (
+        <foreach collection="ids" item="value" separator=",">
+            ${value}
+        </foreach>
+        )
+
+    </delete>
+
+    <select id="selectOne" resultMap="resultJobInfo">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+      FROM exchangis_job_info
+         WHERE
+          ID = #{id}
+     ]]>
+    </select>
+
+    <select id="getBySrcOrDstDataId" resultMap="resultJobInfo">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[FROM exchangis_job_info WHERE data_src_id = #{id} or data_dst_id = #{id};]]>
+    </select>
+    <sql id="findPageWhere">
+        <where>
+            <if test="jobId != null and jobId != ''">
+                AND ID = #{jobId}
+            </if>
+            <if test="jobName != null and jobName != ''">
+                AND job_name = #{jobName}
+            </if>
+            <if test="fuzzyName != null and fuzzyName != ''">
+                AND job_name like concat('%', #{fuzzyName}, '%')
+            </if>
+            <if test="projectId != null and projectId != ''">
+                AND project_id = #{projectId}
+            </if>
+            <if test="createTimeBegin != null">
+                AND CREATE_TIME &gt;= #{createTimeBegin}
+            </if>
+            <if test="createTimeEnd != null">
+                AND CREATE_TIME &lt;= #{createTimeEnd}
+            </if>
+            <if test="userDataAuth != null">
+                <choose>
+                    <when test="createUser != null">
+                        AND ( create_user = #{createUser, jdbcType=VARCHAR}
+                        <if test="userDataAuth.size > 0">
+                            OR project_id in (
+                            <foreach collection="userDataAuth" item="value" separator=",">
+                                #{value}
+                            </foreach>
+                            )
+                        </if>
+                        )
+                    </when>
+                    <otherwise>
+                        <if test="userDataAuth.size > 0">
+                            AND project_id in (
+                            <foreach collection="userDataAuth" item="value" separator=",">
+                                #{value}
+                            </foreach>
+                            )
+                        </if>
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAllList" resultMap="resultJobInfo">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_job_info
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT count(*) FROM exchangis_job_info
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="findPage" resultMap="resultJobInfo">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_job_info
+        <include refid="findPageWhere"/>
+        ORDER BY id DESC
+    </select>
+</mapper>
