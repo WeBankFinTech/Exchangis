@@ -1,0 +1,73 @@
+server:
+  port: ${server.port}
+  tomcat:
+    basedir: ${data.path}/tomcat/gateway
+jasypt:
+  encryptor:
+    password: bdp
+
+cors:
+  switch: true #switch
+  origin: "*"
+
+sso:
+  logoutUrl: /
+  loginUrl: /api/v1/auth/login
+
+auth:
+  token:
+    secret: ENC(doiaIecpZ6QpeVvqcayuWuuWC1C5Nf1V)
+    session-in-minutes: 1440
+    whiteList:
+      - id: exchangis_executor
+        pwd: d0026ed6c07cad6fbe0287c48ed376f4
+        allowedUris:
+          - /api/v1/report/add
+          - /api/v1/jobtask/notifyJobComplete
+          - /api/v1/jobtask/notifyTaskTimeout
+          - /api/v1/exec/node/regiseter
+          - /api/v1/exec/node/heartbeat
+          - /api/v1/admin/datasource/view
+          - /api/v1/datasource/kb
+          - /api/v1/datasource/key
+      - id: exchangis_service
+        pwd: 6341e6dfb5ff3ad32d04a1fe4e555144
+        allowedUris:
+          - /api/v1/executor/run
+          - /api/v1/executor/log
+          - /api/v1/executor/kill
+          - /api/v1/executor/alive
+          - /api/v1/datasource/kb
+          - /api/v1/datasource/key
+          - /api/v1/executor/env/user
+  script:
+    secret-key: ${user.dir}/conf/encrypt.key
+
+web:
+  server:
+    path: /static/index.html
+
+spring:
+  application:
+    name: exchangis-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: c_exchangis_service
+          uri: lb://EXCHANGIS-SERVICE
+          order: 0
+          predicates:
+            - Path=/api/v1/**
+          filters:
+            - StripPrefix=0
+            - AddResponseHeader=Cache-Control, no-store
+
+eureka:
+  instance:
+    prefer-ip-address: true #IP
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL}
