@@ -1,0 +1,88 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.auth.dao.UserExecNodeDao">
+    <resultMap id="execNode" type="ExecutorNode">
+        <result property="id" column="id"/>
+        <result property="address" column="address"/>
+        <result property="heartbeatTime" column="heartbeat_time"/>
+        <result property="status" column="status"/>
+        <result property="memRate" column="mem_rate"/>
+        <result property="cpuRate" column="cpu_rate"/>
+    </resultMap>
+
+    <resultMap id="result" type="userExecNode">
+        <result property="appUser" column="app_user"/>
+        <result property="execNodeId" column="exec_node_id"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="getExecNodeByUser" resultMap="execNode">
+        <![CDATA[
+          SELECT id,address FROM `exchangis_executor_node`
+          WHERE id IN
+          (SELECT exec_node_id FROM `exchangis_user_exec_node`
+            WHERE app_user = #{username});
+        ]]>
+    </select>
+    <select id="getAvailNodesByUser" resultMap="execNode">
+        <![CDATA[
+          SELECT * FROM `exchangis_executor_node`
+          WHERE id IN
+          (SELECT exec_node_id FROM `exchangis_user_exec_node`
+            WHERE app_user = #{username}) AND DATE_SUB(NOW(), INTERVAL ${heartbeat} SECOND) <= heartbeat_time AND status = '0';
+        ]]>
+    </select>
+    <select id="getExecNodeByUserAndIds" resultMap="execNode">
+        <![CDATA[
+          SELECT exec_node_id as id FROM `exchangis_user_exec_node` WHERE app_user = #{username} AND
+          exec_node_id IN
+        ]]>
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+          #{item}
+        </foreach>
+    </select>
+    <select id="getExecNodeByUserAndNames" resultMap="execNode">
+        <![CDATA[
+          SELECT e.exec_node_id as id, n.address as address FROM `exchangis_user_exec_node` e INNER JOIN `exchangis_executor_node` n
+          ON e.exec_node_id = n.id AND e.app_user = #{username} WHERE n.address IN
+        ]]>
+        <foreach collection="names" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getExecNodeByUserAndTab" resultMap="execNode">
+        <![CDATA[
+         SELECT e.id,e.address FROM `exchangis_executor_node` e
+        INNER JOIN `exchangis_user_exec_node` eu ON e.id = eu.exec_node_id
+        INNER JOIN `exchangis_executor_node_tab` et  ON eu.exec_node_id = et.exec_node_id
+        WHERE eu.app_user = #{username} AND et.tab_name = #{tabName};
+        ]]>
+    </select>
+    <select id="count" resultType="long">
+        <![CDATA[SELECT COUNT(*) FROM `exchangis_user_exec_node` a  INNER JOIN `exchangis_user_info` b ON a.app_user = b.username
+          WHERE b.id = #{userId}]]>
+    </select>
+
+    <select id="findPageByUserId" resultMap="execNode">
+        <![CDATA[SELECT * FROM `exchangis_executor_node` WHERE id IN (SELECT a.exec_node_id FROM `exchangis_user_exec_node` a  INNER JOIN `exchangis_user_info` b ON a.app_user = b.username
+          WHERE b.id = #{userId});]]>
+    </select>
+
+    <insert id="addOne">
+       <![CDATA[INSERT INTO `exchangis_user_exec_node`(app_user, exec_node_id) VALUES(#{appUser}, #{execNodeId}) ON DUPLICATE KEY UPDATE app_user = #{appUser};]]>
+    </insert>
+
+    <delete id="deleteOne">
+        <![CDATA[DELETE FROM `exchangis_user_exec_node` WHERE app_user = #{appUser} AND exec_node_id = #{execNodeId};]]>
+    </delete>
+
+    <select id="existsAppUser" resultType="Integer">
+        <![CDATA[SELECT 1 FROM `exchangis_user_exec_node` WHERE app_user = #{appUser} LIMIT 1;]]>
+    </select>
+
+    <delete id="deleteByNodeId" >
+        <![CDATA[DELETE FROM `exchangis_user_exec_node` WHERE exec_node_id = #{id};]]>
+    </delete>
+
+</mapper>

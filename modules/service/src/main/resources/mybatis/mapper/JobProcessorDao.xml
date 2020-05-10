@@ -1,0 +1,21 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.dao.JobProcessorDao">
+    <insert id="insert">
+        <![CDATA[INSERT INTO `exchangis_job_proc`(job_id, proc_src_code)
+VALUES(#{jobId}, #{procSrcCode}) ON DUPLICATE KEY UPDATE proc_src_code = #{procSrcCode} ]]>
+    </insert>
+    <delete id="delete">
+        <![CDATA[DELETE FROM `exchangis_job_proc` WHERE job_id = #{jobId}]]>
+    </delete>
+    <delete id="deleteBatch">
+        <![CDATA[DELETE FROM `exchangis_job_proc` WHERE job_id IN]]>
+        <foreach collection="list" item="item" separator="," close=")" open="(">
+           #{item}
+        </foreach>
+    </delete>
+    <select id="fetchSrcCode" resultType="String">
+        <![CDATA[SELECT proc_src_code FROM `exchangis_job_proc` WHERE job_id = #{jobId}]]>
+    </select>
+</mapper>

@@ -1,0 +1,39 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.datasource.dao.DataSourcePermissionDao">
+    <resultMap id="result" type="DataSourcePermission">
+        <result property="dataSourceId" column="data_source_id"/>
+        <result property="readable" column="access_readable"/>
+        <result property="writeable" column="access_writable"/>
+        <result property="executable" column="access_executable"/>
+        <result property="editable" column="access_editable"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+    <select id="getPermission" resultMap="result">
+        <![CDATA[SELECT * FROM `exchangis_data_source_permissions` WHERE data_source_id = #{dataSourceId};]]>
+    </select>
+    <insert id="insertOne">
+        <![CDATA[INSERT INTO `exchangis_data_source_permissions`(
+        `data_source_id`, `access_readable`, `access_writable`, `access_executable`,
+         `access_editable`, `create_time`)
+         VALUES(#{dataSourceId}, #{readable}, #{writeable}, #{executable}, #{editable}, NOW());
+        ]]>
+    </insert>
+    <update id="update">
+        <![CDATA[UPDATE `exchangis_data_source_permissions` SET
+         `access_readable` = #{readable},
+         `access_writable` = #{writeable},
+         `access_executable` =  #{executable},
+         `access_editable` = #{editable}
+         WHERE `data_source_id` = #{dataSourceId}
+        ]]>
+    </update>
+    <delete id="deleteBatch" parameterType="List">
+        <![CDATA[DELETE FROM `exchangis_data_source_permissions` WHERE `data_source_id` IN ]]>
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,133 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.group.dao.GroupDao">
+    <resultMap id="resultGroup" type="Group">
+        <result property="id" column="ID"/>
+        <result property="groupName" column="group_name"/>
+        <result property="createUser" column="create_user"/>
+        <result property="groupDesc" column="group_desc"/>
+        <result property="projectId" column="ref_project_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyTime" column="modify_time"/>
+        <association property="project" javaType="Project">
+            <result property="projectName" column="project_name"/>
+            <result property="id" column="project_id"/>
+        </association>
+    </resultMap>
+    <sql id="columns">
+        g.id, g.group_name, g.create_user, g.group_desc, g.ref_project_id, g.create_time, g.modify_time,
+        p.project_name, p.id AS project_id
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+
+        INSERT INTO exchangis_group (
+         id ,
+         group_name ,
+         create_user,
+         group_desc,
+         ref_project_id,
+         create_time
+        ) VALUES (
+         #{id} ,
+         #{groupName} ,
+         #{createUser},
+         #{groupDesc},
+         #{projectId},
+         now()
+        )
+
+        ]]>
+    </insert>
+
+    <update id="update">
+        UPDATE exchangis_group SET
+        group_name = #{groupName},
+        group_desc = #{groupDesc},
+        ref_project_id = #{projectId}
+        WHERE
+        id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM exchangis_group WHERE
+        id in (
+        <foreach collection="ids" item="value" separator=",">
+            ${value}
+        </foreach>
+        )
+
+    </delete>
+
+    <select id="selectOne" resultMap="resultGroup">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+            FROM `exchangis_group` g LEFT JOIN `exchangis_project` p ON g.ref_project_id = p.id
+         WHERE
+          g.id = #{id}
+     ]]>
+    </select>
+
+    <sql id="findPageWhere">
+        <where>
+            <if test="id != null and id != ''">
+                AND g.id = #{id}
+            </if>
+            <if test="groupName != null and groupName != ''">
+                AND g.group_name like concat('%', #{groupName}, '%')
+            </if>
+            <if test="createTimeBegin != null and createTimeBegin != ''">
+                AND g.create_time &gt;= #{createTimeBegin}
+            </if>
+            <if test="createTimeEnd != null and createTimeEnd != ''">
+                AND g.create_time &lt;= #{createTimeEnd}
+            </if>
+            <if test="userDataAuth != null and createUser != null">
+                AND g.create_user = #{createUser}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAllList" resultMap="resultGroup">
+        SELECT
+        <include refid="columns"/>
+        FROM `exchangis_group` g LEFT JOIN `exchangis_project` p ON g.ref_project_id = p.id
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="selectByCreatorAndProjects" resultMap="resultGroup">
+        SELECT
+        <include refid="columns"/>
+        FROM `exchangis_group` g LEFT JOIN `exchangis_project` p ON g.ref_project_id = p.id
+        WHERE g.`create_user` = #{createUser} AND g.ref_project_id IN
+        <foreach collection="projectIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT count(*) FROM `exchangis_group` g LEFT JOIN `exchangis_project` p ON g.ref_project_id = p.id
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="selectByIds" resultMap="resultGroup">
+      <![CDATA[SELECT * FROM exchangis_group WHERE id IN]]>
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            <![CDATA[#{item}]]>
+        </foreach>
+    </select>
+
+    <select id="selectRefProjectIds" resultType="String">
+        <![CDATA[
+            SELECT DISTINCT(g.ref_project_id) FROM `exchangis_group` g INNER JOIN `exchangis_user_group` u
+            ON u.user_name = #{username} AND g.id = u.group_id;
+        ]]>
+    </select>
+    <select id="findPage" resultMap="resultGroup">
+        SELECT
+        <include refid="columns"/>
+        FROM `exchangis_group` g LEFT JOIN `exchangis_project` p ON g.ref_project_id = p.id
+        <include refid="findPageWhere"/>
+    </select>
+</mapper>
