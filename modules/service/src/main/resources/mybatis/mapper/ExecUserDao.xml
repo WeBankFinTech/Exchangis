@@ -1,0 +1,51 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.exec.dao.ExecUserDao">
+    <resultMap id="execUserMap" type="execUser">
+        <result property="id" column="id"/>
+        <result property="execUser" column="exec_user"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="findPageWhere">
+        <where>
+            <if test="execUser != null and execUser != ''">
+                AND exec_user like concat('%', #{execUser}, '%')
+            </if>
+        </where>
+    </sql>
+    <select id="listAll" resultMap="execUserMap">
+        <![CDATA[SELECT * FROM  `exchangis_executor_user`]]>
+    </select>
+
+    <select id="selectByName" resultMap="execUserMap" parameterType="String">
+        <![CDATA[SELECT * FROM  `exchangis_executor_user` WHERE exec_user = #{execUser};]]>
+    </select>
+
+    <select id="selectOne" resultMap="execUserMap" parameterType="Integer">
+        <![CDATA[SELECT * FROM  `exchangis_executor_user` WHERE id = #{id}]]>
+    </select>
+
+    <insert id="insertOne" >
+        <![CDATA[INSERT INTO `exchangis_executor_user`(exec_user, description)
+      VALUES(#{execUser}, #{description}) ON DUPLICATE KEY UPDATE description = #{description};]]>
+    </insert>
+
+    <delete id="deleteOne" parameterType="Integer">
+        <![CDATA[DELETE FROM `exchangis_executor_user` WHERE id = #{id}]]>
+    </delete>
+
+    <select id="count" resultType="long">
+        SELECT count(*) FROM `exchangis_executor_user`
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="findPage" resultMap="execUserMap">
+        SELECT *
+        FROM `exchangis_executor_user`
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+    </select>
+</mapper>

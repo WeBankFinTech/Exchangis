@@ -1,0 +1,31 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.tab.dao.TabDao">
+    <resultMap id="result" type="TabEntity">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="type" column="type"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    <select id="listAll" resultMap="result">
+        <![CDATA[SELECT * FROM `exchangis_tab`;]]>
+    </select>
+
+    <select id="getTabsByIds" resultMap="result">
+        <![CDATA[
+          SELECT * FROM `exchangis_tab` WHERE id IN
+        ]]>
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getTabIdsByNameList" resultType="Integer">
+        <![CDATA[SELECT id FROM `exchangis_tab` WHERE name IN ]]>
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

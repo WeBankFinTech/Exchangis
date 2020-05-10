@@ -1,0 +1,117 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.dao.JobReportDao">
+    <resultMap id="result" type="JobReport">
+        <result property="id" column="id"/>
+        <result property="jobId" column="job_id"/>
+        <result property="totalCosts" column="total_costs"/>
+        <result property="byteSpeedPerSecond" column="byte_speed_per_second"/>
+        <result property="recordSpeedPerSecond" column="record_speed_per_second"/>
+        <result property="totalReadRecords" column="total_read_records"/>
+        <result property="totalReadBytes" column="total_read_bytes"/>
+        <result property="totalErrorRecords" column="total_error_records"/>
+        <result property="transformerTotalRecords" column="transformer_total_records"/>
+        <result property="transformerFailedRecords" column="transformer_failed_records"/>
+        <result property="transformerFilterRecords" column="transformer_filter_records"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    <sql id="columns">
+        id,job_id,total_costs,byte_speed_per_second,record_speed_per_second,total_read_records,total_read_bytes,total_error_records,transformer_total_records,transformer_failed_records,transformer_filter_records,create_time
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+
+        INSERT INTO exchangis_job_report (
+         id,job_id,total_costs,byte_speed_per_second,
+         record_speed_per_second,total_read_records,total_read_bytes,total_error_records,
+         transformer_total_records,transformer_failed_records,transformer_filter_records,create_time
+        ) VALUES (
+         #{id} ,
+         #{jobId} ,
+         #{totalCosts} ,
+         #{byteSpeedPerSecond} ,
+         #{recordSpeedPerSecond},
+         #{totalReadRecords},
+         #{totalReadBytes},
+         #{totalErrorRecords},
+         #{transformerTotalRecords},
+         #{transformerFailedRecords},
+         #{transformerFilterRecords},
+         now()
+        )
+
+        ]]>
+    </insert>
+
+    <update id="update">
+        UPDATE exchangis_job_report SET
+        job_id = #{jobId},
+        total_costs = #{totalCosts},
+        record_speed_per_second = #{byteSpeedPerSecond},
+        record_speed_per_second=#{recordSpeedPerSecond},
+        total_read_records=#{totalReadRecords},
+        total_read_bytes=#{totalReadBytes},
+        total_error_records=#{totalErrorRecords},
+        transformer_total_records=#{transformerTotalRecords},
+        transformer_failed_records=#{transformerFailedRecords},
+        transformer_filter_records=#{transformerFilterRecords}
+        WHERE
+        id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM exchangis_job_report WHERE
+        id in (
+        <foreach collection="ids" item="value" separator=",">
+            ${value}
+        </foreach>
+        )
+
+    </delete>
+
+    <select id="selectOne" resultMap="result">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+      FROM exchangis_job_report
+         WHERE
+          id = #{id}
+     ]]>
+    </select>
+
+    <sql id="findPageWhere">
+        <where>
+            <if test="id != null and id != ''">
+                AND id = #{id}
+            </if>
+            <if test="jobId != null and jobId != ''">
+                AND job_id = #{jobId}
+            </if>
+            <if test="createTimeBegin != null">
+                AND create_time &gt;= #{createTimeBegin}
+            </if>
+            <if test="createTimeEnd != null">
+                AND create_time &lt;= #{createTimeEnd}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAllList" resultMap="result">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_job_report
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT count(*) FROM exchangis_job_report
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="findPage" resultMap="result">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_job_report
+        <include refid="findPageWhere"/>
+    </select>
+</mapper>

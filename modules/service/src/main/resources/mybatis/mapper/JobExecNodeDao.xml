@@ -1,0 +1,48 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.dao.JobExecNodeDao">
+    <resultMap id="execNode" type="ExecutorNode">
+        <result property="id" column="id"/>
+        <result property="address" column="address"/>
+        <result property="heartbeatTime" column="heartbeat_time"/>
+        <result property="status" column="status"/>
+        <result property="memRate" column="mem_rate"/>
+        <result property="cpuRate" column="cpu_rate"/>
+    </resultMap>
+    <select id="getAvailsByJobId" resultMap="execNode">
+        <![CDATA[
+        SELECT n.* FROM `exchangis_executor_node` n
+        INNER JOIN `exchangis_job_exec` j
+        ON n.id = j.exec_id
+        WHERE j.job_id = #{jobId} AND DATE_SUB(NOW(), INTERVAL ${heartbeat} SECOND) <= n.heartbeat_time AND n.status = '0';
+        ]]>
+    </select>
+    <select id="getNodesByJobId" resultMap="execNode">
+        <![CDATA[
+         SELECT n.* FROM `exchangis_executor_node` n
+        INNER JOIN `exchangis_job_exec` j
+        ON n.id = j.exec_id
+        WHERE j.job_id = #{jobId};
+        ]]>
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" open="" close="" separator="">
+            <![CDATA[INSERT INTO `exchangis_job_exec`(job_id, exec_id) VALUES(#{item.jobId}, #{item.execId});]]>
+        </foreach>
+    </insert>
+    <delete id="deleteBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" open="" close="" separator="">
+            <![CDATA[DELETE FROM `exchangis_job_exec` WHERE job_id = #{item.jobId} AND exec_id = #{item.execId};]]>
+        </foreach>
+    </delete>
+    <delete id="deleteBatchByJobIds" parameterType="java.util.List">
+        <![CDATA[DELETE FROM `exchangis_job_exec` WHERE job_id IN ]]>
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+    <select id="existsRelationNodes" resultType="Integer">
+        <![CDATA[SELECT 1 FROM `exchangis_job_exec` WHERE job_id = #{jobId} LIMIT 1;]]>
+    </select>
+</mapper>
