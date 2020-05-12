@@ -213,12 +213,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!--um auth-->
-		<dependency>
-			<groupId>cn.webank.sso</groupId>
-			<artifactId>sso-client</artifactId>
-			<version>1.2.6</version>
-		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
