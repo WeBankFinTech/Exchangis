@@ -13,7 +13,7 @@
     <packaging>jar</packaging>
     <version>${datax.engine.version}</version>
     <properties>
-        <hive.version>1.2.1</hive.version>
+        <hive.version>2.3.4</hive.version>
         <hadoop.version>2.7.2</hadoop.version>
         <hbase.version>1.2.2</hbase.version>
     </properties>
