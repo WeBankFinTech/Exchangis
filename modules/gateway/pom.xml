@@ -36,7 +36,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<spring-cloud.version>Finchley.RC1</spring-cloud.version>
 	</properties>
 
 	<dependencies>
@@ -68,10 +67,6 @@
 				<exclusion>
 					<groupId>org.springframework.cloud</groupId>
 					<artifactId>spring-cloud-openfeign-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.webank</groupId>
-					<artifactId>uc-client</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
