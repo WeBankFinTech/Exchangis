@@ -34,7 +34,7 @@ Comparison of some existing data exchange tools and platforms：
 | UI | Integrated the convenient management interface and monitoring window | Integrated | None | None | Integrated |Integrated |
 | Installation and deployment | Ease of deployment and third-party dependencies | One-click deployment, no dependencies | No dependencies | Rely on Hadoop environment | Rely on Zookeeper | Rely on a large number of third-party components |
 | Data authority management |  Multi-tenant permission configuration and data source permission control | Support | Not support | Not support | Not support | Support |
-|        |Dynamic limit transmission | Support | Partially supported, unable to adjust dynamically | Partially supported, unable to adjust dynamically | | Support，with Kafka |
+|        |Dynamic limit transmission | Support | Partially supported, unable to adjust dynamically | Partially supported, unable to adjust dynamically | Support | Support，with Kafka |
 | Data transmission| Unstructured data binary transmission | Support, fast channel | Not support | Not support | Not support，only transport record | Not support，need to be converted to a unified message format|
 |        | Embed processing code | Support，dynamic compilation | Not support | Not support | Not support | Partial support |
 |        | Transmission breakpoint recovery | Support（Not open source） | Not support | Not support | Support | Support |
