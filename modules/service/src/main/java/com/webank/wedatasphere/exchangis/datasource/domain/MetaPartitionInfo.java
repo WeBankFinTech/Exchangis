@@ -18,9 +18,6 @@
 package com.webank.wedatasphere.exchangis.datasource.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.opensaml.xml.signature.J;
-
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
