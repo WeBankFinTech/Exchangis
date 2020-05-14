@@ -302,7 +302,7 @@ public class JobTaskController extends AbstractGenericController<JobTask, JobLog
                     //Update db status
                     jobTask.setStatus(ExecuteStatus.KILL.name());
                     jobTask.setStateSpeed(null);
-                    jobTaskService.update(jobTask);
+                    jobTaskService.selectAndUpdate(jobTask);
                     jobTaskService.removeFromQueue(taskId);
                 }
             }else{
