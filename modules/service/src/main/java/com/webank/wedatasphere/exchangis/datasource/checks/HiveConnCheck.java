@@ -84,6 +84,7 @@ public class HiveConnCheck extends AbstractDataSourceConnCheck {
         try {
             if(isUseKb(parameters) && null == file){
                 if(ds.getId() > 0){
+                    new File(conf.getStoreTmp()).mkdirs();
                     kbFileTmp = getAuthFileFromDataSource(ds, AuthType.KERBERS, conf.getStoreTmp());
                     file = kbFileTmp;
                 }
