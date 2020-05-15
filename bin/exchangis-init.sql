@@ -467,20 +467,20 @@ CREATE TABLE IF NOT EXISTS `EXCHANGIS_QRTZ_LOCKS` (
   PRIMARY KEY (`SCHED_NAME`,`LOCK_NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---Init Tab
+-- Init Tab
 INSERT INTO `exchangis_tab`(`name`, `description`, `type`) VALUES ('DATAX', 'Alibaba DataX Engine', 0) ON DUPLICATE KEY UPDATE `type` = 0;
 INSERT INTO `exchangis_tab`(`name`, `description`, `type`) VALUES ('SQOOP', 'Apache Sqoop Engine', 0) ON DUPLICATE KEY UPDATE `type` = 0;
 
---Init Queue
+-- Init Queue
 INSERT INTO `exchangis_queue_info`(`id`, `qname`, `description`) VALUES(1, 'public-queue-01','none') ON DUPLICATE KEY UPDATE `description` = 'none';
 
---Add Data Source Owner
+-- Add Data Source Owner
 INSERT INTO `exchangis_data_source_owner`(`id`, `owner_name`, `owner_desc`) VALUES(1, 'Exchangis', 'WeDataSphere Exchangis') ON DUPLICATE KEY UPDATE `owner_name` = 'Exchangis';
 
---Add Admin User
+-- Add Admin User
 INSERT INTO `exchangis_user_info`(`username`, `password`, `user_type`, `update_time`) VALUES('admin', '3ef7164d1f6167cb9f2658c07d3c2f0a', 2, now()) ON DUPLICATE KEY UPDATE `user_type` = 2;
 
---Add Job Function
+-- Add Job Function
 INSERT INTO `exchangis_job_func`(`id`,`func_type`, `tab_name`, `func_name`, `param_num`) VALUES(1, 'TRANSFORM', 'DATAX', 'dx_substr', 2) ON DUPLICATE KEY UPDATE `func_type` = 'TRANSFROM';
 INSERT INTO `exchangis_job_func`(`id`,`func_type`, `tab_name`, `func_name`, `param_num`) VALUES(2, 'TRANSFORM', 'DATAX', 'dx_pad', 3) ON DUPLICATE KEY UPDATE `func_type` = 'TRANSFROM';
 INSERT INTO `exchangis_job_func`(`id`,`func_type`, `tab_name`, `func_name`, `param_num`) VALUES(3, 'TRANSFORM', 'DATAX', 'dx_replace', 3) ON DUPLICATE KEY UPDATE `func_type` = 'TRANSFROM';
