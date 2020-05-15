@@ -252,7 +252,7 @@
 						<exclude>**/*.sh</exclude>
 						<exclude>**/*.xml</exclude>
 						<exclude>**/*.pem</exclude>
-						<exclude>**/i18n/**</exclude>
+						<exclude>**/i18n/*.properties</exclude>
 						<exclude>**/job_templates/**</exclude>
 						<exclude>**/mybatis/**</exclude>
 					</excludes>
