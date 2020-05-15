@@ -63,10 +63,9 @@ load_env(){
     LOG INFO "load environment variables"
     while read line
     do
-        if [ ! -z $(echo "${line}" | grep "=") ]; then
-                arr=(${line//=/ })
-                key=${arr[0]}
-                value=${arr[1]}
+        if [[ ! -z $(echo "${line}" | grep "=") ]]; then
+                key=${line%%=*}
+                value=${line#*=}
                 key1=$(echo ${key} | tr '.' '_')
                 if [ -z $(echo "${key1}" | grep -P '\s*#+.*') ]; then
                         eval "${key1}=${value}"
@@ -87,30 +86,30 @@ if [ $? -ne 0 ]; then
 fi
 
 
-if [ ! ${EXECUTOR_LOG_PATH} ]; then
+if [[ ! ${EXECUTOR_LOG_PATH} ]]; then
     EXECUTOR_LOG_PATH=${BIN}/../logs
 fi
-if [ ! ${EXECUTOR_CONF_PATH} ]; then
+if [[ ! ${EXECUTOR_CONF_PATH} ]]; then
     EXECUTOR_CONF_PATH=${BIN}/../conf
 fi
 
-if [ ! ${DATA_PATH} ]; then
+if [[ ! ${DATA_PATH} ]]; then
    DATA_PATH=${BIN}/../data
 fi
 
-if [ ! ${SERVER_PORT} ]; then
+if [[ ! ${SERVER_PORT} ]]; then
    SERVER_PORT=9001
 fi
 
-if [ ! ${JAVA_OPTS} ]; then
+if [[ ! ${JAVA_OPTS} ]]; then
     JAVA_OPTS=" -Xms2g -Xmx2g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
 fi
 
-if [ ! ${REMOTE_DEBUG_SWITCH} ]; then
+if [[ ! ${REMOTE_DEBUG_SWITCH} ]]; then
     REMOTE_DEBUG_SWITCH=false
 fi
 
-if [ ! ${REMOTE_DEBUG_PORT} ]; then
+if [[ ! ${REMOTE_DEBUG_PORT} ]]; then
     REMOTE_DEBUG_PORT="8089"
 fi
 
