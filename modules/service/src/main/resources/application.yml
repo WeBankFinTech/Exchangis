@@ -17,8 +17,8 @@ spring:
   application:
     name: exchangis-service
   datasource:
-    password: ${DB_PASSWORD:pass}
-    username: ${DB_USERNAME:udes_ps_bdp}
+    password: ${DB_PASSWORD:password}
+    username: ${DB_USERNAME:username}
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_DATABASE:exchangis}?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowMultiQueries=true
     type: com.alibaba.druid.pool.DruidDataSource
