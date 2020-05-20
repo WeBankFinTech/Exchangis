@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -99,16 +100,17 @@ public final class OriginalConfPretreatmentUtil {
                 for(Object obj : jdbcUrlObjects){
                     Map<String,Object> map = (Map<String, Object>) obj;
                     String parameter = "";
+		    Map<String, Object> parameterMap = originalConfig.getMap(Key.CONNPARM, new HashMap<>());
                     for(String key : map.keySet()){
                         if (key.equals(Key.CONNPARM)){
-                            Map<String, Object> obj2Map = (Map<String, Object>) map.get(key);
-                            parameter = obj2Map.entrySet().stream().map(
-                                    e->String.join("=", e.getKey(), String.valueOf(e.getValue()))
-                            ).collect(Collectors.joining("&"));
+                            parameterMap.putAll((Map<String, Object>) map.get(key));
                         }
                     }
+		    parameter = parameterMap.entrySet().stream().map(
+				                                 e->String.join("=", e.getKey(), String.valueOf(e.getValue()))
+								                     ).collect(Collectors.joining("&"));
                     String jcUrl = Key.JDBCTEM + map.get(Key.HOST).toString() + ":" + map.get(Key.PORT).toString() + "/" + map.get(Key.DATABASE).toString();
-                    if(parameter != null && parameter.length() != 0){
+                    if(parameter.length() != 0){
                         jcUrl = Key.JDBCTEM + map.get(Key.HOST).toString() + ":" + map.get(Key.PORT).toString() + "/" + map.get(Key.DATABASE).toString() + "?" + parameter;
                     }
                     jdbcUrls.add(jcUrl);

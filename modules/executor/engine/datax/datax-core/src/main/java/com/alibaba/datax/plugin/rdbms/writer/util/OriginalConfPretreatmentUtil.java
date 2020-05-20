@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -67,14 +68,15 @@ public final class OriginalConfPretreatmentUtil {
             if(DATABASE_TYPE.equals(DataBaseType.MySql)){
                 Map<String,Object> map = connConf.getMap(Key.JDBC_URL);
                 String parameter = "";
+		Map<String, Object> parameterMap = originalConfig.getMap(Key.CONNPARM, new HashMap<>());
                 for(String key : map.keySet()){
                     if (key.equals(Key.CONNPARM)){
-                        Map<String, Object> obj2Map = (Map<String, Object>) map.get(key);
-                        parameter = obj2Map.entrySet().stream().map(
-                                e->String.join("=", e.getKey(), String.valueOf(e.getValue()))
-                        ).collect(Collectors.joining("&"));
+                         parameterMap.putAll((Map<String, Object>) map.get(key));
                     }
                  }
+		parameter = parameterMap.entrySet().stream().map(
+				                        e->String.join("=", e.getKey(), String.valueOf(e.getValue()))
+							                ).collect(Collectors.joining("&"));
                 jdbcUrl = Key.JDBCTEM + map.get(Key.HOST).toString() + ":" + map.get(Key.PORT).toString() + "/" + map.get(Key.DATABASE).toString();
                 if(parameter != null && parameter.length() != 0){
                     jdbcUrl = Key.JDBCTEM + map.get(Key.HOST).toString() + ":" + map.get(Key.PORT).toString() + "/" + map.get(Key.DATABASE).toString() + "?" + parameter;
