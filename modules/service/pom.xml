@@ -200,6 +200,11 @@
 					<artifactId>geronimo-jaspic_1.0_spec</artifactId>
 					<groupId>org.apache.geronimo.specs</groupId>
 				</exclusion>
+				<!--For complicated for Hive versions "3.x"-->
+				<exclusion>
+					<groupId>org.eclipse.jetty</groupId>
+					<artifactId>jetty-runner</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
