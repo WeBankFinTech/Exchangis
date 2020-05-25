@@ -1,12 +1,12 @@
 {
    "tool":[{
         "@condition":{
-            "reader.@name": "tdsql"
+            "reader.@name": "mysql"
         },
         "@value": "import"
    },{
         "@condition":{
-            "writer.@name": "tdsql"
+            "writer.@name": "mysql"
         },
         "@value": "export"
    }
