@@ -26,6 +26,7 @@ import com.webank.wedatasphere.exchangis.datasource.domain.MetaColumnInfo;
 import com.webank.wedatasphere.exchangis.datasource.domain.MetaPartitionInfo;
 import com.webank.wedatasphere.exchangis.datasource.service.AbstractMetaDbService;
 import com.webank.wedatasphere.exchangis.datasource.service.MetaService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -74,11 +75,13 @@ public class ElasticMetaDbServiceImpl extends AbstractMetaDbService<ElasticSearc
             Map<String, Object> parameters = dataSource.getParameterMap();
             String elasticUrls = String.valueOf(parameters.getOrDefault(PARAM_ES_URLS, ""));
             String[] endPoints = elasticUrls.split(DEFAULT_ENDPOINT_SPLIT);
+            String username = String.valueOf(parameters.getOrDefault(PARAM_DEFAULT_USERNAME, ""));
+            String password = String.valueOf(parameters.getOrDefault(PARAM_DEFAULT_PASSWORD, ""));
+            if(StringUtils.isNotBlank(password) && StringUtils.isNotBlank(password)){
+                password = String.valueOf(CryptoUtils.string2Object(password));
+            }
             return ElasticSearch.buildClient(endPoints,
-                    String.valueOf(parameters.getOrDefault(PARAM_DEFAULT_USERNAME, "")),
-                    String.valueOf(CryptoUtils.string2Object(
-                            String.valueOf(parameters.getOrDefault(PARAM_DEFAULT_PASSWORD, ""))))
-                    );
+                    username, password);
         }catch(Exception e){
             LOG.error("Get ElasticSearch RestClient failed, message: " + e.getMessage(), e);
             throw new EndPointException("exchange.elastic_meta.failed.to.connect", e);
