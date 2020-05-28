@@ -279,7 +279,7 @@ public class UnstructuredStorageReaderUtil {
         if (null == columnConfigs || columnConfigs.size() == 0) {
             for (String columnValue : sourceLine) {
                 // not equalsIgnoreCase, it's all ok if nullFormat is null
-                if (StringUtils.isBlank(columnValue) || columnValue.equals(nullFormat)) {
+                if (null != columnValue && columnValue.equals(nullFormat)) {
                     columnGenerated = new StringColumn(null);
                 } else {
                     columnGenerated = new StringColumn(columnValue);
@@ -326,7 +326,7 @@ public class UnstructuredStorageReaderUtil {
                     }
                     Type type = Type.valueOf(columnType.toUpperCase());
                     // it's all ok if nullFormat is null
-                    if (columnValue.equals(nullFormat) || StringUtils.isBlank(columnValue)) {
+                    if (null != columnValue && columnValue.equals(nullFormat)) {
                         columnValue = null;
                     }
                     switch (type) {
