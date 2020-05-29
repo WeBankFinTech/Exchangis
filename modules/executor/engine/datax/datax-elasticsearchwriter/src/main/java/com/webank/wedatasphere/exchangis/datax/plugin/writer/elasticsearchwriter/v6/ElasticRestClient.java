@@ -70,8 +70,6 @@ import java.util.function.BiConsumer;
 public class ElasticRestClient {
     public static final Logger logger = LoggerFactory.getLogger(ElasticRestClient.class);
 
-    private static final int VERSION_TAG = 6;
-
     private static final int HEAP_BUFFER_SIZE = 100 * 1024 * 1024;
     private static final int SOCK_TIMEOUT_IN_MILLISECONDS = 60000;
     private static final int CONN_TIMEOUT_IN_MILLISECONDS = 5000;
@@ -377,12 +375,12 @@ public class ElasticRestClient {
         logger.info("Check the version of ElasticSearch");
         MainResponse response = restClient.info(COMMON_OPTIONS);
         Version version = response.getVersion();
-        if(!version.isCompatible(Version.V_6_7_1)){
+        if(!version.isCompatible(Version.CURRENT)){
             throw DataXException.asDataXException(ElasticWriterErrorCode.CONFIG_ERROR,
                     "ElasticSearch's version is not compatible");
         }
         logger.info("The version of ElasticSearch: [" + version.toString() +"]");
-        if(version.major != VERSION_TAG){
+        if(version.major != Version.CURRENT.major){
             throw DataXException.asDataXException(ElasticWriterErrorCode.CONFIG_ERROR,
                     "ElasticSearch's version is not compatible");
         }
