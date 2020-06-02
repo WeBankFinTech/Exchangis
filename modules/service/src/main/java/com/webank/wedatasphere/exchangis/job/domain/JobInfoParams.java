@@ -33,7 +33,7 @@ public class JobInfoParams {
 
     private String paramVal;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     public JobInfoParams(Long jobId, String paramName, String paramVal){
