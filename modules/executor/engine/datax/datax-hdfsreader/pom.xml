@@ -16,6 +16,7 @@
         <hive.version>1.2.1</hive.version>
         <hadoop.version>2.7.2</hadoop.version>
         <hbase.version>1.2.2</hbase.version>
+        <xerces.version>2.9.1</xerces.version>
     </properties>
     <dependencies>
 
@@ -96,6 +97,11 @@
             <version>${hbase.version}</version>
             <exclusions>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${xerces.version}</version>
         </dependency>
     </dependencies>
     <build>
