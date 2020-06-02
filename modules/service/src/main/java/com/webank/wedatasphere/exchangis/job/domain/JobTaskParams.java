@@ -35,7 +35,7 @@ public class JobTaskParams {
 
     private String paramVal;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     public JobTaskParams(String paramName, String paramVal){

@@ -44,7 +44,7 @@ public class JobReport {
     private Long transformerTotalRecords;
     private Long transformerFailedRecords;
     private Long transformerFilterRecords;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     public Long getId() {

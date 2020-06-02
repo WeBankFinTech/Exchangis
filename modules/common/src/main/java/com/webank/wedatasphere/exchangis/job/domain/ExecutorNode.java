@@ -35,7 +35,7 @@ public class ExecutorNode {
     private Integer id;
     @NotBlank(message = "{udes.domain.executor.address.notBlank}")
     private String address;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date heartbeatTime;
     private Integer status;
     private Float memRate;
