@@ -41,7 +41,7 @@ public class ExecUser {
     @Size(max = 200, message = "{udes.domain.exec.user.desc.max}")
     private String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     public Integer getId() {
