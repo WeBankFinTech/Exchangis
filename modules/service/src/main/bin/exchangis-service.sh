@@ -78,10 +78,6 @@ if [ $? -ne 0 ]; then
   exit $?
 fi
 
-if [[ ! ${JAVA_HOME} ]]; then
-    JAVA_HOME=/nemo/jdk8
-fi
-
 if [[ ! ${SERVICE_LOG_PATH} ]]; then
     SERVICE_LOG_PATH=${BIN}/../logs
 fi
