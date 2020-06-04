@@ -230,6 +230,8 @@ public class JobTaskServiceImpl extends AbstractGenericService<JobTask> implemen
         if(null != jobTask && StringUtils.isBlank(jobTask.getExecuterAddress())){
             JobInfo jobInfo = jobInfoDao.selectOne(jobTask.getJobId());
             if(null == jobInfo){
+                //Remove task directly
+                jobTaskDao.delete(Collections.singletonList(String.valueOf(jobTask)));
                 return true;
             }
             Integer exists = jobExecNodeDao.existsRelationNodes(jobTask.getJobId());
