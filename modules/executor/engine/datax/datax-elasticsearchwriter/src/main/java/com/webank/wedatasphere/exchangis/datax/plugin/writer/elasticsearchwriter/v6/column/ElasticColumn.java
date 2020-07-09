@@ -44,7 +44,7 @@ public class ElasticColumn {
     private static final String ARRAY_SUFFIX = "]";
     private static final String ARRAY_PREFIX = "[";
 
-    public static final String DEFAULT_NAME_SPLIT = "|";
+    public static final String DEFAULT_NAME_SPLIT = "\\|";
 
     private String name;
 
