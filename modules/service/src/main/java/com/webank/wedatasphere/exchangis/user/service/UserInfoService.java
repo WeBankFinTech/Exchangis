@@ -106,4 +106,6 @@ public interface UserInfoService extends IBaseService<UserInfo> {
      * @param password
      */
     boolean resetPassword(Integer id, String password);
+
+    UserInfo createUser(String username);
 }

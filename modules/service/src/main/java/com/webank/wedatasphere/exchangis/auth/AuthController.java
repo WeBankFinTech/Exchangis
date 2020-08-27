@@ -17,8 +17,11 @@
 
 package com.webank.wedatasphere.exchangis.auth;
 
+import com.webank.wedatasphere.dss.appjoint.auth.AppJointAuth;
+import com.webank.wedatasphere.dss.appjoint.auth.RedirectMsg;
 import com.webank.wedatasphere.exchangis.auth.domain.UserPasswordToken;
 import com.webank.wedatasphere.exchangis.common.auth.AuthConfiguration;
+import com.webank.wedatasphere.exchangis.common.auth.AuthTokenBean;
 import com.webank.wedatasphere.exchangis.common.constant.CodeConstant;
 import com.webank.wedatasphere.exchangis.common.controller.ExceptionResolverContext;
 import com.webank.wedatasphere.exchangis.common.controller.Response;
@@ -29,6 +32,7 @@ import com.webank.wedatasphere.exchangis.common.util.json.Json;
 import com.webank.wedatasphere.exchangis.common.util.spring.AppUtil;
 import com.webank.wedatasphere.exchangis.user.domain.UserInfo;
 import com.webank.wedatasphere.exchangis.user.service.UserInfoService;
+import groovy.util.logging.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -38,12 +42,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import static com.webank.wedatasphere.exchangis.common.auth.AuthConstraints.DEFAULT_SSO_COOKIE;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +60,7 @@ import java.util.Map;
  * 2018/10/17
  */
 @RestController
+@Slf4j
 @RequestMapping("/api/v1/auth")
 public class AuthController extends ExceptionResolverContext {
     private static Logger LOG = LoggerFactory.getLogger(AuthController.class);
@@ -61,6 +69,8 @@ public class AuthController extends ExceptionResolverContext {
 
     @Resource
     private AuthConfiguration authConfiguration;
+    @Resource
+    private AuthTokenHelper tokenBuilder;
 
     @Resource
     private UserInfoService userInfoService;
@@ -88,6 +98,50 @@ public class AuthController extends ExceptionResolverContext {
             LOG.info(Json.toJson(message, null));
         }
         return new Response<>().successResponse(message);
+    }
+
+    @RequestMapping(value="/redirect", method= RequestMethod.GET)
+    public Response<Object> redirectToCoordinatePage(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws UnsupportedEncodingException {
+        try {
+            AppJointAuth appJointAuth = AppJointAuth.getAppJointAuth();
+            if (appJointAuth.isDssRequest(httpServletRequest)) {
+                RedirectMsg redirectMsg = appJointAuth.getRedirectMsg(httpServletRequest);
+                String redirectUrl = redirectMsg.getRedirectUrl();
+                String username = redirectMsg.getUser();
+                LOG.info("Succeed to get redirect url: {}, and username: {}", redirectUrl, username);
+
+                // create user if not exist
+                UserInfo userInfo = userInfoService.selectDetailByUsername(username);
+                if (userInfo == null) {
+                    userInfo = userInfoService.createUser(username);
+                }
+                userInfo.setUserName(null);
+                userInfo.setPassword(null);
+                userInfo.setId(null);
+                Map<String, String> jsonMap = Json.fromJson(Json.toJson(userInfo, null), Map.class);
+
+                AuthTokenBean tokenBean = new AuthTokenBean();
+                tokenBean.getHeaders().put(AuthConstraints.X_AUTH_ID, username);
+                jsonMap.put(AuthConstraints.X_AUTH_ID, username);
+                tokenBean.getClaims().putAll(jsonMap);
+                String token = tokenBuilder.build(tokenBean);
+
+                LOG.info("Add token: " + token.substring(0, 6) + "**** to login response");
+
+                Cookie cookie = new Cookie(DEFAULT_SSO_COOKIE, token);
+                cookie.setPath("/");
+                cookie.setMaxAge(3600);
+                httpServletResponse.setHeader(AuthConstraints.X_AUTH_ID, username);
+                httpServletResponse.addCookie(cookie);
+                httpServletResponse.sendRedirect(redirectUrl);
+                return null;
+            } else {
+                return new Response<>().errorResponse(400,"重定向登录失败","failed");
+            }
+        } catch (Exception e) {
+            LOG.error("Failed to redirect to other page, caused by: {}", e.getMessage(), e);
+            return new Response<>().successResponse("Failed to redirect to other page.");
+        }
     }
 
     /**
