@@ -71,6 +71,9 @@ public class AuthConfiguration {
     @Value("${auth.login.url:/udes/auth/login}")
     private String authLoginUrl;
 
+    @Value("${auth.redirect.url:/udes/auth/redirect}")
+    private String authRedirectUrl;
+
     public boolean enable(){
         return authSwitch;
     }
@@ -113,6 +116,10 @@ public class AuthConfiguration {
 
     public String authLoginUrl(){
         return authLoginUrl;
+    }
+
+    public String authRedirectUrl(){
+        return authRedirectUrl;
     }
 
     public String authSecret(){

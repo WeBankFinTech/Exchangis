@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -164,6 +165,21 @@ public class UserInfoServiceImpl extends AbstractGenericService<UserInfo> implem
             return affect > 0;
         }
         return false;
+    }
+
+    @Override
+    public UserInfo createUser(String username) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserName(username);
+        // TODO: 该密码为弱密码
+        userInfo.setPassword(username);
+        userInfo.setUserType(0);
+        userInfo.setCreateTime(new Date());
+        userInfo.setUpdateTime(new Date());
+        if (add(userInfo)) {
+            return userInfo;
+        }
+        return null;
     }
 
 
