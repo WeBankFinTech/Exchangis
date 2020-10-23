@@ -1,0 +1,280 @@
+<template>
+    <Row>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.SJY')" prop="source" :label-width="120">
+                <Wb-select v-model="subData.dataSourceId" filterable @on-change="sourceChange">
+                    <wb-option v-for="(item,index) in sourceOrigin" :key="index" :value="item.id" :label="item.sourceName" />
+                    <Loading v-show="ds_loading" size="16px" class="loading-position" />
+                </Wb-select>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.KM')" prop="database" :label-width="120">
+                <Wb-select v-model="subData.DBData" filterable @on-change="dbSeleted">
+                    <wb-option v-for="(item,index) in dbDataList" :key="index" :value="item" />
+                    <Loading v-show="db_loading" size="16px" class="loading-position" />
+                </Wb-select>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.TABLENAMW')" :label-width="120" class="ui-form-item-required" :class="{'ui-form-item-error': subData.errorShow}">
+                <div ref="mySelect" v-clickoutside="handleOutsideClick" class="ui-select ui-select-multiple" :class="{'ui-select-visible': showSelect}">
+                    <div tabindex="0" class="ui-select-selection" @click="showSelect = !showSelect">
+                        <span
+                            v-for="(item,index) in subData.table"
+                            :key="item"
+                            class="ui-select-selected-value">
+                                {{ item }}
+                            <i class="ui-icon ui-icon-md-close" @click="deleteTable(item, index)" />
+                        </span>
+                        <span v-if="subData.table.length === 0" class="ui-select-placeholder">
+                            {{ $t('uiTemplate.QXZ') }}
+                        </span>
+                        <div class="ui-select-selection-icons">
+                            <i class="ui-icon ui-icon-md-arrow-dropdown" />
+                        </div>
+                    </div>
+                    <div v-show="showSelect" transition="slide" class="ui-select-dropdown" style="top: 32px;">
+                        <ul class="ui-select-dropdown-list">
+                            <template
+                                v-for="(item, index) in tableList"
+                            >
+                                <li
+                                    :key="item"
+                                    class="ui-select-item"
+                                    :class="{'ui-select-item-selected': subData.table.includes(item), 'focus': index === optionIndex}"
+                                    @click="opitonItemClick(index, item)">
+                                    {{ item }}
+                                </li>
+                            </template>
+                        <div v-show="table_loading" class="ui-loading loading-position" style="height: 16px; width: 16px; border-width: 2px; border-style: solid; border-color: rgb(45, 183, 245) rgb(45, 183, 245) transparent;" />
+                        </ul>
+                    </div>
+                </div>
+                <div v-if="subData.errorShow" class="ui-form-error-tip">
+                {{ $t('uiTemplate.BBNWK') }}
+                </div>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.LJTJ')" prop="linkCodition" :label-width="120">
+                <ul class="linkCoditionView">
+                    <li v-for="(item, index) in subData.join" :key="index">
+                        <Wb-button @click="linkCoditionClick(index)">
+                        {{ linkCoditionAction(item, index) }}
+                        </Wb-button>
+                    </li>
+                </ul>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.TJ')" prop="where" :label-width="120">
+                 <wb-input v-model="subData.where" :placeholder="$t('uiTemplate.QSR')" />
+            </Form-item>
+        </Cell>
+    </Row>
+</template>
+<script>
+let cache = {};
+let key = 1;
+export default {
+    name: 'tdsqlOne',
+    props: {
+        stepOneData: {
+            tepy: Object,
+            default: {}
+        },
+        sourceOrigin: {
+            tepy: Array,
+            default: []
+        },
+        dbDataList: {
+            type: Array,
+            default: []
+        },
+        tableList: {
+            type: Array,
+            default: []
+        },
+        ds_loading: {
+            type: Boolean,
+            default: false
+        },
+        db_loading: {
+            type: Boolean,
+            default: false
+        },
+        table_loading: {
+            type: Boolean,
+            default: false
+        }
+    },
+    directives: {
+        clickoutside: {
+            inserted(el, binding) {
+                el.outsideKey = key++;
+                const self = {};
+                self.documentHandler = (e) => {
+                    if (el.contains(e.target)) {
+                        return false;
+                    }
+                    if (binding.value) {
+                        binding.value(e);
+                    }
+                    return true;
+                };
+                cache[el.outsideKey] = self;
+                document.addEventListener('click', self.documentHandler);
+            },
+            unbind(el) {
+                const self = cache[el.outsideKey];
+                document.removeEventListener('click', self.documentHandler);
+                delete cache[el.outsideKey];
+            }
+        }
+    },
+    data() {
+        return {
+            subData: this.stepOneData,
+            showSelect: false,
+            optionIndex: '',
+            tableNameContact: {}
+        }
+    },
+    watch: {
+        subData: {
+            handler(val) {
+                this.$emit('stepOneData', val)
+            },
+            deep: true
+        },
+        'subData.table'(newValue, oldValue) {
+            if (this.subData.table <= 0 && newValue.length !== oldValue.length) {
+                this.subData.errorShow = true;
+            } else {
+                this.subData.errorShow = false;
+            }
+            this.subData.alias = []
+            newValue.map((item, index) => {
+                this.subData.alias.push(this.getTableName(index));
+            })
+            this.$emit('tableValueChange', this.subData.table);
+        }
+    },
+    methods: {
+        sourceChange(val) {
+            this.$emit('sourceChange', val);
+        },
+        dbSeleted(val) {
+            this.$emit('dbSeleted', val);
+        },
+        tableValueChange(val) {
+            // this.$emit('tableValueChange', val);
+        },
+        clickInput() {
+            this.showSelect = true;
+        },
+        handleOutsideClick(e) {
+
+            let select = this.$refs.mySelect;
+            if ((select && select.contains(e.target)) || e.target === select) {
+                return;
+            }
+            if (this.showSelect) {
+                this.showSelect = false;
+            }
+        },
+        opitonItemClick(index, table) {
+            if (!this.subData.table.includes(table)) {
+                this.subData.table.push(table);
+                this.$emit('addTable', table);
+            } else {
+                let stepIndex = '';
+                this.subData.table.map((item, i) => {
+                    if (item === table) {
+                        stepIndex = i;
+                    }
+                });
+                if (stepIndex < this.subData.table.length - 1) {
+                    this.$Message.confirm(this.$t('uiTemplate.SCJG'), this.$t('uiTemplate.SFSCCBZHDSYBJLJPZ')).then((value) => {
+                        if (value === 0) {
+                            this.subData.table = this.subData.table.filter((item, itemIndex) => itemIndex < stepIndex);
+                            this.$emit('deleteTable', table);
+                        }
+                    })
+                } else {
+                    this.subData.table = this.subData.table.filter((item) => table !== item);
+                    this.$emit('deleteTable', table);
+                }
+            }
+            this.optionIndex = index;
+        },
+        deleteTable(table, index) {
+            if (index < this.subData.table.length - 1) {
+                this.$Message.confirm(this.$t('uiTemplate.SCJG'), this.$t('uiTemplate.SFSCCBZHDSYBJLJPZ')).then((value) => {
+                    if (value === 0) {
+                        this.subData.table = this.subData.table.filter((item, itemIndex) => itemIndex < index);
+                        this.$emit('deleteTable', table);
+                    }
+                })
+            } else {
+                this.subData.table = this.subData.table.filter((item) => table !== item);
+                this.$emit('deleteTable', table);
+            }
+        },
+        linkCoditionAction(item, index) {
+            const leftTableName = this.subData.alias[index];
+            const rightTableName = this.subData.alias[index + 1];
+            let tepValue = ''
+            item.map((subItem, subIndex) => {
+                tepValue += `${leftTableName}.${subItem.left}${subItem.condition}${rightTableName}.${subItem.right}${item.length - 1 === subIndex ? '' : ','}`
+            })
+            return tepValue;
+        },
+        getTableName(index) {
+
+            let colName = '';
+
+            if (index >= 26) {
+                colName = getTableName(index / 26 - 1);
+                colName += String.fromCharCode(65 + index % 26);
+            } else {
+                colName += String.fromCharCode(65 + index);
+            }
+
+            return colName;
+        },
+        linkCoditionClick(index) {
+            this.$emit('linkCoditionClick', index);
+        }
+    }
+}
+</script>
+<style lang="scss" scoped>
+.linkCoditionView {
+    border: 1px solid #d7dde4;
+    border-radius: 4px;
+    padding: 8px;
+    overflow: auto;
+    max-height: 140px;
+    min-height: 32px;
+    &::-webkit-scrollbar {
+            width: 0px;
+            height: 8px;
+        }
+        &::-webkit-scrollbar-thumb {
+            border-radius: 6px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
+            background: #808695;
+        }
+        &::-webkit-scrollbar-track {
+            border-radius: 6px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, .2);
+            background: #fff;
+        }
+}
+.ui-select-selection {
+    height: 30px;
+}
+</style>
+
