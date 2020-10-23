@@ -30,6 +30,8 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 
 /**
  * @author davidhua
@@ -50,7 +52,13 @@ public class CorsGatewayFilter implements WebFilter {
             ServerHttpResponse response = exchange.getResponse();
             ServerHttpRequest request = exchange.getRequest();
             HttpHeaders headers = response.getHeaders();
-            headers.add("Access-Control-Allow-Origin", origin);
+            List<String> origins =request.getHeaders().get("Origin");
+            String host = origin;
+            if(null != origins && !origins.isEmpty()){
+                host = origins.get(0);
+            }
+
+            headers.add("Access-Control-Allow-Origin", host);
             headers.add("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE,PUT,GET");
             headers.add("Access-Control-Max-Age", "3600");
             headers.add("Access-Control-Allow-Headers", "x-requested-with,Content-Type,Origin");
