@@ -60,4 +60,18 @@ public final class Key {
 
     public final static String JDBCTEM = "jdbc:mysql://";
 
+    public final static String JDBCORCL = "jdbc:oracle:thin:@";
+
+    public final static String SID = "sid";
+
+    public final static String SERVICENAME = "serviceName";
+
+    public final static String GTID = "gtid";
+
+    public final static String HEARTBEATINTERVAL = "heartBeatInterval";
+
+    public final static String SCHEMA = "schema";
+
+    public final static String SERVERID = "serverId";
+
 }

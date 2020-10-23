@@ -196,6 +196,7 @@ public class CommonRdbmsWriter {
         protected int batchSize;
         protected int batchByteSize;
         protected int columnNumber = 0;
+        protected List<String> primarykeys;
         protected TaskPluginCollector taskPluginCollector;
 
         // 作为日志显示信息时，需要附带的通用信息。比如信息所对应的数据库连接等信息，针对哪个表做的操作
@@ -240,6 +241,7 @@ public class CommonRdbmsWriter {
             }
 
             this.table = writerSliceConfig.getString(Key.TABLE);
+            this.primarykeys = writerSliceConfig.getList(Key.PRIMARYKEY, String.class);
 
             this.columns = writerSliceConfig.getList(Key.COLUMN, String.class);
             this.columnNumber = this.columns.size();
@@ -573,7 +575,7 @@ public class CommonRdbmsWriter {
                     forceUseUpdate = true;
                 }
 
-                INSERT_OR_REPLACE_TEMPLATE = WriterUtil.getWriteTemplate(columns, valueHolders, writeMode, dataBaseType, forceUseUpdate);
+                INSERT_OR_REPLACE_TEMPLATE = WriterUtil.getWriteTemplate(columns, valueHolders, writeMode, dataBaseType, forceUseUpdate, primarykeys);
                 writeRecordSql = String.format(INSERT_OR_REPLACE_TEMPLATE, this.table);
             }
         }

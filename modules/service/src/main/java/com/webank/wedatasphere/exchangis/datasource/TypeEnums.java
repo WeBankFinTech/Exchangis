@@ -41,7 +41,9 @@ public enum TypeEnums {
 
     BINLOG("binlog"),
 
-    MYSQL("mysql");
+    MYSQL("mysql"),
+
+    ORACLE("oracle");
     private static Map<String, TypeEnums> typeMap = new HashMap<>();
     private String name;
     TypeEnums(String name){
@@ -61,5 +63,6 @@ public enum TypeEnums {
         typeMap.put(SFTP.name, SFTP);
         typeMap.put(ELASTICSEARCH.name, ELASTICSEARCH);
         typeMap.put(MYSQL.name, MYSQL);
+        typeMap.put(ORACLE.name, ORACLE);
     }
 }
