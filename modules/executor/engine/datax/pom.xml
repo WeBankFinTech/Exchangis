@@ -55,6 +55,8 @@
         <module>datax-elasticsearchwriter</module>
         <module>datax-mysqlreader</module>
         <module>datax-mysqlwriter</module>
+        <module>datax-oraclereader</module>
+        <module>datax-oraclewriter</module>
         <module>datax-assembly</module>
     </modules>
     <dependencyManagement>

@@ -65,6 +65,7 @@ public final class OriginalConfPretreatmentUtil {
         dealColumnConf(originalConfig);
     }
 
+    @SuppressWarnings("unchecked")
     private static void dealJdbcAndTable(Configuration originalConfig) {
         String username = originalConfig.getString(Key.USERNAME);
         String password = originalConfig.getString(Key.PASSWORD);
@@ -112,6 +113,16 @@ public final class OriginalConfPretreatmentUtil {
                     String jcUrl = Key.JDBCTEM + map.get(Key.HOST).toString() + ":" + map.get(Key.PORT).toString() + "/" + map.get(Key.DATABASE).toString();
                     if(parameter.length() != 0){
                         jcUrl = Key.JDBCTEM + map.get(Key.HOST).toString() + ":" + map.get(Key.PORT).toString() + "/" + map.get(Key.DATABASE).toString() + "?" + parameter;
+                    }
+                    jdbcUrls.add(jcUrl);
+                }
+            } else if (DATABASE_TYPE.equals(DataBaseType.Oracle)){
+                List<Object> jdbcUrlObjects = connConf.getList(Key.JDBC_URL);
+                for(Object obj : jdbcUrlObjects){
+                    Map<String,Object> map = (Map<String, Object>) obj;
+                    String jcUrl = Key.JDBCORCL + "//" + map.get(Key.HOST).toString() + ":" + map.get(Key.PORT).toString() + "/" + map.get(Key.SERVICENAME).toString();
+                    if(StringUtils.isEmpty(map.get(Key.SERVICENAME).toString())){
+                        jcUrl = Key.JDBCORCL + map.get(Key.HOST).toString() + ":" + map.get(Key.PORT).toString() + ":" + map.get(Key.SID).toString();
                     }
                     jdbcUrls.add(jcUrl);
                 }
