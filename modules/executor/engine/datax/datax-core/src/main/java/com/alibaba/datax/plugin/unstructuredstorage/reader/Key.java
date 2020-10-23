@@ -24,6 +24,8 @@ public class Key {
 
     public static final String NULL_FORMAT = "nullFormat";
 
+    public static final String FILE_FORMAT = "fileFormat";
+
     public static final String BUFFER_SIZE = "bufferSize";
 
     public static final String CSV_READER_CONFIG = "csvReaderConfig";

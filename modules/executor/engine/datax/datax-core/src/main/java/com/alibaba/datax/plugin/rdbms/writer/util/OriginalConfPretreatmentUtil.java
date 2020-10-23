@@ -81,6 +81,14 @@ public final class OriginalConfPretreatmentUtil {
                 if(parameter != null && parameter.length() != 0){
                     jdbcUrl = Key.JDBCTEM + map.get(Key.HOST).toString() + ":" + map.get(Key.PORT).toString() + "/" + map.get(Key.DATABASE).toString() + "?" + parameter;
                 }
+            }  else if (DATABASE_TYPE.equals(DataBaseType.Oracle)){
+                Map<String,Object> map = connConf.getMap(com.alibaba.datax.plugin.rdbms.reader.Key.JDBC_URL);
+
+                jdbcUrl = com.alibaba.datax.plugin.rdbms.reader.Key.JDBCORCL + "//" + map.get(com.alibaba.datax.plugin.rdbms.reader.Key.HOST).toString() + ":" + map.get(com.alibaba.datax.plugin.rdbms.reader.Key.PORT).toString() + "/" + map.get(com.alibaba.datax.plugin.rdbms.reader.Key.SERVICENAME).toString();
+                if(StringUtils.isEmpty(map.get(com.alibaba.datax.plugin.rdbms.reader.Key.SERVICENAME).toString())){
+                    jdbcUrl = com.alibaba.datax.plugin.rdbms.reader.Key.JDBCORCL + map.get(com.alibaba.datax.plugin.rdbms.reader.Key.HOST).toString() + ":" + map.get(com.alibaba.datax.plugin.rdbms.reader.Key.PORT).toString() + ":" + map.get(com.alibaba.datax.plugin.rdbms.reader.Key.SID).toString();
+
+                }
             }else {
                 jdbcUrl = connConf.getString(Key.JDBC_URL);
             }
@@ -183,6 +191,7 @@ public final class OriginalConfPretreatmentUtil {
 
         // 默认为：insert 方式
         String writeMode = originalConfig.getString(Key.WRITE_MODE, "INSERT");
+        List<String> primaryKeys = originalConfig.getList(Key.PRIMARYKEY,String.class);
 
         List<String> valueHolders = new ArrayList<String>(columns.size());
         for (int i = 0; i < columns.size(); i++) {
@@ -195,7 +204,7 @@ public final class OriginalConfPretreatmentUtil {
             forceUseUpdate = true;
         }
 
-        String writeDataSqlTemplate = WriterUtil.getWriteTemplate(columns, valueHolders, writeMode, dataBaseType, forceUseUpdate);
+        String writeDataSqlTemplate = WriterUtil.getWriteTemplate(columns, valueHolders, writeMode, dataBaseType, forceUseUpdate, primaryKeys);
 
         LOG.info("Write domain [\n{}\n], which jdbcUrl like:[{}]", writeDataSqlTemplate, jdbcUrl);
 
