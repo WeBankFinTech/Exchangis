@@ -41,7 +41,7 @@
         <commons-pool>1.6</commons-pool>
         <commons-configuration-version>1.10</commons-configuration-version>
         <commons-cli-version>1.2</commons-cli-version>
-        <commons-beanutils>1.9.2</commons-beanutils>
+        <commons-beanutils>1.9.4</commons-beanutils>
         <datax.engine.version>3.0.0-Plus-2</datax.engine.version>
     </properties>
     <modules>
