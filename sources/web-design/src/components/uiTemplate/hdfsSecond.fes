@@ -1,0 +1,154 @@
+<template>
+    <Row>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.SJY')" prop="source" :label-width="120">
+                <Wb-select v-model="subData.dataSourceId" filterable>
+                    <wb-option v-for="(item,index) in sourceOrigin" :key="index" :label="item.sourceName" :value="item.id" />
+                    <Loading v-show="dsLoading" size="16px" class="loading-position" />
+                </Wb-select>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.LJ')" prop="path" :label-width="120">
+                <wb-input v-model="subData.path" :placeholder="$t('uiTemplate.SRLJ')" />
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item v-if="transferVal === 'record'" :label="$t('uiTemplate.YSLX')" prop="hdfsCompress" :label-width="120">
+                <Wb-select v-model="subData.compress" :placeholder="$t('uiTemplate.XZYSLX')">
+                    <wb-option v-for="item in hdfsCompressList" :key="item" :value="item" :label="item" />
+                </Wb-select>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.BM')" prop="encoding" :label-width="120">
+                <Wb-select v-model="subData.encoding" :placeholder="$t('uiTemplate.QXZBM')" :disabled="isSqoop">
+                    <wb-option v-for="item in encodingList" :key="item" :value="item" :label="item" />
+                </Wb-select>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.WJMQZ')" prop="fileName" :label-width="120">
+                <wb-input v-model="subData.fileName" :placeholder="$t('uiTemplate.QSRWJMQZ')" :disabled="isSqoop" />
+            </Form-item>
+        </Cell>
+        <Cell v-if="transferVal === 'record'" span="24">
+            <Form-item :label="$t('uiTemplate.WJLX')" prop="fielType" :label-width="120">
+                <Wb-select v-model="subData.fileType" :placeholder="$t('uiTemplate.XZWJLX')">
+                    <wb-option value="text" />
+                    <wb-option v-if="!isSqoop" value="orc" />
+                </Wb-select>
+            </Form-item>
+        </Cell>
+        <Cell v-if="transferVal === 'record'" span="24">
+            <Form-item :label="$t('uiTemplate.ZDFGF')" prop="fieldDelimiter" :label-width="120">
+                <Wb-select v-model="subData.fieldDelimiter" filterable @on-search="search">
+                    <Wb-option v-for="item in options" :key="item.label" :value="item.value">
+                    {{ item.label }}
+                    </Wb-option>
+                </Wb-select>
+            </Form-item>
+        </Cell>
+    </Row>
+</template>
+<script>
+import fieldDelimiterMixin from '../../mixin/fieldDelimiterMixin';
+export default {
+    name: 'hdfsSecond',
+    mixins: [fieldDelimiterMixin],
+    props: {
+        stepSecondData: {
+            tepy: Object,
+            default: {}
+        },
+        sourceOrigin: {
+            tepy: Array,
+            default: []
+        },
+        dsLoading: {
+            type: Boolean,
+            default: false
+        }
+    },
+    data() {
+        return {
+            subData: this.stepSecondData,
+            encodingList: [
+                'UTF-8',
+                'ISO-8859-1',
+                'GB2312',
+                'GBK',
+                'UTF-16'
+            ]
+            // hdfsCompressList: [
+            //     'gzip', 'bzip2'
+            // ]
+        }
+    },
+    computed: {
+        transferVal() {
+            return this.FesFesx.firstIsSelectRecord;
+        },
+        isSqoop() {
+            return this.FesFesx.enginSelect === 'SQOOP';
+        },
+        hdfsCompressList() {
+            if (this.isSqoop) {
+                return [
+                    'deflate',
+                    'lzo'
+                ]
+            } else {
+                if (this.subData.fileType === 'orc') {
+                    return [
+                        'none',
+                        'snappy'
+                    ]
+                } else {
+                    return [
+                        'gzip',
+                        'bzip2'
+                    ]
+                }
+            }
+        }
+    },
+    watch: {
+        subData: {
+            handler(val) {
+                this.$emit('stepSecondData', val);
+            },
+            deep: true
+        },
+        transferVal(val) {
+            if (val === 'stream') {
+                this.subData.fieldDelimiter = '';
+                this.subData.fielType = '';
+                this.subData.compress = '';
+            }
+        },
+        'subData.fileType'(val) {
+            // this.changeCompressList(val);
+        }
+    },
+    created() {
+        // this.changeCompressList(this.subData.fileType);
+    },
+    methods: {
+        // changeCompressList(val) {
+        //     if (val === 'orc') {
+        //         this.hdfsCompressList = [
+        //             'none',
+        //             'snappy'
+        //         ]
+        //     } else {
+        //         this.hdfsCompressList = [
+        //             'gzip',
+        //             'bzip2'
+        //         ]
+        //     }
+        // }
+    }
+}
+</script>
+
