@@ -15,6 +15,10 @@
     </dependencySets>
     <fileSets>
         <fileSet>
+            <directory>src/main/lib</directory>
+            <outputDirectory>exchangis-service/lib</outputDirectory>
+        </fileSet>
+        <fileSet>
             <lineEnding>unix</lineEnding>
             <directory>./src/main/bin</directory>
             <outputDirectory>exchangis-service/bin</outputDirectory>

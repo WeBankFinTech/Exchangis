@@ -26,10 +26,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.charset.UnsupportedCharsetException;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.function.Supplier;
 
 public class UnstructuredStorageReaderUtil {
     private static final Logger LOG = LoggerFactory
@@ -79,8 +77,7 @@ public class UnstructuredStorageReaderUtil {
      * @return 分隔符分隔后的字符串数，
      */
     public static String[] splitOneLine(String inputLine, String delimiter) {
-        String[] splitedResult = StringUtils.split(inputLine, delimiter);
-        return splitedResult;
+        return StringUtils.split(inputLine, delimiter);
     }
 
     public static void readFromStream(InputStream inputStream, OutputStream outputStream,
@@ -196,7 +193,6 @@ public class UnstructuredStorageReaderUtil {
         List<ColumnEntry> column = UnstructuredStorageReaderUtil
                 .getListColumnEntry(readerSliceConfig, Key.COLUMN);
         CsvReader csvReader = null;
-
         // every line logic
         try {
             // TODO lineDelimiter
@@ -205,14 +201,21 @@ public class UnstructuredStorageReaderUtil {
                 LOG.info(String.format("Header line %s has been skiped.",
                         fetchLine));
             }
-            csvReader = new CsvReader(reader);
-            csvReader.setDelimiter(fieldDelimiter);
-
-            setCsvReaderConfig(csvReader);
+            SplitRecordSupplier<String[]> splitSupplier = null;
+            if(readerSliceConfig.getString(Key.FILE_FORMAT, "csv").equalsIgnoreCase("text")){
+                String finalFieldDelimiter = readerSliceConfig.getString(Key.FIELD_DELIMITER,
+                        String.valueOf(Constant.DEFAULT_FIELD_DELIMITER));
+                splitSupplier = () -> UnstructuredStorageReaderUtil.splitOneLine(reader.readLine(), finalFieldDelimiter);
+            }else{
+                csvReader = new CsvReader(reader);
+                csvReader.setDelimiter(fieldDelimiter);
+                setCsvReaderConfig(csvReader);
+                CsvReader finalCsvReader = csvReader;
+                splitSupplier = () -> UnstructuredStorageReaderUtil.splitBufferedReader(finalCsvReader);
+            }
 
             String[] parseRows;
-            while ((parseRows = UnstructuredStorageReaderUtil
-                    .splitBufferedReader(csvReader)) != null) {
+            while ((parseRows = splitSupplier.get()) != null) {
                 UnstructuredStorageReaderUtil.transportOneRecord(recordSender,
                         column, parseRows, nullFormat, taskPluginCollector);
             }
@@ -627,7 +630,7 @@ public class UnstructuredStorageReaderUtil {
 
     private static InputStream decorateWithCompress(InputStream inputStream, String compress) throws IOException {
         InputStream compressedInput = inputStream;
-        if( null != compress){
+        if( null != compress && !"none".equalsIgnoreCase(compress)){
             if("lzo_deflate".equalsIgnoreCase(compress)){
                 compressedInput = new LzoInputStream(inputStream, new LzoDecompressor1x_safe());
             }else if("lzo".equalsIgnoreCase(compress)){
@@ -652,6 +655,16 @@ public class UnstructuredStorageReaderUtil {
             }
         }
         return compressedInput;
+    }
+
+    @FunctionalInterface
+    private interface SplitRecordSupplier<T>{
+        /**
+         * Get method (cas throw exceptions inner)
+         * @return split result
+         * @throws Exception any exception
+         */
+        T get() throws Exception;
     }
 
 }
