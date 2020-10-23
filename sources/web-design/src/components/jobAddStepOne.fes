@@ -1,0 +1,611 @@
+<template>
+    <Panel :title="$t('components.XZSJY')">
+        <Wb-form ref="DataSource" :rule="ruleValidate">
+            <Row>
+                <Cell span="24">
+                    <Form-item :label="$t('components.SJYLX')" :label-width="120">
+                        <Wb-select v-model="addData.type" @on-change="typeChange">
+                            <wb-option v-for="item in dataSourceTypeList" :key="item" :value="item" />
+                        </Wb-select>
+                    </Form-item>
+                </Cell>
+            </Row>
+            <template v-if="addData.type === 'hive' || addData.type === ''">
+            <hiveOne
+                :add-data="addData"
+                :source-origin="sourceOrigin"
+                :db-data-list="dbDataList"
+                :table-list="tableList"
+                :part-val="partVal"
+                :ds_loading="ds_loading"
+                :db_loading="db_loading"
+                :table_loading="table_loading"
+                :part_loading="part_loading"
+                :is-one-step="true"
+                @sourceChange="sourceChange"
+                @dbSeleted="dbSeleted"
+                @tableValueChange="tableValueChange"
+                @partValueSelect="partValueSelect"
+                @partCustom="partCustom"
+                @partCustomClear="partCustomClear"
+                 />
+            </template>
+            <template v-if="addData.type === 'local_fs'">
+                <localFsOne :local-fs-data="localFsData" @localFsData="localFsDataAction" />
+            </template>
+            <template v-if="addData.type === 'hdfs'">
+                <hdfsOne :step-one-data="hdfsData" :source-origin="sourceOrigin" :ds-loading="ds_loading" @stepOneData="hdfsDataAction" />
+            </template>
+            <template v-if="addData.type === 'sftp'">
+                <sftpOne :step-one-data="sftpData" :source-origin="sourceOrigin" :ds-loading="ds_loading" @stepOneData="sftpDataAction" />
+            </template>
+            <template v-if="addData.type === 'mysql'">
+                <mysql
+                    :step-one-data="tdsqlData"
+                    :source-origin="sourceOrigin"
+                    :ds-loading="ds_loading"
+                    :db-data-list="tdsqlValue.dbs"
+                    :table-list="tdsqlValue.tables"
+                    :ds_loading="ds_loading"
+                    :db_loading="db_loading"
+                    :table_loading="table_loading"
+                    @stepOneData="tdsqlDataAction"
+                    @sourceChange="tdsqlSourceChange"
+                    @dbSeleted="tdsqlDbSeleted"
+                    @tableValueChange="tdsqlTableValueChange"
+                    @addTable="addTable"
+                    @deleteTable="deleteTable"
+                    @linkCoditionClick="linkCoditionClick" />
+            </template>
+            <template v-if="addData.type === 'oracle'">
+                <oracle
+                    :step-one-data="oracleData"
+                    :source-origin="sourceOrigin"
+                    :ds-loading="ds_loading"
+                    :db-data-list="oracleValue.dbs"
+                    :table-list="oracleValue.tables"
+                    :ds_loading="ds_loading"
+                    :db_loading="db_loading"
+                    :table_loading="table_loading"
+                    @stepOneData="tdsqlDataAction"
+                    @sourceChange="oracleSourceChange"
+                    @dbSeleted="oracleDbSeleted"
+                     />
+            </template>
+            <Form-item>
+                <Row>
+                    <Cell span="12">
+                        <Wb-button type="primary" @click="preview">
+                            {{ $t('components.SYB') }}
+                        </Wb-button>
+                    </Cell>
+                    <Cell span="12">
+                        <Wb-button type="primary" :disabled="nextStepButtonDisable" class="next-button" @click="parNextStep">
+                            {{ $t('components.XYB') }}
+                        </Wb-button>
+                    </Cell>
+                </Row>
+            </Form-item>
+        </Wb-form>
+        <weModal v-model="linkCoditionShow" :title="$t('components.LJTJPZ')" width="800" :close-text="$t('components.QX')" @onConfirm="addLinkConfirm" @onClose="addLinkClose">
+            <Wb-form>
+                <Form-item>
+                    <Row class="text-center">
+                        <Cell span="7">
+                            {{ $t('components.QBZDXX') }}
+                        </Cell>
+                        <Cell span="1">
+                                <span>&nbsp;</span>
+                            </Cell>
+                        <Cell span="3">
+                            {{ $t('components.LJTJ') }}
+                        </Cell>
+                        <Cell span="1">
+                                <span>&nbsp;</span>
+                            </Cell>
+                        <Cell span="7">
+                            {{ $t('components.DQBZDXX') }}
+                        </Cell>
+                    </Row>
+                </Form-item>
+                <template v-for="(item, index) in currentLink">
+                    <Form-item :key="index">
+                        <Row class="text-center">
+                            <Cell span="7">
+                                <Wb-select v-model="item.left" width="70%">
+                                    <wb-option v-for="(subitem, subIndex) in column.preValue" :key="subIndex" :lable="subitem.name" :value="subitem.name" />
+                                </Wb-select>
+                            </Cell>
+                            <Cell span="1">
+                                    <span>&nbsp;</span>
+                                </Cell>
+                            <Cell span="3">
+                            <Wb-select v-model="item.condition" width="70%">
+                                    <wb-option lable="=" value="=" />
+                                </Wb-select>
+                            </Cell>
+                            <Cell span="1">
+                                    <span>&nbsp;</span>
+                                </Cell>
+                            <Cell span="7">
+                                <Wb-select v-model="item.right" width="70%">
+                                    <wb-option v-for="(subitem, subIndex) in column.currentValue" :key="subIndex" :lable="subitem.name" :value="subitem.name" />
+                                </Wb-select>
+                            </Cell>
+                            <Cell span="4" class="text-dec">
+                                <Wb-button v-if="index === 0" icon="plus" @click="addCodition" />
+                                <Wb-button v-if="index !== 0 || currentLink.length > 1" icon="minus" @click="minusCodition(index)" />
+                            </Cell>
+                        </Row>
+                    </Form-item>
+                </template>
+                <Form-item>
+                    <Row>
+                        <Cell span="24" />
+                    </Row>
+                </Form-item>
+            </Wb-form>
+        </weModal>
+    </Panel>
+</template>
+<script>
+import localFsOne from './uiTemplate/localFsOne.fes';
+import hdfsOne from './uiTemplate/hdfsOne.fes';
+import hiveOne from './uiTemplate/hiveStep.fes';
+import sftpOne from './uiTemplate/sftpOne.fes';
+import mysql from './uiTemplate/tdsqlOne.fes';
+import jobStepMixin from '../mixin/jobStepMixin.js';
+import { SOURCETYPE, TRANSFERTYPE } from '../constants/common.js';
+import weModal from './uiTemplate/weModal';
+import oracle from './uiTemplate/oracleOne.fes';
+export default {
+    name: 'taskOneStep',
+    props: {
+        editData: {
+            type: null
+        },
+        treeId: {
+            type: null
+        }
+    },
+    components: {
+        localFsOne,
+        hdfsOne,
+        hiveOne,
+        sftpOne,
+        mysql,
+        weModal,
+        oracle
+    },
+    mixins: [jobStepMixin],
+    FesData() {
+        return {
+            localFsData: {
+                type: '',
+                path: '',
+                compress: '',
+                encoding: '',
+                transfer: 'record',
+                fieldDelimiter: ''
+            },
+            hdfsData: {
+                type: '',
+                dataSourceId: '',
+                path: '',
+                compress: '',
+                encoding: '',
+                transfer: 'record',
+                fileType: 'text',
+                fieldDelimiter: ''
+            },
+            sftpData: {
+                type: '',
+                dataSourceId: '',
+                path: '',
+                compress: '',
+                encoding: '',
+                transfer: 'record',
+                // fileType: '',
+                fieldDelimiter: '',
+                transit: false
+            },
+            tdsqlData: {
+                type: '',
+                dataSourceId: '',
+                DBData: '',
+                table: [],
+                linkCodition: '',
+                where: '',
+                join: [
+                ],
+                alias: [],
+                errorShow: false
+            },
+            oracleData: {
+                type: '',
+                dataSourceId: '',
+                DBData: '',
+                table: '',
+                where: ''
+            },
+            linkCoditionShow: false,
+            tdsqlValue: {
+                dbs: [],
+                tables: []
+            },
+            oracleValue: {
+                dbs: [],
+                tables: []
+            },
+            column: {
+                preValue: [],
+                currentValue: []
+            },
+            linkTableIndex: '',
+            currentLink: [
+                {
+                    left: '',
+                    right: '',
+                    condition: '='
+                }
+            ]
+        }
+    },
+    computed: {
+        dataSourceTypeList() {
+            const enginSlect = this.FesFesx.enginSelect;
+            if (enginSlect === 'SQOOP') {
+                if (!this.editData) {
+                    this.addData.type = SOURCETYPE.HIVE
+                }
+                return [
+                    SOURCETYPE.HIVE,
+                    SOURCETYPE.MYSQL
+                ]
+            } else {
+                if (!this.editData) {
+                    this.addData.type = SOURCETYPE.HIVE
+                }
+                return [
+                    SOURCETYPE.HIVE,
+                    SOURCETYPE.LOCAL_FS,
+                    SOURCETYPE.HDFS,
+                    SOURCETYPE.SFTP,
+                    SOURCETYPE.MYSQL,
+                    SOURCETYPE.ORACLE
+                ]
+            }
+        }
+    },
+    watch: {
+        // 数据源变化回填
+        sourceOrigin(val) {
+            if (val.length > 0 && this.editData !== '') {
+                this.changeDataSourceId(this.typeTransitionDataName(this.editData.dataSrcType), val, 'dataSrcId');
+            }
+        },
+        // hive库数据变化回填
+        dbDataList(val) {
+            if (val.length > 0 && this.editData !== '' ) {
+                if (val.includes(this.editData.config.dataSrcParams.database)) {
+                    this.addData.DBData = this.editData.config.dataSrcParams.database;
+                }
+            }
+        },
+        // hive表数据回填
+        tableList(val) {
+            if (val.length > 0 && this.editData.config && this.editData.config.dataSrcParams.table !== '') {
+                if (val.includes(this.editData.config.dataSrcParams.table)) {
+                    this.addData.table = this.editData.config.dataSrcParams.table;
+                }
+            }
+        },
+
+        'tdsqlValue.dbs'(val) {
+            if (val.length > 0 && this.editData !== '' ) {
+                if (val.includes(this.editData.config.dataSrcParams.database)) {
+                    this.tdsqlData.DBData = this.editData.config.dataSrcParams.database;
+                }
+            }
+        },
+        'tdsqlValue.tables'(val) {
+            if (val.length > 0 && this.editData !== '' ) {
+                let flag = true;
+                this.editData.config.dataSrcParams.table.map((item) => {
+                    if (!val.includes(item)) {
+                        flag = false;
+                    }
+                })
+                if (flag) {
+                    this.tdsqlData.table = this.editData.config.dataSrcParams.table;
+                    this.tdsqlData.join = this.editData.config.dataSrcParams.join;
+                    let promiseList = this.tdsqlData.table.map((item) => {
+                        return this.FesApi.fetch('/datasource/meta/mysql/' + this.tdsqlData.dataSourceId + '/' + this.tdsqlData.DBData + '/' + item + '/fields', {}, {
+                            method: 'get',
+                            timeout: '60000'
+                        })
+                    })
+                    Promise.all(promiseList).then(rst=>{
+                        this.column.preValue = rst[promiseList.length - 2];
+                        this.column.currentValue = rst[promiseList.length - 1];
+                    }).catch(() => {
+                    })
+                } else {
+                    this.tdsqlData.table = [];
+                    this.tdsqlData.join = [];
+                }
+            }
+        },
+        'column.preValue'(val) {
+            if (!this.currentLink[0].left && val) {
+                this.currentLink[0].left = val[0].name;
+            }
+        },
+        'column.currentValue'(val) {
+            if (!this.currentLink[0].right) {
+                this.currentLink[0].right = val[0].name;
+            }
+        },
+        'oracleValue.dbs'(val) {
+            if (val.length > 0 && this.editData !== '' ) {
+                if (val.includes(this.editData.config.dataSrcParams.database)) {
+                    this.oracleData.DBData = this.editData.config.dataSrcParams.database;
+                }
+            }
+        },
+        'oracleValue.tables'(val) {
+            if (val.length > 0 && this.editData !== '' ) {
+                if (val.includes(this.editData.config.dataSrcParams.table)) {
+                    this.oracleData.table = this.editData.config.dataSrcParams.table;
+                }
+            }
+        }
+    },
+    FesReady() {
+        if (!this.editData) {
+            this.addData.type = SOURCETYPE.HIVE;
+            this.FesFesx.set('firstIsSelectRecord', 'record');
+        } else {
+            this.editorAction(this.editData);
+        }
+    },
+    methods: {
+        typeChange(value) {
+            this.FesFesx.set('FirstCurrentDataSourceType', value);
+            this.nextStepButtonDisable = false;
+            this.addData.dataSourceValue = '';
+            this.addData.dataSourceId = '';
+            this.addData.DBData = '';
+            this.addData.table = '';
+            this.sourceOrigin = [];
+            this.dbDataList = [];
+            this.tableList = [];
+            this.partKey = '';
+            this.partVal = [{name: '', value: '', partitions: {}}];
+            if (value === SOURCETYPE.HIVE) {
+                // 避免缓存影响字段隐射的判断
+                this.FesFesx.set('firstIsSelectRecord', this.addData.transfer);
+                this.getSourceDataList(value);
+            } else if (value === SOURCETYPE.LOCAL_FS) {
+                this.localFsData.type = value;
+            } else if (value === SOURCETYPE.SFTP) {
+                this.sftpData.type = value;
+                this.getSourceDataList(value);
+            } else if (value === SOURCETYPE.MYSQL) {
+                this.FesFesx.set('firstIsSelectRecord', TRANSFERTYPE.RECORD);
+
+                this.tdsqlData.type = value;
+                this.getSourceDataList(value);
+            } else if (value === SOURCETYPE.HDFS) {
+                this.hdfsData.type = value;
+                this.getSourceDataList(value);
+            } else if (value === SOURCETYPE.ORACLE) {
+                this.FesFesx.set('firstIsSelectRecord', TRANSFERTYPE.RECORD);
+                this.oracleData.type = value;
+                this.getSourceDataList(value);
+            }
+        },
+        editorAction(val) {
+            if (val) {
+                this.FesFesx.set('FirstCurrentDataSourceType', val.config.dataSrcParams.type);
+                this.FesFesx.set('firstIsSelectRecord', val.config.transportType);
+                this.addData.type = val.config.dataSrcParams.type;
+                if (val.config.dataSrcParams.type === SOURCETYPE.LOCAL_FS) {
+                    this.localFsData = {
+                        ...val.config.dataSrcParams
+                    }
+                    this.localFsData.transfer = val.config.transportType;
+
+                } else if (val.config.dataSrcParams.type === SOURCETYPE.HDFS) {
+                    this.hdfsData = {
+                        ...val.config.dataSrcParams
+                    }
+                    this.hdfsData.transfer = val.config.transportType;
+
+                } else if (val.config.dataSrcParams.type === SOURCETYPE.SFTP) {
+                    this.sftpData = {
+                        ...val.config.dataSrcParams
+                    }
+                    this.sftpData.transfer = val.config.transportType;
+
+                } else if (val.config.dataSrcParams.type === SOURCETYPE.HIVE) {
+                    this.addData.transfer = val.config.transportType;
+                } else if (val.config.dataSrcParams.type === SOURCETYPE.MYSQL) {
+                    this.tdsqlData = {
+                        ...val.config.dataSrcParams
+                    }
+                } else if (val.config.dataSrcParams.type === SOURCETYPE.ORACLE) {
+                    this.oracleData = {
+                        ...val.config.dataSrcParams
+                    }
+                }
+            }
+        },
+        tableValueChange(value) {
+            this.tableValueChangeAction(value, 'dataSrcParams');
+        },
+        partValueSelect({index, value, partitions}) {
+            this.partValueSelectAction(index, value, partitions, 'dataSrcParams')
+        },
+        preview() {
+            this.$emit('preStep');
+        },
+        addTable(table) {
+            if (this.tdsqlData.dataSourceId !== '' && this.tdsqlData.DBData !== '' && this.tdsqlData.table.length > 1) {
+                let promiseList = this.tdsqlData.table.map((item) => {
+                    return this.FesApi.fetch('/datasource/meta/mysql/' + this.tdsqlData.dataSourceId + '/' + this.tdsqlData.DBData + '/' + item + '/fields', {}, {
+                        method: 'get',
+                        timeout: '60000'
+                    })
+                })
+                Promise.all(promiseList).then(rst=>{
+                    this.column.preValue = rst[promiseList.length - 2];
+                    this.column.currentValue = rst[promiseList.length - 1];
+                    if (Array.isArray(this.tdsqlData.table) && this.tdsqlData.table.length > 1) {
+                        this.linkCoditionShow = true;
+                        this.linkTableIndex = this.tdsqlData.join.length;
+                        this.initCurrentLinkCodition();
+                    }
+                }).catch(() => {
+                })
+            }
+        },
+        deleteTable() {
+            if (this.tdsqlData.table.length < 2) {
+                this.tdsqlData.join = [];
+            } else {
+                this.tdsqlData.join = this.tdsqlData.join.filter((item, index) => {
+                    return index <= this.tdsqlData.table.length - 2
+                })
+            }
+        },
+        tdsqlTableValueChange(value) {
+        },
+        tdsqlSourceChange(value) {
+            this.tdsqlData.DBData = '';
+            this.tdsqlData.table = [];
+            this.tdsqlValue.dbs = [];
+            this.tdsqlValue.tables = [];
+            this.tdsqlData.join = [];
+            if (value == '') {
+                return false;
+            } else {
+                this.db_loading = true;
+                this.FesApi.fetch('/datasource/meta/mysql/' + value + '/dbs', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then(rst => {
+                    this.db_loading = false;
+                    this.tdsqlValue.dbs = JSON.stringify(rst) === '{}' ? [] : rst;
+                }).catch(() => this.db_loading = false);
+            }
+        },
+        tdsqlDbSeleted(value) {
+            this.tdsqlData.table = [];
+            this.tdsqlValue.tables = [];
+            this.tdsqlData.join = [];
+            if (value != '') {
+                this.table_loading = true;
+                this.FesApi.fetch('/datasource/meta/mysql/' + this.tdsqlData.dataSourceId + '/' + value + '/tables', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then(rst => {
+                    this.table_loading = false;
+                    this.tdsqlValue.tables = JSON.stringify(rst) === '{}' ? [] : rst;
+                }).catch(() => this.table_loading = false);
+            }
+        },
+        oracleSourceChange(value) {
+            this.oracleValue.dbs = [];
+            this.oracleValue.tables = [];
+            if (value === '') {
+                return false;
+            } else {
+                this.FesApi.fetch('/datasource/meta/oracle/' + value + '/dbs', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then(rst => {
+                    this.db_loading = false;
+                    this.oracleValue.dbs = JSON.stringify(rst) === '{}' ? [] : rst;
+                }).catch(() => this.db_loading = false);
+            }
+        },
+        oracleDbSeleted(value) {
+            this.oracleValue.tables = [];
+            if (value != '') {
+                this.table_loading = true;
+                this.FesApi.fetch('/datasource/meta/oracle/' + this.oracleData.dataSourceId + '/' + value + '/tables', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then(rst => {
+                    this.table_loading = false;
+                    this.oracleValue.tables = JSON.stringify(rst) === '{}' ? [] : rst;
+                }).catch(() => this.table_loading = false);
+            }
+        },
+        addCodition() {
+            const pushAction = () => {
+                this.currentLink.push(
+                    {left: '', right: '', condition: '='}
+                )
+            }
+            this.linkCoditionCheck(pushAction);
+        },
+        minusCodition(index) {
+            this.currentLink = this.currentLink.filter((item, i) => i !== index);
+        },
+        addLinkConfirm() {
+            this.linkCoditionShow = true;
+            const addAction = () => {
+                this.linkCoditionShow = false;
+                if (!this.tdsqlData.join[this.linkTableIndex]) {
+                    this.tdsqlData.join.push(this.currentLink)
+                } else {
+                    this.tdsqlData.join[this.linkTableIndex] = this.currentLink;
+                }
+            }
+            this.linkCoditionCheck(addAction)
+        },
+        addLinkClose() {
+            if (!this.tdsqlData.join[this.linkTableIndex]) {
+                this.tdsqlData.table.pop();
+            }
+        },
+        initCurrentLinkCodition() {
+            this.currentLink = [
+                {
+                    left: '',
+                    right: '',
+                    condition: '='
+                }
+            ]
+        },
+        linkCoditionClick(index) {
+            this.linkTableIndex = index;
+            this.currentLink = JSON.parse(JSON.stringify(this.tdsqlData.join[index]));
+            this.linkCoditionShow = true;
+        },
+        linkCoditionCheck(fn) {
+            const lastLink = this.currentLink[this.currentLink.length - 1];
+            if (!lastLink.left && !lastLink.right) {
+                return this.$Toast(this.$t('components.QXTXWZLJXX'));
+            } else if (!lastLink.left && lastLink.right) {
+                return this.$Toast(this.$t('components.QTXQBZDXX'));
+            } else if (lastLink.left && !lastLink.right) {
+                return this.$Toast(this.$t('components.QTXDQBZDXX'));
+            } else if (lastLink.left && lastLink.right) {
+                fn();
+            }
+        }
+
+    }
+}
+</script>
+<style lang="scss" scoped>
+.text-center {
+    text-align: center;
+}
+.icon-plus {
+    cursor: pointer;
+}
+</style>

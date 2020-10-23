@@ -1,0 +1,121 @@
+<template>
+    <Row>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.SJY')" prop="source" :label-width="120">
+                <Wb-select v-model="subData.dataSourceId" filterable @on-change="sourceChange">
+                    <wb-option v-for="(item,index) in sourceOrigin" :key="index" :value="item.id" :label="item.sourceName" />
+                    <Loading v-show="ds_loading" size="16px" class="loading-position" />
+                </Wb-select>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.KM')" prop="database" :label-width="120">
+                <Wb-select v-model="subData.DBData" filterable @on-change="dbSeleted">
+                    <wb-option v-for="(item,index) in dbDataList" :key="index" :value="item" />
+                    <Loading v-show="db_loading" size="16px" class="loading-position" />
+                </Wb-select>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.TABLENAMW')" prop="tableTow" :label-width="120">
+                <Wb-select v-model="subData.table" filterable @on-change="tableValueChange">
+                    <wb-option v-for="(item,index) in tableList" :key="index" :value="item" />
+                    <Loading v-show="table_loading" size="16px" class="loading-position" />
+                </Wb-select>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.PLDX')" prop="batchSize" :label-width="120">
+                <wb-input v-model="subData.batchSize" type="number" :disabled="FesFesx.enginSelect === 'SQOOP'" :placeholder="$t('uiTemplate.QSRPLDXZ')" />
+            </Form-item>
+        </Cell>
+    </Row>
+</template>
+<script>
+export default {
+    name: 'tdsqlSecond',
+    props: {
+        stepOneData: {
+            tepy: Object,
+            default: {}
+        },
+        sourceOrigin: {
+            tepy: Array,
+            default: []
+        },
+        dbDataList: {
+            type: Array,
+            default: []
+        },
+        tableList: {
+            type: Array,
+            default: []
+        },
+        ds_loading: {
+            type: Boolean,
+            default: false
+        },
+        db_loading: {
+            type: Boolean,
+            default: false
+        },
+        table_loading: {
+            type: Boolean,
+            default: false
+        }
+    },
+    data() {
+        return {
+            subData: this.stepOneData,
+            showSelect: false,
+            optionIndex: '',
+            alias: [],
+            tableNameContact: {}
+        }
+    },
+    watch: {
+        subData: {
+            handler(val) {
+                this.$emit('stepOneData', val)
+            },
+            deep: true
+        },
+        'subData.table'(newValue, oldValue) {
+            // this.subData.tableName = newValue;
+        }
+    },
+    // computed: {
+    //     writeModeList() {
+    //         if (this.FesFesx.enginSelect === 'SQOOP') {
+    //             return [
+    //                 'updateonly',
+    //                 'allowinsert'
+    //             ]
+    //         } else {
+    //             return [
+    //                 'insert',
+    //                 'replace',
+    //                 'update'
+    //             ]
+    //         }
+    //     }
+    // },
+    methods: {
+        sourceChange(val) {
+            this.$emit('sourceChange', val);
+        },
+        dbSeleted(val) {
+            this.$emit('dbSeleted', val);
+        },
+        tableValueChange(val) {
+            this.$emit('tableValueChange', val);
+        }
+    }
+}
+</script>
+<style lang="scss" scoped>
+.ui-select-selection {
+    height: 30px;
+}
+</style>
+
