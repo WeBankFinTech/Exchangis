@@ -42,7 +42,7 @@ public class Constants {
     public static final String PARAM_AUTH_TYPE = "authType";
     public static final String PARAM_KEY_FILE_PATH = "keyfilepath";
     public static final String PARAM_KEY_TDSQL_CONFIG = "connParams";
-
+    public static final String PARAM_NULL_FORMAT = "nullFormat";
     /**
      *  HIVE data source parameters
      */
@@ -70,4 +70,12 @@ public class Constants {
     public static final String PARAM_BINLOG_SET = "set";
     public static final String PARAM_BINLOG_HOST = "host";
     public static final String PARAM_BINLOG_PORT = "port";
+
+    /**
+     *  Oracle data source parameters
+     */
+    public static final String PARAM_ORACLE_HOST = "host";
+    public static final String PARAM_ORACLE_PORT = "port";
+    public static final String PARAM_ORACLE_SERVICE_NAME  = "serviceName";
+    public static final String PARAM_ORACLE_SID = "sid";
 }

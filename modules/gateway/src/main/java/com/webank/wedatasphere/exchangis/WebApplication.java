@@ -26,6 +26,7 @@ import com.webank.wedatasphere.exchangis.common.auth.AuthTokenService;
 import com.webank.wedatasphere.exchangis.common.auth.scheduler.ServTokenRefresh;
 import com.webank.wedatasphere.exchangis.common.controller.SecurityUtil;
 import com.webank.wedatasphere.exchangis.common.util.spring.AppUtil;
+import com.webank.wedatasphere.exchangis.gateway.filters.CorsGatewayFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,6 +76,11 @@ public class WebApplication{
     @Bean
     public ScriptAuthPwdFilter scriptAuthPwdFilter(){return new ScriptAuthPwdFilter();}
 
+
+    @Bean
+    public CorsGatewayFilter corsHeadersFilter(){
+        return new CorsGatewayFilter();
+    }
 
     @Value("${web.server.path}")
     private String serverPath;
