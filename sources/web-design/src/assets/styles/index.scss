@@ -1,0 +1,126 @@
+@import '../addIconfont/iconfont.css';
+@import 'variables.scss';
+.layout-left-logo {
+    img {
+        display: none;
+    }
+    p {
+        font-weight: 700;
+        font-size: 20px;
+    }
+}
+.ui-modal-dialog {
+    overflow:visible!important;
+}
+.breadcrumb{
+    padding: 15px !important;
+    border-bottom: 1px solid #d7dde4;
+    position: relative;
+    margin-bottom: 0;
+}
+.button-row{
+    padding-top: 15px !important;
+    padding-left: 15px !important;
+    padding-bottom: 10px !important;
+}
+.page-loc{
+    text-align:center;
+    margin: 15px;
+    justify-content: center;
+}
+.loading-w{
+    text-align:center;
+    margin-top:30px;
+    margin-bottom:30px
+}
+.form-inner-panel{
+    margin-top:20px;
+    margin-bottom:6px;
+    height:100px;
+}
+.loading-position {
+    margin-left:50%;
+}
+.last-loading {
+    margin-top: 10px;
+}
+.next-button {
+    margin-left: 80px;
+}
+.custom-input {
+    padding-top: 3px;
+}
+.layout-left {
+    width:  240px !important;
+}
+.layout-right {
+    position: absolute;
+    left: 240px !important;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    min-width: 1150px;
+    .layout-right-body {
+        overflow-y: hidden;
+    }
+}
+.layout.layout-left-hidden {
+    left: -240px !important;
+}
+
+.full-height {
+    height: 100%;
+    overflow: auto;
+}
+
+/* 设置滚动条的样式 */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+
+/* 滚动槽 */
+
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 2px $shadow-color;
+    -webkit-box-shadow: inset 0 0 2px $shadow-color;
+    border-radius: $border-radius-large;
+    -webkit-border-radius: $border-radius-large;
+    -moz-border-radius: $border-radius-large;
+    -ms-border-radius: $border-radius-large;
+    -o-border-radius: $border-radius-large;
+}
+
+
+/* 滚动条滑块 */
+
+::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 2px $shadow-color;
+    border-radius: $border-radius-large;
+    background: $scrollbar-color;
+    -webkit-box-shadow: inset 0 0 2px $shadow-color;
+    -webkit-border-radius: $border-radius-large;
+    -moz-border-radius: $border-radius-large;
+    -ms-border-radius: $border-radius-large;
+    -o-border-radius: $border-radius-large;
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+    background: $scrollbar-color;
+}
+
+// 分页部分居中
+.page-pagination {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    z-index: 10px;
+    transform: translateX(-50%);
+}
+
+// icon图标间隙
+.icon-plus {
+    padding: 3px;
+}
