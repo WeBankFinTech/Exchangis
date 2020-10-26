@@ -1,0 +1,160 @@
+<template>
+    <div class="project-tree">
+        <template v-if="treeData.length > 0">
+            <Tree ref="tree" :data="treeData" @on-select-change="getProjectId">
+                <template slot-scope="{node, root}">
+                    <contextmenu :data="actions" @on-choose="doAction(node,arguments)">
+                        <span> {{ node.projectName }} </span>
+                    </contextmenu>
+                </template>
+            </Tree>
+        </template>
+        <span v-if="treeData.length <= 0" class="not-data">{{ $t('group.ZWSJ') }}</span>
+        <modal ref="addTree" :title="$t('components.XZXM')">
+            <Wb-form ref="addForm">
+                <Form-item
+                    :label="$t('components.XMMC')">
+                    <wb-input v-model="taskName" :placeholder="$t('components.SRXMMC')" />
+                </Form-item>
+
+                <Form-item :label="$t('components.MS')">
+                    <wb-input v-model="taskDesc" :placeholder="$t('components.MS')" />
+                </Form-item>
+                <div class="submit-button-container">
+                    <Wb-button
+                        ref="submitButton" type="primary"
+                        class="submit-button" @click="submit">
+                        {{ $t('components.TJ') }}
+                    </Wb-button>
+                </div>
+            </Wb-form>
+        </modal>
+    </div>
+</template>
+<script>
+export default {
+    props: {
+        arg: {
+            type: Object
+        },
+        newData: {
+            type: Object
+        }
+    },
+    FesData() {
+        return {
+            treeData: [],
+            actions: [ this.$t('components.ZJZJD'), this.$t('components.SCJD')],
+            test: '',
+            taskName: '',
+            taskDesc: '',
+            currentId: '',
+            originTreeData: ''
+        }
+    },
+    FesReady() {
+        this.getTree();
+    },
+    methods: {
+        searchProject(name) {
+            console.log(name, 'name')
+            let tempData = this.originTreeData;
+            this.walker(tempData, name);
+            this.treeData = this.filterAction(tempData);
+        },
+        walker(array, label) {
+            let going = false;
+            array.forEach(item => {
+                if (item.children) {
+                    let a = this.walker(item.children, label);
+                    if (a) {
+                        item.isEnable = false;
+                        going = true;
+                    } else if (item.projectName.indexOf(label) !== -1 || label === '') {
+                        item.isEnable = false;
+                        going = true;
+                    } else {
+                        item.isEnable = true;
+                    }
+                } else if (item.projectName.indexOf(label) !== -1 || label === '') {
+                    item.isEnable = false;
+                    going = true;
+                } else {
+                    item.isEnable = true;
+                }
+            });
+            return going;
+        },
+        filterAction(list) {
+            return list.filter(item => {
+                if (item.children && !item.isEnable) {
+                    item.children = this.filterAction(item.children);
+                    return item.children.length > 0
+                } else {
+                    return !item.isEnable
+                }
+            })
+
+        },
+        doAction(node, [, index]) {
+            this.currentNode = node;
+            this.currentId = node.id;
+            if (index === 0) {
+                if (node.level === 2) {
+                    return this.$Toast.warn($t('message.newComponents.Onlysupportsnomorethanthreelayersofengineering'));
+                }
+                this.$refs.addTree.show();
+            }
+            if (index === 1) {
+
+                this.$Message.confirm(this.$t('components.SC'), this.$t('components.SFSC')).then((item) => {
+                    if (item === 0) {
+                        this.FesFesx.set('isLoading', true);
+                        this.FesApi.fetch('/project/delete/' + node.id, 'delete').then(() => {
+                            this.FesFesx.set('isLoading', false);
+                            this.$Toast.success(this.$t('components.SCCG'));
+                            this.$refs.tree.removeNode(node);
+                        }).catch(() => {
+                            this.FesFesx.set('isLoading', false);
+                        })
+                    }
+                });
+            }
+        },
+        getTree() {
+            this.FesFesx.set('isLoading', true);
+            this.FesApi.fetch('/project/tree', 'get').then(rst => {
+                this.originTreeData = this.treeData = rst;
+                if (this.treeData[0]) {
+                    this.treeData[0].selected = true;
+                    this.getProjectId(this.treeData[0]);
+                }
+                this.FesFesx.set('isLoading', false);
+            })
+        },
+        submit() {
+            let obj = {};
+            obj.parentId = this.currentId;
+            obj.projectName = this.taskName;
+            obj.projectDesc = this.taskDesc;
+
+            this.FesApi.fetch('/project/add', obj).then(() => {
+                this.$refs.addTree.hide();
+                this.$Toast.success(this.$t('components.TJCG'));
+                this.getTree();
+                this.taskName = '';
+                this.taskDesc = '';
+                this.currentId = '';
+            })
+        },
+        getProjectId(value) {
+            if (null != value) {
+                this.$emit('getTreeId', value.id);
+            }
+            return false;
+        }
+    }
+}
+</script>
+<style lang="scss" src="../assets/styles/tree.scss">
+</style>

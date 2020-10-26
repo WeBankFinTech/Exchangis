@@ -1,0 +1,938 @@
+<template>
+    <main class="main">
+        <div class="header-bar">
+            <span class="header-title">
+                {{ $t('dataTemplate.SJYMBGL') }}
+            </span>
+            <p class="header-des">
+                {{ $t('dataTemplate.SJYLJCSMBGL') }}
+            </p>
+        </div>
+        <div class="main-content">
+            <Row class="top-bar">
+                <div>
+                    <label class="ui-form-label">
+                    {{ $t('dataTemplate.MBLX') }}
+                    </label>
+                </div>
+                <Cell span="4">
+                    <Wb-select v-model="querySourceType" :placeholder="$t('dataTemplate.QXZSJY')">
+                        <wb-option value="HIVE" label="HIVE" />
+                        <wb-option value="HDFS" label="HDFS" />
+                        <wb-option value="SFTP" label="SFTP" />
+                        <wb-option value="ElasticSearch" label="ElasticSearch" />
+                        <wb-option value="MYSQL" label="MYSQL" />
+                        <wb-option value="ORACLE" label="ORACLE" />
+                    </Wb-select>
+                </Cell>
+                <div class="margin-left">
+                    <label class="ui-form-label">
+                    {{ $t('dataTemplate.MBMC') }}
+                    </label>
+                </div>
+                <Cell span="4">
+                    <Wb-input v-model="queryModelName" :maxlength="200" :placeholder="$t('dataTemplate.CXMBMC')" />
+                </Cell>
+                <Cell span="4" class="margin-left">
+                    <Wb-button type="primary" icon="search" @click="searchQuery()">
+                    {{ $t('dataTemplate.CX') }}
+                    </Wb-button>
+                </Cell>
+            </Row>
+            <div class="template-lsit">
+                <div class="add-item template-item" @click="addAction">
+                    <Icon type="md-add" size="16" />
+                    {{ $t('dataTemplate.XZMB') }}
+                </div>
+                <div v-for="item in templateList" :key="item.id" class="current-item template-item">
+                    <div class="item-content">
+                        <div class="icon-box">
+                            <i v-if="item.sourceType === 'HIVE'" class="icon-bar" type="iconfont icon-hive" size="35">HIVE</i>
+                            <i v-if="item.sourceType === 'HDFS'" class="icon-bar" type="iconfont icon-hdfs" size="35">HDFS</i>
+                            <i v-if="item.sourceType === 'SFTP'" class="icon-bar" type="iconfont icon-sftp" size="35">SFTP</i>
+                            <i v-if="item.sourceType === 'MYSQL'" class="icon-bar" type="iconfont icon-mysql" size="35">MYSQL</i>
+                            <i v-if="item.sourceType === 'ElasticSearch'" class="icon-bar" type="iconfont icon-ElasticSearch" size="35">ES</i>
+                            <i v-if="item.sourceType === 'ORACLE'" class="icon-bar" type="iconfont icon-xingzhuang" size="35">ORACLE</i>
+                            <!-- <span class="template-type" :title="item.sourceType">
+                            {{ item.sourceType }}
+                            </span> -->
+                        </div>
+                        <div class="content">
+                            <span class="name" :title="item.modelName">
+                            {{ item.modelName }}
+                            </span>
+                            <div class="params" :title="item.modelDesc">
+                            {{ item.modelDesc }}
+                            </div>
+                            <div class="content-footer">
+                                <span>{{ item.modifyUser }}</span>
+                                <span>{{ item.modifyTime.split(' ')[0] }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-option">
+                        <span class="detail" @click="detailAction(item)">
+                            {{ $t('dataTemplate.CKXQ') }}
+                        </span>
+                        <span>|</span>
+                        <span class="delete" @click="modifyAction(item)">
+                            {{ $t('dataTemplate.XG') }}
+                        </span>
+                        <span>|</span>
+                        <span class="modify" @click="deleteAction(item)">
+                            {{ $t('dataTemplate.SC') }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="page-pagination">
+                <Pagination :loking="pagination.locking" :current="pagination.current"
+                            :size="pagination.size" :total="pagination.total" @on-change="pageChange" />
+            </div>
+        </div>
+        <weModal v-model="addShow" :title="modelTitle" width="750" :closable="true" :footer-disable="!(actionType === 'view')" @onConfirm="addConfirm">
+            <Wb-form ref="templateForm" :rule="sourceRule">
+                <Form-item :label="$t('dataTemplate.XZSJYLX')" prop="templateSourceType" :label-width="130">
+                    <Wb-select v-model="selectSourceType" class="modal-select" :disabled="actionType === 'view'">
+                        <wb-option v-for="(item,index) in selectSourceList" :key="index" :value="item" :label="item" />
+                    </Wb-select>
+                </Form-item>
+                <Form-item :label="$t('dataTemplate.MBMC')" prop="templateName" :label-width="130">
+                     <Wb-input v-model="templateName" type="text" :placeholder="$t('dataTemplate.SRWB')" width="85%" :disabled="actionType === 'view'" />
+                </Form-item>
+                <Form-item :label="$t('dataTemplate.MBMS')" prop="templateDesc" :label-width="130">
+                     <Wb-input v-model="description" type="textarea" :placeholder="$t('dataTemplate.SRWB')" width="85%" :disabled="actionType === 'view'" />
+                </Form-item>
+                <Form-item v-if="selectSourceType === 'HIVE'" :label="`Metastore ${$t('dataTemplate.DZ')}`" prop="metaStorePaths" :label-width="130">
+                    <div v-for="(path, index) in parameter.metaStorePaths" :key="index" class="parameter-item">
+                        <wb-input v-model="path.content" :placeholder="`${$t('dataTemplate.QSR')} Metastore ${$t('dataTemplate.DZ')}`" class="margin-bottom" width="85%" :disabled="actionType === 'view'">
+                            <span slot="prepend">
+                            thrift://
+                            </span>
+                            <span slot="append">
+                                <Icon v-if="path.icon =='md-add'" :type="path.icon" color="gray" size="18" class="icon-plus" @click="sourceMetaPlus" />
+                                <Icon v-else-if="path.icon == 'md-remove'" :type="path.icon" color="gray" size="18" class="icon-plus" @click="sourceMetaMinus(index)" />
+                                <Icon v-if="index==0" type="md-add" color="gray" size="18" class="icon-plus" @click="sourceMetaPlus" />
+                            </span>
+                        </wb-input>
+                    </div>
+                </Form-item>
+                <Form-item v-if="selectSourceType === 'HIVE' || selectSourceType === 'HDFS'" :label="`HDFS ${$t('dataTemplate.DZ')}`" prop="hdfsPath" :label-width="130">
+                    <wb-input v-model="parameter.hdfsPath" :placeholder="`HDFS ${$t('dataTemplate.DZ')}`" width="85%" :disabled="actionType === 'view'">
+                        <span slot="prepend">
+                        hdfs://
+                        </span>
+                    </wb-input>
+                </Form-item>
+                <Form-item v-if="selectSourceType === 'HIVE' || selectSourceType === 'HDFS'" :label="`Hadoop ${$t('dataTemplate.PZX')}`" :label-width="130">
+                    <div v-for="(config, index) in parameter.hadoopConfigs" :key="index">
+                        <Row class="parameter-item">
+                            <Cell span="9">
+                                <wb-input v-model="config.key" :placeholder="$t('dataTemplate.PZM')" :disabled="actionType === 'view'" @on-blur="checkHadoop('key')">
+                                    <span slot="prepend">
+                                    {{ $t('dataTemplate.PZM') }}
+                                    </span>
+                                </wb-input>
+                            </Cell>
+                            <Cell span="1">
+                                <span>&nbsp;</span>
+                            </Cell>
+                            <Cell span="9">
+                                <wb-input v-model="config.value" :placeholder="$t('dataTemplate.PZZ')" :disabled="actionType === 'view'">
+                                    <span slot="prepend">
+                                    {{ $t('dataTemplate.PZZ') }}
+                                    </span>
+                                </wb-input>
+                            </Cell>
+                            <Cell span="3" class="text-dec">
+                                <Icon v-if="config.icon == 'md-add'" :type="config.icon" color="gray" size="18"
+                                    class="icon-plus" @click="sourceConfPlus('hadoopConfigs')" />
+                                <Icon v-else-if="config.icon == 'md-remove'" :type="config.icon" color="gray" size="18"
+                                    class="icon-plus" @click="sourceConfMinus(index, 'hadoopConfigs')" />
+                                <Icon v-if="index==0" type="md-add" color="gray" size="18" class="icon-plus"
+                                    @click="sourceConfPlus('hadoopConfigs')" />
+                            </Cell>
+                        </Row>
+                    </div>
+                </Form-item>
+                <Form-item v-if="selectSourceType === 'MYSQL'" :label="`MYSQL ${$t('dataTemplate.LJCS')}`" :label-width="130">
+                    <div v-for="(config, index) in parameter.connParams" :key="index">
+                        <Row class="parameter-item">
+                            <Cell span="9">
+                                <wb-input v-model="config.key" :placeholder="$t('dataTemplate.CSM')" :disabled="actionType === 'view'" @on-blur="checkHadoop('key')">
+                                    <span slot="prepend">
+                                    {{ $t('dataTemplate.CSM') }}
+                                    </span>
+                                </wb-input>
+                            </Cell>
+                            <Cell span="1">
+                                <span>&nbsp;</span>
+                            </Cell>
+                            <Cell span="9">
+                                <wb-input v-model="config.value" :placeholder="$t('dataTemplate.CSZ')" :disabled="actionType === 'view'">
+                                    <span slot="prepend">
+                                    {{ $t('dataTemplate.CSZ') }}
+                                    </span>
+                                </wb-input>
+                            </Cell>
+                            <Cell span="3" class="text-dec">
+                                <Icon v-if="config.icon == 'md-add'" :type="config.icon" color="gray" size="18"
+                                    class="icon-plus" @click="sourceConfPlus('connParams')" />
+                                <Icon v-else-if="config.icon == 'md-remove'" :type="config.icon" color="gray" size="18"
+                                    class="icon-plus" @click="sourceConfMinus(index, 'connParams')" />
+                                <Icon v-if="index==0" type="md-add" color="gray" size="18" class="icon-plus"
+                                    @click="sourceConfPlus('connParams')" />
+                            </Cell>
+                        </Row>
+                    </div>
+                </Form-item>
+                <Row v-if="selectSourceType === 'SFTP'">
+                    <Cell span="11">
+                        <Form-item :label="`SFTP ${$t('dataTemplate.DZ')}`" prop="pathHost" :label-width="130">
+                            <wb-input v-model="parameter.host" :placeholder="`SFTP ${$t('dataTemplate.DZ')} HOST`" :disabled="actionType === 'view'" />
+                        </Form-item>
+                    </Cell>
+                    <Cell span="10">
+                        <Form-item prop="pathPort">
+                            <wb-input v-model="parameter.port" type="number" :placeholder="`SFTP ${$t('dataTemplate.DZDKH')}`" :disabled="actionType === 'view'" />
+                        </Form-item>
+                    </Cell>
+                </Row>
+                <Row v-if="selectSourceType === 'ElasticSearch'">
+                    <Form-item label="Elastic Url" prop="elasticSearchPaths" :label-width="130">
+                        <div v-for="(path, index) in parameter.metaStorePaths" :key="index" class="parameter-item">
+                            <wb-input v-model="path.content" :placeholder="`${$t('dataTemplate.QSR')} elasticSearch ${$t('dataTemplate.DZ')}`" class="margin-bottom" width="85%" :disabled="actionType === 'view'">
+                                <span slot="prepend">
+                                http://
+                                </span>
+                                <span slot="append">
+                                    <Icon v-if="path.icon =='md-add'" :type="path.icon" color="gray" size="18" class="icon-plus" @click="sourceMetaPlus" />
+                                    <Icon v-else-if="path.icon == 'md-remove'" :type="path.icon" color="gray" size="18" class="icon-plus" @click="sourceMetaMinus(index)" />
+                                    <Icon v-if="index==0" type="md-add" color="gray" size="18" class="icon-plus" @click="sourceMetaPlus" />
+                                </span>
+                            </wb-input>
+                        </div>
+                    </Form-item>
+                </Row>
+                <Row v-if="selectSourceType === 'MYSQL'">
+                    <Cell span="11">
+                        <Form-item :label="`MYSQL ${$t('dataTemplate.DZ')}`" prop="sqlPathHost" :label-width="130">
+                            <wb-input v-model="parameter.host" :placeholder="`MYSQL ${$t('dataTemplate.DZ')} HOST`" :disabled="actionType === 'view'" />
+                        </Form-item>
+                    </Cell>
+                    <Cell span="10">
+                        <Form-item prop="sqlPathPort">
+                            <wb-input v-model="parameter.port" type="number" :placeholder="`MYSQL ${$t('dataTemplate.DZDKH')}`" :disabled="actionType === 'view'" />
+                        </Form-item>
+                    </Cell>
+                </Row>
+                <Row v-if="selectSourceType === 'ORACLE'">
+                    <Cell span="11">
+                        <Form-item :label="`ORACLE ${$t('dataTemplate.DZ')}`" prop="pathHost" :label-width="130">
+                            <wb-input v-model="parameter.host" :placeholder="`ORACLE ${$t('dataTemplate.DZ')} HOST`" :disabled="actionType === 'view'" />
+                        </Form-item>
+                    </Cell>
+                    <Cell span="10">
+                        <Form-item prop="pathPort">
+                            <wb-input v-model="parameter.port" type="number" :placeholder="`ORACLE ${$t('dataTemplate.DZDKH')}`" :disabled="actionType === 'view'" />
+                        </Form-item>
+                    </Cell>
+                    <Cell span="11">
+                        <Form-item prop="serviceName" :label-width="130">
+                            <wb-input v-model="parameter.serviceName" :placeholder="`ORACLE ${$t('dataTemplate.DZ')} service_name`" :disabled="actionType === 'view'" />
+                        </Form-item>
+                    </Cell>
+                    <Cell span="10">
+                        <Form-item prop="serviceSid">
+                            <wb-input v-model="parameter.sid" :placeholder="`ORACLE ${$t('dataTemplate.DZ')} sid`" :disabled="actionType === 'view'" />
+                        </Form-item>
+                    </Cell>
+                </Row>
+                <Form-item :label="$t('dataTemplate.RZFS')" :label-width="130" prop="authType">
+                    <Radio-group v-model="parameter.authType" :disabled="actionType === 'view'">
+                        <Radio v-for="item in authTypeList" :key="item.value" :value="item.value" :label="item.label" />
+                    </Radio-group>
+                </Form-item>
+                <Form-item v-if="parameter.authType === 'KERBERS' && parameter.authType !== 'NONE'" label="hostName" prop="hostName" :label-width="130">
+                     <Wb-input v-model="parameter.hostname" type="text" :placeholder="$t('dataTemplate.SRWB')" width="85%" :disabled="actionType === 'view'" />
+                </Form-item>
+                <Form-item v-if="parameter.authType === 'KERBERS' && parameter.authType !== 'NONE'" label="realm" prop="realm" :label-width="130">
+                     <Wb-input v-model="parameter.realminfo" type="text" :placeholder="$t('dataTemplate.SRWB')" width="85%" :disabled="actionType === 'view'" />
+                </Form-item>
+            </Wb-form>
+        </weModal>
+        <weLoading v-show="FesFesx.isLoading" />
+    </main>
+</template>
+<script>
+import weModal from '../../../components/uiTemplate/weModal';
+import weLoading from '../../../components/uiTemplate/weLoading.fes';
+export default {
+    components: {
+        weModal,
+        weLoading
+    },
+    data() {
+        return {
+            addShow: false,
+            selectSourceList: [
+                'HIVE',
+                'HDFS',
+                'SFTP',
+                'ElasticSearch',
+                'MYSQL',
+                'ORACLE'
+            ],
+            parameter: {
+                metaStorePaths: [
+                    {content: ''}
+                ],
+                hdfsPath: '',
+                hadoopConfigs: [
+                    {key: '', value: ''}
+                ],
+                connParams: [
+                    {key: '', value: ''}
+                ],
+                authType: 'KERBERS',
+                host: '',
+                port: '',
+                hostname: '',
+                realminfo: '',
+                elasticUrls: ''
+            },
+            selectSourceType: 'HIVE',
+            templateName: '',
+            description: '',
+            querySourceType: '',
+            queryModelName: '',
+            pagination: {
+                size: 11,
+                current: 1,
+                total: 10
+            },
+            actionType: '', // add modify update
+            templateList: [],
+            currentTemplateID: '',
+            sourceRule: {
+                templateSourceType: [
+                    {required: true, message: this.$t('dataTemplate.SZYLXBMK')}
+                ],
+                templateName: [
+                    {required: true, message: this.$t('dataTemplate.MBMCBLK')},
+                    {message: this.$t('dataTemplate.MCCDBNDY'), max: 100},
+                    {type: 'string', pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5.:]*$/, message: this.$t('dataTemplate.ZU'), trigger: 'change'}
+                ],
+                templateDesc: [
+                    {required: true, message: this.$t('dataTemplate.MOMSBNK')},
+                    {required: false, message: this.$t('dataTemplate.MBCDBNDY'), max: 100}
+                ],
+                metaStorePaths: [
+                    {required: true, message: `metastore ${this.$t('dataTemplate.DZBNK')}`},
+                    {required: false, message: this.$t('dataTemplate.CDBNDY'), max: 1000}
+                ],
+                elasticSearchPaths: [
+                    {required: true, message: `ESPaths ${this.$t('dataTemplate.DZBNK')}`},
+                    {required: false, message: this.$t('dataTemplate.CDBNDY'), max: 1000}
+                ],
+                hdfsPath: [
+                    {required: true, message: `hdfs ${this.$t('dataTemplate.DZBNK')}`},
+                    {required: false, message: this.$t('dataTemplate.CDBNDY'), max: 1000}
+                ],
+                pathHost: [
+                    {required: true, message: this.$t('dataTemplate.DZBNWK')}
+                ],
+                pathPort: [
+                    {required: true, message: this.$t('dataTemplate.DZBNWK')}
+                ],
+                authType: [
+                    {required: true, message: this.$t('dataTemplate.DZBNWK')}
+                ],
+                hostName: [
+                    {required: false, message: `hostName ${this.$t('dataTemplate.BNWK')}`}
+                ],
+                realm: [
+                    {required: true, message: `realm ${this.$t('dataTemplate.BNWK')}`}
+                ],
+                elasticPath: [
+                    {required: true, message: `elasticUrl ${this.$t('dataTemplate.BNWK')}`}
+                ],
+                sqlPathHost: [
+                    {required: true, message: `sql ${this.$t('dataTemplate.DZ')} host ${this.$t('dataTemplate.BNWK')}`}
+                ],
+                sqlPathPort: [
+                    {required: true, message: `sql ${this.$t('dataTemplate.DZ')} port ${this.$t('dataTemplate.BNWK')}`}
+                ]
+            }
+        }
+    },
+    computed: {
+        authTypeList() {
+            let temArry = [];
+            if (this.selectSourceType === 'HIVE' || this.selectSourceType === 'HDFS') {
+                temArry = [
+                    {value: 'KERBERS', label: 'kerbers'},
+                    {value: 'LDAP', label: 'LDAP'}
+                ]
+            } else if (this.selectSourceType === 'SFTP') {
+                temArry = [
+                    {value: 'DEFAULT', label: this.$t('dataTemplate.MR')},
+                    {value: 'KEYFILE', label: 'keyFile'}
+                ]
+            } else if (this.selectSourceType === 'ElasticSearch' || this.selectSourceType === 'MYSQL' || this.selectSourceType === 'ORACLE') {
+                temArry = [
+                    {value: 'DEFAULT', label: this.$t('dataTemplate.MR')}
+                ]
+            }
+            if (this.selectSourceType === 'HIVE' || this.selectSourceType === 'HDFS' || this.selectSourceType === 'ElasticSearch') {
+                temArry.push({value: 'NONE', label: this.$t('dataTemplate.WQX')})
+            }
+            return temArry;
+        },
+        newHadoopValue() {
+            if (this.selectSourceType === 'MYSQL') {
+                return this.parameter.connParams;
+            } else {
+                return this.parameter.hadoopConfigs;
+            }
+        },
+        modelTitle() {
+            if (this.actionType === 'view') {
+                return this.$t('dataTemplate.CKMB');
+            } else if (this.actionType === 'modify') {
+                return this.$t('dataTemplate.XGMB');
+            } else {
+                return this.$t('dataTemplate.TJMB')
+            }
+        },
+        userName() {
+            return this.FesApp.get('FesUserName')
+        }
+    },
+    watch: {
+        selectSourceType(val) {
+            if (this.actionType === 'add') {
+                this.parameter.authType = this.authTypeList[0].value;
+            }
+        }
+    },
+    FesReady() {
+        this.searchQuery();
+    },
+    methods: {
+        init() {
+            this.parameter = {
+                metaStorePaths: [
+                    {content: ''}
+                ],
+                hdfsPath: '',
+                hadoopConfigs: [
+                    {key: '', value: ''}
+                ],
+                connParams: [
+                    {key: '', value: ''}
+                ],
+                authType: 'KERBERS',
+                sftpPath: {
+                    host: '',
+                    port: ''
+                },
+                hostname: '',
+                realminfo: ''
+            }
+            this.selectSourceType = 'HIVE'
+            this.templateName = ''
+            this.description = ''
+        },
+        addAction() {
+            this.addShow = true;
+            this.actionType = 'add';
+            this.init();
+        },
+        sourceMetaPlus() {
+            if (this.parameter.metaStorePaths.length === 1) {
+                this.parameter.metaStorePaths[0].icon = 'md-remove';
+            }
+            this.parameter.metaStorePaths.push({content: '', icon: 'md-remove'});
+        },
+        sourceMetaMinus(index) {
+            this.parameter.metaStorePaths.splice(index, 1);
+            if (this.parameter.metaStorePaths.length === 1) {
+                this.parameter.metaStorePaths[0].icon = '';
+            }
+        },
+        sourceConfPlus(type) {
+            if (this.parameter[type].length === 1) {
+                this.parameter[type][0].icon = 'md-remove';
+            }
+            this.parameter[type].push({key: '', value: '', icon: 'md-remove'});
+        },
+        sourceConfMinus(index, type) {
+            this.parameter[type].splice(index, 1);
+            if (this.parameter[type].length === 1) {
+                this.parameter[type][0].icon = '';
+            }
+        },
+        parameterValue() {
+            let parameter = {};
+            if (this.selectSourceType === 'HIVE' || this.selectSourceType === 'HDFS') {
+                if (this.selectSourceType === 'HIVE') {
+                    let hiveMetastoreUris = '';
+                    for ( let index in this.parameter.metaStorePaths) {
+                        hiveMetastoreUris += 'thrift://' + this.trim(this.parameter.metaStorePaths[index].content);
+                        if (parseInt(index) !== (this.parameter.metaStorePaths.length - 1)) {
+                            hiveMetastoreUris += ',';
+                        }
+                    }
+                    parameter.hiveMetastoreUris = hiveMetastoreUris;
+                }
+                parameter.defaultFS = 'hdfs://' + this.trim(this.parameter.hdfsPath);
+                let hadoopConfigs = {};
+                parameter.hadoopConfig = hadoopConfigs;
+                for ( let index in this.parameter.hadoopConfigs) {
+                    let config = this.parameter.hadoopConfigs[index];
+                    if (null !== config.key && '' !== config.key) {
+                        hadoopConfigs[this.trim(config.key)] = this.trim(config.value);
+                    }
+                }
+                parameter.authType = this.parameter.authType;
+                if (this.parameter.authType === 'KERBERS' && parameter.authType !== 'NONE') {
+                    parameter.haveKerberos = true;
+                    parameter.hostname = this.parameter.hostname;
+                    parameter.realminfo = this.parameter.realminfo;
+                } else {
+                    parameter.haveKerberos = false;
+                }
+            } else if (this.selectSourceType === 'ElasticSearch') {
+                let hiveMetastoreUris = '';
+                for ( let index in this.parameter.metaStorePaths) {
+                    hiveMetastoreUris += 'http://' + this.trim(this.parameter.metaStorePaths[index].content);
+                    if (parseInt(index) !== (this.parameter.metaStorePaths.length - 1)) {
+                        hiveMetastoreUris += ',';
+                    }
+                }
+                parameter.elasticUrls = hiveMetastoreUris;
+                parameter.authType = this.parameter.authType;
+                parameter.haveKerberos = false;
+            } else if (this.selectSourceType === 'MYSQL') {
+                let connParams = {};
+                parameter.connParams = connParams;
+                for ( let index in this.parameter.connParams) {
+                    let config = this.parameter.connParams[index];
+                    if (null !== config.key && '' !== config.key) {
+                        connParams[this.trim(config.key)] = this.trim(config.value);
+                    }
+                }
+                parameter.host = this.parameter.host;
+                parameter.port = this.parameter.port;
+                parameter.authType = this.parameter.authType;
+                parameter.haveKerberos = false;
+            } else if (this.selectSourceType === 'ORACLE') {
+                parameter.serviceName = this.parameter.serviceName;
+                parameter.sid = this.parameter.sid;
+                parameter.host = this.parameter.host;
+                parameter.port = this.parameter.port;
+                parameter.authType = this.parameter.authType;
+                parameter.haveKerberos = false;
+            } else {
+                parameter.host = this.parameter.host;
+                parameter.port = this.parameter.port;
+                parameter.authType = this.parameter.authType;
+                parameter.haveKerberos = false;
+            }
+            return JSON.stringify(parameter);
+        },
+        addConfirm() {
+            if (this.checkHadoop('key')) return;
+            // if (this.checkHadoop('value')) return;
+            this.$refs.templateForm.validate((valid) => {
+                if (valid) {
+                    if (this.checkName(this.templateName, this.currentTemplateID)) return this.$Toast.error(this.$t('dataTemplate.MBMCBKTM'));
+                    this.FesFesx.set('isLoading', true);
+                    if (this.actionType === 'add') {
+                        this.FesApi.fetch('/model/add', {
+                            modelName: this.templateName,
+                            modelDesc: this.description,
+                            sourceType: this.selectSourceType,
+                            parameter: this.parameterValue()
+                        }, 'post').then(() => {
+                            this.$Toast.success(this.$t('dataTemplate.XZMBCG'));
+                            this.searchQuery(this.pagination.current, this.pagination.size);
+                        }).catch(() => {
+                            this.FesFesx.set('isLoading', false);
+                        })
+                    } else {
+                        this.FesApi.fetch(`/model/update/${this.currentTemplateID}`, {
+                            id: this.currentTemplateID,
+                            modelName: this.templateName,
+                            modelDesc: this.description,
+                            sourceType: this.selectSourceType,
+                            parameter: this.parameterValue()
+                        }, {}, 'put').then(() => {
+                            this.$Toast.success(this.$t('dataTemplate.XGMBCG'));
+                            this.searchQuery(this.pagination.current, this.pagination.size);
+                        }).catch(() => {
+                            this.FesFesx.set('isLoading', false);
+                            this.$Toast.error(this.$t('dataTemplate.XGMBSB'));
+                        })
+                    }
+                } else {
+                    this.addShow = true;
+                }
+            })
+        },
+        deleteAction(template) {
+            if (!this.checkAuthority(template, 'DELETE')) return this.$Toast.warn(this.$t('pageDs.YHWSCQX'));
+            const that = this;
+            this.$Message({
+                title: this.$t('dataTemplate.SCMB'),
+                template: `${this.$t('dataTemplate.QRSCMB')} ${template.modelName}`,
+                buttons: [{
+                    text: this.$t('dataTemplate.QR'),
+                    show: true
+                }, {
+                    text: this.$t('dataTemplate.FQ'),
+                    show: true
+                }]
+            }).then(function (index) {
+                if (index == 0) {
+                    that.FesFesx.set('isLoading', true);
+                    that.FesApi.fetch(`model/delete/${template.id}`, {}, 'delete').then(() => {
+                        that.$Toast.success(`${that.$t('dataTemplate.MB')} ${template.modelName} ${that.$t('dataTemplate.SCCG')}`);
+                        that.searchQuery();
+                    }).catch(() => {
+                        that.FesFesx.set('isLoading', false);
+                    })
+                }
+            })
+        },
+        reviewParameterData(template) {
+            const parameter = JSON.parse(template.parameter);
+            if (this.selectSourceType === 'HIVE') {
+                let metastoreUris = parameter.hiveMetastoreUris.split(',');
+                let metaStorePaths = [];
+                for (let i in metastoreUris) {
+                    metaStorePaths.push({content: metastoreUris[i].substring('thrift://'.length), icon: 'md-remove'});
+                }
+                if (metaStorePaths.length === 1) {
+                    metaStorePaths[0].icon = '';
+                }
+                this.parameter.metaStorePaths = metaStorePaths;
+            }
+            if (this.selectSourceType === 'ElasticSearch') {
+                let metastoreUris = parameter.elasticUrls.split(',');
+                let metaStorePaths = [];
+                for (let i in metastoreUris) {
+                    metaStorePaths.push({content: metastoreUris[i].substring('http://'.length), icon: 'md-remove'});
+                }
+                if (metaStorePaths.length === 1) {
+                    metaStorePaths[0].icon = '';
+                }
+                this.parameter.metaStorePaths = metaStorePaths;
+            }
+            if (this.selectSourceType === 'HIVE' || this.selectSourceType === 'HDFS') {
+                this.parameter.hdfsPath = parameter.defaultFS.substring('hdfs://'.length);
+                let hadoopConfigs = [];
+                for (let key in parameter.hadoopConfig) {
+                    hadoopConfigs.push( {key: key, value: parameter.hadoopConfig[key], icon: 'md-remove'})
+                }
+                if (!parameter.hadoopConfig || Object.keys(parameter.hadoopConfig).length <= 0) {
+                    hadoopConfigs.push({key: '', value: '', icon: 'md-add'})
+                }
+                if (hadoopConfigs.length === 1) {
+                    hadoopConfigs[0].icon = '';
+                }
+                this.parameter.hadoopConfigs = hadoopConfigs;
+            } else if (this.selectSourceType === 'MYSQL') {
+                let connParams = [];
+                for (let key in parameter.connParams) {
+                    connParams.push( {key: key, value: parameter.connParams[key], icon: 'md-remove'})
+                }
+                if (!parameter.connParams || Object.keys(parameter.connParams).length <= 0) {
+                    connParams.push({key: '', value: '', icon: 'md-add'})
+                }
+                if (connParams.length === 1) {
+                    connParams[0].icon = '';
+                }
+                this.parameter.connParams = connParams;
+                this.parameter.host = parameter.host;
+                this.parameter.port = parameter.port;
+            } else if (this.selectSourceType === 'ORACLE') {
+                this.parameter.serviceName = parameter.serviceName;
+                this.parameter.sid = parameter.sid;
+                this.parameter.host = parameter.host;
+                this.parameter.port = parameter.port;
+            } else {
+                this.parameter.host = parameter.host;
+                this.parameter.port = parameter.port;
+            }
+            this.parameter.authType = parameter.authType;
+            if (this.parameter.authType === 'KERBERS' || this.parameter.authType === 'KEYFILE') {
+                this.parameter.hostname = parameter.hostname;
+                this.parameter.realminfo = parameter.realminfo;
+            }
+        },
+        detailAction(template) {
+            this.actionType = 'view';
+            this.addShow = true;
+            this.selectSourceType = template.sourceType;
+            this.templateName = template.modelName;
+            this.description = template.modelDesc;
+            this.reviewParameterData(template);
+        },
+        modifyAction(template) {
+            if (!this.checkAuthority(template, 'WRITE')) return this.$Toast.warn(this.$t('pageDs.YHWBJQX'));
+            this.actionType = 'modify';
+            this.addShow = true;
+            this.selectSourceType = template.sourceType;
+            this.templateName = template.modelName;
+            this.description = template.modelDesc;
+            this.currentTemplateID = template.id;
+            this.reviewParameterData(template);
+        },
+        searchQuery(turn = 1, size = 11) {
+            this.FesFesx.set('isLoading', true);
+            this.FesApi.fetch('/model/pageList', {
+                'modelName': this.queryModelName,
+                'sourceType': this.querySourceType,
+                'page': turn,
+                'pageSize': size
+            }, 'get').then((data) => {
+                this.FesFesx.set('isLoading', false);
+                this.templateList = data.data;
+                this.pagination.size = data.pageSize;
+                this.pagination.current = data.page;
+                this.pagination.total = data.totalPages;
+            }).catch(() => {
+                this.FesFesx.set('isLoading', false);
+            });
+        },
+        pageChange({ current, size }) {
+            this.searchQuery(current, size)
+        },
+        checkHadoop(key) {
+            let arry = [];
+            this.newHadoopValue.forEach(item => {
+                arry.push(item[key]);
+            });
+            if (this.checkHadoopRegex(arry)) {
+                this.$Toast.error(`HADOOP${this.$t('dataTemplate.PZ')} ${key == 'key' ? this.$t('dataTemplate.J') : this.$t('dataTemplate.Z')}${this.$t('dataTemplate.CF')}`);
+                return true;
+            }
+        },
+        checkHadoopRegex(arr) {
+            const nary = arr.sort();
+            for (let i = 0; i < arr.length; i++) {
+                if (nary[i] == nary[i + 1] && nary[i] !== '') {
+                    return true;
+                }
+            }
+        },
+        checkName(name, id) {
+            let flage = false;
+            this.templateList.forEach((item) => {
+                if (item.modelName === name && id != item.id) {
+                    flage = true;
+                }
+            })
+            return flage;
+        },
+        trim(str) {
+            return str.replace(/(^\s*)|(\s*$)/g, '');
+        },
+        checkAuthority(data, type) {
+            const userRole = this.FesStorage.get('userRole');
+            if (data.createUser === this.userName || ['super', 'admin'].includes(userRole)) {
+                return true;
+            } else {
+                if (data.authScopes && data.authScopes.includes(type)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
+}
+</script>
+
+<style scoped lang="scss">
+    .main {
+        background-color: #f7f7f7;
+        height: 100%;
+        overflow: auto;
+        .header-bar {
+            height: 95px;
+            padding: 0 30px;
+            font-size: 18px;
+            background-color: #fff;
+            box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items:flex-start;
+            .header-title {
+                color: black;
+            }
+            .header-des {
+                font-size: 14px;
+                padding-top: 15px;
+            }
+        }
+        .main-content {
+            width: 97%;
+            margin: 0 auto;
+            background-color: #fff;
+            margin-top: 25px;
+            padding-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+            // overflow: hidden;
+            min-height: 80%;
+            position: relative;
+            .top-bar {
+                padding: 25px 25px;
+                border: 1px solid #e8e8e8;
+                display: -webkit-flex;
+                justify-content: flex-start;
+                align-items: center;
+                .margin-left {
+                    margin-left:40px;
+                }
+            }
+            .template-lsit {
+                padding: 25px 30px;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                flex-wrap: wrap;
+                .template-item {
+                    width: 23.5%;
+                    height: 185px;
+                    border-radius: 8px;
+                    margin-right: 2%;
+                    margin-bottom: 2%;
+                    border: 1px solid #e8e8e8;
+                    transition: transform .15s linear,box-shadow .2s linear;
+                    &:hover {
+                        box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+                        transform: translateY(-3px)
+                    }
+                    &:nth-child(4n) {
+                        margin-right: 0px;
+                    }
+                }
+                .current-item {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    align-items: center;
+                    overflow: hidden;
+                    .item-content {
+                        width: 100%;
+                        flex: 1;
+                        display: flex;
+                        justify-content: center;
+                        align-items: flex-start;
+                        padding: 20px;
+                        .icon-box {
+                            flex-basis: 60px;
+                            .icon-bar {
+                                display: inline-block;
+                                line-height: 55px;
+                                width: 55px;
+                                height: 55px;
+                                color: rgba(0, 0, 0, 0.5);
+                                border-radius: 50%;
+                                background-color: #e8e8e8;
+                                text-align: center;
+                                font-style: normal;
+                                font-weight: 800;
+                                font-size: 10px;
+                                &::before {
+                                    font-size: 40px;
+                                }
+                            }
+                            .template-type {
+                                display: block;
+                                font-size: 14px;
+                                text-align: center;
+                                margin-top: 10px;
+                                max-width: 60px;
+                                overflow: hidden;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                            }
+                        }
+                        .content {
+                            flex: 1;
+                            margin-left: 20px;
+                            position: relative;
+                            height: 100%;
+                            overflow: hidden;
+                            .name {
+                                font-size: 15px;
+                                color: rgba(0, 0, 0, 0.8);
+                                max-width: 100%;
+                                display: block;
+                                overflow: hidden;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                            }
+                            .params {
+                                margin-top: 10px;
+                                max-width: 100%;
+                                display: inline-block;
+                                overflow: hidden;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                            }
+                            .content-footer {
+                                position:absolute;
+                                left: 0;
+                                bottom: 0;
+                                width: 100%;
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                            }
+                        }
+                    }
+                    .item-option {
+                        flex-basis: 46px;
+                        background-color: rgb(250, 250, 250);
+                        width: 100%;
+                        box-sizing: border-box;
+                        padding: 10px 0;
+                        display: flex;
+                        justify-content: space-around;
+                        align-items: center;
+                        font-size: 14px;
+                        color: rgba(0, 0, 0, 0.45);
+                        border-top: 1px solid #e8e8e8;
+                        .delete, .modify, .detail {
+                            cursor: pointer;
+                            flex: 1;
+                            text-align: center;
+                        }
+                    }
+                }
+                .add-item {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 14px;
+                    cursor: pointer;
+                }
+            }
+
+        }
+        .modal-select {
+            width: 85%;
+        }
+        .parameter-item {
+            margin-bottom: 10px;
+        }
+    }
+</style>
+

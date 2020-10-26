@@ -1,0 +1,104 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "jquery": true
+    },
+    "extends": ["eslint:recommended", "plugin:vue/recommended"],
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "plugins": ["vue"],
+    "rules": {
+        "vue/html-indent": [
+            2,
+            4,
+            {
+                "attribute": 1,
+                "closeBracket": 0
+            }
+        ],
+        "vue/html-closing-bracket-newline": 0,
+        "vue/html-closing-bracket-spacing": [
+            "error",
+            {
+                "startTag": "never",
+                "endTag": "never",
+                "selfClosingTag": "always"
+            }
+        ],
+        "vue/max-attributes-per-line": 0,
+        "vue/comment-directive": 0,
+        "array-callback-return": 0,
+        "brace-style": [
+            "error",
+            "1tbs",
+            {
+                "allowSingleLine": true
+            }
+        ],
+        "comma-dangle": ["error", "never"],
+        "comma-spacing": ["error"],
+        "comma-style": ["error"],
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "key-spacing": ["error"],
+        "keyword-spacing": ["error"],
+        "lines-around-comment": ["error"],
+        "no-console": [0],
+        "new-cap": ["error"],
+        "no-empty-function": 0,
+        "no-extra-bind": "error",
+        "no-floating-decimal": "error",
+        "no-multi-spaces": ["error"],
+        "no-multiple-empty-lines": [
+            "error",
+            {
+                "max": 2,
+                "maxBOF": 1,
+                "maxEOF": 1
+            }
+        ],
+        "no-self-compare": "error",
+        "no-useless-concat": 0,
+        "no-useless-escape": "error",
+        "no-whitespace-before-property": "error",
+        "quote-props": ["error", "consistent"],
+        "quotes": [
+            "error",
+            "single",
+            {
+                "allowTemplateLiterals": true,
+                "avoidEscape": true
+            }
+        ],
+        "semi-spacing": ["error"],
+        "space-before-blocks": ["error"],
+        "space-before-function-paren": [
+            "error",
+            {
+                "anonymous": "always",
+                "named": "never"
+            }
+        ],
+        "space-infix-ops": ["error"],
+        "spaced-comment": ["error", "always"],
+        "dot-notation": ["warn"],
+        "no-shadow": ["warn"],
+        "no-trailing-spaces": [
+            "warn",
+            {
+                "skipBlankLines": true
+            }
+        ],
+        "no-unused-vars": 0,
+        "no-undef": 0,
+        "vue/no-unused-vars": 0
+    }
+}

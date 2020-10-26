@@ -1,0 +1,17 @@
+<template>
+    <div style="text-align:center">
+        <span style="display:inline-block">
+        {{ title }}
+        </span>
+    </div>
+</template>
+<script>
+export default {
+    FesData: function () {
+        return {
+            title: this.$t('components.TYSJJHPTWNFW')
+        }
+    },
+    methods: {}
+}
+</script>

@@ -1,0 +1,529 @@
+<template>
+    <div :style="`height: 100%;`">
+        <Row :style="`height: 100%;`">
+            <Cell span="4" :style="`height: 100%;`">
+                <div class="left-list-wrap" :style="`height: 100%;`">
+                    <h3 class="list-title">
+                    {{ $t('job.projectlist') }}
+                        <span type="default" class="project-add-btn" @click="menuAddBtn">
+                            <Icon type="md-add" size="12" />
+                            {{ $t('job.XJ') }}
+                        </span>
+                    </h3>
+                    <Wb-input v-model="searchProjectName" :placeholder="$t('job.SRXMMCSS')" @on-enter="searchProject">
+                    <span slot="append" class="search-icon"><Icon type="md-search" /></span>
+                    </Wb-input>
+                    <job-left-tree ref="job_left_tree" :add-tree-data="newData" @getTreeId="getTreeId" />
+                </div>
+            </Cell>
+            <Cell class="project-right" :style="`height: 100%;`" span="20">
+                <Wb-form class="search-bar" :label-width="100">
+                    <Row>
+                        <Cell span="6">
+                            <Form-item :label="$t('job.taskNameLable')">
+                                <wb-input v-model="query.jobName" :placeholder="$t('job.input')" @on-enter="search()" />
+                            </Form-item>
+                        </Cell>
+                        <Cell span="6">
+                            <Form-item :label="$t('job.task')">
+                                <wb-input v-model="query.jobId" type="number" :placeholder="$t('job.input')" @on-enter="search()" />
+                            </Form-item>
+                        </Cell>
+                        <Cell span="2">
+                            <Wb-button class="query-btn" type="primary" icon="search" @click.prevent="search()">
+                            {{ $t('job.query') }}
+                            </Wb-button>
+                        </Cell>
+                    </Row>
+                </Wb-form>
+                <div class="button-row">
+                    <Wb-button type="primary" :disabled="!projectId" @click="showAdd()">
+                    {{ $t('job.addJob') }}
+                    </Wb-button>
+                </div>
+                <fes-list-panel>
+                    <Wb-table :data="data" :no-data-text="$t('group.ZWSJ')">
+                        <Column prop="id" :name="$t('job.task')" />
+                        <Column prop="jobName" :name="$t('job.taskName')" />
+                        <Column prop="jobCorn" :name="$t('job.timeJob')" />
+                        <Column prop="jobDesc" :name="$t('job.jobDesc')" />
+                        <Column prop="jobStatus" :name="$t('job.jobStatus')" />
+                        <Column prop="createTime" :name="$t('job.creatTime')" />
+                        <Column :component="optionComponent" :name="$t('job.action')" width="350px" />
+                    </Wb-table>
+                    <div class="page-pagination">
+                        <Pagination :loking="pagination.locking" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
+                    </div>
+                </fes-list-panel>
+            </Cell>
+        </Row>
+        <weModal v-model="addModalShow" :title="$t('job.addProject')" width="1000" :footer-disable="false" :closable="false">
+            <job-add-wrap ref="job_add_wrap" :tree-id="treeId" :edit-data="editData" :is-save="isSave" @saveInfo="saveinfo" @saveSucess="saveSucess" />
+        </weModal>
+         <modal ref="addProjectModal" :title="$t('job.XZXM')">
+            <Wb-form ref="addForm" :label-width="100">
+                <Form-item
+                    :label="$t('job.MXMC')" prop="newData.projectName">
+                    <wb-input v-model="newData.projectName" :placeholder="$t('job.SRXMMC')" />
+                </Form-item>
+
+                <Form-item :label="$t('job.MS')">
+                    <wb-input v-model="newData.projectDesc" :placeholder="$t('job.MS')" />
+                </Form-item>
+                <div class="submit-button-container">
+                    <Wb-button
+                        ref="submitButton" type="primary"
+                        class="submit-button" @click="submit">
+                        {{ $t('job.TJ') }}
+                    </Wb-button>
+                </div>
+            </Wb-form>
+        </modal>
+        <weLoading v-show="FesFesx.isLoading" />
+        <weModal v-model="resetTaskShow" :title="$t('job.LS')" width="800" height="400" @onConfirm="resetTaskAction">
+            <Wb-form ref="resetTaskForm" :rule="validateForm">
+                <Row class="date-content">
+                    <Cell span="12" offset="5">
+                        <Form-item :label="$t('job.QXZQSSJ')" prop="startTime" :label-width="120">
+                            <Wb-input-date-picker v-model="dateValueStart" :max-date="maxDate" />
+                        </Form-item>
+                    </Cell>
+                </Row>
+                <Row class="date-content">
+                    <Cell span="12" offset="5">
+                        <Form-item :label="$t('job.QXZZZSJ')" prop="endTime" :label-width="120">
+                            <Wb-input-date-picker v-model="dateValueEnd" :max-date="maxDate" />
+                        </Form-item>
+                    </Cell>
+                </Row>
+                <Row class="date-content">
+                    <Cell span="12" offset="5">
+                        <Form-item :label="$t('job.JGSJ')" prop="timeUnit" :label-width="120">
+                            <Wb-select v-model="unitValue" disabled>
+                                <wb-option v-for="(item, index) in unitList" :key="index" :value="item">
+                                    {{ item }}
+                                </wb-option>
+                            </Wb-select>
+                        </Form-item>
+                    </Cell>
+                </Row>
+                <Row class="date-content">
+                    <Cell span="12" offset="5">
+                        <Form-item :label="$t('job.JGCD')" prop="timeInterval" :label-width="120">
+                            <Wb-input v-model="intervalValue" :placeholder="$t('job.SRSJCD')" disabled type="number" />
+                        </Form-item>
+                    </Cell>
+                </Row>
+            </Wb-form>
+        </weModal>
+    </div>
+</template>
+<script>
+import weLoading from '../../components/uiTemplate/weLoading.fes';
+import weModal from '../../components/uiTemplate/weModal.fes';
+export default {
+    FesDataCache: 'jobCache',
+    FesHeader: false,
+    data() {
+        let that = this;
+        return {
+            isSave: true,
+            newData: {
+                projectName: '',
+                parentId: '',
+                projectDesc: ''
+            },
+            listSearch: '',
+            addData: {
+                dataSourceValue: '',
+                tableValue: '',
+                partInfo: '',
+                partValue: '',
+                dataSourceValue2: '',
+                tableValue2: ''
+            },
+            projectId: 0,
+            editData: '',
+            data: [],
+            query: {
+                jobName: '',
+                jobId: ''
+            },
+
+            treeId: '',
+            pagination: {
+                size: 10,
+                current: 1,
+                total: 0
+            },
+            resetTaskShow: false,
+            addModalShow: false,
+            dateValueStart: '',
+            dateValueEnd: '',
+            maxDate: new Date(new Date().getTime()),
+            checkTimeResult: false,
+            currentJobId: '',
+            currentJobName: '',
+            searchProjectName: '',
+            optionComponent: function (trData) {
+                return new Vue({
+                    data() {
+                        return {
+                            trData: trData
+                        }
+                    },
+                    methods: {
+                        modifyAction(data) {
+                            that.isSave = false;
+                            that.FesFesx.set('isLoading', true);
+                            that.FesApi.fetch('/jobinfo/view/' + data.id, 'get').then(rst => {
+                                that.FesFesx.set('isLoading', false);
+                                that.addModalShow = true;
+                                that.editData = rst;
+                            }).catch(() => {
+                                that.FesFesx.set('isLoading', false);
+                            });
+                        },
+                        execute(data) {
+                            that.$Message.confirm(that.$root.$t('message.newAllPage.Performatask'), `${that.$root.$t('message.newAllPage.Ifconfirmtoperformatask')}？`).then((index) => {
+                                if (index === 0) {
+                                    that.FesFesx.set('isLoading', true);
+                                    that.FesApi.fetch('/jobinfo/run/' + data.id + '?' + 'userName=' + data.createUser, 'get').then(rst => {
+                                        that.FesFesx.set('isLoading', false);
+                                        that.$Toast.success(that.$t('job.RWKSZX'));
+                                    }).catch(() => {
+                                        that.FesFesx.set('isLoading', false);
+                                    })
+                                }
+                            })
+                        },
+                        copy(data) {
+                            that.isSave = true;
+                            that.FesFesx.set('isLoading', true);
+                            that.FesApi.fetch('/jobinfo/view/' + data.id, 'get').then(rst => {
+                                that.FesFesx.set('isLoading', false);
+                                that.addModalShow = true;
+                                that.editData = rst;
+                                that.editData.jobName = '';
+                                that.editData.jobDesc = '';
+                            }).catch(() => {
+                                that.FesFesx.set('isLoading', false);
+                            });
+                        },
+                        deleteAction(data) {
+                            that.$Message.confirm(that.$t('job.SCRW'), that.$t('job.SFSC')).then( (index) => {
+                                if (index === 0) {
+                                    that.FesApi.fetch('/jobinfo/delete/' + data.id, 'delete').then(() => {
+                                        that.$Toast.success(that.$t('job.SCRWCG'));
+                                        that.search(that.pagination.current, that.pagination.size);
+                                    })
+                                }
+                            })
+                        },
+                        resetTaskButton(data) {
+                            that.currentJobId = data.id;
+                            that.currentJobName = data.jobName;
+                            that.resetTaskShow = true;
+                            that.dateValueStart = new Date().getTime();
+                            that.dateValueEnd = new Date().getTime();
+                            that.unitValue = 'DAY';
+                            that.intervalValue = 1;
+                        },
+                        timingPause(data) {
+                            that.FesApi.fetch(`/jobinfo/${data.id}/sched/pause`, 'put').then(() => {
+                                that.$Toast.success(that.$t('job.ZTCG'));
+                                that.search(that.pagination.current, that.pagination.size);
+                            })
+                        },
+                        timingStart(data) {
+                            that.FesApi.fetch(`/jobinfo/${data.id}/sched/start`, 'put').then(() => {
+                                that.$Toast.success(that.$t('job.DSCG'));
+                                that.search(that.pagination.current, that.pagination.size);
+                            })
+                        }
+                    },
+                    template: `<div>
+                                <span class="component-button" @click="modifyAction(trData)">
+                                    ${that.$t('job.BJ')}
+                                </span>
+                                <span class="component-button" @click="execute(trData)">
+                                    ${that.$t('job.ZX')}
+                                </span>
+                                <span class="component-button" @click="copy(trData)">
+                                    ${that.$t('job.FZ')}
+                                </span>
+                                <span v-if="trData.jobStatus === 'NORMAL' || trData.jobStatus === 'BLOCKED'" class="component-button" @click="timingPause(trData)">
+                                    ${that.$t('job.ZTDS')}
+                                </span>
+                                <span v-if="trData.jobStatus === 'ERROR' || trData.jobStatus === 'PAUSED'" class="component-button" @click="timingStart(trData)">
+                                    ${that.$t('job.QDDS')}
+                                </span>
+                                <span class="component-button" @click="deleteAction(trData)">
+                                    ${that.$t('job.SC')}
+                                </span>
+                                <span class="component-button last-button" @click="resetTaskButton(trData)">
+                                    ${that.$t('job.LSSJCP')}
+                                </span>
+                            </div>`
+                })
+            },
+            validateForm: {
+                startTime: [
+                    {
+                        required: true, message: this.$t('job.KSSJBNWK')
+                    }
+                ],
+                endTime: [
+                    {
+                        required: true, message: this.$t('job.JSSJBNWK')
+                    }
+                ],
+                timeUnit: [
+                    {
+                        required: true, message: this.$t('job.SJBNWK')
+                    }
+                ],
+                timeInterval: [
+                    {
+                        required: true, message: this.$t('job.JGCDBNWK')
+                    }
+                ]
+            },
+            unitList: [
+                'DAY'
+            ],
+            unitValue: 'DAY',
+            intervalValue: 1
+        }
+    },
+    components: {
+        weLoading,
+        weModal
+    },
+    watch: {
+        dateValueStart(val) {
+            if (val > new Date().getTime() || val > this.dateValueEnd) {
+                this.$Toast.error(this.$t('job.XZZQDKSSJ'));
+                this.checkTimeResult = true;
+            } else {
+                this.checkTimeResult = false;
+            }
+        },
+        dateValueEnd(val) {
+            if (val > new Date().getTime() || this.dateValueStart > val) {
+                this.$Toast.error(this.$t('job.XZZQDJSSJ'));
+                this.checkTimeResult = true;
+            } else {
+                this.checkTimeResult = false;
+            }
+        },
+        'FesFesx.enginSelect'(val) {
+            // this.editData = '';
+        }
+    },
+    methods: {
+        // $t('message.newAllPage.Searchproject')
+        searchProject() {
+            this.$refs.job_left_tree.searchProject(this.searchProjectName)
+        },
+        resetTaskAction() {
+            this.$refs.resetTaskForm.validate((valid) => {
+                if (valid) {
+                    // $t('message.newAllPage.Determinethestartandendarelegal')
+                    if (this.checkTimeResult) {
+                        this.$Toast.error(this.$t('job.QXZHFSJD'));
+                        this.resetTaskShow = true;
+                        return;
+                    } else {
+                        if (this.checkTimeInterval(this.intervalValue)) return this.resetTaskShow = true;
+                        const params = {
+                            jobId: this.currentJobId,
+                            startTime: this.dateValueStart,
+                            endTime: this.dateValueEnd,
+                            unit: this.unitValue,
+                            step: this.intervalValue
+                        }
+                        this.$Message.confirm(this.$t('job.LSSJCP'), this.$t('job.QRCP', {name: this.currentJobName})).then((index) => {
+                            if (index === 0) {
+                                this.FesFesx.set('isLoading', true);
+                                this.FesApi.fetch('/jobinfo/history/run', params, {
+                                    methods: 'post',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }
+                                }).then(() => {
+                                    this.FesFesx.set('isLoading', false);
+                                    this.$Toast.success(this.$t('job.CPCG'));
+                                }).catch(() => {
+                                    this.FesFesx.set('isLoading', false);
+                                })
+                            }
+                        })
+                    }
+                } else {
+                    this.resetTaskShow = true;
+                    this.$Toast.warn(this.$t('job.TXZQBD'));
+                }
+            })
+        },
+        showAdd() {
+            this.isSave = true;
+            this.editData = '';
+            this.newData = {};
+            this.addModalShow = true;
+        },
+        search(querycurrent = 1, size = 10) {
+            this.data = [];
+            this.pagination.total = 0;
+            this.FesFesx.set('isLoading', true);
+            const params = {
+                projectId: this.projectId,
+                page: querycurrent,
+                pageSize: size,
+                fuzzyName: this.query.jobName,
+                jobId: this.query.jobId
+            }
+            this.FesApi.fetch('/jobinfo/pageList', params, 'get').then((data) => {
+                this.FesFesx.set('isLoading', false);
+                let code = data.code;
+                if (code != 0) {
+                    this.$Toast.error(data.message)
+                } else {
+                    this.data = data.data;
+                    this.pagination.total = data.totalPages;
+                    this.pagination.current = querycurrent;
+                    this.pagination.size = size;
+                }
+            }).catch(() => {
+                this.FesFesx.set('isLoading', false);
+            });
+            return false;
+        },
+        changePage({ current, size }) {
+            this.search(current, size);
+        },
+        saveinfo(info) {
+            console.log(info);
+        },
+        saveSucess() {
+            this.addModalShow = false;
+            this.search(this.pagination.current, this.pagination.size);
+            return false;
+        },
+        submit() {
+            this.FesApi.fetch('/project/add', this.newData).then(() => {
+                this.$refs.addProjectModal.hide();
+                this.$Toast.success(this.$t('job.XMTJCG'));
+                this.$refs.job_left_tree.getTree();
+                this.newData.projectName = '',
+                this.newData.parentId = '',
+                this.newData.projectDesc = ''
+            })
+        },
+        menuAddBtn() {
+            this.$refs.addProjectModal.show();
+        },
+        addTreeModalShow() {
+            this.$refs.addProjectModal.show();
+        },
+        getTreeId(projectId) {
+            this.treeId = projectId;
+            this.projectId = this.treeId;
+            this.search();
+        },
+        checkTimeInterval(val) {
+            if (this.unitValue === 'DAY') {
+                if (val > 30) {
+                    this.$Toast.warn(this.$t('job.JGCDDY30'));
+                    return true;
+                }
+            } else if (this.unitValue === 'HOUR') {
+                if (val > 24) {
+                    this.$Toast.warn(this.$t('job.JGCDDY24'));
+                    return true;
+                }
+            } else if (this.unitValue === 'MINUTE') {
+                if (val > 60) {
+                    this.$Toast.warn(this.$t('job.JGCDDY60'));
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+}
+</script>
+<style lang="scss">
+    .stander-height {
+        height:32px;
+        padding:3px;
+        line-height:30px;
+    }
+    .btn-wrap{
+        text-align:center;
+        margin-top:50px;
+    }
+    .button-row {
+        margin-bottom:20px;
+    }
+    .left-list-wrap {
+        padding:10px;
+        border-right: 1px solid #ddd;
+        overflow: auto;
+    }
+    .project-right {
+        overflow: auto;
+    }
+    .ul-style {
+        border:1px solid #ccc;
+        padding:10px;
+        height:500px;
+        margin-top:10px;
+        overflow-y:auto;
+    }
+    .list-title{
+        margin-top:20px;
+        margin-bottom:10px;
+        position: relative;
+    }
+    .query-btn{
+        margin-left:10px;
+    }
+    .single-list{
+        height:25px;
+        line-height:25px;
+        cursor:pointer;
+        padding-left:5px;
+    }
+    .single-list:hover{
+        background:#ccc;
+    }
+    .three-part-btn-wrap{
+        margin-top:20px;
+    }
+    .project-add-btn {
+        position:absolute;
+        top: 0px;
+        right:0px;
+        padding: 3px 5px;
+        color: #3399ff;
+        cursor: pointer;
+        font-size: 10px;
+    }
+    .submit-button-container {
+        text-align:center;
+    }
+    .component-button {
+        cursor: pointer;
+        padding: 0 5px;
+        color: #3399ff;
+        border-right: 1px solid #e3e8ee;
+    }
+    .last-button {
+        border: none;
+    }
+    .search-bar {
+        padding-left: 15px;
+    }
+</style>
