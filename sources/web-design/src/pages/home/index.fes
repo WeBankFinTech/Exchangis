@@ -1,0 +1,14 @@
+<template>
+    <p>{{ view }}</p>
+</template>
+<script>
+export default {
+    FesLeft: true,
+    FesHeader: true,
+    FesData() {
+        return {
+            view: 'Hello world'
+        }
+    }
+}
+</script>
