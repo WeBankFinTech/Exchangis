@@ -1,6 +1,5 @@
-import * as monaco from './package/esm/vs/editor/editor.main';
 
-
+import * as monaco from 'monaco-editor';
 monaco.languages.registerCompletionItemProvider('java', {
     provideCompletionItems: () => {
         var suggestions = [{
