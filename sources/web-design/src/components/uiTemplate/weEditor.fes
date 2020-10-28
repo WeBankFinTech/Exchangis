@@ -93,10 +93,8 @@ export default {
                 }
                 let readOnly = this.editor.getConfiguration().readOnly;
                 if (readOnly) {
-                    // editor.setValue $t('message.newUitemplate.and') model.setValue $t('message.newUitemplate.Willbelostundostack')
                     this.editor.setValue(newValue);
                 } else {
-                    // $t('message.newUitemplate.Tocancelthestack')
                     let range = this.editor.getModel().getFullModelRange();
                     const text = newValue;
                     const op = {

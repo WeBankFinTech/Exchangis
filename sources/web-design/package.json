@@ -39,7 +39,8 @@
     "@antv/g2": "^4.0.15",
     "@babel/runtime-corejs3": "^7.11.2",
     "@webank/fes-core": "^0.2.4",
-    "@webank/fes-ui": "^0.2.4"
+    "@webank/fes-ui": "^0.2.4",
+    "monaco-editor": "^0.15.1"
   },
   "gitHead": "357575247bde6d1d24a8d2e11d2bfe7adbe6abd6"
 }
