@@ -128,7 +128,7 @@
                 MYSQL {{ $t('manager.SJY') }}
                 </Wb-button>
                 &nbsp;&nbsp;
-                <Wb-button class="iconfont icon-xingzhuang" @click="showAddWind('ORACLE',`ORACLE ${$t('manager.SJY')}`)">
+                <Wb-button class="iconfont" @click="showAddWind('ORACLE',`ORACLE ${$t('manager.SJY')}`)">
                 ORACLE {{ $t('manager.SJY') }}
                 </Wb-button>
             </Panel>
