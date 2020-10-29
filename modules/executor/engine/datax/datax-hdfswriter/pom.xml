@@ -60,7 +60,17 @@
                     <groupId>xml-apis</groupId>
                     <artifactId>xml-apis</artifactId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>netty-all</artifactId>
+                    <groupId>io.netty</groupId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <!-- replace netty-all in hadoop-hdfs-->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.46.Final</version>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
