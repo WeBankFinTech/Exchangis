@@ -77,7 +77,8 @@ public class UnstructuredStorageReaderUtil {
      * @return 分隔符分隔后的字符串数，
      */
     public static String[] splitOneLine(String inputLine, String delimiter) {
-        return StringUtils.split(inputLine, delimiter);
+        //preserveAllTokens
+        return StringUtils.splitPreserveAllTokens(inputLine, delimiter);
     }
 
     public static void readFromStream(InputStream inputStream, OutputStream outputStream,
