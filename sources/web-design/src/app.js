@@ -75,7 +75,7 @@ export default function () {
         if (typeof res.redirect !== 'undefined') {
         } else {
             if (typeof res['X-AUTH-ID'] !== 'undefined') {
-                this.FesApp.setRole(res.role);
+                this.FesApp.setRole(res.role, true, false);
                 this.FesApp.set('FesUserName', res['X-AUTH-ID']);
                 this.FesApp.set('FesRoleName', roleName(res.role));
                 this.FesStorage.set('currentUser', res['X-AUTH-ID']);
