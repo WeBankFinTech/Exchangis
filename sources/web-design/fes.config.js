@@ -7,10 +7,10 @@ export default {
     theme: 'dark',
     fesName: 'Exchangis',
     roles: {
-        unLogin: ['/login', '/ds/newManager', '/job', '/task', '/help'],
-        user: ['/login', '/ds/newManager', '/ds/dataTemplate', '/job', '/task', '/help', '/group', '/group/groupDetail'],
-        admin: ['/login', '/ds/newManager', '/ds/dataTemplate', '/job', '/task', '/help', '/group', '/group/groupDetail', '/sys/owner'],
-        super: ['/login', '/ds/newManager', '*']
+        unLogin: ['/ds/newManager', '/', '/login', '/job', '/task', '/help'],
+        user: ['/ds/newManager', '/', '/login', '/ds/dataTemplate', '/job', '/task', '/help', '/group', '/group/groupDetail'],
+        admin: ['/ds/newManager', '/', '/login', '/ds/dataTemplate', '/job', '/task', '/help', '/group', '/group/groupDetail', '/sys/owner'],
+        super: ['/ds/newManager', '/', '/login', '*']
     },
     map: {
         status: [
