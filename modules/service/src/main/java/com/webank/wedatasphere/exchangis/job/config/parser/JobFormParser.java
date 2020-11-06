@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
@@ -196,12 +196,12 @@ public class JobFormParser extends AbstractJobTemplate {
                     }
                     if(parameter.getColumnIndex() < columnMaps.size()) {
                         columnMaps.get(parameter.getColumnIndex())
-                                .setVerifyFunc(paras.get(0) + "(" + URLEncoder.encode(paras.get(1), "UTF-8") + ")");
+                                .setVerifyFunc(paras.get(0) + "(" + URLDecoder.decode(paras.get(1), "UTF-8") + ")");
                     }
                 }else{
                     List<String> paras = parameter.getParas();
                     for(int i = 0; i < paras.size(); i ++){
-                        paras.set(i, URLEncoder.encode(paras.get(i), "UTF-8"));
+                        paras.set(i, URLDecoder.decode(paras.get(i), "UTF-8"));
                     }
                     String funcParam = StringUtils.join(paras, ",");
                     if(parameter.getColumnIndex() < columnMaps.size()) {

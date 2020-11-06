@@ -1,0 +1,388 @@
+<template>
+    <div class="detail-box">
+        <div class="detail-header">
+            <h2>{{ $t('group.FZXQ') }}</h2>
+            <Wb-button type="primary" @click="addGroupAction">
+                        {{ saveText }}
+                        </Wb-button>
+             <Wb-button @click="goback">
+            {{ $t('group.FH') }}
+            </Wb-button>
+        </div>
+        <Panel :title="$t('group.JCXX')">
+                <Wb-form ref="formValidate" class="group-detail-form" label-position="left" :label-width="100">
+                    <Form-item :label="$t('group.FZM')" prop="groupName" :rule="[{required: true, message: $t('group.FZMBNK')}, {type: 'string', pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5\[\]]*$/, message: $t('group.ZCZZM'), trigger: 'blur'}]">
+                        <wb-input v-model="groupName" :placeholder="$t('group.QSR')" type="text" :disabled="!isAdmin" />
+                    </Form-item>
+                    <Form-item :label="$t('group.FZMS')">
+                        <wb-input v-model="groupDesc" :placeholder="$t('group.QSR')" type="text" :disabled="!isAdmin" />
+                    </Form-item>
+                    <Form-item :label="$t('group.BDXM')" prop="bindProject">
+                        <Wb-select v-model="bindProject" :disabled="!isAdmin">
+                            <wb-option v-for="item in projectDataList" :key="item.id" :value="item.id" :label="item.projectName" />
+                        </Wb-select>
+                    </Form-item>
+                    <div class="detail-save" />
+                </Wb-form>
+        </Panel>
+        <Panel :title="$t('group.FZCY')" class="group-user-panel">
+            <Row class="group-header">
+                <Cell span="3" class="header-item">
+                        <Wb-button type="primary" @click="deleteUser">
+                           {{ $t('group.SCYXX') }}
+                        </Wb-button>
+                </Cell>
+                <Cell span="6">
+                    <Row>
+                        <Cell span="4">
+                            {{ $t('group.YHM') }}
+                        </Cell>
+                        <Cell span="16">
+                            <Wb-input v-model="searchUserName" :placeholder="$t('group.SRYHMSS')" />
+                        </Cell>
+                        <Cell span="1" offset="1">
+                            <Wb-button type="primary" @click="searchAction">
+                                {{ $t('group.CX') }}
+                            </Wb-button>
+                        </Cell>
+                    </Row>
+                </Cell>
+                <Cell span="3" offset="12" class="header-item">
+                    <Wb-button type="primary" @click="addUser">
+                        {{ $t('group.TICY') }}
+                    </Wb-button>
+                </Cell>
+            </Row>
+            <Row class="group-content">
+                <Wb-table ref="userTable" :data="currentUserData" :no-data-text="$t('group.ZWSJ')" border>
+                    <Column type="selection" />
+                    <Column prop="userId" :name="$t('group.YH')" />
+                    <Column prop="userName" :name="$t('group.YHM')" />
+                </Wb-table>
+            </Row>
+            <div class="page-pagination">
+                <Pagination class="group-pagination" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
+            </div>
+        </Panel>
+        <weModal v-model="addShow" :title="$t('group.TICY')" width="500" :closable="false" @onConfirm="addConfirm">
+            <Wb-form ref="addUserForm">
+                <Form-item :label="$t('group.XZYH')" prop="selectUserName" :rule="[{validator: validateUserName,
+                        trigger: 'change'}]">
+                    <Wb-select v-model="selectUserName" multiple filterable @on-change="selcetChange" @on-search="filterSearch">
+                        <wb-option v-for="item in selectUserIdList" :key="item.userId" :value="item.userName" :label="item.userName" />
+                    </Wb-select>
+                </Form-item>
+                <Form-item :label="$t('group.YHM')">
+                    <wb-input v-model="userName" type="textarea" :placeholder="$t('group.SRWB')" readonly />
+                </Form-item>
+            </Wb-form>
+        </weModal>
+        <weLoading v-show="isLoading" />
+    </div>
+</template>
+<script>
+import weModal from '../../../components/uiTemplate/weModal.fes';
+import weLoading from '../../../components/uiTemplate/weLoading';
+export default {
+    data() {
+        return {
+            searchUserName: '',
+            groupName: '',
+            groupDesc: '',
+            userData: [],
+            currentUserData: [],
+            userList: [],
+            pagination: {
+                size: 10,
+                current: 1,
+                total: 0
+            },
+            addShow: false,
+            deleteList: [],
+            selectUserName: [],
+            selectUserIdList: [],
+            userName: '',
+            saveText: this.$t('group.TJFZ'),
+            isChange: false,
+            isLoading: false,
+            projectDataList: [],
+            bindProject: ''
+        }
+    },
+    components: {
+        weModal,
+        weLoading
+    },
+    created() {
+        this.addGroupUserList();
+        this.getProjectData();
+        this.FesFesx.set('isChange', false);
+        if (this.$route.query.id) {
+            this.groupDetailAction();
+            this.saveText = this.$t('group.BCXG');
+        } else {
+            this.search();
+        }
+    },
+    watch: {
+        userList: {
+            handler(val) {
+                this.pageTotalAction(val);
+            },
+            deep: true
+        },
+        isChange(val) {
+            this.FesFesx.set('isChange', val);
+        },
+        routedPath(val) {
+            const that = this;
+            if (val) {
+                this.$Message.confirm(this.$t('group.BCTS'), this.$t('group.FZXXTXSFBC')).then(function (index) {
+                    if (index === 0) {
+                        that.addGroupAction(val)
+                    } else {
+                        that.FesFesx.set('isChange', false);
+                        that.$router.push({ path: val })
+                    }
+                })
+            }
+        }
+    },
+    computed: {
+        routedPath() {
+            return this.FesFesx.get('isGoto');
+        },
+        isAdmin() {
+            const userRole = this.FesStorage.get('userRole');
+            return ['super', 'admin'].includes(userRole);
+        }
+    },
+    methods: {
+        getProjectData() {
+            this.FesApi.fetch('/project/selectAll', 'get').then(rst => {
+                this.projectDataList = rst
+            })
+        },
+        validateUserName(rule, value, callback) {
+            if (value.every((item) => /^[a-zA-Z0-9_\u4e00-\u9fa5]*$/.test(item))) {
+                callback();
+            } else {
+                callback(new Error(this.$t('group.ZCZZM')));
+            }
+        },
+        goback() {
+            if (this.isChange && this.$route.query.id) {
+                return this.$Toast(this.$t('group.XGFZNRWBC'))
+            } else {
+                this.FesApp.router.push('/group');
+            }
+        },
+        addUser() {
+            this.addShow = true;
+        },
+        addGroupUserList() {
+            this.isLoading = true;
+            this.FesApi.fetch('/usergroup/getAvailableUser', {}, 'post').then(res => {
+                this.selectUserIdList = res;
+                this.isLoading = false;
+            }).catch(() => {
+                this.isLoading = false;
+            })
+        },
+        groupDetailAction() {
+            this.FesApi.fetch(`/group/view/${this.$route.query.id}`, {}, 'get').then(res => {
+                this.groupName = res.groupName;
+                this.groupDesc = res.groupDesc;
+                this.userList = res.userList ? res.userList : [];
+                this.bindProject = res.projectId;
+                this.pagination.total = Math.ceil(this.userList.length / this.pagination.size);
+                this.search(this.pagination.current, this.pagination.size);
+            })
+        },
+        addGroupAction(val = '') {
+            this.$refs.formValidate.validate((valid) => {
+                if (valid) {
+                    // if (this.userList.length <= 0) {
+                    //     return this.$Toast(this.$t('group.TJZCY'));
+                    // }
+                    // if (this.checkName(this.groupName, this.$route.query.id)) return this.$Toast(this.$t('group.FZNBKCF'));
+                    this.isLoading = true;
+                    if (this.$route.query.id) {
+                        const params = {
+                            id: this.$route.query.id,
+                            groupName: this.groupName,
+                            groupDesc: this.groupDesc,
+                            userList: this.userList,
+                            projectId: this.bindProject
+                        }
+                        this.FesApi.fetch(`/group/update/${params.id}`, params, 'post').then(res => {
+                            this.isLoading = false;
+                            this.isChange = false;
+                            this.FesFesx.set('isChange', false);
+                            this.$Toast.success(this.$t('group.FZXG', {name: params.groupName}));
+                            this.FesApp.router.push('/group');
+                        }).catch(() => {
+                            this.FesFesx.set('isChange', false);
+                            this.isLoading = false;
+                        })
+                    } else {
+                        const params = {
+                            groupName: this.groupName,
+                            groupDesc: this.groupDesc,
+                            userList: this.userList,
+                            projectId: this.bindProject
+                        }
+                        this.FesApi.fetch('/group/add', params, 'post').then(res => {
+                            this.isLoading = false;
+                            this.isChange = false;
+                            this.FesFesx.set('isChange', false);
+                            this.$Toast.success(this.$t('group.CJCG', {name: params.groupName}));
+                            this.$router.go(-1);
+                        }).catch(() => {
+                            this.FesFesx.set('isChange', false);
+                            this.isLoading = false;
+                        })
+                    }
+                } else {
+                    this.$Toast(this.$t('group.TXZQBD'));
+                }
+            })
+        },
+        pageTotalAction(val) {
+            this.pagination.total = Math.ceil(val.length / this.pagination.size);
+        },
+        changePage({current, size }) {
+            this.search(current, size);
+            this.pagination.current = current;
+            this.pagination.size = size;
+        },
+        searchAction() {
+            this.search(1, 10);
+            this.pagination.current = 1;
+        },
+        search(current = 1, size = 10) {
+            let currentUserData = this.userList.filter(item => {
+                const reg = RegExp(this.searchUserName)
+                return reg.test(item.userName) || !this.searchUserName;
+            })
+            this.currentUserData = currentUserData.filter((item, index) => {
+                return (current - 1) * size <= index && index < current * size;
+            })
+            this.pageTotalAction(currentUserData);
+        },
+        deleteUser() {
+            this.deleteList = this.$refs.userTable.getSelected();
+            if (this.deleteList.length <= 0) {
+                this.$Toast(this.$t('group.XZYSCDYH'));
+            } else {
+                this.$Message.confirm(this.$t('sys.user.SCYH'), `${this.$t('group.QRSCYH')}${this.deleteList.map(item => item.userName).join(', ')} ?`).then( (index) => {
+                    if (index === 0) {
+                        this.deleteConfirm();
+                    }
+                });
+            }
+        },
+        deleteConfirm() {
+            this.userList = this.userList.filter((item) => {
+                return !this.deleteList.map(subItem => {
+                    return subItem.userId;
+                }).includes(item.userId)
+            })
+            this.$Toast.success(this.$t('group.SCCG'));
+            this.search();
+            this.isChange = true;
+        },
+        deleteClose() {
+            this.$Toast.error(this.$t('group.FZCYSCSB'));
+        },
+        selcetChange(value) {
+            this.userName = value.join('、');
+        },
+        addConfirm() {
+            this.$refs.addUserForm.validate((valid) => {
+                if (valid) {
+                    if (this.selectUserName.length <= 0) {
+                        this.addShow = true;
+                        return this.$Toast(this.$t('group.XZYHS'))
+                    }
+                    let tepArry = this.selectUserIdList.filter(item => {
+                        return this.selectUserName.includes(item.userName);
+                    })
+                    let obj = {};
+                    this.userList = this.userList.concat(tepArry).reduce((cur, next) => {
+                        obj[next.userId] ? '' : obj[next.userId] = true && cur.push(next);
+                        return cur;
+                    }, []);
+                    this.search();
+                    this.selectUserName = [];
+                    this.userName = '';
+                    this.isChange = true;
+                } else {
+                    this.addShow = true;
+                }
+            })
+        },
+        checkName(name, id) {
+
+            let dataList = this.FesFesx.get('groupDataList');
+            console.log(name, id, dataList, 'dataList')
+            let flage = false;
+            dataList.map((item) => {
+                if (item.groupName === name && id != item.id) {
+                    flage = true;
+                }
+            })
+            return flage;
+        },
+        filterSearch(val) {
+            if (val) {
+                if (!this.selectUserIdList.map((item) => item.userName).includes(val)) {
+                    this.selectUserIdList.unshift({
+                        userName: val,
+                        userId: String(new Date().getTime() + Math.ceil(Math.random() * 1000)).slice(-5)
+                    })
+                }
+            }
+        }
+    }
+}
+</script>
+<style scoped lang="scss">
+.detail-box {
+    height: 100%;
+    padding: 20px;
+    overflow: auto;
+    .group-detail-form {
+        width: 90%;
+        margin: 0 auto;
+    }
+    .detail-header {
+        height: 70px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .detail-save {
+            text-align: center;
+        }
+    .group-user-panel {
+        margin-top: 20px;
+        .ui-panel-content {
+            padding: 0;
+        }
+        .group-header {
+            height: 70px;
+            line-height: 70px;
+            .header-item {
+                text-align: center;
+            }
+        }
+        .group-content {
+            .group-pagination {
+                text-align: center;
+                padding: 15px 0 ;
+            }
+        }
+    }
+}
+</style>
