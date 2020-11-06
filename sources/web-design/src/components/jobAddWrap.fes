@@ -1,0 +1,722 @@
+<template>
+    <div>
+        <we-step :current-step="currentStep" :step-description="stepDescription" />
+        <job-add-step-zero v-show="partZero" :edit-data="editData" @nextStep="partZeroNext" />
+        <job-add-step-one v-show="partOne" ref="job_add_step_one" :edit-data="editData" :tree-id="treeId" @preStep="partOnePre" @nextStep="partOneNext" />
+        <job-add-step-two v-show="partTwo" ref="job_add_step_two" :edit-data="editData" :tree-id="treeId" @nextStep="partTwoNext" @preTwo="partTwoPre" @syncMeta="syncMeta" />
+        <job-add-step-three
+            v-show="partThree"
+            ref="job_add_step_three"
+            :arg="partThreeData"
+            :edit-data="editData"
+            :paran-new-object="newObject"
+            :is-show="partThree"
+            @threeNext="partThreeNext"
+            @threePre="partThreePre"
+        />
+        <job-add-editor v-show="editorShow" :value="addData.editorContent" @preEditor="partEditorPre" @parNextStep="editorNext" />
+        <job-add-step-four v-show="partFour" ref="job_add_step_four" :edit-data="editData" @fourNext="partFourNext" @fourPre="partFourPre" />
+        <job-add-step-five v-show="partFive" ref="job_add_step_five" :edit-data="editData" :save-disable="saveDisable" @save="save" @fivePre="fivePre" />
+    </div>
+</template>
+<script>
+import weStep from './uiTemplate/weStep.fes';
+import { SOURCETYPE, TRANSFERTYPE } from '../constants/common.js';
+export default {
+    FesDataCache: 'wrap',
+    FesHeader: false,
+    props: {
+        treeId: {
+            type: null
+        },
+        editData: {
+            type: null
+        },
+        isSave: {
+            type: null
+        }
+    },
+    components: {
+        weStep
+    },
+    data() {
+        return {
+            hivetype: '',
+            dataSourceValue: '',
+            speed: '',
+            listSearch: '',
+            addData: {
+                addData0: '',
+                addData1: '',
+                addData2: '',
+                addData3: '',
+                speed: '',
+                errorLimit: '',
+                addData5: '',
+                editorContent: '',
+                advance: {},
+                editorData: ''
+            },
+            partThreeData: '',
+            sourceArr: [],
+            funcArr: [],
+            newObject: {
+                funcArr: [],
+                rst: [],
+                sourceArr: []
+            },
+            query: {
+                taskName: '',
+                projectName: ''
+            },
+            partZero: true,
+            partOne: false,
+            partTwo: false,
+            partThree: false,
+            partFour: false,
+            partFive: false,
+            editorShow: false,
+            newData: {
+                id: null,
+                parentId: null,
+                projectName: '',
+                projectDesc: ''
+            },
+            pagination: {
+                size: 10,
+                current: 1,
+                total: 0
+            },
+            dataSrcParams: {},
+            currentStep: 1,
+            firstDataSourceType: '',
+            secondDataSourceType: '',
+            saveDisable: false,
+            syncMetaData: {} // 同步源信息数据
+        }
+    },
+    FesReady() {
+        this.initCurrentStep();
+    },
+    computed: {
+        // 动态步骤条
+        stepDescription() {
+            if (this.toFourOrThree() && !(this.syncMetaData.show && this.syncMetaData.syncMeta)) {
+                return [
+                    this.$t('message.newComponents.Chooseexecutionengine'),
+                    this.$t('components.XZSJY'),
+                    this.$t('components.XZMD'),
+                    this.$t('components.ZDYS'),
+                    this.$t('components.SDKZ'),
+                    this.$t('components.JBXX')
+                ]
+            } else {
+                // es数据源选择后置处理器
+                if (this.FesFesx.usePostProcess) {
+                    return [
+                        this.$t('message.newComponents.Chooseexecutionengine'),
+                        this.$t('components.XZSJY'),
+                        this.$t('components.XZMD'),
+                        this.$t('components.DYCLQ'),
+                        this.$t('components.SDKZ'),
+                        this.$t('components.JBXX')
+                    ]
+                } else {
+                    return [
+                        this.$t('message.newComponents.Chooseexecutionengine'),
+                        this.$t('components.XZSJY'),
+                        this.$t('components.XZMD'),
+                        this.$t('components.SDKZ'),
+                        this.$t('components.JBXX')
+                    ]
+                }
+            }
+        }
+    },
+    methods: {
+        // 引擎选择下一步
+        partZeroNext(addDataZero) {
+            this.FesFesx.set('enginSelect', addDataZero.engin);
+            this.addData.addData0 = addDataZero;
+            this.currentStep += 1;
+            this.partZero = false;
+            this.partOne = true;
+        },
+        // 第一步上一步
+        partOnePre() {
+            this.currentStep -= 1;
+            this.partZero = true;
+            this.partOne = false;
+        },
+        // 第一步下一步
+        partOneNext(addDataOne) {
+            this.addData.addData1 = addDataOne;
+            this.currentStep += 1;
+            this.partOne = false;
+            this.partTwo = true;
+            // 结构化获取表字段信息
+            if (addDataOne.type === SOURCETYPE.HIVE && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+                this.FesApi.fetch('/datasource/meta/hive/' + addDataOne.dataSourceId + '/' + addDataOne.db + '/' + addDataOne.table + '/fields', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then(rst=>{
+                    this.partThreeData = rst;
+                })
+            } else if (addDataOne.type === SOURCETYPE.MYSQL) {
+                // mysql是多表，需要查询多表字段
+                let promiseList = addDataOne.table.map((item) => {
+                    return this.FesApi.fetch('/datasource/meta/mysql/' + addDataOne.dataSourceId + '/' + addDataOne.DBData + '/' + item + '/fields', {}, {
+                        method: 'get',
+                        timeout: '60000'
+                    })
+                })
+                Promise.all(promiseList).then(rst=>{
+                    let stepArray = [];
+                    rst.map((item, index) => {
+                        item = item.map((subItem) => {
+                            subItem.name = `${addDataOne.alias[index]}.${subItem.name}`;
+                            return subItem;
+                        })
+                        stepArray = stepArray.concat(item);
+                    })
+                    let hash = {}
+                    this.partThreeData = stepArray.reduce((item, next) => {
+                        if (!hash[next.name]) {
+                            hash[next.name] = true
+                            item.push(next)
+                        }
+                        return item
+                    }, [])
+                }).catch(() => {
+                    // this.FesFesx.set('isLoading', false);
+                })
+            } else if (addDataOne.type === SOURCETYPE.ORACLE) {
+                this.FesApi.fetch('/datasource/meta/oracle/' + addDataOne.dataSourceId + '/' + addDataOne.DBData + '/' + addDataOne.table + '/fields', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then((res) => {
+                    this.partThreeData = res;
+                })
+            }
+        },
+        partTwoPre() {
+            this.partOne = true;
+            this.partTwo = false;
+            this.currentStep -= 1;
+        },
+        partTwoNext(addDataTwo) {
+            this.addData.addData2 = addDataTwo;
+            this.currentStep += 1;
+            // 只要选择了同步元信息，就没有字段映射或者编辑器
+            if (this.toFourOrThree() && !(this.syncMetaData.show && this.syncMetaData.syncMeta)) {
+                this.partThree = true;
+            } else {
+                if (addDataTwo.usePostProcess && !(this.syncMetaData.show && this.syncMetaData.syncMeta)) {
+                    this.editorShow = true;
+                } else {
+                    this.partFour = true;
+                }
+            }
+            this.partTwo = false;
+
+            if (this.syncMetaData.show && this.syncMetaData.syncMeta) return;
+            if (addDataTwo.type === SOURCETYPE.HIVE && (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HIVE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+                this.FesApi.fetch('/datasource/meta/hive/' + addDataTwo.dataSourceId + '/' + addDataTwo.db + '/' + addDataTwo.table + '/fields', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then(rst=>{
+                    let sourceArr = [];
+                    for (let i = 0; i < rst.length; i++) {
+                        let obj = {};
+                        obj.sourceWord = this.partThreeData[i % this.partThreeData.length].name;
+                        obj.sourceType = this.partThreeData[i % this.partThreeData.length].type;
+                        sourceArr.push(obj);
+
+                    }
+                    let newObject = {};
+                    newObject.sourceArr = sourceArr;
+                    let funcArr = [];
+                    for (let i = 0; i < rst.length; i++) {
+                        let obj = {};
+                        obj.validFun = '';
+                        obj.transform = '';
+                        obj.validFuncArg = [];
+                        obj.transformFunArg = [];
+                        funcArr.push(obj);
+                    }
+                    newObject.funcArr = funcArr;
+                    newObject.rst = rst;
+                    this.newObject = newObject;
+                    this.editorAction(this.editData, rst)
+                });
+            } else if (addDataTwo.type === SOURCETYPE.MYSQL && (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HIVE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+                this.FesApi.fetch('/datasource/meta/mysql/' + addDataTwo.dataSourceId + '/' + addDataTwo.DBData + '/' + addDataTwo.table + '/fields', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then(rst=>{
+                    let sourceArr = [];
+                    for (let i = 0; i < rst.length; i++) {
+                        let obj = {};
+                        obj.sourceWord = this.partThreeData[i % this.partThreeData.length].name;
+                        obj.sourceType = this.partThreeData[i % this.partThreeData.length].type;
+                        sourceArr.push(obj);
+
+                    }
+                    let newObject = {};
+                    newObject.sourceArr = sourceArr;
+                    let funcArr = [];
+                    for (let i = 0; i < rst.length; i++) {
+                        let obj = {};
+                        obj.validFun = '';
+                        obj.transform = '';
+                        obj.validFuncArg = [];
+                        obj.transformFunArg = [];
+                        funcArr.push(obj);
+                    }
+                    newObject.funcArr = funcArr;
+                    newObject.rst = rst;
+                    this.newObject = newObject;
+                    this.editorAction(this.editData, rst)
+                });
+            } else if ([SOURCETYPE.HIVE, SOURCETYPE.MYSQL, SOURCETYPE.ORACLE].includes(this.FesFesx.FirstCurrentDataSourceType) && [ SOURCETYPE.LOCAL_FS, SOURCETYPE.HDFS, SOURCETYPE.SFTP].includes(addDataTwo.type) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+                let newObject = {
+                    funcArr: [],
+                    rst: [],
+                    sourceArr: []
+                };
+                this.newObject = newObject;
+                if (this.editData && this.editData.config.columnMaps && this.editData.config.columnMaps.length > 0) {
+                    const flag = true;
+                    if (this.addData.addData1.table.length !== this.editData.config.dataSrcParams.table.length || this.addData.addData1.table.toString !== this.editData.config.dataSrcParams.table.toString) {
+                        this.editData.config.columnMaps = [];
+                    }
+                    this.editorAction(this.editData, this.editData.config.columnMaps, flag);
+                }
+            } else if (addDataTwo.type === SOURCETYPE.ORACLE && (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HIVE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.TDSQL || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+                this.FesApi.fetch('/datasource/meta/oracle/' + addDataTwo.dataSourceId + '/' + addDataTwo.DBData + '/' + addDataTwo.table + '/fields', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then(rst=>{
+                    let sourceArr = [];
+                    for (let i = 0; i < rst.length; i++) {
+                        let obj = {};
+                        obj.sourceWord = this.partThreeData[i % this.partThreeData.length].name;
+                        obj.sourceType = this.partThreeData[i % this.partThreeData.length].type;
+                        sourceArr.push(obj);
+
+                    }
+                    let newObject = {};
+                    newObject.sourceArr = sourceArr;
+                    let funcArr = [];
+                    for (let i = 0; i < rst.length; i++) {
+                        let obj = {};
+                        obj.validFun = '';
+                        obj.transform = '';
+                        obj.validFuncArg = [];
+                        obj.transformFunArg = [];
+                        funcArr.push(obj);
+                    }
+                    newObject.funcArr = funcArr;
+                    newObject.rst = rst;
+                    this.newObject = newObject;
+                    this.editorAction(this.editData, rst)
+                });
+            }
+            if (addDataTwo.type === SOURCETYPE.ELASTICSEARCH) {
+                if (addDataTwo.usePostProcess) {
+                    if (this.editData && this.editData.config.procSrcCode) {
+                        this.addData.editorContent = this.editData.config.procSrcCode
+                    } else {
+                        this.FesApi.fetch('/job/tpl/proc/' + addDataTwo.type, {}, 'get').then(res => {
+                            this.addData.editorContent = res;
+                        })
+                    }
+                } else {
+                    this.FesApi.fetch('/datasource/meta/elastic/' + addDataTwo.dataSourceId + '/' + addDataTwo.indexName + '/' + addDataTwo.indexType + '/columns', {}, {
+                        method: 'get',
+                        timeout: '60000'
+                    }).then(rst=>{
+                        let sourceArr = [];
+                        for (let i = 0; i < rst.length; i++) {
+                            let obj = {};
+                            obj.sourceWord = this.partThreeData[i % this.partThreeData.length].name;
+                            obj.sourceType = this.partThreeData[i % this.partThreeData.length].type;
+                            sourceArr.push(obj);
+
+                        }
+                        let newObject = {};
+                        newObject.sourceArr = sourceArr;
+                        let funcArr = [];
+                        for (let i = 0; i < rst.length; i++) {
+                            let obj = {};
+                            obj.validFun = '';
+                            obj.transform = '';
+                            obj.validFuncArg = [];
+                            obj.transformFunArg = [];
+                            funcArr.push(obj);
+                        }
+                        newObject.funcArr = funcArr;
+                        newObject.rst = rst;
+                        this.newObject = newObject;
+                        this.editorAction(this.editData, rst)
+                    });
+                }
+
+            }
+        },
+        // 编辑时字段映射回填
+        editorAction(val, dstData, flag = false) {
+            if (val && val.config.columnMaps && val.config.columnMaps.length > 0) {
+                let arg = [];
+                let targetArr = [];
+                for (let i = 0; i < dstData.length; i++) {
+                    let obj = {}
+                    let targetObj = {};
+                    for (let j = 0; j < this.partThreeData.length; j++) {
+                        if (val.config.columnMaps[i] && this.partThreeData[j].name === val.config.columnMaps[i].srcName) {
+                            obj.sourceType = this.partThreeData[j].type;
+                            obj.sourceWord = this.partThreeData[j].name;
+                            arg.push(obj);
+                        }
+                    }
+                    if (flag) {
+                        targetObj.name = dstData[i].dstName;
+                        targetObj.type = dstData[i].dstType;
+                        targetArr.push(targetObj);
+                    }
+                }
+                for (let i = arg.length; i < dstData.length; i++) {
+                    let obj = {};
+                    let targetObj = {};
+                    obj.sourceType = this.partThreeData[0].type;
+                    obj.sourceWord = this.partThreeData[0].name;
+                    arg.push(obj);
+                    targetObj.name = dstData[0].dstName;
+                    targetObj.type = dstData[0].dstType;
+                    targetArr.push(targetObj);
+                }
+                this.newObject.sourceArr = arg;
+                if (flag) {
+                    this.newObject.rst = targetArr;
+                }
+                let arr = [];
+                for (let i = 0; i < dstData.length; i++) {
+                    let obj = {};
+                    if (val.config.columnMaps[i] && val.config.columnMaps[i].transforFunc && val.config.columnMaps[i].verifyFunc ) {
+                        obj.transform = val.config.columnMaps[i].transforFunc.split('(')[0];
+                        let str = val.config.columnMaps[i].transforFunc.split(')')[0];
+                        let argstr = str.split('(')[1];
+                        let argarr = argstr.split(',');
+                        obj.validFun = val.config.columnMaps[i].verifyFunc.split('(')[0];
+                        let strV = val.config.columnMaps[i].verifyFunc.split(')')[0];
+                        let argstrV = strV.split('(')[1];
+                        let argarrV = argstrV.split(',');
+                        obj.transformNum = argarr.length;
+                        obj.transformFunArg = this.arrayToObjList(argarr);
+                        obj.validFuncArg = this.arrayToObjList(argarrV);
+                        obj.validParamNum = argarrV.length;
+                    } else if (val.config.columnMaps[i] && val.config.columnMaps[i].transforFunc && !val.config.columnMaps[i].verifyFunc) {
+                        obj.transform = val.config.columnMaps[i].transforFunc.split('(')[0];
+                        let str = val.config.columnMaps[i].transforFunc.split(')')[0];
+                        let argstr = str.split('(')[1];
+                        let argarr = argstr.split(',');
+                        obj.transformNum = argarr.length;
+                        obj.transformFunArg = this.arrayToObjList(argarr);
+                    } else if (val.config.columnMaps[i] && !val.config.columnMaps[i].transforFunc && val.config.columnMaps[i].verifyFunc) {
+                        obj.validFun = val.config.columnMaps[i].verifyFunc.split('(')[0];
+                        let strV = val.config.columnMaps[i].verifyFunc.split(')')[0];
+                        let argstrV = strV.split('(')[1];
+                        let argarrV = argstrV.split(',');
+                        obj.validFuncArg = this.arrayToObjList(argarrV);
+                        obj.validParamNum = argarrV.length;
+                    } else {
+                        obj.transform = '';
+                        obj.verifyFunc = '';
+                    }
+                    arr.push(obj);
+                }
+                for (let i = arr.length; i < dstData.length; i++) {
+                    let obj = {};
+                    obj.validFun = '';
+                    obj.transform = '';
+                    obj.validFuncArg = [];
+                    obj.transformFunArg = [];
+                    arr.push(obj);
+                }
+                this.newObject.funcArr = arr;
+            }
+        },
+        partEditorPre() {
+            this.partTwo = true;
+            this.editorShow = false;
+            this.currentStep -= 1;
+        },
+        editorNext(editorData) {
+            this.addData.editorData = editorData;
+            this.editorShow = false;
+            this.partFour = true;
+            this.currentStep += 1;
+        },
+        partThreePre() {
+            this.partTwo = true;
+            this.partThree = false;
+            this.currentStep -= 1;
+        },
+        partThreeNext(addDataThree) {
+            this.addData.addData3 = addDataThree;
+            this.partThree = false;
+            this.partFour = true;
+            this.currentStep += 1;
+        },
+        partFourPre() {
+            if (this.toFourOrThree() && !(this.syncMetaData.show && this.syncMetaData.syncMeta)) {
+                this.partThree = true;
+            } else {
+                if (this.addData.addData2.usePostProcess && !(this.syncMetaData.show && this.syncMetaData.syncMeta)) {
+                    this.editorShow = true;
+                } else {
+                    this.partTwo = true;
+                }
+            }
+            this.partFour = false;
+            this.currentStep -= 1;
+        },
+        partFourNext(speed, errorLimit, advance) {
+            this.addData.speed = speed;
+            this.addData.errorLimit = errorLimit;
+            this.addData.advance = advance;
+            this.partFour = false;
+            this.partFive = true;
+            this.currentStep += 1;
+            this.$refs.job_add_step_five.getUserAndNodeList();
+        },
+        // 保存配置操作
+        save(value) {
+            this.addData.addData5 = value;
+            this.$emit('saveInfo', this.addData);
+            let obj = {};
+            let config = {};
+            config.columnMaps = [];
+            if (this.toFourOrThree() && !(this.syncMetaData.show && this.syncMetaData.syncMeta)) {
+                let datas = this.addData.addData3;
+                for (let i = 0; i < datas.targetData.length; i++) {
+                    let obj1 = {};
+                    obj1.dstName = datas.targetData[i].name;
+                    obj1.dstType = datas.targetData[i].type;
+                    obj1.srcIndex = i;
+                    obj1.srcName = datas.sourceArr[i].sourceWord;
+                    obj1.srcType = datas.sourceArr[i].sourceType;
+                    obj1.transforFunc = '';
+                    obj1.verifyFunc = '';
+                    for (let k = 0; k < this.partThreeData.length; k++) {
+                        if (obj1.srcName == this.partThreeData[k].name) {
+                            obj1.srcIndex = this.partThreeData[k].index;
+                        }
+                    }
+                    let tranVal = '(';
+                    if (datas.funcArr[i].transformFunArg) {
+                        for (let j = 0; j < datas.funcArr[i].transformFunArg.length; j++) {
+                            if (j != datas.funcArr[i].transformFunArg.length - 1) {
+                                tranVal = tranVal + datas.funcArr[i].transformFunArg[j].value + ','
+                            } else {
+                                tranVal = tranVal + datas.funcArr[i].transformFunArg[j].value
+                            }
+                        }
+                    }
+                    tranVal = tranVal + ')';
+                    if (tranVal == '()') {
+                        tranVal = '';
+                    }
+                    let tranKey = datas.funcArr[i].transform;
+                    if (typeof (tranKey) !== 'undefined') {
+                        obj1.transforFunc = tranKey + tranVal;
+                    }
+                    let validVal = '(';
+                    if (datas.funcArr[i].validFuncArg) {
+                        for (let j = 0; j < datas.funcArr[i].validFuncArg.length; j++) {
+                            if (j != datas.funcArr[i].validFuncArg.length - 1) {
+                                validVal = validVal + datas.funcArr[i].validFuncArg[j].value + ','
+                            } else {
+                                validVal = validVal + datas.funcArr[i].validFuncArg[j].value
+                            }
+                        }
+                    }
+
+                    validVal = validVal + ')';
+                    if (validVal == '()') {
+                        validVal = '';
+                    }
+                    let validKey = datas.funcArr[i].validFun;
+                    obj1.verifyFunc = validKey + validVal;
+                    if (obj1.verifyFunc == 'undefined') {
+                        obj1.verifyFunc = '';
+                    }
+                    config.columnMaps.push(obj1);
+                }
+            }
+
+            if (this.syncMetaData.show && this.syncMetaData.syncMeta) {
+                config.syncMeta = this.syncMetaData.syncMeta;
+            }
+            // 目的端配置
+            config.dataDstParams = {};
+            if (this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.HIVE) {
+                config.dataDstParams.database = this.addData.addData2.db;
+                config.dataDstParams.table = this.addData.addData2.table;
+                config.dataDstParams.partitions = this.addData.addData2.partitions;
+                config.dataDstParams.writeMode = this.syncMetaData.writeMode;
+                obj.dataDestId = this.addData.addData2.dataSourceId;
+            } else if (this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.ORACLE) {
+                config.dataDstParams.database = this.addData.addData2.DBData;
+                config.dataDstParams.table = this.addData.addData2.table;
+                config.dataDstParams.batchSize = this.addData.addData2.batchSize;
+                obj.dataDestId = this.addData.addData2.dataSourceId ? this.addData.addData2.dataSourceId : 0;
+                if (this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.MYSQL) {
+                    config.dataDstParams.writeMode = this.addData.addData2.writeMode;
+                }
+            } else if (this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.ELASTICSEARCH) {
+                config.dataDstParams.indexName = this.addData.addData2.indexName;
+                config.dataDstParams.indexType = this.addData.addData2.indexType;
+                config.dataDstParams.batchSize = this.addData.addData2.batchSize;
+                config.usePostProcess = this.addData.addData2.usePostProcess;
+                if (this.addData.addData2.usePostProcess) {
+                    config.procSrcCode = this.addData.editorData;
+                }
+                obj.dataDestId = this.addData.addData2.dataSourceId ? this.addData.addData2.dataSourceId : 0;
+            } else {
+                config.dataDstParams.path = this.addData.addData2.path;
+                config.dataDstParams.encoding = this.addData.addData2.encoding || 'UTF-8';
+                config.dataDstParams.fileName = this.addData.addData2.fileName || '';
+                if (this.syncMetaData.writeMode) {
+                    config.dataDstParams.writeMode = this.syncMetaData.writeMode;
+                }
+                if (this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.SFTP) {
+                    config.dataDstParams.transit = this.addData.addData2.transit;
+                }
+                if (this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+                    config.dataDstParams.compress = this.addData.addData2.compress;
+                    config.dataDstParams.fieldDelimiter = this.addData.addData2.fieldDelimiter || ',';
+                    if (this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.HDFS) {
+                        config.dataDstParams.fileType = this.addData.addData2.fileType;
+                    }
+                }
+                obj.dataDestId = this.addData.addData2.dataSourceId ? this.addData.addData2.dataSourceId : 0;
+            }
+            // 源端配置
+            config.dataSrcParams = {};
+            if (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HIVE) {
+                config.dataSrcParams.database = this.addData.addData1.db;
+                config.dataSrcParams.table = this.addData.addData1.table;
+                config.dataSrcParams.partitions = this.addData.addData1.partitions;
+                config.transportType = this.addData.addData1.transfer;
+                obj.dataSrcId = this.addData.addData1.dataSourceId;
+            } else if (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.MYSQL) {
+                config.dataSrcParams.database = this.addData.addData1.DBData;
+                config.dataSrcParams.table = this.addData.addData1.table;
+                config.dataSrcParams.join = this.addData.addData1.join;
+                config.dataSrcParams.alias = this.addData.addData1.alias;
+                config.dataSrcParams.where = this.addData.addData1.where;
+                obj.dataSrcId = this.addData.addData1.dataSourceId ? this.addData.addData1.dataSourceId : 0;
+            } else if (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE) {
+                config.dataSrcParams.database = this.addData.addData1.DBData;
+                config.dataSrcParams.table = this.addData.addData1.table;
+                config.dataSrcParams.where = this.addData.addData1.where;
+                obj.dataSrcId = this.addData.addData1.dataSourceId;
+            } else {
+                config.dataSrcParams.path = this.addData.addData1.path;
+                config.transportType = this.addData.addData1.transfer;
+                config.dataSrcParams.encoding = this.addData.addData1.encoding || 'UTF-8';
+                if (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.SFTP) {
+                    config.dataSrcParams.transit = this.addData.addData1.transit;
+                }
+                if (this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+                    config.dataSrcParams.compress = this.addData.addData1.compress;
+                    config.dataSrcParams.fieldDelimiter = this.addData.addData1.fieldDelimiter || ',';
+                    if (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HDFS) {
+                        config.dataSrcParams.fileType = this.addData.addData1.fileType;
+                    }
+                }
+                obj.dataSrcId = this.addData.addData1.dataSourceId ? this.addData.addData1.dataSourceId : 0;
+            }
+            obj.dataSrcType = this.FesFesx.FirstCurrentDataSourceType;
+            obj.dataDestType = this.FesFesx.secondCurrentDataSourceType;
+            config.speed = {};
+            config.errorLimit = {};
+            config.advance = this.addData.advance;
+            config.speed.mBytes = this.addData.speed.mBytes;
+            if (this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+                config.speed.record = this.addData.speed.record;
+
+            }
+            if (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HIVE && this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.HIVE || this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+                config.errorLimit.record = this.addData.errorLimit.record;
+            }
+            obj.config = config;
+
+            // five part
+            obj.jobCorn = value.jobCorn;
+            obj.jobDesc = value.jobDesc;
+            obj.sync = value.sync;
+            obj.alarmUser = value.email;
+            obj.execUser = value.execUser;
+            obj.execNodes = value.execNodes;
+            obj.timeout = value.timeout;
+            // obj.vldType = value.vldType;
+            // obj.vldNum = value.vldNum;
+            obj.engineType = this.addData.addData0.engin
+            obj.jobParams = value.jobParams;
+            let newTreeId = this.treeId;
+            if (newTreeId == '') {
+                newTreeId = 1;
+            }
+            obj.projectId = newTreeId;
+            obj.jobName = value.taskName;
+            this.saveDisable = true;
+            if (this.isSave === true) {
+                this.FesApi.fetch('/jobinfo/add', obj ).then(() => {
+                    this.$emit('saveSucess', true);
+                    this.$Toast.success(this.$t('components.RWBCCG'));
+                    this.currentStep = 1;
+                    this.saveDisable = false;
+                }).catch(() => {
+                    this.saveDisable = false;
+                });
+            } else {
+                obj.id = this.editData.id;
+                this.FesApi.fetch('/jobinfo/update/' + this.editData.id, obj ).then(() => {
+                    this.$emit('saveSucess', true);
+                    this.$Toast.success(this.$t('components.RWXGSC'));
+                    this.currentStep = 1;
+                    this.saveDisable = false;
+                }).catch(() => {
+                    this.saveDisable = false;
+                });
+            }
+        },
+        fivePre() {
+            this.partFour = true;
+            this.partFive = false;
+            this.currentStep -= 1;
+        },
+        initCurrentStep() {
+            this.currentStep = 1;
+            this.FesFesx.set('FirstCurrentDataSourceType', SOURCETYPE.HIVE);
+            this.FesFesx.set('secondCurrentDataSourceType', SOURCETYPE.HIVE);
+        },
+        arrayToObjList(arr) {
+            let list = [];
+            for (let i in arr) {
+                list.push({ value: arr[i] });
+            }
+            return list;
+        },
+        // 是否有字段映射步骤
+        toFourOrThree() {
+            return [SOURCETYPE.HIVE, SOURCETYPE.MYSQL, SOURCETYPE.ORACLE].includes(this.FesFesx.FirstCurrentDataSourceType) && ([SOURCETYPE.HIVE, SOURCETYPE.MYSQL, SOURCETYPE.LOCAL_FS, SOURCETYPE.HDFS, SOURCETYPE.SFTP, SOURCETYPE.ORACLE].includes(this.FesFesx.secondCurrentDataSourceType) || this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.ELASTICSEARCH && !this.FesFesx.usePostProcess) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD
+        },
+        syncMeta(params) {
+            this.syncMetaData = params;
+        }
+    }
+}
+</script>

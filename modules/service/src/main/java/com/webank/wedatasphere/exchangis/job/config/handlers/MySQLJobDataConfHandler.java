@@ -102,9 +102,9 @@ public class MySQLJobDataConfHandler extends AbstractJobDataConfHandler {
 
     @Override
     protected void prePersistReader(DataSource dataSource, Map<String, Object> dataFormParams) {
-        List tables= (List)dataFormParams.get(TDSQL_TABLE_NAME);
-        List alias = (List)dataFormParams.get(TDSQL_TABLE_ALIAS);
-        List joinInfo = (List) dataFormParams.get(TDSQL_LINK_CONDITION);
+        List<?> tables= (List<?>)dataFormParams.get(TDSQL_TABLE_NAME);
+        List<?> alias = (List<?>)dataFormParams.get(TDSQL_TABLE_ALIAS);
+        List<?> joinInfo = (List<?>) dataFormParams.get(TDSQL_LINK_CONDITION);
         if(alias.size() <= 0){
             throw new JobDataParamsInValidException("exchange.job.handler.jdbc.table.alias.notNull");
         }
@@ -114,7 +114,7 @@ public class MySQLJobDataConfHandler extends AbstractJobDataConfHandler {
         if(joinInfo.size() < tables.size() - 1){
             throw new JobDataParamsInValidException("exchange.job.handler.jdbc.table.condition");
         }
-        List columns = (List) dataFormParams.get(JobConstants.CONFIG_COLUM_NAME);
+        List<?> columns = (List<?>) dataFormParams.get(JobConstants.CONFIG_COLUM_NAME);
         //concat querySql
         String querySql = contactSql( tables, alias,columns, joinInfo,
                 String.valueOf(dataFormParams.getOrDefault(TDSQL_WHERE, "")));
@@ -123,12 +123,12 @@ public class MySQLJobDataConfHandler extends AbstractJobDataConfHandler {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void prePersistWriter(DataSource dataSource, Map<String, Object> dataFormParams) {
         List columns = (List) dataFormParams.get(JobConstants.CONFIG_COLUM_NAME);
         //change columns to array
         if(null != columns && !columns.isEmpty()) {
-            List sqlColumns = (List) columns.stream().map(value -> {
+            List<?> sqlColumns = (List<?>) columns.stream().map(value -> {
                 if (value instanceof DataColumn) {
                     return ((DataColumn)value).getName();
                 }
@@ -193,8 +193,9 @@ public class MySQLJobDataConfHandler extends AbstractJobDataConfHandler {
     }
 
     @Override
+    @SuppressWarnings({"rawtypes"})
     protected void autoFillColumn(List<DataColumn> columns, DataSource dataSource, Map<String, Object> dataFormParams, DataConfType type) {
-        LOG.info("Fill column list automatically, type: " + type.name() + ", datasourceId: " + dataSource.getId() +
+        LOG.info("Fill column list automatically, type: " + type.name() + ", data source Id: " + dataSource.getId() +
                 ",  database: " +  String.valueOf(dataFormParams.get(TDSQL_DB_NAME)) +", table:" + String.valueOf(dataFormParams.get(TDSQL_TABLE_NAME)));
         Object tableName = dataFormParams.get(TDSQL_TABLE_NAME);
         List alias = (List)dataFormParams.get(TDSQL_TABLE_ALIAS);
@@ -227,6 +228,7 @@ public class MySQLJobDataConfHandler extends AbstractJobDataConfHandler {
         }
     }
 
+    @SuppressWarnings({"rawtypes"})
     private String contactSql(List tables, List alias,
                               List columns, List joinInfo, String whereClause){
         StringBuilder builder = new StringBuilder(TDSQL_SELECT_CONDITION)
@@ -239,6 +241,7 @@ public class MySQLJobDataConfHandler extends AbstractJobDataConfHandler {
         return builder.toString();
     }
 
+    @SuppressWarnings({"rawtypes"})
     private String columnListSql(List columns){
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < columns.size(); i++){
@@ -254,6 +257,7 @@ public class MySQLJobDataConfHandler extends AbstractJobDataConfHandler {
         return builder.toString();
     }
 
+    @SuppressWarnings({"rawtypes"})
     private String tableOnSql(List tables, List alias, List joinInfo){
         StringBuilder builder = new StringBuilder();
         boolean onJoin = false;
