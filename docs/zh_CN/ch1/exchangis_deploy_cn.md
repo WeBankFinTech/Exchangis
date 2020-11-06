@@ -11,7 +11,7 @@
 
 ### 安装包准备
 #### 1）下载二进制包
-[点击下载](https://)
+[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
 #### 2） 编译打包（二进制包跳过）
 直接从Git上面获得源代码，在项目的根目录下执行如下命令
 ```
@@ -82,7 +82,7 @@ vi ./modules/{module_name}/bin/env.properties
 
 #### 4）查看服务
 服务使用Eureka做注册中心，默认的Eureka端口是8500(可变), 可以在Eureka界面http://{EUREKA_IP}:{EUREKA_PORT}上观察服务是否正常启动。
-
----
+Exchangis的入口界面集成在Gateway中，Gateway的访问端口为9503（可变）
+--
 
 Tips: 脚本使用的都是bash指令集，如若使用sh调用脚本，可能会有未知的错误

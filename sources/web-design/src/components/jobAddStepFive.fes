@@ -1,0 +1,319 @@
+<template>
+    <Panel :title="$t('components.BCLL')">
+        <Wb-button slot="action" @click="addJobVar">
+{{ $t('message.newComponents.Taskvariables') }}
+</Wb-button>
+        <Wb-form ref="saveView" :rule="vaildateRule">
+            <Row>
+                <Cell span="8" offset="3">
+                    <Form-item :label="$t('components.RWMC')" :label-width="120" prop="jobName">
+                        <Wb-input v-model="addData.taskName" :placeholder="$t('components.QSRRWMC')" />
+                    </Form-item>
+                </Cell>
+                <Cell span="8">
+                    <Form-item :label="$t('components.TXR')" :label-width="120">
+                        <Wb-input v-model="addData.email" :placeholder="$t('components.QSRTXR')" />
+                    </Form-item>
+                </Cell>
+            </Row>
+            <Row class="option-margin">
+                <Cell span="8" offset="3">
+                    <CronComponent v-model="addData.jobCorn" />
+                </Cell>
+                <Cell span="8">
+                    <Form-item :label="$t('components.RWMS')" :label-width="120">
+                        <Wb-input v-model="addData.jobDesc" :placeholder="$t('components.SRRWMS')" />
+                    </Form-item>
+                </Cell>
+            </Row>
+            <Row class="option-margin">
+                <Cell span="8" offset="3">
+                    <Form-item :label="$t('components.ZXYH')" :label-width="120" prop="executeUser" :rule="[{required: true, message: $t('components.XZZXYH')}]">
+                        <Wb-select v-model="addData.execUser" :placeholder="$t('components.XZZXYH')">
+                            <wb-option v-for="item in executeUserList" :key="item" :value="item" />
+                        </Wb-select>
+                    </Form-item>
+                </Cell>
+                <Cell span="8">
+                    <Form-item :label="$t('components.ZXJD')" :label-width="120" prop="executeNode">
+                        <Wb-select v-model="addData.execNodes" multiple :placeholder="$t('message.newComponents.Pleaseselecttheexecutionnode')">
+                            <wb-option v-for="item in executeNodeList" :key="item.id" :value="item.id" :label="item.address" />
+                        </Wb-select>
+                    </Form-item>
+                </Cell>
+            </Row>
+            <Row>
+                <Cell span="8" offset="3">
+                    <Form-item prop="timeOut" :label="$t('components.CSSJ')" :label-width="120">
+                        <Wb-input v-model="addData.timeout" :placeholder="$t('components.SRCSSJ')">
+                        <span slot="append">S</span>
+                        </Wb-input>
+                    </Form-item>
+                </Cell>
+                <Cell span="9" class="stander-height">
+                    <Form-item :label="$t('components.TBFS')" :label-width="120">
+                        <Radio-group v-model="addData.sync" @on-change="radioChange">
+                            <Radio value="FULL">
+                                {{ $t('components.QL') }}
+                            </Radio>
+                            <Radio value="INCR" :disabled="FesFesx.firstIsSelectRecord === 'record'">
+                                {{ $t('components.ZL') }}
+                            </Radio>
+                        </Radio-group>
+                    </Form-item>
+                </Cell>
+            </Row>
+            <Row>
+                <Cell span="12">
+                    <Form-item class="btn-wrap">
+                        <Wb-button type="primary" class="end-save-btn" @click="fivePre">
+                        {{ $t('components.SYB') }}
+                        </Wb-button>
+                    </Form-item>
+                </Cell>
+                <Cell span="12">
+                    <Form-item class="btn-wrap">
+                        <Wb-button type="primary" :disabled="saveDisable" class="end-save-btn" @click="save">
+                            {{ $t('components.BC') }}
+                        </Wb-button>
+                    </Form-item>
+                </Cell>
+            </Row>
+        </Wb-form>
+        <modal ref="argModal"
+            :footer-disable="true"
+            :title="$t('message.newComponents.Taskvariables')"
+            :close-on-click-shadow="false"
+            :width="650">
+            <Wb-form ref="varForm">
+                <Form-item>
+                    <Wb-button icon="plus" @click="sourceConfPlus()">
+{{ $t('message.newComponents.new') }}
+</Wb-button>
+                </Form-item>
+                <template v-if="jobParams.length > 0">
+                    <div v-for="(config, index) in jobParams" :key="index">
+                        <Row class="parameter-item">
+                            <Cell span="7">
+                                <Form-item prop="key" :rule="[{message: `${$t('message.newComponents.Fieldlengthcantmorethan')}200`, max: 200},{type: 'string', pattern: /^[a-zA-Z0-9_-]*$/, message: $t('message.newComponents.Supportonlyalphanumericunderlineandhorizontalline'), trigger: 'change'}]">
+                                    <wb-input v-model="config.key" :placeholder="`${$t('message.newComponents.Pleasefilloutthe')}key${$t('message.newComponents.value')}`" @on-blur="checkHadoop('key')">
+                                        <span slot="prepend">
+                                        key
+                                        </span>
+                                    </wb-input>
+                                </Form-item>
+                            </Cell>
+                            <Cell span="1">
+                                <span>&nbsp;</span>
+                            </Cell>
+                            <Cell span="7">
+                                <Form-item prop="value" :rule="[{message: `${$t('message.newComponents.Fieldlengthcantmorethan')}200`, max: 200},]">
+                                    <wb-input v-model="config.value" :placeholder="$t('message.newComponents.Pleasefillinavariablesvalue')">
+                                        <span slot="prepend">
+                                        value
+                                        </span>
+                                    </wb-input>
+                                </Form-item>
+                            </Cell>
+                            <span>&nbsp; </span>
+                            <Cell span="3" class="text-dec">
+                                <Wb-button icon="minus" @click="sourceConfMinus(index)" />
+                            </Cell>
+                        </Row>
+                    </div>
+                </template>
+                <Form-item>
+                    <Wb-button type="primary" @click="jobVarConfirm">
+{{ $t('message.newComponents.confirm') }}
+</Wb-button>
+                </Form-item>
+            </Wb-form>
+        </modal>
+    </Panel>
+</template>
+<script>
+import CronComponent from './uiTemplate/corn.fes';
+export default {
+    props: {
+        editData: {
+            type: null
+        },
+        saveDisable: {
+            type: Boolean,
+            default: false
+        }
+
+    },
+    components: {
+        CronComponent
+    },
+    FesData() {
+        return {
+            addData: {
+                email: '',
+                taskName: '',
+                jobCorn: '',
+                jobDesc: '',
+                sync: 'FULL',
+                execUser: '',
+                execNodes: [],
+                timeout: '43200',
+                // vldType: 'ITSM',
+                // vldNum: '',
+                jobParams: {}
+            },
+            executeUserList: [
+            ],
+            executeNodeList: [],
+            timeoutIsError: false,
+            timeoutErroeText: '',
+            jobParams: [],
+            vaildateRule: {
+                jobName: [
+                    {required: true, message: this.$t('components.TXRWM')}
+                ],
+                executeNode: [
+                    {required: true, message: this.$t('message.newComponents.Pleaseselecttheexecutionnode')}
+                ],
+                vldNum: [
+                    {required: true, message: this.$t('message.newComponents.Pleaseenterthechecknumber')},
+                    {type: 'string', pattern: /^[a-z0-9]*$/, message: this.$t('message.newComponents.SupportonlylettersandNumbers'), trigger: 'change'}
+                ],
+                vldType: [
+                    {required: true, message: this.$t('message.newComponents.Pleaseselectacalibrationtype')}
+                ],
+                timeOut: [
+                    {message: this.$t('components.DXBNCG'), max: 5},
+                    {type: 'string', pattern: /^[0-9]*$/, message: this.$t('components.ZZCSZ'), trigger: 'change'}
+                ]
+            }
+        }
+    },
+    FesReady() {
+        if (this.editData) {
+            this.addData.taskName = this.editData.jobName;
+            this.addData.email = this.editData.alarmUser;
+            this.addData.jobCorn = this.editData.jobCorn;
+            this.addData.jobDesc = this.editData.jobDesc;
+            this.addData.sync = this.editData.sync || 'FULL';
+            this.addData.execUser = this.editData.execUser || '';
+            this.addData.timeout = String(this.editData.timeout) || '';
+            // this.addData.vldType = this.editData.vldType || 'ITSM';
+            // this.addData.vldNum = this.editData.vldNum;
+            if (this.editData.jobParams && Object.keys(this.editData.jobParams).length > 0) {
+                this.jobParams = [];
+                Object.keys(this.editData.jobParams).forEach((key, index) => {
+                    this.jobParams.push({
+                        key,
+                        value: this.editData.jobParams[key],
+                        icon: 'minus'
+                    })
+                })
+            }
+        }
+    },
+    watch: {
+        'FesFesx.firstIsSelectRecord'(val) {
+            if (val === 'record') {
+                this.addData.sync = 'FULL';
+            }
+        },
+        executeNodeList(val) {
+            if (this.editData && this.editData.execNodes) {
+                const nodesCheck = this.editData.execNodes.some((item) => val.map((i) => i.id).includes(item));
+                if (nodesCheck) {
+                    this.addData.execNodes = this.editData.execNodes
+                } else {
+                    this.addData.execNodes = []
+                }
+            }
+        }
+    },
+    methods: {
+        getUserAndNodeList() {
+            const tabName = this.FesFesx.enginSelect;
+            Promise.all([this.FesApi.fetch('/exec/user/list', 'get'), this.FesApi.fetch(`/exec/node/list/${tabName}`, 'get')]).then((res) => {
+                this.executeUserList = res[0];
+                this.executeNodeList = res[1];
+                if (!this.editData) {
+                    this.addData.execUser = this.FesApp.get('FesUserName');
+                }
+            })
+        },
+        save() {
+            this.$refs.saveView.validate((valid) => {
+                if (valid) {
+                    this.$emit('save', this.addData);
+                }
+            })
+        },
+        fivePre() {
+            this.$emit('fivePre', true);
+        },
+        radioChange(val) {
+            // console.log(val, this.addData.sync)
+        },
+        addJobVar() {
+            this.$refs.argModal.show();
+        },
+        sourceConfPlus() {
+            this.jobParams.push({key: '', value: '', icon: 'minus'});
+        },
+        sourceConfMinus(index) {
+            this.jobParams.splice(index, 1);
+        },
+        checkHadoop(key) {
+            let arry = [];
+            this.jobParams.forEach(item => {
+                arry.push(item[key]);
+            });
+            if (this.checkHadoopRegex(arry)) {
+                this.$Toast.error(this.$t('message.newComponents.Taskvariablesexistduplicatekey/valuepair'));
+                return true;
+            }
+        },
+        checkHadoopRegex(arr) {
+            const nary = arr.sort();
+            for (let i = 0; i < arr.length; i++) {
+                if (nary[i] == nary[i + 1] && nary[i] !== '') {
+                    return true;
+                }
+            }
+        },
+        jobVarConfirm() {
+            this.$refs.varForm.validate((valid) => {
+                if (valid) {
+                    if (this.checkHadoop('key')) return;
+                    let tempObj = {};
+                    this.jobParams.forEach((item) => {
+                        tempObj[item.key] = item.value;
+                    })
+                    this.addData.jobParams = tempObj;
+                    this.$refs.argModal.close();
+                }
+            })
+        }
+    }
+
+}
+</script>
+<style>
+    .title-span {
+        text-align:center;
+    }
+    .red-icon {
+        color:red;
+    }
+    .option-margin {
+        margin-top:15px;
+    }
+    .ui-select .ui-select-selection {
+        min-height: 30px;
+    }
+    .parameter-item {
+        margin-bottom: 2px;
+    }
+    .icon-plus {
+    cursor: pointer;
+    }
+</style>

@@ -1,0 +1,87 @@
+<template>
+    <Row>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.LJ')" prop="path" :label-width="120">
+                <wb-input v-model="subData.path" :placeholder="$t('uiTemplate.SRLJ')" />
+            </Form-item>
+        </Cell>
+        <Cell v-if="transferVal === 'record'" span="24">
+            <Form-item :label="$t('uiTemplate.YSLX')" prop="localFsCompress" :label-width="120">
+                <Wb-select v-model="subData.compress" :placeholder="$t('uiTemplate.XZYSLX')">
+                    <wb-option v-for="item in localFsCompressList" :key="item" :value="item" :label="item" />
+                </Wb-select>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.BM')" prop="encoding" :label-width="120">
+                <Wb-select v-model="subData.encoding" :placeholder="$t('uiTemplate.QXZBM')">
+                    <wb-option v-for="item in encodingList" :key="item" :value="item" :label="item" />
+                </Wb-select>
+            </Form-item>
+        </Cell>
+        <Cell span="24">
+            <Form-item :label="$t('uiTemplate.WJMQZ')" prop="fileName" :label-width="120">
+                <wb-input v-model="subData.fileName" :placeholder="$t('uiTemplate.QSRWJMQZ')" />
+            </Form-item>
+        </Cell>
+        <Cell v-if="transferVal === 'record'" span="24">
+            <Form-item :label="$t('uiTemplate.ZDFGF')" prop="fieldDelimiter" :label-width="120">
+                <Wb-select v-model="subData.fieldDelimiter" filterable @on-search="search">
+                    <Wb-option v-for="item in options" :key="item.label" :value="item.value">
+                    {{ item.label }}
+                    </Wb-option>
+                </Wb-select>
+            </Form-item>
+        </Cell>
+    </Row>
+</template>
+<script>
+import fieldDelimiterMixin from '../../mixin/fieldDelimiterMixin';
+export default {
+    name: 'LocalFsTwo',
+    mixins: [fieldDelimiterMixin],
+    props: {
+        localFsData: {
+            tepy: Object,
+            default: {}
+        }
+    },
+    data() {
+        return {
+            subData: this.localFsData,
+            encodingList: [
+                'UTF-8',
+                'ISO-8859-1',
+                'GB2312',
+                'GBK',
+                'UTF-16'
+            ],
+            localFsCompressList: [
+                'gzip', 'bzip2'
+            ]
+        }
+    },
+    computed: {
+        transferVal() {
+            return this.FesFesx.firstIsSelectRecord;
+        }
+    },
+    watch: {
+        subData: {
+            handler(val) {
+                this.$emit('localFsData', val);
+            },
+            deep: true
+        },
+        transferVal(val) {
+            if (val === 'stream') {
+                this.subData.fieldDelimiter = '';
+                this.subData.compress = '';
+            }
+        }
+    },
+    methods: {
+    }
+}
+</script>
+

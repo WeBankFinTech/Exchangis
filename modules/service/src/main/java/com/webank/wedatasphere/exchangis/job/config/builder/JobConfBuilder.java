@@ -19,7 +19,6 @@ package com.webank.wedatasphere.exchangis.job.config.builder;
 
 import com.webank.wedatasphere.exchangis.common.exceptions.EndPointException;
 import com.webank.wedatasphere.exchangis.common.util.PatternInjectUtils;
-import com.webank.wedatasphere.exchangis.common.util.json.Json;
 import com.webank.wedatasphere.exchangis.common.util.spring.AppUtil;
 import com.webank.wedatasphere.exchangis.datasource.TypeEnums;
 import com.webank.wedatasphere.exchangis.datasource.domain.DataSource;
@@ -163,8 +162,7 @@ public class JobConfBuilder extends AbstractJobTemplate {
     }
 
     public JobConfBuilder transformer(List<Transform> transforms){
-        String transformListJson = Json.toJson(transforms, Transform.class);
-        jobFormParams.put(JobConstants.CONFIG_TRANSFORMER_NAME, transformListJson);
+        jobFormParams.put(JobConstants.CONFIG_TRANSFORMER_NAME, transforms);
         return this;
     }
 
