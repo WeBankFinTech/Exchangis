@@ -47,6 +47,14 @@
             <directory>../datax-mysqlwriter/target/plugin</directory>
             <outputDirectory>/</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>../datax-oraclereader/target/plugin</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../datax-oraclewriter/target/plugin</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
     </fileSets>
     <dependencySets>
         <dependencySet>

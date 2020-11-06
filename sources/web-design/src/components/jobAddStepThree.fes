@@ -1,0 +1,515 @@
+<template>
+    <Panel :title="$t('components.ZDYS')">
+        <Wb-button v-if="isHandleAdd" type="primary" @click="addItem">
+        {{ $t('message.newComponents.Thenewfield') }}
+        </Wb-button>
+        <Wb-form ref="validForm" :label-width="0">
+            <Row class="form-box">
+                <Cell span="7">
+                    <Row class="source-word-block">
+                        <Cell span="24">
+                            <Cell span="12">
+                                <div class="table-header">
+                                {{ $t('components.YZD') }}
+                                </div>
+                            </Cell>
+                            <Cell span="12">
+                                <div class="table-header">
+                                {{ $t('components.LX') }}
+                                </div>
+                            </Cell>
+                        </Cell>
+                        <div v-for="(d, i) in showObjectData.sourceArr" :key="i">
+                            <Cell span="12" class="raw-style">
+                                <Form-item prop="sourceWord" :rule="[{required: true, message: $t('message.newComponents.Pleaseenterthesourcefield'), trigger: 'blur'},{validator: validateSource, trigger: 'change'}]">
+                                    <Wb-select v-model="d.sourceWord" @on-change="sourceWordChange(i)">
+                                        <wb-option v-for="item in arg" :key="item.name" :value="item.name" />
+                                    </Wb-select>
+                                </Form-item>
+                            </Cell>
+                            <Cell span="12" class="raw-style">
+                                <wb-input v-model="d.sourceType" placeholder="" disabled />
+                            </Cell>
+                        </div>
+                    </Row>
+                </Cell>
+                <Cell span="1">
+                    <div class="table-margin" />
+                </Cell>
+                <Cell span="7">
+                    <Row class="source-word-block">
+                        <Cell span="24">
+                            <Cell span="12">
+                                <div class="table-header">
+                                {{ $t('components.MBZD') }}
+                                </div>
+                            </Cell>
+                            <Cell span="12">
+                                <div class="table-header">
+                                {{ $t('components.LX') }}
+                                </div>
+                            </Cell>
+                        </Cell>
+                        <div v-for="(d, i) in showObjectData.rst" :key="i">
+                            <Cell span="12" class="raw-style">
+                                <Form-item prop="name" :rule="[{required: true, message: $t('message.newComponents.Pleaseenterthepurposefield'), trigger: 'blur'},{message: `${$t('message.newComponents.Fieldlengthcantmorethan')}200`, max: 200}]">
+                                    <wb-input v-model="d.name" :title="d.name" placeholder="" :disabled="!isHandleAdd" />
+                                </Form-item>
+                            </Cell>
+                            <Cell span="12" class="raw-style">
+                                <wb-input v-if="!isHandleAdd" v-model="d.type" placeholder="" disabled />
+                                <Wb-select v-if="isHandleAdd" v-model="d.type" disabled>
+                                    <wb-option v-for="(subItem, index) in targetType" :key="index" :value="subItem">
+                                    {{ subItem }}
+                                    </wb-option>
+                                </Wb-select>
+                            </Cell>
+                        </div>
+                    </Row>
+                </Cell>
+                <Cell span="1">
+                    <div class="table-margin" />
+                </Cell>
+                <Cell span="7">
+                    <Row class="source-word-block">
+                        <Cell span="24">
+                            <Cell span="12">
+                                <div class="table-header">
+                                {{ $t('components.JYHS') }}
+                                </div>
+                            </Cell>
+                            <Cell span="12">
+                                <div class="table-header">
+                                {{ $t('components.ZHHS') }}
+                                </div>
+                            </Cell>
+                        </Cell>
+                        <Cell v-for="(item, index) in showObjectData.funcArr" :key="index" span="24">
+                            <Cell span="6" class="raw-style">
+                                <Wb-select v-model="item.validFun" :disabled="isSqoop" @on-change="getValidArgNum(index)">
+                                    <wb-option v-for="(subItem, i) in validFun" :key="i" :value="subItem.funcName">
+                                    {{ subItem.label }}
+                                    </wb-option>
+                                </Wb-select>
+                            </Cell>
+                            <Cell span="4">
+                                <Wb-button type="primary" class="arg-btn" :param-num="item.validParamNum" :disabled="isSqoop" @click="setValidArg(item.validParamNum, index, item)">
+                                {{ $t('components.CS') }}
+                                </Wb-button>
+                            </Cell>
+                            <Cell span="6" class="raw-style">
+                                <Wb-select v-model="item.transform" :disabled="isSqoop" @on-change="getTransformArgNum(index)">
+                                    <wb-option v-for="(subItem, i) in transform" :key="i" :value="subItem.funcName" />
+                                </Wb-select>
+                            </Cell>
+                            <Cell span="4">
+                                <Wb-button type="primary" class="arg-btn" :param-num="item.transformNum" :disabled="isSqoop" @click="setTransformArg(item.transformNum, index, item)">
+                                {{ $t('components.CS') }}
+                                </Wb-button>
+                            </Cell>
+                            <Cell span="4">
+                                <Wb-button type="defalut" class="arg-btn" :disabled="!isHandleAdd" @click="deleteIitem(index)">
+                                {{ $t('message.newComponents.delete') }}
+                                </Wb-button>
+                            </Cell>
+                        </Cell>
+                    </Row>
+                </Cell>
+            </Row>
+            <Pagination class="pagination page-loc" :loking="pagination.locking" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
+            <Form-item class="three-part-btn-wrap">
+                <Row>
+                    <Cell span="12">
+                    <Wb-button type="primary" @click="partThreePre">
+                    {{ $t('components.SYB') }}
+                    </Wb-button>
+                    </Cell>
+                    <Cell span="12">
+                    <Wb-button type="primary" class="next-button" @click="partThreeNext">
+                    {{ $t('components.XYB') }}
+                    </Wb-button>
+                    </Cell>
+                </Row>
+            </Form-item>
+        </Wb-form>
+        <modal ref="argModal" :title="$t('components.SZCS')">
+            <div>
+                <div class="parmas-bar">
+                    <div v-for="(item, index) in modalArg" :key="index" class="arg-width">
+                        <span v-if="modalParamsName[index]" class="label">{{ modalParamsName[index] }}: </span>
+                        <Wb-input v-if="modalParamsName[index]" v-model="item.value" placeholder="" />
+                    </div>
+                </div>
+                <Row>
+                    <Cell span="12" class="modal-btn-wrap">
+                        <Wb-button type="primary" @click="validFunAdd">
+                        {{ $t('components.QR') }}
+                        </Wb-button>
+                    </Cell>
+                    <Cell span="12" class="modal-btn-wrap">
+                        <Wb-button type="primary" @click="close">
+                    {{ $t('components.QX') }}
+                    </Wb-button>
+                    </Cell>
+                </Row>
+            </div>
+        </modal>
+        <modal ref="argModal1" :title="$t('components.SZCS')">
+            <div>
+                <div class="parmas-bar">
+                    <div v-for="(item, index) in modalArg1" :key="index" class="arg-width">
+                        <span v-if="modalParamsName1[index]" class="label">{{ modalParamsName1[index] }}: </span>
+                        <Wb-input v-if="modalParamsName1[index]" v-model="item.value" placeholder="" />
+                    </div>
+                </div>
+                <Row>
+                    <Cell span="12" class="modal-btn-wrap">
+                        <Wb-button type="primary" @click="transformFunAdd">
+                        {{ $t('components.QR') }}
+                        </Wb-button>
+                    </Cell>
+                    <Cell span="12" class="modal-btn-wrap">
+                        <Wb-button type="primary" @click="close">
+                        {{ $t('components.QX') }}
+                        </Wb-button>
+                    </Cell>
+                </Row>
+            </div>
+        </modal>
+    </Panel>
+</template>
+<script>
+import { SOURCETYPE, TRANSFERTYPE } from '../constants/common.js';
+export default {
+    props: {
+        arg: {
+            type: null
+        },
+        paranNewObject: {
+            type: Object,
+            default: {}
+        },
+        editData: {
+            type: null
+        },
+        isShow: {
+            type: null
+        }
+    },
+    FesData() {
+        return {
+            addData: {
+                sourceWord: '',
+                sourceType: ''
+            },
+            modalArg: [],
+            modalArg1: [],
+            flagIndex: '',
+            transformFlagIndex: '',
+            validFun: [],
+            transform: [],
+            subNewObject: this.paranNewObject,
+            targetType: [
+                'string'
+            ],
+            pagination: {
+                size: 10,
+                current: 1,
+                total: 0
+            },
+            showObjectData: {
+                sourceArr: [],
+                funcArr: [],
+                rst: []
+            },
+            modalParamsName: [],
+            modalParamsName1: []
+        }
+    },
+    FesReady() {
+        this.FesApi.fetch('/jobinfo/func/verify', 'get').then(rst => {
+            // 将特殊字符加中文意思
+            this.validFun = rst.map((item) => {
+                if (item.funcName === '>') {
+                    item.label = this.$t('message.newComponents.DY');
+                } else if (item.funcName === '<') {
+                    item.label = this.$t('message.newComponents.XY');
+                } else if (item.funcName === '=') {
+                    item.label = this.$t('message.newComponents.DYH');
+                } else if (item.funcName === '!=') {
+                    item.label = this.$t('message.newComponents.BDY');
+                } else if (item.funcName === '>=') {
+                    item.label = this.$t('message.newComponents.DYDY');
+                } else if (item.funcName === '<=') {
+                    item.label = this.$t('message.newComponents.XYDY');
+                } else {
+                    item.label = item.funcName;
+                }
+                return item;
+            })
+        });
+        this.FesApi.fetch('/jobinfo/func/transform', 'get').then(rst => {
+            this.transform = rst;
+        })
+    },
+    watch: {
+        paranNewObject(val) {
+            this.subNewObject = val;
+            if (this.subNewObject.rst.length > this.arg.length && this.isSqoop) {
+                this.subNewObject.sourceArr = val.sourceArr.filter((item, index) => index < this.arg.length);
+                this.subNewObject.funcArr = val.funcArr.filter((item, index) => index < this.arg.length);
+                this.subNewObject.rst = val.rst.filter((item, index) => index < this.arg.length);
+            }
+            this.pageTotalAction(this.subNewObject.sourceArr);
+            this.search(this.pagination.current, this.pagination.size);
+        }
+    },
+    computed: {
+        // subNewObject() {
+        //     console.log(this.paranNewObject, 'this.paranNewObject')
+        //     return this.paranNewObject
+        // }
+        isHandleAdd() {
+            return [SOURCETYPE.HIVE, SOURCETYPE.MYSQL, SOURCETYPE.ORACLE].includes(this.FesFesx.FirstCurrentDataSourceType) && [ SOURCETYPE.LOCAL_FS, SOURCETYPE.HDFS, SOURCETYPE.SFTP].includes(this.FesFesx.secondCurrentDataSourceType) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD
+        },
+        isSqoop() {
+            return this.FesFesx.enginSelect === 'SQOOP';
+        }
+    },
+    methods: {
+        changePage({current, size }) {
+            this.search(current, size);
+            this.pagination.current = current;
+            this.pagination.size = size;
+            this.pagination.total = Math.ceil(this.subNewObject.sourceArr.length / this.pagination.size);
+        },
+        pageTotalAction(val) {
+            this.pagination.total = Math.ceil(val.length / this.pagination.size);
+        },
+        search(current = 1, size = 10) {
+            this.showObjectData.sourceArr = this.subNewObject.sourceArr.filter((item, index) => (current - 1) * size <= index && index < current * size);
+            this.showObjectData.funcArr = this.subNewObject.funcArr.filter((item, index) => (current - 1) * size <= index && index < current * size);
+            this.showObjectData.rst = this.subNewObject.rst.filter((item, index) => (current - 1) * size <= index && index < current * size);
+        },
+        validateSource(rule, value, callback) {
+            if (this.isSqoop) {
+                let tempArr = [];
+                this.subNewObject.sourceArr.forEach((item) => {
+                    if (item.sourceWord === value) {
+                        tempArr.push(item);
+                    }
+                })
+                if (tempArr.length > 1) {
+                    callback(new Error(this.$t('message.newComponents.Repeatingfield')));
+                } else {
+                    callback();
+                }
+            } else {
+                callback();
+            }
+        },
+        sourceWordChange(i) {
+            let checkedValue = this.subNewObject.sourceArr[i].sourceWord;
+            for (let j = 0; j < this.arg.length; j++) {
+                if (checkedValue == this.arg[j].name) {
+                    this.subNewObject.sourceArr[i].sourceType = this.arg[j].type;
+                }
+            }
+        },
+        getValidArgNum(index) {
+            let func = this.subNewObject.funcArr[(this.pagination.size * (this.pagination.current - 1)) + index];
+            func.validFuncArg = [];
+            func.validParamNum = 0;
+            var val = func.validFun;
+            for (var i = 0; i < this.validFun.length; i++) {
+                if (val === this.validFun[i].funcName) {
+                    func.validParamNum = this.validFun[i].paramNum;
+                }
+            }
+        },
+        setValidArg(value, index, params) {
+            if (value == undefined) {
+                return false;
+            }
+            this.flagIndex = (this.pagination.size * (this.pagination.current - 1)) + index;
+            let funcArg = this.subNewObject.funcArr[(this.pagination.size * (this.pagination.current - 1)) + index].validFuncArg;
+            if (typeof (funcArg) !== 'undefined' && funcArg.length > 0) {
+                this.$refs.argModal.show();
+                this.modalArg = this.subNewObject.funcArr[(this.pagination.size * (this.pagination.current - 1)) + index].validFuncArg;
+            } else if (value > 0) {
+                this.$refs.argModal.show();
+                var argArr = [];
+                for (var i = 0; i < value; i++) {
+                    var obj = {};
+                    obj.value = '';
+                    argArr.push(obj);
+                }
+                this.modalArg = argArr;
+                // this.newObject.funcArr[index].validFuncArg = argArr;
+            }
+            // find params
+            const paramNames = this.validFun.find((item) => item.funcName === params.validFun).paramNames
+            this.modalParamsName = paramNames || [];
+        },
+        getTransformArgNum(index) {
+            let func = this.subNewObject.funcArr[(this.pagination.size * (this.pagination.current - 1)) + index];
+            func.transformFunArg = [];
+            func.transformNum = 0;
+            var val = func.transform;
+            for (var i = 0; i < this.transform.length; i++) {
+                if (val == this.transform[i].funcName) {
+                    func.transformNum = this.transform[i].paramNum;
+                }
+            }
+        },
+        setTransformArg(value, index, params) {
+            if (value == undefined) {
+                return false;
+            }
+            this.transformFlagIndex = (this.pagination.size * (this.pagination.current - 1)) + index;
+            this.$refs.argModal1.show();
+            let funcArg = this.subNewObject.funcArr[(this.pagination.size * (this.pagination.current - 1)) + index].transformFunArg;
+            if (typeof (funcArg) !== 'undefined' && funcArg.length > 0) {
+                this.modalArg1 = this.subNewObject.funcArr[(this.pagination.size * (this.pagination.current - 1)) + index].transformFunArg;
+            } else if (value > 0) {
+                var argArr = [];
+                for (var i = 0; i < value; i++) {
+                    var obj = {};
+                    obj.value = '';
+                    argArr.push(obj);
+                }
+                this.modalArg1 = argArr;
+                this.subNewObject.funcArr[(this.pagination.size * (this.pagination.current - 1)) + index].transformFunArg = argArr;// there
+            }
+            const paramNames = this.transform.find((item) => item.funcName === params.transform).paramNames
+            this.modalParamsName1 = paramNames || [];
+        },
+        partThreePre() {
+            this.$emit('threePre', true);
+        },
+        partThreeNext() {
+            if (this.isHandleAdd && this.subNewObject.sourceArr.length <= 0) return this.$Toast(this.$t('message.newComponents.Mappingfieldcannotbeempty'));
+            this.$refs.validForm.validate((valid) => {
+                if (valid) {
+                    var addDataThree = {};
+                    addDataThree.sourceArr = this.subNewObject.sourceArr;
+                    addDataThree.targetData = this.subNewObject.rst;
+                    addDataThree.funcArr = this.subNewObject.funcArr;
+                    this.$emit('threeNext', addDataThree);
+                }
+            })
+        },
+        validFunAdd() {
+            this.$refs.argModal.hide();
+            this.subNewObject.funcArr[this.flagIndex].validFuncArg = this.modalArg;
+        },
+        transformFunAdd() {
+            this.$refs.argModal1.hide();
+            this.subNewObject.funcArr[this.transformFlagIndex].transformFunArg = this.modalArg1;
+        },
+        close() {
+            this.$refs.argModal.hide();
+            this.$refs.argModal1.hide();
+        },
+        clear() {
+            console.log(this.subNewObject)
+        },
+        addItem() {
+            if (this.isHandleAdd && this.isSqoop) {
+                if (this.subNewObject.sourceArr && this.subNewObject.sourceArr.length >= this.arg.length) return this.$Toast(this.$t('message.newComponents.Thetargetfieldisnotgreaterthanthesourcefield'));
+            }
+            this.subNewObject.sourceArr.push({
+                sourceWord: this.arg[this.subNewObject.sourceArr.length % this.arg.length].name,
+                sourceType: this.arg[this.subNewObject.sourceArr.length % this.arg.length].type
+            })
+            this.subNewObject.funcArr.push({
+                validFun: '',
+                transform: '',
+                validFuncArg: [],
+                transformFunArg: []
+            })
+            this.subNewObject.rst.push({
+                name: this.arg[this.subNewObject.rst.length % this.arg.length].name,
+                type: 'string'
+            })
+            this.pagination.total = Math.ceil(this.subNewObject.sourceArr.length / this.pagination.size);
+            this.pagination.current = this.pagination.total
+            this.search(this.pagination.total, this.pagination.size);
+        },
+        deleteIitem(index) {
+            this.subNewObject.sourceArr.splice(this.pagination.size * (this.pagination.current - 1) + index, 1);
+            this.subNewObject.funcArr.splice(this.pagination.size * (this.pagination.current - 1) + index, 1);
+            this.subNewObject.rst.splice(this.pagination.size * (this.pagination.current - 1) + index, 1);
+            this.pagination.total = Math.ceil(this.subNewObject.sourceArr.length / this.pagination.size);
+            if (this.pagination.current > this.pagination.total) {
+                this.pagination.current = this.pagination.total
+            }
+            this.search(this.pagination.current, this.pagination.size);
+        }
+    }
+}
+</script>
+<style lang="scss" scoped>
+    .table-margin {
+        min-width:20px;
+        height:50px;
+    }
+    .table-header {
+        width:100%;
+        height:51px;
+        line-height:51px;
+        text-align:center;
+        background:#f7f7f7;
+        border-top:1px solid #e3e8ee;
+        border-bottom:1px solid #e3e8ee;
+    }
+    .raw-style {
+        height:51px;
+        padding-top:9px;
+        padding-bottom:0px;
+        border-bottom:1px solid #e3e8ee;
+    }
+    .source-word-block {
+        min-height:300px;
+        max-height:300px;
+    }
+    .arg-btn {
+        margin-top:9px;
+        width: 40px;
+        padding: 6px 6px;
+    }
+    .modal-btn-wrap {
+        text-align:center;
+        margin-top:15px;
+    }
+    .arg-margin{
+        margin-top:10px;
+        margin-bottom:10px;
+    }
+    .parmas-bar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .arg-width {
+        flex: 33%;
+        margin-right:10px;
+        margin-bottom:10px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        .label {
+            margin-right: 5px;
+            white-space: nowrap;
+        }
+    }
+    .form-box {
+        max-height: 400px;
+        overflow: auto;
+    }
+    .pagination {
+        text-align: center;
+        padding: 15px 0 ;
+    }
+</style>

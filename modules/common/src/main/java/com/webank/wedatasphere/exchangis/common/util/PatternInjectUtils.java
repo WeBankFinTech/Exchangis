@@ -67,8 +67,10 @@ public class PatternInjectUtils {
                     value = escape? StringEscapeUtils.escapeJava(String.valueOf(paramsV))
                         : String.valueOf(paramsV);
                 }else{
-                    value = Json.toJson(paramsV, null);
-                    value = escape? StringEscapeUtils.escapeJava(value) : value;
+                    //For default not to escape
+                    value = "$".equals(matcher.group(2)) ?
+                            Json.toJson(paramsV, null) :
+                            StringEscapeUtils.escapeJava(Json.toJson(paramsV, null));
                 }
                 if( null != matcher.group(1)
                         && !"".equals(matcher.group(1))){
@@ -76,8 +78,6 @@ public class PatternInjectUtils {
                 }
                 offset ++;
             }else if(null != matcher.group(4) && useDefault){
-//                value = escape? StringEscapeUtils.escapeJava(String.valueOf(matcher.group(4)))
-//                        : matcher.group(4);
                 //For default not to escape
                 value = matcher.group(4);
             }
@@ -123,8 +123,10 @@ public class PatternInjectUtils {
                             value = escape? StringEscapeUtils.escapeJava(String.valueOf(entryV))
                             : String.valueOf(entryV);
                         }else{
-                            value = Json.toJson(entryV, null);
-                            value = escape? StringEscapeUtils.escapeJava(value) : value;
+                            //For default not to escape
+                            value = "$".equals(matcher.group(2)) ?
+                                    Json.toJson(entryV, null) :
+                                    StringEscapeUtils.escapeJava(Json.toJson(entryV, null));
                         }
                         if(null != matcher.group(1)
                                 || !"".equals(matcher.group(1))){

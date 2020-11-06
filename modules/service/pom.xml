@@ -139,7 +139,17 @@
 					<artifactId>guava</artifactId>
 					<groupId>com.google.guava</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>netty-all</artifactId>
+					<groupId>io.netty</groupId>
+				</exclusion>
 			</exclusions>
+		</dependency>
+		<!-- replace netty-all in hadoop-hdfs-->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.1.46.Final</version>
 		</dependency>
 		<dependency>
 			<artifactId>hadoop-common</artifactId>
@@ -248,6 +258,14 @@
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
 			<version>1.4.11.1</version>
+		</dependency>
+		<!--import ojdbc6-->
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11.2.0.3</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/src/main/lib/ojdbc6-11.2.0.3.jar</systemPath>
 		</dependency>
 	</dependencies>
 	<build>
