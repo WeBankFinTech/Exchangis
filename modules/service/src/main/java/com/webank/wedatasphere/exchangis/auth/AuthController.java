@@ -102,6 +102,7 @@ public class AuthController extends ExceptionResolverContext {
 
     @RequestMapping(value="/redirect", method= RequestMethod.GET)
     public Response<Object> redirectToCoordinatePage(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws UnsupportedEncodingException {
+        LOG.info("Start to redirect for exchangis");
         try {
             AppJointAuth appJointAuth = AppJointAuth.getAppJointAuth();
             if (appJointAuth.isDssRequest(httpServletRequest)) {
