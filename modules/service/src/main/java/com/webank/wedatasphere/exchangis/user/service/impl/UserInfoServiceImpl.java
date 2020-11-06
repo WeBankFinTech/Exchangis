@@ -38,8 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author davidhua
@@ -55,6 +54,8 @@ public class UserInfoServiceImpl extends AbstractGenericService<UserInfo> implem
 
     @Resource
     private UserExecUserDao userExecUserDao;
+
+    private static final Integer PASSWORD_MIN_LENGTH = 12;
 
     @Override
     protected IBaseDao<UserInfo> getDao() {
@@ -171,8 +172,7 @@ public class UserInfoServiceImpl extends AbstractGenericService<UserInfo> implem
     public UserInfo createUser(String username) {
         UserInfo userInfo = new UserInfo();
         userInfo.setUserName(username);
-        // TODO: 该密码为弱密码
-        userInfo.setPassword(username);
+        userInfo.setPassword(generatePassword(PASSWORD_MIN_LENGTH));
         userInfo.setUserType(0);
         userInfo.setCreateTime(new Date());
         userInfo.setUpdateTime(new Date());
@@ -180,6 +180,30 @@ public class UserInfoServiceImpl extends AbstractGenericService<UserInfo> implem
             return userInfo;
         }
         return null;
+    }
+
+    public String generatePassword(int pwdLength) {
+        List<String> charSetList = new ArrayList<>();
+        charSetList.add("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        charSetList.add("1234567890");
+        charSetList.add("~!@#$%^&*.?");
+
+        Integer[] indexArray = new Integer[pwdLength];
+        Arrays.fill(indexArray, 0);
+        indexArray[0] = 1;
+        indexArray[1] = 1;
+        indexArray[2] = 2;
+        List<Integer> index = Arrays.asList(indexArray);
+        Collections.shuffle(index);
+
+        StringBuilder password = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < index.size(); i++) {
+            String charSet = charSetList.get(index.get(i));
+            password.append(charSet.charAt(random.nextInt(charSet.length())));
+        }
+
+        return password.toString();
     }
 
 
