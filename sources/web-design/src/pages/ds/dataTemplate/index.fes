@@ -273,6 +273,18 @@ export default {
         weLoading
     },
     data() {
+        const serviceNameOrSidValid = (rule, value, callback) => {
+            if (!this.parameter.serviceName && !this.parameter.sid) {
+                callback(new Error(`service_name和sid至少填一项`));
+            }
+            callback();
+        }
+        const postValid = (rule, value, callback) => {
+            if (value < 0 || value > 65535) {
+                callback(new Error(`请输入正确的端口`));
+            }
+            callback();
+        }
         return {
             addShow: false,
             selectSourceList: [
@@ -299,7 +311,9 @@ export default {
                 port: '',
                 hostname: '',
                 realminfo: '',
-                elasticUrls: ''
+                elasticUrls: '',
+                serviceName: '',
+                sid: ''
             },
             selectSourceType: 'HIVE',
             templateName: '',
@@ -343,7 +357,8 @@ export default {
                     {required: true, message: this.$t('dataTemplate.DZBNWK')}
                 ],
                 pathPort: [
-                    {required: true, message: this.$t('dataTemplate.DZBNWK')}
+                    {required: true, message: this.$t('dataTemplate.DZBNWK')},
+                    {validator: postValid, trigger: 'blur'}
                 ],
                 authType: [
                     {required: true, message: this.$t('dataTemplate.DZBNWK')}
@@ -362,6 +377,14 @@ export default {
                 ],
                 sqlPathPort: [
                     {required: true, message: `sql ${this.$t('dataTemplate.DZ')} port ${this.$t('dataTemplate.BNWK')}`}
+                ],
+                serviceName: [
+                    {validator: serviceNameOrSidValid, trigger: 'blur'},
+                    {type: 'string', pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5.:]*$/, message: this.$t('dataTemplate.ZU'), trigger: 'change'}
+                ],
+                serviceSid: [
+                    {validator: serviceNameOrSidValid, trigger: 'blur'},
+                    {type: 'string', pattern: /^[a-zA-Z0-9]*$/, message: this.$t('message.newComponents.SupportonlylettersandNumbers'), trigger: 'change'}
                 ]
             }
         }

@@ -380,7 +380,7 @@
         "MBCDBNDY": "描述长度不能大于",
         "DZBNK": "地址不能为空",
         "CDBNDY": "url长度不能大于1000",
-        "DZBNWK": "sftp地址port不能为空",
+        "DZBNWK": "地址port不能为空",
         "BNWK": "不能为空",
         "MR": "默认",
         "WQX": "无权限",
