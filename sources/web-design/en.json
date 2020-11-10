@@ -380,7 +380,7 @@
         "MBCDBNDY": "Description length cannot be greater than ",
         "DZBNK": "Address cannot be empty",
         "CDBNDY": "URL length cannot be greater than 1000",
-        "DZBNWK": "SFTP Address Port cannot be empty",
+        "DZBNWK": "Address Port cannot be empty",
         "BNWK": "cannot be empty",
         "MR": "default",
         "WQX": "None",
