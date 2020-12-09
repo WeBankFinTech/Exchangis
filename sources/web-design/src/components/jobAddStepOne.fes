@@ -186,7 +186,8 @@ export default {
                 compress: '',
                 encoding: '',
                 transfer: 'record',
-                fieldDelimiter: ''
+                fieldDelimiter: '',
+                skipHeader: false
             },
             hdfsData: {
                 type: '',
@@ -196,7 +197,8 @@ export default {
                 encoding: '',
                 transfer: 'record',
                 fileType: 'text',
-                fieldDelimiter: ''
+                fieldDelimiter: '',
+                skipHeader: false
             },
             sftpData: {
                 type: '',
@@ -207,7 +209,8 @@ export default {
                 transfer: 'record',
                 // fileType: '',
                 fieldDelimiter: '',
-                transit: false
+                transit: false,
+                skipHeader: false
             },
             tdsqlData: {
                 type: '',
