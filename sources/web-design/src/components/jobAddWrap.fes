@@ -634,6 +634,13 @@ export default {
                     config.dataSrcParams.fieldDelimiter = this.addData.addData1.fieldDelimiter || ',';
                     if (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HDFS) {
                         config.dataSrcParams.fileType = this.addData.addData1.fileType;
+                        if (this.addData.addData1.fileType === 'csv') {
+                            config.dataSrcParams.skipHeader = this.addData.addData1.skipHeader
+                        }
+                    }
+                    // local和hdfs、sftp源端记录方式下文件类型为csv有跳过首行字段
+                    if ([SOURCETYPE.LOCAL_FS, SOURCETYPE.SFTP].includes(this.FesFesx.FirstCurrentDataSourceType)) {
+                        config.dataSrcParams.skipHeader = this.addData.addData1.skipHeader
                     }
                 }
                 obj.dataSrcId = this.addData.addData1.dataSourceId ? this.addData.addData1.dataSourceId : 0;
