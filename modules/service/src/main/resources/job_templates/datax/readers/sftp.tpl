@@ -13,6 +13,7 @@
         "compress": #{compress},
         "encoding": #{encoding|UTF-8},
         "nullFormat": "\\N",
-        "transit": ${transit|true}
+        "transit": ${transit|true},
+        "skipHeader": ${skipHeader|false}
     }
 }

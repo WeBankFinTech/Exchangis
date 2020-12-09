@@ -6,6 +6,7 @@
         "fieldDelimiter": #{fieldDelimiter},
         "compress": #{compress},
         "encoding": #{encoding|UTF-8},
-        "nullFormat": #{nullFormat|\\N}
+        "nullFormat": #{nullFormat|\\N},
+        "skipHeader": ${skipHeader|false}
     }
 }
