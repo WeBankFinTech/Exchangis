@@ -43,6 +43,7 @@ public class Constants {
     public static final String PARAM_KEY_FILE_PATH = "keyfilepath";
     public static final String PARAM_KEY_TDSQL_CONFIG = "connParams";
     public static final String PARAM_NULL_FORMAT = "nullFormat";
+    public static final String PARAM_SKIP_HEADER = "skipHeader";
     /**
      *  HIVE data source parameters
      */

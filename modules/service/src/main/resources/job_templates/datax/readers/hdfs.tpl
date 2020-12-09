@@ -16,6 +16,7 @@
         "kerberosKeytabFilePath": #{kerberosKeytabFilePath},
         "kerberosPrincipal": #{kerberosPrincipal},
         "ldapUserName": #{ldapUserName},
-        "ldapUserPassword": #{ldapUserPassword}
+        "ldapUserPassword": #{ldapUserPassword},
+        "skipHeader": ${skipHeader|false}
     }
 }

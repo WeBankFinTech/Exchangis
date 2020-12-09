@@ -17,6 +17,7 @@
 
 package com.webank.wedatasphere.exchangis.job.config.handlers;
 
+import com.webank.wedatasphere.exchangis.datasource.Constants;
 import com.webank.wedatasphere.exchangis.datasource.domain.DataSource;
 import com.webank.wedatasphere.exchangis.job.config.exception.JobDataParamsInValidException;
 import org.apache.commons.io.Charsets;
@@ -134,4 +135,11 @@ public class LocalFSJobDataConfHandler extends AbstractJobDataConfHandler{
        return result;
     }
 
+    @Override
+    protected Map<String, Object> postGetReader(Map<String, Object> dataConfParams) {
+        Map<String, Object> result = new HashMap<>(1);
+        result.put(Constants.PARAM_SKIP_HEADER, Boolean.parseBoolean(
+                String.valueOf(dataConfParams.getOrDefault(Constants.PARAM_SKIP_HEADER, false))));
+        return result;
+    }
 }
