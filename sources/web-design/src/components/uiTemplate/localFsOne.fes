@@ -27,6 +27,11 @@
                 </Wb-select>
             </Form-item>
         </Cell>
+        <Cell v-if="skipHeaderShow" span="24">
+            <Form-item :label="$t('uiTemplate.TGSH')" :label-width="120">
+                <Checkbox v-model="subData.skipHeader" />
+            </Form-item>
+        </Cell>
         <Cell v-if="subData.transfer === 'record'" span="24">
             <Form-item :label="$t('uiTemplate.ZDFGF')" prop="fieldDelimiter" :label-width="120">
                 <Wb-select v-model="subData.fieldDelimiter" filterable @on-search="search">
@@ -62,6 +67,12 @@ export default {
             localFsCompressList: [
                 'zip', 'gzip', 'bzip2'
             ]
+        }
+    },
+    computed: {
+        // 只有在记录方式下文件类型选择csv才显示, 默认csv
+        skipHeaderShow() {
+            return this.subData.transfer === 'record'
         }
     },
     watch: {
