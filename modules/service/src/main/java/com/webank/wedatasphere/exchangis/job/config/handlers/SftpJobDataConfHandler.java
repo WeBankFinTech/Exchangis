@@ -121,4 +121,12 @@ public class SftpJobDataConfHandler extends AbstractJobDataConfHandler{
         return result;
     }
 
+    @Override
+    protected Map<String, Object> postGetReader(Map<String, Object> dataConfParams) {
+        Map<String, Object> result = new HashMap<>(1);
+        result.put(Constants.PARAM_SKIP_HEADER, Boolean.parseBoolean(
+                String.valueOf(dataConfParams.getOrDefault(Constants.PARAM_SKIP_HEADER, false))));
+        return result;
+    }
+
 }
