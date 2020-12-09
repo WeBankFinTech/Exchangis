@@ -47,6 +47,11 @@
                 </Wb-select>
             </Form-item>
         </Cell>
+        <Cell v-if="skipHeaderShow" span="24">
+            <Form-item :label="$t('uiTemplate.TGSH')" :label-width="120">
+                <Checkbox v-model="subData.skipHeader" />
+            </Form-item>
+        </Cell>
         <Cell v-if="subData.transfer === 'record'" span="24">
             <Form-item :label="$t('uiTemplate.ZDFGF')" prop="fieldDelimiter" :label-width="120">
                 <Wb-select v-model="subData.fieldDelimiter" filterable @on-search="search">
@@ -90,6 +95,12 @@ export default {
             hdfsCompressList: [
                 'gzip', 'bz2', 'zip', 'lzo', 'lzo_deflate', 'snappy'
             ]
+        }
+    },
+    computed: {
+        // 只有在记录方式下文件类型选择csv才显示
+        skipHeaderShow() {
+            return this.subData.transfer === 'record' && this.subData.fileType === 'csv'
         }
     },
     watch: {
