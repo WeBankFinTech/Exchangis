@@ -820,7 +820,8 @@
         "KBJ": "Write",
         "KSY": "Execute",
         "SJDQ": "Data Read",
-        "SJXR": "Data Write"
+        "SJXR": "Data Write",
+        "TGSH": "Spik header"
     },
 
     "components": {
