@@ -76,7 +76,7 @@ public class CustomHttpMessageConverter extends AbstractJackson2HttpMessageConve
             mapper.setTimeZone(timeZone);
         }
 
-        if (this.jacksonProperties.getDateFormat() != null) {
+        if (dateFormat != null) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
                 dateFormat);
 
