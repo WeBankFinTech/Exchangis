@@ -19,10 +19,14 @@ package com.webank.wedatasphere.exchangis.http.converters;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jackson.JacksonProperties;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -50,6 +54,8 @@ public class CustomHttpMessageConverter extends AbstractJackson2HttpMessageConve
     @Nullable
     private String jsonPrefix;
 
+    @Autowired
+    private JacksonProperties jacksonProperties;
 
     @PostConstruct
     public void addSupportedMediaTypes(){
@@ -60,6 +66,26 @@ public class CustomHttpMessageConverter extends AbstractJackson2HttpMessageConve
             mediaTypes.addAll(MediaType.parseMediaTypes(supportMedias));
         }
         setSupportedMediaTypes(mediaTypes);
+
+        ObjectMapper mapper = this.getObjectMapper();
+        // jackson date config
+        if (this.jacksonProperties.getTimeZone() != null) {
+            mapper.setTimeZone(this.jacksonProperties.getTimeZone());
+        }
+
+        if (this.jacksonProperties.getDateFormat() != null) {
+            String dateFormat = jacksonProperties.getDateFormat();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                dateFormat);
+
+            TimeZone timeZone = this.jacksonProperties.getTimeZone();
+            if (timeZone == null) {
+                timeZone = new ObjectMapper().getSerializationConfig()
+                    .getTimeZone();
+            }
+            simpleDateFormat.setTimeZone(timeZone);
+            mapper.setDateFormat(simpleDateFormat);
+        }
     }
     /**
      * Construct a new {@link MappingJackson2HttpMessageConverter} using default configuration
