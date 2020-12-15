@@ -69,16 +69,17 @@ public class CustomHttpMessageConverter extends AbstractJackson2HttpMessageConve
 
         ObjectMapper mapper = this.getObjectMapper();
         // jackson date config
-        if (this.jacksonProperties.getTimeZone() != null) {
-            mapper.setTimeZone(this.jacksonProperties.getTimeZone());
+        TimeZone timeZone = jacksonProperties.getTimeZone();
+        String dateFormat = jacksonProperties.getDateFormat();
+
+        if (timeZone != null) {
+            mapper.setTimeZone(timeZone);
         }
 
         if (this.jacksonProperties.getDateFormat() != null) {
-            String dateFormat = jacksonProperties.getDateFormat();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
                 dateFormat);
 
-            TimeZone timeZone = this.jacksonProperties.getTimeZone();
             if (timeZone == null) {
                 timeZone = new ObjectMapper().getSerializationConfig()
                     .getTimeZone();
