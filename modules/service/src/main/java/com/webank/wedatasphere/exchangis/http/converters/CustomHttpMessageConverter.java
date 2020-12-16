@@ -55,7 +55,7 @@ public class CustomHttpMessageConverter extends AbstractJackson2HttpMessageConve
     private String jsonPrefix;
 
     @Autowired
-    private JacksonProperties jacksonProperties;
+    private Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder;
 
     @PostConstruct
     public void addSupportedMediaTypes(){
@@ -67,26 +67,9 @@ public class CustomHttpMessageConverter extends AbstractJackson2HttpMessageConve
         }
         setSupportedMediaTypes(mediaTypes);
 
-        ObjectMapper mapper = this.getObjectMapper();
-        // jackson date config
-        TimeZone timeZone = jacksonProperties.getTimeZone();
-        String dateFormat = jacksonProperties.getDateFormat();
+        ObjectMapper objectMapper = jacksonObjectMapperBuilder.build();
 
-        if (timeZone != null) {
-            mapper.setTimeZone(timeZone);
-        }
-
-        if (dateFormat != null) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-                dateFormat);
-
-            if (timeZone == null) {
-                timeZone = new ObjectMapper().getSerializationConfig()
-                    .getTimeZone();
-            }
-            simpleDateFormat.setTimeZone(timeZone);
-            mapper.setDateFormat(simpleDateFormat);
-        }
+        setObjectMapper(objectMapper);
     }
     /**
      * Construct a new {@link MappingJackson2HttpMessageConverter} using default configuration
