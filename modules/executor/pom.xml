@@ -23,6 +23,12 @@
         <module>engine/datax</module>
         <module>core</module>
     </modules>
+    <dependencies>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+    </dependencies>
     <parent>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
         <artifactId>exchangis</artifactId>
