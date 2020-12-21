@@ -101,3 +101,16 @@ snowflake:
   startTime: ${SNOWFLAKE_START_TIME}
   workerId: ${SNOWFLAKE_WORKER_ID}
   dataCenterId: ${SNOWFLAKE_DATA_CENTER_ID}
+
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoints:
+    web:
+    #http暴露所有监控项
+      exposure:
+        include: '*'
+      #uri,可自定义
+      base-path: /metrics

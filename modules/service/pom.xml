@@ -267,6 +267,10 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/src/main/lib/ojdbc6-11.2.0.3.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
