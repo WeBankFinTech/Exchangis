@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
@@ -50,6 +51,8 @@ public class CustomHttpMessageConverter extends AbstractJackson2HttpMessageConve
     @Nullable
     private String jsonPrefix;
 
+    @Autowired
+    private Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder;
 
     @PostConstruct
     public void addSupportedMediaTypes(){
@@ -60,6 +63,10 @@ public class CustomHttpMessageConverter extends AbstractJackson2HttpMessageConve
             mediaTypes.addAll(MediaType.parseMediaTypes(supportMedias));
         }
         setSupportedMediaTypes(mediaTypes);
+
+        ObjectMapper objectMapper = jacksonObjectMapperBuilder.build();
+
+        setObjectMapper(objectMapper);
     }
     /**
      * Construct a new {@link MappingJackson2HttpMessageConverter} using default configuration
