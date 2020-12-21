@@ -20,15 +20,18 @@ package com.webank.wedatasphere.exchangis;
 import com.webank.wedatasphere.exchangis.common.util.ProcessUtil;
 import com.webank.wedatasphere.exchangis.route.MachineLoadProviderConfig;
 import com.webank.wedatasphere.exchangis.route.feign.FeginClientConfig;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.netflix.ribbon.RibbonClients;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @SpringBootApplication
@@ -53,5 +56,14 @@ public class ServiceApplication {
             LOG.error(e.getMessage(), e);
             System.exit(1);
         }
+    }
+
+    @Bean
+    MeterRegistryCustomizer meterRegistryCustomizer(MeterRegistry meterRegistry) {
+        return meterRegistry1 -> {
+            meterRegistry.config()
+                    .commonTags("application", "Tenantapp");
+            //所有指标添加统一标签： application = Tenantapp
+        };
     }
 }

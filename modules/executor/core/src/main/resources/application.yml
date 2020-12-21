@@ -23,3 +23,17 @@ eureka:
 auth:
   token:
     api: ENC(doiaIecpZ6QpeVvqcayuWuuWC1C5Nf1V)
+
+
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoints:
+    web:
+    #http暴露所有监控项
+      exposure:
+        include: '*'
+      #uri,可自定义
+      base-path: /metrics
