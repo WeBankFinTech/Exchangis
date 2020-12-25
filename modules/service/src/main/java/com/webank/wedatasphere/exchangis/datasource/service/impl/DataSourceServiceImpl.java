@@ -111,7 +111,7 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean add(DataSource dataSource) {
+    public boolean add(DataSource dataSource) throws Exception {
         String authCreden = dataSource.getAuthCreden();
         if(StringUtils.isNotBlank(authCreden) && !isUrl(authCreden)){
             dataSource.setAuthCreden(encodeBase64(dataSource.getAuthCreden()));
