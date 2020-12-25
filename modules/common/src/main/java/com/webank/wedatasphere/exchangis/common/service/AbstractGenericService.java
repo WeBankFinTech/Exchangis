@@ -43,7 +43,7 @@ public abstract class AbstractGenericService<T> implements IBaseService<T> {
      *
      */
     @Override
-    public boolean add(T t) {
+    public boolean add(T t) throws Exception {
         return getDao().insert(t) > 0;
     }
 
