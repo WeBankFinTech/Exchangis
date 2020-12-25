@@ -33,7 +33,7 @@ public interface IBaseService<T> {
      * @param t
      * @return
      */
-    boolean add(T t);
+    boolean add(T t) throws Exception;
 
     /**s
      * Delete batch(collection)
