@@ -122,7 +122,7 @@ export default {
             this.$emit('indexTypeChange', val);
         },
         checkUsePostProcess(val) {
-            if (val !== 'hive') {
+            if (!['hive', 'oracle', 'mysql'].includes(val)) {
                 this.subData.usePostProcess = true;
                 this.UsePostProcessDisable = true;
             } else {
