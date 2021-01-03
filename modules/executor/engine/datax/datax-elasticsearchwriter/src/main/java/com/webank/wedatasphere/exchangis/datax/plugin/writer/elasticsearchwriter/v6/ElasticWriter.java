@@ -73,13 +73,13 @@ public class ElasticWriter extends Writer {
         }
         @Override
         public void prepare() {
-            ElasticRestClient restClient;
+            ElasticRestHighClient restClient;
             Map<String, Object> clientConfig = jobConf.getMap(ElasticKey.CLIENT_CONFIG);
             if(StringUtils.isNotBlank(userName) && StringUtils.isNotBlank(password)){
-                restClient = ElasticRestClient.custom(endPoints, userName,
+                restClient = ElasticRestHighClient.custom(endPoints, userName,
                         password, clientConfig);
             }else{
-                restClient = ElasticRestClient.custom(endPoints, clientConfig);
+                restClient = ElasticRestHighClient.custom(endPoints, clientConfig);
             }
             String indexName = this.jobConf.getNecessaryValue(ElasticKey.INDEX_NAME, ElasticWriterErrorCode.REQUIRE_VALUE);
             String indexType = this.jobConf.getString(ElasticKey.INDEX_TYPE, "");
@@ -136,7 +136,7 @@ public class ElasticWriter extends Writer {
             this.jobConf.getNecessaryValue(ElasticKey.INDEX_NAME, ElasticWriterErrorCode.REQUIRE_VALUE);
         }
 
-        private Map<Object, Object> resolveColumn(ElasticRestClient client,
+        private Map<Object, Object> resolveColumn(ElasticRestHighClient client,
                                                   String index, String type ,
                                                   List<Object> rawColumnList, List<ElasticColumn> outputColumn,
                                                   String columnNameSeparator){
@@ -192,8 +192,8 @@ public class ElasticWriter extends Writer {
                             levelColumn.setFormat(String.valueOf(metaMap.get(ElasticKey.PROPS_COLUMN_FORMAT)));
                         }
                         outputColumn.add(levelColumn);
-                    }else if(null != metaMap.get(ElasticRestClient.FIELD_PROPS)
-                            && metaMap.get(ElasticRestClient.FIELD_PROPS) instanceof Map){
+                    }else if(null != metaMap.get(ElasticRestHighClient.FIELD_PROPS)
+                            && metaMap.get(ElasticRestHighClient.FIELD_PROPS) instanceof Map){
                         ElasticColumn levelColumn = column;
                         if(null == levelColumn){
                             levelColumn = new ElasticColumn();
@@ -201,7 +201,7 @@ public class ElasticWriter extends Writer {
                         }else{
                             levelColumn.setName(levelColumn.getName() + columnNameSeparator + key);
                         }
-                        resolveColumn(outputColumn, levelColumn, (Map)metaMap.get(ElasticRestClient.FIELD_PROPS),
+                        resolveColumn(outputColumn, levelColumn, (Map)metaMap.get(ElasticRestHighClient.FIELD_PROPS),
                                 columnNameSeparator);
                     }
                 }
@@ -218,14 +218,14 @@ public class ElasticWriter extends Writer {
         private String typeName;
         private String columnNameSeparator = ElasticColumn.DEFAULT_NAME_SPLIT;
         private List<ElasticColumn> columns;
-        private ElasticRestClient restClient;
+        private ElasticRestHighClient restClient;
         private BulkProcessor bulkProcessor;
 
         @Override
         public void init() {
             this.taskConf = super.getPluginJobConf();
             indexName = this.taskConf.getString(ElasticKey.INDEX_NAME);
-            typeName = this.taskConf.getString(ElasticKey.INDEX_TYPE, ElasticRestClient.MAPPING_TYPE_DEFAULT);
+            typeName = this.taskConf.getString(ElasticKey.INDEX_TYPE, ElasticRestHighClient.MAPPING_TYPE_DEFAULT);
             columnNameSeparator = this.taskConf.getString(ElasticKey.COLUMN_NAME_SEPARATOR, ElasticColumn.DEFAULT_NAME_SPLIT);
             int batchSize = this.taskConf.getInt(ElasticKey.BULK_ACTIONS, 1000);
             int bulkPerTask = this.taskConf.getInt(ElasticKey.BULK_PER_TASK, 1);
@@ -242,10 +242,10 @@ public class ElasticWriter extends Writer {
             }
             String[] endPoints = this.taskConf.getString(ElasticKey.ENDPOINTS).split(DEFAULT_ENDPOINT_SPLIT);
             if(StringUtils.isNotBlank(userName) && StringUtils.isNotBlank(password)){
-                restClient = ElasticRestClient.custom(endPoints, userName,
+                restClient = ElasticRestHighClient.custom(endPoints, userName,
                         password, this.taskConf.getMap(ElasticKey.CLIENT_CONFIG));
             }else{
-                restClient = ElasticRestClient.custom(endPoints, this.taskConf.getMap(ElasticKey.CLIENT_CONFIG));
+                restClient = ElasticRestHighClient.custom(endPoints, this.taskConf.getMap(ElasticKey.CLIENT_CONFIG));
             }
             this.bulkProcessor = restClient.createBulk(buildListener(getTaskPluginCollector()), batchSize, bulkPerTask);
         }

@@ -87,6 +87,75 @@ public class ElasticColumn {
         this.format = format;
     }
 
+    public static String recordToString(Record record, List<ElasticColumn> colConfs, String columnNameSeparator){
+        String sql1="{%s}";
+        boolean first=false;
+
+        StringBuffer sb=new StringBuffer();
+        for(int i = 0; i < record.getColumnNumber(); i++){
+            Column column = record.getColumn(i);
+            ElasticColumn config = colConfs.get(i);
+            String columnName = config.getName();
+            if(first){
+                sb.append(",");
+            }
+            first = true;
+            sb.append("\"").append(columnName).append("\":");
+            ElasticFieldDataType type = ElasticFieldDataType.valueOf(config.getType().toUpperCase());
+            switch(type){
+                case IP:
+                case IP_RANGE:
+                case KEYWORD:
+                case TEXT:
+                    sb.append("\"").append(column.asString()).append("\"");;
+                    break;
+                case GEO_POINT:
+                case GEO_SHAPE:
+                case NESTED:
+                case OBJECT:
+                    sb.append("\"").append(parseObject(column.asString())).append("\"");
+                    break;
+                case LONG_RANGE:
+                case LONG:
+                    sb.append(column.asLong());
+                    break;
+                case INTEGER:
+                case INTEGER_RANGE:
+                case SHORT:
+                    sb.append(column.asBigInteger());
+                    break;
+                case FLOAT:
+                case FLOAT_RANGE:
+                case HALF_FLOAT:
+                case SCALED_FLOAT:
+                case DOUBLE_RANGE:
+                case DOUBLE:
+                    sb.append(column.asDouble());
+                    break;
+                case BINARY:
+                case BYTE:
+                    sb.append("\"").append(column.asString()).append("\"");
+                    break;
+                case BOOLEAN:
+                    sb.append(column.asBoolean());
+                    break;
+                case DATE_RANGE:
+                case DATE:
+                    sb.append("\"").append(parseDate(config, column)).append("\"");
+                    break;
+                default:
+                    throw DataXException.asDataXException(ElasticWriterErrorCode.MAPPING_TYPE_UNSUPPORTED,
+                            "unsupported type:[" +config.getType() + "]");
+            }
+        }
+        String sql2=sb.toString();
+        if(StringUtils.isNoneBlank(sql2)){
+            return String.format(sql1, sql2);
+        }else{
+            return null;
+        }
+    }
+
     public static Map<String, Object> toData(Record record, List<ElasticColumn> colConfs, String columnNameSeparator){
         Map<String, Object> outputData = new HashMap<>(record.getColumnNumber());
         for(int i = 0; i < record.getColumnNumber(); i++){
