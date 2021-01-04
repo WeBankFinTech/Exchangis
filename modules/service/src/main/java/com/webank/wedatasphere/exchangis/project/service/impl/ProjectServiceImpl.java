@@ -18,6 +18,7 @@
 package com.webank.wedatasphere.exchangis.project.service.impl;
 
 import com.webank.wedatasphere.exchangis.common.dao.IBaseDao;
+import com.webank.wedatasphere.exchangis.common.exceptions.EndPointException;
 import com.webank.wedatasphere.exchangis.common.service.AbstractGenericService;
 import com.webank.wedatasphere.exchangis.common.util.PatternInjectUtils;
 import com.webank.wedatasphere.exchangis.group.domain.Group;
@@ -27,6 +28,7 @@ import com.webank.wedatasphere.exchangis.project.dao.ProjectDao;
 import com.webank.wedatasphere.exchangis.project.domain.Project;
 import com.webank.wedatasphere.exchangis.project.query.ProjectQuery;
 import com.webank.wedatasphere.exchangis.project.service.ProjectService;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,7 +99,12 @@ public class ProjectServiceImpl extends AbstractGenericService<Project> implemen
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean add(Project project) {
-        boolean result = super.add(project);
+        boolean result = false;
+        try {
+            result = super.add(project);
+        } catch (DuplicateKeyException e) {
+            throw new EndPointException("exchange.duplicate.entry.project_name", e);
+        }
         Group group = new Group();
         group.setGroupName(PatternInjectUtils.inject(PROJECT_REF_GROUP_NAME, new String[]
                 {project.getProjectName()}, false, false,true));
