@@ -219,6 +219,7 @@ CREATE TABLE IF NOT EXISTS `exchangis_project` (
   `create_time` datetime DEFAULT NULL COMMENT 'Create Time',
   `modify_user` varchar(20) DEFAULT NULL COMMENT 'Modify User',
   `modify_time` datetime DEFAULT NULL COMMENT 'Modify Time',
+  UNIQUE KEY `project_name_create_user` (`project_name`,`create_user`),
   PRIMARY KEY (`id`),
   KEY `index_user` (`create_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
