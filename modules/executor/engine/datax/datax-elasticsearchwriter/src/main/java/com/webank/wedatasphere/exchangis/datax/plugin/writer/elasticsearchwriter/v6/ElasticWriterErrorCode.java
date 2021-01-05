@@ -37,7 +37,9 @@ public enum ElasticWriterErrorCode implements ErrorCode {
     MAPPING_TYPE_UNSUPPORTED("ESWriter-08", "Unsupported mapping type"),
     BULK_REQ_ERROR("ESWriter-09", "Bulk request error"),
     INDEX_NOT_EXIST("ESWriter-10", "Index not exist"),
-    CONFIG_ERROR("ESWriter-11", "Config error");
+    CONFIG_ERROR("ESWriter-11", "Config error"),
+    ES_VERSION("ESWriter-12", "Cannot get Elasticsearch version"),
+    FEATURES_ERROR("ESWriter-13", "Function not supported");
 
     private final String code;
     private final String description;
