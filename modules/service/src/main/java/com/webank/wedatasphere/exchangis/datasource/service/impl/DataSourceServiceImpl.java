@@ -85,24 +85,24 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
     public boolean update(DataSource dataSource) {
         DataSource oldDs = dataSourceDao.selectOneAndLock(dataSource.getId());
         Object oldDsAuthCreden = null;
-        if(null == dataSource.getAuthCreden()){
+        if (null == dataSource.getAuthCreden()) {
             dataSource.setAuthCreden(oldDs.getAuthCreden());
-        }else {
+        } else {
             oldDsAuthCreden = oldDs.getAuthCreden();
-            if(!isUrl(dataSource.getAuthCreden())){
+            if (!isUrl(dataSource.getAuthCreden())) {
                 dataSource.setAuthCreden(encodeBase64(dataSource.getAuthCreden()));
             }
         }
         List<String> authScopes = dataSource.getAuthScopes();
-        if(null != authScopes){
+        if (null != authScopes) {
             permissionDao.update(new DataSourcePermission(dataSource.getId(), authScopes));
         }
         boolean result = super.update(dataSource);
-        if(result && oldDsAuthCreden != null &&
+        if (result && oldDsAuthCreden != null &&
                 isUrl(String.valueOf(oldDsAuthCreden))) {
             try {
                 AppUtil.removeFile(String.valueOf(oldDsAuthCreden));
-            }catch(Exception e){
+            } catch (Exception e) {
                 LOG.error("Remove authentication file Error: " + e.getMessage());
             }
         }
@@ -111,16 +111,16 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean add(DataSource dataSource) throws Exception {
+    public boolean add(DataSource dataSource) {
         String authCreden = dataSource.getAuthCreden();
-        if(StringUtils.isNotBlank(authCreden) && !isUrl(authCreden)){
+        if (StringUtils.isNotBlank(authCreden) && !isUrl(authCreden)) {
             dataSource.setAuthCreden(encodeBase64(dataSource.getAuthCreden()));
         }
         List<String> authScopes = dataSource.getAuthScopes();
         boolean result = super.add(dataSource);
-        if(result){
+        if (result) {
             //Add permissions
-            DataSourcePermission permission =  null == authScopes ? new DataSourcePermission(dataSource.getId())
+            DataSourcePermission permission = null == authScopes ? new DataSourcePermission(dataSource.getId())
                     : new DataSourcePermission(dataSource.getId(), authScopes);
             permissionDao.insertOne(permission);
         }
@@ -131,7 +131,7 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
     @Transactional(rollbackFor = Exception.class)
     public boolean delete(List<Object> ids) {
         boolean result = true;
-        if(!ids.isEmpty()) {
+        if (!ids.isEmpty()) {
             List<String> associatedFiles = new ArrayList<>();
             for (Object id : ids) {
                 DataSource dataSource = dataSourceDao.selectOneAndLock(id);
@@ -157,9 +157,9 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
     }
 
     @Override
-    public DataSource getDetail(Object id){
+    public DataSource getDetail(Object id) {
         DataSource dataSource = getDao().selectOne(id);
-        if(null != dataSource) {
+        if (null != dataSource) {
             fillDataSourceWithModel(dataSource, dataSource.getModelId());
             dataSource.setParameter(Json.toJson(dataSource.getParameterMap(), null));
         }
@@ -169,23 +169,23 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
     @Override
     public DataSource getDecryptedSimpleOne(Object id) {
         DataSource dataSource = getDao().selectOne(id);
-        if(null != dataSource && StringUtils.isNotBlank(dataSource.getAuthCreden()) &&
-                !isUrl(dataSource.getAuthCreden())){
+        if (null != dataSource && StringUtils.isNotBlank(dataSource.getAuthCreden()) &&
+                !isUrl(dataSource.getAuthCreden())) {
             dataSource.setAuthCreden(decodeBase64(dataSource.getAuthCreden()));
         }
         return dataSource;
     }
 
     @Override
-    public File store(MultipartFile authFile, String authType, boolean disposable) throws IOException{
-        String newName = (disposable? PERSIST_DISPOSABLE_PREFIX : "") +
+    public File store(MultipartFile authFile, String authType, boolean disposable) throws IOException {
+        String newName = (disposable ? PERSIST_DISPOSABLE_PREFIX : "") +
                 AppUtil.newFileName(authFile.getOriginalFilename());
         File storeFile = new File(conf.getStorePersist(authType) + newName);
         new File(conf.getStorePersist(authType)).mkdirs();
         if (storeFile.createNewFile()) {
             FileUtils.copyInputStreamToFile(authFile.getInputStream(), storeFile);
-        }else{
-            throw new RuntimeException("Cannot create new file:"+storeFile.getPath()+", check if the system have " +
+        } else {
+            throw new RuntimeException("Cannot create new file:" + storeFile.getPath() + ", check if the system have " +
                     "the right permission");
         }
         return storeFile;
@@ -197,21 +197,21 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
     }
 
     @Override
-    public void addDataSourceModelParamsToMap(Map<String, Object> map, String authEntity, String authCreden, String modelName){
+    public void addDataSourceModelParamsToMap(Map<String, Object> map, String authEntity, String authCreden, String modelName) {
         DataSourceModel modelAssembly = modelDao.selectOneByName(modelName);
-        addDataSourceModelParamsToMap(map, authEntity, authCreden,modelAssembly);
+        addDataSourceModelParamsToMap(map, authEntity, authCreden, modelAssembly);
     }
 
     @Override
     public void addDataSourceModelParamsToMap(Map<String, Object> map,
-                                              String authEntity, String authCreden, Integer modelId){
+                                              String authEntity, String authCreden, Integer modelId) {
         DataSourceModel modelAssembly = modelDao.selectOne(modelId);
-        addDataSourceModelParamsToMap(map, authEntity, authCreden,modelAssembly);
+        addDataSourceModelParamsToMap(map, authEntity, authCreden, modelAssembly);
     }
 
     private void addDataSourceModelParamsToMap(Map<String, Object> map,
-                                               String authEntity, String authCreden, DataSourceModel modelAssembly){
-        if(null != modelAssembly) {
+                                               String authEntity, String authCreden, DataSourceModel modelAssembly) {
+        if (null != modelAssembly) {
             Map<String, Object> params = modelAssembly.resolveParams();
             if (params.containsKey(Constants.PARAM_AUTH_TYPE)) {
                 String authType = String.valueOf(params.get(Constants.PARAM_AUTH_TYPE));
@@ -222,12 +222,12 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
                     case AuthType.KERBERS:
                         authCredenKey = Constants.PARAM_KB_FILE_PATH;
                         authEntityKey = Constants.PARAM_KERBEROS_FILE_PRINCILE;
-                        if(StringUtils.isNotBlank(
-                                String.valueOf(params.getOrDefault(Constants.PARAM_KERBEROS_HOST_NAME, "")))){
+                        if (StringUtils.isNotBlank(
+                                String.valueOf(params.getOrDefault(Constants.PARAM_KERBEROS_HOST_NAME, "")))) {
                             authEntityValue = authEntity + IOUtils.DIR_SEPARATOR +
                                     params.getOrDefault(Constants.PARAM_KERBEROS_HOST_NAME, "");
                         }
-                        authEntityValue +=  "@" +
+                        authEntityValue += "@" +
                                 params.getOrDefault(Constants.PARAM_KERBEROS_REALM_INFO, "");
                         params.put(Constants.PARAM_KERBEROS_BOOLEAN, true);
                         break;
@@ -246,10 +246,10 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
                     default:
                         break;
                 }
-                if(StringUtils.isNotBlank(authEntity) && StringUtils.isNotBlank(authEntityKey)){
+                if (StringUtils.isNotBlank(authEntity) && StringUtils.isNotBlank(authEntityKey)) {
                     params.put(authEntityKey, authEntityValue);
                 }
-                if(StringUtils.isNotBlank(authCreden) && StringUtils.isNotBlank(authCredenKey)){
+                if (StringUtils.isNotBlank(authCreden) && StringUtils.isNotBlank(authCredenKey)) {
                     params.put(authCredenKey, authCreden);
                 }
 
@@ -260,7 +260,7 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
 
 
     @Override
-    public void fillDataSourceWithModel(DataSource dataSource, Integer modelId){
+    public void fillDataSourceWithModel(DataSource dataSource, Integer modelId) {
         Map<String, Object> mergedParams = dataSource.resolveParams();
         Map<String, Object> params = new HashMap<>();
         addDataSourceModelParamsToMap(params, dataSource.getAuthEntity(), dataSource.getAuthCreden(), modelId);
@@ -268,9 +268,9 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
                 .flatMap(map -> map.entrySet().stream())
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        entry ->{
-                           Object value = entry.getValue();
-                           return value != null? value : "";
+                        entry -> {
+                            Object value = entry.getValue();
+                            return value != null ? value : "";
                         },
                         (v1, v2) -> v1
                 ));
@@ -281,7 +281,7 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
     @Override
     public List<DataAuthScope> getPermission(Long id) {
         DataSourcePermission permission = permissionDao.getPermission(id);
-        if(null != permission){
+        if (null != permission) {
             return permission.toDataAuthScopes();
         }
         return Collections.singletonList(DataAuthScope.ALL);
@@ -289,15 +289,16 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
 
     /**
      * Bind project
+     *
      * @param projectId
      * @param dataSourceIds
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void bindDataSourceToProject(Long projectId, Long... dataSourceIds) {
-        if(projectId != null && projectId > 0){
+        if (projectId != null && projectId > 0) {
             for (Long dataSourceId : dataSourceIds) {
-                if(null != dataSourceId && dataSourceId > 0){
+                if (null != dataSourceId && dataSourceId > 0) {
                     DataSource dataSource = dataSourceDao.selectOneAndLock(dataSourceId);
                     bindDataSourceToProject(projectId, dataSource, false);
                 }
@@ -305,23 +306,24 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
         }
     }
 
-    private void bindDataSourceToProject(Long projectId, DataSource dataSource, boolean force){
+    private void bindDataSourceToProject(Long projectId, DataSource dataSource, boolean force) {
         Long existProjectId = dataSource.getProjectId();
-        if(existProjectId != null && existProjectId > 0){
-            if(projectId.equals(existProjectId)){
+        if (existProjectId != null && existProjectId > 0) {
+            if (projectId.equals(existProjectId)) {
                 return;
             }
-            if(!force){
+            if (!force) {
                 throw new EndPointException("exchange.data_source.project.unbind.not", null, dataSource.getSourceName());
             }
-        }else {
+        } else {
             dataSourceDao.bindProject(dataSource.getId(), projectId);
         }
     }
+
     /**
-     *  Base64 encode LDAP password
+     * Base64 encode LDAP password
      */
-    private String encodeBase64(String ldapPwd){
+    private String encodeBase64(String ldapPwd) {
         try {
             return CryptoUtils.object2String(ldapPwd);
         } catch (Exception e) {
@@ -329,17 +331,18 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
         }
     }
 
-    private String decodeBase64(String ldapPwd){
-        try{
+    private String decodeBase64(String ldapPwd) {
+        try {
             return (String) CryptoUtils.string2Object(ldapPwd);
-        } catch(Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-    private boolean isUseKb(Map<String, Object> params){
+
+    private boolean isUseKb(Map<String, Object> params) {
         boolean useKb = false;
         Object v = params.get(PARAM_KERBEROS_BOOLEAN);
-        if(null != v){
+        if (null != v) {
             String isUseKb = String.valueOf(v);
             useKb = "true".equals(isUseKb);
         }
@@ -348,7 +351,7 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
 
     @Override
     protected DataSource queryFilter(DataSource dataSource) {
-        if(null != dataSource) {
+        if (null != dataSource) {
             String authCreden = dataSource.getAuthCreden();
             if (StringUtils.isBlank(authCreden) || !isUrl(authCreden)) {
                 dataSource.setAuthCreden(null);
@@ -357,7 +360,7 @@ public class DataSourceServiceImpl extends AbstractGenericService<DataSource> im
         return dataSource;
     }
 
-    private boolean isUrl(String input){
+    private boolean isUrl(String input) {
         return input.startsWith(URL_PROTOCOL);
     }
 }

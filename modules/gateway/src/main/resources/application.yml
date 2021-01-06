@@ -84,4 +84,4 @@ management:
       exposure:
         include: '*'
       #uri,可自定义
-      base-path: /metrics
+      base-path: /actuator
