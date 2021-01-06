@@ -45,6 +45,7 @@ public class ProjectServiceImpl extends AbstractGenericService<Project> implemen
     private GroupService groupService;
     @Resource
     private ProjectDao projectDao;
+
     @Override
     protected IBaseDao<Project> getDao() {
         return projectDao;
@@ -55,7 +56,7 @@ public class ProjectServiceImpl extends AbstractGenericService<Project> implemen
         ProjectQuery query = new ProjectQuery();
         query.setParentId(parentId);
         query.setCreateUser(userName);
-        List<Project> projects =  projectDao.selectAllList(query);
+        List<Project> projects = projectDao.selectAllList(query);
         return queryFilter(projects);
     }
 
@@ -65,23 +66,23 @@ public class ProjectServiceImpl extends AbstractGenericService<Project> implemen
         Map<String, List<Long>> creatorMap = new HashMap<>();
         List<Object> projectIds = new ArrayList<>();
         List<Object> groupIds = new ArrayList<>();
-        projects.forEach(project ->{
+        projects.forEach(project -> {
             List<Long> value = creatorMap.computeIfAbsent(project.getCreateUser(), key -> new ArrayList<>());
             value.add(project.getId());
             projectIds.add(project.getId());
         });
-        creatorMap.forEach((createUser, projectIds0)->{
+        creatorMap.forEach((createUser, projectIds0) -> {
             List<Group> groups = groupService.selectByCreatorAndProjects(createUser, projectIds0);
-            groups.forEach(group ->{
+            groups.forEach(group -> {
                 groupIds.add(group.getId());
             });
         });
         //Delete projects and the groups associated
         boolean result = true;
-        if(!projectIds.isEmpty()){
+        if (!projectIds.isEmpty()) {
             result = super.delete(projectIds);
         }
-        if(!groupIds.isEmpty()) {
+        if (!groupIds.isEmpty()) {
             groupService.delete(groupIds);
         }
         return result;
@@ -90,7 +91,7 @@ public class ProjectServiceImpl extends AbstractGenericService<Project> implemen
 
     @Override
     protected Project queryFilter(Project project) {
-        if(null != project){
+        if (null != project) {
             return project.cleanSensitive();
         }
         return null;
@@ -98,7 +99,7 @@ public class ProjectServiceImpl extends AbstractGenericService<Project> implemen
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean add(Project project) throws Exception {
+    public boolean add(Project project) {
         boolean result = false;
         try {
             result = super.add(project);
@@ -107,7 +108,7 @@ public class ProjectServiceImpl extends AbstractGenericService<Project> implemen
         }
         Group group = new Group();
         group.setGroupName(PatternInjectUtils.inject(PROJECT_REF_GROUP_NAME, new String[]
-                {project.getProjectName()}, false, false,true));
+                {project.getProjectName()}, false, false, true));
         group.setProjectId(project.getId());
         group.setCreateTime(Calendar.getInstance().getTime());
         group.setCreateUser(project.getCreateUser());
