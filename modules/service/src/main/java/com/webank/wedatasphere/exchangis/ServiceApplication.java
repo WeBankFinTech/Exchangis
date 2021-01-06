@@ -62,7 +62,7 @@ public class ServiceApplication {
     MeterRegistryCustomizer meterRegistryCustomizer(MeterRegistry meterRegistry) {
         return meterRegistry1 -> {
             meterRegistry.config()
-                    .commonTags("application", "Tenantapp");
+                    .commonTags("application", "ServiceApplication");
             //所有指标添加统一标签： application = Tenantapp
         };
     }

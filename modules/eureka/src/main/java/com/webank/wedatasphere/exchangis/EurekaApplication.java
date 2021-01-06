@@ -74,8 +74,7 @@ public class EurekaApplication {
     MeterRegistryCustomizer meterRegistryCustomizer(MeterRegistry meterRegistry) {
         return meterRegistry1 -> {
             meterRegistry.config()
-                    .commonTags("application", "Tenantapp");
-            //所有指标添加统一标签： application = Tenantapp
+                    .commonTags("application", "EurekaApplication");
         };
     }
 }
