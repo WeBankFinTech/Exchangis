@@ -36,14 +36,14 @@ import java.util.List;
 public abstract class AbstractGenericService<T> implements IBaseService<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractGenericService.class);
+
     protected abstract IBaseDao<T> getDao();
 
     /**
      * Add
-     *
      */
     @Override
-    public boolean add(T t) throws Exception {
+    public boolean add(T t) {
         return getDao().insert(t) > 0;
     }
 
@@ -71,7 +71,6 @@ public abstract class AbstractGenericService<T> implements IBaseService<T> {
 
     /**
      * Update
-     *
      */
     @Override
     public boolean update(T t) {
@@ -80,7 +79,6 @@ public abstract class AbstractGenericService<T> implements IBaseService<T> {
 
     /**
      * (non-Javadoc)
-     *
      */
     @Override
     @Transactional(readOnly = true)
@@ -90,7 +88,6 @@ public abstract class AbstractGenericService<T> implements IBaseService<T> {
 
     /**
      * Get
-     *
      */
     @Override
     @Transactional(readOnly = true)
@@ -116,6 +113,7 @@ public abstract class AbstractGenericService<T> implements IBaseService<T> {
 
     /**
      * Select all
+     *
      * @return
      */
     @Override
@@ -126,16 +124,17 @@ public abstract class AbstractGenericService<T> implements IBaseService<T> {
 
     /**
      * Filter of query
+     *
      * @param t data
      * @return
      */
-    protected T queryFilter(T t){
+    protected T queryFilter(T t) {
         return t;
     }
 
-    final protected List<T> queryFilter(List<T> list){
+    final protected List<T> queryFilter(List<T> list) {
         List<T> result = new ArrayList<>();
-        for(T t : list){
+        for (T t : list) {
             result.add(queryFilter(t));
         }
         return result;
