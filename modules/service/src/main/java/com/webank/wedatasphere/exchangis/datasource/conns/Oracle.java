@@ -240,20 +240,21 @@ public class Oracle {
     }
 
 
-    public boolean isView0(String database, String table) {
+    public boolean isUseableTable(String database, String table) {
         Connection conn = null;
         Statement stmt = null;
         try {
             conn = this.getDbConnect(database);
             stmt = conn.createStatement();
-            stmt.executeQuery("select * from\" +  table + \" where 1==2");
-
+            stmt.executeQuery("select * from " +  table + " where 1 = 2");
         } catch (Exception e) {
+            LOG.error("Exception: " + e.getMessage(), e);
             throw new EndPointException("exchange.oracle_meta.get.table.by.user.input.failed", e, database,table);
         } finally {
             closeResource(conn, null, null);
         }
 
+        return true;
     }
 
     public String getHost() {
