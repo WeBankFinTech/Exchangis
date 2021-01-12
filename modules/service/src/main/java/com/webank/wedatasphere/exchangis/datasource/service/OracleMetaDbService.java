@@ -17,6 +17,7 @@
 
 package com.webank.wedatasphere.exchangis.datasource.service;
 
+import com.webank.wedatasphere.exchangis.datasource.conns.Oracle;
 import com.webank.wedatasphere.exchangis.datasource.domain.DataSource;
 import org.apache.hadoop.hive.ql.metadata.Table;
 
@@ -66,6 +67,16 @@ public interface OracleMetaDbService extends MetaDbService {
      */
     boolean isView(String dsId, String database, String table);
     boolean isView(DataSource ds, String database, String table);
+
+    /**
+     * check table
+     * @param ds
+     * @param database
+     * @param table
+     * @return
+     */
+    Boolean isUsealbeTable(DataSource ds, String database, String table);
+    Boolean isUsealbeTable(String dsId, String database, String table);
 
     /**
      * Get raw type table

@@ -117,8 +117,8 @@ public class OracleInfoController extends AbstractDataAuthController {
         if(!hasDataAuth(DataSource.class, DataAuthScope.EXECUTE, request, dataSourceService.get(dsId))){
             return new Response<>().errorResponse(CodeConstant.AUTH_ERROR, null, super.informationSwitch("exchange.data_source.not.access.rights"));
         }
-        List<MetaColumnInfo> information = oracleMetaDbService.getColumns(dsId, db, table);
-        return new Response<>().successResponse(information);
+        Boolean result = oracleMetaDbService.isUsealbeTable(dsId, db, table);
+        return new Response<>().successResponse(result);
     }
 
 
