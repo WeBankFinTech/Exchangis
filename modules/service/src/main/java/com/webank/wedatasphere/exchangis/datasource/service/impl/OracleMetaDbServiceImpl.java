@@ -170,13 +170,28 @@ public class OracleMetaDbServiceImpl extends AbstractMetaDbService<Oracle> imple
 
     @Override
     public boolean isView(String dsId, String database, String table) {
-        return super.getConnAndRun(dsId, conn -> this.isView0(conn, database, table));
+        return false;
     }
 
     @Override
     public boolean isView(DataSource ds, String database, String table) {
         return false;
     }
+
+    @Override
+    public Boolean isUsealbeTable(DataSource ds, String database, String table) {
+        return super.getConnAndRun(ds, conn -> this.isUsealbeTable0(conn, database, table));
+    }
+
+    @Override
+    public Boolean isUsealbeTable(String dsId, String database, String table) {
+        return super.getConnAndRun(dsId, conn -> this.isUsealbeTable0(conn, database, table));
+    }
+
+    private Boolean isUsealbeTable0(Oracle oracle, String database, String table) {
+        return  oracle.isUseableTable(database, table);
+    }
+
 
     @Override
     public Table getRawTable(String dsId, String database, String table) {
@@ -202,7 +217,4 @@ public class OracleMetaDbServiceImpl extends AbstractMetaDbService<Oracle> imple
         return oracle.getPrimaryKeys(database, table);
     }
 
-    public boolean isView0(String dsId, String database, String table) {
-        return oracle.isView(database, table);
-    }
 }
