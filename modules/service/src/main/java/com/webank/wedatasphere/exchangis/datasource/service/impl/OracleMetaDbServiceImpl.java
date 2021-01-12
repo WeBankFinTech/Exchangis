@@ -170,7 +170,7 @@ public class OracleMetaDbServiceImpl extends AbstractMetaDbService<Oracle> imple
 
     @Override
     public boolean isView(String dsId, String database, String table) {
-        return false;
+        return super.getConnAndRun(dsId, conn -> this.isView0(conn, database, table));
     }
 
     @Override
@@ -200,5 +200,9 @@ public class OracleMetaDbServiceImpl extends AbstractMetaDbService<Oracle> imple
 
     private List<String> getPrimaryKeys0(Oracle oracle, String database, String table){
         return oracle.getPrimaryKeys(database, table);
+    }
+
+    public boolean isView0(String dsId, String database, String table) {
+        return oracle.isView(database, table);
     }
 }
