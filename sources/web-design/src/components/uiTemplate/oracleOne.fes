@@ -16,7 +16,7 @@
                 </Wb-select>
             </Form-item>
         </Cell>
-        <Cell span="24">
+        <Cell span="24" v-if="false">
             <Form-item :label="$t('uiTemplate.TABLENAMW')" prop="tableTow" :label-width="120">
                 <Wb-select v-model="subData.table" filterable @on-change="tableValueChange">
                     <wb-option v-for="(item,index) in tableList" :key="index" :value="item" />
@@ -24,6 +24,33 @@
                 </Wb-select>
             </Form-item>
         </Cell>
+        <Row v-if="subData.tableInputType === 'select'">
+            <Cell span="18">
+                <Form-item :label="$t('uiTemplate.TABLENAMW')" prop="tableTow" :label-width="120">
+                    <Wb-select v-model="subData.table" filterable @on-change="tableValueChange">
+                        <wb-option v-for="(item,index) in tableList" :key="index" :value="item" />
+                        <Loading v-show="table_loading" size="16px" class="loading-position" />
+                    </Wb-select>
+                </Form-item>
+            </Cell>
+            <Cell span="5" offset="1">
+                <Wb-button type="primary" long @click="changeTableInput('input')">
+                   {{ $t('uiTemplate.QXSH') }}
+                </Wb-button>
+            </Cell>
+        </Row>
+        <Row v-if="subData.tableInputType === 'input'">
+            <Cell span="18">
+                <Form-item :label="$t('uiTemplate.TABLENAMW')" prop="tableTow" :label-width="120">
+                 <wb-input v-model="subData.table" :placeholder="$t('uiTemplate.SRBM')" />
+              </Form-item>
+            </Cell>
+            <Cell span="5" offset="1">
+                <Wb-button type="primary" long @click="changeTableInput('select')">
+                   {{ $t('uiTemplate.QXXZ') }}
+                </Wb-button>
+            </Cell>
+        </Row>
         <Cell span="24">
             <Form-item :label="$t('uiTemplate.TJ')" prop="where" :label-width="120">
                  <wb-input v-model="subData.where" :placeholder="$t('uiTemplate.QSR')" />
@@ -66,6 +93,7 @@ export default {
     },
     data() {
         return {
+            tableInputType: 'select',
             subData: this.stepOneData,
             showSelect: false,
             optionIndex: '',
@@ -108,8 +136,14 @@ export default {
             this.$emit('dbSeleted', val);
         },
         tableValueChange(val) {
+            
             this.$emit('tableValueChange', val);
-        }
+        },
+        changeTableInput(type){
+            this.subData.tableInputType = type;
+            this.subData.table = '';
+          this.$emit('tableInputTypeChange', type);
+        },
     }
 }
 </script>

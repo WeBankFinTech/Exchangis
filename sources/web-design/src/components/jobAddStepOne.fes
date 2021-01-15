@@ -70,6 +70,7 @@
                     @stepOneData="tdsqlDataAction"
                     @sourceChange="oracleSourceChange"
                     @dbSeleted="oracleDbSeleted"
+                    @tableInputTypeChange="oracleDbTableInputTypeChange"
                      />
             </template>
             <Form-item>
@@ -229,7 +230,8 @@ export default {
                 dataSourceId: '',
                 DBData: '',
                 table: '',
-                where: ''
+                where: '',
+                tableInputType: 'select',
             },
             linkCoditionShow: false,
             tdsqlValue: {
@@ -545,6 +547,10 @@ export default {
                     this.oracleValue.tables = JSON.stringify(rst) === '{}' ? [] : rst;
                 }).catch(() => this.table_loading = false);
             }
+        },
+        oracleDbTableInputTypeChange(value){
+            this.oracleData.tableInputType = value;
+            this.oracleData.table = '';
         },
         addCodition() {
             const pushAction = () => {
