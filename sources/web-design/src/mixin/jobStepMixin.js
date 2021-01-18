@@ -411,10 +411,7 @@ export default {
                         ) {
                             this.tdsqlData.errorShow = true;
                         } else {
-                            if (
-                                this.addData.type === SOURCETYPE.ORACLE &&
-                                this.oracleData.tableInputType === "input"
-                            ) {
+                            if (this.addData.type === SOURCETYPE.ORACLE) {
                                 console.log(122);
                                 const {
                                     dataSourceId,
@@ -429,7 +426,7 @@ export default {
                                         timeout: "60000",
                                     }
                                 ).then((rst) => {
-                                    if(rst){
+                                    if (rst) {
                                         this.$emit(
                                             "nextStep",
                                             this[
