@@ -821,10 +821,7 @@
         "KSY": "Execute",
         "SJDQ": "Data Read",
         "SJXR": "Data Write",
-        "TGSH": "Spik header",
-        "QXSH": "Use manual input",
-        "QXXZ": "Swtich to select",
-        "SRBM": "Please enter a table name"
+        "TGSH": "Spik header"
     },
 
     "components": {
