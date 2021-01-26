@@ -224,7 +224,9 @@ public class OracleJobDataConfHandler extends AbstractJobDataConfHandler {
         for(int i = 0; i < columns.size(); i++){
             Object rawColumn = columns.get(i);
             if(rawColumn instanceof  DataColumn){
+                builder.append("\"");
                 builder.append(((DataColumn)rawColumn).getName());
+                builder.append("\"");
                 if(i < columns.size() - 1){
                     builder.append(DEFAULT_COLUMN_SEPARATOR);
                 }
