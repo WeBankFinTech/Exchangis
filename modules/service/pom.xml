@@ -61,6 +61,10 @@
 					<artifactId>guava</artifactId>
 					<groupId>com.google.guava</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>xstream</artifactId>
+					<groupId>com.thoughtworks.xstream</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -252,7 +256,7 @@
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.11.1</version>
+			<version>1.4.15</version>
 		</dependency>
 		<!--import ojdbc6-->
 		<dependency>
