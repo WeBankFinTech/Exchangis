@@ -71,3 +71,17 @@ eureka:
   client:
     serviceUrl:
       defaultZone: ${EUREKA_SERVICE_URL}
+
+
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoints:
+    web:
+    #http暴露所有监控项
+      exposure:
+        include: '*'
+      #uri,可自定义
+      base-path: /actuator
