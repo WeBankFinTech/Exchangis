@@ -101,4 +101,26 @@ public class OracleInfoController extends AbstractDataAuthController {
         return new Response<>().successResponse(information);
     }
 
+    /**
+     * check table whether user can use
+     *
+     * @param dsId
+     * @param db
+     * @param table
+     * @param request
+     * @return
+     */
+    @GetMapping(value = "/oracle/{ds_id}/{db}/{table}/check")
+    public Response<Object> checkTable(@PathVariable("ds_id") String dsId,
+                                      @PathVariable("db")String db,
+                                      @PathVariable("table") String table, HttpServletRequest request){
+        if(!hasDataAuth(DataSource.class, DataAuthScope.EXECUTE, request, dataSourceService.get(dsId))){
+            return new Response<>().errorResponse(CodeConstant.AUTH_ERROR, null, super.informationSwitch("exchange.data_source.not.access.rights"));
+        }
+        Boolean result = oracleMetaDbService.isUsealbeTable(dsId, db, table);
+        return new Response<>().successResponse(result);
+    }
+
+
+
 }
