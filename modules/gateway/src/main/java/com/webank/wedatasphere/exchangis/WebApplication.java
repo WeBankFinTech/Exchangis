@@ -27,10 +27,12 @@ import com.webank.wedatasphere.exchangis.common.auth.scheduler.ServTokenRefresh;
 import com.webank.wedatasphere.exchangis.common.controller.SecurityUtil;
 import com.webank.wedatasphere.exchangis.common.util.spring.AppUtil;
 import com.webank.wedatasphere.exchangis.gateway.filters.CorsGatewayFilter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -101,5 +103,14 @@ public class WebApplication{
             return;
         }
         SpringApplication.run(WebApplication.class, args);
+    }
+
+    @Bean
+    MeterRegistryCustomizer meterRegistryCustomizer(MeterRegistry meterRegistry) {
+        return meterRegistry1 -> {
+            meterRegistry.config()
+                    .commonTags("application", "WebApplication");
+            //所有指标添加统一标签： application = Tenantapp
+        };
     }
 }
