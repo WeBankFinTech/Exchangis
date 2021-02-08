@@ -35,7 +35,8 @@ public interface IBaseService<T> {
      */
     boolean add(T t);
 
-    /**s
+    /**
+     * s
      * Delete batch(collection)
      *
      * @return

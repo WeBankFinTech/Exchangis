@@ -17,12 +17,15 @@
 
 package com.webank.wedatasphere.exchangis;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
+import org.springframework.context.annotation.Bean;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -65,5 +68,13 @@ public class EurekaApplication {
 
     private static void removePID(String pidFile) throws IOException{
         Files.delete(Paths.get(pidFile));
+    }
+
+    @Bean
+    MeterRegistryCustomizer meterRegistryCustomizer(MeterRegistry meterRegistry) {
+        return meterRegistry1 -> {
+            meterRegistry.config()
+                    .commonTags("application", "EurekaApplication");
+        };
     }
 }
