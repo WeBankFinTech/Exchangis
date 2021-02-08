@@ -45,7 +45,7 @@ public class Oracle {
     private String sid;
 
 
-    private Oracle(String host, String port, String username, String password,String serviceName,String sid) {
+    private Oracle(String host, String port, String username, String password, String serviceName, String sid) {
         this.host = host;
         this.port = port;
         this.username = username;
@@ -54,14 +54,14 @@ public class Oracle {
         this.sid = sid;
     }
 
-    public static Oracle createOracle(Map<String,Object> param) throws IOException, ClassNotFoundException {
+    public static Oracle createOracle(Map<String, Object> param) throws IOException, ClassNotFoundException {
         String host = String.valueOf(param.get(PARAM_ORACLE_HOST));
         String port = param.get(PARAM_ORACLE_PORT).toString();
         String username = String.valueOf(param.get(PARAM_DEFAULT_USERNAME));
         String password = String.valueOf(CryptoUtils.string2Object(String.valueOf(param.get(PARAM_DEFAULT_PASSWORD))));
         String serviceName = String.valueOf(param.get(PARAM_ORACLE_SERVICE_NAME));
         String sid = String.valueOf(param.get(PARAM_ORACLE_SID));
-        return new Oracle(host,port,username,password,serviceName,sid);
+        return new Oracle(host, port, username, password, serviceName, sid);
     }
 
     private Connection getDbConnect(String database) throws Exception {
@@ -70,20 +70,20 @@ public class Oracle {
 
     private Connection getDbConnect() throws Exception {
         Connection conn = null;
-        try{
+        try {
             Class.forName(DRIVER);
             //Set custom connection parameters
             String url;
-            if(StringUtils.notEmpty(serviceName))
+            if (StringUtils.notEmpty(serviceName))
                 url = "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName;
-            else if(StringUtils.notEmpty(sid))
+            else if (StringUtils.notEmpty(sid))
                 url = "jdbc:oracle:thin:@" + host + ":" + port + ":" + sid;
-            else throw new EndPointException("At least one of sid and serviceName cannot be empty!",new Exception());
+            else throw new EndPointException("At least one of sid and serviceName cannot be empty!", new Exception());
             //Check if the username is sysdba, need to add 'sys as '
-            if(username.matches("sysdba|sysoper"))
+            if (username.matches("sysdba|sysoper"))
                 username = "sys as " + username;
-            conn = DriverManager.getConnection(url,username,password);
-        }catch(Exception e){
+            conn = DriverManager.getConnection(url, username, password);
+        } catch (Exception e) {
             throw new EndPointException("exchange.oracle.obtain.database_info.failed", e);
         }
         return conn;
@@ -91,22 +91,23 @@ public class Oracle {
 
     /**
      * Get all databases in server instance
+     *
      * @return name list
      */
-    public List<String> getAllDatabases(){
+    public List<String> getAllDatabases() {
         List<String> dataBaseName = new ArrayList<>();
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
-        try{
+        try {
             Class.forName(DRIVER);
             conn = getDbConnect();
             stmt = conn.createStatement();
             rs = stmt.executeQuery("select * from v$database");
-            while (rs.next()){
+            while (rs.next()) {
                 dataBaseName.add(rs.getString("name"));
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             if (e instanceof SQLException) {
                 if (((SQLException) e).getErrorCode() == 942) {
                     dataBaseName.add(DEFAULT_DB);
@@ -115,7 +116,7 @@ public class Oracle {
             }
             LOG.error("Failed to obtain database information: [" + e.getMessage() + "]");
             throw new EndPointException("exchange.oracle.obtain.database_info.failed", e);
-        }finally {
+        } finally {
             closeResource(conn, stmt, rs);
         }
         return dataBaseName;
@@ -123,10 +124,11 @@ public class Oracle {
 
     /**
      * Get all tables from sid
+     *
      * @param sid sid
      * @return name list
      */
-    public List<String> getAllTables(String sid){
+    public List<String> getAllTables(String sid) {
         List<String> tableNames = new ArrayList<>();
         Connection conn = null;
         Statement stmt = null;
@@ -138,15 +140,15 @@ public class Oracle {
             while (rs.next()) {
                 tableNames.add(rs.getString("TABLE_NAME"));
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new EndPointException("exchange.oracle.obtain.table_info.failed", e);
-        }finally {
+        } finally {
             closeResource(conn, stmt, rs);
         }
         return tableNames;
     }
 
-    public List<MetaColumnInfo> getColumn(String database, String table) throws Exception{
+    public List<MetaColumnInfo> getColumn(String database, String table) throws Exception {
         List<MetaColumnInfo> metaColumnInfos = new ArrayList<>();
         Connection conn = this.getDbConnect(database);
         String sql = "select * from " + table + " where 1 = 2";
@@ -164,14 +166,14 @@ public class Oracle {
                 info.setIndex(i);
                 info.setName(meta.getColumnName(i));
                 info.setType(meta.getColumnTypeName(i));
-                if(primaryKeys.contains(meta.getColumnName(i))){
+                if (primaryKeys.contains(meta.getColumnName(i))) {
                     info.setPrimaryKey(true);
                 }
                 metaColumnInfos.add(info);
             }
         } catch (SQLException e) {
             throw new EndPointException("exchange.oracle.obtain.field_info.failed", e);
-        }finally {
+        } finally {
             closeResource(conn, ps, rs);
         }
         return metaColumnInfos;
@@ -179,8 +181,9 @@ public class Oracle {
 
     /**
      * Get primary keys
+     *
      * @param connection connection
-     * @param table table name
+     * @param table      table name
      * @return key list
      * @throws SQLException
      */
@@ -190,50 +193,70 @@ public class Oracle {
         try {
             DatabaseMetaData dbMeta = connection.getMetaData();
             rs = dbMeta.getPrimaryKeys(null, null, table.toUpperCase());
-            while(rs.next()){
+            while (rs.next()) {
                 primaryKeys.add(rs.getString("column_name"));
             }
             return primaryKeys;
-        }finally{
-            if(null != rs){
+        } finally {
+            if (null != rs) {
                 closeResource(null, null, rs);
             }
         }
     }
 
-    public List<String> getPrimaryKeys(String database, String table){
+    public List<String> getPrimaryKeys(String database, String table) {
         Connection conn = null;
-        try{
+        try {
             conn = this.getDbConnect(database);
             return getPrimaryKeys(conn, table);
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new EndPointException("exchange.oracle.obtain.field_info.failed", e);
-        }finally{
+        } finally {
             closeResource(conn, null, null);
         }
     }
 
     /**
      * Close database resource
+     *
      * @param connection connection
-     * @param statement statement
-     * @param resultSet result set
+     * @param statement  statement
+     * @param resultSet  result set
      */
-    private void closeResource(Connection connection,  Statement statement, ResultSet resultSet){
+    private void closeResource(Connection connection, Statement statement, ResultSet resultSet) {
         try {
-            if(null != resultSet && !resultSet.isClosed()) {
+            if (null != resultSet && !resultSet.isClosed()) {
                 resultSet.close();
             }
-            if(null != statement && !statement.isClosed()){
+            if (null != statement && !statement.isClosed()) {
                 statement.close();
             }
-            if(null != connection && !connection.isClosed()){
+            if (null != connection && !connection.isClosed()) {
                 connection.close();
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             LOG.error("SQLException: " + e.getMessage(), e);
         }
     }
+
+
+    public boolean isUseableTable(String database, String table) {
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            conn = this.getDbConnect(database);
+            stmt = conn.createStatement();
+            stmt.executeQuery("select * from " +  table + " where 1 = 2");
+        } catch (Exception e) {
+            LOG.error("Exception: " + e.getMessage(), e);
+            throw new EndPointException("exchange.oracle_meta.get.table.by.user.input.failed", e, database,table);
+        } finally {
+            closeResource(conn, null, null);
+        }
+
+        return true;
+    }
+
     public String getHost() {
         return host;
     }
