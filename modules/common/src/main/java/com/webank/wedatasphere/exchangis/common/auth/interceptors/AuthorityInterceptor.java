@@ -58,7 +58,8 @@ public class AuthorityInterceptor implements HandlerInterceptor {
     private AuthTokenHelper authTokenHelper;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if(conf.enable() && !request.getRequestURI().equals(conf.authLoginUrl())) {
+        if(conf.enable() && !request.getRequestURI().equals(conf.authLoginUrl())
+                                && !request.getRequestURI().equals(conf.authRedirectUrl())) {
             String token = AppUtil.getCookieValue(request, AuthConstraints.DEFAULT_SSO_COOKIE);
             Map<String, String> headers = authTokenHelper.getAuthHeader(token);
             String loginId = headers.get(X_AUTH_ID);
