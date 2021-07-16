@@ -90,6 +90,9 @@ public class MySQL {
         try{
             Class.forName(DBRIVER);
             String url = "jdbc:mysql://" + host + ":" + port;
+            if(StringUtils.isNotEmpty(parameter)){
+                url = "jdbc:mysql://" + host + ":" + port + "?" + parameter;
+            }
             conn = DriverManager.getConnection(url, username, password);
             stmt = conn.createStatement();
             rs = stmt.executeQuery("show databases");
