@@ -1,3 +1,3 @@
-# fes 模版
+# Exchangis Web
 
-内部测试用，不对外发布
+基于[FES](https://winixt.gitee.io/fesjs/zh/)打造的管理系统
