@@ -22,18 +22,19 @@
 
 	<groupId>com.webank.wedatasphere.exchangis</groupId>
 	<artifactId>exchangis</artifactId>
-	<version>0.5.0.RELEASE</version>
+	<version>1.0.0-RC1</version>
 	<packaging>pom</packaging>
 
 	<name>exchangis</name>
 	<description>Unified data exchange service</description>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.1.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+	<licenses>
+		<license>
+			<name>Apache 2.0 License</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<properties>
 		<dss.version>1.0.0-RC1</dss.version>
@@ -66,12 +67,6 @@
 
 
 	<modules>
-		<!--<module>modules/eureka</module>
-		<module>modules/common</module>
-		<module>modules/service</module>
-		<module>modules/gateway</module>
-		<module>modules/executor</module>-->
-		<module>assembly</module>
 		<module>exchangis-project</module>
 		<module>exchangis-plugins</module>
 		<module>exchangis-datasource</module>
