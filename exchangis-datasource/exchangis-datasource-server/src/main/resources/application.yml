@@ -8,7 +8,7 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://121.36.12.247:20303/eureka/
+      defaultZone: http://124.70.31.149:20303/eureka/
   instance:
     metadata-map:
       test: wedatasphere
