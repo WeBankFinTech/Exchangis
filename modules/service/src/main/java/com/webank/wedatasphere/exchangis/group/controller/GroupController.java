@@ -46,6 +46,8 @@ import java.util.*;
 /**
  * Group management
  * Created by devendeng on 2018/8/23.
+ *
+ * 权限组管理
  */
 @RestController
 @RequestMapping("/api/v1/group")
