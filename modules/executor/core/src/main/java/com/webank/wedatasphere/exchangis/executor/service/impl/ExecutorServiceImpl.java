@@ -153,6 +153,7 @@ public class ExecutorServiceImpl implements ExecutorService {
                     //Overwrite executive user
                     execUser0 = taskExecUser;
                 }
+                // buildTaskProcess 会根据引擎来返回对应的 TaskProcess
                 return TaskProcessUtils.buildTaskProcess(req.getEngine(), jobId, taskId, execUser0, taskConfig,
                         configuration, req.getEngineParams());
             }, Math.toIntExact(timeout), (process, status, message) -> {

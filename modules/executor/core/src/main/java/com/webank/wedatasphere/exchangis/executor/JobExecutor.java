@@ -282,7 +282,7 @@ public class JobExecutor extends Thread {
         boolean preAlloc = true;
         try{
             Resource resource = this.taskProcess.getResource();
-            //Pre allocate
+            //Pre allocate 如果存在 resourceManager 对象，这尝试预分配资源，如果分配成功，则 preAlloc = true
             if(null != resourceManager){
                 preAlloc = resourceManager.allocate(resource);
             }
@@ -291,7 +291,7 @@ public class JobExecutor extends Thread {
                         "resource:["+ Json.toJson(resource, null) + "]", TaskProcessUtils.getTaskId(taskProcess));
                 //execute and allocate actually
                 return taskProcess.executeAsync();
-            }else{
+            }else{  // 分配失败，抛出异常
                 LOG.info("Pre-allocate task:[" + TaskProcessUtils.getTaskId(taskProcess) + "]  resource failed," +
                         " resource:[" + Json.toJson(resource, null)+ "]");
                 throw new TaskResAllocException();

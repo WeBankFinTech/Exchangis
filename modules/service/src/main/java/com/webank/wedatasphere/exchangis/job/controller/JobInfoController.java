@@ -230,7 +230,7 @@ public class JobInfoController extends AbstractGenericController<JobInfo, JobInf
     }
 
     /**
-     * Provide api to execute job with
+     * Provide api to execute job with 执行任务接口
      * data source configuration, authentication file and so on
      * @param jobFile
      * @param srcAuthFile
