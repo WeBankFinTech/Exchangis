@@ -1136,3 +1136,14 @@ Caused by: java.net.SocketException: Connection reset
 2021-07-27 14:12:32.192 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
 2021-07-27 14:12:32.193 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
 2021-07-27 14:12:32.205 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (61) [logStarted] - Started DataWorkCloudApplication in 3.926 seconds (JVM running for 5.252)
+2021-07-27 14:17:31.974 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-07-27 14:18:26.265 [INFO ] [SpringContextShutdownHook               ] o.s.c.n.e.s.EurekaServiceRegistry (65) [deregister] - Unregistering application EXCHANGIS-SERVER with eureka with status DOWN
+2021-07-27 14:18:26.266 [WARN ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (1321) [notify] - Saw local status change event StatusChangeEvent [timestamp=1627366706266, current=DOWN, previous=UP]
+2021-07-27 14:18:26.266 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/192.168.0.158:exchangis-server:9321: registering service...
+2021-07-27 14:18:26.277 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.AbstractConnector (343) [doStop] - Stopped ServerConnector@71a4f441{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-07-27 14:18:26.278 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.session (158) [stopScavenging] - node0 Stopped scavenging
+2021-07-27 14:18:26.280 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.C.application (2232) [log] - Destroying Spring FrameworkServlet 'dispatcherServlet'
+2021-07-27 14:18:26.280 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.ContextHandler (1007) [doStop] - Stopped o.s.b.w.e.j.JettyEmbeddedWebAppContext@66756662{application,/,[file:///private/var/folders/bn/n6c483k96h37hg9rdkldz2d40000gn/T/jetty-docbase.3033386066401992742.9321/],UNAVAILABLE}
+2021-07-27 14:18:26.282 [INFO ] [SpringContextShutdownHook               ] o.s.s.c.ThreadPoolTaskExecutor (218) [shutdown] - Shutting down ExecutorService 'applicationTaskExecutor'
+2021-07-27 14:18:26.282 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/192.168.0.158:exchangis-server:9321 - registration status: 204
+2021-07-27 14:18:26.286 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (906) [shutdown] - Shutting down DiscoveryClient ...
