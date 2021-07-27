@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>exchangis</artifactId>
+        <groupId>com.webank.wedatasphere.exchangis</groupId>
+        <version>1.0.0-RC1</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>exchangis-datasource</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-RC1</version>
+
+    <modules>
+        <module>exchangis-datasource-core</module>
+        <module>exchangis-datasource-loader</module>
+        <module>exchangis-datasource-server</module>
+        <module>exchangis-datasource-streamis</module>
+        <module>extension-datasources/exchangis-datasource-ext-mysql</module>
+        <module>extension-datasources/exchangis-datasource-ext-hive</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+</project>
