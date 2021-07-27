@@ -224,7 +224,7 @@ public class JobTaskServiceImpl extends AbstractGenericService<JobTask> implemen
     }
 
     @Override
-    public boolean runTask(QueueElement taskQueueElement) {
+    public boolean runTask(QueueElement taskQueueElement) {     // 这个方法是通过 QueueSchedulerManager 来调度的
         long taskId = taskQueueElement.getId();
         JobTask jobTask = jobTaskDao.selectOne(taskId);
         if(null != jobTask && StringUtils.isBlank(jobTask.getExecuterAddress())){
@@ -479,7 +479,7 @@ public class JobTaskServiceImpl extends AbstractGenericService<JobTask> implemen
         element.setDelayCount(delayCount + 1);
         LOG.trace("No available executor, delay element {}", Json.toJson(element, null));
     }
-
+    // 把要运行的任务加入到队列中
     private void addTaskToQueue(JobTask task){
         Queue<QueueElement> queue = queueManager.chooseQueue();
         if(null == queue){

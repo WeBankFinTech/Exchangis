@@ -64,10 +64,10 @@ public class LocalResourceManager implements ResourceManager {
                 double virtualRate = (double)(totalMem - resWareHouse.getMemByte() + memRequire)/(double)totalMem;
                 LOG.info("ActualRate:[" + actualRate +"], virtualRate:[" + virtualRate +"]," +
                         " threshold:["+resourceConfiguration.getThresholdMem() + "]");
-                if(Math.max(actualRate, virtualRate) >= resourceConfiguration.getThresholdMem()){
+                if(Math.max(actualRate, virtualRate) >= resourceConfiguration.getThresholdMem()){   // 超过阈值就返回false
                     return false;
                 }
-
+                // 分配资源，并计算资源
                 resWareHouse.allocate(resource);
                 return null == allocated.putIfAbsent(String.valueOf(resource.getResourceId()), resource);
             }

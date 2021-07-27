@@ -55,6 +55,7 @@ public class MySQLInfoController extends AbstractDataAuthController {
      * @param request request
      * @return
      */
+    // 列出所有该mysql连接下的数据库
     @GetMapping(value = "/mysql/{ds_id}/dbs")
     public Response<Object> dbInfo(@PathVariable("ds_id") String dsId, HttpServletRequest request){
         if(!hasDataAuth(DataSource.class, DataAuthScope.EXECUTE, request, dataSourceService.get(dsId))){
@@ -71,6 +72,7 @@ public class MySQLInfoController extends AbstractDataAuthController {
      * @param request request
      * @return
      */
+    // 列出某个数据库下的所有表
     @GetMapping(value = "/mysql/{ds_id}/{db}/tables")
     public Response<Object> tableInfo( @PathVariable("ds_id") String dsId,
                                         @PathVariable("db")String db, HttpServletRequest request){
@@ -89,6 +91,7 @@ public class MySQLInfoController extends AbstractDataAuthController {
      * @param request
      * @return
      */
+    // 列出某张表下的所有字段
     @GetMapping(value = "/mysql/{ds_id}/{db}/{table}/fields")
     public Response<Object> fieldInfo(@PathVariable("ds_id") String dsId,
                                           @PathVariable("db")String db,
