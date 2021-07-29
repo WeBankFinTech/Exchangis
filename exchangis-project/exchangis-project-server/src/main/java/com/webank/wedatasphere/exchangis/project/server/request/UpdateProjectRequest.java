@@ -1,14 +1,22 @@
 package com.webank.wedatasphere.exchangis.project.server.request;
 
-public class CreateProjectRequest {
+public class UpdateProjectRequest {
 
-    private String workspaceName;
+    private Long id;
 
     private String projectName;
 
     private String description;
 
-    private String tags;
+    private String creator;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getProjectName() {
         return projectName;
@@ -26,19 +34,11 @@ public class CreateProjectRequest {
         this.description = description;
     }
 
-    public String getTags() {
-        return tags;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
-    public String getWorkspaceName() {
-        return workspaceName;
-    }
-
-    public void setWorkspaceName(String workspaceName) {
-        this.workspaceName = workspaceName;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }
