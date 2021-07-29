@@ -22,8 +22,49 @@
             <groupId>com.webank.wedatasphere.linkis</groupId>
             <artifactId>linkis-module</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.linkis</groupId>
+            <artifactId>linkis-common</artifactId>
+        </dependency>
 
+      <!--  <dependency>
+            <groupId></groupId>
+            <artifactId>linkis-dataso</artifactId>
+        </dependency>-->
 
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-datasource-core</artifactId>
+            <version>1.0.0-RC1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-datasource-loader</artifactId>
+            <version>1.0.0-RC1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.webank.wedatasphere.linkis</groupId>
+            <artifactId>linkis-datasource-client</artifactId>
+            <version>1.0.0-RC1</version>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>com.webank.wedatasphere.linkis</groupId>
+            <artifactId>linkis-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.webank.wedatasphere.linkis</groupId>
+            <artifactId>linkis-mybatis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.bundles.repackaged</groupId>
+            <artifactId>jersey-guava</artifactId>
+            <version>2.6</version>
+        </dependency>-->
     </dependencies>
 
     <build>

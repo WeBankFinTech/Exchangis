@@ -6,7 +6,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSo
 
 public interface ExchangisDataSourceLoader {
 
-    String APPCONN_DIR_NAME = "exchangis-extds";
+    String EXCHANGIS_DIR_NAME = "exchangis-extds";
 
     String PROPERTIES_NAME = "extds.properties";
 
