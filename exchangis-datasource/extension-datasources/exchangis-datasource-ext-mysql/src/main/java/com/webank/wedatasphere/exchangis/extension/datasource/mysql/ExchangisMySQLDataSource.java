@@ -17,6 +17,16 @@ public class ExchangisMySQLDataSource implements ExchangisDataSource {
     }
 
     @Override
+    public String description() {
+        return "MYSQL description";
+    }
+
+    @Override
+    public String icon() {
+        return "icon-mysql";
+    }
+
+    @Override
     public List<ElementUI> getDataSourceParamsUI() {
 
         FormElementUI form = new FormElementUI();
