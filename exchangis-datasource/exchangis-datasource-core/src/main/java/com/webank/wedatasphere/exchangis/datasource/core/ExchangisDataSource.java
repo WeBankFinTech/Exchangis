@@ -10,6 +10,10 @@ public interface ExchangisDataSource {
 
     String type();
 
+    String description();
+
+    String icon();
+
     List<ElementUI> getDataSourceParamsUI();
 
     List<ElementUI> getTransForm();

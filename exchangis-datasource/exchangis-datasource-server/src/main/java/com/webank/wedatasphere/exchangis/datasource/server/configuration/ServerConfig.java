@@ -1,17 +1,28 @@
 package com.webank.wedatasphere.exchangis.datasource.server.configuration;
 
 
+import com.webank.wedatasphere.exchangis.datasource.core.context.DefaultExchangisDataSourceContext;
+import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
+import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceLoader;
+import com.webank.wedatasphere.exchangis.datasource.loader.loader.ExchangisDataSourceLoaderFactory;
+import com.webank.wedatasphere.linkis.common.exception.ErrorException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ServerConfig {
-//
-//    @Bean
-//    public ExchangisDataSourceContext context() {
-//        return new DefaultExchangisDataSourceContext();
-//    }
 
-
+    @Bean
+    public ExchangisDataSourceContext context() throws Exception {
+        DefaultExchangisDataSourceContext context = new DefaultExchangisDataSourceContext();
+        ExchangisDataSourceLoader loader = ExchangisDataSourceLoaderFactory.getLoader();
+        loader.setContext(context);
+        try {
+            loader.init();
+        } catch (Exception e) {
+            throw new ErrorException(70059, e.getMessage());
+        }
+        return context;
+    }
 
 }
