@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.core.loader;
 
 
+import com.webank.wedatasphere.exchangis.dao.hook.MapperHook;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 
@@ -20,7 +21,7 @@ public interface ExchangisDataSourceLoader {
 
     void setContext(ExchangisDataSourceContext context);
 
-    void init() throws Exception;
+    void init(MapperHook mapperHook) throws Exception;
 
     ExchangisDataSource load(String dataSourceType);
 

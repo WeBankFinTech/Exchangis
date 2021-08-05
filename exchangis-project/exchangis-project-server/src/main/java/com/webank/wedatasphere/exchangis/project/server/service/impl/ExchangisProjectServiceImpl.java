@@ -33,6 +33,9 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
         String projectName = createProjectRequest.getProjectName();
         String description = createProjectRequest.getDescription();
         String tags = createProjectRequest.getTags();
+        String editUsers = createProjectRequest.getEditUsers();
+        String viewUsers = createProjectRequest.getViewUsers();
+        String execUsers = createProjectRequest.getExecUsers();
 
         Date now = new Date();
         ExchangisProject entity = new ExchangisProject();
@@ -41,17 +44,22 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
         entity.setDssProjectId(1L);
         entity.setName(projectName);
         entity.setTags(tags);
+        entity.setEditUsers(editUsers);
+        entity.setViewUsers(viewUsers);
+        entity.setExecUsers(execUsers);
         entity.setWorkspaceName(workspaceName);
         entity.setDescription(description);
 
         int insert = this.exchangisProjectMapper.insert(entity);
-
+        if (insert <= 0) {
+            throw new ExchangisProjectErrorException(30041, "exchangis.project.create.error");
+        }
         return entity;
     }
 
     @Transactional
     @Override
-    public ExchangisProject updateProject(String username, UpdateProjectRequest updateProjectRequest) {
+    public ExchangisProject updateProject(String username, UpdateProjectRequest updateProjectRequest) throws ExchangisProjectErrorException {
         ExchangisProject exchangisProject = this.exchangisProjectMapper.selectById(updateProjectRequest.getId());
         if(!Strings.isNullOrEmpty(updateProjectRequest.getDescription())) {
             exchangisProject.setDescription(updateProjectRequest.getDescription());
@@ -60,8 +68,26 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
             exchangisProject.setName(updateProjectRequest.getProjectName());
         }
 
-        int i = this.exchangisProjectMapper.updateById(exchangisProject);
+        if (!Strings.isNullOrEmpty(updateProjectRequest.getTags())) {
+            exchangisProject.setTags(updateProjectRequest.getTags());
+        }
 
+        if (!Strings.isNullOrEmpty(updateProjectRequest.getViewUsers())) {
+            exchangisProject.setViewUsers(updateProjectRequest.getViewUsers());
+        }
+
+        if (!Strings.isNullOrEmpty(updateProjectRequest.getEditUsers())) {
+            exchangisProject.setExecUsers(updateProjectRequest.getEditUsers());
+        }
+
+        if (!Strings.isNullOrEmpty(updateProjectRequest.getExecUsers())) {
+            exchangisProject.setExecUsers(updateProjectRequest.getExecUsers());
+        }
+
+        int ret = this.exchangisProjectMapper.updateById(exchangisProject);
+        if (ret <= 0) {
+            throw new ExchangisProjectErrorException(30041, "exchangis.project.update.error");
+        }
         return exchangisProject;
     }
 

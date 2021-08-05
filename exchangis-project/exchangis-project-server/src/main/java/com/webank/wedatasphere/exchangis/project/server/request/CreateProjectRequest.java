@@ -10,6 +10,12 @@ public class CreateProjectRequest {
 
     private String tags;
 
+    private String editUsers;
+
+    private String viewUsers;
+
+    private String execUsers;
+
     public String getProjectName() {
         return projectName;
     }
@@ -40,5 +46,29 @@ public class CreateProjectRequest {
 
     public void setWorkspaceName(String workspaceName) {
         this.workspaceName = workspaceName;
+    }
+
+    public String getEditUsers() {
+        return editUsers;
+    }
+
+    public void setEditUsers(String editUsers) {
+        this.editUsers = editUsers;
+    }
+
+    public String getViewUsers() {
+        return viewUsers;
+    }
+
+    public void setViewUsers(String viewUsers) {
+        this.viewUsers = viewUsers;
+    }
+
+    public String getExecUsers() {
+        return execUsers;
+    }
+
+    public void setExecUsers(String execUsers) {
+        this.execUsers = execUsers;
     }
 }

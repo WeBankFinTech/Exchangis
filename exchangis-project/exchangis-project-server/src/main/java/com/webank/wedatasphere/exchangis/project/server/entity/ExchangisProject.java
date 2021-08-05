@@ -11,6 +11,9 @@ public class ExchangisProject {
     private String lastUpdateBy;
     private Date lastUpdateTime;
     private String tags;
+    private String editUsers;
+    private String viewUsers;
+    private String execUsers;
     private String workspaceName;
     private Long dssProjectId;
 
@@ -100,4 +103,27 @@ public class ExchangisProject {
         this.dssProjectId = dssProjectId;
     }
 
+    public String getEditUsers() {
+        return editUsers;
+    }
+
+    public void setEditUsers(String editUsers) {
+        this.editUsers = editUsers;
+    }
+
+    public String getViewUsers() {
+        return viewUsers;
+    }
+
+    public void setViewUsers(String viewUsers) {
+        this.viewUsers = viewUsers;
+    }
+
+    public String getExecUsers() {
+        return execUsers;
+    }
+
+    public void setExecUsers(String execUsers) {
+        this.execUsers = execUsers;
+    }
 }
