@@ -2,20 +2,16 @@ package com.webank.wedatasphere.exchangis.datasource.core.ui;
 
 import java.util.Collection;
 
-public class OptionElementUI<V> implements ElementUI {
+public class OptionElementUI implements ElementUI {
 
     private String field;
     private String label;
-    private Collection<V> values;
-    private V selected;
+    private Collection<String> values;
+    private String value;
+    private Integer sort;
 
     public String getField() {
         return field;
-    }
-
-    @Override
-    public String getIcon() {
-        return "icon-option";
     }
 
     @Override
@@ -23,15 +19,11 @@ public class OptionElementUI<V> implements ElementUI {
         return ElementUI.OPTION;
     }
 
-    @Override
-    public String getUIContent() {
-        return "";
-    }
-
     public void setField(String field) {
         this.field = field;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -40,19 +32,28 @@ public class OptionElementUI<V> implements ElementUI {
         this.label = label;
     }
 
-    public Collection<V> getValues() {
+    public Collection<String> getValues() {
         return values;
     }
 
-    public void setValues(Collection<V> values) {
+    public void setValues(Collection<String> values) {
         this.values = values;
     }
 
-    public V getSelected() {
-        return selected;
+    public String getValue() {
+        return value;
     }
 
-    public void setSelected(V selected) {
-        this.selected = selected;
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
     }
 }

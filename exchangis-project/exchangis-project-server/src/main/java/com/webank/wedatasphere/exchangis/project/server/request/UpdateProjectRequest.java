@@ -8,7 +8,13 @@ public class UpdateProjectRequest {
 
     private String description;
 
-    private String creator;
+    private String tags;
+
+    private String editUsers;
+
+    private String viewUsers;
+
+    private String execUsers;
 
     public Long getId() {
         return id;
@@ -34,11 +40,35 @@ public class UpdateProjectRequest {
         this.description = description;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getTags() {
+        return tags;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public String getEditUsers() {
+        return editUsers;
+    }
+
+    public void setEditUsers(String editUsers) {
+        this.editUsers = editUsers;
+    }
+
+    public String getViewUsers() {
+        return viewUsers;
+    }
+
+    public void setViewUsers(String viewUsers) {
+        this.viewUsers = viewUsers;
+    }
+
+    public String getExecUsers() {
+        return execUsers;
+    }
+
+    public void setExecUsers(String execUsers) {
+        this.execUsers = execUsers;
     }
 }
