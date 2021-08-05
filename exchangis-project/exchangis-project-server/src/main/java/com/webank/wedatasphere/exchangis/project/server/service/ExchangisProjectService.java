@@ -10,7 +10,7 @@ public interface ExchangisProjectService {
 
      ExchangisProject createProject(String username, CreateProjectRequest createProjectRequest) throws ExchangisProjectErrorException;
 
-     ExchangisProject updateProject(String username, UpdateProjectRequest updateProjectRequest);
+     ExchangisProject updateProject(String username, UpdateProjectRequest updateProjectRequest) throws ExchangisProjectErrorException;
 
 //     ExchangisProject createProject(CreateStreamProjectRequest createStreamProjectRequest) throws ExchangisProjectErrorException;
 //
