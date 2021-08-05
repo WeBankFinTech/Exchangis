@@ -40,7 +40,9 @@ public class ExchangisProjectRestful {
     @POST
     @Path("createProject")
     public Response createProject(@Context HttpServletRequest request, @Valid CreateProjectRequest createProjectRequest){
-        String username = SecurityFilter.getLoginUsername(request);
+        // TODO
+//        String username = SecurityFilter.getLoginUsername(request);
+        String username = "hdfs";
         try{
             ExchangisProject exchangisProject = projectService.createProject(username, createProjectRequest);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
@@ -55,7 +57,10 @@ public class ExchangisProjectRestful {
     @POST
     @Path("updateProject")
     public Response updateProject(@Context HttpServletRequest request, @Valid UpdateProjectRequest updateProjectRequest){
-        String username = SecurityFilter.getLoginUsername(request);
+        // TODO
+//        String username = SecurityFilter.getLoginUsername(request);
+
+        String username = "hdfs";
         try {
             ExchangisProject exchangisProject = projectService.updateProject(username, updateProjectRequest);
             return ExchangisProjectRestfulUtils.dealOk("更新工程成功",
