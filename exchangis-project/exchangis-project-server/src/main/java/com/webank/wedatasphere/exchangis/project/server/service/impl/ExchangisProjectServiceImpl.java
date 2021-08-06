@@ -1,10 +1,12 @@
 package com.webank.wedatasphere.exchangis.project.server.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.project.server.dao.ExchangisProjectMapper;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.exception.ExchangisProjectErrorException;
 import com.webank.wedatasphere.exchangis.project.server.request.CreateProjectRequest;
+import com.webank.wedatasphere.exchangis.project.server.request.ProjectQueryRequest;
 import com.webank.wedatasphere.exchangis.project.server.request.UpdateProjectRequest;
 import com.webank.wedatasphere.exchangis.project.server.service.ExchangisProjectService;
 import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ExchangisProjectServiceImpl implements ExchangisProjectService {
@@ -89,6 +92,14 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
             throw new ExchangisProjectErrorException(30041, "exchangis.project.update.error");
         }
         return exchangisProject;
+    }
+
+    @Override
+    public List<ExchangisProject> queryProjects(ProjectQueryRequest projectQueryRequest) {
+        QueryWrapper<ExchangisProject> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("create_by", projectQueryRequest.getUsername());
+
+        return this.exchangisProjectMapper.selectList(queryWrapper);
     }
 
 //    @Override
