@@ -22,10 +22,13 @@ import com.webank.wedatasphere.exchangis.datasource.dto.ExchangisDataSourceDTO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceUpdateVO;
 import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
+import com.webank.wedatasphere.linkis.datasource.client.request.MetadataGetColumnsAction;
 import com.webank.wedatasphere.linkis.datasource.client.request.MetadataGetDatabasesAction;
 import com.webank.wedatasphere.linkis.datasource.client.request.MetadataGetTablesAction;
+import com.webank.wedatasphere.linkis.datasource.client.response.MetadataGetColumnsResult;
 import com.webank.wedatasphere.linkis.datasource.client.response.MetadataGetDatabasesResult;
 import com.webank.wedatasphere.linkis.datasource.client.response.MetadataGetTablesResult;
+import com.webank.wedatasphere.linkis.metadatamanager.common.domain.MetaColumnInfo;
 import com.webank.wedatasphere.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,8 +83,6 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
         ExchangisJobParamsContent params = content.getParams();
         List<ExchangisJobParamConfig> sourceParamConfigs = Collections.emptyList();
         List<ExchangisJobParamConfig> sinkParamConfigs = Collections.emptyList();
-        List<ElementUI> sourceParamsUI;
-        List<ElementUI> sinkParamsUI;
         if (null != dataSourceIdsUI) {
             ExchangisDataSourceIdUI source = dataSourceIdsUI.getSource();
             if (null != source) {
@@ -236,5 +237,156 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
         List<String> tbs = tables.getTables();
 
         return Message.ok().data("tbs", tbs);
+    }
+
+    public Message getJobDataSourceParamsUI(Long jobId) {
+        if (Objects.isNull(jobId)) {
+            return null;
+        }
+
+        ExchangisJobInfo job = this.exchangisJobInfoMapper.selectById(jobId);
+        if (Objects.isNull(job)) {
+            return null;
+        }
+
+        String jobContent = job.getContent();
+        ExchangisJobInfoContent content;
+        // 转换 content
+        if (Strings.isNullOrEmpty(jobContent)) {
+            content = new ExchangisJobInfoContent();
+        } else {
+            try {
+                content = this.mapper.readValue(jobContent, ExchangisJobInfoContent.class);
+            } catch (JsonProcessingException e) {
+                content = new ExchangisJobInfoContent();
+            }
+        }
+
+        // ----------- 构建 dataSourceIdsUI
+        ExchangisDataSourceIdsUI dataSourceIdsUI = ExchangisDataSourceUIViewBuilder.getDataSourceIdsUI(content.getDataSources());
+
+        // ----------- 构建 dataSourceParamsUI
+        ExchangisJobParamsContent params = content.getParams();
+        List<ExchangisJobParamConfig> sourceParamConfigs = Collections.emptyList();
+        List<ExchangisJobParamConfig> sinkParamConfigs = Collections.emptyList();
+        if (null != dataSourceIdsUI) {
+            ExchangisDataSourceIdUI source = dataSourceIdsUI.getSource();
+            if (null != source) {
+                String type = source.getType();
+                ExchangisDataSource exchangisSourceDataSource = this.context.getExchangisDataSource(type);
+                if (null != exchangisSourceDataSource) {
+                    sourceParamConfigs = exchangisSourceDataSource.getDataSourceParamConfigs();
+                }
+            }
+
+            ExchangisDataSourceIdUI sink = dataSourceIdsUI.getSink();
+            if (null != sink) {
+                String type = sink.getType();
+                ExchangisDataSource exchangisSinkDataSource = this.context.getExchangisDataSource(type);
+                if (null != exchangisSinkDataSource) {
+                    sinkParamConfigs = exchangisSinkDataSource.getDataSourceParamConfigs();
+                }
+            }
+        }
+
+        List<ExchangisJobParamsContent.ExchangisJobParamsItem> sourceParamsItems = Collections.emptyList();
+        List<ExchangisJobParamsContent.ExchangisJobParamsItem> sinkParamsItems = Collections.emptyList();
+        if (null != params && null != params.getSources()) {
+            sourceParamsItems = params.getSources();
+        }
+        if (null != params && null != params.getSinks()) {
+            sinkParamsItems = params.getSinks();
+        }
+
+        List<ElementUI> jobDataSourceParamsUI1 = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(sourceParamConfigs, sourceParamsItems);
+        List<ElementUI> jobDataSourceParamsUI2 = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(sinkParamConfigs, sinkParamsItems);
+        ExchangisDataSourceParamsUI paramsUI = new ExchangisDataSourceParamsUI();
+        paramsUI.setSources(jobDataSourceParamsUI1);
+        paramsUI.setSinks(jobDataSourceParamsUI2);
+
+        return Message.ok().data("ui", paramsUI);
+    }
+
+    public Message getJobDataSourceTransformsUI(Long jobId) {
+        if (Objects.isNull(jobId)) {
+            return null;
+        }
+
+        ExchangisJobInfo job = this.exchangisJobInfoMapper.selectById(jobId);
+        if (Objects.isNull(job)) {
+            return null;
+        }
+
+        String jobContent = job.getContent();
+        ExchangisJobInfoContent content;
+        // 转换 content
+        if (Strings.isNullOrEmpty(jobContent)) {
+            content = new ExchangisJobInfoContent();
+        } else {
+            try {
+                content = this.mapper.readValue(jobContent, ExchangisJobInfoContent.class);
+            } catch (JsonProcessingException e) {
+                content = new ExchangisJobInfoContent();
+            }
+        }
+
+        // ----------- 构建 dataSourceTransformsUI
+        List<ExchangisJobTransformsItem> transforms = content.getTransforms();
+        ExchangisDataSourceTransformsUI dataSourceTransFormsUI = ExchangisDataSourceUIViewBuilder.getDataSourceTransFormsUI(transforms);
+
+        return Message.ok().data("ui", dataSourceTransFormsUI);
+    }
+
+    public Message getJobDataSourceSettingsUI(Long jobId) {
+        if (Objects.isNull(jobId)) {
+            return null;
+        }
+
+        ExchangisJobInfo job = this.exchangisJobInfoMapper.selectById(jobId);
+        if (Objects.isNull(job)) {
+            return null;
+        }
+
+        String jobContent = job.getContent();
+        ExchangisJobInfoContent content;
+        // 转换 content
+        if (Strings.isNullOrEmpty(jobContent)) {
+            content = new ExchangisJobInfoContent();
+        } else {
+            try {
+                content = this.mapper.readValue(jobContent, ExchangisJobInfoContent.class);
+            } catch (JsonProcessingException e) {
+                content = new ExchangisJobInfoContent();
+            }
+        }
+
+        // ----------- 构建 dataSourceSettingsUI
+        List<ExchangisJobParamsContent.ExchangisJobParamsItem> settings = content.getSettings();
+        String engineType = job.getEngineType();
+        QueryWrapper<ExchangisJobParamConfig> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("type", engineType);
+        queryWrapper.eq("is_hidden", 0);
+        queryWrapper.eq("status", 1);
+        List<ExchangisJobParamConfig> settingParamConfigs = exchangisJobParamConfigMapper.selectList(queryWrapper);
+        List<ElementUI> jobDataSourceSettingsUI = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(settingParamConfigs, settings);
+
+        return Message.ok().data("ui", jobDataSourceSettingsUI);
+    }
+
+    public Message queryDataSourceDBTableFields(HttpServletRequest request, String type, Long id, String dbName, String tableName) {
+        ExchangisDataSource exchangisDataSource = context.getExchangisDataSource(type);
+        LinkisMetaDataRemoteClient metaDataRemoteClient = exchangisDataSource.getMetaDataRemoteClient();
+
+        MetadataGetColumnsResult columns = metaDataRemoteClient.getColumns(MetadataGetColumnsAction.builder()
+                .setSystem("system")
+                .setDataSourceId(id)
+                .setDatabase(dbName)
+                .setTable(tableName)
+                .setUser("hdfs")
+                .build());
+
+        List<MetaColumnInfo> allColumns = columns.getAllColumns();
+
+        return Message.ok().data("columns", allColumns);
     }
 }

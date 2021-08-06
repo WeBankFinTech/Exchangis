@@ -75,6 +75,13 @@ public class ExchangisDataSourceRestfulApi {
     }
 
     @GET
+    @Path("datasources/{type}/{id}/dbs/{dbName}/tables/{tableName}/fields")
+    public Response queryDataSourceDBTableFields(@Context HttpServletRequest request, @PathParam("type") String type, @PathParam("id") Long id, @PathParam("dbName") String dbName, @PathParam("tableName") String tableName) throws Exception {
+        Message message = this.exchangisDataSourceService.queryDataSourceDBTableFields(request, type, id, dbName, tableName);
+        return Message.messageToResponse(message);
+    }
+
+    @GET
     @Path("datasources/{type}/params/ui")
     public Response getParamsUI(@Context HttpServletRequest request, @PathParam("type")String type) {
         List<ElementUI> uis = this.exchangisDataSourceService.getDataSourceParamsUI(type);

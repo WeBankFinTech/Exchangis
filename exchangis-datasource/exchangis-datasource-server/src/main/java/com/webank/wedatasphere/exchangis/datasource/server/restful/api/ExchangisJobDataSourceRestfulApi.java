@@ -23,22 +23,16 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("exchangis")
-public class ExchangisJobRestfulApi {
+public class ExchangisJobDataSourceRestfulApi {
 
-    private final ExchangisDataSourceContext context;
-    private final ExchangisJobInfoMapper exchangisJobInfoMapper;
-    private final ExchangisJobParamConfigMapper exchangisJobParamConfigMapper;
     private final ExchangisDataSourceService exchangisDataSourceService;
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public ExchangisJobRestfulApi(ExchangisDataSourceService exchangisDataSourceService, ExchangisDataSourceContext context, ExchangisJobInfoMapper exchangisJobInfoMapper, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper) {
+    public ExchangisJobDataSourceRestfulApi(ExchangisDataSourceService exchangisDataSourceService) {
         this.exchangisDataSourceService = exchangisDataSourceService;
-        this.context = context;
-        this.exchangisJobInfoMapper = exchangisJobInfoMapper;
-        this.exchangisJobParamConfigMapper = exchangisJobParamConfigMapper;
     }
 
+    // 根据 任务ID 获取该任务的数据源所有配置项 UI 数据
     @GET
     @Path("jobs/{jobId}/datasource/ui")
     public Response getJobDataSourcesUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId) {
@@ -47,6 +41,7 @@ public class ExchangisJobRestfulApi {
         return Message.messageToResponse(message);
     }
 
+    // 根据 任务引擎类型 获取该引擎的配置项 UI 数据
     @GET
     @Path("jobs/engine/{engineType}/settings/ui")
     public Response getJobEngineSettingsUI(@Context HttpServletRequest request, @PathParam("engineType")String engineType) {
@@ -55,24 +50,27 @@ public class ExchangisJobRestfulApi {
         return Message.messageToResponse(message);
     }
 
+    // 根据 任务ID 获取该任务的数据源配置项 UI 数据
     @GET
     @Path("jobs/{jobId}/datasource/params/ui")
-    public Response getJobParamsUI(@Context HttpServletRequest request) {
-        Message message = Message.ok();
+    public Response getJobDataSourceParamsUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId) {
+        Message message = this.exchangisDataSourceService.getJobDataSourceParamsUI(jobId);
         return Message.messageToResponse(message);
     }
 
+    // 根据 任务ID 获取该任务的数据源字段映射 UI 数据
     @GET
     @Path("jobs/{jobId}/datasource/transforms/ui")
-    public Response getJobTransformsUI(@Context HttpServletRequest request) {
-        Message message = Message.ok();
+    public Response getJobTransformsUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId) {
+        Message message = this.exchangisDataSourceService.getJobDataSourceTransformsUI(jobId);
         return Message.messageToResponse(message);
     }
 
+    // 根据 任务ID 获取该任务的数据源引擎配置项 UI 数据
     @GET
     @Path("jobs/{jobId}/datasource/settings/ui")
-    public Response getJobSettingsUI(@Context HttpServletRequest request) {
-        Message message = Message.ok();
+    public Response getJobSettingsUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId) {
+        Message message = this.exchangisDataSourceService.getJobDataSourceSettingsUI(jobId);
         return Message.messageToResponse(message);
     }
 }
