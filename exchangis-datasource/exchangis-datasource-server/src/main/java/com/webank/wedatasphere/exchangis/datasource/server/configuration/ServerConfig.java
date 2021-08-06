@@ -26,6 +26,4 @@ public class ServerConfig {
         return context;
     }
 
-
-
 }
