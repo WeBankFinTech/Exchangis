@@ -7,6 +7,7 @@
         "column": ${column|["*"]},
         "fileType": #{fileType|TEXT},
         "encoding": #{encoding|UTF-8},
+        "hivePrincipal": "hadoop/_HOST@EXAMPLE.COM",
         "fieldDelimiter": #{fieldDelimiter|\u0001},
         "partitionValues": #{partitions},
         "hiveTable": #{table},
