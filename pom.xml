@@ -22,110 +22,239 @@
 
 	<groupId>com.webank.wedatasphere.exchangis</groupId>
 	<artifactId>exchangis</artifactId>
-	<version>0.5.0.RELEASE</version>
+	<version>1.0.0-RC1</version>
 	<packaging>pom</packaging>
 
 	<name>exchangis</name>
 	<description>Unified data exchange service</description>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.1.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+	<licenses>
+		<license>
+			<name>Apache 2.0 License</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<properties>
-		<project-sourceEncoding>UTF-8</project-sourceEncoding>
+		<dss.version>1.0.0-RC1</dss.version>
+		<linkis.version>1.0.1</linkis.version>
+		<streamis.version>0.1.0-SNAPSHOT</streamis.version>
+		<scala.version>2.11.8</scala.version>
+		<jdk.compile.version>1.8</jdk.compile.version>
+		<maven.version>3.3.3</maven.version>
+		<gson.version>2.8.5</gson.version>
+		<fasterxml.jackson.version>2.11.3</fasterxml.jackson.version>
+		<org.codehaus.jackson.version>1.9.13</org.codehaus.jackson.version>
+		<math3.version>3.1.1</math3.version>
+		<httpclient.version>4.5.4</httpclient.version>
+		<httpmime.version>4.5.4</httpmime.version>
+		<beanutils.version>1.9.4</beanutils.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-		<java.version>1.8</java.version>
-		<hadoop.version>2.7.2</hadoop.version>
-		<hive.version>1.2.1</hive.version>
-		<es.version>6.7.1</es.version>
-        <commons.lang3.version>3.4</commons.lang3.version>
-		<spring-cloud.version>Finchley.SR1</spring-cloud.version>
-		<guava-version>16.0.1</guava-version>
-		<bdp.udes.version>1.2.0</bdp.udes.version>
-		<jackson.version>2.11.0</jackson.version>
+		<spring.version>5.2.12.RELEASE</spring.version>
+		<mybatis.spring.boot.version>2.1.2</mybatis.spring.boot.version>
+		<spring.boot.version>2.3.7.RELEASE</spring.boot.version>
+		<spring.cloud.version>2.2.6.RELEASE</spring.cloud.version>
+		<commons.math.version>3.1.1</commons.math.version>
+		<commons.lang3.version>3.8.1</commons.lang3.version>
+		<commons.lang.version>2.6</commons.lang.version>
+		<reflections.version>0.9.10</reflections.version>
+		<jersey-bean-validation.version>2.21</jersey-bean-validation.version>
+		<aspectj.version>1.9.5</aspectj.version>
+		<xstream.version>1.4.15</xstream.version>
+		<jobmanager.version>0.1.0-SNAPSHOT</jobmanager.version>
 	</properties>
 
+
 	<modules>
-		<module>modules/eureka</module>
-		<module>modules/common</module>
-		<module>modules/service</module>
-		<module>modules/gateway</module>
-		<module>modules/executor</module>
-		<module>assembly</module>
+		<module>exchangis-project</module>
+		<module>exchangis-plugins</module>
+		<module>exchangis-datasource</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-library</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-compiler</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-reflect</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scalap</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>${commons.lang.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.webank.wedatasphere.linkis</groupId>
+				<artifactId>linkis-mybatis</artifactId>
+				<version>${linkis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.webank.wedatasphere.linkis</groupId>
+				<artifactId>linkis-module</artifactId>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-tomcat</artifactId>
+					</exclusion>
+					<exclusion>
+						<artifactId>hibernate-validator</artifactId>
+						<groupId>org.hibernate.validator</groupId>
+					</exclusion>
+				</exclusions>
+				<version>${linkis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.webank.wedatasphere.linkis</groupId>
+				<artifactId>linkis-common</artifactId>
+				<version>${linkis.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.webank.wedatasphere.linkis</groupId>
+				<artifactId>linkis-protocol</artifactId>
+				<version>${linkis.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.version}</version>
+				<artifactId>jackson-databind</artifactId>
+				<version>${fasterxml.jackson.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger2</artifactId>
-				<version>2.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger-ui</artifactId>
-				<version>2.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.38</version>
-			</dependency>
-			<dependency>
-				<groupId>org.mybatis.spring.boot</groupId>
-				<artifactId>mybatis-spring-boot-starter</artifactId>
-				<version>1.3.2</version>
-			</dependency>
-			<dependency>
-				<groupId>com.alibaba</groupId>
-				<artifactId>druid-spring-boot-starter</artifactId>
-				<version>1.1.9</version>
-			</dependency>
-			<!--sigar-->
-			<dependency>
-				<groupId>org.fusesource</groupId>
-				<artifactId>sigar</artifactId>
-				<version>1.6.4</version>
-			</dependency>
-			<dependency>
-				<groupId>com.alibaba</groupId>
-				<artifactId>fastjson</artifactId>
-				<version>1.2.68</version>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-mapper-asl</artifactId>
+				<version>${org.codehaus.jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>${commons.lang3.version}</version>
+				<artifactId>commons-math3</artifactId>
+				<version>${commons.math.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>3.1.0</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava-version}</version>
+				<artifactId>xstream</artifactId>
+				<groupId>com.thoughtworks.xstream</groupId>
+				<version>${xstream.version}</version>
 			</dependency>
 		</dependencies>
-
 	</dependencyManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>1.4.1</version>
+					<executions>
+						<execution>
+							<id>enforce-versions</id>
+							<goals>
+								<goal>enforce</goal>
+							</goals>
+							<configuration>
+								<rules>
+									<requireMavenVersion>
+										<version>${maven.version}</version>
+									</requireMavenVersion>
+									<requireJavaVersion>
+										<version>${java.version}</version>
+									</requireJavaVersion>
+									<bannedDependencies>
+										<excludes>
+											<exclude>org.jboss.netty</exclude>
+										</excludes>
+										<searchTransitive>true</searchTransitive>
+									</bannedDependencies>
+								</rules>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.5.1</version>
+					<configuration>
+						<source>${jdk.compile.version}</source>
+						<target>${jdk.compile.version}</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.3</version>
+				</plugin>
+				<plugin>
+					<groupId>net.alchim31.maven</groupId>
+					<artifactId>scala-maven-plugin</artifactId>
+					<version>3.2.2</version>
+					<executions>
+						<execution>
+							<id>eclipse-add-source</id>
+							<goals>
+								<goal>add-source</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>scala-compile-first</id>
+							<phase>process-resources</phase>
+							<goals>
+								<goal>compile</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>scala-test-compile-first</id>
+							<phase>process-test-resources</phase>
+							<goals>
+								<goal>testCompile</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>attach-scaladocs</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>doc-jar</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<scalaVersion>${scala.version}</scalaVersion>
+						<recompileMode>incremental</recompileMode>
+						<useZincServer>true</useZincServer>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 </project>
