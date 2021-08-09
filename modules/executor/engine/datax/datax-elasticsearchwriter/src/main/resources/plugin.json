@@ -1,6 +1,0 @@
-{
-  "name": "elasticsearchwriter",
-  "class": "com.webank.wedatasphere.exchangis.datax.plugin.writer.elasticsearchwriter.v6.ElasticWriter",
-  "description": "elastic",
-  "developer": "webank"
-}
