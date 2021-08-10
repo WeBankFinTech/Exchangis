@@ -46,13 +46,27 @@
     "@webank/eslint-config-webank": "0.3.0"
   },
   "dependencies": {
+<<<<<<< Updated upstream
     "@fesjs/fes": "^2.0.0",
     "@fesjs/plugin-access": "^2.0.0",
     "@fesjs/plugin-layout": "^2.0.0",
     "@fesjs/plugin-model": "^2.0.0",
     "@fesjs/plugin-enums": "^2.0.0",
+=======
+    "@ant-design/icons-vue": "^6.0.1",
+    "@fesjs/fes": "^2.0.0",
+    "@fesjs/plugin-access": "^2.0.0",
+    "@fesjs/plugin-enums": "^2.0.0",
+    "@fesjs/plugin-layout": "^2.0.0",
+    "@fesjs/plugin-model": "^2.0.0",
+    "@fesjs/plugin-request": "^2.0.2",
+>>>>>>> Stashed changes
     "ant-design-vue": "^2.2.0",
     "vue": "^3.1.0"
   },
   "private": true
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

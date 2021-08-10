@@ -1,0 +1,10 @@
+INSERT INTO `exchangis_job_param_config`(config_key, config_name, type, ui_type, ui_field, ui_label, value_type, value_range, default_value, validate_type, validate_range, is_hidden, is_advanced, level, treename, sort, description, status) VALUES ('exchangis.job.ds.params.hive.transform_type', '传输方式', 'HIVE', 'OPTION', 'transform', '传输方式', 'ARRAY', '[\"Record\", \"二进制\"]', 'Record', '', '', 0, 0, 1, '', 1, '', 1);
+
+INSERT INTO `exchangis_job_param_config`(config_key, config_name, type, ui_type, ui_field, ui_label, value_type, value_range, default_value, validate_type, validate_range, is_hidden, is_advanced, level, treename, sort, description, status) VALUES ('exchangis.datax.setting.speed.channel', '并发数', 'DATAX', 'INPUT', 'channel', '并发数', 'NUMBER', '1', '1', '', '', 0, 0, 1, '', 1, '', 1);
+INSERT INTO `exchangis_job_param_config`(config_key, config_name, type, ui_type, ui_field, ui_label, value_type, value_range, default_value, validate_type, validate_range, is_hidden, is_advanced, level, treename, sort, description, status) VALUES ('exchangis.datax.setting.speed.byte', '传输速率', 'DATAX', 'INPUT', 'channel', '传输速率', 'NUMBER', '', '', '', '', 0, 0, 1, '', 1, '', 1);
+INSERT INTO `exchangis_job_param_config`(config_key, config_name, type, ui_type, ui_field, ui_label, value_type, value_range, default_value, validate_type, validate_range, is_hidden, is_advanced, level, treename, sort, description, status) VALUES ('exchangis.datax.setting.errorlimit.record', '脏数据最大记录数', 'DATAX', 'INPUT', 'errorlimit_record', '脏数据最大记录数', 'NUMBER', '', '', '', '', 0, 0, 1, '', 1, '', 1);
+INSERT INTO `exchangis_job_param_config`(config_key, config_name, type, ui_type, ui_field, ui_label, value_type, value_range, default_value, validate_type, validate_range, is_hidden, is_advanced, level, treename, sort, description, status) VALUES ('exchangis.datax.setting.errorlimit.percentage', '脏数据占比阈值', 'DATAX', 'INPUT', 'errorlimit_percentage', '脏数据占比阈值', 'DOUBLE', '', '', '', '', 0, 0, 1, '', 1, '', 1);
+
+
+
+

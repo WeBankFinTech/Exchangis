@@ -70,7 +70,9 @@
 		<module>exchangis-project</module>
 		<module>exchangis-plugins</module>
 		<module>exchangis-datasource</module>
-	</modules>
+        <module>exchangis-dao</module>
+        <module>exchangis-server</module>
+    </modules>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
