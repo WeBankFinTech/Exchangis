@@ -3,23 +3,12 @@ package com.webank.wedatasphere.exchangis.datasource.core.ui;
 public class InputElementUI implements ElementUI {
 
     private String field;
-    private String icon;
-    private String content;
+    private String label;
+    private Integer sort;
+    private String value;
 
     public void setField(String field) {
         this.field = field;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     @Override
@@ -28,8 +17,12 @@ public class InputElementUI implements ElementUI {
     }
 
     @Override
-    public String getIcon() {
-        return this.icon;
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     @Override
@@ -38,8 +31,20 @@ public class InputElementUI implements ElementUI {
     }
 
     @Override
-    public String getUIContent() {
-        return this.content;
+    public Integer getSort() {
+        return sort;
     }
 
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
+
+    @Override
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

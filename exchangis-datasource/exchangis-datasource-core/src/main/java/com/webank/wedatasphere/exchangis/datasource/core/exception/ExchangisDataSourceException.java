@@ -1,24 +1,14 @@
 package com.webank.wedatasphere.exchangis.datasource.core.exception;
 
-public class ExchangisDataSourceException extends RuntimeException {
+import com.webank.wedatasphere.linkis.common.exception.ErrorException;
 
-    public ExchangisDataSourceException() {
+public class ExchangisDataSourceException extends ErrorException {
+
+    public ExchangisDataSourceException(int errCode, String desc) {
+        super(errCode, desc);
     }
 
-    public ExchangisDataSourceException(String message) {
-        super(message);
+    public ExchangisDataSourceException(int errCode, String desc, String ip, int port, String serviceKind) {
+        super(errCode, desc, ip, port, serviceKind);
     }
-
-    public ExchangisDataSourceException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public ExchangisDataSourceException(Throwable cause) {
-        super(cause);
-    }
-
-    public ExchangisDataSourceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-
 }
