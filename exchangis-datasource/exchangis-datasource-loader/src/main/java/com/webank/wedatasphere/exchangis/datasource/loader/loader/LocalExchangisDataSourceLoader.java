@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.loader.loader;
 
+import com.webank.wedatasphere.exchangis.dao.hook.MapperHook;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceLoader;
@@ -33,11 +34,11 @@ public class LocalExchangisDataSourceLoader implements ExchangisDataSourceLoader
     }
 
     @Override
-    public void init() throws Exception {
+    public void init(MapperHook mapperHook) throws Exception {
         // 初始化磁盘扫描加载
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         String loadClassPath =  Objects.requireNonNull(currentClassLoader.getResource("")).getPath();
-        String libPathUrl = loadClassPath + ".." + File.separator + ".." + File.separator + APPCONN_DIR_NAME;
+        String libPathUrl = loadClassPath + ".." + File.separator + ".." + File.separator + EXCHANGIS_DIR_NAME;
         LOGGER.info("libPath url is {}",  libPathUrl);
 
         List<URL> jars = ExtDsUtils.getJarsUrlsOfPath(libPathUrl);
@@ -57,90 +58,13 @@ public class LocalExchangisDataSourceLoader implements ExchangisDataSourceLoader
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
             } else {
                 ExchangisDataSource exchangisDataSource = (ExchangisDataSource) clazz.newInstance();
+                exchangisDataSource.setMapperHook(mapperHook);
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
                 LOGGER.info("ExchangisDataSource is {}", exchangisDataSource.getClass().toString());
 
                 context.addExchangisDataSource(exchangisDataSource);
             }
         }
-
-
-//        jars.forEach(jar -> {
-//            String path = jar.getPath();
-//            System.out.println(path);
-//        });
-//        for (URL jar: jars) {
-//            // 为了加载jar包的类，需要URLClassLoader
-//            ;
-//            URL[] urls = new URL[]{jar};
-//            ClassLoader classLoader = new ExchangisDataSourceClassLoader(urls/*jars.toArray(new URL[1])*/, currentClassLoader);
-//
-//            Thread.currentThread().setContextClassLoader(classLoader);
-//            String fullClassName = null;
-//            try {
-//                fullClassName = ExtDsUtils.getExchangisExtDataSourceClassName(libPathUrl, classLoader);
-//            } catch (NoSuchExchangisExtDataSourceException e) {
-//                Thread.currentThread().setContextClassLoader(currentClassLoader);
-//                throw e;
-//            }
-//            System.out.println(libPathUrl);
-//            System.out.println(fullClassName);
-//
-//            Class<?> clazz = null;
-//            try {
-//                clazz = classLoader.loadClass(fullClassName);
-//            } catch (ClassNotFoundException e) {
-//                Thread.currentThread().setContextClassLoader(currentClassLoader);
-//                ExceptionHelper.dealErrorException(70062, fullClassName + " class not found ", e, ErrorException.class);
-//            }
-//
-//            if (clazz == null) {
-//                Thread.currentThread().setContextClassLoader(currentClassLoader);
-//            } else {
-//                ExchangisDataSource exchangisDataSource = (ExchangisDataSource) clazz.newInstance();
-//                Thread.currentThread().setContextClassLoader(currentClassLoader);
-//                LOGGER.info("ExchangisDataSource is {}", exchangisDataSource.getClass().toString());
-//
-//                context.addExchangisDataSource(exchangisDataSource);
-//            }
-//        }
-
-
-
-//        URL finalURL = null;
-//        try {
-//            String finalUrlStr = libPathUrl.endsWith("/") ? libPathUrl + "*" : libPathUrl + "/*";
-//            finalURL = new URL(ExchangisDataSourceLoader.FILE_SCHEMA +  finalUrlStr);
-//        } catch (MalformedURLException e) {
-//            DSSExceptionUtils.dealErrorException(70061, libPathUrl + " url is wrong", e, ErrorException.class);
-//        }
-//        List<URL> jars = ExtDsUtils.getJarsUrlsOfPath(libPathUrl);
-//        // 为了加载jar包的类，需要URLClassLoader
-//        ClassLoader classLoader = new ExchangisDataSourceClassLoader(jars.toArray(new URL[1]), currentClassLoader);
-//        Thread.currentThread().setContextClassLoader(classLoader);
-//        String fullClassName;
-//        try {
-//            fullClassName = ExtDsUtils.getExchangisExtDataSourceClassName(dataSourceName, libPathUrl, classLoader);
-//        } catch (NoSuchExchangisExtDataSourceException e) {
-//            Thread.currentThread().setContextClassLoader(currentClassLoader);
-//            throw e;
-//        }
-//        Class<?> clazz = null;
-//        try {
-//            clazz = classLoader.loadClass(fullClassName);
-//        } catch (ClassNotFoundException e) {
-//            Thread.currentThread().setContextClassLoader(currentClassLoader);
-//            DSSExceptionUtils.dealErrorException(70062, fullClassName + " class not found ", e, ErrorException.class);
-//        }
-//        if (clazz == null) {
-//            Thread.currentThread().setContextClassLoader(currentClassLoader);
-//            return null;
-//        } else {
-//            AppConn retAppConn = (AppConn) clazz.newInstance();
-//            Thread.currentThread().setContextClassLoader(currentClassLoader);
-//            LOGGER.info("AppConn is {},  retAppConn is {}", appConnName, retAppConn.getClass().toString());
-//            return retAppConn;
-//        }
 
     }
 
