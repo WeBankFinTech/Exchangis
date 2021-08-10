@@ -1,17 +1,40 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui.viewer;
 
-import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
+import com.webank.wedatasphere.exchangis.datasource.core.ui.*;
 
 import java.util.List;
 
 public class DefaultDataSourceUIViewer implements ExchangisDataSourceUIViewer {
-    @Override
-    public List<ElementUI> getDataSourceParamsUI() {
-        return null;
+
+    private final ExchangisDataSourceIdsUI dataSourceIds;
+    private final ExchangisDataSourceParamsUI params;
+    private final ExchangisDataSourceTransformsUI transforms;
+    private final List<ElementUI> settings;
+
+    public DefaultDataSourceUIViewer(ExchangisDataSourceIdsUI dataSourceIds, ExchangisDataSourceParamsUI params, ExchangisDataSourceTransformsUI transforms, List<ElementUI> settings) {
+        this.dataSourceIds = dataSourceIds;
+        this.params = params;
+        this.transforms = transforms;
+        this.settings = settings;
     }
 
     @Override
-    public List<ElementUI> getTransformUI() {
-        return null;
+    public ExchangisDataSourceIdsUI getDataSourceIds() {
+        return this.dataSourceIds;
+    }
+
+    @Override
+    public ExchangisDataSourceParamsUI getParams() {
+        return this.params;
+    }
+
+    @Override
+    public ExchangisDataSourceTransformsUI getTransforms() {
+        return this.transforms;
+    }
+
+    @Override
+    public List<ElementUI> getSettings() {
+        return this.settings;
     }
 }
