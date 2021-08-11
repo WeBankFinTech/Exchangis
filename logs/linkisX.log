@@ -21876,3 +21876,194 @@ Caused by: java.net.ConnectException: Connection refused: connect
 2021-08-05 17:02:40.999 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.ContextHandler (1007) [doStop] - Stopped o.s.b.w.e.j.JettyEmbeddedWebAppContext@15549dd7{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.2741354659680988250.9321/],UNAVAILABLE}
 2021-08-05 17:02:41.003 [INFO ] [SpringContextShutdownHook               ] o.s.s.c.ThreadPoolTaskExecutor (218) [shutdown] - Shutting down ExecutorService 'applicationTaskExecutor'
 2021-08-05 17:02:41.069 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (906) [shutdown] - Shutting down DiscoveryClient ...
+2021-08-11 15:02:10.617 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-11 15:02:14.907 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-11 15:02:17.045 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-11 15:02:17.045 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-11 15:02:17.049 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-11 15:02:17.082 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-11 15:02:17.082 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-11 15:02:18.452 [WARN ] [main                                    ] o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext (559) [refresh] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.webank.wedatasphere.linkis.DataWorkCloudApplication]; nested exception is java.io.FileNotFoundException: class path resource [com/webank/wedatasphere/linkis/storage/io/IOMethodInterceptorCreator.class] cannot be opened because it does not exist
+2021-08-11 15:02:18.456 [INFO ] [main                                    ] o.s.b.a.l.ConditionEvaluationReportLoggingListener (136) [logMessage] - 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2021-08-11 15:02:18.460 [ERROR] [main                                    ] o.s.b.SpringApplication (837) [reportFailure] - Application run failed org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.webank.wedatasphere.linkis.DataWorkCloudApplication]; nested exception is java.io.FileNotFoundException: class path resource [com/webank/wedatasphere/linkis/storage/io/IOMethodInterceptorCreator.class] cannot be opened because it does not exist
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:188) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:319) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:236) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:280) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:96) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:707) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:533) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at com.webank.wedatasphere.linkis.DataWorkCloudApplication.main(DataWorkCloudApplication.java:108) [linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication$.main(ExchangisServerApplication.scala:19) [classes/:?]
+	at com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication.main(ExchangisServerApplication.scala) [classes/:?]
+Caused by: java.io.FileNotFoundException: class path resource [com/webank/wedatasphere/linkis/storage/io/IOMethodInterceptorCreator.class] cannot be opened because it does not exist
+	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:180) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReader.getClassReader(SimpleMetadataReader.java:55) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:49) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:103) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.createMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:86) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.getMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:73) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:81) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.asSourceClass(ConfigurationClassParser.java:695) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser$SourceClass.getInterfaces(ConfigurationClassParser.java:1023) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processInterfaces(ConfigurationClassParser.java:385) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:331) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:249) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:198) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:303) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:249) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:206) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:174) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	... 14 more
+
+2021-08-11 15:04:07.398 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-11 15:04:11.076 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-11 15:04:13.207 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-11 15:04:13.208 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-11 15:04:13.212 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-11 15:04:13.241 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-11 15:04:13.242 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-11 15:04:14.518 [WARN ] [main                                    ] o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext (559) [refresh] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.webank.wedatasphere.linkis.DataWorkCloudApplication]; nested exception is java.io.FileNotFoundException: class path resource [com/webank/wedatasphere/linkis/storage/io/IOMethodInterceptorCreator.class] cannot be opened because it does not exist
+2021-08-11 15:04:14.520 [INFO ] [main                                    ] o.s.b.a.l.ConditionEvaluationReportLoggingListener (136) [logMessage] - 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2021-08-11 15:04:14.523 [ERROR] [main                                    ] o.s.b.SpringApplication (837) [reportFailure] - Application run failed org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.webank.wedatasphere.linkis.DataWorkCloudApplication]; nested exception is java.io.FileNotFoundException: class path resource [com/webank/wedatasphere/linkis/storage/io/IOMethodInterceptorCreator.class] cannot be opened because it does not exist
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:188) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:319) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:236) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:280) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:96) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:707) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:533) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at com.webank.wedatasphere.linkis.DataWorkCloudApplication.main(DataWorkCloudApplication.java:108) [linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication$.main(ExchangisServerApplication.scala:19) [classes/:?]
+	at com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication.main(ExchangisServerApplication.scala) [classes/:?]
+Caused by: java.io.FileNotFoundException: class path resource [com/webank/wedatasphere/linkis/storage/io/IOMethodInterceptorCreator.class] cannot be opened because it does not exist
+	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:180) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReader.getClassReader(SimpleMetadataReader.java:55) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:49) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:103) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.createMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:86) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.getMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:73) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:81) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.asSourceClass(ConfigurationClassParser.java:695) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser$SourceClass.getInterfaces(ConfigurationClassParser.java:1023) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processInterfaces(ConfigurationClassParser.java:385) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:331) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:249) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:198) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:303) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:249) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:206) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:174) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	... 14 more
+
+2021-08-11 15:10:07.737 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-11 15:10:11.804 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-11 15:10:13.934 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-11 15:10:13.934 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-11 15:10:13.937 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-11 15:10:13.963 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-11 15:10:13.964 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-11 15:10:15.204 [WARN ] [main                                    ] o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext (559) [refresh] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.webank.wedatasphere.linkis.DataWorkCloudApplication]; nested exception is java.io.FileNotFoundException: class path resource [com/webank/wedatasphere/linkis/storage/io/IOMethodInterceptorCreator.class] cannot be opened because it does not exist
+2021-08-11 15:10:15.208 [INFO ] [main                                    ] o.s.b.a.l.ConditionEvaluationReportLoggingListener (136) [logMessage] - 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2021-08-11 15:10:15.212 [ERROR] [main                                    ] o.s.b.SpringApplication (837) [reportFailure] - Application run failed org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.webank.wedatasphere.linkis.DataWorkCloudApplication]; nested exception is java.io.FileNotFoundException: class path resource [com/webank/wedatasphere/linkis/storage/io/IOMethodInterceptorCreator.class] cannot be opened because it does not exist
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:188) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:319) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:236) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:280) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:96) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:707) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:533) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at com.webank.wedatasphere.linkis.DataWorkCloudApplication.main(DataWorkCloudApplication.java:108) [linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication$.main(ExchangisServerApplication.scala:19) [classes/:?]
+	at com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication.main(ExchangisServerApplication.scala) [classes/:?]
+Caused by: java.io.FileNotFoundException: class path resource [com/webank/wedatasphere/linkis/storage/io/IOMethodInterceptorCreator.class] cannot be opened because it does not exist
+	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:180) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReader.getClassReader(SimpleMetadataReader.java:55) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:49) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:103) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.createMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:86) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.getMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:73) ~[spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:81) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.asSourceClass(ConfigurationClassParser.java:695) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser$SourceClass.getInterfaces(ConfigurationClassParser.java:1023) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processInterfaces(ConfigurationClassParser.java:385) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:331) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:249) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:198) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:303) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:249) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:206) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:174) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	... 14 more
+
+2021-08-11 15:15:35.367 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-11 15:15:39.347 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-11 15:15:41.511 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-11 15:15:41.511 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-11 15:15:41.514 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-11 15:15:41.539 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-11 15:15:41.539 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-11 15:15:43.855 [WARN ] [main                                    ] o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext (559) [refresh] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.support.BeanDefinitionOverrideException: Invalid bean definition with name 'dataSource' defined in class path resource [com/webank/wedatasphere/linkis/metadata/hive/config/LinkisMybatisConfig.class]: Cannot register bean definition [Root bean: class [null]; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=linkisMybatisConfig; factoryMethodName=mutiDataSource; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [com/webank/wedatasphere/linkis/metadata/hive/config/LinkisMybatisConfig.class]] for bean 'dataSource': There is already [Root bean: class [null]; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=dataSourceConfig; factoryMethodName=dataSource; initMethodName=null; destroyMethodName=close; defined in class path resource [com/webank/wedatasphere/linkis/mybatis/DataSourceConfig.class]] bound.
+2021-08-11 15:15:43.870 [INFO ] [main                                    ] o.s.b.a.l.ConditionEvaluationReportLoggingListener (136) [logMessage] - 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2021-08-11 15:15:43.875 [ERROR] [main                                    ] o.s.b.d.LoggingFailureAnalysisReporter (40) [report] - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'dataSource', defined in class path resource [com/webank/wedatasphere/linkis/metadata/hive/config/LinkisMybatisConfig.class], could not be registered. A bean with that name has already been defined in class path resource [com/webank/wedatasphere/linkis/mybatis/DataSourceConfig.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
+2021-08-11 15:17:36.171 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-11 15:17:41.557 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-11 15:17:43.757 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-11 15:17:43.757 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-11 15:17:43.760 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-11 15:17:43.781 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-11 15:17:43.782 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-11 15:17:45.973 [WARN ] [main                                    ] o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext (559) [refresh] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.support.BeanDefinitionOverrideException: Invalid bean definition with name 'dataSource' defined in class path resource [com/webank/wedatasphere/linkis/metadata/hive/config/LinkisMybatisConfig.class]: Cannot register bean definition [Root bean: class [null]; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=linkisMybatisConfig; factoryMethodName=mutiDataSource; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [com/webank/wedatasphere/linkis/metadata/hive/config/LinkisMybatisConfig.class]] for bean 'dataSource': There is already [Root bean: class [null]; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=dataSourceConfig; factoryMethodName=dataSource; initMethodName=null; destroyMethodName=close; defined in class path resource [com/webank/wedatasphere/linkis/mybatis/DataSourceConfig.class]] bound.
+2021-08-11 15:17:45.985 [INFO ] [main                                    ] o.s.b.a.l.ConditionEvaluationReportLoggingListener (136) [logMessage] - 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2021-08-11 15:17:45.988 [ERROR] [main                                    ] o.s.b.d.LoggingFailureAnalysisReporter (40) [report] - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'dataSource', defined in class path resource [com/webank/wedatasphere/linkis/metadata/hive/config/LinkisMybatisConfig.class], could not be registered. A bean with that name has already been defined in class path resource [com/webank/wedatasphere/linkis/mybatis/DataSourceConfig.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
