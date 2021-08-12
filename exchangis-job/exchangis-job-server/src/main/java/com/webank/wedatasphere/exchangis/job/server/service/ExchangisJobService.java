@@ -1,7 +1,9 @@
 package com.webank.wedatasphere.exchangis.job.server.service;
 
-import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 
 /**
  * <p>
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ExchangisJobService extends IService<ExchangisJob> {
 
+    public ExchangisJobBasicInfoVO createJob(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO);
 }
