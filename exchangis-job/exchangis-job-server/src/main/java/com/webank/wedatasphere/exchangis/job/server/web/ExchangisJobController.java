@@ -1,18 +1,25 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
-import com.webank.wedatasphere.linkis.server.Message;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
+import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
+import com.webank.wedatasphere.linkis.server.Message;
 
 /**
  * <p>
@@ -23,7 +30,7 @@ import java.util.Map;
  * @since 2021-08-10
  */
 @RestController
-@RequestMapping("/server/exchangisJob")
+@RequestMapping("/job")
 public class ExchangisJobController {
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -32,11 +39,6 @@ public class ExchangisJobController {
     private ExchangisJobService exchangisJobService;
 
     @GetMapping
-    public String test(){
-        return "hello";
-    }
-
-    @GetMapping("/job")
     public Response getJobList() {
         return Message.messageToResponse(Message.ok());
     }
@@ -48,10 +50,11 @@ public class ExchangisJobController {
         return Message.messageToResponse(message);
     }
 
-    @PostMapping("/job")
-    public Response createJob(@Context HttpServletRequest request, @RequestBody ExchangisJob body) throws Exception{
-        ExchangisJob job = mapper.readValue(mapper.writeValueAsString(body), ExchangisJob.class);
-        return Message.messageToResponse(new Message().setMessage(job.toString()));
+    @PostMapping
+    public Message createJob(HttpServletRequest request,
+        @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
+        ExchangisJobBasicInfoVO job = exchangisJobService.createJob(exchangisJobBasicInfoDTO);
+        return Message.ok().data("result", job);
     }
 
     @PostMapping("/job/{sourceJobId}/copy")
