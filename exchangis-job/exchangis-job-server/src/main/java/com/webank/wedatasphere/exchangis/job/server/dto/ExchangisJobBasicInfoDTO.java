@@ -1,12 +1,14 @@
 package com.webank.wedatasphere.exchangis.job.server.dto;
 
+import com.webank.wedatasphere.exchangis.job.server.enums.JobTypeEnum;
+
 public class ExchangisJobBasicInfoDTO {
 
     private Long projectId;
 
     private String jobName;
 
-    private String jobType;
+    private JobTypeEnum jobType;
 
     private String engineType;
 
@@ -30,11 +32,11 @@ public class ExchangisJobBasicInfoDTO {
         this.jobName = jobName;
     }
 
-    public String getJobType() {
+    public JobTypeEnum getJobType() {
         return jobType;
     }
 
-    public void setJobType(String jobType) {
+    public void setJobType(JobTypeEnum jobType) {
         this.jobType = jobType;
     }
 

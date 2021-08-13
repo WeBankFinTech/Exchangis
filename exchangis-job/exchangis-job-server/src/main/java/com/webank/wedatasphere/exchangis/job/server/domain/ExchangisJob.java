@@ -5,6 +5,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.webank.wedatasphere.exchangis.job.server.enums.JobTypeEnum;
 
 /**
  * <p>
@@ -26,7 +27,7 @@ public class ExchangisJob {
 
     private String jobName;
 
-    private String jobType;
+    private JobTypeEnum jobType;
 
     private String engineType;
 
@@ -80,11 +81,11 @@ public class ExchangisJob {
         this.jobName = jobName;
     }
 
-    public String getJobType() {
+    public JobTypeEnum getJobType() {
         return jobType;
     }
 
-    public void setJobType(String jobType) {
+    public void setJobType(JobTypeEnum jobType) {
         this.jobType = jobType;
     }
 
