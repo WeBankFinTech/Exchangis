@@ -30,7 +30,7 @@ import com.webank.wedatasphere.linkis.server.Message;
  * @since 2021-08-10
  */
 @RestController
-@RequestMapping("/job")
+@RequestMapping("exchangis/job")
 public class ExchangisJobController {
 
     private final ObjectMapper mapper = new ObjectMapper();
