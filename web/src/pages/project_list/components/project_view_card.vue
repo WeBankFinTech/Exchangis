@@ -22,16 +22,10 @@
 </template>
 
 <script>
-import { Card, Tag, Row, Col, Menu, Dropdown, MenuItem, Pagination, InputSearch } from "ant-design-vue";
 import { ApartmentOutlined } from "@ant-design/icons-vue";
 export default {
-  name: "ItemViewCard",
+  name: "ProjectViewCard",
   components: {
-    aCard: Card,
-    aTag: Tag,
-    aDropdown: Dropdown,
-    aMenu: Menu,
-    aMenuItem: MenuItem,
     iconApartmentOutlined: ApartmentOutlined,
   },
   props: {
