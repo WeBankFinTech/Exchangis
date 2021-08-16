@@ -14,6 +14,11 @@ public class ExchangisMySQLDataSource extends ExchangisBatchDataSource {
     }
 
     @Override
+    public String category() {
+        return "rdbms";
+    }
+
+    @Override
     public String description() {
         return "MYSQL description";
     }

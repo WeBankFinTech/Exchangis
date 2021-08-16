@@ -14,6 +14,11 @@ public class ExchangisHiveDataSource extends ExchangisBatchDataSource {
     }
 
     @Override
+    public String category() {
+        return "bigdata";
+    }
+
+    @Override
     public String description() {
         return "Hive Description";
     }
