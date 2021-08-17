@@ -42,9 +42,6 @@ export default {
         name: "index",
       },
       {
-        name: "index",
-      },
-      {
         name: "job",
       },
       {
