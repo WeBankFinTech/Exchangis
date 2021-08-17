@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.core.context;
 
 
+import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceLoader;
 
@@ -12,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultExchangisDataSourceContext implements ExchangisDataSourceContext {
 
-    private Map<String, ExchangisDataSource> dataSources = new ConcurrentHashMap<>(24);
+    private final Map<String, ExchangisDataSource> dataSources = new ConcurrentHashMap<>(24);
 
     @Override
     public boolean registerDataSourceLoader(ExchangisDataSourceLoader loader) {
@@ -38,7 +39,10 @@ public class DefaultExchangisDataSourceContext implements ExchangisDataSourceCon
 
     @Override
     public ExchangisDataSource getExchangisDataSource(String type) {
-        return null;
+        if (Strings.isNullOrEmpty(type)) {
+            return null;
+        }
+        return this.dataSources.get(type.trim().toUpperCase());
     }
 
     @Override

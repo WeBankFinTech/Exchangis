@@ -68,9 +68,11 @@
 
 	<modules>
 		<module>exchangis-project</module>
-		<module>exchangis-plugins</module>
 		<module>exchangis-datasource</module>
-	</modules>
+        <module>exchangis-dao</module>
+        <module>exchangis-server</module>
+		<module>exchangis-job</module>
+    </modules>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
