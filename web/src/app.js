@@ -1,4 +1,3 @@
-
 import {
     pum as pumApi, request as ajax, access, getRouter
 } from '@fesjs/fes';
@@ -9,6 +8,7 @@ import UserCenter from '@/components/UserCenter';
 import { BASE_URL } from '@/common/constants';
 import { loadAllRegister } from './register';
 import { locale } from '@fesjs/fes';
+import "ant-design-vue/dist/antd.css"; // or 'ant-design-vue/dist/antd.less'
 
 import "ant-design-vue/lib/input/style/css";
 import "ant-design-vue/lib/modal/style/css";

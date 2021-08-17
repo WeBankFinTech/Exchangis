@@ -1,11 +1,15 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui.viewer;
 
-import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
+import com.webank.wedatasphere.exchangis.datasource.core.ui.*;
 
 import java.util.List;
 
 public interface ExchangisDataSourceUIViewer {
-    List<ElementUI> getDataSourceParamsUI();
+    ExchangisDataSourceIdsUI getDataSourceIds();
 
-    List<ElementUI> getTransformUI();
+    ExchangisDataSourceParamsUI getParams();
+
+    ExchangisDataSourceTransformsUI getTransforms();
+
+    List<ElementUI> getSettings();
 }

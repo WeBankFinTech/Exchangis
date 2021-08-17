@@ -4,20 +4,37 @@ export default {
   publicPath: "./",
   access: {
     roles: {
-      admin: ["/", "/onepiece", "/jobManagement"],
+      admin: ["/", "/onepiece", "/item_list", "/data_source"],
     },
   },
-  request: {
-    dataField: "result",
-  },
-  extraBabelPlugins: [
-    [
-      "import",
-      { libraryName: "ant-design-vue", libraryDirectory: "es", style: "css" },
+  router: {
+    mode: "hash",
+    routes: [
+      {
+        path: "/",
+        redirect: "/item_list",
+      },
+      {
+        path: "/item_list",
+        component: "@/pages/item_list",
+        meta: {
+          name: "item_list",
+          title: "项目列表",
+        },
+      },
+      {
+        path: "/data_source",
+        component: "@/pages/data_source",
+        meta: {
+          name: "data_source",
+          title: "数据源列表",
+        },
+      },
     ],
-  ],
+  },
+  mock: true,
   layout: {
-    title: "Fes.js",
+    title: "数据交换",
     footer: "Created by MumbelFe",
     multiTabs: false,
     menus: [
@@ -29,6 +46,13 @@ export default {
       },
       {
         name: "job",
+      },
+      {
+        name: "item_list",
+      },
+      {
+        name: "data_source",
+
       },
     ],
   },
