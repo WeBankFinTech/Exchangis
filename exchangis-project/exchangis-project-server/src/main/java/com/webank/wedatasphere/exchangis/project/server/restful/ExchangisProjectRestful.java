@@ -3,8 +3,11 @@ package com.webank.wedatasphere.exchangis.project.server.restful;
 
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.request.CreateProjectRequest;
+import com.webank.wedatasphere.exchangis.project.server.request.ProjectQueryRequest;
+import com.webank.wedatasphere.exchangis.project.server.request.UpdateProjectRequest;
 import com.webank.wedatasphere.exchangis.project.server.service.ExchangisProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
+import com.webank.wedatasphere.linkis.server.Message;
 import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
@@ -14,13 +17,11 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 
 /**
@@ -37,25 +38,53 @@ public class ExchangisProjectRestful {
     private ExchangisProjectService projectService;
 
     @POST
+    @Path("projects")
+    public Response queryProjects(@Context HttpServletRequest request, @Valid ProjectQueryRequest projectQueryRequest){
+        // TODO
+//        String username = SecurityFilter.getLoginUsername(request);
+        String username = "hdfs";
+        projectQueryRequest.setUsername(username);
+        try{
+            List<ExchangisProject> projects = projectService.queryProjects(projectQueryRequest);
+            return Message.messageToResponse(Message.ok().data("list", projects));
+        }catch(final Throwable t){
+            LOGGER.error("failed to create project for user {}", username, t);
+            return ExchangisProjectRestfulUtils.dealError("获取工程列表失败,原因是:" + t.getMessage());
+        }
+    }
+
+    @POST
     @Path("createProject")
     public Response createProject(@Context HttpServletRequest request, @Valid CreateProjectRequest createProjectRequest){
-        String username = SecurityFilter.getLoginUsername(request);
+        // TODO
+//        String username = SecurityFilter.getLoginUsername(request);
+        String username = "hdfs";
         try{
-            ExchangisProject streamisProject = projectService.createProject(username, createProjectRequest);
+            ExchangisProject exchangisProject = projectService.createProject(username, createProjectRequest);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
-                    new Pair<>("projectName", streamisProject.getName()), new Pair<>("projectId", streamisProject.getId()));
+                    new Pair<>("projectName", exchangisProject.getName()), new Pair<>("projectId", exchangisProject.getId()));
         }catch(final Throwable t){
             LOGGER.error("failed to create project for user {}", username, t);
             return ExchangisProjectRestfulUtils.dealError("创建工程失败,原因是:" + t.getMessage());
         }
     }
 
-//
-//    @POST
-//    @Path("updateProject")
-//    public Response updateProject(@Context HttpServletRequest request, @Valid UpdateProjectRequest updateProjectRequest){
-//        return null;
-//    }
+
+    @PUT
+    @Path("updateProject")
+    public Response updateProject(@Context HttpServletRequest request, @Valid UpdateProjectRequest updateProjectRequest){
+        // TODO
+//        String username = SecurityFilter.getLoginUsername(request);
+        String username = "hdfs";
+        try {
+            ExchangisProject exchangisProject = projectService.updateProject(username, updateProjectRequest);
+            return ExchangisProjectRestfulUtils.dealOk("更新工程成功",
+                    new Pair<>("projectName", exchangisProject.getName()), new Pair<>("projectId", exchangisProject.getId()));
+        } catch(final Throwable t){
+            LOGGER.error("failed to update project for user {}", username, t);
+            return ExchangisProjectRestfulUtils.dealError("更新工程失败,原因是:" + t.getMessage());
+        }
+    }
 //
 //
 //    @POST
