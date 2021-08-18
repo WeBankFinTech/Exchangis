@@ -36,8 +36,9 @@ public class ExchangisJobDataSourceRestfulApi {
     @GET
     @Path("jobs/{jobId}/datasource/ui")
     public Response getJobDataSourcesUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId) {
-        ExchangisDataSourceUIViewer jobDataSourceUI = this.exchangisDataSourceService.getJobDataSourceUIs(jobId);
-        Message message = Message.ok().data("ui", jobDataSourceUI);
+//        ExchangisDataSourceUIViewer jobDataSourceUI = this.exchangisDataSourceService.getJobDataSourceUIs(jobId);
+        List<ExchangisDataSourceUIViewer> ui = this.exchangisDataSourceService.getJobDataSourceUIs(jobId);
+        Message message = Message.ok().data("ui", ui);
         return Message.messageToResponse(message);
     }
 
