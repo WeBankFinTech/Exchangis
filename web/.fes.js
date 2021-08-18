@@ -1,34 +1,10 @@
 // .fes.js 只负责管理编译时配置，只能使用plain Object
 
-<<<<<<< Updated upstream
-
-export default {
-    publicPath: './',
-    access: {
-        roles: {
-            admin: ["/", "/onepiece"]
-        }
-    },
-    layout: {
-        title: "Fes.js",
-        footer: 'Created by MumbelFe',
-        multiTabs: false,
-        menus: [{
-            name: 'index'
-        }]
-    },
-    devServer: {
-        port: 8000
-    },
-    enums: {
-        status: [['0', '无效的'], ['1', '有效的']]
-    }
-=======
 export default {
   publicPath: "./",
   access: {
     roles: {
-      admin: ["/", "/onepiece", "/item_list", "/data_source"],
+      admin: ["*"],
     },
   },
   router: {
@@ -36,11 +12,11 @@ export default {
     routes: [
       {
         path: "/",
-        redirect: "/item_list",
+        redirect: "/project_list",
       },
       {
-        path: "/item_list",
-        component: "@/pages/item_list",
+        path: "/project_list",
+        component: "@/pages/project_list",
         meta: {
           name: "item_list",
           title: "项目列表",
@@ -56,7 +32,10 @@ export default {
       },
     ],
   },
-  mock: true,
+  request: {
+    dataField: "data",
+  },
+  extraBabelPlugins: [["import", { libraryName: "ant-design-vue", libraryDirectory: "es", style: "css" }]],
   layout: {
     title: "数据交换",
     footer: "Created by MumbelFe",
@@ -73,11 +52,17 @@ export default {
   devServer: {
     port: 8000,
   },
+  proxy: {
+    "/api": {
+      target: "http://192.168.0.157:9321/",
+      changeOrigin: true,
+      pathRewrite: { "^/api": "" },
+    },
+  },
   enums: {
     status: [
       ["0", "无效的"],
       ["1", "有效的"],
     ],
   },
->>>>>>> Stashed changes
 };
