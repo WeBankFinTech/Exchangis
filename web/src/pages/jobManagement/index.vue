@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="content">
     <job-list v-show="choosedTab === 'jobList'"/>
   </div>
 </template>
@@ -34,3 +34,22 @@ export default {
   },
 };
 </script>
+<style scoped lang="less">
+.content {
+  padding: 16px;
+  box-sizing: border-box;
+}
+.title-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .title {
+    border-left: 6px solid #1890ff;
+    padding-left: 6px;
+  }
+}
+.pagination-line {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>
