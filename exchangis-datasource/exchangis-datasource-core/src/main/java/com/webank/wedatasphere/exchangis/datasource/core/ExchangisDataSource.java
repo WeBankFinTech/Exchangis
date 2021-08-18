@@ -14,6 +14,8 @@ public interface ExchangisDataSource {
 
     String description();
 
+    String category();
+
     String icon();
 
     List<ExchangisJobParamConfig> getDataSourceParamConfigs();
