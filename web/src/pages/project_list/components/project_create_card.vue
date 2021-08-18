@@ -5,12 +5,10 @@
 </template>
 
 <script>
-import { Card } from "ant-design-vue";
 import { PlusOutlined } from "@ant-design/icons-vue";
 export default {
-  name: "ItemCreateCard",
+  name: "ProjectCreateCard",
   components: {
-    aCard: Card,
     iconPlusOutlined: PlusOutlined,
   },
   emits: ["action"],

@@ -1,5 +1,6 @@
-package com.webank.wedatasphere.exchangis.datasource.linkis
+package com.webank.wedatasphere.exchangis.datasource.streamis
 
+import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceConfiguration
 import com.webank.wedatasphere.linkis.datasource.client.impl.{LinkisDataSourceRemoteClient, LinkisMetaDataRemoteClient}
 import com.webank.wedatasphere.linkis.datasource.client.request._
 import com.webank.wedatasphere.linkis.datasource.client.response._
@@ -10,7 +11,7 @@ import com.webank.wedatasphere.linkis.httpclient.dws.config.{DWSClientConfig, DW
 import java.lang
 import java.util.concurrent.TimeUnit
 
-object ExchangisLinkisRemoteClient {
+object ExchangisStreamisRemoteClient {
   //Linkis Datasource Client Config
   val serverUrl: String = ExchangisDataSourceConfiguration.SERVER_URL.getValue
   val connectionTimeout: lang.Long = ExchangisDataSourceConfiguration.CONNECTION_TIMEOUT.getValue
@@ -50,8 +51,8 @@ object ExchangisLinkisRemoteClient {
     .retryEnabled(false)
     .readTimeout(30000L)
     .setAuthenticationStrategy(new StaticAuthenticationStrategy())
-    .setAuthTokenKey("hdfs")
-    .setAuthTokenValue("hdfs")
+    .setAuthTokenKey(authTokenKey)
+    .setAuthTokenValue(authTokenValue)
     .setDWSVersion("v1")
     .build()
 
@@ -59,11 +60,11 @@ object ExchangisLinkisRemoteClient {
 
   val metaDataClient = new LinkisMetaDataRemoteClient(clientConfig)
 
-  def getLinkisDataSourceRemoteClient: LinkisDataSourceRemoteClient = {
+  def getStreamisDataSourceRemoteClient: LinkisDataSourceRemoteClient = {
     dataSourceClient
   }
 
-  def getLinkisMetadataRemoteClient: LinkisMetaDataRemoteClient = {
+  def getStreamisMetadataRemoteClient: LinkisMetaDataRemoteClient = {
     metaDataClient
   }
 

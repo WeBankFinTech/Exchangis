@@ -1,16 +1,12 @@
 <template>
-    <div>
-        Exchangis
-    </div>
+  <div>Exchangis</div>
 </template>
 
 <script>
-
 export default {
-    setup() {
-
-        return {};
-    }
+  setup() {
+    return {};
+  },
 };
 </script>
 
