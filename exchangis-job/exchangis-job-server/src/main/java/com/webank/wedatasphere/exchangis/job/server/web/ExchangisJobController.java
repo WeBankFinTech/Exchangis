@@ -1,36 +1,41 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Response;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
-import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
-import com.webank.wedatasphere.linkis.server.Message;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
+import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
+import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
+import com.webank.wedatasphere.linkis.server.Message;
+
 /**
- * <p>
- * 前端控制器
- * </p>
+ * The type Exchangis job controller.
  *
  * @author yuxin.yuan
- * @since 2021-08-10
+ * @date 2021 /08/18
+ * @since 2021 -08-10
  */
 @RestController
 @RequestMapping("exchangis/job")
 public class ExchangisJobController {
-
-    private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     private ExchangisJobService exchangisJobService;
@@ -83,8 +88,16 @@ public class ExchangisJobController {
     }
 
     @GetMapping("/{id}")
-    public Message getJob(@PathVariable Long id) {
-        ExchangisJobBasicInfoVO job = exchangisJobService.getJob(id);
+    public Message getJob(@PathVariable Long id) throws ExchangisJobErrorException {
+        ExchangisJob job = exchangisJobService.getJob(id);
         return Message.ok().data("result", job);
     }
+
+    @PostMapping("/{id}/save")
+    public Message saveJobConfigAndSubjobs(@PathVariable Long id,
+        @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException {
+        ExchangisJob exchangisJob = exchangisJobService.updateJob(exchangisJobContentDTO, id);
+        return Message.ok().data("result", exchangisJob);
+    }
+
 }
