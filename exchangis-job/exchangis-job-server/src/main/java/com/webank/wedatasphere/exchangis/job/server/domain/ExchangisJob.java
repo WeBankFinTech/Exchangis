@@ -27,7 +27,7 @@ public class ExchangisJob {
 
     private String jobName;
 
-    private JobTypeEnum jobType;
+    private String jobType;
 
     private String engineType;
 
@@ -81,11 +81,11 @@ public class ExchangisJob {
         this.jobName = jobName;
     }
 
-    public JobTypeEnum getJobType() {
+    public String getJobType() {
         return jobType;
     }
 
-    public void setJobType(JobTypeEnum jobType) {
+    public void setJobType(String jobType) {
         this.jobType = jobType;
     }
 
