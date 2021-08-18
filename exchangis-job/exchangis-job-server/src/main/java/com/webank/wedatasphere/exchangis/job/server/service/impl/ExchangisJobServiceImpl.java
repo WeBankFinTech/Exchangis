@@ -1,20 +1,22 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
+import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobMapper;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -32,6 +34,9 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Autowired
     private ExchangisJobService exchangisJobService;
+
+    // @Autowired
+    // private ExchangisDataSourceService exchangisDataSourceService;
 
     @Override
     public ExchangisJobBasicInfoVO createJob(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
@@ -88,8 +93,35 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     }
 
     @Override
-    public ExchangisJobBasicInfoVO getJob(Long id) {
-        ExchangisJob job = exchangisJobService.getById(id);
-        return modelMapper.map(job, ExchangisJobBasicInfoVO.class);
+    public ExchangisJob getJob(Long id) throws ExchangisJobErrorException {
+        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+        // generate subjobs ui content
+        // ExchangisDataSourceUIViewer jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(id);
+        String content = null; // convertToString(jobDataSourceUIs);
+
+        exchangisJob.setContent(content);
+        return exchangisJob;
     }
+
+    @Override
+    public ExchangisJob updateJob(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
+        throws ExchangisJobErrorException {
+        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+        exchangisJob.setContent(exchangisJobContentDTO.getContent());
+        exchangisJob.setProxyUser(exchangisJobContentDTO.getProxyUser());
+        exchangisJob.setExecuteNode(exchangisJobContentDTO.getExecuteNode());
+        exchangisJob.setSyncType(exchangisJobContentDTO.getSyncType());
+        exchangisJob.setJobParams(exchangisJobContentDTO.getJobParams());
+        exchangisJobService.updateById(exchangisJob);
+        return this.getJob(id);
+    }
+
+    // private String convertToString(ExchangisDataSourceUIViewer jobDataSourceUIs) throws ExchangisJobErrorException {
+    // ObjectMapper mapper = new ObjectMapper();
+    // try {
+    // return mapper.writeValueAsString(jobDataSourceUIs);
+    // } catch (JsonProcessingException e) {
+    // throw new ExchangisJobErrorException(20001, "exchangis.subjob.ui.create.error", e);
+    // }
+    // }
 }
