@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="content">
     <div class="formWrap">
       <a-input-search
         v-model:value="search"
@@ -27,8 +27,12 @@
               离线任务
             </span>
           </template>
-          Tab 1</a-tab-pane
-        >
+          <div class="cardWrap">
+          <div v-for="(item, index) in jobList" :key="index" class="card">
+            <job-card :jobData="item" />
+          </div>
+          </div>
+        </a-tab-pane>
         <a-tab-pane key="2"
           ><template #tab>
             <span>
@@ -40,7 +44,7 @@
         >
       </a-tabs>
     </div>
-    <CreateJob :visible="visible" @handleCreateJob="handleCreateJob"/>
+    <CreateJob :visible="visible" @handleCreateJob="handleCreateJob" />
   </div>
 </template>
 <script>
@@ -50,14 +54,16 @@ import {
   ApiOutlined,
   PlusOutlined,
 } from "@ant-design/icons-vue";
-import CreateJob from './createJob.vue';
+import CreateJob from "./createJob.vue";
+import JobCard from "./job_card.vue";
 export default {
   components: {
     DownloadOutlined,
     NodeIndexOutlined,
     ApiOutlined,
     PlusOutlined,
-    CreateJob
+    CreateJob,
+    JobCard,
   },
   data() {
     return {
@@ -66,6 +72,26 @@ export default {
       activeKey: "1",
       visible: false,
       loading: false,
+      jobList: [
+        {
+          id: 1, // 任务id
+          projectId: 1, // 所属项目id
+          jobName: "任务名1",
+          jobType: "OFFLINE",
+          engineType: "DataX", // 执行引擎
+          jobLabels: "renwu, hello, hello",
+          jobDesc: "任务描述",
+        },
+        {
+          id: 2, // 任务id
+          projectId: 1, // 所属项目id
+          jobName: "任务名2",
+          jobType: "STREAM",
+          engineType: "Sqoop", // 执行引擎
+          jobLabels: "renwu, hello, hello",
+          jobDesc: "任务描述ets how a flex item will grow or shrink to fit the space available in itsets how a flex item will grow or shrink to fit the space available in its",
+        },
+      ],
     };
   },
   methods: {
@@ -84,3 +110,14 @@ export default {
   },
 };
 </script>
+<style scoped lang="less">
+.cardWrap{
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 30px;
+  .card{
+    margin: 10px 20px 10px 0px;
+  }
+}
+
+</style>

@@ -4,7 +4,7 @@ export default {
   publicPath: "./",
   access: {
     roles: {
-      admin: ["/", "/onepiece", "/item_list", "/data_source"],
+      admin: ["/", "/onepiece", "/item_list", "/data_source", "/jobManagement"],
     },
   },
   router: {
@@ -30,6 +30,14 @@ export default {
           title: "数据源列表",
         },
       },
+      {
+        path: "/jobManagement",
+        component: "@/pages/jobManagement",
+        meta: {
+          name: "jobManagement",
+          title: "数据任务管理",
+        },
+      },
     ],
   },
   mock: true,
@@ -39,17 +47,13 @@ export default {
     multiTabs: false,
     menus: [
       {
-        name: "index",
-      },
-      {
-        name: "job",
-      },
-      {
         name: "item_list",
       },
       {
         name: "data_source",
-
+      },
+      {
+        name: "jobManagement",
       },
     ],
   },
