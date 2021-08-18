@@ -27967,3 +27967,742 @@ Caused by: com.webank.wedatasphere.linkis.httpclient.exception.HttpClientResultE
 2021-08-13 20:05:19.700 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (940) [unregister] - Unregistering ...
 2021-08-13 20:05:19.710 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (942) [unregister] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - deregister  status: 200
 2021-08-13 20:05:19.718 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (929) [shutdown] - Completed shut down of DiscoveryClient
+2021-08-18 10:01:58.942 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-18 10:02:01.038 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-18 10:02:03.267 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-18 10:02:03.268 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-18 10:02:03.270 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-18 10:02:03.308 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-18 10:02:03.308 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-18 10:02:05.488 [INFO ] [main                                    ] o.s.c.a.ConfigurationClassPostProcessor (403) [enhanceConfigurationClasses] - Cannot enhance @Configuration bean definition 'myBatisMapperScannerConfig' since its singleton instance has been created too early. The typical cause is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor return type: Consider declaring such methods as 'static'.
+2021-08-18 10:02:05.588 [INFO ] [main                                    ] o.s.c.c.s.GenericScope (295) [setSerializationId] - BeanFactory id=47efa477-1360-333a-bde0-f4c642dc94e8
+2021-08-18 10:02:06.247 [INFO ] [main                                    ] o.e.j.u.log (169) [initialized] - Logging initialized @9541ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-08-18 10:02:06.819 [INFO ] [main                                    ] o.s.b.w.e.j.JettyServletWebServerFactory (147) [getWebServer] - Server initialized with port: 9321
+2021-08-18 10:02:06.875 [INFO ] [main                                    ] o.e.j.s.Server (359) [doStart] - jetty-9.4.30.v20200611; built: 2020-06-11T12:34:51.929Z; git: 271836e4c1f4612f12b7bb13ef5a92a927634b0d; jvm 1.8.0_291-b10
+2021-08-18 10:02:06.912 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring embedded WebApplicationContext
+2021-08-18 10:02:06.913 [INFO ] [main                                    ] o.s.b.w.s.c.ServletWebServerApplicationContext (285) [prepareWebApplicationContext] - Root WebApplicationContext: initialization completed in 3594 ms
+2021-08-18 10:02:07.101 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-18 10:02:07.103 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-18 10:02:07.141 [INFO ] [main                                    ] c.n.c.DynamicPropertyFactory (281) [getInstance] - DynamicPropertyFactory is initialized with configuration sources: com.netflix.config.ConcurrentCompositeConfiguration@68543a35
+2021-08-18 10:02:07.241 [WARN ] [main                                    ] o.s.b.a.e.EndpointId (155) [logWarning] - Endpoint ID 'service-registry' contains invalid characters, please migrate to a valid format.
+2021-08-18 10:02:07.505 [INFO ] [main                                    ] o.e.j.s.session (333) [doStart] - DefaultSessionIdManager workerName=node0
+2021-08-18 10:02:07.505 [INFO ] [main                                    ] o.e.j.s.session (338) [doStart] - No SessionScavenger set, using defaults
+2021-08-18 10:02:07.506 [INFO ] [main                                    ] o.e.j.s.session (140) [startScavenging] - node0 Scavenging every 660000ms
+2021-08-18 10:02:07.513 [INFO ] [main                                    ] o.e.j.s.h.ContextHandler (824) [doStart] - Started o.s.b.w.e.j.JettyEmbeddedWebAppContext@5e66733b{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.3654686608292708513.9321/],AVAILABLE}
+2021-08-18 10:02:07.514 [INFO ] [main                                    ] o.e.j.s.Server (399) [doStart] - Started @10819ms
+2021-08-18 10:02:07.677 [INFO ] [main                                    ] c.w.w.l.m.DataSourceConfig$$EnhancerBySpringCGLIB$$a51aacf4 (35) [info] - Database connection address information(数据库连接地址信息)=jdbc:mysql://192.168.0.31:3306/exchangis_v3?useSSL=false&characterEncoding=UTF-8
+2021-08-18 10:02:07.718 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$5a2fa8e (35) [info] - Mybatis typeAliasesPackage=
+2021-08-18 10:02:07.718 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$5a2fa8e (35) [info] - Mybatis mapperLocations=
+2021-08-18 10:02:07.719 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$5a2fa8e (35) [info] - Mybatis configLocation=classpath:/mybatis-config.xml
+2021-08-18 10:02:08.863 [INFO ] [main                                    ] c.w.w.e.d.l.l.ExchangisDataSourceLoaderFactory (36) [getLoader] - Use LocalExchangisDataSourceLoader to load all Exchangis Extension DataSources.
+2021-08-18 10:02:08.863 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (42) [init] - libPath url is /D:/dev_workspace/java-dsslinks-maven-workspace/dw-exchangis/exchangis-server/target/classes/..\..\exchangis-extds
+2021-08-18 10:02:08.904 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.hive.ExchangisHiveDataSource
+2021-08-18 10:02:08.904 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.mysql.ExchangisMySQLDataSource
+2021-08-18 10:02:09.013 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverChoosers in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverChooser@43de88f3)
+2021-08-18 10:02:09.019 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverSenderBuilders in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverSenderBuilder@2c8e096)
+2021-08-18 10:02:09.026 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init RPCReceiverListenerBus with queueSize 1000 and consumeThreadSize 10.
+2021-08-18 10:02:09.028 [INFO ] [main                                    ] c.w.w.l.r.AsynRPCMessageBus (40) [info] - RPC-Receiver-Asyn-Thread-ListenerBus add a new listener => class com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$anon$1
+2021-08-18 10:02:09.544 [INFO ] [main                                    ] o.s.c.n.e.InstanceInfoFactory (72) [create] - Setting initial instance status as: STARTING
+2021-08-18 10:02:09.609 [INFO ] [main                                    ] c.n.d.DiscoveryClient (365) [<init>] - Initializing Eureka in region us-east-1
+2021-08-18 10:02:10.475 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (70) [<init>] - Using JSON encoding codec LegacyJacksonJson
+2021-08-18 10:02:10.476 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (71) [<init>] - Using JSON decoding codec LegacyJacksonJson
+2021-08-18 10:02:10.736 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (80) [<init>] - Using XML encoding codec XStreamXml
+2021-08-18 10:02:10.736 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (81) [<init>] - Using XML decoding codec XStreamXml
+2021-08-18 10:02:11.070 [INFO ] [main                                    ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-18 10:02:11.352 [INFO ] [main                                    ] c.n.d.DiscoveryClient (976) [fetchRegistry] - Disable delta property : false
+2021-08-18 10:02:11.352 [INFO ] [main                                    ] c.n.d.DiscoveryClient (977) [fetchRegistry] - Single vip registry refresh property : null
+2021-08-18 10:02:11.352 [INFO ] [main                                    ] c.n.d.DiscoveryClient (978) [fetchRegistry] - Force full registry fetch : false
+2021-08-18 10:02:11.352 [INFO ] [main                                    ] c.n.d.DiscoveryClient (979) [fetchRegistry] - Application is null : false
+2021-08-18 10:02:11.353 [INFO ] [main                                    ] c.n.d.DiscoveryClient (980) [fetchRegistry] - Registered Applications size is zero : true
+2021-08-18 10:02:11.353 [INFO ] [main                                    ] c.n.d.DiscoveryClient (982) [fetchRegistry] - Application version is -1: true
+2021-08-18 10:02:11.353 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1065) [getAndStoreFullRegistry] - Getting all instance registry info from the eureka server
+2021-08-18 10:02:13.499 [ERROR] [main                                    ] c.n.d.s.t.d.RedirectingEurekaHttpClient (83) [execute] - Request execution error. endpoint=DefaultEndpoint{ serviceUrl='http://euk1.com:7001/eureka/} com.sun.jersey.api.client.ClientHandlerException: java.net.ConnectException: Connection refused: connect
+	at com.sun.jersey.client.apache4.ApacheHttpClient4Handler.handle(ApacheHttpClient4Handler.java:187) ~[jersey-apache-client4-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.filter.GZIPContentEncodingFilter.handle(GZIPContentEncodingFilter.java:123) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.netflix.discovery.EurekaIdentityHeaderFilter.handle(EurekaIdentityHeaderFilter.java:27) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.sun.jersey.api.client.Client.handle(Client.java:652) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource.handle(WebResource.java:682) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource.access$200(WebResource.java:74) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource$Builder.get(WebResource.java:509) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.netflix.discovery.shared.transport.jersey.AbstractJerseyEurekaHttpClient.getApplicationsInternal(AbstractJerseyEurekaHttpClient.java:194) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.jersey.AbstractJerseyEurekaHttpClient.getApplications(AbstractJerseyEurekaHttpClient.java:165) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$6.execute(EurekaHttpClientDecorator.java:137) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.MetricsCollectingEurekaHttpClient.execute(MetricsCollectingEurekaHttpClient.java:73) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.getApplications(EurekaHttpClientDecorator.java:134) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$6.execute(EurekaHttpClientDecorator.java:137) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.executeOnNewServer(RedirectingEurekaHttpClient.java:118) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.execute(RedirectingEurekaHttpClient.java:79) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.getApplications(EurekaHttpClientDecorator.java:134) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$6.execute(EurekaHttpClientDecorator.java:137) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:120) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.getApplications(EurekaHttpClientDecorator.java:134) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$6.execute(EurekaHttpClientDecorator.java:137) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.getApplications(EurekaHttpClientDecorator.java:134) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.getAndStoreFullRegistry(DiscoveryClient.java:1069) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.fetchRegistry(DiscoveryClient.java:983) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:430) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:276) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:272) ~[eureka-client-1.9.13.jar:1.9.13]
+	at org.springframework.cloud.netflix.eureka.CloudEurekaClient.<init>(CloudEurekaClient.java:67) ~[spring-cloud-netflix-eureka-client-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration$RefreshableEurekaClientConfiguration.eurekaClient(EurekaClientAutoConfiguration.java:324) ~[spring-cloud-netflix-eureka-client-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_291]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_291]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_291]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_291]
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:637) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1336) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1176) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$1(AbstractBeanFactory.java:363) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.cloud.context.scope.GenericScope$BeanLifecycleWrapper.getBean(GenericScope.java:389) ~[spring-cloud-context-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at org.springframework.cloud.context.scope.GenericScope.get(GenericScope.java:186) ~[spring-cloud-context-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:360) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.aop.target.SimpleBeanTargetSource.getTarget(SimpleBeanTargetSource.java:35) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at com.webank.wedatasphere.linkis.server.utils.AopTargetUtils.getJdkDynamicProxyTargetObject(AopTargetUtils.java:72) ~[linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.utils.AopTargetUtils.getTarget(AopTargetUtils.java:40) ~[linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.rpc.sender.eureka.EurekaClientRefreshUtils.storeEurekaClientRefreshUtils(EurekaClientRefreshUtils.scala:52) ~[linkis-rpc-1.0.0-RC1.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_291]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_291]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_291]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_291]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:333) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:157) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:415) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1786) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:594) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:897) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:879) [spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:551) [spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at com.webank.wedatasphere.linkis.DataWorkCloudApplication.main(DataWorkCloudApplication.java:108) [linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication$.main(ExchangisServerApplication.scala:19) [classes/:?]
+	at com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication.main(ExchangisServerApplication.scala) [classes/:?]
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.net.DualStackPlainSocketImpl.waitForConnect(Native Method) ~[?:1.8.0_291]
+	at java.net.DualStackPlainSocketImpl.socketConnect(DualStackPlainSocketImpl.java:81) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:476) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:218) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:200) ~[?:1.8.0_291]
+	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:162) ~[?:1.8.0_291]
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:394) ~[?:1.8.0_291]
+	at java.net.Socket.connect(Socket.java:606) ~[?:1.8.0_291]
+	at org.apache.http.conn.scheme.PlainSocketFactory.connectSocket(PlainSocketFactory.java:121) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:180) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:144) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:134) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:610) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:445) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:835) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:118) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:56) ~[httpclient-4.5.3.jar:4.5.3]
+	at com.sun.jersey.client.apache4.ApacheHttpClient4Handler.handle(ApacheHttpClient4Handler.java:173) ~[jersey-apache-client4-1.19.1.jar:1.19.1]
+	... 74 more
+
+2021-08-18 10:02:13.516 [WARN ] [main                                    ] c.n.d.s.t.d.RetryableEurekaHttpClient (130) [execute] - Request execution failed with message: java.net.ConnectException: Connection refused: connect
+2021-08-18 10:02:13.516 [ERROR] [main                                    ] c.n.d.DiscoveryClient (990) [fetchRegistry] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - was unable to refresh its cache! status = Cannot execute request on any known server com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.getApplications(EurekaHttpClientDecorator.java:134) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$6.execute(EurekaHttpClientDecorator.java:137) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.getApplications(EurekaHttpClientDecorator.java:134) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.getAndStoreFullRegistry(DiscoveryClient.java:1069) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.fetchRegistry(DiscoveryClient.java:983) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:430) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:276) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.<init>(DiscoveryClient.java:272) ~[eureka-client-1.9.13.jar:1.9.13]
+	at org.springframework.cloud.netflix.eureka.CloudEurekaClient.<init>(CloudEurekaClient.java:67) ~[spring-cloud-netflix-eureka-client-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration$RefreshableEurekaClientConfiguration.eurekaClient(EurekaClientAutoConfiguration.java:324) ~[spring-cloud-netflix-eureka-client-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_291]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_291]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_291]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_291]
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:637) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1336) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1176) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$1(AbstractBeanFactory.java:363) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.cloud.context.scope.GenericScope$BeanLifecycleWrapper.getBean(GenericScope.java:389) ~[spring-cloud-context-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at org.springframework.cloud.context.scope.GenericScope.get(GenericScope.java:186) ~[spring-cloud-context-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:360) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.aop.target.SimpleBeanTargetSource.getTarget(SimpleBeanTargetSource.java:35) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at com.webank.wedatasphere.linkis.server.utils.AopTargetUtils.getJdkDynamicProxyTargetObject(AopTargetUtils.java:72) ~[linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.utils.AopTargetUtils.getTarget(AopTargetUtils.java:40) ~[linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.rpc.sender.eureka.EurekaClientRefreshUtils.storeEurekaClientRefreshUtils(EurekaClientRefreshUtils.scala:52) ~[linkis-rpc-1.0.0-RC1.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_291]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_291]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_291]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_291]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:333) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:157) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:415) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1786) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:594) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:897) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:879) [spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:551) [spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at com.webank.wedatasphere.linkis.DataWorkCloudApplication.main(DataWorkCloudApplication.java:108) [linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication$.main(ExchangisServerApplication.scala:19) [classes/:?]
+	at com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication.main(ExchangisServerApplication.scala) [classes/:?]
+
+2021-08-18 10:02:13.517 [WARN ] [main                                    ] c.n.d.DiscoveryClient (297) [get] - Using default backup registry implementation which does not do anything.
+2021-08-18 10:02:13.518 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1288) [initScheduledTasks] - Starting heartbeat executor: renew interval is: 30
+2021-08-18 10:02:13.520 [INFO ] [main                                    ] c.n.d.InstanceInfoReplicator (60) [<init>] - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2021-08-18 10:02:13.523 [INFO ] [main                                    ] c.n.d.DiscoveryClient (465) [<init>] - Discovery Client initialized at timestamp 1629252133522 with initial instances count: 0
+2021-08-18 10:02:14.172 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-18 10:02:14.173 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-18 10:02:14.339 [INFO ] [main                                    ] o.s.s.c.ThreadPoolTaskExecutor (181) [initialize] - Initializing ExecutorService 'applicationTaskExecutor'
+2021-08-18 10:02:15.178 [WARN ] [main                                    ] o.s.c.l.c.BlockingLoadBalancerClientAutoConfiguration$BlockingLoadBalancerClientRibbonWarnLogger (86) [logWarning] - You already have RibbonLoadBalancerClient on your classpath. It will be used by default. As Spring Cloud Ribbon is in maintenance mode. We recommend switching to BlockingLoadBalancerClient instead. In order to use it, set the value of `spring.cloud.loadbalancer.ribbon.enabled` to `false` or remove spring-cloud-starter-netflix-ribbon from your project.
+2021-08-18 10:02:15.282 [INFO ] [main                                    ] o.s.b.a.e.w.EndpointLinksResolver (58) [<init>] - Exposing 2 endpoint(s) beneath base path '/actuator'
+2021-08-18 10:02:15.330 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaServiceRegistry (41) [register] - Registering application EXCHANGIS-SERVER with eureka with status UP
+2021-08-18 10:02:15.331 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1323) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629252135331, current=UP, previous=STARTING]
+2021-08-18 10:02:15.333 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-18 10:02:15.364 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-08-18 10:02:15.364 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (525) [initServletBean] - Initializing Servlet 'dispatcherServlet'
+2021-08-18 10:02:15.372 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (547) [initServletBean] - Completed initialization in 8 ms
+2021-08-18 10:02:15.462 [INFO ] [main                                    ] o.e.j.s.AbstractConnector (293) [doStart] - Started ServerConnector@1abf951a{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-18 10:02:15.463 [INFO ] [main                                    ] o.s.b.w.e.j.JettyWebServer (185) [start] - Jetty started on port(s) 9321 (http/1.1) with context path '/'
+2021-08-18 10:02:15.464 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaAutoServiceRegistration (145) [onApplicationEvent] - Updating port to 9321
+2021-08-18 10:02:15.835 [INFO ] [main                                    ] c.w.w.l.r.c.RPCSpringConfiguration$$EnhancerBySpringCGLIB$$84ddd427 (40) [info] - DataWorkCloud RPC need register RPCReceiveRestful, now add it to configuration.
+2021-08-18 10:02:15.836 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-18 10:02:15.836 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-18 10:02:15.849 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (61) [logStarted] - Started DataWorkCloudApplication in 16.755 seconds (JVM running for 19.153)
+2021-08-18 10:02:17.370 [ERROR] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.s.t.d.RedirectingEurekaHttpClient (83) [execute] - Request execution error. endpoint=DefaultEndpoint{ serviceUrl='http://euk1.com:7001/eureka/} com.sun.jersey.api.client.ClientHandlerException: java.net.ConnectException: Connection refused: connect
+	at com.sun.jersey.client.apache4.ApacheHttpClient4Handler.handle(ApacheHttpClient4Handler.java:187) ~[jersey-apache-client4-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.filter.GZIPContentEncodingFilter.handle(GZIPContentEncodingFilter.java:123) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.netflix.discovery.EurekaIdentityHeaderFilter.handle(EurekaIdentityHeaderFilter.java:27) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.sun.jersey.api.client.Client.handle(Client.java:652) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource.handle(WebResource.java:682) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource.access$200(WebResource.java:74) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource$Builder.post(WebResource.java:570) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.netflix.discovery.shared.transport.jersey.AbstractJerseyEurekaHttpClient.register(AbstractJerseyEurekaHttpClient.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.MetricsCollectingEurekaHttpClient.execute(MetricsCollectingEurekaHttpClient.java:73) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.executeOnNewServer(RedirectingEurekaHttpClient.java:118) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.execute(RedirectingEurekaHttpClient.java:79) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:120) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:847) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:121) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator$1.run(InstanceInfoReplicator.java:101) [eureka-client-1.9.13.jar:1.9.13]
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run(FutureTask.java) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_291]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_291]
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.net.DualStackPlainSocketImpl.waitForConnect(Native Method) ~[?:1.8.0_291]
+	at java.net.DualStackPlainSocketImpl.socketConnect(DualStackPlainSocketImpl.java:81) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:476) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:218) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:200) ~[?:1.8.0_291]
+	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:162) ~[?:1.8.0_291]
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:394) ~[?:1.8.0_291]
+	at java.net.Socket.connect(Socket.java:606) ~[?:1.8.0_291]
+	at org.apache.http.conn.scheme.PlainSocketFactory.connectSocket(PlainSocketFactory.java:121) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:180) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:144) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:134) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:610) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:445) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:835) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:118) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:56) ~[httpclient-4.5.3.jar:4.5.3]
+	at com.sun.jersey.client.apache4.ApacheHttpClient4Handler.handle(ApacheHttpClient4Handler.java:173) ~[jersey-apache-client4-1.19.1.jar:1.19.1]
+	... 31 more
+
+2021-08-18 10:02:17.371 [WARN ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.s.t.d.RetryableEurekaHttpClient (130) [execute] - Request execution failed with message: java.net.ConnectException: Connection refused: connect
+2021-08-18 10:02:17.371 [WARN ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (849) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration failed Cannot execute request on any known server com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:847) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:121) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator$1.run(InstanceInfoReplicator.java:101) [eureka-client-1.9.13.jar:1.9.13]
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run(FutureTask.java) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_291]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_291]
+
+2021-08-18 10:02:17.371 [WARN ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.InstanceInfoReplicator (125) [run] - There was a problem with the instance info replicator com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:847) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:121) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator$1.run(InstanceInfoReplicator.java:101) [eureka-client-1.9.13.jar:1.9.13]
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run(FutureTask.java) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_291]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_291]
+
+2021-08-18 10:02:19.310 [INFO ] [SpringContextShutdownHook               ] o.s.c.n.e.s.EurekaServiceRegistry (65) [deregister] - Unregistering application EXCHANGIS-SERVER with eureka with status DOWN
+2021-08-18 10:02:19.310 [WARN ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (1321) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629252139310, current=DOWN, previous=UP]
+2021-08-18 10:02:19.310 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-18 10:02:19.317 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.AbstractConnector (343) [doStop] - Stopped ServerConnector@1abf951a{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-18 10:02:19.317 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.session (158) [stopScavenging] - node0 Stopped scavenging
+2021-08-18 10:02:19.318 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.C.application (2232) [log] - Destroying Spring FrameworkServlet 'dispatcherServlet'
+2021-08-18 10:02:19.319 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.ContextHandler (1007) [doStop] - Stopped o.s.b.w.e.j.JettyEmbeddedWebAppContext@5e66733b{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.3654686608292708513.9321/],UNAVAILABLE}
+2021-08-18 10:02:19.320 [INFO ] [SpringContextShutdownHook               ] o.s.s.c.ThreadPoolTaskExecutor (218) [shutdown] - Shutting down ExecutorService 'applicationTaskExecutor'
+2021-08-18 10:02:19.325 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (906) [shutdown] - Shutting down DiscoveryClient ...
+2021-08-18 10:02:21.320 [ERROR] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.s.t.d.RedirectingEurekaHttpClient (83) [execute] - Request execution error. endpoint=DefaultEndpoint{ serviceUrl='http://euk1.com:7001/eureka/} com.sun.jersey.api.client.ClientHandlerException: java.net.ConnectException: Connection refused: connect
+	at com.sun.jersey.client.apache4.ApacheHttpClient4Handler.handle(ApacheHttpClient4Handler.java:187) ~[jersey-apache-client4-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.filter.GZIPContentEncodingFilter.handle(GZIPContentEncodingFilter.java:123) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.netflix.discovery.EurekaIdentityHeaderFilter.handle(EurekaIdentityHeaderFilter.java:27) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.sun.jersey.api.client.Client.handle(Client.java:652) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource.handle(WebResource.java:682) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource.access$200(WebResource.java:74) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource$Builder.post(WebResource.java:570) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.netflix.discovery.shared.transport.jersey.AbstractJerseyEurekaHttpClient.register(AbstractJerseyEurekaHttpClient.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.MetricsCollectingEurekaHttpClient.execute(MetricsCollectingEurekaHttpClient.java:73) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.executeOnNewServer(RedirectingEurekaHttpClient.java:118) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.execute(RedirectingEurekaHttpClient.java:79) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:120) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:847) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:121) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator$1.run(InstanceInfoReplicator.java:101) [eureka-client-1.9.13.jar:1.9.13]
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run(FutureTask.java) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_291]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_291]
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.net.DualStackPlainSocketImpl.waitForConnect(Native Method) ~[?:1.8.0_291]
+	at java.net.DualStackPlainSocketImpl.socketConnect(DualStackPlainSocketImpl.java:81) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:476) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:218) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:200) ~[?:1.8.0_291]
+	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:162) ~[?:1.8.0_291]
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:394) ~[?:1.8.0_291]
+	at java.net.Socket.connect(Socket.java:606) ~[?:1.8.0_291]
+	at org.apache.http.conn.scheme.PlainSocketFactory.connectSocket(PlainSocketFactory.java:121) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:180) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:144) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:134) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:610) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:445) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:835) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:118) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:56) ~[httpclient-4.5.3.jar:4.5.3]
+	at com.sun.jersey.client.apache4.ApacheHttpClient4Handler.handle(ApacheHttpClient4Handler.java:173) ~[jersey-apache-client4-1.19.1.jar:1.19.1]
+	... 31 more
+
+2021-08-18 10:02:21.321 [WARN ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.s.t.d.RetryableEurekaHttpClient (130) [execute] - Request execution failed with message: java.net.ConnectException: Connection refused: connect
+2021-08-18 10:02:21.321 [WARN ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (849) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration failed Cannot execute request on any known server com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:847) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:121) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator$1.run(InstanceInfoReplicator.java:101) [eureka-client-1.9.13.jar:1.9.13]
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run(FutureTask.java) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_291]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_291]
+
+2021-08-18 10:02:21.321 [WARN ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.InstanceInfoReplicator (125) [run] - There was a problem with the instance info replicator com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$1.execute(EurekaHttpClientDecorator.java:59) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.register(EurekaHttpClientDecorator.java:56) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.register(DiscoveryClient.java:847) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator.run(InstanceInfoReplicator.java:121) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.InstanceInfoReplicator$1.run(InstanceInfoReplicator.java:101) [eureka-client-1.9.13.jar:1.9.13]
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run(FutureTask.java) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180) [?:1.8.0_291]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_291]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_291]
+
+2021-08-18 10:02:21.322 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (940) [unregister] - Unregistering ...
+2021-08-18 10:02:23.362 [ERROR] [SpringContextShutdownHook               ] c.n.d.s.t.d.RedirectingEurekaHttpClient (83) [execute] - Request execution error. endpoint=DefaultEndpoint{ serviceUrl='http://euk1.com:7001/eureka/} com.sun.jersey.api.client.ClientHandlerException: java.net.ConnectException: Connection refused: connect
+	at com.sun.jersey.client.apache4.ApacheHttpClient4Handler.handle(ApacheHttpClient4Handler.java:187) ~[jersey-apache-client4-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.filter.GZIPContentEncodingFilter.handle(GZIPContentEncodingFilter.java:123) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.netflix.discovery.EurekaIdentityHeaderFilter.handle(EurekaIdentityHeaderFilter.java:27) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.sun.jersey.api.client.Client.handle(Client.java:652) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource.handle(WebResource.java:682) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource.access$200(WebResource.java:74) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.sun.jersey.api.client.WebResource$Builder.delete(WebResource.java:591) ~[jersey-client-1.19.1.jar:1.19.1]
+	at com.netflix.discovery.shared.transport.jersey.AbstractJerseyEurekaHttpClient.cancel(AbstractJerseyEurekaHttpClient.java:76) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$2.execute(EurekaHttpClientDecorator.java:74) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.MetricsCollectingEurekaHttpClient.execute(MetricsCollectingEurekaHttpClient.java:73) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.cancel(EurekaHttpClientDecorator.java:71) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$2.execute(EurekaHttpClientDecorator.java:74) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.executeOnNewServer(RedirectingEurekaHttpClient.java:118) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient.execute(RedirectingEurekaHttpClient.java:79) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.cancel(EurekaHttpClientDecorator.java:71) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$2.execute(EurekaHttpClientDecorator.java:74) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:120) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.cancel(EurekaHttpClientDecorator.java:71) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$2.execute(EurekaHttpClientDecorator.java:74) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.cancel(EurekaHttpClientDecorator.java:71) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.unregister(DiscoveryClient.java:941) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.shutdown(DiscoveryClient.java:919) [eureka-client-1.9.13.jar:1.9.13]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_291]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_291]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_291]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_291]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeDestroyMethods(InitDestroyAnnotationBeanPostProcessor.java:347) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeDestruction(InitDestroyAnnotationBeanPostProcessor.java:177) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.destroy(DisposableBeanAdapter.java:242) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.run(DisposableBeanAdapter.java:235) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.cloud.context.scope.GenericScope$BeanLifecycleWrapper.destroy(GenericScope.java:403) [spring-cloud-context-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at org.springframework.cloud.context.scope.GenericScope.destroy(GenericScope.java:142) [spring-cloud-context-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.destroy(DisposableBeanAdapter.java:258) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroyBean(DefaultSingletonBeanRegistry.java:587) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingleton(DefaultSingletonBeanRegistry.java:559) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingleton(DefaultListableBeanFactory.java:1092) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingletons(DefaultSingletonBeanRegistry.java:520) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingletons(DefaultListableBeanFactory.java:1085) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.destroyBeans(AbstractApplicationContext.java:1061) [spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:1030) [spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.doClose(ServletWebServerApplicationContext.java:170) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext$1.run(AbstractApplicationContext.java:949) [spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.net.DualStackPlainSocketImpl.waitForConnect(Native Method) ~[?:1.8.0_291]
+	at java.net.DualStackPlainSocketImpl.socketConnect(DualStackPlainSocketImpl.java:81) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:476) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:218) ~[?:1.8.0_291]
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:200) ~[?:1.8.0_291]
+	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:162) ~[?:1.8.0_291]
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:394) ~[?:1.8.0_291]
+	at java.net.Socket.connect(Socket.java:606) ~[?:1.8.0_291]
+	at org.apache.http.conn.scheme.PlainSocketFactory.connectSocket(PlainSocketFactory.java:121) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:180) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:144) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:134) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:610) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:445) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:835) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:118) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:56) ~[httpclient-4.5.3.jar:4.5.3]
+	at com.sun.jersey.client.apache4.ApacheHttpClient4Handler.handle(ApacheHttpClient4Handler.java:173) ~[jersey-apache-client4-1.19.1.jar:1.19.1]
+	... 43 more
+
+2021-08-18 10:02:23.363 [WARN ] [SpringContextShutdownHook               ] c.n.d.s.t.d.RetryableEurekaHttpClient (130) [execute] - Request execution failed with message: java.net.ConnectException: Connection refused: connect
+2021-08-18 10:02:23.363 [ERROR] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (944) [unregister] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - de-registration failedCannot execute request on any known server com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute(RetryableEurekaHttpClient.java:112) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.cancel(EurekaHttpClientDecorator.java:71) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator$2.execute(EurekaHttpClientDecorator.java:74) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute(SessionedEurekaHttpClient.java:77) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.cancel(EurekaHttpClientDecorator.java:71) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.unregister(DiscoveryClient.java:941) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.shutdown(DiscoveryClient.java:919) [eureka-client-1.9.13.jar:1.9.13]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_291]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_291]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_291]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_291]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeDestroyMethods(InitDestroyAnnotationBeanPostProcessor.java:347) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeDestruction(InitDestroyAnnotationBeanPostProcessor.java:177) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.destroy(DisposableBeanAdapter.java:242) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.run(DisposableBeanAdapter.java:235) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.cloud.context.scope.GenericScope$BeanLifecycleWrapper.destroy(GenericScope.java:403) [spring-cloud-context-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at org.springframework.cloud.context.scope.GenericScope.destroy(GenericScope.java:142) [spring-cloud-context-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at org.springframework.beans.factory.support.DisposableBeanAdapter.destroy(DisposableBeanAdapter.java:258) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroyBean(DefaultSingletonBeanRegistry.java:587) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingleton(DefaultSingletonBeanRegistry.java:559) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingleton(DefaultListableBeanFactory.java:1092) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingletons(DefaultSingletonBeanRegistry.java:520) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.destroySingletons(DefaultListableBeanFactory.java:1085) [spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.destroyBeans(AbstractApplicationContext.java:1061) [spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:1030) [spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.doClose(ServletWebServerApplicationContext.java:170) [spring-boot-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext$1.run(AbstractApplicationContext.java:949) [spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+
+2021-08-18 10:02:23.370 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (929) [shutdown] - Completed shut down of DiscoveryClient
+2021-08-18 10:03:53.582 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-18 10:03:55.152 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-18 10:03:57.315 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-18 10:03:57.315 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-18 10:03:57.318 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-18 10:03:57.333 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-18 10:03:57.333 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-18 10:03:58.933 [INFO ] [main                                    ] o.s.c.a.ConfigurationClassPostProcessor (403) [enhanceConfigurationClasses] - Cannot enhance @Configuration bean definition 'myBatisMapperScannerConfig' since its singleton instance has been created too early. The typical cause is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor return type: Consider declaring such methods as 'static'.
+2021-08-18 10:03:59.016 [INFO ] [main                                    ] o.s.c.c.s.GenericScope (295) [setSerializationId] - BeanFactory id=47efa477-1360-333a-bde0-f4c642dc94e8
+2021-08-18 10:03:59.454 [INFO ] [main                                    ] o.e.j.u.log (169) [initialized] - Logging initialized @8837ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-08-18 10:03:59.876 [INFO ] [main                                    ] o.s.b.w.e.j.JettyServletWebServerFactory (147) [getWebServer] - Server initialized with port: 9321
+2021-08-18 10:03:59.910 [INFO ] [main                                    ] o.e.j.s.Server (359) [doStart] - jetty-9.4.30.v20200611; built: 2020-06-11T12:34:51.929Z; git: 271836e4c1f4612f12b7bb13ef5a92a927634b0d; jvm 1.8.0_291-b10
+2021-08-18 10:03:59.934 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring embedded WebApplicationContext
+2021-08-18 10:03:59.934 [INFO ] [main                                    ] o.s.b.w.s.c.ServletWebServerApplicationContext (285) [prepareWebApplicationContext] - Root WebApplicationContext: initialization completed in 2598 ms
+2021-08-18 10:04:00.037 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-18 10:04:00.037 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-18 10:04:00.046 [INFO ] [main                                    ] c.n.c.DynamicPropertyFactory (281) [getInstance] - DynamicPropertyFactory is initialized with configuration sources: com.netflix.config.ConcurrentCompositeConfiguration@1bba9862
+2021-08-18 10:04:00.103 [WARN ] [main                                    ] o.s.b.a.e.EndpointId (155) [logWarning] - Endpoint ID 'service-registry' contains invalid characters, please migrate to a valid format.
+2021-08-18 10:04:00.238 [INFO ] [main                                    ] o.e.j.s.session (333) [doStart] - DefaultSessionIdManager workerName=node0
+2021-08-18 10:04:00.238 [INFO ] [main                                    ] o.e.j.s.session (338) [doStart] - No SessionScavenger set, using defaults
+2021-08-18 10:04:00.239 [INFO ] [main                                    ] o.e.j.s.session (140) [startScavenging] - node0 Scavenging every 600000ms
+2021-08-18 10:04:00.245 [INFO ] [main                                    ] o.e.j.s.h.ContextHandler (824) [doStart] - Started o.s.b.w.e.j.JettyEmbeddedWebAppContext@39a2e77d{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.5221740320602320288.9321/],AVAILABLE}
+2021-08-18 10:04:00.246 [INFO ] [main                                    ] o.e.j.s.Server (399) [doStart] - Started @9630ms
+2021-08-18 10:04:00.312 [INFO ] [main                                    ] c.w.w.l.m.DataSourceConfig$$EnhancerBySpringCGLIB$$cff99674 (35) [info] - Database connection address information(数据库连接地址信息)=jdbc:mysql://192.168.0.31:3306/exchangis_v3?useSSL=false&characterEncoding=UTF-8
+2021-08-18 10:04:00.338 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$3081e40e (35) [info] - Mybatis typeAliasesPackage=
+2021-08-18 10:04:00.338 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$3081e40e (35) [info] - Mybatis mapperLocations=
+2021-08-18 10:04:00.339 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$3081e40e (35) [info] - Mybatis configLocation=classpath:/mybatis-config.xml
+2021-08-18 10:04:01.234 [INFO ] [main                                    ] c.w.w.e.d.l.l.ExchangisDataSourceLoaderFactory (36) [getLoader] - Use LocalExchangisDataSourceLoader to load all Exchangis Extension DataSources.
+2021-08-18 10:04:01.234 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (42) [init] - libPath url is /D:/dev_workspace/java-dsslinks-maven-workspace/dw-exchangis/exchangis-server/target/classes/..\..\exchangis-extds
+2021-08-18 10:04:01.264 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.hive.ExchangisHiveDataSource
+2021-08-18 10:04:01.264 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.mysql.ExchangisMySQLDataSource
+2021-08-18 10:04:01.354 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverChoosers in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverChooser@1aea759d)
+2021-08-18 10:04:01.359 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverSenderBuilders in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverSenderBuilder@4549d616)
+2021-08-18 10:04:01.366 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init RPCReceiverListenerBus with queueSize 1000 and consumeThreadSize 10.
+2021-08-18 10:04:01.368 [INFO ] [main                                    ] c.w.w.l.r.AsynRPCMessageBus (40) [info] - RPC-Receiver-Asyn-Thread-ListenerBus add a new listener => class com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$anon$1
+2021-08-18 10:04:01.820 [INFO ] [main                                    ] o.s.c.n.e.InstanceInfoFactory (72) [create] - Setting initial instance status as: STARTING
+2021-08-18 10:04:01.854 [INFO ] [main                                    ] c.n.d.DiscoveryClient (365) [<init>] - Initializing Eureka in region us-east-1
+2021-08-18 10:04:02.680 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (70) [<init>] - Using JSON encoding codec LegacyJacksonJson
+2021-08-18 10:04:02.681 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (71) [<init>] - Using JSON decoding codec LegacyJacksonJson
+2021-08-18 10:04:02.842 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (80) [<init>] - Using XML encoding codec XStreamXml
+2021-08-18 10:04:02.842 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (81) [<init>] - Using XML decoding codec XStreamXml
+2021-08-18 10:04:03.050 [INFO ] [main                                    ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-18 10:04:03.314 [INFO ] [main                                    ] c.n.d.DiscoveryClient (976) [fetchRegistry] - Disable delta property : false
+2021-08-18 10:04:03.314 [INFO ] [main                                    ] c.n.d.DiscoveryClient (977) [fetchRegistry] - Single vip registry refresh property : null
+2021-08-18 10:04:03.314 [INFO ] [main                                    ] c.n.d.DiscoveryClient (978) [fetchRegistry] - Force full registry fetch : false
+2021-08-18 10:04:03.314 [INFO ] [main                                    ] c.n.d.DiscoveryClient (979) [fetchRegistry] - Application is null : false
+2021-08-18 10:04:03.314 [INFO ] [main                                    ] c.n.d.DiscoveryClient (980) [fetchRegistry] - Registered Applications size is zero : true
+2021-08-18 10:04:03.315 [INFO ] [main                                    ] c.n.d.DiscoveryClient (982) [fetchRegistry] - Application version is -1: true
+2021-08-18 10:04:03.315 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1065) [getAndStoreFullRegistry] - Getting all instance registry info from the eureka server
+2021-08-18 10:04:03.746 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1074) [getAndStoreFullRegistry] - The response status is 200
+2021-08-18 10:04:03.748 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1288) [initScheduledTasks] - Starting heartbeat executor: renew interval is: 30
+2021-08-18 10:04:03.750 [INFO ] [main                                    ] c.n.d.InstanceInfoReplicator (60) [<init>] - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2021-08-18 10:04:03.752 [INFO ] [main                                    ] c.n.d.DiscoveryClient (465) [<init>] - Discovery Client initialized at timestamp 1629252243751 with initial instances count: 0
+2021-08-18 10:04:04.391 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-18 10:04:04.391 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-18 10:04:04.500 [INFO ] [main                                    ] o.s.s.c.ThreadPoolTaskExecutor (181) [initialize] - Initializing ExecutorService 'applicationTaskExecutor'
+2021-08-18 10:04:05.238 [WARN ] [main                                    ] o.s.c.l.c.BlockingLoadBalancerClientAutoConfiguration$BlockingLoadBalancerClientRibbonWarnLogger (86) [logWarning] - You already have RibbonLoadBalancerClient on your classpath. It will be used by default. As Spring Cloud Ribbon is in maintenance mode. We recommend switching to BlockingLoadBalancerClient instead. In order to use it, set the value of `spring.cloud.loadbalancer.ribbon.enabled` to `false` or remove spring-cloud-starter-netflix-ribbon from your project.
+2021-08-18 10:04:05.301 [INFO ] [main                                    ] o.s.b.a.e.w.EndpointLinksResolver (58) [<init>] - Exposing 2 endpoint(s) beneath base path '/actuator'
+2021-08-18 10:04:05.338 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaServiceRegistry (41) [register] - Registering application EXCHANGIS-SERVER with eureka with status UP
+2021-08-18 10:04:05.339 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1323) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629252245339, current=UP, previous=STARTING]
+2021-08-18 10:04:05.341 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-18 10:04:05.373 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-08-18 10:04:05.374 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (525) [initServletBean] - Initializing Servlet 'dispatcherServlet'
+2021-08-18 10:04:05.381 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (547) [initServletBean] - Completed initialization in 7 ms
+2021-08-18 10:04:05.442 [INFO ] [main                                    ] o.e.j.s.AbstractConnector (293) [doStart] - Started ServerConnector@400e741{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-18 10:04:05.450 [INFO ] [main                                    ] o.s.b.w.e.j.JettyWebServer (185) [start] - Jetty started on port(s) 9321 (http/1.1) with context path '/'
+2021-08-18 10:04:05.451 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaAutoServiceRegistration (145) [onApplicationEvent] - Updating port to 9321
+2021-08-18 10:04:05.469 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-18 10:04:05.828 [INFO ] [main                                    ] c.w.w.l.r.c.RPCSpringConfiguration$$EnhancerBySpringCGLIB$$afbcbda7 (40) [info] - DataWorkCloud RPC need register RPCReceiveRestful, now add it to configuration.
+2021-08-18 10:04:05.828 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-18 10:04:05.829 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-18 10:04:05.842 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (61) [logStarted] - Started DataWorkCloudApplication in 12.152 seconds (JVM running for 15.226)
+2021-08-18 10:04:09.756 [INFO ] [qtp404787971-44                         ] c.w.w.l.s.r.RestfulApplication (40) [<init>] - register com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$EnhancerBySpringCGLIB$$4fba02cf
+2021-08-18 10:04:09.759 [INFO ] [qtp404787971-44                         ] c.w.w.l.s.r.RestfulApplication (46) [<init>] - packages com.webank.wedatasphere.exchangis.datasource.server.restful.api,com.webank.wedatasphere.exchangis.project.server.restful
+2021-08-18 10:04:10.254 [INFO ] [qtp404787971-44                         ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/1/datasource/ui
+2021-08-18 10:04:10.255 [INFO ] [qtp404787971-44                         ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-18 10:04:33.748 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (976) [fetchRegistry] - Disable delta property : false
+2021-08-18 10:04:33.748 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (977) [fetchRegistry] - Single vip registry refresh property : null
+2021-08-18 10:04:33.748 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (978) [fetchRegistry] - Force full registry fetch : false
+2021-08-18 10:04:33.748 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (979) [fetchRegistry] - Application is null : false
+2021-08-18 10:04:33.748 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (980) [fetchRegistry] - Registered Applications size is zero : true
+2021-08-18 10:04:33.748 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (982) [fetchRegistry] - Application version is -1: false
+2021-08-18 10:04:33.749 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (1065) [getAndStoreFullRegistry] - Getting all instance registry info from the eureka server
+2021-08-18 10:04:33.790 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (1074) [getAndStoreFullRegistry] - The response status is 200
+2021-08-18 10:06:56.290 [INFO ] [SpringContextShutdownHook               ] o.s.c.n.e.s.EurekaServiceRegistry (65) [deregister] - Unregistering application EXCHANGIS-SERVER with eureka with status DOWN
+2021-08-18 10:06:56.290 [WARN ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (1321) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629252416290, current=DOWN, previous=UP]
+2021-08-18 10:06:56.290 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-18 10:06:56.304 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.AbstractConnector (343) [doStop] - Stopped ServerConnector@400e741{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-18 10:06:56.304 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.session (158) [stopScavenging] - node0 Stopped scavenging
+2021-08-18 10:06:56.306 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.C.application (2232) [log] - Destroying Spring FrameworkServlet 'dispatcherServlet'
+2021-08-18 10:06:56.308 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-18 10:06:56.311 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.ContextHandler (1007) [doStop] - Stopped o.s.b.w.e.j.JettyEmbeddedWebAppContext@39a2e77d{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.5221740320602320288.9321/],UNAVAILABLE}
+2021-08-18 10:06:56.313 [INFO ] [SpringContextShutdownHook               ] o.s.s.c.ThreadPoolTaskExecutor (218) [shutdown] - Shutting down ExecutorService 'applicationTaskExecutor'
+2021-08-18 10:06:56.328 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (906) [shutdown] - Shutting down DiscoveryClient ...
+2021-08-18 10:06:59.331 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (940) [unregister] - Unregistering ...
+2021-08-18 10:06:59.348 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (942) [unregister] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - deregister  status: 200
+2021-08-18 10:06:59.354 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (929) [shutdown] - Completed shut down of DiscoveryClient
+2021-08-18 10:07:07.347 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-18 10:07:08.920 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-18 10:07:11.063 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-18 10:07:11.063 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-18 10:07:11.065 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-18 10:07:11.080 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-18 10:07:11.080 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-18 10:07:12.301 [INFO ] [main                                    ] o.s.c.a.ConfigurationClassPostProcessor (403) [enhanceConfigurationClasses] - Cannot enhance @Configuration bean definition 'myBatisMapperScannerConfig' since its singleton instance has been created too early. The typical cause is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor return type: Consider declaring such methods as 'static'.
+2021-08-18 10:07:12.372 [INFO ] [main                                    ] o.s.c.c.s.GenericScope (295) [setSerializationId] - BeanFactory id=47efa477-1360-333a-bde0-f4c642dc94e8
+2021-08-18 10:07:12.794 [INFO ] [main                                    ] o.e.j.u.log (169) [initialized] - Logging initialized @8982ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-08-18 10:07:13.201 [INFO ] [main                                    ] o.s.b.w.e.j.JettyServletWebServerFactory (147) [getWebServer] - Server initialized with port: 9321
+2021-08-18 10:07:13.245 [INFO ] [main                                    ] o.e.j.s.Server (359) [doStart] - jetty-9.4.30.v20200611; built: 2020-06-11T12:34:51.929Z; git: 271836e4c1f4612f12b7bb13ef5a92a927634b0d; jvm 1.8.0_291-b10
+2021-08-18 10:07:13.267 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring embedded WebApplicationContext
+2021-08-18 10:07:13.268 [INFO ] [main                                    ] o.s.b.w.s.c.ServletWebServerApplicationContext (285) [prepareWebApplicationContext] - Root WebApplicationContext: initialization completed in 2185 ms
+2021-08-18 10:07:13.364 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-18 10:07:13.365 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-18 10:07:13.373 [INFO ] [main                                    ] c.n.c.DynamicPropertyFactory (281) [getInstance] - DynamicPropertyFactory is initialized with configuration sources: com.netflix.config.ConcurrentCompositeConfiguration@6f69e2d8
+2021-08-18 10:07:13.424 [WARN ] [main                                    ] o.s.b.a.e.EndpointId (155) [logWarning] - Endpoint ID 'service-registry' contains invalid characters, please migrate to a valid format.
+2021-08-18 10:07:13.533 [INFO ] [main                                    ] o.e.j.s.session (333) [doStart] - DefaultSessionIdManager workerName=node0
+2021-08-18 10:07:13.533 [INFO ] [main                                    ] o.e.j.s.session (338) [doStart] - No SessionScavenger set, using defaults
+2021-08-18 10:07:13.534 [INFO ] [main                                    ] o.e.j.s.session (140) [startScavenging] - node0 Scavenging every 660000ms
+2021-08-18 10:07:13.540 [INFO ] [main                                    ] o.e.j.s.h.ContextHandler (824) [doStart] - Started o.s.b.w.e.j.JettyEmbeddedWebAppContext@131c5bd{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.182500302940296009.9321/],AVAILABLE}
+2021-08-18 10:07:13.541 [INFO ] [main                                    ] o.e.j.s.Server (399) [doStart] - Started @9730ms
+2021-08-18 10:07:13.607 [INFO ] [main                                    ] c.w.w.l.m.DataSourceConfig$$EnhancerBySpringCGLIB$$3049ac78 (35) [info] - Database connection address information(数据库连接地址信息)=jdbc:mysql://192.168.0.31:3306/exchangis_v3?useSSL=false&characterEncoding=UTF-8
+2021-08-18 10:07:13.632 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$90d1fa12 (35) [info] - Mybatis typeAliasesPackage=
+2021-08-18 10:07:13.632 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$90d1fa12 (35) [info] - Mybatis mapperLocations=
+2021-08-18 10:07:13.632 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$90d1fa12 (35) [info] - Mybatis configLocation=classpath:/mybatis-config.xml
+2021-08-18 10:07:14.428 [INFO ] [main                                    ] c.w.w.e.d.l.l.ExchangisDataSourceLoaderFactory (36) [getLoader] - Use LocalExchangisDataSourceLoader to load all Exchangis Extension DataSources.
+2021-08-18 10:07:14.428 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (42) [init] - libPath url is /D:/dev_workspace/java-dsslinks-maven-workspace/dw-exchangis/exchangis-server/target/classes/..\..\exchangis-extds
+2021-08-18 10:07:14.434 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.hive.ExchangisHiveDataSource
+2021-08-18 10:07:14.435 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.mysql.ExchangisMySQLDataSource
+2021-08-18 10:07:14.497 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverChoosers in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverChooser@3a5ffea)
+2021-08-18 10:07:14.501 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverSenderBuilders in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverSenderBuilder@136cad3e)
+2021-08-18 10:07:14.508 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init RPCReceiverListenerBus with queueSize 1000 and consumeThreadSize 10.
+2021-08-18 10:07:14.510 [INFO ] [main                                    ] c.w.w.l.r.AsynRPCMessageBus (40) [info] - RPC-Receiver-Asyn-Thread-ListenerBus add a new listener => class com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$anon$1
+2021-08-18 10:07:14.965 [INFO ] [main                                    ] o.s.c.n.e.InstanceInfoFactory (72) [create] - Setting initial instance status as: STARTING
+2021-08-18 10:07:14.996 [INFO ] [main                                    ] c.n.d.DiscoveryClient (365) [<init>] - Initializing Eureka in region us-east-1
+2021-08-18 10:07:15.571 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (70) [<init>] - Using JSON encoding codec LegacyJacksonJson
+2021-08-18 10:07:15.571 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (71) [<init>] - Using JSON decoding codec LegacyJacksonJson
+2021-08-18 10:07:15.690 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (80) [<init>] - Using XML encoding codec XStreamXml
+2021-08-18 10:07:15.690 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (81) [<init>] - Using XML decoding codec XStreamXml
+2021-08-18 10:07:15.911 [INFO ] [main                                    ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-18 10:07:16.173 [INFO ] [main                                    ] c.n.d.DiscoveryClient (976) [fetchRegistry] - Disable delta property : false
+2021-08-18 10:07:16.173 [INFO ] [main                                    ] c.n.d.DiscoveryClient (977) [fetchRegistry] - Single vip registry refresh property : null
+2021-08-18 10:07:16.174 [INFO ] [main                                    ] c.n.d.DiscoveryClient (978) [fetchRegistry] - Force full registry fetch : false
+2021-08-18 10:07:16.174 [INFO ] [main                                    ] c.n.d.DiscoveryClient (979) [fetchRegistry] - Application is null : false
+2021-08-18 10:07:16.174 [INFO ] [main                                    ] c.n.d.DiscoveryClient (980) [fetchRegistry] - Registered Applications size is zero : true
+2021-08-18 10:07:16.174 [INFO ] [main                                    ] c.n.d.DiscoveryClient (982) [fetchRegistry] - Application version is -1: true
+2021-08-18 10:07:16.174 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1065) [getAndStoreFullRegistry] - Getting all instance registry info from the eureka server
+2021-08-18 10:07:16.286 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1074) [getAndStoreFullRegistry] - The response status is 200
+2021-08-18 10:07:16.287 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1288) [initScheduledTasks] - Starting heartbeat executor: renew interval is: 30
+2021-08-18 10:07:16.290 [INFO ] [main                                    ] c.n.d.InstanceInfoReplicator (60) [<init>] - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2021-08-18 10:07:16.293 [INFO ] [main                                    ] c.n.d.DiscoveryClient (465) [<init>] - Discovery Client initialized at timestamp 1629252436292 with initial instances count: 0
+2021-08-18 10:07:16.845 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-18 10:07:16.846 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-18 10:07:16.959 [INFO ] [main                                    ] o.s.s.c.ThreadPoolTaskExecutor (181) [initialize] - Initializing ExecutorService 'applicationTaskExecutor'
+2021-08-18 10:07:17.650 [WARN ] [main                                    ] o.s.c.l.c.BlockingLoadBalancerClientAutoConfiguration$BlockingLoadBalancerClientRibbonWarnLogger (86) [logWarning] - You already have RibbonLoadBalancerClient on your classpath. It will be used by default. As Spring Cloud Ribbon is in maintenance mode. We recommend switching to BlockingLoadBalancerClient instead. In order to use it, set the value of `spring.cloud.loadbalancer.ribbon.enabled` to `false` or remove spring-cloud-starter-netflix-ribbon from your project.
+2021-08-18 10:07:17.708 [INFO ] [main                                    ] o.s.b.a.e.w.EndpointLinksResolver (58) [<init>] - Exposing 2 endpoint(s) beneath base path '/actuator'
+2021-08-18 10:07:17.744 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaServiceRegistry (41) [register] - Registering application EXCHANGIS-SERVER with eureka with status UP
+2021-08-18 10:07:17.744 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1323) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629252437744, current=UP, previous=STARTING]
+2021-08-18 10:07:17.746 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-18 10:07:17.763 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-08-18 10:07:17.763 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (525) [initServletBean] - Initializing Servlet 'dispatcherServlet'
+2021-08-18 10:07:17.770 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (547) [initServletBean] - Completed initialization in 6 ms
+2021-08-18 10:07:17.790 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-18 10:07:17.794 [INFO ] [main                                    ] o.e.j.s.AbstractConnector (293) [doStart] - Started ServerConnector@455d04d2{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-18 10:07:17.795 [INFO ] [main                                    ] o.s.b.w.e.j.JettyWebServer (185) [start] - Jetty started on port(s) 9321 (http/1.1) with context path '/'
+2021-08-18 10:07:17.796 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaAutoServiceRegistration (145) [onApplicationEvent] - Updating port to 9321
+2021-08-18 10:07:18.160 [INFO ] [main                                    ] c.w.w.l.r.c.RPCSpringConfiguration$$EnhancerBySpringCGLIB$$100cd3ab (40) [info] - DataWorkCloud RPC need register RPCReceiveRestful, now add it to configuration.
+2021-08-18 10:07:18.160 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-18 10:07:18.160 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-18 10:07:18.174 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (61) [logStarted] - Started DataWorkCloudApplication in 10.775 seconds (JVM running for 14.364)
+2021-08-18 10:07:23.144 [INFO ] [qtp2112011719-44                        ] c.w.w.l.s.r.RestfulApplication (40) [<init>] - register com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$EnhancerBySpringCGLIB$$d91b0013
+2021-08-18 10:07:23.145 [INFO ] [qtp2112011719-44                        ] c.w.w.l.s.r.RestfulApplication (46) [<init>] - packages com.webank.wedatasphere.exchangis.datasource.server.restful.api,com.webank.wedatasphere.exchangis.project.server.restful
+2021-08-18 10:07:23.479 [INFO ] [qtp2112011719-44                        ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/1/datasource/ui
+2021-08-18 10:07:23.481 [INFO ] [qtp2112011719-44                        ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-18 10:07:46.303 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (976) [fetchRegistry] - Disable delta property : false
+2021-08-18 10:07:46.303 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (977) [fetchRegistry] - Single vip registry refresh property : null
+2021-08-18 10:07:46.303 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (978) [fetchRegistry] - Force full registry fetch : false
+2021-08-18 10:07:46.303 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (979) [fetchRegistry] - Application is null : false
+2021-08-18 10:07:46.303 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (980) [fetchRegistry] - Registered Applications size is zero : true
+2021-08-18 10:07:46.304 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (982) [fetchRegistry] - Application version is -1: false
+2021-08-18 10:07:46.304 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (1065) [getAndStoreFullRegistry] - Getting all instance registry info from the eureka server
+2021-08-18 10:07:46.332 [INFO ] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (1074) [getAndStoreFullRegistry] - The response status is 200
+2021-08-18 10:10:47.800 [INFO ] [qtp2112011719-51                        ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/1/datasource/ui
+2021-08-18 10:10:47.800 [INFO ] [qtp2112011719-51                        ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-18 10:12:16.188 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-18 10:16:35.928 [INFO ] [qtp2112011719-54                        ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/1/datasource/ui
+2021-08-18 10:16:35.928 [INFO ] [qtp2112011719-54                        ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-18 10:17:16.201 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-18 10:18:16.470 [INFO ] [SpringContextShutdownHook               ] o.s.c.n.e.s.EurekaServiceRegistry (65) [deregister] - Unregistering application EXCHANGIS-SERVER with eureka with status DOWN
+2021-08-18 10:18:16.470 [WARN ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (1321) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629253096470, current=DOWN, previous=UP]
+2021-08-18 10:18:16.470 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-18 10:18:16.490 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.AbstractConnector (343) [doStop] - Stopped ServerConnector@455d04d2{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-18 10:18:16.491 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.session (158) [stopScavenging] - node0 Stopped scavenging
+2021-08-18 10:18:16.495 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-18 10:18:16.497 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.C.application (2232) [log] - Destroying Spring FrameworkServlet 'dispatcherServlet'
+2021-08-18 10:18:16.507 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.ContextHandler (1007) [doStop] - Stopped o.s.b.w.e.j.JettyEmbeddedWebAppContext@131c5bd{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.182500302940296009.9321/],UNAVAILABLE}
+2021-08-18 10:18:16.508 [INFO ] [SpringContextShutdownHook               ] o.s.s.c.ThreadPoolTaskExecutor (218) [shutdown] - Shutting down ExecutorService 'applicationTaskExecutor'
+2021-08-18 10:18:16.523 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (906) [shutdown] - Shutting down DiscoveryClient ...
+2021-08-18 10:18:16.851 [ERROR] [DiscoveryClient-CacheRefreshExecutor-0  ] c.n.d.DiscoveryClient (1519) [refreshRegistry] - Cannot fetch registry from server org.springframework.beans.factory.BeanCreationNotAllowedException: Error creating bean with name 'sqlSessionFactory': Singleton bean creation not allowed while singletons of this factory are in destruction (Do not request a bean from a BeanFactory in a destroy method implementation!)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:220) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.context.event.AbstractApplicationEventMulticaster.retrieveApplicationListeners(AbstractApplicationEventMulticaster.java:245) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.event.AbstractApplicationEventMulticaster.getApplicationListeners(AbstractApplicationEventMulticaster.java:197) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:134) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:404) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:361) ~[spring-context-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.cloud.netflix.eureka.CloudEurekaClient.onCacheRefreshed(CloudEurekaClient.java:123) ~[spring-cloud-netflix-eureka-client-2.2.1.RELEASE.jar:2.2.1.RELEASE]
+	at com.netflix.discovery.DiscoveryClient.fetchRegistry(DiscoveryClient.java:999) ~[eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient.refreshRegistry(DiscoveryClient.java:1497) [eureka-client-1.9.13.jar:1.9.13]
+	at com.netflix.discovery.DiscoveryClient$CacheRefreshThread.run(DiscoveryClient.java:1464) [eureka-client-1.9.13.jar:1.9.13]
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266) [?:1.8.0_291]
+	at java.util.concurrent.FutureTask.run(FutureTask.java) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_291]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_291]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_291]
+
+2021-08-18 10:18:19.524 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (940) [unregister] - Unregistering ...
+2021-08-18 10:18:19.541 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (942) [unregister] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - deregister  status: 200
+2021-08-18 10:18:19.547 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (929) [shutdown] - Completed shut down of DiscoveryClient
