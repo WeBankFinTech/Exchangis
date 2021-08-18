@@ -50,8 +50,8 @@ object ExchangisLinkisRemoteClient {
     .retryEnabled(false)
     .readTimeout(30000L)
     .setAuthenticationStrategy(new StaticAuthenticationStrategy())
-    .setAuthTokenKey(authTokenKey)
-    .setAuthTokenValue(authTokenValue)
+    .setAuthTokenKey("hdfs")
+    .setAuthTokenValue("hdfs")
     .setDWSVersion("v1")
     .build()
 

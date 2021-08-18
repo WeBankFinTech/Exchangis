@@ -41,20 +41,8 @@
 </template>
 
 <script>
-import { Modal, Col, Row, Input, Form, FormItem, Select, SelectOption, Textarea } from "ant-design-vue";
 export default {
-  name: "ItemEditModal",
-  components: {
-    aCol: Col,
-    aRow: Row,
-    aModal: Modal,
-    aForm: Form,
-    aInput: Input,
-    aFormItem: FormItem,
-    aSelect: Select,
-    aSelectOption: SelectOption,
-    aTextarea: Textarea,
-  },
+  name: "ProjectEditModal",
   props: {
     // 是否可见
     visible: {
