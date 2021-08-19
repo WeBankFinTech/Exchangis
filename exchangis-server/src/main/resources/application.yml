@@ -3,7 +3,6 @@ server:
 spring:
   application:
     name: exchangis-server
-
 eureka:
   client:
     serviceUrl:
