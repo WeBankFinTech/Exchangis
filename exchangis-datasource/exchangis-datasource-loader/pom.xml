@@ -23,13 +23,14 @@
             <version>1.0.0-RC1</version>
         </dependency>
         <dependency>
-            <groupId>com.webank.wedatasphere.linkis</groupId>
-            <artifactId>linkis-common</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-dao</artifactId>
             <version>1.0.0-RC1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.linkis</groupId>
+            <artifactId>linkis-common</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
