@@ -74,22 +74,7 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.49</version>
         </dependency>
-<!--
-        <dependency>
-            <groupId>com.webank.wedatasphere.linkis</groupId>
-            <artifactId>linkis-common</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>com.webank.wedatasphere.linkis</groupId>
-            <artifactId>linkis-mybatis</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.jersey.bundles.repackaged</groupId>
-            <artifactId>jersey-guava</artifactId>
-            <version>2.6</version>
-        </dependency>-->
     </dependencies>
 
     <!--<build>
