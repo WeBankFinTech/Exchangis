@@ -31,7 +31,7 @@
         <dependency>
             <groupId>com.webank.wedatasphere.linkis</groupId>
             <artifactId>linkis-datasource-client</artifactId>
-            <version>1.0.0-RC1</version>
+            <version>1.0.1</version>
         </dependency>
     </dependencies>
 </project>
