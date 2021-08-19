@@ -23,8 +23,17 @@
             <version>${linkis.version}</version>
         </dependency>
 
-
         <dependency>
+            <groupId>com.webank.wedatasphere.linkis</groupId>
+            <artifactId>linkis-datasource-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.linkis</groupId>
+            <artifactId>linkis-storage</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
+        <!--<dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-datasource-server</artifactId>
             <version>1.0.0-RC1</version>
@@ -42,13 +51,13 @@
                     <artifactId>linkis-metadata</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-project-server</artifactId>
             <version>1.0.0-RC1</version>
-            <exclusions>
+            <!--<exclusions>
                 <exclusion>
                     <groupId>com.webank.wedatasphere.linkis</groupId>
                     <artifactId>linkis-module</artifactId>
@@ -61,7 +70,7 @@
                     <groupId>com.webank.wedatasphere.linkis</groupId>
                     <artifactId>linkis-metadata</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
     </dependencies>
 
