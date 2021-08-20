@@ -30,6 +30,13 @@
             <artifactId>linkis-mybatis</artifactId>
             <version>${linkis.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-datasource-service</artifactId>
+            <version>1.0.0-RC1</version>
+        </dependency>
+
     </dependencies>
 
 
