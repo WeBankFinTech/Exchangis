@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.project.server.restful;
 
 
+import com.webank.wedatasphere.exchangis.project.server.dto.ExchangisProjectDTO;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.request.CreateProjectRequest;
 import com.webank.wedatasphere.exchangis.project.server.request.ProjectQueryRequest;
@@ -47,7 +48,7 @@ public class ExchangisProjectRestful {
         }
         projectQueryRequest.setUsername(username);
         try{
-            List<ExchangisProject> projects = projectService.queryProjects(projectQueryRequest);
+            List<ExchangisProjectDTO> projects = projectService.queryProjects(projectQueryRequest);
             return Message.messageToResponse(Message.ok().data("list", projects));
         }catch(final Throwable t){
             LOGGER.error("failed to create project for user {}", username, t);
