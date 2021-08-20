@@ -1,17 +1,9 @@
 <template>
-  <div>
-    <Button type="primary"> OK </Button>
-  </div>
+  <div>Exchangis</div>
 </template>
 
 <script>
-import Button from "ant-design-vue/lib/Button";
-import "ant-design-vue/lib/button/style/css";
-
 export default {
-  components: {
-    Button,
-  },
   setup() {
     return {};
   },
