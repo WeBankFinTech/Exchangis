@@ -33,15 +33,9 @@
 </template>
 
 <script>
-import { Space, Button, Select, SelectOption, Input } from "ant-design-vue";
 import { PlusOutlined, ExportOutlined, ImportOutlined, SearchOutlined } from "@ant-design/icons-vue";
 export default {
   components: {
-    aSelect: Select,
-    aSelectOption: SelectOption,
-    aInput: Input,
-    aSpace: Space,
-    aButton: Button,
     iconPlusOutlined: PlusOutlined,
     iconExportOutlined: ExportOutlined,
     iconImportOutlined: ImportOutlined,
