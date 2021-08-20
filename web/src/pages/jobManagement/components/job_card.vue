@@ -64,7 +64,7 @@ export default {
   props: {
     jobData: Object,
   },
-  emits: ["handleCreateJob"], //需要声明emits
+  emits: ["showJobDetail"],
   setup(props, context) {
     const jobData = toRaw(props.jobData);
     const { engineType } = jobData;
@@ -84,7 +84,7 @@ export default {
     };
 
     const gotoDetail = () => {
-      message.success("删除成功");
+      context.emit("showJobDetail", jobData);
     };
 
     return {
