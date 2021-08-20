@@ -7,7 +7,6 @@ import PageLoading from '@/components/PageLoading';
 import UserCenter from '@/components/UserCenter';
 import { BASE_URL } from '@/common/constants';
 import { loadAllRegister } from './register';
-import { locale } from '@fesjs/fes';
 import "ant-design-vue/dist/antd.css"; // or 'ant-design-vue/dist/antd.less'
 
 import "ant-design-vue/lib/input/style/css";
@@ -17,7 +16,6 @@ import "ant-design-vue/lib/form/style/css";
 import "ant-design-vue/lib/style";
 
 
-locale.setLocale({ locale: 'zh-CN' });
 
 export const beforeRender = {
     loading: <PageLoading />,
@@ -68,9 +66,6 @@ export const request = {
     }
 };
 
-export function onAppCreated({ app }) {
-    loadAllRegister(app);
-}
 
 export const layout = {
     customHeader: <UserCenter />
