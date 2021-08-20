@@ -28,40 +28,12 @@
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-datasource-server</artifactId>
             <version>1.0.0-RC1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.webank.wedatasphere.linkis</groupId>
-                    <artifactId>linkis-module</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.webank.wedatasphere.linkis</groupId>
-                    <artifactId>linkis-mybatis</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.webank.wedatasphere.linkis</groupId>
-                    <artifactId>linkis-metadata</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-project-server</artifactId>
             <version>1.0.0-RC1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.webank.wedatasphere.linkis</groupId>
-                    <artifactId>linkis-module</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.webank.wedatasphere.linkis</groupId>
-                    <artifactId>linkis-mybatis</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.webank.wedatasphere.linkis</groupId>
-                    <artifactId>linkis-metadata</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
@@ -101,7 +73,7 @@
                 </executions>
                 <configuration>
                     <skipAssembly>false</skipAssembly>
-                    <finalName>streamis-server</finalName>
+                    <finalName>exchangis-server</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <attach>false</attach>
                     <descriptors>
