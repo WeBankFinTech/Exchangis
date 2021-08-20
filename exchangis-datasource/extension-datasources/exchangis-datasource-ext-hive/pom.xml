@@ -21,6 +21,11 @@
 
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-dao</artifactId>
+            <version>1.0.0-RC1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-datasource-linkis</artifactId>
             <version>1.0.0-RC1</version>
         </dependency>
