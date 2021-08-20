@@ -27,3 +27,5 @@ target
 .mvn/wrapper/maven-wrapper.properties
 /packages/
 exchangis-server/exchangis-extds
+/logs/
+/web/package-lock.json
