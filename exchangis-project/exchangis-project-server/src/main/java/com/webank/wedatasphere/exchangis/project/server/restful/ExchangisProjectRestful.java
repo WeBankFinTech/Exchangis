@@ -8,7 +8,6 @@ import com.webank.wedatasphere.exchangis.project.server.request.UpdateProjectReq
 import com.webank.wedatasphere.exchangis.project.server.service.ExchangisProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.linkis.server.Message;
-import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
