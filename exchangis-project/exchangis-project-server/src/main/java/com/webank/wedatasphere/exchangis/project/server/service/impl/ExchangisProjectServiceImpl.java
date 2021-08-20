@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
@@ -99,7 +100,17 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
         QueryWrapper<ExchangisProject> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("create_by", projectQueryRequest.getUsername());
 
+        if (!Strings.isNullOrEmpty(projectQueryRequest.getName())) {
+            queryWrapper.like("name", projectQueryRequest.getName());
+        }
+
         return this.exchangisProjectMapper.selectList(queryWrapper);
+    }
+
+    @Transactional
+    @Override
+    public void deleteProject(HttpServletRequest request, String id) {
+        this.exchangisProjectMapper.deleteById(id);
     }
 
 //    @Override

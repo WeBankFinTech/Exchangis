@@ -11,8 +11,12 @@
 
     <artifactId>exchangis-job</artifactId>
     <packaging>pom</packaging>
+<<<<<<< HEAD:exchangis-job/pom.xml
     <version>1.0.0-SNAPSHOT</version>
 
+=======
+    <version>1.0.0-RC1</version>
+>>>>>>> 66cd0cde11a2796cf2de18097fbbe28402b6f96d:exchangis-plugins/pom.xml
     <modules>
         <module>exchangis-job-server</module>
     </modules>
