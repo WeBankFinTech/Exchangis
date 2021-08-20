@@ -12,6 +12,7 @@ target
 
 ### IntelliJ IDEA ###
 .idea
+*.log
 *.iws
 *.iml
 *.ipr
