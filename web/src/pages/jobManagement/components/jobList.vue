@@ -28,9 +28,9 @@
             </span>
           </template>
           <div class="cardWrap">
-          <div v-for="(item, index) in jobList" :key="index" class="card">
-            <job-card :jobData="item" />
-          </div>
+            <div v-for="(item, index) in jobList" :key="index" class="card">
+              <job-card :jobData="item" @showJobDetail="showJobDetail"/>
+            </div>
           </div>
         </a-tab-pane>
         <a-tab-pane key="2"
@@ -40,8 +40,11 @@
               流式任务
             </span>
           </template>
-          Tab 2</a-tab-pane
-        >
+          <div class="cardWrap">
+            <div v-for="(item, index) in jobList" :key="index" class="card">
+              <job-card :jobData="item" />
+            </div></div
+        ></a-tab-pane>
       </a-tabs>
     </div>
     <CreateJob :visible="visible" @handleCreateJob="handleCreateJob" />
@@ -89,7 +92,8 @@ export default {
           jobType: "STREAM",
           engineType: "Sqoop", // 执行引擎
           jobLabels: "renwu, hello, hello",
-          jobDesc: "任务描述ets how a flex item will grow or shrink to fit the space available in itsets how a flex item will grow or shrink to fit the space available in its",
+          jobDesc:
+            "任务描述ets how a flex item will grow or shrink to fit the space available in itsets how a flex item will grow or shrink to fit the space available in its",
         },
       ],
     };
@@ -107,17 +111,20 @@ export default {
       this.visible = false;
       console.log(status);
     },
+    showJobDetail(data){
+      console.log(data);
+      this.$emit("showJobDetail", data)
+    }
   },
 };
 </script>
 <style scoped lang="less">
-.cardWrap{
+.cardWrap {
   display: flex;
   flex-wrap: wrap;
   padding-bottom: 30px;
-  .card{
+  .card {
     margin: 10px 20px 10px 0px;
   }
 }
-
 </style>
