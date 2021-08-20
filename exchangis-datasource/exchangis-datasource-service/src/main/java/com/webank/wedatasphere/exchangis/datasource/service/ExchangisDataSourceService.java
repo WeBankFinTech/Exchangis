@@ -18,20 +18,24 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.builder.Excha
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsItem;
+import com.webank.wedatasphere.exchangis.datasource.dto.DataSourceDTO;
+import com.webank.wedatasphere.exchangis.datasource.dto.DataSourceDbTableColumnDTO;
 import com.webank.wedatasphere.exchangis.datasource.dto.ExchangisDataSourceDTO;
+import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
+import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
+import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceUpdateVO;
 import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
-import com.webank.wedatasphere.linkis.datasource.client.request.MetadataGetColumnsAction;
-import com.webank.wedatasphere.linkis.datasource.client.request.MetadataGetDatabasesAction;
-import com.webank.wedatasphere.linkis.datasource.client.request.MetadataGetTablesAction;
-import com.webank.wedatasphere.linkis.datasource.client.response.MetadataGetColumnsResult;
-import com.webank.wedatasphere.linkis.datasource.client.response.MetadataGetDatabasesResult;
-import com.webank.wedatasphere.linkis.datasource.client.response.MetadataGetTablesResult;
+import com.webank.wedatasphere.linkis.datasource.client.request.*;
+import com.webank.wedatasphere.linkis.datasource.client.response.*;
+import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.DataSource;
+import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.DataSourceType;
 import com.webank.wedatasphere.linkis.metadatamanager.common.domain.MetaColumnInfo;
 import com.webank.wedatasphere.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -168,12 +172,22 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
         for (ExchangisDataSource item : all) {
             dtos.add(new ExchangisDataSourceDTO(
                     item.type(),
+                    item.category(),
                     item.description(),
                     item.icon()
             ));
         }
 //        String userName = SecurityFilter.getLoginUsername(request);
-//        String userName = "hdfs";
+        String userName = "hdfs";
+
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        GetAllDataSourceTypesResult result = linkisDataSourceRemoteClient.getAllDataSourceTypes(GetAllDataSourceTypesAction.builder()
+                .setUser(userName)
+                .build()
+        );
+
+        List<DataSourceType> allDataSourceType = result.getAllDataSourceType();
+
 //        List<DataSourceType> dataSourceTypes = LinkisDataSourceClient.queryDataSourceTypes(userName);
 //        让 dataSourceTypes 和自己加载的数据源类型做交集得到最终可以展示的数据源类型返回给UI
 //        System.out.println(dataSourceTypes);
@@ -181,12 +195,27 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
         return Message.ok().data("list", dtos);
     }
 
-    public Message create(HttpServletRequest request, Map<String, Object> json) {
+    @Transactional
+    public Message create(HttpServletRequest request, String type, Map<String, Object> json) throws Exception {
+        DataSourceCreateVO vo = null;
+        try {
+            vo = mapper.readValue(mapper.writeValueAsString(json), DataSourceCreateVO.class);
+        } catch (JsonProcessingException e) {
+            throw new ExchangisDataSourceException(30401, e.getMessage());
+        }
 
+        String name = vo.getName();
+        Map<String, Object> connectParams = vo.getConnectParams();
+        //
+
+        LinkisDataSourceRemoteClient client = context.getExchangisDataSource(type).getDataSourceRemoteClient();
+
+//        client.execute()
         return Message.ok();
     }
 
-    public Message updateDataSource(HttpServletRequest request, Map<String, Object> json) throws Exception {
+    @Transactional
+    public Message updateDataSource(HttpServletRequest request, String type, Long id, Map<String, Object> json) throws Exception {
         DataSourceUpdateVO vo = null;
         try {
             vo = mapper.readValue(mapper.writeValueAsString(json), DataSourceUpdateVO.class);
@@ -194,12 +223,12 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
             throw new ExchangisDataSourceException(30401, e.getMessage());
         }
 
-        Long id = vo.getId();
 //        LinkisDataSourceClient.dataSourceClient().
 
         return Message.ok();
     }
 
+    @Transactional
     public Message deleteDataSource(HttpServletRequest request, String type, Long id) {
         ExchangisDataSource exchangisDataSource = context.getExchangisDataSource(type);
         LinkisDataSourceRemoteClient dataSourceRemoteClient = exchangisDataSource.getDataSourceRemoteClient();
@@ -387,6 +416,76 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
 
         List<MetaColumnInfo> allColumns = columns.getAllColumns();
 
-        return Message.ok().data("columns", allColumns);
+        List<DataSourceDbTableColumnDTO> list = new ArrayList<>();
+        allColumns.forEach(col -> {
+            DataSourceDbTableColumnDTO item = new DataSourceDbTableColumnDTO();
+            item.setName(col.getName());
+            item.setType(col.getType());
+            list.add(item);
+        });
+
+        return Message.ok().data("columns", list);
+    }
+
+    public Message queryDataSources(HttpServletRequest request, DataSourceQueryVO vo) throws Exception {
+        if (null == vo) {
+            vo = new DataSourceQueryVO();
+        }
+        String name = vo.getName();
+        String type = vo.getType();
+        ExchangisDataSource exchangisDataSource = context.getExchangisDataSource(type);
+        LinkisDataSourceRemoteClient dataSourceRemoteClient = exchangisDataSource.getDataSourceRemoteClient();
+        QueryDataSourceResult result = dataSourceRemoteClient.queryDataSource(QueryDataSourceAction.builder()
+                        .setSystem("")
+                        .setName("linkis")
+                        .setTypeId(1)
+                        .setIdentifies("")
+                        .setCurrentPage(1)
+                        .setUser("hdfs")
+                        .setPageSize(20).build()
+        );
+
+        List<DataSource> allDataSource = result.getAllDataSource();
+
+        List<DataSourceDTO> dataSources = new ArrayList<>();
+        allDataSource.forEach(ds -> {
+            DataSourceDTO item = new DataSourceDTO();
+            item.setId(ds.getId());
+            item.setCreateIdentify(ds.getCreateIdentify());
+            item.setName(ds.getDataSourceName());
+            item.setType(type);
+            dataSources.add(item);
+        });
+
+
+        return Message.ok().data("list", dataSources);
+    }
+
+    public Message listAllDataSources(HttpServletRequest request) {
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        QueryDataSourceResult result = linkisDataSourceRemoteClient.queryDataSource(QueryDataSourceAction.builder()
+                .setSystem("linkis")
+                .setName("linkis")
+                .setTypeId(1)
+                .setIdentifies("")
+                .setCurrentPage(1)
+                .setUser("hdfs")
+                .setPageSize(20).build()
+        );
+
+        List<DataSource> allDataSource = result.getAllDataSource();
+
+        List<DataSourceDTO> dataSources = new ArrayList<>();
+        allDataSource.forEach(ds -> {
+            DataSourceDTO item = new DataSourceDTO();
+            item.setId(ds.getId());
+            item.setCreateIdentify(ds.getCreateIdentify());
+            item.setName(ds.getDataSourceName());
+            item.setType(ds.getDataSourceType().getName());
+            dataSources.add(item);
+        });
+
+
+        return Message.ok().data("list", dataSources);
     }
 }

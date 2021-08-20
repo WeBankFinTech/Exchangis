@@ -11,10 +11,10 @@
         </div>
       </a-col>
       <!-- 创建卡片 -->
-      <a-col :span="6"> <ItemCreateCard @action="handleCreateCardAction" /> </a-col>
+      <a-col :span="6"> <project-create-card @action="handleCreateCardAction" /> </a-col>
       <!-- 视图卡片 -->
-      <a-col :span="6" v-for="item in itemList" :key="item.id">
-        <item-view-card @delete="handleOnDelteItem" @edit="handleOnEditItem" :name="item.name" :describe="item.describe" :id="item.id" :tags="item.tags" :icon="item.icon" />
+      <a-col :span="6" v-for="item in projectList" :key="item.id">
+        <project-view-card @delete="handleOnDelteProject" @edit="handleOnEditProject" :name="item.name" :describe="item.describe" :id="item.id" :tags="item.tags" :icon="item.icon" />
       </a-col>
       <!-- 分页行 -->
       <a-col :span="24">
@@ -29,21 +29,22 @@
 </template>
 
 <script>
-import { Card, Tag, Row, Col, Menu, Dropdown, MenuItem, Pagination, Modal, InputSearch, TypographyTitle } from "ant-design-vue";
+import { useI18n } from "@fesjs/fes";
 import { ApartmentOutlined, PlusOutlined } from "@ant-design/icons-vue";
-import ItemCreateCard from "./components/item_create_card.vue";
-import ItemViewCard from "./components/item_view_card.vue";
+import ProjectCreateCard from "./components/project_create_card.vue";
+import ProjectViewCard from "./components/project_view_card.vue";
 import EditModal from "./components/edit_modal.vue";
+import { getProjectList } from "@/common/service";
 export default {
   components: {
-    aRow: Row,
-    aCol: Col,
-    aPagination: Pagination,
-    aInputSearch: InputSearch,
-    aTitle: TypographyTitle,
-    ItemViewCard,
-    ItemCreateCard,
+    ProjectViewCard,
+    ProjectCreateCard,
     EditModal,
+  },
+  setup() {
+    const { t } = useI18n();
+    console.log(t);
+    return { t };
   },
   data() {
     return {
@@ -52,29 +53,7 @@ export default {
         id: "",
         visible: false,
       },
-      itemList: [
-        {
-          id: "1",
-          name: "测试项目1",
-          icon: null,
-          describe: "我是项目描述",
-          tags: ["标签1", "标签2"],
-        },
-        {
-          id: "2",
-          name: "测试项目2",
-          icon: null,
-          describe: "我是项目描述",
-          tags: ["标签1", "标签2"],
-        },
-        {
-          id: "3",
-          name: "测试项目3",
-          icon: null,
-          describe: "我是项目描述我是项目描述我是项目描述我是项目描述我是项目描述我是项目描述我是项目描述",
-          tags: ["标签1", "标签2"],
-        },
-      ],
+      projectList: [],
     };
   },
   methods: {
@@ -92,17 +71,26 @@ export default {
       alert(value);
     },
     // 删除项目
-    handleOnDelteItem(id) {
+    handleOnDelteProject(id) {
       console.log(id);
     },
     // 编辑项目
-    handleOnEditItem(id) {
+    handleOnEditProject(id) {
       this.modalCfg = {
         visible: true,
         mode: "edit",
         id: id,
       };
     },
+  },
+  async mounted() {
+    let { list } = await getProjectList();
+    this.projectList = list.map((item) => ({
+      id: item.id,
+      name: item.name,
+      describe: item.description,
+      tags: item.tags.split(","),
+    }));
   },
 };
 </script>
