@@ -31,7 +31,6 @@
 </template>
 
 <script>
-import { Row, Col, Table, Tag, Button, Space } from "ant-design-vue";
 import TopLine from "./components/top_line.vue";
 import SelectTypeModal from "./components/select_type_modal.vue";
 import EditModal from "./components/edit_modal.vue";
@@ -129,16 +128,10 @@ const data = [
 ];
 export default {
   components: {
-    aRow: Row,
-    aCol: Col,
-    aTable: Table,
     TopLine,
     SelectTypeModal,
     EditModal,
     VersionModal,
-    aTag: Tag,
-    aButton: Button,
-    aSpace: Space,
   },
   data() {
     return {

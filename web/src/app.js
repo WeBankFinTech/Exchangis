@@ -75,3 +75,16 @@ export function onAppCreated({ app }) {
 export const layout = {
     customHeader: <UserCenter />
 };
+
+
+export function onAppCreated({ app }) {
+  loadAllRegister(app);
+}
+export const locale = {
+  locale: {
+    locale: "zh-CN", // default locale
+    fallbackLocale: "zh-CN", // set fallback locale
+    baseNavigator: true, // 开启浏览器语言检测
+    share: true, // 用户是否需要手动改变语言
+  },
+};
