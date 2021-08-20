@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import { Modal, Table } from "ant-design-vue";
 const columns = [
   {
     title: "版本",
@@ -44,10 +43,6 @@ const columns = [
 ];
 export default {
   name: "VersionModal",
-  components: {
-    aModal: Modal,
-    aTable: Table,
-  },
   props: {
     // 是否可见
     visible: {

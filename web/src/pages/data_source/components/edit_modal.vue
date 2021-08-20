@@ -1,5 +1,5 @@
 <template>
-  <a-modal title="创建项目" okText="确定" cancelText="取消" :visible="visible" :confirm-loading="confirmLoading" @ok="handleOk" @cancel="$emit('update:visible', false)">
+  <a-modal title="创建项目" :visible="visible" :confirm-loading="confirmLoading" @ok="handleOk" @cancel="$emit('update:visible', false)">
     <a-form ref="formRef" :rules="rules" :model="formState" :label-col="{ span: 6 }" @submit="handleSubmit">
       <a-form-item label="数据源名称" name="name">
         <a-input v-model:value="formState.name" placeholder="请输入数据源名称" />
@@ -30,20 +30,8 @@
 </template>
 
 <script>
-import { Modal, Col, Row, Input, Form, FormItem, Select, SelectOption, Textarea } from "ant-design-vue";
 export default {
   name: "ItemEditModal",
-  components: {
-    aCol: Col,
-    aRow: Row,
-    aModal: Modal,
-    aForm: Form,
-    aInput: Input,
-    aFormItem: FormItem,
-    aSelect: Select,
-    aSelectOption: SelectOption,
-    aTextarea: Textarea,
-  },
   props: {
     // 是否可见
     visible: {

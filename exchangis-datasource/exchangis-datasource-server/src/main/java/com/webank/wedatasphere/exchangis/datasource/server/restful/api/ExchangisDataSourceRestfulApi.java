@@ -3,9 +3,11 @@ package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
+import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -36,19 +38,34 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
-    // 创建数据源
+    // 查询所有数据源
     @POST
     @Path("datasources")
-    public Response create(@Context HttpServletRequest request, Map<String, Object> json) {
-        Message message = this.exchangisDataSourceService.create(request, json);
+    public Response create(@Context HttpServletRequest request, @RequestBody DataSourceQueryVO vo) throws Exception {
+        Message message = this.exchangisDataSourceService.queryDataSources(request, vo);
+        return Message.messageToResponse(message);
+    }
+
+    @GET
+    @Path("datasources")
+    public Response listAllDataSources(@Context HttpServletRequest request) throws Exception {
+        Message message = this.exchangisDataSourceService.listAllDataSources(request);
+        return Message.messageToResponse(message);
+    }
+
+    // 创建数据源
+    @POST
+    @Path("datasources/{type}")
+    public Response create(@Context HttpServletRequest request, @PathParam("type") String type, @RequestBody Map<String, Object> json) throws Exception {
+        Message message = this.exchangisDataSourceService.create(request, type, json);
         return Message.messageToResponse(message);
     }
 
     // 更新数据源
     @PUT
-    @Path("datasources")
-    public Response update(@Context HttpServletRequest request, Map<String, Object> json) throws Exception {
-        Message message = this.exchangisDataSourceService.updateDataSource(request, json);
+    @Path("datasources/{type}/{id}")
+    public Response update(@Context HttpServletRequest request, @PathParam("type") String type, @PathParam("id") Long id, Map<String, Object> json) throws Exception {
+        Message message = this.exchangisDataSourceService.updateDataSource(request, type, id, json);
         return Message.messageToResponse(message);
     }
 
@@ -59,6 +76,7 @@ public class ExchangisDataSourceRestfulApi {
         Message message = this.exchangisDataSourceService.deleteDataSource(request, type, id);
         return Message.messageToResponse(message);
     }
+
 
     @GET
     @Path("datasources/{type}/{id}/dbs")
