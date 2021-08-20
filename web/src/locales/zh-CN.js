@@ -10,5 +10,8 @@ export default {
   },
   job: {
     createJob: "新建任务"
-  }
+  },
+  message: {
+    hello: "asdada",
+  },
 };

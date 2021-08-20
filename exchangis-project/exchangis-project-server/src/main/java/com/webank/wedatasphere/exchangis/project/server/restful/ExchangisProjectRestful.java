@@ -43,6 +43,9 @@ public class ExchangisProjectRestful {
         // TODO
 //        String username = SecurityFilter.getLoginUsername(request);
         String username = "hdfs";
+        if (null == projectQueryRequest) {
+            projectQueryRequest = new ProjectQueryRequest();
+        }
         projectQueryRequest.setUsername(username);
         try{
             List<ExchangisProject> projects = projectService.queryProjects(projectQueryRequest);
@@ -85,13 +88,20 @@ public class ExchangisProjectRestful {
             return ExchangisProjectRestfulUtils.dealError("更新工程失败,原因是:" + t.getMessage());
         }
     }
-//
-//
-//    @POST
-//    @Path("deleteProject")
-//    public Response deleteProject(@Context HttpServletRequest request, @Valid DeleteProjectRequest deleteProjectRequest){
-//        return null;
-//    }
+
+
+    @DELETE
+    @Path("/projects/{id}")
+    public Response deleteProject(@Context HttpServletRequest request, @PathParam("id") String id){
+        String username = "hdfs";
+        try {
+            projectService.deleteProject(request, id);
+            return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
+        } catch(final Throwable t){
+            LOGGER.error("failed to update project for user {}", username, t);
+            return ExchangisProjectRestfulUtils.dealError("删除工程失败,原因是:" + t.getMessage());
+        }
+    }
 
 
 

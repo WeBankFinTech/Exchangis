@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import { Modal, Input, Row, Col } from "ant-design-vue";
 const options = [
   {
     group_name: "关系型数据库",
@@ -98,12 +97,6 @@ export default {
   emits: {
     select: null,
     "update:visible": null,
-  },
-  components: {
-    aModal: Modal,
-    aInput: Input,
-    aRow: Row,
-    aCol: Col,
   },
   data() {
     return { options, searchVal: "" };
