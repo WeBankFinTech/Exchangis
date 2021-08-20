@@ -1,9 +1,5 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
-import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
-import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
