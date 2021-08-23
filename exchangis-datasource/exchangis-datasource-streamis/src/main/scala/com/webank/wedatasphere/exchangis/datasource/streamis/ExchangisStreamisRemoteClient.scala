@@ -43,17 +43,17 @@ object ExchangisStreamisRemoteClient {
 
   val clientConfig: DWSClientConfig = DWSClientConfigBuilder.newBuilder()
     .addServerUrl(serverUrl)
-    .connectionTimeout(30000L)
-    .discoveryEnabled(false)
-    .discoveryFrequency(1, TimeUnit.MINUTES)
-    .loadbalancerEnabled(true)
-    .maxConnectionSize(5)
-    .retryEnabled(false)
-    .readTimeout(30000L)
+    .connectionTimeout(connectionTimeout)
+    .discoveryEnabled(discoveryEnabled)
+    .discoveryFrequency(discoveryFrequencyPeriod, TimeUnit.MINUTES)
+    .loadbalancerEnabled(loadbalancerEnabled)
+    .maxConnectionSize(maxConnectionSize)
+    .retryEnabled(retryEnabled)
+    .readTimeout(readTimeout)
     .setAuthenticationStrategy(new StaticAuthenticationStrategy())
     .setAuthTokenKey(authTokenKey)
     .setAuthTokenValue(authTokenValue)
-    .setDWSVersion("v1")
+    .setDWSVersion(dwsVersion)
     .build()
 
   val dataSourceClient = new LinkisDataSourceRemoteClient(clientConfig)
@@ -66,6 +66,11 @@ object ExchangisStreamisRemoteClient {
 
   def getStreamisMetadataRemoteClient: LinkisMetaDataRemoteClient = {
     metaDataClient
+  }
+
+  def close(): Unit = {
+    dataSourceClient.close()
+    metaDataClient.close()
   }
 
   def queryDataSource(linkisDatasourceName: String): QueryDataSourceResult = {
