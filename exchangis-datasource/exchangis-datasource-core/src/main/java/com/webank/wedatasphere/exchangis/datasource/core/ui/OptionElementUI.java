@@ -3,12 +3,22 @@ package com.webank.wedatasphere.exchangis.datasource.core.ui;
 import java.util.Collection;
 
 public class OptionElementUI implements ElementUI {
-
+    private String key;
     private String field;
     private String label;
     private Collection<String> values;
     private String value;
     private Integer sort;
+    private String unit;
+    private Boolean required;
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public String getField() {
         return field;
@@ -55,5 +65,21 @@ public class OptionElementUI implements ElementUI {
 
     public void setSort(Integer sort) {
         this.sort = sort;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public Boolean getRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
     }
 }
