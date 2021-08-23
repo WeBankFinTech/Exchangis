@@ -4,11 +4,14 @@ import java.util.List;
 
 public class ExchangisJobInfoContent {
 
+    private String subJobName;
+
     private ExchangisJobDataSourcesContent dataSources;
 
     private ExchangisJobParamsContent params;
 
-    private List<ExchangisJobTransformsItem> transforms;
+//    private List<ExchangisJobTransformsItem> transforms;
+    private ExchangisJobTransformsContent transforms;
 
     private List<ExchangisJobParamsContent.ExchangisJobParamsItem> settings;
 
@@ -28,11 +31,11 @@ public class ExchangisJobInfoContent {
         this.params = params;
     }
 
-    public List<ExchangisJobTransformsItem> getTransforms() {
+    public ExchangisJobTransformsContent getTransforms() {
         return transforms;
     }
 
-    public void setTransforms(List<ExchangisJobTransformsItem> transforms) {
+    public void setTransforms(ExchangisJobTransformsContent transforms) {
         this.transforms = transforms;
     }
 
@@ -42,5 +45,13 @@ public class ExchangisJobInfoContent {
 
     public void setSettings(List<ExchangisJobParamsContent.ExchangisJobParamsItem> settings) {
         this.settings = settings;
+    }
+
+    public String getSubJobName() {
+        return subJobName;
+    }
+
+    public void setSubJobName(String subJobName) {
+        this.subJobName = subJobName;
     }
 }

@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.project.server.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.project.server.dao.ExchangisProjectMapper;
+import com.webank.wedatasphere.exchangis.project.server.dto.ExchangisProjectDTO;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.exception.ExchangisProjectErrorException;
 import com.webank.wedatasphere.exchangis.project.server.request.CreateProjectRequest;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -96,7 +98,7 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     }
 
     @Override
-    public List<ExchangisProject> queryProjects(ProjectQueryRequest projectQueryRequest) {
+    public List<ExchangisProjectDTO> queryProjects(ProjectQueryRequest projectQueryRequest) {
         QueryWrapper<ExchangisProject> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("create_by", projectQueryRequest.getUsername());
 
@@ -104,7 +106,19 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
             queryWrapper.like("name", projectQueryRequest.getName());
         }
 
-        return this.exchangisProjectMapper.selectList(queryWrapper);
+        List<ExchangisProject> exchangisProjects = this.exchangisProjectMapper.selectList(queryWrapper);
+        List<ExchangisProjectDTO> result = new ArrayList<>();
+        ExchangisProjectDTO item;
+        for (ExchangisProject exchangisProject : exchangisProjects) {
+            item = new ExchangisProjectDTO();
+            item.setId(exchangisProject.getId()+"");
+            item.setName(exchangisProject.getName());
+            item.setTags(exchangisProject.getTags());
+            item.setDescription(exchangisProject.getDescription());
+            result.add(item);
+        }
+
+        return result;
     }
 
     @Transactional
