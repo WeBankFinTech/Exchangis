@@ -13,9 +13,10 @@
           </template>
           <template #action>
             <a-space>
-              <a-button size="small" @click="handleEdit">编辑</a-button>
-              <a-button size="small">过期</a-button>
-              <a-button size="small">测试连接</a-button>
+              <a-button size="small" @click="handleEdit">{{ $t("dataSource.table.list.columns.actions.editButton") }}</a-button>
+              <a-button size="small">{{ $t("dataSource.table.list.columns.actions.expireButton") }}</a-button>
+              <a-button size="small">{{ $t("dataSource.table.list.columns.actions.testConnectButton") }}</a-button>
+              <a-button size="small">{{ $t("dataSource.table.list.columns.actions.deleteButton") }}</a-button>
             </a-space>
           </template>
           <template #version>
@@ -25,7 +26,7 @@
       </a-col>
     </a-row>
     <select-type-modal @select="handleSelectType" v-model:visible="selectTypeModalVisible" />
-    <version-modal v-model:visible="VersionModalVisible" />
+    <version-modal v-model:visible="versionModalVisible" />
     <edit-modal v-model:visible="modalCfg.visible" />
   </div>
 </template>
@@ -35,82 +36,6 @@ import TopLine from "./components/top_line.vue";
 import SelectTypeModal from "./components/select_type_modal.vue";
 import EditModal from "./components/edit_modal.vue";
 import VersionModal from "./components/version_modal.vue";
-const columns = [
-  {
-    title: "数据源名称",
-    dataIndex: "name",
-    align: "center",
-    key: "name",
-  },
-  {
-    title: "数据源类型",
-    dataIndex: "type",
-    align: "center",
-    key: "type",
-  },
-  {
-    title: "可用集群",
-    dataIndex: "colony",
-    align: "center",
-    key: "colony",
-  },
-  {
-    title: "状态",
-    key: "status",
-    align: "center",
-    dataIndex: "status",
-  },
-  {
-    title: "权限设置",
-    align: "center",
-    key: "power",
-    dataIndex: "power",
-  },
-  {
-    title: "标签",
-    align: "center",
-    key: "tags",
-    dataIndex: "tags",
-    slots: { customRender: "tags" },
-  },
-  {
-    title: "版本",
-    align: "center",
-    dataIndex: "version",
-    key: "action",
-    slots: { customRender: "version" },
-  },
-  {
-    title: "描述",
-    align: "center",
-    key: "describe",
-    dataIndex: "describe",
-  },
-  {
-    title: "修后修改时间",
-    align: "center",
-    key: "updatetim",
-    dataIndex: "updatetim",
-  },
-  {
-    title: "创建者",
-    align: "center",
-    key: "creator",
-    dataIndex: "creator",
-  },
-  {
-    title: "最后修改者",
-    align: "center",
-    key: "updater",
-    dataIndex: "updater",
-  },
-  {
-    title: "操作",
-    align: "center",
-    key: "action",
-    slots: { customRender: "action" },
-  },
-];
 
 const data = [
   {
@@ -133,12 +58,91 @@ export default {
     EditModal,
     VersionModal,
   },
+
   data() {
     return {
       data,
-      columns,
+      columns: [
+        {
+          title: this.$t("dataSource.table.list.columns.title.name"),
+          dataIndex: "name",
+          align: "center",
+          key: "name",
+        },
+        {
+          title: this.$t("dataSource.table.list.columns.title.type"),
+          dataIndex: "type",
+          align: "center",
+          key: "type",
+        },
+        {
+          title: this.$t("dataSource.table.list.columns.title.colony"),
+          dataIndex: "colony",
+          align: "center",
+          key: "colony",
+        },
+        {
+          title: this.$t("dataSource.table.list.columns.title.status"),
+          key: "status",
+          align: "center",
+          dataIndex: "status",
+        },
+        {
+          title: this.$t("dataSource.table.list.columns.title.power"),
+          align: "center",
+          key: "power",
+          dataIndex: "power",
+        },
+        {
+          title: this.$t("dataSource.table.list.columns.title.tags"),
+          align: "center",
+          key: "tags",
+          dataIndex: "tags",
+          slots: { customRender: "tags" },
+        },
+        {
+          title: this.$t("dataSource.table.list.columns.title.version"),
+          align: "center",
+          dataIndex: "version",
+          key: "version",
+          slots: { customRender: "version" },
+        },
+        {
+          title: this.$t("dataSource.table.list.columns.title.describe"),
+
+          align: "center",
+          key: "describe",
+          dataIndex: "describe",
+        },
+        {
+          title: this.$t("dataSource.table.list.columns.title.updatetim"),
+
+          align: "center",
+          key: "updatetim",
+          dataIndex: "updatetim",
+        },
+        {
+          title: this.$t("dataSource.table.list.columns.title.creator"),
+
+          align: "center",
+          key: "creator",
+          dataIndex: "creator",
+        },
+        {
+          title: this.$t("dataSource.table.list.columns.title.updater"),
+          align: "center",
+          key: "updater",
+          dataIndex: "updater",
+        },
+        {
+          title: this.$t("dataSource.table.list.columns.title.action"),
+          align: "center",
+          key: "action",
+          slots: { customRender: "action" },
+        },
+      ],
       selectTypeModalVisible: false,
-      VersionModalVisible: false,
+      versionModalVisible: false,
       modalCfg: {
         mode: "",
         id: "",
@@ -148,7 +152,7 @@ export default {
   },
   methods: {
     handleOpenVersionModal() {
-      this.VersionModalVisible = true;
+      this.versionModalVisible = true;
     },
     handleSelectType(val) {
       this.selectTypeModalVisible = false;
