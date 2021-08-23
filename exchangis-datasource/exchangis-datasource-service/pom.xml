@@ -19,18 +19,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.webank.wedatasphere.linkis</groupId>
-            <artifactId>linkis-module</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.webank.wedatasphere.linkis</groupId>
-            <artifactId>linkis-common</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-datasource-core</artifactId>
             <version>1.0.0-RC1</version>
@@ -42,12 +30,32 @@
             <version>1.0.0-RC1</version>
         </dependency>
 
+<<<<<<< HEAD
         <dependency>
             <groupId>com.webank.wedatasphere.linkis</groupId>
             <artifactId>linkis-datasource-client</artifactId>
             <version>1.0.1</version>
         </dependency>
 
+=======
+>>>>>>> 9817ea16ff12175fb2e2ee79bf60aa1eb8f305cf
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
