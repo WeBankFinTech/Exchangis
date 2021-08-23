@@ -1,9 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
@@ -12,14 +9,11 @@ import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMappe
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
-import com.webank.wedatasphere.exchangis.datasource.core.ui.*;
-import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.DefaultDataSourceUIViewer;
+import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
+import com.webank.wedatasphere.exchangis.datasource.core.ui.ExchangisDataSourceParamsUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
-import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.builder.ExchangisDataSourceUIViewBuilder;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsItem;
 import com.webank.wedatasphere.exchangis.datasource.dto.DataSourceDTO;
 import com.webank.wedatasphere.exchangis.datasource.dto.DataSourceDbTableColumnDTO;
 import com.webank.wedatasphere.exchangis.datasource.dto.ExchangisDataSourceDTO;
@@ -35,6 +29,7 @@ import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.DataSource
 import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.DataSourceType;
 import com.webank.wedatasphere.linkis.metadatamanager.common.domain.MetaColumnInfo;
 import com.webank.wedatasphere.linkis.server.Message;
+import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,18 +38,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Service
-public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourceServiceDispatcher, MetadataServiceDispatcher {
-
-    private final ExchangisDataSourceContext context;
-    private final ExchangisJobParamConfigMapper exchangisJobParamConfigMapper;
-    private final ExchangisJobInfoMapper exchangisJobInfoMapper;
-    private final ObjectMapper mapper = new ObjectMapper();
+public class ExchangisDataSourceService extends AbstractDataSourceService implements DataSourceUIGetter, DataSourceServiceDispatcher, MetadataServiceDispatcher {
 
     @Autowired
     public ExchangisDataSourceService(ExchangisDataSourceContext context, ExchangisJobInfoMapper exchangisJobInfoMapper, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper) {
-        this.context = context;
-        this.exchangisJobInfoMapper = exchangisJobInfoMapper;
-        this.exchangisJobParamConfigMapper = exchangisJobParamConfigMapper;
+        super(context, exchangisJobParamConfigMapper, exchangisJobInfoMapper);
     }
 
     @Override
@@ -68,152 +56,14 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
             return null;
         }
 
-        String jobContent = job.getContent();
-        ExchangisJobInfoContent content;
-        List<ExchangisJobInfoContent> jobInfoContents;
-        // 转换 content
-        if (Strings.isNullOrEmpty(jobContent)) {
-//            content = new ExchangisJobInfoContent();
-            jobInfoContents = new ArrayList<>();
-        } else {
-            try {
-//                content = this.mapper.readValue(jobContent, ExchangisJobInfoContent.class);
-                jobInfoContents = this.mapper.readValue(jobContent, new TypeReference<List<ExchangisJobInfoContent>>() {});
-            } catch (JsonProcessingException e) {
-//                content = new ExchangisJobInfoContent();
-                jobInfoContents = new ArrayList<>();
-            }
-        }
+        List<ExchangisJobInfoContent> jobInfoContents = this.parseJobContent(job.getContent());
         List<ExchangisDataSourceUIViewer> uis = new ArrayList<>();
         for (ExchangisJobInfoContent cnt : jobInfoContents) {
-            ExchangisDataSourceUIViewer viewer = wrapJobDataSourceUI(job, cnt);
+            ExchangisDataSourceUIViewer viewer = buildAllUI(job, cnt);
             uis.add(viewer);
         }
 
         return uis;
-
-
-//        // ----------- 构建 dataSourceIdsUI
-//        ExchangisDataSourceIdsUI dataSourceIdsUI = ExchangisDataSourceUIViewBuilder.getDataSourceIdsUI(content.getDataSources());
-//
-//
-//        // ----------- 构建 dataSourceParamsUI
-//        ExchangisJobParamsContent params = content.getParams();
-//        List<ExchangisJobParamConfig> sourceParamConfigs = Collections.emptyList();
-//        List<ExchangisJobParamConfig> sinkParamConfigs = Collections.emptyList();
-//        if (null != dataSourceIdsUI) {
-//            ExchangisDataSourceIdUI source = dataSourceIdsUI.getSource();
-//            if (null != source) {
-//                String type = source.getType();
-//                ExchangisDataSource exchangisSourceDataSource = this.context.getExchangisDataSource(type);
-//                if (null != exchangisSourceDataSource) {
-//                    sourceParamConfigs = exchangisSourceDataSource.getDataSourceParamConfigs();
-//                }
-//            }
-//
-//            ExchangisDataSourceIdUI sink = dataSourceIdsUI.getSink();
-//            if (null != sink) {
-//                String type = sink.getType();
-//                ExchangisDataSource exchangisSinkDataSource = this.context.getExchangisDataSource(type);
-//                if (null != exchangisSinkDataSource) {
-//                    sinkParamConfigs = exchangisSinkDataSource.getDataSourceParamConfigs();
-//                }
-////                sinkParamsUI = exchangisSinkDataSource.getDataSourceParamsUI();
-//            }
-//        }
-//
-//        List<ExchangisJobParamsContent.ExchangisJobParamsItem> sourceParamsItems = Collections.emptyList();
-//        List<ExchangisJobParamsContent.ExchangisJobParamsItem> sinkParamsItems = Collections.emptyList();
-//        if (null != params && null != params.getSources()) {
-//            sourceParamsItems = params.getSources();
-//        }
-//        if (null != params && null != params.getSinks()) {
-//            sinkParamsItems = params.getSinks();
-//        }
-//
-//        List<ElementUI> jobDataSourceParamsUI1 = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(sourceParamConfigs, sourceParamsItems);
-//        List<ElementUI> jobDataSourceParamsUI2 = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(sinkParamConfigs, sinkParamsItems);
-//        ExchangisDataSourceParamsUI paramsUI = new ExchangisDataSourceParamsUI();
-//        paramsUI.setSources(jobDataSourceParamsUI1);
-//        paramsUI.setSinks(jobDataSourceParamsUI2);
-//
-//        // ----------- 构建 dataSourceTransformsUI
-//        ExchangisJobTransformsContent transforms = content.getTransforms();
-////        ExchangisDataSourceTransformsUI dataSourceTransFormsUI = ExchangisDataSourceUIViewBuilder.getDataSourceTransFormsUI(transforms);
-//
-//        // ----------- 构建 dataSourceSettingsUI
-//        List<ExchangisJobParamsContent.ExchangisJobParamsItem> settings = content.getSettings();
-//        String engineType = job.getEngineType();
-//        QueryWrapper<ExchangisJobParamConfig> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("type", engineType);
-//        queryWrapper.eq("is_hidden", 0);
-//        queryWrapper.eq("status", 1);
-//        List<ExchangisJobParamConfig> settingParamConfigs = exchangisJobParamConfigMapper.selectList(queryWrapper);
-//        List<ElementUI> jobDataSourceSettingsUI = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(settingParamConfigs, settings);
-//
-//        return new DefaultDataSourceUIViewer(dataSourceIdsUI, paramsUI, dataSourceTransFormsUI, jobDataSourceSettingsUI);
-    }
-
-
-    private ExchangisDataSourceUIViewer wrapJobDataSourceUI(ExchangisJobInfo job, ExchangisJobInfoContent content) {
-        // ----------- 构建 dataSourceIdsUI
-        ExchangisDataSourceIdsUI dataSourceIdsUI = ExchangisDataSourceUIViewBuilder.getDataSourceIdsUI(content.getDataSources());
-
-        // ----------- 构建 dataSourceParamsUI
-        ExchangisJobParamsContent params = content.getParams();
-        List<ExchangisJobParamConfig> sourceParamConfigs = Collections.emptyList();
-        List<ExchangisJobParamConfig> sinkParamConfigs = Collections.emptyList();
-        if (null != dataSourceIdsUI) {
-            ExchangisDataSourceIdUI source = dataSourceIdsUI.getSource();
-            if (null != source) {
-                String type = source.getType();
-                ExchangisDataSource exchangisSourceDataSource = this.context.getExchangisDataSource(type);
-                if (null != exchangisSourceDataSource) {
-                    sourceParamConfigs = exchangisSourceDataSource.getDataSourceParamConfigs();
-                }
-            }
-
-            ExchangisDataSourceIdUI sink = dataSourceIdsUI.getSink();
-            if (null != sink) {
-                String type = sink.getType();
-                ExchangisDataSource exchangisSinkDataSource = this.context.getExchangisDataSource(type);
-                if (null != exchangisSinkDataSource) {
-                    sinkParamConfigs = exchangisSinkDataSource.getDataSourceParamConfigs();
-                }
-//                sinkParamsUI = exchangisSinkDataSource.getDataSourceParamsUI();
-            }
-        }
-
-        List<ExchangisJobParamsContent.ExchangisJobParamsItem> sourceParamsItems = Collections.emptyList();
-        List<ExchangisJobParamsContent.ExchangisJobParamsItem> sinkParamsItems = Collections.emptyList();
-        if (null != params && null != params.getSources()) {
-            sourceParamsItems = params.getSources();
-        }
-        if (null != params && null != params.getSinks()) {
-            sinkParamsItems = params.getSinks();
-        }
-
-        List<ElementUI> jobDataSourceParamsUI1 = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(sourceParamConfigs, sourceParamsItems);
-        List<ElementUI> jobDataSourceParamsUI2 = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(sinkParamConfigs, sinkParamsItems);
-        ExchangisDataSourceParamsUI paramsUI = new ExchangisDataSourceParamsUI();
-        paramsUI.setSources(jobDataSourceParamsUI1);
-        paramsUI.setSinks(jobDataSourceParamsUI2);
-
-        // ----------- 构建 dataSourceTransformsUI
-        ExchangisJobTransformsContent transforms = content.getTransforms();
-//        ExchangisDataSourceTransformsUI dataSourceTransFormsUI = ExchangisDataSourceUIViewBuilder.getDataSourceTransFormsUI(transforms);
-
-        // ----------- 构建 dataSourceSettingsUI
-        List<ExchangisJobParamsContent.ExchangisJobParamsItem> settings = content.getSettings();
-        String engineType = job.getEngineType();
-        QueryWrapper<ExchangisJobParamConfig> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("type", engineType);
-        queryWrapper.eq("is_hidden", 0);
-        queryWrapper.eq("status", 1);
-        List<ExchangisJobParamConfig> settingParamConfigs = exchangisJobParamConfigMapper.selectList(queryWrapper);
-        List<ElementUI> jobDataSourceSettingsUI = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(settingParamConfigs, settings);
-
-        return new DefaultDataSourceUIViewer(content.getSubJobName(), dataSourceIdsUI, paramsUI, transforms, jobDataSourceSettingsUI);
     }
 
     // 根据数据源类型获取参数
@@ -221,21 +71,12 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
     public List<ElementUI> getDataSourceParamsUI(String dsType) {
         ExchangisDataSource exchangisDataSource = this.context.getExchangisDataSource(dsType);
         List<ExchangisJobParamConfig> paramConfigs = exchangisDataSource.getDataSourceParamConfigs();
-        return ExchangisDataSourceUIViewBuilder.getDataSourceParamsUI(paramConfigs);
+        return this.buildDataSourceParamsUI(paramConfigs);
     }
 
     @Override
     public List<ElementUI> getJobEngineSettingsUI(String engineType) {
-        if (Strings.isNullOrEmpty(engineType)) {
-            return Collections.emptyList();
-        }
-        engineType = engineType.trim().toUpperCase();
-        QueryWrapper<ExchangisJobParamConfig> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("type", engineType);
-        queryWrapper.eq("is_hidden", 0);
-        queryWrapper.eq("status", 1);
-        List<ExchangisJobParamConfig> jobSettingConfigs = this.exchangisJobParamConfigMapper.selectList(queryWrapper);
-        return ExchangisDataSourceUIViewBuilder.getDataSourceParamsUI(jobSettingConfigs);
+        return this.buildJobSettingsUI(engineType);
     }
 
     /**
@@ -253,8 +94,8 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
                     item.icon()
             ));
         }
-//        String userName = SecurityFilter.getLoginUsername(request);
-        String userName = "hdfs";
+        String userName = SecurityFilter.getLoginUsername(request);
+//        String userName = "hdfs";
 
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         GetAllDataSourceTypesResult result = linkisDataSourceRemoteClient.getAllDataSourceTypes(GetAllDataSourceTypesAction.builder()
@@ -273,7 +114,7 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
 
     @Transactional
     public Message create(HttpServletRequest request, String type, Map<String, Object> json) throws Exception {
-        DataSourceCreateVO vo = null;
+        DataSourceCreateVO vo;
         try {
             vo = mapper.readValue(mapper.writeValueAsString(json), DataSourceCreateVO.class);
         } catch (JsonProcessingException e) {
@@ -286,7 +127,6 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
 
         LinkisDataSourceRemoteClient client = context.getExchangisDataSource(type).getDataSourceRemoteClient();
 
-//        client.execute()
         return Message.ok();
     }
 
@@ -354,62 +194,13 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
             return null;
         }
 
-        String jobContent = job.getContent();
-        ExchangisJobInfoContent content;
-        // 转换 content
-        if (Strings.isNullOrEmpty(jobContent)) {
-            content = new ExchangisJobInfoContent();
-        } else {
-            try {
-                content = this.mapper.readValue(jobContent, ExchangisJobInfoContent.class);
-            } catch (JsonProcessingException e) {
-                content = new ExchangisJobInfoContent();
-            }
+        List<ExchangisJobInfoContent> jobInfoContents = this.parseJobContent(job.getContent());
+        List<ExchangisDataSourceParamsUI> uis = new ArrayList<>();
+        for (ExchangisJobInfoContent cnt : jobInfoContents) {
+            uis.add(this.buildDataSourceParamsUI(cnt));
         }
 
-        // ----------- 构建 dataSourceIdsUI
-        ExchangisDataSourceIdsUI dataSourceIdsUI = ExchangisDataSourceUIViewBuilder.getDataSourceIdsUI(content.getDataSources());
-
-        // ----------- 构建 dataSourceParamsUI
-        ExchangisJobParamsContent params = content.getParams();
-        List<ExchangisJobParamConfig> sourceParamConfigs = Collections.emptyList();
-        List<ExchangisJobParamConfig> sinkParamConfigs = Collections.emptyList();
-        if (null != dataSourceIdsUI) {
-            ExchangisDataSourceIdUI source = dataSourceIdsUI.getSource();
-            if (null != source) {
-                String type = source.getType();
-                ExchangisDataSource exchangisSourceDataSource = this.context.getExchangisDataSource(type);
-                if (null != exchangisSourceDataSource) {
-                    sourceParamConfigs = exchangisSourceDataSource.getDataSourceParamConfigs();
-                }
-            }
-
-            ExchangisDataSourceIdUI sink = dataSourceIdsUI.getSink();
-            if (null != sink) {
-                String type = sink.getType();
-                ExchangisDataSource exchangisSinkDataSource = this.context.getExchangisDataSource(type);
-                if (null != exchangisSinkDataSource) {
-                    sinkParamConfigs = exchangisSinkDataSource.getDataSourceParamConfigs();
-                }
-            }
-        }
-
-        List<ExchangisJobParamsContent.ExchangisJobParamsItem> sourceParamsItems = Collections.emptyList();
-        List<ExchangisJobParamsContent.ExchangisJobParamsItem> sinkParamsItems = Collections.emptyList();
-        if (null != params && null != params.getSources()) {
-            sourceParamsItems = params.getSources();
-        }
-        if (null != params && null != params.getSinks()) {
-            sinkParamsItems = params.getSinks();
-        }
-
-        List<ElementUI> jobDataSourceParamsUI1 = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(sourceParamConfigs, sourceParamsItems);
-        List<ElementUI> jobDataSourceParamsUI2 = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(sinkParamConfigs, sinkParamsItems);
-        ExchangisDataSourceParamsUI paramsUI = new ExchangisDataSourceParamsUI();
-        paramsUI.setSources(jobDataSourceParamsUI1);
-        paramsUI.setSinks(jobDataSourceParamsUI2);
-
-        return Message.ok().data("ui", paramsUI);
+        return Message.ok().data("ui", uis);
     }
 
     public Message getJobDataSourceTransformsUI(Long jobId) {
@@ -443,8 +234,8 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
         return Message.ok().data("ui", transforms);
     }
 
-    public Message getJobDataSourceSettingsUI(Long jobId) {
-        if (Objects.isNull(jobId)) {
+    public Message getJobDataSourceSettingsUI(Long jobId, String jobName) {
+        if (Objects.isNull(jobId) || Strings.isNullOrEmpty(jobName)) {
             return null;
         }
 
@@ -453,30 +244,17 @@ public class ExchangisDataSourceService implements DataSourceUIGetter, DataSourc
             return null;
         }
 
-        String jobContent = job.getContent();
-        ExchangisJobInfoContent content;
-        // 转换 content
-        if (Strings.isNullOrEmpty(jobContent)) {
-            content = new ExchangisJobInfoContent();
-        } else {
-            try {
-                content = this.mapper.readValue(jobContent, ExchangisJobInfoContent.class);
-            } catch (JsonProcessingException e) {
-                content = new ExchangisJobInfoContent();
+        List<ExchangisJobInfoContent> contents = this.parseJobContent(job.getContent());
+
+        for (ExchangisJobInfoContent content : contents) {
+            if (content.getSubJobName().equalsIgnoreCase(jobName)) {
+                List<ElementUI> uis = this.buildJobSettingsUI(job.getEngineType(), content);
+                return Message.ok().data("uis", uis);
             }
         }
 
-        // ----------- 构建 dataSourceSettingsUI
-        List<ExchangisJobParamsContent.ExchangisJobParamsItem> settings = content.getSettings();
-        String engineType = job.getEngineType();
-        QueryWrapper<ExchangisJobParamConfig> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("type", engineType);
-        queryWrapper.eq("is_hidden", 0);
-        queryWrapper.eq("status", 1);
-        List<ExchangisJobParamConfig> settingParamConfigs = exchangisJobParamConfigMapper.selectList(queryWrapper);
-        List<ElementUI> jobDataSourceSettingsUI = ExchangisDataSourceUIViewBuilder.getJobDataSourceParamsUI(settingParamConfigs, settings);
+        return Message.ok().data("ui", Collections.emptyList());
 
-        return Message.ok().data("ui", jobDataSourceSettingsUI);
     }
 
     public Message queryDataSourceDBTableFields(HttpServletRequest request, String type, Long id, String dbName, String tableName) {
