@@ -17,6 +17,9 @@ public class ExchangisJobParamConfig {
     @TableField(value = "config_name")
     private String configName;
 
+    @TableField(value = "config_direction")
+    private String configDirection;
+
     private String type;
 
     @TableField(value = "ui_type")
@@ -27,6 +30,12 @@ public class ExchangisJobParamConfig {
 
     @TableField(value = "ui_label")
     private String uiLabel;
+
+    @TableField(value = "unit")
+    private String unit;
+
+    @TableField(value = "required")
+    private Boolean required;
 
     @TableField(value = "value_type")
     private String valueType;
@@ -211,4 +220,28 @@ public class ExchangisJobParamConfig {
         this.status = status;
     }
 
+
+    public String getConfigDirection() {
+        return configDirection;
+    }
+
+    public void setConfigDirection(String configDirection) {
+        this.configDirection = configDirection;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public Boolean getRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
+    }
 }

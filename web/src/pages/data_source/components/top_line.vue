@@ -1,18 +1,18 @@
 <template>
   <div class="top-line">
     <span>
-      <a-select @change="changeType" style="width: 90px" placeholder="数据源类型">
+      <a-select @change="changeType" style="width: 120px" :placeholder="$t('dataSource.topLine.searchBar.dataTypePlaceholder')">
         <a-select-option value="jack">Jack</a-select-option>
         <a-select-option value="lucy">Lucy</a-select-option>
       </a-select>
-      <a-select @change="changeCreator" style="width: 90px" placeholder="创建者">
+      <a-select @change="changeCreator" style="width: 120px" :placeholder="$t('dataSource.topLine.searchBar.creatorPlaceholder')">
         <a-select-option value="jack">Jack</a-select-option>
         <a-select-option value="lucy">Lucy</a-select-option>
       </a-select>
-      <a-input @change="changeName" style="width: 120px" placeholder="数据源名称" />
+      <a-input @change="changeName" style="width: 120px" :placeholder="$t('dataSource.topLine.searchBar.namePlaceholder')" />
       <a-button type="primary" @click="$emit('search', seartParams)">
         <template v-slot:icon> <icon-searchOutlined /></template>
-        搜索
+        {{ $t("dataSource.topLine.searchBar.searchButtonText") }}
       </a-button>
     </span>
     <a-space>
