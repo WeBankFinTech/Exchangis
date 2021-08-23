@@ -8,7 +8,7 @@ import java.util.List;
 public interface DataSourceUIGetter {
 
     // 根据已经创建的 Job 来获取该 Job DataSource 的配置信息
-    ExchangisDataSourceUIViewer getJobDataSourceUIs(Long jobId);
+    List<ExchangisDataSourceUIViewer> getJobDataSourceUIs(Long jobId);
 
     // 在新建 Job 的时候，右侧需要根据选择的数据源类型来获取参数设置项
     List<ElementUI> getDataSourceParamsUI(String dsType);
