@@ -438,3 +438,698 @@ Caused by: com.webank.wedatasphere.linkis.httpclient.exception.HttpClientResultE
 2021-08-20 19:52:54.502 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (940) [unregister] - Unregistering ...
 2021-08-20 19:52:54.526 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (942) [unregister] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - deregister  status: 200
 2021-08-20 19:52:54.531 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (929) [shutdown] - Completed shut down of DiscoveryClient
+2021-08-23 14:19:56.472 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-23 14:19:58.197 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-23 14:20:00.330 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-23 14:20:00.331 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-23 14:20:00.333 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-23 14:20:00.358 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-23 14:20:00.358 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-23 14:20:03.915 [INFO ] [main                                    ] o.s.c.a.ConfigurationClassPostProcessor (403) [enhanceConfigurationClasses] - Cannot enhance @Configuration bean definition 'myBatisMapperScannerConfig' since its singleton instance has been created too early. The typical cause is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor return type: Consider declaring such methods as 'static'.
+2021-08-23 14:20:04.083 [INFO ] [main                                    ] o.s.c.c.s.GenericScope (295) [setSerializationId] - BeanFactory id=802f5273-594f-3e03-8465-058f0565cf99
+2021-08-23 14:20:06.181 [INFO ] [main                                    ] o.e.j.u.log (169) [initialized] - Logging initialized @11401ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-08-23 14:20:06.959 [INFO ] [main                                    ] o.s.b.w.e.j.JettyServletWebServerFactory (147) [getWebServer] - Server initialized with port: 9321
+2021-08-23 14:20:07.167 [INFO ] [main                                    ] o.e.j.s.Server (359) [doStart] - jetty-9.4.30.v20200611; built: 2020-06-11T12:34:51.929Z; git: 271836e4c1f4612f12b7bb13ef5a92a927634b0d; jvm 1.8.0_291-b10
+2021-08-23 14:20:07.243 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring embedded WebApplicationContext
+2021-08-23 14:20:07.243 [INFO ] [main                                    ] o.s.b.w.s.c.ServletWebServerApplicationContext (285) [prepareWebApplicationContext] - Root WebApplicationContext: initialization completed in 5847 ms
+2021-08-23 14:20:07.451 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-23 14:20:07.451 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-23 14:20:07.461 [INFO ] [main                                    ] c.n.c.DynamicPropertyFactory (281) [getInstance] - DynamicPropertyFactory is initialized with configuration sources: com.netflix.config.ConcurrentCompositeConfiguration@1cdad619
+2021-08-23 14:20:07.541 [WARN ] [main                                    ] o.s.b.a.e.EndpointId (155) [logWarning] - Endpoint ID 'service-registry' contains invalid characters, please migrate to a valid format.
+2021-08-23 14:20:07.807 [INFO ] [main                                    ] o.e.j.s.session (333) [doStart] - DefaultSessionIdManager workerName=node0
+2021-08-23 14:20:07.807 [INFO ] [main                                    ] o.e.j.s.session (338) [doStart] - No SessionScavenger set, using defaults
+2021-08-23 14:20:07.808 [INFO ] [main                                    ] o.e.j.s.session (140) [startScavenging] - node0 Scavenging every 660000ms
+2021-08-23 14:20:07.816 [INFO ] [main                                    ] o.e.j.s.h.ContextHandler (824) [doStart] - Started o.s.b.w.e.j.JettyEmbeddedWebAppContext@7f31937b{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.978114140883685907.9321/],AVAILABLE}
+2021-08-23 14:20:07.817 [INFO ] [main                                    ] o.e.j.s.Server (399) [doStart] - Started @13037ms
+2021-08-23 14:20:08.119 [INFO ] [main                                    ] c.w.w.l.m.DataSourceConfig$$EnhancerBySpringCGLIB$$44135736 (35) [info] - Database connection address information(数据库连接地址信息)=jdbc:mysql://192.168.0.31:3306/exchangis_v3?useSSL=false&characterEncoding=UTF-8
+2021-08-23 14:20:08.185 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$a49ba4d0 (35) [info] - Mybatis typeAliasesPackage=
+2021-08-23 14:20:08.185 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$a49ba4d0 (35) [info] - Mybatis mapperLocations=classpath*:com/webank/wedatasphere/dss/framework/appconn/dao/impl/*.xml,classpath*:com/webank/wedatasphere/dss/workflow/dao/impl/*.xml
+2021-08-23 14:20:08.186 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$a49ba4d0 (35) [info] - Mybatis configLocation=classpath:/mybatis-config.xml
+2021-08-23 14:20:09.866 [WARN ] [main                                    ] c.b.m.e.s.MybatisSqlSessionFactoryBean (44) [warn] - Property 'mapperLocations' was specified but matching resources are not found.
+2021-08-23 14:20:10.723 [INFO ] [main                                    ] c.w.w.e.d.l.l.ExchangisDataSourceLoaderFactory (36) [getLoader] - Use LocalExchangisDataSourceLoader to load all Exchangis Extension DataSources.
+2021-08-23 14:20:10.724 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (42) [init] - libPath url is /D:/dev_workspace/java-dsslinks-maven-workspace/dw-exchangis/exchangis-server/target/classes/..\..\exchangis-extds
+2021-08-23 14:20:10.780 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.hive.ExchangisHiveDataSource
+2021-08-23 14:20:10.780 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.mysql.ExchangisMySQLDataSource
+2021-08-23 14:20:10.889 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverChoosers in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverChooser@3b3a3a92)
+2021-08-23 14:20:10.894 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverSenderBuilders in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverSenderBuilder@34588991)
+2021-08-23 14:20:10.899 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init RPCReceiverListenerBus with queueSize 5000 and consumeThreadSize 400.
+2021-08-23 14:20:10.901 [INFO ] [main                                    ] c.w.w.l.r.AsynRPCMessageBus (40) [info] - RPC-Receiver-Asyn-Thread-ListenerBus add a new listener => class com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$anon$1
+2021-08-23 14:20:11.295 [INFO ] [main                                    ] o.s.c.n.e.InstanceInfoFactory (72) [create] - Setting initial instance status as: STARTING
+2021-08-23 14:20:11.333 [INFO ] [main                                    ] c.n.d.DiscoveryClient (365) [<init>] - Initializing Eureka in region us-east-1
+2021-08-23 14:20:12.051 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (70) [<init>] - Using JSON encoding codec LegacyJacksonJson
+2021-08-23 14:20:12.052 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (71) [<init>] - Using JSON decoding codec LegacyJacksonJson
+2021-08-23 14:20:12.408 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (80) [<init>] - Using XML encoding codec XStreamXml
+2021-08-23 14:20:12.408 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (81) [<init>] - Using XML decoding codec XStreamXml
+2021-08-23 14:20:12.682 [INFO ] [main                                    ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 14:20:12.994 [INFO ] [main                                    ] c.n.d.DiscoveryClient (976) [fetchRegistry] - Disable delta property : false
+2021-08-23 14:20:12.994 [INFO ] [main                                    ] c.n.d.DiscoveryClient (977) [fetchRegistry] - Single vip registry refresh property : null
+2021-08-23 14:20:12.994 [INFO ] [main                                    ] c.n.d.DiscoveryClient (978) [fetchRegistry] - Force full registry fetch : false
+2021-08-23 14:20:12.994 [INFO ] [main                                    ] c.n.d.DiscoveryClient (979) [fetchRegistry] - Application is null : false
+2021-08-23 14:20:12.994 [INFO ] [main                                    ] c.n.d.DiscoveryClient (980) [fetchRegistry] - Registered Applications size is zero : true
+2021-08-23 14:20:12.994 [INFO ] [main                                    ] c.n.d.DiscoveryClient (982) [fetchRegistry] - Application version is -1: true
+2021-08-23 14:20:12.995 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1065) [getAndStoreFullRegistry] - Getting all instance registry info from the eureka server
+2021-08-23 14:20:13.427 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1074) [getAndStoreFullRegistry] - The response status is 200
+2021-08-23 14:20:13.430 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1288) [initScheduledTasks] - Starting heartbeat executor: renew interval is: 30
+2021-08-23 14:20:13.432 [INFO ] [main                                    ] c.n.d.InstanceInfoReplicator (60) [<init>] - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2021-08-23 14:20:13.434 [INFO ] [main                                    ] c.n.d.DiscoveryClient (465) [<init>] - Discovery Client initialized at timestamp 1629699613434 with initial instances count: 23
+2021-08-23 14:20:13.974 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-23 14:20:13.975 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-23 14:20:14.166 [INFO ] [main                                    ] o.s.s.c.ThreadPoolTaskExecutor (181) [initialize] - Initializing ExecutorService 'applicationTaskExecutor'
+2021-08-23 14:20:14.959 [WARN ] [main                                    ] o.s.c.l.c.BlockingLoadBalancerClientAutoConfiguration$BlockingLoadBalancerClientRibbonWarnLogger (86) [logWarning] - You already have RibbonLoadBalancerClient on your classpath. It will be used by default. As Spring Cloud Ribbon is in maintenance mode. We recommend switching to BlockingLoadBalancerClient instead. In order to use it, set the value of `spring.cloud.loadbalancer.ribbon.enabled` to `false` or remove spring-cloud-starter-netflix-ribbon from your project.
+2021-08-23 14:20:15.046 [INFO ] [main                                    ] o.s.b.a.e.w.EndpointLinksResolver (58) [<init>] - Exposing 2 endpoint(s) beneath base path '/actuator'
+2021-08-23 14:20:15.117 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaServiceRegistry (41) [register] - Registering application EXCHANGIS-SERVER with eureka with status UP
+2021-08-23 14:20:15.118 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1323) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629699615118, current=UP, previous=STARTING]
+2021-08-23 14:20:15.120 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-23 14:20:15.258 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-08-23 14:20:15.258 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (525) [initServletBean] - Initializing Servlet 'dispatcherServlet'
+2021-08-23 14:20:15.269 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (547) [initServletBean] - Completed initialization in 11 ms
+2021-08-23 14:20:15.286 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-23 14:20:15.308 [INFO ] [main                                    ] o.e.j.s.AbstractConnector (293) [doStart] - Started ServerConnector@581e8969{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-23 14:20:15.310 [INFO ] [main                                    ] o.s.b.w.e.j.JettyWebServer (185) [start] - Jetty started on port(s) 9321 (http/1.1) with context path '/'
+2021-08-23 14:20:15.310 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaAutoServiceRegistration (145) [onApplicationEvent] - Updating port to 9321
+2021-08-23 14:20:15.629 [INFO ] [main                                    ] c.w.w.l.r.c.RPCSpringConfiguration$$EnhancerBySpringCGLIB$$23d67e69 (40) [info] - DataWorkCloud RPC need register RPCReceiveRestful, now add it to configuration.
+2021-08-23 14:20:15.629 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-23 14:20:15.629 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-23 14:20:15.645 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (61) [logStarted] - Started DataWorkCloudApplication in 19.095 seconds (JVM running for 20.866)
+2021-08-23 14:20:33.451 [INFO ] [qtp516866200-44                         ] c.w.w.l.s.r.RestfulApplication (40) [<init>] - register com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$EnhancerBySpringCGLIB$$1ea5c23c
+2021-08-23 14:20:33.453 [INFO ] [qtp516866200-44                         ] c.w.w.l.s.r.RestfulApplication (46) [<init>] - packages com.webank.wedatasphere.exchangis.datasource.server.restful.api,com.webank.wedatasphere.exchangis.project.server.restful
+2021-08-23 14:20:33.800 [INFO ] [qtp516866200-44                         ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/datasources/all
+2021-08-23 14:20:33.801 [INFO ] [qtp516866200-44                         ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-23 14:20:34.332 [INFO ] [qtp516866200-44                         ] o.r.Reflections (229) [scan] - Reflections took 153 ms to scan 18 urls, producing 188 keys and 1674 values 
+2021-08-23 14:20:34.422 [ERROR] [qtp516866200-44                         ] c.w.w.l.s.r.RestfulCatchAOP (81) [apply] - operation failed(操作失败)s java.lang.reflect.UndeclaredThrowableException: null
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:759) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint.proceed(MethodInvocationProceedingJoinPoint.java:88) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at com.webank.wedatasphere.linkis.server.restful.RestfulCatchAOP$$anonfun$1.apply(RestfulCatchAOP.scala:45) ~[linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.restful.RestfulCatchAOP$$anonfun$1.apply(RestfulCatchAOP.scala:45) ~[linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.common.utils.Utils$.tryCatch(Utils.scala:39) [linkis-common-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.package$.catchMsg(package.scala:55) [linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.package$.catchIt(package.scala:87) [linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.restful.RestfulCatchAOP.dealResponseRestful(RestfulCatchAOP.scala:44) [linkis-module-1.0.1.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_291]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_291]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_291]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_291]
+	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethodWithGivenArgs(AbstractAspectJAdvice.java:644) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethod(AbstractAspectJAdvice.java:633) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.aspectj.AspectJAroundAdvice.invoke(AspectJAroundAdvice.java:70) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:175) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:95) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:691) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at com.webank.wedatasphere.exchangis.datasource.server.restful.api.ExchangisDataSourceRestfulApi$$EnhancerBySpringCGLIB$$df852557.listDataSourceTypes(<generated>) [classes/:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_291]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_291]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_291]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_291]
+	at org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory$1.invoke(ResourceMethodInvocationHandlerFactory.java:81) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:144) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:161) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:160) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:99) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:389) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:347) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:102) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.ServerRuntime$2.run(ServerRuntime.java:309) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:271) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:267) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:315) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:297) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:267) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:317) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:292) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:1139) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.servlet.WebComponent.service(WebComponent.java:460) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:386) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:334) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:221) [jaxrs-ri-2.21.jar:2.21.]
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:852) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1604) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter.doFilter(WebSocketUpgradeFilter.java:226) [websocket-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at com.webank.wedatasphere.linkis.server.security.SecurityFilter.doFilter(SecurityFilter.scala:100) [linkis-module-1.0.1.jar:?]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.doFilterInternal(WebMvcMetricsFilter.java:93) [spring-boot-actuator-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:542) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:143) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:536) [jetty-security-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:127) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:235) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1581) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:233) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1307) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:188) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:482) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1549) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:186) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1204) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:141) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:127) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.Server.handle(Server.java:494) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:374) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:268) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:311) [jetty-io-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:103) [jetty-io-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:117) [jetty-io-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:806) [jetty-util-9.4.30.v20200611.jar:9.4.30.v20200611]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:938) [jetty-util-9.4.30.v20200611.jar:9.4.30.v20200611]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_291]
+Caused by: com.webank.wedatasphere.linkis.httpclient.exception.HttpClientResultException: errCode: 10905 ,desc: URL /api/rest_j/v1/datasource/type/all request failed! ResponseBody is {"timestamp":"2021-08-23T06:20:34.990+00:00","status":404,"error":"Not Found","message":"","path":"/api/rest_j/v1/datasource/type/all"}. ,ip: 192.168.86.1 ,port: 9321 ,serviceKind: exchangis-server
+	at com.webank.wedatasphere.linkis.httpclient.dws.response.DWSResult$class.set(DWSResult.scala:53) ~[linkis-gateway-httpclient-support-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.datasource.client.response.GetAllDataSourceTypesResult.set(GetAllDataSourceTypesResult.scala:12) ~[linkis-datasource-client-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.httpclient.dws.DWSHttpClient$$anonfun$httpResponseToResult$2.apply(DWSHttpClient.scala:64) ~[linkis-gateway-httpclient-support-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.httpclient.dws.DWSHttpClient$$anonfun$httpResponseToResult$2.apply(DWSHttpClient.scala:60) ~[linkis-gateway-httpclient-support-1.0.1.jar:?]
+	at scala.Option.map(Option.scala:146) ~[scala-library-2.11.8.jar:?]
+	at com.webank.wedatasphere.linkis.httpclient.dws.DWSHttpClient.httpResponseToResult(DWSHttpClient.scala:60) ~[linkis-gateway-httpclient-support-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.httpclient.AbstractHttpClient.responseToResult(AbstractHttpClient.scala:327) ~[linkis-httpclient-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.httpclient.AbstractHttpClient.execute(AbstractHttpClient.scala:103) ~[linkis-httpclient-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.httpclient.AbstractHttpClient.execute(AbstractHttpClient.scala:83) ~[linkis-httpclient-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.datasource.client.AbstractRemoteClient.execute(AbstractRemoteClient.scala:24) ~[linkis-datasource-client-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient.getAllDataSourceTypes(LinkisDataSourceRemoteClient.scala:13) ~[linkis-datasource-client-1.0.1.jar:?]
+	at com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService.listDataSources(ExchangisDataSourceService.java:260) ~[classes/:?]
+	at com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService$$FastClassBySpringCGLIB$$7e51dd92.invoke(<generated>) ~[classes/:?]
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:687) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService$$EnhancerBySpringCGLIB$$d340e130.listDataSources(<generated>) ~[classes/:?]
+	at com.webank.wedatasphere.exchangis.datasource.server.restful.api.ExchangisDataSourceRestfulApi.listDataSourceTypes(ExchangisDataSourceRestfulApi.java:36) ~[classes/:?]
+	at com.webank.wedatasphere.exchangis.datasource.server.restful.api.ExchangisDataSourceRestfulApi$$FastClassBySpringCGLIB$$f6f65b73.invoke(<generated>) ~[classes/:?]
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:771) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	... 91 more
+
+2021-08-23 14:24:17.156 [INFO ] [SpringContextShutdownHook               ] o.s.c.n.e.s.EurekaServiceRegistry (65) [deregister] - Unregistering application EXCHANGIS-SERVER with eureka with status DOWN
+2021-08-23 14:24:17.157 [WARN ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (1321) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629699857157, current=DOWN, previous=UP]
+2021-08-23 14:24:17.157 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-23 14:24:17.173 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.AbstractConnector (343) [doStop] - Stopped ServerConnector@581e8969{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-23 14:24:17.173 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.session (158) [stopScavenging] - node0 Stopped scavenging
+2021-08-23 14:24:17.174 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.C.application (2232) [log] - Destroying Spring FrameworkServlet 'dispatcherServlet'
+2021-08-23 14:24:17.174 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-23 14:24:17.179 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.ContextHandler (1007) [doStop] - Stopped o.s.b.w.e.j.JettyEmbeddedWebAppContext@7f31937b{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.978114140883685907.9321/],UNAVAILABLE}
+2021-08-23 14:24:17.180 [INFO ] [SpringContextShutdownHook               ] o.s.s.c.ThreadPoolTaskExecutor (218) [shutdown] - Shutting down ExecutorService 'applicationTaskExecutor'
+2021-08-23 14:24:17.184 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (906) [shutdown] - Shutting down DiscoveryClient ...
+2021-08-23 14:24:20.195 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (940) [unregister] - Unregistering ...
+2021-08-23 14:24:20.217 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (942) [unregister] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - deregister  status: 200
+2021-08-23 14:24:20.222 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (929) [shutdown] - Completed shut down of DiscoveryClient
+2021-08-23 14:24:24.008 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-23 14:24:25.309 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-23 14:24:27.421 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-23 14:24:27.421 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-23 14:24:27.423 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-23 14:24:27.446 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-23 14:24:27.446 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-23 14:24:29.476 [INFO ] [main                                    ] o.s.c.a.ConfigurationClassPostProcessor (403) [enhanceConfigurationClasses] - Cannot enhance @Configuration bean definition 'myBatisMapperScannerConfig' since its singleton instance has been created too early. The typical cause is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor return type: Consider declaring such methods as 'static'.
+2021-08-23 14:24:29.550 [INFO ] [main                                    ] o.s.c.c.s.GenericScope (295) [setSerializationId] - BeanFactory id=802f5273-594f-3e03-8465-058f0565cf99
+2021-08-23 14:24:29.996 [INFO ] [main                                    ] o.e.j.u.log (169) [initialized] - Logging initialized @7160ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-08-23 14:24:30.367 [INFO ] [main                                    ] o.s.b.w.e.j.JettyServletWebServerFactory (147) [getWebServer] - Server initialized with port: 9321
+2021-08-23 14:24:30.405 [INFO ] [main                                    ] o.e.j.s.Server (359) [doStart] - jetty-9.4.30.v20200611; built: 2020-06-11T12:34:51.929Z; git: 271836e4c1f4612f12b7bb13ef5a92a927634b0d; jvm 1.8.0_291-b10
+2021-08-23 14:24:30.429 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring embedded WebApplicationContext
+2021-08-23 14:24:30.429 [INFO ] [main                                    ] o.s.b.w.s.c.ServletWebServerApplicationContext (285) [prepareWebApplicationContext] - Root WebApplicationContext: initialization completed in 1974 ms
+2021-08-23 14:24:30.525 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-23 14:24:30.525 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-23 14:24:30.534 [INFO ] [main                                    ] c.n.c.DynamicPropertyFactory (281) [getInstance] - DynamicPropertyFactory is initialized with configuration sources: com.netflix.config.ConcurrentCompositeConfiguration@45e35a0d
+2021-08-23 14:24:30.582 [WARN ] [main                                    ] o.s.b.a.e.EndpointId (155) [logWarning] - Endpoint ID 'service-registry' contains invalid characters, please migrate to a valid format.
+2021-08-23 14:24:30.677 [INFO ] [main                                    ] o.e.j.s.session (333) [doStart] - DefaultSessionIdManager workerName=node0
+2021-08-23 14:24:30.677 [INFO ] [main                                    ] o.e.j.s.session (338) [doStart] - No SessionScavenger set, using defaults
+2021-08-23 14:24:30.679 [INFO ] [main                                    ] o.e.j.s.session (140) [startScavenging] - node0 Scavenging every 660000ms
+2021-08-23 14:24:30.685 [INFO ] [main                                    ] o.e.j.s.h.ContextHandler (824) [doStart] - Started o.s.b.w.e.j.JettyEmbeddedWebAppContext@16c9f7f0{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.6420425413874457354.9321/],AVAILABLE}
+2021-08-23 14:24:30.686 [INFO ] [main                                    ] o.e.j.s.Server (399) [doStart] - Started @7851ms
+2021-08-23 14:24:30.748 [INFO ] [main                                    ] c.w.w.l.m.DataSourceConfig$$EnhancerBySpringCGLIB$$efe8d91d (35) [info] - Database connection address information(数据库连接地址信息)=jdbc:mysql://192.168.0.31:3306/exchangis_v3?useSSL=false&characterEncoding=UTF-8
+2021-08-23 14:24:30.775 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$507126b7 (35) [info] - Mybatis typeAliasesPackage=
+2021-08-23 14:24:30.776 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$507126b7 (35) [info] - Mybatis mapperLocations=classpath*:com/webank/wedatasphere/dss/framework/appconn/dao/impl/*.xml,classpath*:com/webank/wedatasphere/dss/workflow/dao/impl/*.xml
+2021-08-23 14:24:30.776 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$507126b7 (35) [info] - Mybatis configLocation=classpath:/mybatis-config.xml
+2021-08-23 14:24:30.932 [WARN ] [main                                    ] c.b.m.e.s.MybatisSqlSessionFactoryBean (44) [warn] - Property 'mapperLocations' was specified but matching resources are not found.
+2021-08-23 14:24:31.569 [INFO ] [main                                    ] c.w.w.e.d.l.l.ExchangisDataSourceLoaderFactory (36) [getLoader] - Use LocalExchangisDataSourceLoader to load all Exchangis Extension DataSources.
+2021-08-23 14:24:31.569 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (42) [init] - libPath url is /D:/dev_workspace/java-dsslinks-maven-workspace/dw-exchangis/exchangis-server/target/classes/..\..\exchangis-extds
+2021-08-23 14:24:31.575 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.hive.ExchangisHiveDataSource
+2021-08-23 14:24:31.575 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.mysql.ExchangisMySQLDataSource
+2021-08-23 14:24:31.628 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverChoosers in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverChooser@1c966488)
+2021-08-23 14:24:31.632 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverSenderBuilders in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverSenderBuilder@4351d055)
+2021-08-23 14:24:31.637 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init RPCReceiverListenerBus with queueSize 5000 and consumeThreadSize 400.
+2021-08-23 14:24:31.639 [INFO ] [main                                    ] c.w.w.l.r.AsynRPCMessageBus (40) [info] - RPC-Receiver-Asyn-Thread-ListenerBus add a new listener => class com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$anon$1
+2021-08-23 14:24:32.022 [INFO ] [main                                    ] o.s.c.n.e.InstanceInfoFactory (72) [create] - Setting initial instance status as: STARTING
+2021-08-23 14:24:32.051 [INFO ] [main                                    ] c.n.d.DiscoveryClient (365) [<init>] - Initializing Eureka in region us-east-1
+2021-08-23 14:24:32.579 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (70) [<init>] - Using JSON encoding codec LegacyJacksonJson
+2021-08-23 14:24:32.579 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (71) [<init>] - Using JSON decoding codec LegacyJacksonJson
+2021-08-23 14:24:32.708 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (80) [<init>] - Using XML encoding codec XStreamXml
+2021-08-23 14:24:32.708 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (81) [<init>] - Using XML decoding codec XStreamXml
+2021-08-23 14:24:32.914 [INFO ] [main                                    ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 14:24:33.136 [INFO ] [main                                    ] c.n.d.DiscoveryClient (976) [fetchRegistry] - Disable delta property : false
+2021-08-23 14:24:33.136 [INFO ] [main                                    ] c.n.d.DiscoveryClient (977) [fetchRegistry] - Single vip registry refresh property : null
+2021-08-23 14:24:33.137 [INFO ] [main                                    ] c.n.d.DiscoveryClient (978) [fetchRegistry] - Force full registry fetch : false
+2021-08-23 14:24:33.137 [INFO ] [main                                    ] c.n.d.DiscoveryClient (979) [fetchRegistry] - Application is null : false
+2021-08-23 14:24:33.137 [INFO ] [main                                    ] c.n.d.DiscoveryClient (980) [fetchRegistry] - Registered Applications size is zero : true
+2021-08-23 14:24:33.137 [INFO ] [main                                    ] c.n.d.DiscoveryClient (982) [fetchRegistry] - Application version is -1: true
+2021-08-23 14:24:33.137 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1065) [getAndStoreFullRegistry] - Getting all instance registry info from the eureka server
+2021-08-23 14:24:33.311 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1074) [getAndStoreFullRegistry] - The response status is 200
+2021-08-23 14:24:33.314 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1288) [initScheduledTasks] - Starting heartbeat executor: renew interval is: 30
+2021-08-23 14:24:33.316 [INFO ] [main                                    ] c.n.d.InstanceInfoReplicator (60) [<init>] - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2021-08-23 14:24:33.318 [INFO ] [main                                    ] c.n.d.DiscoveryClient (465) [<init>] - Discovery Client initialized at timestamp 1629699873318 with initial instances count: 23
+2021-08-23 14:24:33.807 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-23 14:24:33.807 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-23 14:24:33.908 [INFO ] [main                                    ] o.s.s.c.ThreadPoolTaskExecutor (181) [initialize] - Initializing ExecutorService 'applicationTaskExecutor'
+2021-08-23 14:24:34.559 [WARN ] [main                                    ] o.s.c.l.c.BlockingLoadBalancerClientAutoConfiguration$BlockingLoadBalancerClientRibbonWarnLogger (86) [logWarning] - You already have RibbonLoadBalancerClient on your classpath. It will be used by default. As Spring Cloud Ribbon is in maintenance mode. We recommend switching to BlockingLoadBalancerClient instead. In order to use it, set the value of `spring.cloud.loadbalancer.ribbon.enabled` to `false` or remove spring-cloud-starter-netflix-ribbon from your project.
+2021-08-23 14:24:34.622 [INFO ] [main                                    ] o.s.b.a.e.w.EndpointLinksResolver (58) [<init>] - Exposing 2 endpoint(s) beneath base path '/actuator'
+2021-08-23 14:24:34.657 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaServiceRegistry (41) [register] - Registering application EXCHANGIS-SERVER with eureka with status UP
+2021-08-23 14:24:34.658 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1323) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629699874657, current=UP, previous=STARTING]
+2021-08-23 14:24:34.660 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-23 14:24:34.677 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-08-23 14:24:34.677 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (525) [initServletBean] - Initializing Servlet 'dispatcherServlet'
+2021-08-23 14:24:34.684 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (547) [initServletBean] - Completed initialization in 7 ms
+2021-08-23 14:24:34.698 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-23 14:24:34.706 [INFO ] [main                                    ] o.e.j.s.AbstractConnector (293) [doStart] - Started ServerConnector@33c9f1ac{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-23 14:24:34.707 [INFO ] [main                                    ] o.s.b.w.e.j.JettyWebServer (185) [start] - Jetty started on port(s) 9321 (http/1.1) with context path '/'
+2021-08-23 14:24:34.708 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaAutoServiceRegistration (145) [onApplicationEvent] - Updating port to 9321
+2021-08-23 14:24:35.030 [INFO ] [main                                    ] c.w.w.l.r.c.RPCSpringConfiguration$$EnhancerBySpringCGLIB$$cfac0050 (40) [info] - DataWorkCloud RPC need register RPCReceiveRestful, now add it to configuration.
+2021-08-23 14:24:35.030 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-23 14:24:35.030 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-23 14:24:35.045 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (61) [logStarted] - Started DataWorkCloudApplication in 10.997 seconds (JVM running for 12.209)
+2021-08-23 14:24:49.919 [INFO ] [qtp273480484-44                         ] c.w.w.l.s.r.RestfulApplication (40) [<init>] - register com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$EnhancerBySpringCGLIB$$d88950ba
+2021-08-23 14:24:49.920 [INFO ] [qtp273480484-44                         ] c.w.w.l.s.r.RestfulApplication (46) [<init>] - packages com.webank.wedatasphere.exchangis.datasource.server.restful.api,com.webank.wedatasphere.exchangis.project.server.restful
+2021-08-23 14:24:50.219 [INFO ] [qtp273480484-44                         ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/1/datasource/params/ui
+2021-08-23 14:24:50.220 [INFO ] [qtp273480484-44                         ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-23 14:25:48.118 [INFO ] [qtp273480484-23                         ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/1/datasource/params/ui
+2021-08-23 14:25:48.118 [INFO ] [qtp273480484-23                         ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-23 14:25:55.315 [INFO ] [SpringContextShutdownHook               ] o.s.c.n.e.s.EurekaServiceRegistry (65) [deregister] - Unregistering application EXCHANGIS-SERVER with eureka with status DOWN
+2021-08-23 14:25:55.315 [WARN ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (1321) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629699955315, current=DOWN, previous=UP]
+2021-08-23 14:25:55.315 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-23 14:25:55.320 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.AbstractConnector (343) [doStop] - Stopped ServerConnector@33c9f1ac{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-23 14:25:55.320 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.session (158) [stopScavenging] - node0 Stopped scavenging
+2021-08-23 14:25:55.322 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.C.application (2232) [log] - Destroying Spring FrameworkServlet 'dispatcherServlet'
+2021-08-23 14:25:55.326 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.ContextHandler (1007) [doStop] - Stopped o.s.b.w.e.j.JettyEmbeddedWebAppContext@16c9f7f0{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.6420425413874457354.9321/],UNAVAILABLE}
+2021-08-23 14:25:55.328 [INFO ] [SpringContextShutdownHook               ] o.s.s.c.ThreadPoolTaskExecutor (218) [shutdown] - Shutting down ExecutorService 'applicationTaskExecutor'
+2021-08-23 14:25:55.332 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (906) [shutdown] - Shutting down DiscoveryClient ...
+2021-08-23 14:25:55.332 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-23 14:25:55.333 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (940) [unregister] - Unregistering ...
+2021-08-23 14:25:55.345 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (942) [unregister] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - deregister  status: 200
+2021-08-23 14:25:55.351 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (929) [shutdown] - Completed shut down of DiscoveryClient
+2021-08-23 14:26:02.648 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-23 14:26:03.940 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-23 14:26:06.043 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-23 14:26:06.043 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-23 14:26:06.045 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-23 14:26:06.068 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-23 14:26:06.068 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-23 14:26:08.181 [INFO ] [main                                    ] o.s.c.a.ConfigurationClassPostProcessor (403) [enhanceConfigurationClasses] - Cannot enhance @Configuration bean definition 'myBatisMapperScannerConfig' since its singleton instance has been created too early. The typical cause is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor return type: Consider declaring such methods as 'static'.
+2021-08-23 14:26:08.248 [INFO ] [main                                    ] o.s.c.c.s.GenericScope (295) [setSerializationId] - BeanFactory id=802f5273-594f-3e03-8465-058f0565cf99
+2021-08-23 14:26:08.692 [INFO ] [main                                    ] o.e.j.u.log (169) [initialized] - Logging initialized @7355ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-08-23 14:26:09.051 [INFO ] [main                                    ] o.s.b.w.e.j.JettyServletWebServerFactory (147) [getWebServer] - Server initialized with port: 9321
+2021-08-23 14:26:09.086 [INFO ] [main                                    ] o.e.j.s.Server (359) [doStart] - jetty-9.4.30.v20200611; built: 2020-06-11T12:34:51.929Z; git: 271836e4c1f4612f12b7bb13ef5a92a927634b0d; jvm 1.8.0_291-b10
+2021-08-23 14:26:09.113 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring embedded WebApplicationContext
+2021-08-23 14:26:09.113 [INFO ] [main                                    ] o.s.b.w.s.c.ServletWebServerApplicationContext (285) [prepareWebApplicationContext] - Root WebApplicationContext: initialization completed in 2036 ms
+2021-08-23 14:26:09.211 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-23 14:26:09.211 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-23 14:26:09.220 [INFO ] [main                                    ] c.n.c.DynamicPropertyFactory (281) [getInstance] - DynamicPropertyFactory is initialized with configuration sources: com.netflix.config.ConcurrentCompositeConfiguration@7d07e04e
+2021-08-23 14:26:09.267 [WARN ] [main                                    ] o.s.b.a.e.EndpointId (155) [logWarning] - Endpoint ID 'service-registry' contains invalid characters, please migrate to a valid format.
+2021-08-23 14:26:09.368 [INFO ] [main                                    ] o.e.j.s.session (333) [doStart] - DefaultSessionIdManager workerName=node0
+2021-08-23 14:26:09.368 [INFO ] [main                                    ] o.e.j.s.session (338) [doStart] - No SessionScavenger set, using defaults
+2021-08-23 14:26:09.369 [INFO ] [main                                    ] o.e.j.s.session (140) [startScavenging] - node0 Scavenging every 660000ms
+2021-08-23 14:26:09.376 [INFO ] [main                                    ] o.e.j.s.h.ContextHandler (824) [doStart] - Started o.s.b.w.e.j.JettyEmbeddedWebAppContext@7f9dbe11{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.5029618498191166578.9321/],AVAILABLE}
+2021-08-23 14:26:09.377 [INFO ] [main                                    ] o.e.j.s.Server (399) [doStart] - Started @8041ms
+2021-08-23 14:26:09.450 [INFO ] [main                                    ] c.w.w.l.m.DataSourceConfig$$EnhancerBySpringCGLIB$$2d9436a8 (35) [info] - Database connection address information(数据库连接地址信息)=jdbc:mysql://192.168.0.31:3306/exchangis_v3?useSSL=false&characterEncoding=UTF-8
+2021-08-23 14:26:09.473 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$8e1c8442 (35) [info] - Mybatis typeAliasesPackage=
+2021-08-23 14:26:09.473 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$8e1c8442 (35) [info] - Mybatis mapperLocations=classpath*:com/webank/wedatasphere/dss/framework/appconn/dao/impl/*.xml,classpath*:com/webank/wedatasphere/dss/workflow/dao/impl/*.xml
+2021-08-23 14:26:09.474 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$8e1c8442 (35) [info] - Mybatis configLocation=classpath:/mybatis-config.xml
+2021-08-23 14:26:09.640 [WARN ] [main                                    ] c.b.m.e.s.MybatisSqlSessionFactoryBean (44) [warn] - Property 'mapperLocations' was specified but matching resources are not found.
+2021-08-23 14:26:10.289 [INFO ] [main                                    ] c.w.w.e.d.l.l.ExchangisDataSourceLoaderFactory (36) [getLoader] - Use LocalExchangisDataSourceLoader to load all Exchangis Extension DataSources.
+2021-08-23 14:26:10.290 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (42) [init] - libPath url is /D:/dev_workspace/java-dsslinks-maven-workspace/dw-exchangis/exchangis-server/target/classes/..\..\exchangis-extds
+2021-08-23 14:26:10.295 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.hive.ExchangisHiveDataSource
+2021-08-23 14:26:10.296 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.mysql.ExchangisMySQLDataSource
+2021-08-23 14:26:10.346 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverChoosers in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverChooser@41dc34c8)
+2021-08-23 14:26:10.349 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverSenderBuilders in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverSenderBuilder@99af41d)
+2021-08-23 14:26:10.356 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init RPCReceiverListenerBus with queueSize 5000 and consumeThreadSize 400.
+2021-08-23 14:26:10.358 [INFO ] [main                                    ] c.w.w.l.r.AsynRPCMessageBus (40) [info] - RPC-Receiver-Asyn-Thread-ListenerBus add a new listener => class com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$anon$1
+2021-08-23 14:26:10.746 [INFO ] [main                                    ] o.s.c.n.e.InstanceInfoFactory (72) [create] - Setting initial instance status as: STARTING
+2021-08-23 14:26:10.775 [INFO ] [main                                    ] c.n.d.DiscoveryClient (365) [<init>] - Initializing Eureka in region us-east-1
+2021-08-23 14:26:11.293 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (70) [<init>] - Using JSON encoding codec LegacyJacksonJson
+2021-08-23 14:26:11.294 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (71) [<init>] - Using JSON decoding codec LegacyJacksonJson
+2021-08-23 14:26:11.411 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (80) [<init>] - Using XML encoding codec XStreamXml
+2021-08-23 14:26:11.411 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (81) [<init>] - Using XML decoding codec XStreamXml
+2021-08-23 14:26:11.615 [INFO ] [main                                    ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 14:26:11.839 [INFO ] [main                                    ] c.n.d.DiscoveryClient (976) [fetchRegistry] - Disable delta property : false
+2021-08-23 14:26:11.839 [INFO ] [main                                    ] c.n.d.DiscoveryClient (977) [fetchRegistry] - Single vip registry refresh property : null
+2021-08-23 14:26:11.839 [INFO ] [main                                    ] c.n.d.DiscoveryClient (978) [fetchRegistry] - Force full registry fetch : false
+2021-08-23 14:26:11.839 [INFO ] [main                                    ] c.n.d.DiscoveryClient (979) [fetchRegistry] - Application is null : false
+2021-08-23 14:26:11.840 [INFO ] [main                                    ] c.n.d.DiscoveryClient (980) [fetchRegistry] - Registered Applications size is zero : true
+2021-08-23 14:26:11.840 [INFO ] [main                                    ] c.n.d.DiscoveryClient (982) [fetchRegistry] - Application version is -1: true
+2021-08-23 14:26:11.840 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1065) [getAndStoreFullRegistry] - Getting all instance registry info from the eureka server
+2021-08-23 14:26:11.999 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1074) [getAndStoreFullRegistry] - The response status is 200
+2021-08-23 14:26:12.001 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1288) [initScheduledTasks] - Starting heartbeat executor: renew interval is: 30
+2021-08-23 14:26:12.004 [INFO ] [main                                    ] c.n.d.InstanceInfoReplicator (60) [<init>] - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2021-08-23 14:26:12.007 [INFO ] [main                                    ] c.n.d.DiscoveryClient (465) [<init>] - Discovery Client initialized at timestamp 1629699972007 with initial instances count: 23
+2021-08-23 14:26:12.494 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-23 14:26:12.494 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-23 14:26:12.603 [INFO ] [main                                    ] o.s.s.c.ThreadPoolTaskExecutor (181) [initialize] - Initializing ExecutorService 'applicationTaskExecutor'
+2021-08-23 14:26:13.271 [WARN ] [main                                    ] o.s.c.l.c.BlockingLoadBalancerClientAutoConfiguration$BlockingLoadBalancerClientRibbonWarnLogger (86) [logWarning] - You already have RibbonLoadBalancerClient on your classpath. It will be used by default. As Spring Cloud Ribbon is in maintenance mode. We recommend switching to BlockingLoadBalancerClient instead. In order to use it, set the value of `spring.cloud.loadbalancer.ribbon.enabled` to `false` or remove spring-cloud-starter-netflix-ribbon from your project.
+2021-08-23 14:26:13.332 [INFO ] [main                                    ] o.s.b.a.e.w.EndpointLinksResolver (58) [<init>] - Exposing 2 endpoint(s) beneath base path '/actuator'
+2021-08-23 14:26:13.368 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaServiceRegistry (41) [register] - Registering application EXCHANGIS-SERVER with eureka with status UP
+2021-08-23 14:26:13.369 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1323) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629699973369, current=UP, previous=STARTING]
+2021-08-23 14:26:13.371 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-23 14:26:13.389 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-08-23 14:26:13.389 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (525) [initServletBean] - Initializing Servlet 'dispatcherServlet'
+2021-08-23 14:26:13.396 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (547) [initServletBean] - Completed initialization in 6 ms
+2021-08-23 14:26:13.414 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-23 14:26:13.419 [INFO ] [main                                    ] o.e.j.s.AbstractConnector (293) [doStart] - Started ServerConnector@481bae3f{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-23 14:26:13.420 [INFO ] [main                                    ] o.s.b.w.e.j.JettyWebServer (185) [start] - Jetty started on port(s) 9321 (http/1.1) with context path '/'
+2021-08-23 14:26:13.421 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaAutoServiceRegistration (145) [onApplicationEvent] - Updating port to 9321
+2021-08-23 14:26:13.738 [INFO ] [main                                    ] c.w.w.l.r.c.RPCSpringConfiguration$$EnhancerBySpringCGLIB$$d575ddb (40) [info] - DataWorkCloud RPC need register RPCReceiveRestful, now add it to configuration.
+2021-08-23 14:26:13.738 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-23 14:26:13.738 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-23 14:26:13.750 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (61) [logStarted] - Started DataWorkCloudApplication in 11.066 seconds (JVM running for 12.414)
+2021-08-23 14:26:21.786 [INFO ] [qtp1261095698-44                        ] c.w.w.l.s.r.RestfulApplication (40) [<init>] - register com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$EnhancerBySpringCGLIB$$cea9a8c8
+2021-08-23 14:26:21.787 [INFO ] [qtp1261095698-44                        ] c.w.w.l.s.r.RestfulApplication (46) [<init>] - packages com.webank.wedatasphere.exchangis.datasource.server.restful.api,com.webank.wedatasphere.exchangis.project.server.restful
+2021-08-23 14:26:22.111 [INFO ] [qtp1261095698-44                        ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/1/datasource/params/ui
+2021-08-23 14:26:22.112 [INFO ] [qtp1261095698-44                        ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-23 14:26:39.187 [INFO ] [qtp1261095698-24                        ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/1/datasource/params/ui
+2021-08-23 14:26:39.188 [INFO ] [qtp1261095698-24                        ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-23 14:27:58.107 [INFO ] [qtp1261095698-25                        ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/1/datasource/params/ui
+2021-08-23 14:27:58.107 [INFO ] [qtp1261095698-25                        ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-23 14:31:11.853 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 14:32:51.291 [INFO ] [SpringContextShutdownHook               ] o.s.c.n.e.s.EurekaServiceRegistry (65) [deregister] - Unregistering application EXCHANGIS-SERVER with eureka with status DOWN
+2021-08-23 14:32:51.292 [WARN ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (1321) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629700371292, current=DOWN, previous=UP]
+2021-08-23 14:32:51.292 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-23 14:32:51.297 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.AbstractConnector (343) [doStop] - Stopped ServerConnector@481bae3f{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-23 14:32:51.297 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.session (158) [stopScavenging] - node0 Stopped scavenging
+2021-08-23 14:32:51.299 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.C.application (2232) [log] - Destroying Spring FrameworkServlet 'dispatcherServlet'
+2021-08-23 14:32:51.303 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.ContextHandler (1007) [doStop] - Stopped o.s.b.w.e.j.JettyEmbeddedWebAppContext@7f9dbe11{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.5029618498191166578.9321/],UNAVAILABLE}
+2021-08-23 14:32:51.304 [INFO ] [SpringContextShutdownHook               ] o.s.s.c.ThreadPoolTaskExecutor (218) [shutdown] - Shutting down ExecutorService 'applicationTaskExecutor'
+2021-08-23 14:32:51.310 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (906) [shutdown] - Shutting down DiscoveryClient ...
+2021-08-23 14:32:51.313 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-23 14:32:51.313 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (940) [unregister] - Unregistering ...
+2021-08-23 14:32:51.328 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (942) [unregister] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - deregister  status: 200
+2021-08-23 14:32:51.333 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (929) [shutdown] - Completed shut down of DiscoveryClient
+2021-08-23 14:32:55.155 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-23 14:32:56.477 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-23 14:32:58.580 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-23 14:32:58.580 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-23 14:32:58.581 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-23 14:32:58.605 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-23 14:32:58.605 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-23 14:33:00.651 [INFO ] [main                                    ] o.s.c.a.ConfigurationClassPostProcessor (403) [enhanceConfigurationClasses] - Cannot enhance @Configuration bean definition 'myBatisMapperScannerConfig' since its singleton instance has been created too early. The typical cause is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor return type: Consider declaring such methods as 'static'.
+2021-08-23 14:33:00.723 [INFO ] [main                                    ] o.s.c.c.s.GenericScope (295) [setSerializationId] - BeanFactory id=802f5273-594f-3e03-8465-058f0565cf99
+2021-08-23 14:33:01.268 [INFO ] [main                                    ] o.e.j.u.log (169) [initialized] - Logging initialized @7416ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-08-23 14:33:01.661 [INFO ] [main                                    ] o.s.b.w.e.j.JettyServletWebServerFactory (147) [getWebServer] - Server initialized with port: 9321
+2021-08-23 14:33:01.694 [INFO ] [main                                    ] o.e.j.s.Server (359) [doStart] - jetty-9.4.30.v20200611; built: 2020-06-11T12:34:51.929Z; git: 271836e4c1f4612f12b7bb13ef5a92a927634b0d; jvm 1.8.0_291-b10
+2021-08-23 14:33:01.716 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring embedded WebApplicationContext
+2021-08-23 14:33:01.716 [INFO ] [main                                    ] o.s.b.w.s.c.ServletWebServerApplicationContext (285) [prepareWebApplicationContext] - Root WebApplicationContext: initialization completed in 2101 ms
+2021-08-23 14:33:01.812 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-23 14:33:01.812 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-23 14:33:01.820 [INFO ] [main                                    ] c.n.c.DynamicPropertyFactory (281) [getInstance] - DynamicPropertyFactory is initialized with configuration sources: com.netflix.config.ConcurrentCompositeConfiguration@ce0bbd5
+2021-08-23 14:33:01.866 [WARN ] [main                                    ] o.s.b.a.e.EndpointId (155) [logWarning] - Endpoint ID 'service-registry' contains invalid characters, please migrate to a valid format.
+2021-08-23 14:33:01.971 [INFO ] [main                                    ] o.e.j.s.session (333) [doStart] - DefaultSessionIdManager workerName=node0
+2021-08-23 14:33:01.971 [INFO ] [main                                    ] o.e.j.s.session (338) [doStart] - No SessionScavenger set, using defaults
+2021-08-23 14:33:01.972 [INFO ] [main                                    ] o.e.j.s.session (140) [startScavenging] - node0 Scavenging every 660000ms
+2021-08-23 14:33:01.978 [INFO ] [main                                    ] o.e.j.s.h.ContextHandler (824) [doStart] - Started o.s.b.w.e.j.JettyEmbeddedWebAppContext@3538a129{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.4454963759225088763.9321/],AVAILABLE}
+2021-08-23 14:33:01.979 [INFO ] [main                                    ] o.e.j.s.Server (399) [doStart] - Started @8128ms
+2021-08-23 14:33:02.045 [INFO ] [main                                    ] c.w.w.l.m.DataSourceConfig$$EnhancerBySpringCGLIB$$ada86153 (35) [info] - Database connection address information(数据库连接地址信息)=jdbc:mysql://192.168.0.31:3306/exchangis_v3?useSSL=false&characterEncoding=UTF-8
+2021-08-23 14:33:02.072 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$e30aeed (35) [info] - Mybatis typeAliasesPackage=
+2021-08-23 14:33:02.073 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$e30aeed (35) [info] - Mybatis mapperLocations=classpath*:com/webank/wedatasphere/dss/framework/appconn/dao/impl/*.xml,classpath*:com/webank/wedatasphere/dss/workflow/dao/impl/*.xml
+2021-08-23 14:33:02.073 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$e30aeed (35) [info] - Mybatis configLocation=classpath:/mybatis-config.xml
+2021-08-23 14:33:02.238 [WARN ] [main                                    ] c.b.m.e.s.MybatisSqlSessionFactoryBean (44) [warn] - Property 'mapperLocations' was specified but matching resources are not found.
+2021-08-23 14:33:02.893 [INFO ] [main                                    ] c.w.w.e.d.l.l.ExchangisDataSourceLoaderFactory (36) [getLoader] - Use LocalExchangisDataSourceLoader to load all Exchangis Extension DataSources.
+2021-08-23 14:33:02.894 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (42) [init] - libPath url is /D:/dev_workspace/java-dsslinks-maven-workspace/dw-exchangis/exchangis-server/target/classes/..\..\exchangis-extds
+2021-08-23 14:33:02.900 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.hive.ExchangisHiveDataSource
+2021-08-23 14:33:02.901 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.mysql.ExchangisMySQLDataSource
+2021-08-23 14:33:02.951 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverChoosers in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverChooser@7524125c)
+2021-08-23 14:33:02.955 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverSenderBuilders in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverSenderBuilder@1802f60c)
+2021-08-23 14:33:02.960 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init RPCReceiverListenerBus with queueSize 5000 and consumeThreadSize 400.
+2021-08-23 14:33:02.962 [INFO ] [main                                    ] c.w.w.l.r.AsynRPCMessageBus (40) [info] - RPC-Receiver-Asyn-Thread-ListenerBus add a new listener => class com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$anon$1
+2021-08-23 14:33:03.352 [INFO ] [main                                    ] o.s.c.n.e.InstanceInfoFactory (72) [create] - Setting initial instance status as: STARTING
+2021-08-23 14:33:03.380 [INFO ] [main                                    ] c.n.d.DiscoveryClient (365) [<init>] - Initializing Eureka in region us-east-1
+2021-08-23 14:33:03.893 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (70) [<init>] - Using JSON encoding codec LegacyJacksonJson
+2021-08-23 14:33:03.893 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (71) [<init>] - Using JSON decoding codec LegacyJacksonJson
+2021-08-23 14:33:04.006 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (80) [<init>] - Using XML encoding codec XStreamXml
+2021-08-23 14:33:04.007 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (81) [<init>] - Using XML decoding codec XStreamXml
+2021-08-23 14:33:04.194 [INFO ] [main                                    ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 14:33:04.417 [INFO ] [main                                    ] c.n.d.DiscoveryClient (976) [fetchRegistry] - Disable delta property : false
+2021-08-23 14:33:04.417 [INFO ] [main                                    ] c.n.d.DiscoveryClient (977) [fetchRegistry] - Single vip registry refresh property : null
+2021-08-23 14:33:04.417 [INFO ] [main                                    ] c.n.d.DiscoveryClient (978) [fetchRegistry] - Force full registry fetch : false
+2021-08-23 14:33:04.418 [INFO ] [main                                    ] c.n.d.DiscoveryClient (979) [fetchRegistry] - Application is null : false
+2021-08-23 14:33:04.418 [INFO ] [main                                    ] c.n.d.DiscoveryClient (980) [fetchRegistry] - Registered Applications size is zero : true
+2021-08-23 14:33:04.418 [INFO ] [main                                    ] c.n.d.DiscoveryClient (982) [fetchRegistry] - Application version is -1: true
+2021-08-23 14:33:04.418 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1065) [getAndStoreFullRegistry] - Getting all instance registry info from the eureka server
+2021-08-23 14:33:04.546 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1074) [getAndStoreFullRegistry] - The response status is 200
+2021-08-23 14:33:04.548 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1288) [initScheduledTasks] - Starting heartbeat executor: renew interval is: 30
+2021-08-23 14:33:04.550 [INFO ] [main                                    ] c.n.d.InstanceInfoReplicator (60) [<init>] - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2021-08-23 14:33:04.553 [INFO ] [main                                    ] c.n.d.DiscoveryClient (465) [<init>] - Discovery Client initialized at timestamp 1629700384552 with initial instances count: 23
+2021-08-23 14:33:05.041 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-23 14:33:05.041 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-23 14:33:05.149 [INFO ] [main                                    ] o.s.s.c.ThreadPoolTaskExecutor (181) [initialize] - Initializing ExecutorService 'applicationTaskExecutor'
+2021-08-23 14:33:05.790 [WARN ] [main                                    ] o.s.c.l.c.BlockingLoadBalancerClientAutoConfiguration$BlockingLoadBalancerClientRibbonWarnLogger (86) [logWarning] - You already have RibbonLoadBalancerClient on your classpath. It will be used by default. As Spring Cloud Ribbon is in maintenance mode. We recommend switching to BlockingLoadBalancerClient instead. In order to use it, set the value of `spring.cloud.loadbalancer.ribbon.enabled` to `false` or remove spring-cloud-starter-netflix-ribbon from your project.
+2021-08-23 14:33:05.868 [INFO ] [main                                    ] o.s.b.a.e.w.EndpointLinksResolver (58) [<init>] - Exposing 2 endpoint(s) beneath base path '/actuator'
+2021-08-23 14:33:05.902 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaServiceRegistry (41) [register] - Registering application EXCHANGIS-SERVER with eureka with status UP
+2021-08-23 14:33:05.903 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1323) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629700385903, current=UP, previous=STARTING]
+2021-08-23 14:33:05.905 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-23 14:33:05.920 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-08-23 14:33:05.920 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (525) [initServletBean] - Initializing Servlet 'dispatcherServlet'
+2021-08-23 14:33:05.928 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (547) [initServletBean] - Completed initialization in 7 ms
+2021-08-23 14:33:05.952 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-23 14:33:05.954 [INFO ] [main                                    ] o.e.j.s.AbstractConnector (293) [doStart] - Started ServerConnector@7455204c{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-23 14:33:05.955 [INFO ] [main                                    ] o.s.b.w.e.j.JettyWebServer (185) [start] - Jetty started on port(s) 9321 (http/1.1) with context path '/'
+2021-08-23 14:33:05.956 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaAutoServiceRegistration (145) [onApplicationEvent] - Updating port to 9321
+2021-08-23 14:33:06.280 [INFO ] [main                                    ] c.w.w.l.r.c.RPCSpringConfiguration$$EnhancerBySpringCGLIB$$8d6b8886 (40) [info] - DataWorkCloud RPC need register RPCReceiveRestful, now add it to configuration.
+2021-08-23 14:33:06.280 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-23 14:33:06.280 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-23 14:33:06.293 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (61) [logStarted] - Started DataWorkCloudApplication in 11.1 seconds (JVM running for 12.443)
+2021-08-23 14:33:12.375 [INFO ] [qtp1579650597-44                        ] c.w.w.l.s.r.RestfulApplication (40) [<init>] - register com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$EnhancerBySpringCGLIB$$bf793079
+2021-08-23 14:33:12.377 [INFO ] [qtp1579650597-44                        ] c.w.w.l.s.r.RestfulApplication (46) [<init>] - packages com.webank.wedatasphere.exchangis.datasource.server.restful.api,com.webank.wedatasphere.exchangis.project.server.restful
+2021-08-23 14:33:12.689 [INFO ] [qtp1579650597-44                        ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/1/datasource/params/ui
+2021-08-23 14:33:12.689 [INFO ] [qtp1579650597-44                        ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-23 14:38:04.431 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 14:43:04.438 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 14:48:04.447 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 14:48:17.885 [INFO ] [SpringContextShutdownHook               ] o.s.c.n.e.s.EurekaServiceRegistry (65) [deregister] - Unregistering application EXCHANGIS-SERVER with eureka with status DOWN
+2021-08-23 14:48:17.885 [WARN ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (1321) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629701297885, current=DOWN, previous=UP]
+2021-08-23 14:48:17.885 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-23 14:48:17.891 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.AbstractConnector (343) [doStop] - Stopped ServerConnector@7455204c{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-23 14:48:17.891 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.session (158) [stopScavenging] - node0 Stopped scavenging
+2021-08-23 14:48:17.893 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.C.application (2232) [log] - Destroying Spring FrameworkServlet 'dispatcherServlet'
+2021-08-23 14:48:17.897 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.ContextHandler (1007) [doStop] - Stopped o.s.b.w.e.j.JettyEmbeddedWebAppContext@3538a129{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.4454963759225088763.9321/],UNAVAILABLE}
+2021-08-23 14:48:17.899 [INFO ] [SpringContextShutdownHook               ] o.s.s.c.ThreadPoolTaskExecutor (218) [shutdown] - Shutting down ExecutorService 'applicationTaskExecutor'
+2021-08-23 14:48:17.904 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (906) [shutdown] - Shutting down DiscoveryClient ...
+2021-08-23 14:48:17.906 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-23 14:48:17.907 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (940) [unregister] - Unregistering ...
+2021-08-23 14:48:17.920 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (942) [unregister] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - deregister  status: 200
+2021-08-23 14:48:17.927 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (929) [shutdown] - Completed shut down of DiscoveryClient
+2021-08-23 14:48:22.087 [WARN ] [main                                    ] c.w.w.l.c.c.BDPConfiguration$ (49) [warn] - ******************************** Notice: The Linkis serverConf file null is not exists! ***************************
+2021-08-23 14:48:23.401 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (249) [getRemoteEnvironment] - Fetching config from server at : http://localhost:8888
+2021-08-23 14:48:25.513 [INFO ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (273) [getRemoteEnvironment] - Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2021-08-23 14:48:25.513 [WARN ] [main                                    ] o.s.c.c.c.ConfigServicePropertySourceLocator (152) [locate] - Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/exchangis-server/default": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+2021-08-23 14:48:25.515 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (651) [logStartupProfileInfo] - No active profile set, falling back to default profiles: default
+2021-08-23 14:48:25.538 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-23 14:48:25.538 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-23 14:48:27.649 [INFO ] [main                                    ] o.s.c.a.ConfigurationClassPostProcessor (403) [enhanceConfigurationClasses] - Cannot enhance @Configuration bean definition 'myBatisMapperScannerConfig' since its singleton instance has been created too early. The typical cause is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor return type: Consider declaring such methods as 'static'.
+2021-08-23 14:48:27.719 [INFO ] [main                                    ] o.s.c.c.s.GenericScope (295) [setSerializationId] - BeanFactory id=802f5273-594f-3e03-8465-058f0565cf99
+2021-08-23 14:48:28.144 [INFO ] [main                                    ] o.e.j.u.log (169) [initialized] - Logging initialized @7266ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-08-23 14:48:28.497 [INFO ] [main                                    ] o.s.b.w.e.j.JettyServletWebServerFactory (147) [getWebServer] - Server initialized with port: 9321
+2021-08-23 14:48:28.532 [INFO ] [main                                    ] o.e.j.s.Server (359) [doStart] - jetty-9.4.30.v20200611; built: 2020-06-11T12:34:51.929Z; git: 271836e4c1f4612f12b7bb13ef5a92a927634b0d; jvm 1.8.0_291-b10
+2021-08-23 14:48:28.555 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring embedded WebApplicationContext
+2021-08-23 14:48:28.555 [INFO ] [main                                    ] o.s.b.w.s.c.ServletWebServerApplicationContext (285) [prepareWebApplicationContext] - Root WebApplicationContext: initialization completed in 2001 ms
+2021-08-23 14:48:28.650 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-23 14:48:28.651 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-23 14:48:28.659 [INFO ] [main                                    ] c.n.c.DynamicPropertyFactory (281) [getInstance] - DynamicPropertyFactory is initialized with configuration sources: com.netflix.config.ConcurrentCompositeConfiguration@3e0327dd
+2021-08-23 14:48:28.705 [WARN ] [main                                    ] o.s.b.a.e.EndpointId (155) [logWarning] - Endpoint ID 'service-registry' contains invalid characters, please migrate to a valid format.
+2021-08-23 14:48:28.808 [INFO ] [main                                    ] o.e.j.s.session (333) [doStart] - DefaultSessionIdManager workerName=node0
+2021-08-23 14:48:28.809 [INFO ] [main                                    ] o.e.j.s.session (338) [doStart] - No SessionScavenger set, using defaults
+2021-08-23 14:48:28.810 [INFO ] [main                                    ] o.e.j.s.session (140) [startScavenging] - node0 Scavenging every 600000ms
+2021-08-23 14:48:28.816 [INFO ] [main                                    ] o.e.j.s.h.ContextHandler (824) [doStart] - Started o.s.b.w.e.j.JettyEmbeddedWebAppContext@58932d08{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.1913483911546416836.9321/],AVAILABLE}
+2021-08-23 14:48:28.817 [INFO ] [main                                    ] o.e.j.s.Server (399) [doStart] - Started @7940ms
+2021-08-23 14:48:28.883 [INFO ] [main                                    ] c.w.w.l.m.DataSourceConfig$$EnhancerBySpringCGLIB$$13c27e80 (35) [info] - Database connection address information(数据库连接地址信息)=jdbc:mysql://192.168.0.31:3306/exchangis_v3?useSSL=false&characterEncoding=UTF-8
+2021-08-23 14:48:28.908 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$744acc1a (35) [info] - Mybatis typeAliasesPackage=
+2021-08-23 14:48:28.908 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$744acc1a (35) [info] - Mybatis mapperLocations=classpath*:com/webank/wedatasphere/dss/framework/appconn/dao/impl/*.xml,classpath*:com/webank/wedatasphere/dss/workflow/dao/impl/*.xml
+2021-08-23 14:48:28.908 [INFO ] [main                                    ] c.w.w.l.m.MybatisConfigurationFactory$$EnhancerBySpringCGLIB$$744acc1a (35) [info] - Mybatis configLocation=classpath:/mybatis-config.xml
+2021-08-23 14:48:29.062 [WARN ] [main                                    ] c.b.m.e.s.MybatisSqlSessionFactoryBean (44) [warn] - Property 'mapperLocations' was specified but matching resources are not found.
+2021-08-23 14:48:29.718 [INFO ] [main                                    ] c.w.w.e.d.l.l.ExchangisDataSourceLoaderFactory (36) [getLoader] - Use LocalExchangisDataSourceLoader to load all Exchangis Extension DataSources.
+2021-08-23 14:48:29.719 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (42) [init] - libPath url is /D:/dev_workspace/java-dsslinks-maven-workspace/dw-exchangis/exchangis-server/target/classes/..\..\exchangis-extds
+2021-08-23 14:48:29.725 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.hive.ExchangisHiveDataSource
+2021-08-23 14:48:29.726 [INFO ] [main                                    ] c.w.w.e.d.l.l.LocalExchangisDataSourceLoader (63) [init] - ExchangisDataSource is class com.webank.wedatasphere.exchangis.extension.datasource.mysql.ExchangisMySQLDataSource
+2021-08-23 14:48:29.785 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverChoosers in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverChooser@25da1dc9)
+2021-08-23 14:48:29.788 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init all receiverSenderBuilders in spring beans, list => List(com.webank.wedatasphere.linkis.rpc.CommonReceiverSenderBuilder@7612f385)
+2021-08-23 14:48:29.794 [INFO ] [main                                    ] c.w.w.l.r.RPCReceiveRestful (40) [info] - init RPCReceiverListenerBus with queueSize 5000 and consumeThreadSize 400.
+2021-08-23 14:48:29.795 [INFO ] [main                                    ] c.w.w.l.r.AsynRPCMessageBus (40) [info] - RPC-Receiver-Asyn-Thread-ListenerBus add a new listener => class com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$anon$1
+2021-08-23 14:48:30.173 [INFO ] [main                                    ] o.s.c.n.e.InstanceInfoFactory (72) [create] - Setting initial instance status as: STARTING
+2021-08-23 14:48:30.202 [INFO ] [main                                    ] c.n.d.DiscoveryClient (365) [<init>] - Initializing Eureka in region us-east-1
+2021-08-23 14:48:30.728 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (70) [<init>] - Using JSON encoding codec LegacyJacksonJson
+2021-08-23 14:48:30.728 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (71) [<init>] - Using JSON decoding codec LegacyJacksonJson
+2021-08-23 14:48:30.850 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (80) [<init>] - Using XML encoding codec XStreamXml
+2021-08-23 14:48:30.850 [INFO ] [main                                    ] c.n.d.p.DiscoveryJerseyProvider (81) [<init>] - Using XML decoding codec XStreamXml
+2021-08-23 14:48:31.049 [INFO ] [main                                    ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 14:48:31.282 [INFO ] [main                                    ] c.n.d.DiscoveryClient (976) [fetchRegistry] - Disable delta property : false
+2021-08-23 14:48:31.282 [INFO ] [main                                    ] c.n.d.DiscoveryClient (977) [fetchRegistry] - Single vip registry refresh property : null
+2021-08-23 14:48:31.282 [INFO ] [main                                    ] c.n.d.DiscoveryClient (978) [fetchRegistry] - Force full registry fetch : false
+2021-08-23 14:48:31.283 [INFO ] [main                                    ] c.n.d.DiscoveryClient (979) [fetchRegistry] - Application is null : false
+2021-08-23 14:48:31.283 [INFO ] [main                                    ] c.n.d.DiscoveryClient (980) [fetchRegistry] - Registered Applications size is zero : true
+2021-08-23 14:48:31.283 [INFO ] [main                                    ] c.n.d.DiscoveryClient (982) [fetchRegistry] - Application version is -1: true
+2021-08-23 14:48:31.283 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1065) [getAndStoreFullRegistry] - Getting all instance registry info from the eureka server
+2021-08-23 14:48:31.453 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1074) [getAndStoreFullRegistry] - The response status is 200
+2021-08-23 14:48:31.455 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1288) [initScheduledTasks] - Starting heartbeat executor: renew interval is: 30
+2021-08-23 14:48:31.458 [INFO ] [main                                    ] c.n.d.InstanceInfoReplicator (60) [<init>] - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2021-08-23 14:48:31.460 [INFO ] [main                                    ] c.n.d.DiscoveryClient (465) [<init>] - Discovery Client initialized at timestamp 1629701311460 with initial instances count: 23
+2021-08-23 14:48:31.951 [WARN ] [main                                    ] c.n.c.s.URLConfigurationSource (121) [<init>] - No URLs will be polled as dynamic configuration sources.
+2021-08-23 14:48:31.951 [INFO ] [main                                    ] c.n.c.s.URLConfigurationSource (122) [<init>] - To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+2021-08-23 14:48:32.057 [INFO ] [main                                    ] o.s.s.c.ThreadPoolTaskExecutor (181) [initialize] - Initializing ExecutorService 'applicationTaskExecutor'
+2021-08-23 14:48:32.737 [WARN ] [main                                    ] o.s.c.l.c.BlockingLoadBalancerClientAutoConfiguration$BlockingLoadBalancerClientRibbonWarnLogger (86) [logWarning] - You already have RibbonLoadBalancerClient on your classpath. It will be used by default. As Spring Cloud Ribbon is in maintenance mode. We recommend switching to BlockingLoadBalancerClient instead. In order to use it, set the value of `spring.cloud.loadbalancer.ribbon.enabled` to `false` or remove spring-cloud-starter-netflix-ribbon from your project.
+2021-08-23 14:48:32.795 [INFO ] [main                                    ] o.s.b.a.e.w.EndpointLinksResolver (58) [<init>] - Exposing 2 endpoint(s) beneath base path '/actuator'
+2021-08-23 14:48:32.831 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaServiceRegistry (41) [register] - Registering application EXCHANGIS-SERVER with eureka with status UP
+2021-08-23 14:48:32.831 [INFO ] [main                                    ] c.n.d.DiscoveryClient (1323) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629701312831, current=UP, previous=STARTING]
+2021-08-23 14:48:32.833 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-23 14:48:32.853 [INFO ] [main                                    ] o.e.j.s.h.C.application (2232) [log] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-08-23 14:48:32.853 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (525) [initServletBean] - Initializing Servlet 'dispatcherServlet'
+2021-08-23 14:48:32.861 [INFO ] [main                                    ] o.s.w.s.DispatcherServlet (547) [initServletBean] - Completed initialization in 8 ms
+2021-08-23 14:48:32.883 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-23 14:48:32.883 [INFO ] [main                                    ] o.e.j.s.AbstractConnector (293) [doStart] - Started ServerConnector@438c0aaf{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-23 14:48:32.884 [INFO ] [main                                    ] o.s.b.w.e.j.JettyWebServer (185) [start] - Jetty started on port(s) 9321 (http/1.1) with context path '/'
+2021-08-23 14:48:32.885 [INFO ] [main                                    ] o.s.c.n.e.s.EurekaAutoServiceRegistration (145) [onApplicationEvent] - Updating port to 9321
+2021-08-23 14:48:33.220 [INFO ] [main                                    ] c.w.w.l.r.c.RPCSpringConfiguration$$EnhancerBySpringCGLIB$$f385a5b3 (40) [info] - DataWorkCloud RPC need register RPCReceiveRestful, now add it to configuration.
+2021-08-23 14:48:33.220 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (84) [onApplicationEvent] - add config from config server...
+2021-08-23 14:48:33.220 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (89) [onApplicationEvent] - initialize DataWorkCloud spring application...
+2021-08-23 14:48:33.237 [INFO ] [main                                    ] c.w.w.l.DataWorkCloudApplication (61) [logStarted] - Started DataWorkCloudApplication in 11.113 seconds (JVM running for 12.36)
+2021-08-23 14:48:37.968 [INFO ] [qtp157316544-44                         ] c.w.w.l.s.r.RestfulApplication (40) [<init>] - register com.webank.wedatasphere.linkis.rpc.RPCReceiveRestful$$EnhancerBySpringCGLIB$$afdd6e64
+2021-08-23 14:48:37.970 [INFO ] [qtp157316544-44                         ] c.w.w.l.s.r.RestfulApplication (46) [<init>] - packages com.webank.wedatasphere.exchangis.datasource.server.restful.api,com.webank.wedatasphere.exchangis.project.server.restful
+2021-08-23 14:48:38.296 [INFO ] [qtp157316544-44                         ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/1/datasource/params/ui
+2021-08-23 14:48:38.296 [INFO ] [qtp157316544-44                         ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-23 14:48:46.253 [INFO ] [qtp157316544-24                         ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/jobs/2/datasource/ui
+2021-08-23 14:48:46.253 [INFO ] [qtp157316544-24                         ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-23 14:53:31.289 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 14:58:31.291 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 15:01:04.829 [INFO ] [qtp157316544-52                         ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/projects
+2021-08-23 15:01:04.830 [INFO ] [qtp157316544-52                         ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
+2021-08-23 15:01:04.863 [ERROR] [qtp157316544-52                         ] c.w.w.l.s.r.RestfulCatchAOP (81) [apply] - operation failed(操作失败)s java.lang.reflect.UndeclaredThrowableException: null
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:759) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint.proceed(MethodInvocationProceedingJoinPoint.java:88) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at com.webank.wedatasphere.linkis.server.restful.RestfulCatchAOP$$anonfun$1.apply(RestfulCatchAOP.scala:45) ~[linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.restful.RestfulCatchAOP$$anonfun$1.apply(RestfulCatchAOP.scala:45) ~[linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.common.utils.Utils$.tryCatch(Utils.scala:39) [linkis-common-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.package$.catchMsg(package.scala:55) [linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.package$.catchIt(package.scala:87) [linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.restful.RestfulCatchAOP.dealResponseRestful(RestfulCatchAOP.scala:44) [linkis-module-1.0.1.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_291]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_291]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_291]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_291]
+	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethodWithGivenArgs(AbstractAspectJAdvice.java:644) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethod(AbstractAspectJAdvice.java:633) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.aspectj.AspectJAroundAdvice.invoke(AspectJAroundAdvice.java:70) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:175) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:95) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:691) [spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at com.webank.wedatasphere.exchangis.project.server.restful.ExchangisProjectRestful$$EnhancerBySpringCGLIB$$911f8445.queryProjects(<generated>) [classes/:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_291]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_291]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_291]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_291]
+	at org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory$1.invoke(ResourceMethodInvocationHandlerFactory.java:81) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:144) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:161) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:160) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:99) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:389) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:347) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:102) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.ServerRuntime$2.run(ServerRuntime.java:309) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:271) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:267) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:315) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:297) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:267) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:317) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:292) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:1139) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.servlet.WebComponent.service(WebComponent.java:460) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:386) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:334) [jaxrs-ri-2.21.jar:2.21.]
+	at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:221) [jaxrs-ri-2.21.jar:2.21.]
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:852) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1604) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter.doFilter(WebSocketUpgradeFilter.java:226) [websocket-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at com.webank.wedatasphere.linkis.server.security.SecurityFilter.doFilter(SecurityFilter.scala:100) [linkis-module-1.0.1.jar:?]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.doFilterInternal(WebMvcMetricsFilter.java:93) [spring-boot-actuator-2.3.2.RELEASE.jar:2.3.2.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119) [spring-web-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1591) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:542) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:143) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:536) [jetty-security-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:127) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:235) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1581) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:233) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1307) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:188) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:482) [jetty-servlet-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1549) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:186) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1204) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:141) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:127) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.Server.handle(Server.java:494) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:374) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:268) [jetty-server-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:311) [jetty-io-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:103) [jetty-io-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:117) [jetty-io-9.4.20.v20190813.jar:9.4.20.v20190813]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:806) [jetty-util-9.4.30.v20200611.jar:9.4.30.v20200611]
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:938) [jetty-util-9.4.30.v20200611.jar:9.4.30.v20200611]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_291]
+Caused by: com.webank.wedatasphere.linkis.server.exception.IllegalUserTicketException: errCode: 11003 ,desc: Illegal user token information(非法的用户token信息). ,ip: 192.168.86.1 ,port: 9321 ,serviceKind: exchangis-server
+	at com.webank.wedatasphere.linkis.server.security.SecurityFilter$$anonfun$getLoginUsername$1.apply(SecurityFilter.scala:143) ~[linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.security.SecurityFilter$$anonfun$getLoginUsername$1.apply(SecurityFilter.scala:143) ~[linkis-module-1.0.1.jar:?]
+	at scala.Option.getOrElse(Option.scala:121) ~[scala-library-2.11.8.jar:?]
+	at com.webank.wedatasphere.linkis.server.security.SecurityFilter$.getLoginUsername(SecurityFilter.scala:143) ~[linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.linkis.server.security.SecurityFilter.getLoginUsername(SecurityFilter.scala) ~[linkis-module-1.0.1.jar:?]
+	at com.webank.wedatasphere.exchangis.project.server.restful.ExchangisProjectRestful.queryProjects(ExchangisProjectRestful.java:46) ~[classes/:?]
+	at com.webank.wedatasphere.exchangis.project.server.restful.ExchangisProjectRestful$$FastClassBySpringCGLIB$$32d6cbf5.invoke(<generated>) ~[classes/:?]
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218) ~[spring-core-5.2.12.RELEASE.jar:5.2.12.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:771) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
+	... 91 more
+
+2021-08-23 15:03:31.301 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 15:08:31.302 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 15:13:31.312 [INFO ] [AsyncResolver-bootstrap-executor-0      ] c.n.d.s.r.a.ConfigClusterResolver (43) [getClusterEndpoints] - Resolving eureka endpoints via configuration
+2021-08-23 15:15:58.413 [INFO ] [SpringContextShutdownHook               ] o.s.c.n.e.s.EurekaServiceRegistry (65) [deregister] - Unregistering application EXCHANGIS-SERVER with eureka with status DOWN
+2021-08-23 15:15:58.413 [WARN ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (1321) [notify] - Saw local status change event StatusChangeEvent [timestamp=1629702958413, current=DOWN, previous=UP]
+2021-08-23 15:15:58.414 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (844) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321: registering service...
+2021-08-23 15:15:58.419 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.AbstractConnector (343) [doStop] - Stopped ServerConnector@438c0aaf{HTTP/1.1,[http/1.1]}{0.0.0.0:9321}
+2021-08-23 15:15:58.419 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.session (158) [stopScavenging] - node0 Stopped scavenging
+2021-08-23 15:15:58.421 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.C.application (2232) [log] - Destroying Spring FrameworkServlet 'dispatcherServlet'
+2021-08-23 15:15:58.425 [INFO ] [SpringContextShutdownHook               ] o.e.j.s.h.ContextHandler (1007) [doStop] - Stopped o.s.b.w.e.j.JettyEmbeddedWebAppContext@58932d08{application,/,[file:///C:/Users/totor/AppData/Local/Temp/jetty-docbase.1913483911546416836.9321/],UNAVAILABLE}
+2021-08-23 15:15:58.426 [INFO ] [SpringContextShutdownHook               ] o.s.s.c.ThreadPoolTaskExecutor (218) [shutdown] - Shutting down ExecutorService 'applicationTaskExecutor'
+2021-08-23 15:15:58.431 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (906) [shutdown] - Shutting down DiscoveryClient ...
+2021-08-23 15:15:58.444 [INFO ] [DiscoveryClient-InstanceInfoReplicator-0] c.n.d.DiscoveryClient (853) [register] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - registration status: 204
+2021-08-23 15:15:58.444 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (940) [unregister] - Unregistering ...
+2021-08-23 15:15:58.466 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (942) [unregister] - DiscoveryClient_EXCHANGIS-SERVER/DESKTOP-IM1HG4I:exchangis-server:9321 - deregister  status: 200
+2021-08-23 15:15:58.471 [INFO ] [SpringContextShutdownHook               ] c.n.d.DiscoveryClient (929) [shutdown] - Completed shut down of DiscoveryClient
