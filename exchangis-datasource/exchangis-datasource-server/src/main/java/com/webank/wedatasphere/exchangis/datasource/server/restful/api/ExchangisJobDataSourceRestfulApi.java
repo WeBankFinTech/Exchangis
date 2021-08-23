@@ -1,9 +1,5 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
-import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
-import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
@@ -36,8 +32,9 @@ public class ExchangisJobDataSourceRestfulApi {
     @GET
     @Path("jobs/{jobId}/datasource/ui")
     public Response getJobDataSourcesUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId) {
-        ExchangisDataSourceUIViewer jobDataSourceUI = this.exchangisDataSourceService.getJobDataSourceUIs(jobId);
-        Message message = Message.ok().data("ui", jobDataSourceUI);
+//        ExchangisDataSourceUIViewer jobDataSourceUI = this.exchangisDataSourceService.getJobDataSourceUIs(jobId);
+        List<ExchangisDataSourceUIViewer> ui = this.exchangisDataSourceService.getJobDataSourceUIs(jobId);
+        Message message = Message.ok().data("ui", ui);
         return Message.messageToResponse(message);
     }
 

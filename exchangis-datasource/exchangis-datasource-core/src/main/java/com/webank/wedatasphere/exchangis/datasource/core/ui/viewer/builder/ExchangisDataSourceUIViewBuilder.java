@@ -178,21 +178,26 @@ public class ExchangisDataSourceUIViewBuilder {
         }
 
         OptionElementUI ui = new OptionElementUI();
-
+        ui.setKey(config.getConfigKey());
         ui.setField(config.getUiField());
         ui.setLabel(config.getUiLabel());
         ui.setValues(values);
         ui.setValue(value);
         ui.setSort(config.getSort());
+        ui.setRequired(config.getRequired());
+        ui.setUnit(config.getUnit());
         return ui;
     }
 
     private static InputElementUI fillInputElementUIValue(ExchangisJobParamConfig config, String value) {
         InputElementUI ui = new InputElementUI();
+        ui.setKey(config.getConfigKey());
         ui.setField(config.getUiField());
         ui.setLabel(config.getUiLabel());
         ui.setValue(value);
         ui.setSort(config.getSort());
+        ui.setRequired(config.getRequired());
+        ui.setUnit(config.getUnit());
         return ui;
     }
 
