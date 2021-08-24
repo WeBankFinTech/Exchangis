@@ -30,7 +30,7 @@
             >管理</a-button
           >
           <div v-if="managementVisible">
-            <CopyOutlined class="icon" />
+            <CopyOutlined class="icon" @click="handleJobCopy" />
             <a-popconfirm
               title="确认删除该任务？"
               ok-text="是"
@@ -64,7 +64,7 @@ export default {
   props: {
     jobData: Object,
   },
-  emits: ["showJobDetail"],
+  emits: ["showJobDetail", "handleJobCopy"],
   setup(props, context) {
     const jobData = toRaw(props.jobData);
     const { engineType } = jobData;
@@ -87,12 +87,17 @@ export default {
       context.emit("showJobDetail", jobData);
     };
 
+    const handleJobCopy = () => {
+      context.emit("handleJobCopy", jobData);
+    };
+
     return {
       imageSrc: require(`../../../images/${imageName}`),
       changeManagement,
       managementVisible,
       confirm,
-      gotoDetail
+      gotoDetail,
+      handleJobCopy,
     };
   },
 };
