@@ -29,7 +29,7 @@
           </template>
           <div class="cardWrap">
             <div v-for="(item, index) in jobList" :key="index" class="card">
-              <job-card :jobData="item" @showJobDetail="showJobDetail"/>
+              <job-card :jobData="item" @showJobDetail="showJobDetail" @handleJobCopy="handleJobCopy"/>
             </div>
           </div>
         </a-tab-pane>
@@ -42,12 +42,12 @@
           </template>
           <div class="cardWrap">
             <div v-for="(item, index) in jobList" :key="index" class="card">
-              <job-card :jobData="item" />
+              <job-card :jobData="item" @showJobDetail="showJobDetail" @handleJobCopy="handleJobCopy"/>
             </div></div
         ></a-tab-pane>
       </a-tabs>
     </div>
-    <CreateJob :visible="visible" @handleCreateJob="handleCreateJob" />
+    <CreateJob :visible="visible" :editData="editJobData" @handleJobAction="handleJobAction" />
   </div>
 </template>
 <script>
@@ -75,6 +75,7 @@ export default {
       activeKey: "1",
       visible: false,
       loading: false,
+      editJobData: {},
       jobList: [
         {
           id: 1, // 任务id
@@ -107,14 +108,20 @@ export default {
       console.log(122);
       this.visible = true;
     },
-    handleCreateJob(status) {
+    handleJobAction(status) {
       this.visible = false;
+      this.editJobData = {};
       console.log(status);
     },
-    showJobDetail(data){
+    handleJobCopy(data) {
+      this.visible = true;
       console.log(data);
-      this.$emit("showJobDetail", data)
-    }
+      this.editJobData = data;
+    },
+    showJobDetail(data) {
+      console.log(data);
+      this.$emit("showJobDetail", data);
+    },
   },
 };
 </script>
