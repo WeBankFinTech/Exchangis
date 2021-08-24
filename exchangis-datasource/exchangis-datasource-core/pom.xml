@@ -27,9 +27,6 @@
         <dependency>
             <groupId>com.webank.wedatasphere.linkis</groupId>
             <artifactId>linkis-datasource-client</artifactId>
-<<<<<<< HEAD
-            <version>1.0.1</version>
-=======
             <version>${linkis.version}</version>
             <exclusions>
                 <exclusion>
@@ -45,7 +42,6 @@
                     <artifactId>linkis-bml</artifactId>
                 </exclusion>
             </exclusions>
->>>>>>> 9817ea16ff12175fb2e2ee79bf60aa1eb8f305cf
         </dependency>
 
 
