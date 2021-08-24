@@ -11,6 +11,12 @@ export default {
       ui: 'UI components'
   },
   job: {
-    createJob: "Create Job"
+    action: {
+      createJob: "Create Job",
+      copyJob: "Copy Job"
+    },
+    jobDetail:{
+      name: "Job name"
+    }
   }
 };
