@@ -2,14 +2,19 @@ package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
+import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
@@ -35,8 +40,8 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     @Autowired
     private ExchangisJobService exchangisJobService;
 
-    // @Autowired
-    // private ExchangisDataSourceService exchangisDataSourceService;
+    @Autowired
+    private ExchangisDataSourceService exchangisDataSourceService;
 
     @Override
     public ExchangisJobBasicInfoVO createJob(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
@@ -46,16 +51,20 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     }
 
     @Override
-    public List<ExchangisJobBasicInfoVO> getJobList(long projectId, String type, String name) {
-        List<ExchangisJob> joblist = exchangisJobService.list();
-        joblist = joblist.stream().filter(job -> job.getProjectId().equals(projectId) && job.getJobType() != null && job.getJobType().equals(type)).collect(Collectors.toList());
-        if (name != null) {
-            joblist = joblist.stream().filter(job -> job.getJobName() != null && job.getJobName().equals(name)).collect(Collectors.toList());
+    public List<ExchangisJobBasicInfoVO> getJobList(long projectId, String jobType, String name) {
+        LambdaQueryChainWrapper<ExchangisJob> query =
+            exchangisJobService.lambdaQuery().eq(ExchangisJob::getProjectId, projectId);
+        if (StringUtils.isNotBlank(jobType)) {
+            query.eq(ExchangisJob::getJobType, jobType);
         }
+        if (StringUtils.isNotBlank(name)) {
+            query.like(ExchangisJob::getJobName, name.trim());
+        }
+        List<ExchangisJob> exchangisJobs = query.list();
+
         List<ExchangisJobBasicInfoVO> returnlist = new ArrayList<>();
-        joblist.stream().forEach(job -> {
-            returnlist.add(modelMapper.map(job, ExchangisJobBasicInfoVO.class));
-        });
+        exchangisJobs.stream().forEach(job -> returnlist.add(modelMapper.map(job, ExchangisJobBasicInfoVO.class)));
+
         return returnlist;
     }
 
@@ -95,11 +104,12 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     @Override
     public ExchangisJob getJob(Long id) throws ExchangisJobErrorException {
         ExchangisJob exchangisJob = exchangisJobService.getById(id);
-        // generate subjobs ui content
-        // ExchangisDataSourceUIViewer jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(id);
-        String content = null; // convertToString(jobDataSourceUIs);
-
-        exchangisJob.setContent(content);
+        if (exchangisJob != null) {
+            // generate subjobs ui content
+            List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(id);
+            String content = convertToString(jobDataSourceUIs);
+            exchangisJob.setContent(content);
+        }
         return exchangisJob;
     }
 
@@ -116,12 +126,13 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         return this.getJob(id);
     }
 
-    // private String convertToString(ExchangisDataSourceUIViewer jobDataSourceUIs) throws ExchangisJobErrorException {
-    // ObjectMapper mapper = new ObjectMapper();
-    // try {
-    // return mapper.writeValueAsString(jobDataSourceUIs);
-    // } catch (JsonProcessingException e) {
-    // throw new ExchangisJobErrorException(20001, "exchangis.subjob.ui.create.error", e);
-    // }
-    // }
+    private String convertToString(List<ExchangisDataSourceUIViewer> jobDataSourceUIs)
+        throws ExchangisJobErrorException {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(jobDataSourceUIs);
+        } catch (JsonProcessingException e) {
+            throw new ExchangisJobErrorException(20001, "exchangis.subjob.ui.create.error", e);
+        }
+    }
 }
