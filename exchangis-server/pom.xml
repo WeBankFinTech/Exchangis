@@ -29,10 +29,20 @@
             <artifactId>exchangis-datasource-server</artifactId>
             <version>1.0.0-RC1</version>
         </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-job-server</artifactId>
+            <version>1.0.0-RC1</version>
+        </dependency>
 
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-project-server</artifactId>
+            <version>1.0.0-RC1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.linkis</groupId>
+            <artifactId>linkis-storage</artifactId>
             <version>1.0.0-RC1</version>
         </dependency>
     </dependencies>

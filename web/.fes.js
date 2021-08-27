@@ -30,6 +30,14 @@ export default {
           title: "数据源列表",
         },
       },
+      {
+        path: "/jobManagement",
+        component: "@/pages/jobManagement",
+        meta: {
+          name: "jobManagement",
+          title: "数据任务管理",
+        },
+      },
     ],
   },
   request: {
@@ -46,6 +54,9 @@ export default {
       },
       {
         name: "data_source",
+      },
+      {
+        name: "jobManagement",
       },
     ],
   },
@@ -64,5 +75,11 @@ export default {
       ["0", "无效的"],
       ["1", "有效的"],
     ],
+  },
+  locale: {
+    locale: "zh-CN", // default locale
+    fallbackLocale: "zh-CN", // set fallback locale
+    baseNavigator: true, // 开启浏览器语言检测
+    share: true, // 用户是否需要手动改变语言
   },
 };
