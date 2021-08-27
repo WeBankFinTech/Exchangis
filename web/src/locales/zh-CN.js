@@ -102,4 +102,13 @@ export default {
       searchInputPlaceholder: "输入关键字搜索数据源",
     },
   },
+  job: {
+    action: {
+      createJob: "新增任务",
+      copyJob: "复制任务"
+    },
+    jobDetail:{
+      name: "任务名"
+    }
+  }
 };
