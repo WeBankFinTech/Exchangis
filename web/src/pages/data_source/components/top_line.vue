@@ -18,15 +18,15 @@
     <a-space>
       <a-button type="primary" @click="$emit('create')">
         <template v-slot:icon> <icon-plusOutlined /></template>
-        新建数据源
+        {{ $t("dataSource.topLine.createDataSourceButton") }}
       </a-button>
       <a-button>
         <template v-slot:icon> <icon-importOutlined /></template>
-        批量导入数据源
+        {{ $t("dataSource.topLine.importsDataSource") }}
       </a-button>
       <a-button>
         <template v-slot:icon> <icon-exportOutlined /></template>
-        批量导出数据源
+        {{ $t("dataSource.topLine.exportsDataSource") }}
       </a-button>
     </a-space>
   </div>
@@ -41,12 +41,7 @@ export default {
     iconImportOutlined: ImportOutlined,
     iconSearchOutlined: SearchOutlined,
   },
-  emits: {
-    search: null,
-    export: null,
-    import: null,
-    create: null,
-  },
+  emits: ["search", "export", "import", "create"],
   data() {
     return {
       seartParams: {

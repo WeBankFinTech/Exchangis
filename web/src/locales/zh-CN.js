@@ -1,4 +1,55 @@
 export default {
+  projectManage: {
+    topLine: {
+      searchBar: {
+        searchInputPlaceholder: "输入项目名搜索",
+        searchButtonText: "搜索",
+      },
+      title: "项目列表",
+    },
+    createCardText: "创建项目",
+    viewCard: {
+      actionTitle: "操作",
+      action: {
+        edit: "编辑",
+        delete: "删除",
+      },
+    },
+    editModal: {
+      title: {
+        create: "创建项目",
+        edit: "修改项目",
+      },
+      form: {
+        fields: {
+          projectName: {
+            label: "项目名",
+            placeholder: "请输入项目名",
+          },
+          tags: {
+            label: "标签",
+            placeholder: "请选择标签",
+          },
+          description: {
+            label: "描述",
+            placeholder: "请填写描述",
+          },
+          viewUsers: {
+            label: "查看权限",
+            placeholder: "请选择查看权限",
+          },
+          execUsers: {
+            label: "执行权限",
+            placeholder: "请选择执行权限",
+          },
+          editUsers: {
+            label: "编辑权限",
+            placeholder: "请选择编辑权限",
+          },
+        },
+      },
+    },
+  },
   dataSource: {
     topLine: {
       searchBar: {
@@ -43,9 +94,7 @@ export default {
         edit: "修改数据源",
       },
       form: {
-        fields: {
-          name: "",
-        },
+        fields: {},
       },
     },
     sourceTypeModal: {
