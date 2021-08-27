@@ -6,10 +6,15 @@
         <a-col :span="24">
           <div class="title-line">
             <span class="title">
-              <a-title style="margin-bottom: 0" :level="4">项目列表</a-title>
+              <a-title style="margin-bottom: 0">{{ $t("projectManage.topLine.title") }}</a-title>
             </span>
-            <a-input-search placeholder="输入项目名搜索" :allowClear="true" style="width: 200px" @search="handleOnSearch">
-              <template #enterButton> 搜索 </template>
+            <a-input-search :placeholder="$t('projectManage.topLine.searchBar.searchInputPlaceholder')" :allowClear="true" style="width: 300px" @search="handleOnSearch">
+              <template #enterButton>
+                <a-button type="primary">
+                  <template v-slot:icon> <icon-plusOutlined /></template>
+                  {{ $t("projectManage.topLine.searchBar.searchButtonText") }}
+                </a-button>
+              </template>
             </a-input-search>
           </div>
         </a-col>
@@ -22,7 +27,7 @@
         <!-- 分页行 -->
         <a-col :span="24">
           <div class="pagination-line">
-            <a-pagination v-model:current="pageCfg.current" v-model:pageSize="pageCfg.pageSize" :total="50" show-less-items />
+            <a-pagination v-model:current="pageCfg.current" v-model:pageSize="pageCfg.pageSize" :total="projectList.lenght" show-less-items />
           </div>
         </a-col>
       </a-row>
@@ -34,17 +39,17 @@
 
 <script>
 import { useI18n } from "@fesjs/fes";
-import { ApartmentOutlined, PlusOutlined } from "@ant-design/icons-vue";
+import { PlusOutlined } from "@ant-design/icons-vue";
 import ProjectCreateCard from "./components/project_create_card.vue";
 import ProjectViewCard from "./components/project_view_card.vue";
 import EditModal from "./components/edit_modal.vue";
 import { getProjectList, deleteProject } from "@/common/service";
-import { useTableBase } from "@/common/use/useTable";
 export default {
   components: {
     ProjectViewCard,
     ProjectCreateCard,
     EditModal,
+    iconPlusOutlined: PlusOutlined,
   },
   data() {
     return {
@@ -75,13 +80,15 @@ export default {
     async getDataList(name) {
       this.loading = true;
       let { list } = await getProjectList(name);
-      this.projectList = list.map((item) => ({
-        id: item.id,
-        name: item.name,
-        describe: item.description,
-        tags: item.tags.split(","),
-      }));
       this.loading = false;
+      this.projectList = list
+        .map((item) => ({
+          id: item.id,
+          name: item.name,
+          describe: item.description,
+          tags: item.tags.split(","),
+        }))
+        .reverse();
     },
     // 模态框操作完成
     handleModalFinish() {

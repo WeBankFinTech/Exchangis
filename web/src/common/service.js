@@ -14,3 +14,15 @@ export const deleteProject = (id) => {
     method: "DELETE",
   });
 };
+
+export const getProjectById = (id) => {
+  return request("/projects/" + id, null, {
+    method: "GET",
+  });
+};
+
+export const updateProject = (body) => {
+  return request("/updateProject", body, {
+    method: "PUT",
+  });
+};
