@@ -1,22 +1,134 @@
 import Select from "ant-design-vue/lib/vc-select";
 
 export default {
-  menu: {
-      interface: 'interface'
+  projectManage: {
+    topLine: {
+      searchBar: {
+        searchInputPlaceholder: "search by name",
+        searchButtonText: "Search",
+      },
+      title: "Project List",
+    },
+    createCardText: "Create Project",
+    viewCard: {
+      actionTitle: "action",
+      action: {
+        edit: "edit",
+        delete: "delete",
+      },
+    },
+    editModal: {
+      title: {
+        create: "Create Project",
+        edit: "Edit Project",
+      },
+      form: {
+        fields: {
+          projectName: {
+            label: "Project Name",
+            placeholder: "please enter Project Name",
+          },
+          tags: {
+            label: "Tags",
+            placeholder: "please select Project Tags",
+          },
+          description: {
+            label: "describe",
+            placeholder: "please enter describe",
+          },
+          viewUsers: {
+            label: "viewUsers",
+            placeholder: "please select viewUsers",
+          },
+          execUsers: {
+            label: "execUsers",
+            placeholder: "please select execUsers",
+          },
+          editUsers: {
+            label: "editUsers",
+            placeholder: "please select editUsers",
+          },
+        },
+      },
+    },
   },
-  overview: 'Overview',
+  dataSource: {
+    topLine: {
+      searchBar: {
+        dataTypePlaceholder: "DataSourceType",
+        creatorPlaceholder: "creator",
+        namePlaceholder: "DataSourceName",
+        searchButtonText: "Search",
+      },
+      createDataSourceButton: "CreateDataSource",
+      importsDataSource: "Batch import DataSource",
+      exportsDataSource: "Batch export DataSource",
+    },
+    table: {
+      list: {
+        columns: {
+          title: {
+            name: "Name",
+            type: "Type",
+            colony: "colony",
+            status: "status",
+            power: "power",
+            tags: "tags",
+            version: "version",
+            describe: "describe",
+            updatetim: "updatetim",
+            creator: "creator",
+            updater: "updater",
+            action: "action",
+          },
+          actions: {
+            testConnectButton: "TestConnect",
+            editButton: "Edit",
+            expireButton: "Expire",
+            deleteButton: "Delete",
+          },
+        },
+      },
+    },
+    editModal: {
+      title: {
+        create: "CreateDataSource",
+        edit: "EditDataSource",
+      },
+      form: {
+        fields: {
+          dataSourceName: {
+            label: "Name",
+            placeholder: "please enter DataSourceName",
+          },
+          dataSourceDesc: {
+            label: "describe",
+            placeholder: "please enter describe",
+          },
+        },
+      },
+    },
+    sourceTypeModal: {
+      title: "DataSourceType",
+      searchInputPlaceholder: "Search Type By Name",
+    },
+  },
+  menu: {
+    interface: "interface",
+  },
+  overview: "Overview",
   i18n: {
-      internationalization: 'internationalization，base on',
-      achieve: 'to achieve.',
-      ui: 'UI components'
+    internationalization: "internationalization，base on",
+    achieve: "to achieve.",
+    ui: "UI components",
   },
   job: {
     action: {
       createJob: "Create Job",
-      copyJob: "Copy Job"
+      copyJob: "Copy Job",
     },
-    jobDetail:{
-      name: "Job name"
-    }
-  }
+    jobDetail: {
+      name: "Job name",
+    },
+  },
 };
