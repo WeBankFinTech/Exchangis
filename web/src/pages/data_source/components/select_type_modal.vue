@@ -1,16 +1,16 @@
 <template>
-  <a-modal footer="" :visible="visible" title="请选择数据源类型" @cancel="$emit('update:visible', false)">
+  <a-modal footer="" :visible="visible" :title="$t(`dataSource.sourceTypeModal.title`)" @cancel="$emit('update:visible', false)">
     <div style="display: flex; justify-content: flex-end; margin-bottom: 16px">
-      <a-input size="small" style="width: 200px" placeholder="输入关键字搜索数据源" @change="(e) => (searchVal = e.target.value)" />
+      <a-input size="small" style="width: 200px" :placeholder="$t(`dataSource.sourceTypeModal.searchInputPlaceholder`)" @change="(e) => (searchVal = e.target.value)" />
     </div>
     <div>
       <div style="height: 400px; overflow: hidden auto">
         <div v-for="(group, index) of options" :key="index">
           <div class="group_name">{{ group.group_name }}</div>
           <a-row :gutter="[16, 16]">
-            <a-col :span="6" v-for="item of group.items" :key="item.value" v-show="item.label.search(searchVal) !== -1">
-              <span class="logo" @click="$emit('select', item)" style="background-image: url(https://liangx-gallery.oss-cn-beijing.aliyuncs.com/mydb.mytb@primary.png)"> </span>
-              <div style="text-align: center">{{ item.label }}</div>
+            <a-col :span="6" v-for="item of group.items" :key="item.id" v-show="item.name.search(searchVal) !== -1">
+              <span class="logo" @click="$emit('select', item)" :style="`background-image: url(${require('@/images/dataSourceTypeIcon/' + item.name + '.png')})`"> </span>
+              <div style="text-align: center">{{ item.name }}</div>
             </a-col>
           </a-row>
         </div>
@@ -20,73 +20,8 @@
 </template>
 
 <script>
-const options = [
-  {
-    group_name: "关系型数据库",
-    items: [
-      {
-        label: "mysql",
-        logo: "",
-        value: 1,
-      },
-    ],
-  },
-  {
-    group_name: "大数据存储",
-    items: [
-      {
-        label: "hive",
-        logo: "",
-        value: 1,
-      },
-      {
-        label: "presto",
-        logo: "",
-        value: 1,
-      },
-    ],
-  },
-  {
-    group_name: "文件系统",
-    items: [
-      {
-        label: "HDFS",
-        logo: "",
-        value: 1,
-      },
-    ],
-  },
-  {
-    group_name: "无结构化存储",
-    items: [
-      {
-        label: "ElsticSearch",
-        logo: "",
-        value: 1,
-      },
-    ],
-  },
-  {
-    group_name: "消息队列",
-    items: [
-      {
-        label: "kafka",
-        logo: "",
-        value: 1,
-      },
-    ],
-  },
-  {
-    group_name: "实时流",
-    items: [
-      {
-        label: "mysql Binlog",
-        logo: "",
-        value: 1,
-      },
-    ],
-  },
-];
+import { getDataSourceTypes } from "@/common/service";
+
 export default {
   name: "select_type_modal",
   props: {
@@ -94,12 +29,26 @@ export default {
       type: Boolean,
     },
   },
-  emits: {
-    select: null,
-    "update:visible": null,
-  },
+  emits: ["select", "update:visible"],
   data() {
-    return { options, searchVal: "" };
+    return { options: [], searchVal: "" };
+  },
+  mounted() {
+    this.getTypeData();
+  },
+  methods: {
+    async getTypeData() {
+      let options = {};
+      let { list } = await getDataSourceTypes();
+      for (const item of list) {
+        if (options[item.classifier] === undefined) {
+          options[item.classifier] = [item];
+        } else {
+          options[item.classifier].push(item);
+        }
+      }
+      this.options = Object.entries(options).map(([group_name, items]) => ({ group_name, items }));
+    },
   },
 };
 </script>

@@ -94,21 +94,30 @@ export default {
         edit: "修改数据源",
       },
       form: {
-        fields: {},
+        fields: {
+          dataSourceName: {
+            label: "数据源名称",
+            placeholder: "请输入数据源名称",
+          },
+          dataSourceDesc: {
+            label: "描述",
+            placeholder: "请输入描述",
+          },
+        },
       },
     },
     sourceTypeModal: {
-      title: "请选择数据源类型",
+      title: "DataSourceType",
       searchInputPlaceholder: "输入关键字搜索数据源",
     },
   },
   job: {
     action: {
       createJob: "新增任务",
-      copyJob: "复制任务"
+      copyJob: "复制任务",
     },
-    jobDetail:{
-      name: "任务名"
-    }
-  }
+    jobDetail: {
+      name: "任务名",
+    },
+  },
 };
