@@ -3,7 +3,7 @@
     <a-row :gutter="[16, 16]">
       <a-col :span="24"> <TopLine @create="handleCreate" /> </a-col>
       <a-col :span="24">
-        <a-table :columns="columns" :data-source="data">
+        <a-table :columns="columns" :data-source="dataSourceListData" rowKey="id">
           <template #tags="{ text: tags }">
             <span>
               <a-tag v-for="tag in tags" :key="tag" :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'">
@@ -11,12 +11,12 @@
               </a-tag>
             </span>
           </template>
-          <template #action>
+          <template #action="row">
             <a-space>
               <a-button size="small" @click="handleEdit">{{ $t("dataSource.table.list.columns.actions.editButton") }}</a-button>
               <a-button size="small">{{ $t("dataSource.table.list.columns.actions.expireButton") }}</a-button>
               <a-button size="small">{{ $t("dataSource.table.list.columns.actions.testConnectButton") }}</a-button>
-              <a-button size="small">{{ $t("dataSource.table.list.columns.actions.deleteButton") }}</a-button>
+              <a-button size="small" @click="handleDelete(row)">{{ $t("dataSource.table.list.columns.actions.deleteButton") }}</a-button>
             </a-space>
           </template>
           <template #version>
@@ -27,7 +27,7 @@
     </a-row>
     <select-type-modal @select="handleSelectType" v-model:visible="selectTypeModalVisible" />
     <version-modal v-model:visible="versionModalVisible" />
-    <edit-modal v-model:visible="modalCfg.visible" />
+    <edit-modal v-model:visible="modalCfg.visible" :id="modalCfg.id" :type="modalCfg.type" :mode="modalCfg.mode" @finish="handleModalFinish" />
   </div>
 </template>
 
@@ -36,6 +36,10 @@ import TopLine from "./components/top_line.vue";
 import SelectTypeModal from "./components/select_type_modal.vue";
 import EditModal from "./components/edit_modal.vue";
 import VersionModal from "./components/version_modal.vue";
+import { useI18n } from "@fesjs/fes";
+import { computed } from "vue";
+import { getDataSourceList, deleteDataSource } from "@/common/service";
+import { message } from "ant-design-vue";
 
 const data = [
   {
@@ -49,6 +53,7 @@ const data = [
     status: "可用",
     power: "只读数据源",
     colony: "BDP测试",
+    id: "1",
   },
 ];
 export default {
@@ -58,95 +63,89 @@ export default {
     EditModal,
     VersionModal,
   },
-
+  setup() {
+    const { t, locale } = useI18n({ useScope: "global" });
+    let columns = computed(() => [
+      {
+        title: t("dataSource.table.list.columns.title.name"),
+        dataIndex: "name",
+        align: "center",
+      },
+      {
+        title: t("dataSource.table.list.columns.title.type"),
+        dataIndex: "type",
+        align: "center",
+      },
+      {
+        title: t("dataSource.table.list.columns.title.colony"),
+        dataIndex: "colony",
+        align: "center",
+      },
+      {
+        title: t("dataSource.table.list.columns.title.status"),
+        align: "center",
+        dataIndex: "status",
+      },
+      {
+        title: t("dataSource.table.list.columns.title.power"),
+        align: "center",
+        dataIndex: "power",
+      },
+      {
+        title: t("dataSource.table.list.columns.title.tags"),
+        align: "center",
+        dataIndex: "tags",
+        slots: { customRender: "tags" },
+      },
+      {
+        title: t("dataSource.table.list.columns.title.version"),
+        align: "center",
+        dataIndex: "version",
+        slots: { customRender: "version" },
+      },
+      {
+        title: t("dataSource.table.list.columns.title.describe"),
+        align: "center",
+        dataIndex: "describe",
+      },
+      {
+        title: t("dataSource.table.list.columns.title.updatetim"),
+        align: "center",
+        dataIndex: "updatetim",
+      },
+      {
+        title: t("dataSource.table.list.columns.title.creator"),
+        align: "center",
+        dataIndex: "creator",
+      },
+      {
+        title: t("dataSource.table.list.columns.title.updater"),
+        align: "center",
+        dataIndex: "updater",
+      },
+      {
+        title: t("dataSource.table.list.columns.title.action"),
+        align: "center",
+        slots: { customRender: "action" },
+      },
+    ]);
+    return { columns };
+  },
   data() {
     return {
-      data,
-      columns: [
-        {
-          title: this.$t("dataSource.table.list.columns.title.name"),
-          dataIndex: "name",
-          align: "center",
-          key: "name",
-        },
-        {
-          title: this.$t("dataSource.table.list.columns.title.type"),
-          dataIndex: "type",
-          align: "center",
-          key: "type",
-        },
-        {
-          title: this.$t("dataSource.table.list.columns.title.colony"),
-          dataIndex: "colony",
-          align: "center",
-          key: "colony",
-        },
-        {
-          title: this.$t("dataSource.table.list.columns.title.status"),
-          key: "status",
-          align: "center",
-          dataIndex: "status",
-        },
-        {
-          title: this.$t("dataSource.table.list.columns.title.power"),
-          align: "center",
-          key: "power",
-          dataIndex: "power",
-        },
-        {
-          title: this.$t("dataSource.table.list.columns.title.tags"),
-          align: "center",
-          key: "tags",
-          dataIndex: "tags",
-          slots: { customRender: "tags" },
-        },
-        {
-          title: this.$t("dataSource.table.list.columns.title.version"),
-          align: "center",
-          dataIndex: "version",
-          key: "version",
-          slots: { customRender: "version" },
-        },
-        {
-          title: this.$t("dataSource.table.list.columns.title.describe"),
-
-          align: "center",
-          key: "describe",
-          dataIndex: "describe",
-        },
-        {
-          title: this.$t("dataSource.table.list.columns.title.updatetim"),
-
-          align: "center",
-          key: "updatetim",
-          dataIndex: "updatetim",
-        },
-        {
-          title: this.$t("dataSource.table.list.columns.title.creator"),
-
-          align: "center",
-          key: "creator",
-          dataIndex: "creator",
-        },
-        {
-          title: this.$t("dataSource.table.list.columns.title.updater"),
-          align: "center",
-          key: "updater",
-          dataIndex: "updater",
-        },
-        {
-          title: this.$t("dataSource.table.list.columns.title.action"),
-          align: "center",
-          key: "action",
-          slots: { customRender: "action" },
-        },
-      ],
+      dataSourceList: data,
       selectTypeModalVisible: false,
       versionModalVisible: false,
+      loading: false,
       modalCfg: {
         mode: "",
         id: "",
+        type: "",
         visible: false,
+      },
+      pageCfg: {
+        current: 1,
+        pageSize: 11,
       },
     };
   },
@@ -154,24 +153,49 @@ export default {
     handleOpenVersionModal() {
       this.versionModalVisible = true;
     },
-    handleSelectType(val) {
+    handleSelectType(item) {
       this.selectTypeModalVisible = false;
       this.modalCfg = {
         mode: "create",
         id: "",
+        type: item.id,
         visible: true,
       };
+    },
+    async handleDelete(row) {
+      await deleteDataSource(row.record.id);
+      message.success("成功");
     },
     handleEdit() {
       this.modalCfg = {
         mode: "edit",
         id: "12321",
+        type: "",
         visible: true,
       };
     },
     handleCreate() {
       this.selectTypeModalVisible = true;
     },
+    handleModalFinish() {
+      this.modalCfg.visible = false;
+      this.getDataSourceList();
+    },
+    async getDataSourceList() {
+      this.loading = true;
+      let { list } = await getDataSourceList();
+      this.loading = false;
+      this.dataSourceList = list;
+    },
+  },
+  computed: {
+    dataSourceListData() {
+      let strIndex = Math.max(this.pageCfg.current - 1, 0) * this.pageCfg.pageSize;
+      return this.dataSourceList.slice(strIndex, strIndex + this.pageCfg.pageSize);
+    },
+  },
+  mounted() {
+    this.getDataSourceList();
   },
 };
 </script>
