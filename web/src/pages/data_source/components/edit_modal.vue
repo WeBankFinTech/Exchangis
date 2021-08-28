@@ -1,35 +1,31 @@
 <template>
-  <a-modal title="创建项目" :visible="visible" :confirm-loading="confirmLoading" @ok="handleOk" @cancel="$emit('update:visible', false)">
-    <a-form ref="formRef" :rules="rules" :model="formState" :label-col="{ span: 6 }" @submit="handleSubmit">
-      <a-form-item label="数据源名称" name="name">
-        <a-input v-model:value="formState.name" placeholder="请输入数据源名称" />
+  <a-modal :title="$t(`dataSource.editModal.title.${mode}`)" :visible="visible" :confirm-loading="confirmLoading" @ok="handleOk" @cancel="$emit('update:visible', false)">
+    <a-form ref="formRef" :rules="rules" :model="formState" :label-col="{ span: 6 }">
+      <a-form-item :label="$t(`dataSource.editModal.form.fields.dataSourceName.label`)" name="dataSourceName">
+        <a-input v-model:value="formState.dataSourceName" :placeholder="$t(`dataSource.editModal.form.fields.dataSourceName.placeholder`)" />
       </a-form-item>
-      <a-form-item label="数据源Host" name="tags">
-        <a-input v-model:value="formState.tags" placeholder="请输入数据源Host" />
+      <a-form-item label="数据源host" :name="['connectParams', 'host']">
+        <a-input v-model:value="formState.connectParams.host" placeholder="数据源host" />
       </a-form-item>
-      <a-form-item label="数据库名称" name="tags">
-        <a-input v-model:value="formState.tags" placeholder="请输入数据库名称" />
+      <a-form-item label="数据库名称" :name="['connectParams', 'dbName']">
+        <a-input v-model:value="formState.connectParams.dbName" placeholder="数据库名称" />
       </a-form-item>
-      <a-form-item label="用户名" name="tags">
-        <a-input v-model:value="formState.tags" placeholder="请输入用户名" />
+      <a-form-item label="用户名" :name="['connectParams', 'dbUser']">
+        <a-input v-model:value="formState.connectParams.dbUser" placeholder="用户名" />
       </a-form-item>
-      <a-form-item label="密码" name="tags">
-        <a-input v-model:value="formState.tags" placeholder="请输入密码" />
+      <a-form-item label="密码" :name="['connectParams', 'dbPassword']">
+        <a-input v-model:value="formState.connectParams.dbPassword" placeholder="密码" />
       </a-form-item>
-      <a-form-item label="可用集群" name="edit_users">
-        <a-select v-model:value="formState.edit_users" placeholder="请选择可用集群">
-          <a-select-option value="male"> male </a-select-option>
-          <a-select-option value="female"> female </a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="描述信息" name="describe">
-        <a-textarea v-model:value="formState.describe" placeholder="请填写描述信息" />
+      <a-form-item :label="$t(`dataSource.editModal.form.fields.dataSourceDesc.label`)" name="dataSourceDesc">
+        <a-textarea v-model:value="formState.dataSourceDesc" :placeholder="$t(`dataSource.editModal.form.fields.dataSourceDesc.placeholder`)" />
       </a-form-item>
     </a-form>
   </a-modal>
 </template>
 
 <script>
+import { createDataSource } from "@/common/service";
+import { toRaw } from "vue";
 export default {
   name: "ItemEditModal",
   props: {
@@ -48,23 +44,31 @@ export default {
       type: String,
       default: "",
     },
+    // 创建的数据源类型
+    type: {
+      type: String,
+      default: "",
+    },
   },
-  emits: {
-    // 操作完成
-    finish: null,
-    // 操作取消
-    cancel: null,
-    "update:visible": null,
-  },
+  emits: ["finish", "cancel", "update:visible"],
   data() {
     return {
       // 是否加载中
       confirmLoading: false,
       // 表单数据
-      formState: { name: "", tags: [], describe: "", show_users: [], run_users: [], edit_users: [] },
+      formState: {
+        dataSourceName: "",
+        dataSourceDesc: "",
+        connectParams: {
+          host: "",
+          dbName: "",
+          dbUser: "",
+          dbPassword: "",
+        },
+      },
       // 验证
       rules: {
-        name: [{ required: true, min: 3, max: 5 }],
+        dataSourceName: [{ required: true, min: 1, max: 24 }],
       },
     };
   },
@@ -73,14 +77,16 @@ export default {
     // modal完成
     handleOk(e) {
       // 在这里应该触发表单提交
-      this.$refs.formRef.validate().then(() => {
-        console.log("values", this.formState.name);
+      this.$refs.formRef.validate().then(async () => {
+        console.log("values", this.formState.dataSourceName);
+        await createDataSource({
+          ...toRaw(this.formState),
+          dataSourceTypeId: this.type,
+          createSystem: "",
+        });
+        // 请求保存数据
+        this.$emit("finish");
       });
-    },
-    // 表单提交
-    handleSubmit(e) {
-      // 请求保存数据
-      // this.$emit("finish");
     },
   },
 };

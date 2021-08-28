@@ -1,5 +1,3 @@
-// .fes.js 只负责管理编译时配置，只能使用plain Object
-
 export default {
   publicPath: "./",
   access: {
@@ -45,7 +43,7 @@ export default {
   },
   extraBabelPlugins: [["import", { libraryName: "ant-design-vue", libraryDirectory: "es", style: "css" }]],
   layout: {
-    title: "数据交换",
+    title: "",
     footer: "Created by MumbelFe",
     multiTabs: false,
     menus: [
@@ -77,7 +75,7 @@ export default {
     ],
   },
   locale: {
-    locale: "zh-CN", // default locale
+    locale: "en-US", // default locale
     fallbackLocale: "zh-CN", // set fallback locale
     baseNavigator: true, // 开启浏览器语言检测
     share: true, // 用户是否需要手动改变语言
