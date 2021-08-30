@@ -64,7 +64,7 @@ export default {
     VersionModal,
   },
   setup() {
-    const { t, locale } = useI18n({ useScope: "global" });
+    const { t } = useI18n({ useScope: "global" });
     let columns = computed(() => [
       {
         title: t("dataSource.table.list.columns.title.name"),
@@ -150,9 +150,11 @@ export default {
     };
   },
   methods: {
+    // 打开版本弹框
     handleOpenVersionModal() {
       this.versionModalVisible = true;
     },
+    // 处理选择类型
     handleSelectType(item) {
       this.selectTypeModalVisible = false;
       this.modalCfg = {
@@ -162,10 +164,12 @@ export default {
         visible: true,
       };
     },
+    // 处理删除
     async handleDelete(row) {
       await deleteDataSource(row.record.id);
       message.success("成功");
     },
+    // 处理编辑
     handleEdit() {
       this.modalCfg = {
         mode: "edit",
