@@ -18,6 +18,8 @@ public interface ExchangisDataSourceContext {
 
     ExchangisDataSource getExchangisDataSource(String type);
 
+    ExchangisDataSource getExchangisDataSource(Long dataSourceTypeId);
+
     Collection<ExchangisDataSource> all();
 
     Set<String> keys();
