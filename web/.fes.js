@@ -75,7 +75,7 @@ export default {
     ],
   },
   locale: {
-    locale: "en-US", // default locale
+    locale: "zh-CN", // default locale
     fallbackLocale: "zh-CN", // set fallback locale
     baseNavigator: true, // 开启浏览器语言检测
     share: true, // 用户是否需要手动改变语言
