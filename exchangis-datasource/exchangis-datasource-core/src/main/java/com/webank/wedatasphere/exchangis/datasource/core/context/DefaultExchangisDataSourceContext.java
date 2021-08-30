@@ -23,8 +23,8 @@ public class DefaultExchangisDataSourceContext implements ExchangisDataSourceCon
     @Override
     public void addExchangisDataSource(ExchangisDataSource dataSource) {
         Objects.requireNonNull(dataSource, "dataSource required");
-        String type = dataSource.type();
-        dataSources.put(type, dataSource);
+        String name = dataSource.name();
+        dataSources.put(name, dataSource);
     }
 
     @Override
@@ -43,6 +43,21 @@ public class DefaultExchangisDataSourceContext implements ExchangisDataSourceCon
             return null;
         }
         return this.dataSources.get(type.trim().toUpperCase());
+    }
+
+    @Override
+    public ExchangisDataSource getExchangisDataSource(Long dataSourceTypeId) {
+        if (Objects.isNull(dataSourceTypeId)) {
+            return null;
+        }
+        Collection<ExchangisDataSource> values = this.dataSources.values();
+        for (ExchangisDataSource ds : values) {
+            if (ds.id().equalsIgnoreCase(dataSourceTypeId+"")) {
+                return ds;
+            }
+        }
+
+        return null;
     }
 
     @Override

@@ -43,8 +43,8 @@ public class ExchangisProjectRestful {
     @Path("projects")
     public Response queryProjects(@Context HttpServletRequest request, @Valid ProjectQueryRequest projectQueryRequest){
         // TODO
-        String username = SecurityFilter.getLoginUsername(request);
-//        String username = "hdfs";
+//        String username = SecurityFilter.getLoginUsername(request);
+        String username = "hdfs";
         if (null == projectQueryRequest) {
             projectQueryRequest = new ProjectQueryRequest();
         }
@@ -62,8 +62,8 @@ public class ExchangisProjectRestful {
     @Path("projects/{projectId}")
     public Response queryProjects(@Context HttpServletRequest request, @PathParam("projectId") String projectId){
         // TODO
-        String username = SecurityFilter.getLoginUsername(request);
-//        String username = "hdfs";
+//        String username = SecurityFilter.getLoginUsername(request);
+        String username = "hdfs";
         try{
             ExchangisProjectGetDTO dto = projectService.getProjectById(projectId);
             return Message.messageToResponse(Message.ok().data("item", dto));
@@ -77,8 +77,8 @@ public class ExchangisProjectRestful {
     @Path("createProject")
     public Response createProject(@Context HttpServletRequest request, @Valid CreateProjectRequest createProjectRequest){
         // TODO
-        String username = SecurityFilter.getLoginUsername(request);
-//        String username = "hdfs";
+//        String username = SecurityFilter.getLoginUsername(request);
+        String username = "hdfs";
         try{
             ExchangisProject exchangisProject = projectService.createProject(username, createProjectRequest);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
@@ -94,8 +94,8 @@ public class ExchangisProjectRestful {
     @Path("updateProject")
     public Response updateProject(@Context HttpServletRequest request, @Valid UpdateProjectRequest updateProjectRequest){
         // TODO
-        String username = SecurityFilter.getLoginUsername(request);
-//        String username = "hdfs";
+//        String username = SecurityFilter.getLoginUsername(request);
+        String username = "hdfs";
         try {
             ExchangisProject exchangisProject = projectService.updateProject(username, updateProjectRequest);
             return ExchangisProjectRestfulUtils.dealOk("更新工程成功",
@@ -110,8 +110,8 @@ public class ExchangisProjectRestful {
     @DELETE
     @Path("/projects/{id}")
     public Response deleteProject(@Context HttpServletRequest request, @PathParam("id") String id){
-//        String username = "hdfs";
-        String username = SecurityFilter.getLoginUsername(request);
+        String username = "hdfs";
+//        String username = SecurityFilter.getLoginUsername(request);
         try {
             projectService.deleteProject(request, id);
             return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
