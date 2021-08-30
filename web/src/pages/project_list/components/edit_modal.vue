@@ -45,6 +45,7 @@
 
 <script>
 import { toRaw } from "vue";
+import { message } from "ant-design-vue";
 import { createProject, getProjectById, updateProject } from "@/common/service";
 export default {
   name: "ProjectEditModal",
@@ -110,11 +111,13 @@ export default {
         this.confirmLoading = true;
         await createProject(formatData);
         this.confirmLoading = false;
+        message.success("创建成功");
       }
       if (this.mode === "edit") {
         this.confirmLoading = true;
         await updateProject(formatData);
         this.confirmLoading = false;
+        message.success("修改成功");
       }
       this.$emit("update:visible", false);
       this.$emit("finish");

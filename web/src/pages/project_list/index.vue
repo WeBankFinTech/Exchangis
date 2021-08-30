@@ -11,7 +11,7 @@
             <a-input-search :placeholder="$t('projectManage.topLine.searchBar.searchInputPlaceholder')" :allowClear="true" style="width: 300px" @search="handleOnSearch">
               <template #enterButton>
                 <a-button type="primary">
-                  <template v-slot:icon> <icon-plusOutlined /></template>
+                  <template #icon> <icon-plusOutlined /></template>
                   {{ $t("projectManage.topLine.searchBar.searchButtonText") }}
                 </a-button>
               </template>
@@ -22,7 +22,7 @@
         <a-col :span="6"> <project-create-card @action="handleCreateCardAction" /> </a-col>
         <!-- 视图卡片 -->
         <a-col :span="6" v-for="item in projectListData" :key="item.id">
-          <project-view-card @delete="handleOnDelteProject" @edit="handleOnEditProject" :name="item.name" :describe="item.describe" :id="item.id" :tags="item.tags" :icon="item.icon" />
+          <project-view-card @delete="handleOnDelteProject" @edit="handleOnEditProject" :name="item.name" :describe="item.describe" :id="item.id" :tags="item.tags" />
         </a-col>
         <!-- 分页行 -->
         <a-col :span="24">
