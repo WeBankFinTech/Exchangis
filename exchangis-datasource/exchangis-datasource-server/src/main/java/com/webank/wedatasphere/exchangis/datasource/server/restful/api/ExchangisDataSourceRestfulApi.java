@@ -31,7 +31,7 @@ public class ExchangisDataSourceRestfulApi {
 
     // 获取所有数据源类型
     @GET
-    @Path("datasources/all")
+    @Path("datasources/type")
     public Response listDataSourceTypes(@Context HttpServletRequest request) {
         Message message = this.exchangisDataSourceService.listDataSources(request);
         return Message.messageToResponse(message);
@@ -39,7 +39,7 @@ public class ExchangisDataSourceRestfulApi {
 
     // 查询所有数据源
     @POST
-    @Path("datasources")
+    @Path("datasources/query")
     public Response create(@Context HttpServletRequest request, @RequestBody DataSourceQueryVO vo) throws Exception {
         Message message = this.exchangisDataSourceService.queryDataSources(request, vo);
         return Message.messageToResponse(message);
@@ -54,9 +54,17 @@ public class ExchangisDataSourceRestfulApi {
 
     // 创建数据源
     @POST
-    @Path("datasources/{type}")
-    public Response create(@Context HttpServletRequest request, @PathParam("type") String type, @RequestBody Map<String, Object> json) throws Exception {
-        Message message = this.exchangisDataSourceService.create(request, type, json);
+    @Path("datasources")
+    public Response create(@Context HttpServletRequest request, /*@PathParam("type") String type, */@RequestBody Map<String, Object> json) throws Exception {
+        Message message = this.exchangisDataSourceService.create(request,/* type, */json);
+        return Message.messageToResponse(message);
+    }
+
+    // 获取某个数据源详情
+    @GET
+    @Path("datasources/{id}")
+    public Response getDataSourceInfoById(@Context HttpServletRequest request, @PathParam("id") Long id) throws Exception {
+        Message message = this.exchangisDataSourceService.getDataSource(request, id);
         return Message.messageToResponse(message);
     }
 
@@ -75,6 +83,7 @@ public class ExchangisDataSourceRestfulApi {
         Message message = this.exchangisDataSourceService.deleteDataSource(request, type, id);
         return Message.messageToResponse(message);
     }
+
 
 
     @GET
