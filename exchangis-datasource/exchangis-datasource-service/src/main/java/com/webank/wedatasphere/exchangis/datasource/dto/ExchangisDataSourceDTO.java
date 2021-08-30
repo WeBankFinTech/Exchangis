@@ -1,20 +1,45 @@
 package com.webank.wedatasphere.exchangis.datasource.dto;
 
 public class ExchangisDataSourceDTO {
-    private final String type;
-    private final String category;
-    private final String description;
-    private final String icon;
+    private final String id;
+    private final String classifier;
+    private final String name;
+    private String option;
+    private String description;
+    private String icon;
 
-    public ExchangisDataSourceDTO(String type, String category, String description, String icon) {
-        this.type = type;
-        this.category = category;
-        this.description = description;
-        this.icon = icon;
+    public ExchangisDataSourceDTO(String id, String classifier, String name) {
+        this.id = id;
+        this.classifier = classifier;
+        this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getId() {
+        return id;
+    }
+
+    public String getClassifier() {
+        return classifier;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getOption() {
+        return option;
+    }
+
+    public void setOption(String option) {
+        this.option = option;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public String getDescription() {

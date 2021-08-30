@@ -1,16 +1,10 @@
 package com.webank.wedatasphere.exchangis.datasource.vo;
 
 public class DataSourceQueryVO {
-    private String type;
+    private Integer page;
+    private Integer pageSize;
+    private Long typeId;
     private String name;
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     public String getName() {
         return name;
@@ -18,5 +12,29 @@ public class DataSourceQueryVO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getPage() {
+        return page;
+    }
+
+    public void setPage(Integer page) {
+        this.page = page;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public Long getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Long typeId) {
+        this.typeId = typeId;
     }
 }

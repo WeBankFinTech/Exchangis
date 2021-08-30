@@ -7,12 +7,18 @@ import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMappe
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
 import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
+import com.webank.wedatasphere.linkis.datasource.client.request.GetAllDataSourceTypesAction;
+import com.webank.wedatasphere.linkis.datasource.client.response.GetAllDataSourceTypesResult;
+import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.DataSourceType;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class ExchangisBatchDataSource implements ExchangisDataSource {
 
     protected MapperHook mapperHook;
+    protected String id;
 
     @Override
     public void setMapperHook(MapperHook mapperHook) {
@@ -36,5 +42,18 @@ public abstract class ExchangisBatchDataSource implements ExchangisDataSource {
     @Override
     public LinkisMetaDataRemoteClient getMetaDataRemoteClient() {
         return ExchangisLinkisRemoteClient.getLinkisMetadataRemoteClient();
+    }
+
+    @Override
+    public String id() {
+        if (null == id || id.equalsIgnoreCase("")) {
+            List<DataSourceType> types = getDataSourceTypes("hdfs");
+            for (DataSourceType type : types) {
+                if (type.getName().equalsIgnoreCase(name())) {
+                    this.id = type.getId();
+                }
+            }
+        }
+        return this.id;
     }
 }
