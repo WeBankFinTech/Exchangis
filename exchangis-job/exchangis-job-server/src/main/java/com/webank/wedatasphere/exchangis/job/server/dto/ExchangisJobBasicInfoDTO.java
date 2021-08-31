@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.dto;
 
-import com.webank.wedatasphere.exchangis.job.server.enums.JobTypeEnum;
+import com.webank.wedatasphere.exchangis.job.enums.JobTypeEnum;
 
 public class ExchangisJobBasicInfoDTO {
 
