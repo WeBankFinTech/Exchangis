@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -20,7 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
@@ -53,11 +53,7 @@ public class ExchangisJobController {
     @GET
     @Path("/engineType")
     public Message getEngineList() {
-        List<String> enginetypelist = new ArrayList<>();
-        enginetypelist.add("datax");
-        enginetypelist.add("sqoop");
-        enginetypelist.add("distcopy");
-        return Message.ok().data("result", enginetypelist);
+        return Message.ok().data("result", EngineTypeEnum.values());
     }
 
     @POST
