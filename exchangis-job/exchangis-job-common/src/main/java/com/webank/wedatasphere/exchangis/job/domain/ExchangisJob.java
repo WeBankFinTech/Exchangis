@@ -1,11 +1,10 @@
-package com.webank.wedatasphere.exchangis.job.server.domain;
+package com.webank.wedatasphere.exchangis.job.domain;
 
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.webank.wedatasphere.exchangis.job.server.enums.JobTypeEnum;
 
 /**
  * <p>
