@@ -15,7 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
-import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;

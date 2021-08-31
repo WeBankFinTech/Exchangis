@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
