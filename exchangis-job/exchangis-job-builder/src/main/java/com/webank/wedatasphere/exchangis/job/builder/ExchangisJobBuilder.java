@@ -1,7 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.builder;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.LaunchTask;
 
 public interface ExchangisJobBuilder {
-    void buildJob(ExchangisJob job);
+    LaunchTask[] buildJob(ExchangisJob job);
 }
