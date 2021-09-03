@@ -30,6 +30,8 @@ public class DataSourceCreateVO {
 
     private Boolean expire = false;
 
+    private String comment;
+
     public String getDataSourceName() {
         return dataSourceName;
     }
@@ -142,5 +144,13 @@ public class DataSourceCreateVO {
 
     public void setConnectParams(Map<String, Object> connectParams) {
         this.connectParams = connectParams;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }
