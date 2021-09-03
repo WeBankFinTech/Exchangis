@@ -1,5 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.enums;
 
-public enum DataSourceEnum {
+public enum DataSourceTypeEnum {
     MYSQL, HIVE, TEXT;
 }

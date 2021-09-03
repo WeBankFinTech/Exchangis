@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.writer;
+package com.webank.wedatasphere.exchangis.job.datax.writer;
 
 import java.util.Map;
 
