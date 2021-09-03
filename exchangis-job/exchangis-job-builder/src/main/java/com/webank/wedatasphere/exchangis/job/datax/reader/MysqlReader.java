@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.reader;
+package com.webank.wedatasphere.exchangis.job.datax.reader;
 
 import java.util.Map;
 

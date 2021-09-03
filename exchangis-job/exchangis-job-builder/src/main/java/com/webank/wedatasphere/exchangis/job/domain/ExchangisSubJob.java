@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.domain;
 import java.util.List;
 import java.util.Map;
 
-public class ExchangisSourceJob {
+public class ExchangisSubJob {
 
     private String subjobName;
 
