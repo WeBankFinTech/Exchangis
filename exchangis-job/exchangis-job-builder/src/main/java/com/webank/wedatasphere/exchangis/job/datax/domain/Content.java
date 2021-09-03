@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.domain;
+package com.webank.wedatasphere.exchangis.job.datax.domain;
 
 public class Content {
     protected String name;
