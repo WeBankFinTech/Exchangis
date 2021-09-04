@@ -5,13 +5,6 @@ import PageLoading from "@/components/PageLoading";
 import UserCenter from "@/components/UserCenter";
 import { BASE_URL } from "@/common/constants";
 import { loadAllRegister } from "./register";
-import "ant-design-vue/dist/antd.css"; // or 'ant-design-vue/dist/antd.less'
-
-import "ant-design-vue/lib/input/style/css";
-import "ant-design-vue/lib/modal/style/css";
-import "ant-design-vue/lib/select/style/css";
-import "ant-design-vue/lib/form/style/css";
-import "ant-design-vue/lib/style";
 
 export const beforeRender = {
   loading: <PageLoading />,
@@ -44,11 +37,8 @@ export const request = {
     return data;
   },
   errorHandler: {
-    401() {
-      pumApi.redirectToLogin();
-    },
     default(error) {
-      message.error(error?.response?.data?.msg || "系统异常");
+      message.error(error?.response?.data?.message || "系统异常");
     },
   },
 };
