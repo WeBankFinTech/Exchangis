@@ -23,31 +23,31 @@
 import { getDataSourceTypes } from "@/common/service";
 
 export default {
-  name: "select_type_modal",
+  name: "selectTypeModal",
   props: {
     visible: {
       type: Boolean,
     },
+    sourceTypeList: {
+      type: Array,
+      default: [],
+    },
   },
   emits: ["select", "update:visible"],
   data() {
-    return { options: [], searchVal: "" };
+    return { searchVal: "" };
   },
-  mounted() {
-    this.getTypeData();
-  },
-  methods: {
-    async getTypeData() {
+  computed: {
+    options() {
       let options = {};
-      let { list } = await getDataSourceTypes();
-      for (const item of list) {
+      for (const item of this.sourceTypeList) {
         if (options[item.classifier] === undefined) {
           options[item.classifier] = [item];
         } else {
           options[item.classifier].push(item);
         }
       }
-      this.options = Object.entries(options).map(([group_name, items]) => ({ group_name, items }));
+      return Object.entries(options).map(([group_name, items]) => ({ group_name, items }));
     },
   },
 };

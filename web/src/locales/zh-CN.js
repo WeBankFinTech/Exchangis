@@ -1,4 +1,9 @@
 export default {
+  globalMenu: {
+    projectManage: "项目管理",
+    dataSourceManage: "数据源管理",
+    jobManagement: "数据任务管理",
+  },
   projectManage: {
     topLine: {
       searchBar: {
@@ -68,9 +73,7 @@ export default {
           title: {
             name: "数据源名称",
             type: "类型",
-            colony: "集群",
             status: "状态",
-            power: "权限",
             tags: "标签",
             version: "版本",
             describe: "描述",

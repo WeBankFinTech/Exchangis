@@ -39,6 +39,22 @@ export const createDataSource = (params) => {
   return request("/datasources", { ...params }, { method: "POST" });
 };
 
-export const deleteDataSource = (type, id) => {
-  return request(`/datasources/${type}/${id}`, {}, { method: "DELETE" });
+export const updateDataSource = (id, params) => {
+  return request("/datasources/" + id, { ...params }, { method: "PUT" });
+};
+
+export const deleteDataSource = (id) => {
+  return request(`/datasources/${id}`, {}, { method: "DELETE" });
+};
+
+export const getDataSourceVersionList = (id) => {
+  return request(`/datasources/${id}/versions`, {}, { method: "GET" });
+};
+
+export const testDataSourceConnect = (type, id) => {
+  return request(`/datasources/${type}/${id}/connect`, {}, { method: "PUT" });
+};
+
+export const getDataSourceById = (id) => {
+  return request(`/datasources/${id}`, {}, { method: "GET" });
 };

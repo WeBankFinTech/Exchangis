@@ -6,7 +6,7 @@
         <a-col :span="24">
           <div class="title-line">
             <span class="title">
-              <a-title style="margin-bottom: 0">{{ $t("projectManage.topLine.title") }}</a-title>
+              <a-typography-title :level="5" style="margin-bottom: 0">{{ $t("projectManage.topLine.title") }}</a-typography-title>
             </span>
             <a-input-search :placeholder="$t('projectManage.topLine.searchBar.searchInputPlaceholder')" :allowClear="true" style="width: 300px" @search="handleOnSearch">
               <template #enterButton>
@@ -40,9 +40,9 @@
 <script>
 import { useI18n } from "@fesjs/fes";
 import { PlusOutlined } from "@ant-design/icons-vue";
-import ProjectCreateCard from "./components/project_create_card.vue";
-import ProjectViewCard from "./components/project_view_card.vue";
-import EditModal from "./components/edit_modal.vue";
+import ProjectCreateCard from "./components/projectCreateCard.vue";
+import ProjectViewCard from "./components/projectViewCard.vue";
+import EditModal from "./components/editModal.vue";
 import { getProjectList, deleteProject } from "@/common/service";
 export default {
   components: {
