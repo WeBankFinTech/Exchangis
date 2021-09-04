@@ -1,6 +1,9 @@
-import Select from "ant-design-vue/lib/vc-select";
-
 export default {
+  globalMenu: {
+    projectManage: "project",
+    dataSourceManage: "data source",
+    jobManagement: "job management",
+  },
   projectManage: {
     topLine: {
       searchBar: {
@@ -70,9 +73,7 @@ export default {
           title: {
             name: "Name",
             type: "Type",
-            colony: "colony",
             status: "status",
-            power: "power",
             tags: "tags",
             version: "version",
             describe: "describe",
@@ -113,9 +114,7 @@ export default {
       searchInputPlaceholder: "Search Type By Name",
     },
   },
-  menu: {
-    interface: "interface",
-  },
+
   overview: "Overview",
   i18n: {
     internationalization: "internationalization，base on",

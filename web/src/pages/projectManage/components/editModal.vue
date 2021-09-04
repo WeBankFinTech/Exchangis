@@ -107,18 +107,19 @@ export default {
         execUsers: this.formState.execUsers.join(),
         editUsers: this.formState.editUsers.join(),
       };
-      if (this.mode === "create") {
-        this.confirmLoading = true;
-        await createProject(formatData);
-        this.confirmLoading = false;
-        message.success("创建成功");
-      }
-      if (this.mode === "edit") {
-        this.confirmLoading = true;
-        await updateProject(formatData);
-        this.confirmLoading = false;
-        message.success("修改成功");
-      }
+      try {
+        if (this.mode === "create") {
+          this.confirmLoading = true;
+          await createProject(formatData);
+          message.success("创建成功");
+        }
+        if (this.mode === "edit") {
+          this.confirmLoading = true;
+          await updateProject(formatData);
+          message.success("修改成功");
+        }
+      } catch (error) {}
+      this.confirmLoading = false;
       this.$emit("update:visible", false);
       this.$emit("finish");
     },
