@@ -142,6 +142,11 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         LinkisDataSourceRemoteClient client = exchangisDataSource.getDataSourceRemoteClient();
 
+        Map<String, Object> connectParams = vo.getConnectParams();
+        if (!Objects.isNull(connectParams)) {
+            json.put("parameter", mapper.writeValueAsString(connectParams));
+        }
+
         Result execute = client.execute(CreateDataSourceAction.builder()
                 .setUser(user)
                 .addRequestPayloads(json)
@@ -156,8 +161,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         }
 
         Long dataSourceId = rest.getData().getId();
-        // 创建完成后发布数据源，形成一个版本
-//        Map<String, Object> connectParams = vo.getConnectParams();
+        // 创建完成后发布数据源参数，形成一个版本
         Result versionExec = client.execute(
                 UpdateDataSourceParameterAction.builder()
                         .setDataSourceId(dataSourceId)
@@ -509,16 +513,49 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     public Message getDataSourceVersionsById(HttpServletRequest request, Long id) throws ErrorException  {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+
+        // 先根据ID获取数据源详情
         Result execute = linkisDataSourceRemoteClient.execute(
-                new GetDataSourceVersionsAction(id + "")
+                new GetDataSourceAction(id + "")
         );
 
         String responseBody = execute.getResponseBody();
+        GetDataSourceInfoResultDTO getResult = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+        if (getResult.getStatus() != 0) {
+            throw new ExchangisDataSourceException(23001, getResult.getMessage());
+        }
+        Long publishedVersionId = null;
+        GetDataSourceInfoResultDTO.DataSourceInfoDTO data = getResult.getData();
+        if (!Objects.isNull(data)) {
+            GetDataSourceInfoResultDTO.DataSourceItemDTO info = data.getInfo();
+            if (!Objects.isNull(info)) {
+                publishedVersionId = info.getPublishedVersionId();
+            }
+        }
 
-        GetDataSourceVersionsResultDTO result = Json.fromJson(responseBody, GetDataSourceVersionsResultDTO.class);
+        Result versionExecute = linkisDataSourceRemoteClient.execute(
+                new GetDataSourceVersionsAction(id + "")
+        );
+
+        String versionResponseBody = versionExecute.getResponseBody();
+
+        GetDataSourceVersionsResultDTO result = Json.fromJson(versionResponseBody, GetDataSourceVersionsResultDTO.class);
         if (result.getStatus() != 0) {
             throw new ExchangisDataSourceException(23001, result.getMessage());
         }
+
+        GetDataSourceVersionsResultDTO.VersionDataDTO versionData = result.getData();
+        if (!Objects.isNull(versionData)) {
+            List<GetDataSourceVersionsResultDTO.VersionDTO> versions = versionData.getVersions();
+            if (!Objects.isNull(versions)) {
+                for (GetDataSourceVersionsResultDTO.VersionDTO version : versions) {
+                    if (Objects.equals(version.getVersionId(), publishedVersionId)) {
+                        version.setPublished(true);
+                    }
+                }
+            }
+        }
+
 
         return Message.ok().data("versions", result.getData().getVersions());
     }
@@ -539,13 +576,50 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         return Message.ok();
     }
 
-    public Message publishDataSource(HttpServletRequest request, Long id, Long version) {
+    public Message publishDataSource(HttpServletRequest request, Long id, Long version) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         Result execute = linkisDataSourceRemoteClient.execute(
                 new PublishDataSourceVersionAction(id, version)
         );
 
         String responseBody = execute.getResponseBody();
+
+        ResultDTO result = Json.fromJson(responseBody, ResultDTO.class);
+        if (result.getStatus() != 0) {
+            throw new ExchangisDataSourceException(23001, result.getMessage());
+        }
+
+        return Message.ok();
+    }
+
+    public Message getDataSourceConnectParamsById(HttpServletRequest request, Long id) throws ErrorException {
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        Result execute = linkisDataSourceRemoteClient.execute(
+                new GetDataSourceConnectParamsAction(id + "")
+        );
+
+        String responseBody = execute.getResponseBody();
+        GetDataSourceConnectParamsResultDTO result = Json.fromJson(responseBody, GetDataSourceConnectParamsResultDTO.class);
+        if (result.getStatus() != 0) {
+            throw new ExchangisDataSourceException(23001, result.getMessage());
+        }
+
+        return Message.ok().data("info", Objects.isNull(result.getData()) ? null : result.getData());
+    }
+
+    @Transactional
+    public Message expireDataSource(HttpServletRequest request, Long id) throws ErrorException {
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        Result execute = linkisDataSourceRemoteClient.execute(
+                new ExpireDataSourceAction(id)
+        );
+
+        String responseBody = execute.getResponseBody();
+
+        ExpireDataSourceSuccessResultDTO result = Json.fromJson(responseBody, ExpireDataSourceSuccessResultDTO.class);
+        if (result.getStatus() != 0) {
+            throw new ExchangisDataSourceException(23001, result.getMessage());
+        }
 
         return Message.ok();
     }
