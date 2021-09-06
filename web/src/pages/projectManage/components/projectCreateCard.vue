@@ -1,6 +1,8 @@
 <template>
-  <a-card class="view-card" @click="$emit('action')">
-    <div class="card-body"><icon-plus-outlined class="icon" /> <span class="text">创建项目</span></div>
+  <a-card class="create-card" @click="$emit('action')">
+    <div class="card-body">
+      <icon-plus-outlined class="icon" /> <span class="text">{{ $t("projectManage.createCardText") }}</span>
+    </div>
   </a-card>
 </template>
 
@@ -16,14 +18,14 @@ export default {
 </script>
 
 <style scoped lang="less">
-.view-card {
-  height: 100%;
+.create-card {
+  height: 180px;
   position: relative;
   cursor: pointer;
   box-sizing: border-box;
   border: 1px dashed #999999;
 }
-.view-card:hover {
+.create-card:hover {
   .icon {
     color: #1890ff;
   }
