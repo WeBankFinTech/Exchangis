@@ -8,19 +8,29 @@ import java.util.List;
 public class ExchangisHiveDataSource extends ExchangisBatchDataSource {
     private static final String DATASOURCE_TYPE = "HIVE";
 
+//    @Override
+//    public String id() {
+//        return null;
+//    }
+
     @Override
-    public String type() {
+    public String name() {
         return DATASOURCE_TYPE;
     }
 
     @Override
-    public String category() {
-        return "bigdata";
+    public String classifier() {
+        return "大数据存储";
     }
 
     @Override
     public String description() {
         return "Hive Description";
+    }
+
+    @Override
+    public String option() {
+        return "hive";
     }
 
     @Override
