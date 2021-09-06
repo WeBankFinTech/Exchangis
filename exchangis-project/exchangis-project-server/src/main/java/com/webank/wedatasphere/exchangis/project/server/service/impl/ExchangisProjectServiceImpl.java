@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.project.server.dao.ExchangisProjectMapper;
 import com.webank.wedatasphere.exchangis.project.server.dto.ExchangisProjectDTO;
+import com.webank.wedatasphere.exchangis.project.server.dto.ExchangisProjectGetDTO;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.exception.ExchangisProjectErrorException;
 import com.webank.wedatasphere.exchangis.project.server.request.CreateProjectRequest;
@@ -125,6 +126,21 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     @Override
     public void deleteProject(HttpServletRequest request, String id) {
         this.exchangisProjectMapper.deleteById(id);
+    }
+
+    @Override
+    public ExchangisProjectGetDTO getProjectById(String projectId) {
+        ExchangisProject project = this.exchangisProjectMapper.selectById(projectId);
+
+        ExchangisProjectGetDTO dto = new ExchangisProjectGetDTO();
+        dto.setId(project.getId()+"");
+        dto.setEditUsers(project.getEditUsers());
+        dto.setViewUsers(project.getViewUsers());
+        dto.setExecUsers(project.getExecUsers());
+        dto.setName(project.getName());
+        dto.setDescription(project.getDescription());
+        dto.setTags(project.getTags());
+        return dto;
     }
 
 //    @Override

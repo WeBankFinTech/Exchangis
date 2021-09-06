@@ -1,5 +1,3 @@
-// .fes.js 只负责管理编译时配置，只能使用plain Object
-
 export default {
   publicPath: "./",
   access: {
@@ -12,22 +10,22 @@ export default {
     routes: [
       {
         path: "/",
-        redirect: "/project_list",
+        redirect: "/projectManage",
       },
       {
-        path: "/project_list",
-        component: "@/pages/project_list",
+        path: "/projectManage",
+        component: "@/pages/projectManage",
         meta: {
-          name: "item_list",
-          title: "项目列表",
+          name: "projectManage",
+          title: "globalMenu.projectManage",
         },
       },
       {
-        path: "/data_source",
-        component: "@/pages/data_source",
+        path: "/dataSourceManage",
+        component: "@/pages/dataSourceManage",
         meta: {
-          name: "data_source",
-          title: "数据源列表",
+          name: "dataSourceManage",
+          title: "globalMenu.dataSourceManage",
         },
       },
       {
@@ -35,7 +33,7 @@ export default {
         component: "@/pages/jobManagement",
         meta: {
           name: "jobManagement",
-          title: "数据任务管理",
+          title: "globalMenu.jobManagement",
         },
       },
     ],
@@ -45,15 +43,16 @@ export default {
   },
   extraBabelPlugins: [["import", { libraryName: "ant-design-vue", libraryDirectory: "es", style: "css" }]],
   layout: {
-    title: "数据交换",
-    footer: "Created by MumbelFe",
+    title: "",
+    footer: "",
+    logo: null,
     multiTabs: false,
     menus: [
       {
-        name: "item_list",
+        name: "projectManage",
       },
       {
-        name: "data_source",
+        name: "dataSourceManage",
       },
       {
         name: "jobManagement",
@@ -69,12 +68,6 @@ export default {
       changeOrigin: true,
       pathRewrite: { "^/api": "" },
     },
-  },
-  enums: {
-    status: [
-      ["0", "无效的"],
-      ["1", "有效的"],
-    ],
   },
   locale: {
     locale: "zh-CN", // default locale
