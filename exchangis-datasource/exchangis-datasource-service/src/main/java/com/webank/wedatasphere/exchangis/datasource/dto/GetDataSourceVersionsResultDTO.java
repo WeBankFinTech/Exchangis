@@ -29,10 +29,11 @@ public class GetDataSourceVersionsResultDTO extends ResultDTO {
 
     public static class VersionDTO {
         private Long versionId;
-        private Long dataSourceId;
+        private Long datasourceId;
         private Map<String, Object> connectParams;
         private String comment;
         private String createUser;
+        private boolean published = false;
 
         public Long getVersionId() {
             return versionId;
@@ -42,12 +43,12 @@ public class GetDataSourceVersionsResultDTO extends ResultDTO {
             this.versionId = versionId;
         }
 
-        public Long getDataSourceId() {
-            return dataSourceId;
+        public Long getDatasourceId() {
+            return datasourceId;
         }
 
-        public void setDataSourceId(Long dataSourceId) {
-            this.dataSourceId = dataSourceId;
+        public void setDatasourceId(Long datasourceId) {
+            this.datasourceId = datasourceId;
         }
 
         public Map<String, Object> getConnectParams() {
@@ -72,6 +73,14 @@ public class GetDataSourceVersionsResultDTO extends ResultDTO {
 
         public void setCreateUser(String createUser) {
             this.createUser = createUser;
+        }
+
+        public boolean isPublished() {
+            return published;
+        }
+
+        public void setPublished(boolean published) {
+            this.published = published;
         }
     }
 
