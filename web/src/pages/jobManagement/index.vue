@@ -18,6 +18,7 @@
       </div>
     </div>
     <job-list v-show="!activeTabId" @showJobDetail="showJobDetail" />
+    <job-detail v-if="activeTabId" :curTab="curTab"></job-detail>
   </div>
 </template>
 <script>
@@ -42,6 +43,7 @@ export default {
       name: "jobManagement11",
       choosedTab: "jobList",
       activeTabId: "",
+      curTab: "",
       tabs: [
         {
           id: 1, // 任务id
@@ -82,6 +84,7 @@ export default {
     changeTab(data) {
       data = toRaw(data);
       console.log(data);
+      this.curTab = data
       this.activeTabId = data.id;
     },
     deleteTab(data) {
