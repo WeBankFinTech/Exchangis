@@ -74,7 +74,7 @@
 2021-08-20 17:09:21.190 [INFO ] [qtp1090300647-47                        ] c.w.w.l.s.r.RestfulApplication (46) [<init>] - packages com.webank.wedatasphere.exchangis.datasource.server.restful.api,com.webank.wedatasphere.exchangis.project.server.restful
 2021-08-20 17:09:21.548 [INFO ] [qtp1090300647-47                        ] c.w.w.l.s.s.SecurityFilter$ (40) [info] - test mode! login for uri: /api/rest_j/v1/exchangis/datasources/all
 2021-08-20 17:09:21.549 [INFO ] [qtp1090300647-47                        ] c.w.w.l.s.s.SSOUtils$ (40) [info] - add login userTicketCookie for user .
-2021-08-20 17:09:22.090 [INFO ] [qtp1090300647-47                        ] o.r.Reflections (229) [scan] - Reflections took 137 ms to scan 18 urls, producing 188 keys and 1674 values 
+2021-08-20 17:09:22.090 [INFO ] [qtp1090300647-47                        ] o.r.Reflections (229) [scan] - Reflections took 137 ms to scan 18 urls, producing 188 keys and 1674 values
 2021-08-20 17:09:22.166 [ERROR] [qtp1090300647-47                        ] c.w.w.l.s.r.RestfulCatchAOP (81) [apply] - operation failed(操作失败)s java.lang.reflect.UndeclaredThrowableException: null
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:759) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
 	at org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint.proceed(MethodInvocationProceedingJoinPoint.java:88) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]
