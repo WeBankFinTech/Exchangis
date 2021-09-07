@@ -12,6 +12,7 @@ target
 
 ### IntelliJ IDEA ###
 .idea
+*.log
 *.iws
 *.iml
 *.ipr
@@ -26,3 +27,6 @@ target
 .mvn/wrapper/maven-wrapper.jar
 .mvn/wrapper/maven-wrapper.properties
 /packages/
+exchangis-server/exchangis-extds
+/logs/
+/web/package-lock.json
