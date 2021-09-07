@@ -17,8 +17,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @TableName("exchangis_job")
 public class ExchangisJob {
 
-    private static final long serialVersionUID = 1L;
-
     @TableId(type = IdType.AUTO)
     private Long id;
 
