@@ -6,10 +6,15 @@
         <a-col :span="24">
           <div class="title-line">
             <span class="title">
-              <a-title style="margin-bottom: 0" :level="4">项目列表</a-title>
+              <a-typography-title :level="5" style="margin-bottom: 0">{{ $t("projectManage.topLine.title") }}</a-typography-title>
             </span>
-            <a-input-search placeholder="输入项目名搜索" :allowClear="true" style="width: 200px" @search="handleOnSearch">
-              <template #enterButton> 搜索 </template>
+            <a-input-search :placeholder="$t('projectManage.topLine.searchBar.searchInputPlaceholder')" :allowClear="true" style="width: 300px" @search="handleOnSearch">
+              <template #enterButton>
+                <a-button type="primary">
+                  <template #icon> <icon-plusOutlined /></template>
+                  {{ $t("projectManage.topLine.searchBar.searchButtonText") }}
+                </a-button>
+              </template>
             </a-input-search>
           </div>
         </a-col>
@@ -17,12 +22,12 @@
         <a-col :span="6"> <project-create-card @action="handleCreateCardAction" /> </a-col>
         <!-- 视图卡片 -->
         <a-col :span="6" v-for="item in projectListData" :key="item.id">
-          <project-view-card @delete="handleOnDelteProject" @edit="handleOnEditProject" :name="item.name" :describe="item.describe" :id="item.id" :tags="item.tags" :icon="item.icon" />
+          <project-view-card @delete="handleOnDelteProject" @edit="handleOnEditProject" :name="item.name" :describe="item.describe" :id="item.id" :tags="item.tags" />
         </a-col>
         <!-- 分页行 -->
         <a-col :span="24">
           <div class="pagination-line">
-            <a-pagination v-model:current="pageCfg.current" v-model:pageSize="pageCfg.pageSize" :total="50" show-less-items />
+            <a-pagination v-model:current="pageCfg.current" v-model:pageSize="pageCfg.pageSize" :total="projectList.lenght" show-less-items />
           </div>
         </a-col>
       </a-row>
@@ -34,17 +39,17 @@
 
 <script>
 import { useI18n } from "@fesjs/fes";
-import { ApartmentOutlined, PlusOutlined } from "@ant-design/icons-vue";
-import ProjectCreateCard from "./components/project_create_card.vue";
-import ProjectViewCard from "./components/project_view_card.vue";
-import EditModal from "./components/edit_modal.vue";
+import { PlusOutlined } from "@ant-design/icons-vue";
+import ProjectCreateCard from "./components/projectCreateCard.vue";
+import ProjectViewCard from "./components/projectViewCard.vue";
+import EditModal from "./components/editModal.vue";
 import { getProjectList, deleteProject } from "@/common/service";
-import { useTableBase } from "@/common/use/useTable";
 export default {
   components: {
     ProjectViewCard,
     ProjectCreateCard,
     EditModal,
+    iconPlusOutlined: PlusOutlined,
   },
   data() {
     return {
@@ -75,13 +80,15 @@ export default {
     async getDataList(name) {
       this.loading = true;
       let { list } = await getProjectList(name);
-      this.projectList = list.map((item) => ({
-        id: item.id,
-        name: item.name,
-        describe: item.description,
-        tags: item.tags.split(","),
-      }));
       this.loading = false;
+      this.projectList = list
+        .map((item) => ({
+          id: item.id,
+          name: item.name,
+          describe: item.description,
+          tags: item.tags.split(","),
+        }))
+        .reverse();
     },
     // 模态框操作完成
     handleModalFinish() {
