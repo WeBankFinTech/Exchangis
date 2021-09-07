@@ -1,4 +1,60 @@
 export default {
+  globalMenu: {
+    projectManage: "项目管理",
+    dataSourceManage: "数据源管理",
+    jobManagement: "数据任务管理",
+  },
+  projectManage: {
+    topLine: {
+      searchBar: {
+        searchInputPlaceholder: "输入项目名搜索",
+        searchButtonText: "搜索",
+      },
+      title: "项目列表",
+    },
+    createCardText: "创建项目",
+    viewCard: {
+      actionTitle: "操作",
+      action: {
+        edit: "编辑",
+        delete: "删除",
+      },
+    },
+    editModal: {
+      title: {
+        create: "创建项目",
+        edit: "修改项目",
+      },
+      form: {
+        fields: {
+          projectName: {
+            label: "项目名",
+            placeholder: "请输入项目名",
+          },
+          tags: {
+            label: "标签",
+            placeholder: "请选择标签",
+          },
+          description: {
+            label: "描述",
+            placeholder: "请填写描述",
+          },
+          viewUsers: {
+            label: "查看权限",
+            placeholder: "请选择查看权限",
+          },
+          execUsers: {
+            label: "执行权限",
+            placeholder: "请选择执行权限",
+          },
+          editUsers: {
+            label: "编辑权限",
+            placeholder: "请选择编辑权限",
+          },
+        },
+      },
+    },
+  },
   dataSource: {
     topLine: {
       searchBar: {
@@ -17,9 +73,7 @@ export default {
           title: {
             name: "数据源名称",
             type: "类型",
-            colony: "集群",
             status: "状态",
-            power: "权限",
             tags: "标签",
             version: "版本",
             describe: "描述",
@@ -44,22 +98,29 @@ export default {
       },
       form: {
         fields: {
-          name: "",
+          dataSourceName: {
+            label: "数据源名称",
+            placeholder: "请输入数据源名称",
+          },
+          dataSourceDesc: {
+            label: "描述",
+            placeholder: "请输入描述",
+          },
         },
       },
     },
     sourceTypeModal: {
-      title: "请选择数据源类型",
+      title: "DataSourceType",
       searchInputPlaceholder: "输入关键字搜索数据源",
     },
   },
   job: {
     action: {
       createJob: "新增任务",
-      copyJob: "复制任务"
+      copyJob: "复制任务",
     },
-    jobDetail:{
-      name: "任务名"
-    }
-  }
+    jobDetail: {
+      name: "任务名",
+    },
+  },
 };

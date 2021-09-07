@@ -9,10 +9,3 @@ export default {
   },
 };
 </script>
-
-<config>
-{
-    "name": "index",
-    "title": "首页"
-}
-</config>
