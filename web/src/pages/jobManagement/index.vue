@@ -36,7 +36,7 @@ export default {
     JobDetail,
     UnorderedListOutlined,
     ClusterOutlined,
-    CloseOutlined,
+    CloseOutlined
   },
   data() {
     return {
@@ -96,7 +96,7 @@ export default {
       }
       this.activeTabId = undefined;
       this.tabs = tabs;
-    },
+    }
   },
 };
 </script>
