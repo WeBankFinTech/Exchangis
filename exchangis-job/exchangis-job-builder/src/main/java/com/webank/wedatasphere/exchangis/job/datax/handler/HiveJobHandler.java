@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class HiveJobHandler extends DataxJobHandler {
     @Override
-    public Reader handlerReader(ExchangisSubJob job, Long jobId) {
+    public Reader handleReader(ExchangisSubJob job, Long jobId) {
         HiveReader reader = new HiveReader();
         Map params = new HashMap<String, String>();
         reader.setName("hivereader");
@@ -22,7 +22,7 @@ public class HiveJobHandler extends DataxJobHandler {
     }
 
     @Override
-    public Writer handlerWriter(ExchangisSubJob job, Long jobId) {
+    public Writer handleWriter(ExchangisSubJob job, Long jobId) {
         HiveWriter writer = new HiveWriter();
         Map params = new HashMap<String, String>();
         writer.setName("hivewriter");

@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class MysqlJobHandler extends DataxJobHandler {
     @Override
-    public Reader handlerReader(ExchangisSubJob subjob, Long jobId) throws ExchangisDataSourceException {
+    public Reader handleReader(ExchangisSubJob subjob, Long jobId) throws ExchangisDataSourceException {
         MysqlReader reader = new MysqlReader();
         reader.setName("mysqlreader");
 
@@ -84,12 +84,12 @@ public class MysqlJobHandler extends DataxJobHandler {
     }
 
     @Override
-    public Writer handlerWriter(ExchangisSubJob subjob, Long jobId) {
+    public Writer handleWriter(ExchangisSubJob subjob, Long jobId) {
         MysqlWriter writer = new MysqlWriter();
         writer.setName("mysqlwriter");
 
         Map params = new HashMap<String, String>();
-        //Map connectParams = dataSourceServiceservice.getGetDataSourceInfoResultDTO(jobId).getData().getInfo().getConnectParams();
+        //Map connectParams = dataSourceService.getGetDataSourceInfoResultDTO(jobId).getData().getInfo().getConnectParams();
         Map connectParams = new HashMap();
         connectParams.put("host", "172.24.2.61");
         connectParams.put("port", "3306");
