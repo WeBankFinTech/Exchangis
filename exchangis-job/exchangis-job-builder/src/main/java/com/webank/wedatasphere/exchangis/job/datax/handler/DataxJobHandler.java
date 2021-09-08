@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class DataxJobHandler implements JobHandler {
 
     @Autowired
-    ExchangisDataSourceService dataSourceServiceservice;
+    ExchangisDataSourceService dataSourceService;
 
     GsonBuilder builder = new GsonBuilder();
     Gson gson = builder.create();
