@@ -64,3 +64,15 @@ CREATE TABLE `exchangis_project`  (
     edit_users varchar(255),
     primary key (id)
 ) ENGINE = InnoDB CHARACTER SET = utf8;
+
+DROP TABLE IF EXISTS `exchangis_launch_task`;
+CREATE TABLE `exchangis_launch_task`  (
+    id bigint auto_increment,
+    job_id bigint,
+    engine_type varchar(64),
+    run_type varchar(64),
+    code text,
+    creator varchar(64),
+    execute_user varchar(64),
+    primary key (id)
+) ENGINE = InnoDB CHARACTER SET = utf8;
