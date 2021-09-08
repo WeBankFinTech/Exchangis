@@ -2,13 +2,15 @@ package com.webank.wedatasphere.exchangis.job.builder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
+import com.webank.wedatasphere.exchangis.job.datax.domain.LaunchCode;
 import com.webank.wedatasphere.exchangis.job.datax.handler.HiveJobHandler;
 import com.webank.wedatasphere.exchangis.job.datax.handler.MysqlJobHandler;
 import com.webank.wedatasphere.exchangis.job.datax.reader.Reader;
 import com.webank.wedatasphere.exchangis.job.datax.writer.Writer;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
-import com.webank.wedatasphere.exchangis.job.domain.LaunchTask;
 import com.webank.wedatasphere.exchangis.job.domain.Setting;
 import com.webank.wedatasphere.exchangis.job.enums.DataSourceTypeEnum;
 import com.webank.wedatasphere.exchangis.job.handler.JobHandler;
@@ -24,25 +26,32 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
     Gson gson = builder.create();
 
     @Override
-    public LaunchTask[] buildJob(ExchangisJob job) {
+    public ExchangisLaunchTask[] buildJob(ExchangisJob job) throws ExchangisDataSourceException {
         String content = job.getContent();
+        Long jobId = job.getId();
         ExchangisSubJob[] exchangisSubJobs = gson.fromJson(content, ExchangisSubJob[].class);
-        LaunchTask[] tasks = new LaunchTask[exchangisSubJobs.length];
+        ExchangisLaunchTask[] launchTasks = new ExchangisLaunchTask[exchangisSubJobs.length];
 
         for (int i = 0; i < exchangisSubJobs.length; i++) {
             ExchangisSubJob subjob = exchangisSubJobs[i];
-            LaunchTask task = new LaunchTask();
+            LaunchCode code = new LaunchCode();
 
-            task.setContent(generateContents(subjob));
-            task.setSettings(generateSettings(subjob));
+            code.setContent(generateContents(subjob, jobId));
+            code.setSettings(generateSettings(subjob));
+            ExchangisLaunchTask task = new ExchangisLaunchTask();
+            task.setCode(code.toString());
+            task.setEngineType(job.getEngineType());
+            task.setCreator(job.getCreateUser());
+            task.setExecuteUser(job.getProxyUser());
+            task.setRunType((String) subjob.getTransforms().get("type"));
 
-            tasks[i] = task;
+            launchTasks[i] = task;
         }
 
-        return tasks;
+        return launchTasks;
     }
 
-    private List generateContents(ExchangisSubJob subjob) {
+    private List generateContents(ExchangisSubJob subjob, Long jobId) throws ExchangisDataSourceException {
         DataSourceTypeEnum source = getDataSourceType(subjob.getDataSources().get("source_id").toString());
         DataSourceTypeEnum sink = getDataSourceType(subjob.getDataSources().get("sink_id").toString());
         JobHandler jobhandler;
@@ -54,11 +63,11 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
         switch (source) {
             case MYSQL:
                 jobhandler = new MysqlJobHandler();
-                reader = jobhandler.handlerReader(subjob);
+                reader = jobhandler.handlerReader(subjob, jobId);
                 break;
             case HIVE:
                 jobhandler = new HiveJobHandler();
-                reader = jobhandler.handlerReader(subjob);
+                reader = jobhandler.handlerReader(subjob, jobId);
                 break;
             default:
                 break;
@@ -67,11 +76,11 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
         switch (sink) {
             case MYSQL:
                 jobhandler = new MysqlJobHandler();
-                writer = jobhandler.handlerWriter(subjob);
+                writer = jobhandler.handlerWriter(subjob, jobId);
                 break;
             case HIVE:
                 jobhandler = new HiveJobHandler();
-                writer = jobhandler.handlerWriter(subjob);
+                writer = jobhandler.handlerWriter(subjob, jobId);
                 break;
             default:
                 break;
