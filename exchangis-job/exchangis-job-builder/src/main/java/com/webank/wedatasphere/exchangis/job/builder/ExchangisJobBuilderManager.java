@@ -1,21 +1,17 @@
 package com.webank.wedatasphere.exchangis.job.builder;
 
+import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
+
 public class ExchangisJobBuilderManager {
 
-    private volatile static ExchangisJobBuilder jobBuilder;
-
-    public static ExchangisJobBuilder getJobBuiler(String engineType) {
-        if (jobBuilder == null) {
-            synchronized (ExchangisJobBuilderManager.class) {
-                if (jobBuilder == null) {
-                    switch (engineType) {
-                        default:
-                            jobBuilder = new DataXJobBuilder();
-                            break;
-                    }
-                }
-            }
+    public static ExchangisJobBuilder getJobBuilder(EngineTypeEnum engineType) throws Exception {
+        switch (engineType) {
+            case DATAX:
+                return new DataXJobBuilder();
+            case SQOOP:
+                return new SqoopJobBuilder();
+            default:
+                throw new Exception("Engine type not supported");
         }
-        return jobBuilder;
     }
 }
