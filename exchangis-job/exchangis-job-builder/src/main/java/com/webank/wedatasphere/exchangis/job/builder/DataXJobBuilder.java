@@ -39,7 +39,7 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
             code.setContent(generateContents(subjob, jobId));
             code.setSettings(generateSettings(subjob));
             ExchangisLaunchTask task = new ExchangisLaunchTask();
-            task.setCode(code.toString());
+            task.setCode(gson.toJson(code));
             task.setEngineType(job.getEngineType());
             task.setCreator(job.getCreateUser());
             task.setExecuteUser(job.getProxyUser());
@@ -97,8 +97,8 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
         Map tasksettings = new HashMap();
         Map speedsettings = new HashMap();
 
-        for (int j = 0; j < settings.size(); j++) {
-            Setting setting = gson.fromJson(settings.get(j).toString(), Setting.class);
+        for (Object o : settings) {
+            Setting setting = gson.fromJson(o.toString(), Setting.class);
             speedsettings.put(setting.getConfig_key(), setting.getConfig_value());
         }
         tasksettings.put("speed", speedsettings);
