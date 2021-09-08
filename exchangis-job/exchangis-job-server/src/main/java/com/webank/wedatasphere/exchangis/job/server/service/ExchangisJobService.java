@@ -15,8 +15,7 @@ import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
  * The interface Exchangis job service.
  *
  * @author yuxin.yuan
- * @date 2021 /08/18
- * @since 2021 -08-10
+ * @since 2021-08-10
  */
 public interface ExchangisJobService extends IService<ExchangisJob> {
 
