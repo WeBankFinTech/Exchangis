@@ -63,11 +63,11 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
         switch (source) {
             case MYSQL:
                 jobhandler = new MysqlJobHandler();
-                reader = jobhandler.handlerReader(subjob, jobId);
+                reader = jobhandler.handleReader(subjob, jobId);
                 break;
             case HIVE:
                 jobhandler = new HiveJobHandler();
-                reader = jobhandler.handlerReader(subjob, jobId);
+                reader = jobhandler.handleReader(subjob, jobId);
                 break;
             default:
                 break;
@@ -76,11 +76,11 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
         switch (sink) {
             case MYSQL:
                 jobhandler = new MysqlJobHandler();
-                writer = jobhandler.handlerWriter(subjob, jobId);
+                writer = jobhandler.handleWriter(subjob, jobId);
                 break;
             case HIVE:
                 jobhandler = new HiveJobHandler();
-                writer = jobhandler.handlerWriter(subjob, jobId);
+                writer = jobhandler.handleWriter(subjob, jobId);
                 break;
             default:
                 break;
