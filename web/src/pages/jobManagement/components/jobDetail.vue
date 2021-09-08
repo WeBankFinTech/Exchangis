@@ -9,8 +9,8 @@
         <div class="jd-content">
           <div class="jd_left">
             <DatabaseFilled /><span>子任务列表</span><PlusSquareOutlined />
-            <div>
-              <div>任务1<CopyOutlined /> <DeleteOutlined /></div>
+            <div v-for="item in list">
+              <div>{{item.jobName}}<CopyOutlined @click="copySub(item)" /> <DeleteOutlined /></div>
               <div>xxxxxx</div>
               <div> <ArrowDownOutlined /> </div>
               <div>xxxxxx</div>
@@ -21,6 +21,7 @@
           </div>
         </div>
       <config-modal v-model:visible="modalCfg.visible" :id="modalCfg.id" @finish="handleModalFinish" />
+      <copy-modal v-model:visible="modalCopy.visible" :origin="copyObj" @finish="handleModalCopy" />
     </div>
 </template>
 <script>
@@ -38,6 +39,7 @@
     CheckCircleOutlined
   } from "@ant-design/icons-vue";
   import configModal from './configModal'
+  import copyModal from './copyModal'
   export default {
     components: {
       SettingOutlined,
@@ -50,7 +52,8 @@
       DeleteOutlined,
       ArrowDownOutlined,
       CheckCircleOutlined,
-      configModal
+      configModal,
+      copyModal
     },
     data() {
       return {
@@ -58,7 +61,18 @@
         modalCfg: {
           id: '',
           visible: false,
-        }
+        },
+        modalCopy: {
+          visible: false,
+        },
+        copyObj: {},
+        list:[
+          {
+            id: 1,
+            jobName: '任务1',
+            engineType: 'DataX'
+          }
+        ]
       };
     },
     props: {
@@ -79,6 +93,13 @@
       },
       handleModalFinish(){
 
+      },
+      handleModalCopy() {
+
+      },
+      copySub(item) {
+        this.copyObj = item
+        this.modalCopy.visible = true
       }
     }
   }
