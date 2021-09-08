@@ -7,7 +7,7 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
 
 public interface JobHandler {
 
-    Reader handlerReader(ExchangisSubJob job, Long jobId) throws ExchangisDataSourceException;
+    Reader handleReader(ExchangisSubJob job, Long jobId) throws ExchangisDataSourceException;
 
-    Writer handlerWriter(ExchangisSubJob job, Long jobId);
+    Writer handleWriter(ExchangisSubJob job, Long jobId);
 }
