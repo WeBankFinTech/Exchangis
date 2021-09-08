@@ -58,3 +58,11 @@ export const testDataSourceConnect = (type, id) => {
 export const getDataSourceById = (id) => {
   return request(`/datasources/${id}`, {}, { method: "GET" });
 };
+
+export const expireDataSource = (id) => {
+  return request(`/datasources/${id}/expire`, {}, { method: "PUT" });
+};
+
+export const publishDataSource = (id, versionId) => {
+  return request(`/datasources/${id}/${versionId}/publish`, {}, { method: "PUT" });
+};
