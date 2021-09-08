@@ -58,3 +58,9 @@ export const testDataSourceConnect = (type, id) => {
 export const getDataSourceById = (id) => {
   return request(`/datasources/${id}`, {}, { method: "GET" });
 };
+
+export const copyJob = (id, params) => {
+  return request(`/job/${id}/copy`, {...params}, {
+    method: "POST",
+  });
+};

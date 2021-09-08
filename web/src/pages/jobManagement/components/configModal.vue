@@ -28,7 +28,6 @@
           <a-input v-model:value="item.value" />
         </a-form-item>
       </div>
-
     </a-form>
   </a-modal>
 </template>
@@ -77,13 +76,7 @@ export default {
     async handleOk() {
       await this.$refs.formRef.validate();
       const formatData = {
-        id: this.id ? this.id : undefined,
-        projectName: this.formState.projectName,
-        description: this.formState.description,
-        tags: this.formState.tags.join(),
-        viewUsers: this.formState.viewUsers.join(),
-        execUsers: this.formState.execUsers.join(),
-        editUsers: this.formState.editUsers.join(),
+        ...this.formState
       };
       try {
         if (this.mode === "create") {
