@@ -1,8 +1,8 @@
 <template>
   <a-modal title="复制任务" :visible="visible" :confirm-loading="confirmLoading" @ok="handleOk" @cancel="$emit('update:visible', false)">
     <a-form ref="formRef" :rules="rules" :model="formState" :label-col="{ span: 4 }">
-      <a-form-item label="原任务" name="jobNameOrigin">
-        <a-input v-model:value="origin.jobName" disabled/>
+      <a-form-item label="原任务" name="subjobName">
+        <a-input v-model:value="origin.subjobName" disabled/>
       </a-form-item>
       <a-form-item label="任务名" name="jobName">
         <a-input v-model:value="formState.jobName" />
