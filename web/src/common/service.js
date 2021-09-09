@@ -64,3 +64,9 @@ export const copyJob = (id, params) => {
     method: "POST",
   });
 };
+
+export const getJobInfo = (id) => {
+  return request(`/job/${id}`, null, {
+    method: "GET",
+  });
+};

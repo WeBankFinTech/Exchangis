@@ -20,11 +20,11 @@
       </a-form-item>
       <h2>任务变量 <PlusOutlined class="fr" @click="createTask"/></h2>
       <div v-for="(item, index) in formState.taskVariable" style="overflow: hidden">
-        <a-form-item class="w40 fl" :label="index" name="taskVariableKey" >
+        <a-form-item class="w40 fl" :label="index + 1" name="taskVariableKey" >
           <a-input v-model:value="item.key" />
         </a-form-item>
         <span class="fl separator">=</span>
-        <a-form-item class="w40 fl" :label="index" name="taskVariableValue">
+        <a-form-item class="w40 fl" name="taskVariableValue">
           <a-input v-model:value="item.value" />
         </a-form-item>
       </div>
