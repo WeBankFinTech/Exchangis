@@ -22,8 +22,7 @@
       <div class="jd_right">
         <CheckCircleOutlined />
         <div>
-          <!-- <DataSource /> -->
-          <Tree />
+          <DataSource />
         </div>
       </div>
     </div>
@@ -56,7 +55,6 @@ import {
 import configModal from "./configModal";
 import copyModal from "./copyModal";
 import DataSource from "./dataSource";
-import Tree from "./tree.vue";
 export default {
   components: {
     SettingOutlined,
@@ -72,7 +70,6 @@ export default {
     configModal,
     copyModal,
     DataSource,
-    Tree,
   },
   data() {
     return {
