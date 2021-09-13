@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="tools-bar">
-      <span @click="modalCfg.visible=true"><SettingOutlined />配置</span>
+      <span @click="modalCfg.visible = true"><SettingOutlined />配置</span>
       <span><CaretRightOutlined />执行</span>
       <span><SaveOutlined />保存</span>
       <span><HistoryOutlined />执行历史</span>
@@ -9,19 +9,34 @@
     <div class="jd-content">
       <div class="jd_left">
         <DatabaseFilled /><span>子任务列表</span><PlusSquareOutlined />
-        <div v-for="item in list">
-          <div>{{item.subjobName}}<CopyOutlined @click="copySub(item)" /> <DeleteOutlined /></div>
+        <div v-for="(item, idx) in list" :key="idx">
+          <div>
+            {{ item.jobName }}<CopyOutlined @click="copySub(item)" />
+            <DeleteOutlined />
+          </div>
           <div>xxxxxx</div>
-          <div> <ArrowDownOutlined /> </div>
+          <div><ArrowDownOutlined /></div>
           <div>xxxxxx</div>
         </div>
       </div>
       <div class="jd_right">
-        <CheckCircleOutlined />数据源
+        <CheckCircleOutlined />
+        <div>
+          <!-- <DataSource /> -->
+          <Tree />
+        </div>
       </div>
     </div>
-    <config-modal v-model:visible="modalCfg.visible" :id="modalCfg.id" @finish="handleModalFinish" />
-    <copy-modal v-model:visible="modalCopy.visible" :origin="copyObj" @finish="handleModalCopy" />
+    <config-modal
+      v-model:visible="modalCfg.visible"
+      :id="modalCfg.id"
+      @finish="handleModalFinish"
+    />
+    <copy-modal
+      v-model:visible="modalCopy.visible"
+      :origin="copyObj"
+      @finish="handleModalCopy"
+    />
   </div>
 </template>
 <script>
@@ -36,13 +51,12 @@ import {
   CopyOutlined,
   DeleteOutlined,
   ArrowDownOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
 } from "@ant-design/icons-vue";
-import configModal from './configModal'
-import copyModal from './copyModal'
-import { getJobInfo } from "@/common/service";
-import { jobInfo } from "../mock"
-
+import configModal from "./configModal";
+import copyModal from "./copyModal";
+import DataSource from "./dataSource";
+import Tree from "./tree.vue";
 export default {
   components: {
     SettingOutlined,
@@ -56,73 +70,65 @@ export default {
     ArrowDownOutlined,
     CheckCircleOutlined,
     configModal,
-    copyModal
+    copyModal,
+    DataSource,
+    Tree,
   },
   data() {
     return {
-      name: '',
+      name: "",
       modalCfg: {
-        id: '',
+        id: "",
         visible: false,
       },
       modalCopy: {
         visible: false,
       },
-      jobData: {},
       copyObj: {},
-      list:[]
+      list: [
+        {
+          id: 1,
+          jobName: "任务1",
+          engineType: "DataX",
+        },
+      ],
     };
   },
   props: {
-    curTab: Object
+    curTab: Object,
   },
-  watch:{
-    curTab(n, o){
-      this.init()
-    }
+  watch: {
+    curTab(n, o) {
+      this.init();
+    },
   },
   mounted() {
-    this.init()
+    this.init();
   },
   methods: {
-    init(){
-      this.name = this.curTab.jobName
-      this.getInfo()
+    init() {
+      this.name = this.curTab.jobName;
+      console.log(this.curTab, this.name);
     },
-    async getInfo() {
-      try {
-        //await getJobInfo(this.curTab.id);
-        jobInfo.content.subJobs.forEach(item => {
-          item.engineType = jobInfo.engineType
-        })
-        this.jobData = jobInfo
-        this.list = this.jobData.content.subJobs
-        console.log(this.jobData)
-      } catch (error) {}
-    },
-    handleModalFinish(){
-
-    },
-    handleModalCopy() {
-
-    },
+    handleModalFinish() {},
+    handleModalCopy() {},
     copySub(item) {
-      this.copyObj = item
-      this.modalCopy.visible = true
-    }
-  }
-}
+      this.copyObj = item;
+      this.modalCopy.visible = true;
+    },
+  },
+};
 </script>
 <style scoped lang="less">
 .container {
-    .jd-content{
-        display: flex;
-        .jd_left{
-          flex: 1;
-        }
-        .jd_right{
-          flex: 4;
-        }
+  .jd-content {
+    display: flex;
+    .jd_left {
+      flex: 1;
     }
+    .jd_right {
+      flex: 4;
+    }
+  }
 }
 </style>
