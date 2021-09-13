@@ -1,4 +1,34 @@
-import { Button, Row, Col, Tag, Form, Input, ConfigProvider, Select, Checkbox, DatePicker, TimePicker, Dropdown, Divider, Modal, Popconfirm, Upload, InputNumber, Table, Spin, Breadcrumb, Tabs, Card, Menu, Pagination, Typography, Space,message, Radio } from "ant-design-vue";
+import {
+  Button,
+  Row,
+  Col,
+  Tag,
+  Form,
+  Input,
+  ConfigProvider,
+  Select,
+  Checkbox,
+  DatePicker,
+  TimePicker,
+  Dropdown,
+  Divider,
+  Modal,
+  Popconfirm,
+  Upload,
+  InputNumber,
+  Table,
+  Spin,
+  Breadcrumb,
+  Tabs,
+  Card,
+  Menu,
+  Pagination,
+  Typography,
+  Space,
+  message,
+  Radio,
+  Tree,
+} from "ant-design-vue";
 
 /**
  * @description 手动注册 antd-vue 组件,达到按需加载目的
@@ -34,4 +64,5 @@ export default function loadComponent(app) {
   app.use(Space);
   app.use(Typography);
   app.use(Radio);
+  app.use(Tree);
 }

@@ -19,24 +19,34 @@
         <!-- left -->
         <div class="data-source-warp-l">
           <div class="data-source-warp-l-content">
-            <div class="ds-warp-l-c-item">
-              <div class="data-source-label">
-                <span>数据源信息：</span>
-              </div>
-              <!-- 三级联 选择 -->
-              <div class="data-source-select-modal">
-                <a-button type="primary" @click="showModal"
-                  >Open Modal</a-button
+            <a-form ref="formRef" :model="formState" :rules="rules">
+              <a-form-item ref="dsInfo" label="数据源信息" name="dsInfo">
+                <SelectDataSource @updateDsInfo="updateDsInfo" />
+              </a-form-item>
+              <a-form-item label="传输方式" name="transMode">
+                <a-select
+                  v-model:value="formState.transMode"
+                  placeholder="please select your transmission mode"
                 >
-                <a-modal
-                  v-model:visible="visible_1"
-                  title="选择数据源"
-                  :footer="null"
-                >
-                  <SelectDataSource />
-                </a-modal>
-              </div>
-            </div>
+                  <a-select-option value="Record">Record</a-select-option>
+                  <a-select-option value="Binary">二进制</a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item ref="partInfo" label="分区信息" name="partInfo">
+                <span>ds1=</span>
+                <a-input
+                  v-model:value="formState.partInfo"
+                  style="width: 200px"
+                />
+              </a-form-item>
+              <a-form-item
+                ref="nullCharacter"
+                label="空值字符"
+                name="nullCharacter"
+              >
+                <a-input v-model:value="formState.nullCharacter" />
+              </a-form-item>
+            </a-form>
           </div>
         </div>
 
@@ -44,29 +54,86 @@
         <div class="data-source-warp-mid"></div>
 
         <!-- right -->
-        <div class="data-source-warp-r"></div>
+        <div class="data-source-warp-r">
+          <div class="data-source-warp-r-content">
+            <a-form ref="formRef" :model="formState2" :rules="rules2">
+              <a-form-item ref="dsInfo2" label="数据源信息" name="dsInfo2">
+                <SelectDataSource @updateDsInfo="updateDsInfo2" />
+              </a-form-item>
+              <a-form-item label="写入方式" name="writeMode">
+                <a-select
+                  v-model:value="formState2.writeMode"
+                  placeholder="please select your write mode"
+                >
+                  <a-select-option value="Insert">Insert</a-select-option>
+                  <a-select-option value="Replace">Replace</a-select-option>
+                  <a-select-option value="Update">Update</a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item ref="batchSize" label="批量大小" name="batchSize">
+                <a-input v-model:value="formState2.batchSize" />
+              </a-form-item>
+            </a-form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, reactive, toRaw } from "vue";
 import SelectDataSource from "./selectDataSource";
 export default defineComponent({
   components: {
     SelectDataSource,
   },
   setup() {
-    const visible_1 = ref(false);
-
-    const showModal = () => {
-      visible_1.value = true;
+    const formRef = ref();
+    const formState = reactive({
+      dsInfo: "",
+      transMode: undefined,
+      partInfo: "",
+      nullCharacter: "",
+    });
+    const formState2 = reactive({
+      dsInfo2: "",
+      writeMode: undefined,
+      batchSize: "",
+    });
+    const rules = {
+      transMode: [
+        {
+          required: true,
+          message: "Please select transmission mode",
+          trigger: "change",
+        },
+      ],
     };
-
+    const rules2 = {
+      writeMode: [
+        {
+          required: true,
+          message: "Please select write mode",
+          trigger: "change",
+        },
+      ],
+    };
+    const updateDsInfo = (dsInfo) => {
+      formState.dsInfo = dsInfo;
+      console.log(formState);
+    };
+    const updateDsInfo2 = (dsInfo) => {
+      formState2.dsInfo = dsInfo;
+      console.log(formState2);
+    };
     return {
-      visible_1,
-      showModal,
+      formRef,
+      formState,
+      rules,
+      formState2,
+      rules2,
+      updateDsInfo,
     };
   },
 });
