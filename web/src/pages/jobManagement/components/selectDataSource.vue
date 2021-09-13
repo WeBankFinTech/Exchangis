@@ -1,44 +1,39 @@
 <template>
   <div class="sds-wrap">
-    <!-- top -->
-    <div class="sds-wrap-t">
-      <a-space>
-        <a-select
-          v-model:value="dataBase"
-          style="width: 120px"
-          :options="dataBaseTypes.map((db) => ({ value: db }))"
-        >
-        </a-select>
-        <a-select
-          v-model:value="colony"
-          style="width: 120px"
-          :options="colonys.map((colony) => ({ value: colony }))"
-        >
-        </a-select>
-      </a-space>
-    </div>
-    <!-- bottom 类似tree组件 -->
-    <div class="sds-wrap-b">
-      <!-- <a-tree
-        :tree-data="treeData"
-        v-model:expandedKeys="expandedKeys"
-        v-model:selectedKeys="selectedKeys"
-      ></a-tree> -->
-      <a-directory-tree
-        multiple
-        v-model:expandedKeys="expandedKeys"
-        v-model:selectedKeys="selectedKeys"
-      >
-        <a-tree-node key="0-0" title="parent 0">
-          <a-tree-node key="0-0-0" title="leaf 0-0" is-leaf />
-          <a-tree-node key="0-0-1" title="leaf 0-1" is-leaf />
-        </a-tree-node>
-        <a-tree-node key="0-1" title="parent 1">
-          <a-tree-node key="0-1-0" title="leaf 1-0" is-leaf />
-          <a-tree-node key="0-1-1" title="leaf 1-1" is-leaf />
-        </a-tree-node>
-      </a-directory-tree>
-    </div>
+    <a-button type="primary" @click="showModal">{{ defaultSelect }}</a-button>
+    <a-modal
+      v-model:visible="visible"
+      title="选择数据源"
+      @ok="handleOk"
+      width="500px"
+    >
+      <!-- top -->
+      <div class="sds-wrap-t">
+        <a-space>
+          <a-select
+            v-model:value="dataBase"
+            style="width: 120px"
+            :options="dataBaseTypes.map((db) => ({ value: db }))"
+          >
+          </a-select>
+          <a-select
+            v-model:value="colony"
+            style="width: 120px"
+            :options="colonys.map((colony) => ({ value: colony }))"
+          >
+          </a-select>
+        </a-space>
+      </div>
+      <!-- bottom 类似tree组件 -->
+      <div class="sds-wrap-b">
+        <a-directory-tree
+          :tree-data="treeData"
+          v-model:expandedKeys="expandedKeys"
+          v-model:selectedKeys="selectedKeys"
+          @select="selectItem"
+        ></a-directory-tree>
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -52,89 +47,99 @@ const tables = {
   A集群: [
     {
       title: "default",
-      key: "0-0",
-      childrens: [
-        { title: "a1", key: "0-0-0" },
-        { title: "test_table", key: "0-0-1" },
+      key: "default",
+      children: [
+        { title: "a1", key: "a1" },
+        { title: "test_table", key: "test_table" },
       ],
     },
-    { title: "db_test_mask", key: "0-1" },
-    { title: "db_test_mask1", key: "0-2" },
-    { title: "db_test_mask2", key: "0-3" },
+    { title: "db_test_mask", key: "db_test_mask" },
+    { title: "db_test_mask1", key: "db_test_mask1" },
+    { title: "db_test_mask2", key: "db_test_mask2" },
+  ],
+  D集群: [
+    {
+      title: "default2",
+      key: "default2",
+      children: [
+        { title: "a2", key: "a2" },
+        { title: "test_table2", key: "test_table2" },
+      ],
+    },
+    { title: "db_test_mask3", key: "db_test_mask3" },
+    { title: "db_test_mask4", key: "db_test_mask4" },
+    { title: "db_test_mask5", key: "db_test_mask5" },
   ],
 };
-const treeData = [
-  {
-    title: "parent 1",
-    key: "0-0",
-    children: [
-      {
-        title: "parent 1-0",
-        key: "0-0-0",
-        disabled: true,
-        children: [
-          {
-            title: "leaf",
-            key: "0-0-0-0",
-            disableCheckbox: true,
-          },
-          {
-            title: "leaf",
-            key: "0-0-0-1",
-          },
-        ],
-      },
-      {
-        title: "parent 1-1",
-        key: "0-0-1",
-        children: [
-          {
-            key: "0-0-1-0",
-            slots: {
-              title: "title0010",
-            },
-          },
-        ],
-      },
-    ],
-  },
-];
-import { defineComponent, reactive, toRefs, computed, watch, ref } from "vue";
+import {
+  defineComponent,
+  reactive,
+  toRefs,
+  computed,
+  watch,
+  ref,
+  toRaw,
+} from "vue";
 
 export default defineComponent({
-  setup() {
+  props: {
+    dsInfo: String,
+  },
+  emits: ["updateDsInfo"],
+  setup(props, context) {
     const dataBase = dataBaseTypes[0];
     const state = reactive({
       dataBase,
       dataBaseTypes,
       colonyData,
       colony: colonyData[dataBase][0],
+      defaultSelect: "Hive-A集群-a1",
     });
+    const visible = ref(false);
+
+    const showModal = () => {
+      visible.value = true;
+    };
     const colonys = computed(() => {
       return colonyData[state.dataBase];
     });
-    // const treeData = computed(() => {
-    //   console.log("state.colony", state.colony);
-    //   return tables[state.colony];
-    // });
-    const expandedKeys = ref(["0-0", "0-1"]);
-    const selectedKeys = ref([]);
-    watch(expandedKeys, () => {
-      console.log("expandedKeys", expandedKeys);
+    const treeData = computed(() => {
+      return tables[state.colony];
     });
-    watch(selectedKeys, () => {
-      console.log("selectedKeys", selectedKeys);
-    });
+    const expandedKeys = ref([]);
+    const selectedKeys = ref();
+    let _defaultSelect = "";
+    const selectItem = (e) => {
+      _defaultSelect = `${state.dataBase}-${state.colony}-${e.join("")}`;
+    };
+    const handleOk = () => {
+      visible.value = false;
+      state.defaultSelect = _defaultSelect;
+      context.emit("updateDsInfo", _defaultSelect);
+    };
     watch(
       () => state.dataBase,
       (val) => {
         state.colony = state.colonyData[val][0];
       }
     );
-
-    return { ...toRefs(state), colonys, expandedKeys, selectedKeys };
+    return {
+      ...toRefs(state),
+      colonys,
+      treeData,
+      expandedKeys,
+      selectedKeys,
+      selectItem,
+      visible,
+      showModal,
+      handleOk,
+    };
   },
 });
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.sds-wrap {
+  display: inline-block;
+}
+</style>
