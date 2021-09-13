@@ -69,12 +69,11 @@ export default {
       };
       try {
         this.confirmLoading = true;
-
         message.success("复制成功");
       } catch (error) {}
       this.confirmLoading = false;
       this.$emit("update:visible", false);
-      this.$emit("finish");
+      this.$emit("finish", formatData);
     }
   }
 };

@@ -11,7 +11,7 @@
         <DatabaseFilled /><span>子任务列表</span><PlusSquareOutlined />
         <div v-for="(item, idx) in list" :key="idx">
           <div>
-            {{ item.jobName }}<CopyOutlined @click="copySub(item)" />
+            {{ item.subjobName }}<CopyOutlined @click="copySub(item)" />
             <DeleteOutlined />
           </div>
           <div>xxxxxx</div>
@@ -55,6 +55,8 @@ import {
 } from "@ant-design/icons-vue";
 import configModal from "./configModal";
 import copyModal from "./copyModal";
+import { getJobInfo } from "@/common/service";
+import { jobInfo } from "../mock"
 import DataSource from "./dataSource";
 import Tree from "./tree.vue";
 export default {
@@ -84,14 +86,9 @@ export default {
       modalCopy: {
         visible: false,
       },
+      jobData: {},
       copyObj: {},
-      list: [
-        {
-          id: 1,
-          jobName: "任务1",
-          engineType: "DataX",
-        },
-      ],
+      list: [],
     };
   },
   props: {
@@ -108,10 +105,23 @@ export default {
   methods: {
     init() {
       this.name = this.curTab.jobName;
-      console.log(this.curTab, this.name);
+      this.getInfo()
+    },
+    async getInfo() {
+      try {
+        //await getJobInfo(this.curTab.id);
+        jobInfo.content.subJobs.forEach(item => {
+          item.engineType = jobInfo.engineType
+        })
+        this.jobData = jobInfo
+        this.list = this.jobData.content.subJobs
+        console.log(this.jobData)
+      } catch (error) {}
     },
     handleModalFinish() {},
-    handleModalCopy() {},
+    handleModalCopy(data) {
+      console.log(data)
+    },
     copySub(item) {
       this.copyObj = item;
       this.modalCopy.visible = true;
