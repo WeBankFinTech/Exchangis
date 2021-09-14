@@ -22,7 +22,7 @@
       <div class="jd_right">
         <CheckCircleOutlined />
         <div>
-          <DataSource />
+          <DataSource v-bind:dsData="list[0]" />
         </div>
       </div>
     </div>
@@ -55,7 +55,7 @@ import {
 import configModal from "./configModal";
 import copyModal from "./copyModal";
 import { getJobInfo } from "@/common/service";
-import { jobInfo } from "../mock"
+import { jobInfo } from "../mock";
 import DataSource from "./dataSource";
 export default {
   components: {
@@ -96,28 +96,28 @@ export default {
       this.init();
     },
   },
-  mounted() {
+  created() {
     this.init();
   },
   methods: {
     init() {
       this.name = this.curTab.jobName;
-      this.getInfo()
+      this.getInfo();
     },
     async getInfo() {
       try {
         //await getJobInfo(this.curTab.id);
-        jobInfo.content.subJobs.forEach(item => {
-          item.engineType = jobInfo.engineType
-        })
-        this.jobData = jobInfo
-        this.list = this.jobData.content.subJobs
-        console.log(this.jobData)
+        jobInfo.content.subJobs.forEach((item) => {
+          item.engineType = jobInfo.engineType;
+        });
+        this.jobData = jobInfo;
+        this.list = this.jobData.content.subJobs;
+        console.log("jobData", this.jobData);
       } catch (error) {}
     },
     handleModalFinish() {},
     handleModalCopy(data) {
-      console.log(data)
+      console.log(data);
     },
     copySub(item) {
       this.copyObj = item;
