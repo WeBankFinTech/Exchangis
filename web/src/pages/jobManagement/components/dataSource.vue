@@ -134,6 +134,7 @@ export default defineComponent({
       formState2,
       rules2,
       updateDsInfo,
+      updateDsInfo2,
     };
   },
 });
