@@ -1681,7 +1681,7 @@
     "@vue/compiler-core" "3.1.5"
     "@vue/shared" "3.1.5"
 
-"@vue/compiler-sfc@^3.0.4":
+"@vue/compiler-sfc@3.1.5", "@vue/compiler-sfc@^3.0.4":
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/@vue/compiler-sfc/-/compiler-sfc-3.1.5.tgz#e61e54f3a963b0f4a8e523fbb8632390dc52b0d6"
   integrity sha512-mtMY6xMvZeSRx9MTa1+NgJWndrkzVTdJ1pQAmAKQuxyb5LsHVvrgP7kcQFvxPHVpLVTORbTJWHaiqoKrJvi1iA==
@@ -7967,6 +7967,11 @@ vue-loader@^16.1.2:
     chalk "^4.1.0"
     hash-sum "^2.0.0"
     loader-utils "^2.0.0"
+
+vue-request@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/vue-request/-/vue-request-1.2.0.tgz#ed4dd7d8657f03bd125a530e331c0243cdecc60f"
+  integrity sha512-T8Q+ohkKeJJVd3VtO1uhjQiE2DBzlklCZtl5ErMFzgmoLbgRT4vDzUoAvUUsy2UQHFgIYDcKlCQ6BTpssE/XbQ==
 
 vue-router@^4.0.1:
   version "4.0.10"

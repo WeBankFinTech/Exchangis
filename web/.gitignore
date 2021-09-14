@@ -10,3 +10,6 @@
 /src/.fes-production
 /src/.fes-test
 /.env.local
+
+# vs code
+.vscode

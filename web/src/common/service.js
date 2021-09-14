@@ -58,3 +58,9 @@ export const testDataSourceConnect = (type, id) => {
 export const getDataSourceById = (id) => {
   return request(`/datasources/${id}`, {}, { method: "GET" });
 };
+
+export const getJobInfo = (id) => {
+  return request(`/job/${id}`, null, {
+    method: "GET",
+  });
+};
