@@ -43,6 +43,7 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .field-map-warp {
+  margin-top: 30px;
   width: 1100px;
   display: flex;
 }
@@ -92,7 +93,7 @@ export default defineComponent({
   flex: 1;
 }
 .field-map-warp-mid {
-  width: 172px;
+  width: 248px;
 }
 .field-map-label {
   font-size: 14px;
