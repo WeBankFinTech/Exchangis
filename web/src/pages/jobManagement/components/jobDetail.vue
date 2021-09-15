@@ -12,7 +12,7 @@
         <div v-for="(item, idx) in list" :key="idx">
           <div>
             {{ item.subjobName }}<CopyOutlined @click="copySub(item)" />
-            <DeleteOutlined />
+            <DeleteOutlined @click="deleteSub(idx)" />
           </div>
           <div>xxxxxx</div>
           <div><ArrowDownOutlined /></div>
@@ -117,12 +117,18 @@ export default {
     },
     handleModalFinish() {},
     handleModalCopy(data) {
-      console.log(data)
+      if(data) {
+        this.jobData.content.subJobs.push(data)
+      }
+      console.log(this.list, this.jobData.content.subJobs)
     },
     copySub(item) {
       this.copyObj = item;
       this.modalCopy.visible = true;
     },
+    deleteSub(index) {
+      this.jobData.content.subJobs.splice(index, 1)
+    }
   },
 };
 </script>
