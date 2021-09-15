@@ -1,7 +1,7 @@
 <template>
   <a-modal footer="" :visible="visible" :title="$t(`dataSource.sourceTypeModal.title`)" @cancel="$emit('update:visible', false)">
     <div style="display: flex; justify-content: flex-end; margin-bottom: 16px">
-      <a-input size="small" style="width: 200px" :placeholder="$t(`dataSource.sourceTypeModal.searchInputPlaceholder`)" @change="(e) => (searchVal = e.target.value)" />
+      <a-input size="small" style="width: 200px" :placeholder="$t(`dataSource.sourceTypeModal.searchInputPlaceholder`)" v-model:value="searchVal" />
     </div>
     <div>
       <div style="height: 400px; overflow: hidden auto">
@@ -41,11 +41,8 @@ export default {
     options() {
       let options = {};
       for (const item of this.sourceTypeList) {
-        if (options[item.classifier] === undefined) {
-          options[item.classifier] = [item];
-        } else {
-          options[item.classifier].push(item);
-        }
+        if (options[item.classifier] === undefined) options[item.classifier] = [item];
+        else options[item.classifier].push(item);
       }
       return Object.entries(options).map(([group_name, items]) => ({ group_name, items }));
     },
