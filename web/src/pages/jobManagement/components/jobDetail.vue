@@ -24,6 +24,12 @@
         <div>
           <DataSource v-bind:dsData="list[0]" />
         </div>
+        <div>
+          <FieldMap />
+        </div>
+        <div>
+          <ProcessControl v-bind:psData="list[0].settings" />
+        </div>
       </div>
     </div>
     <config-modal
@@ -57,6 +63,8 @@ import copyModal from "./copyModal";
 import { getJobInfo } from "@/common/service";
 import { jobInfo } from "../mock";
 import DataSource from "./dataSource";
+import FieldMap from "./fieldMap.vue";
+import ProcessControl from "./processControl.vue";
 export default {
   components: {
     SettingOutlined,
@@ -72,6 +80,8 @@ export default {
     configModal,
     copyModal,
     DataSource,
+    FieldMap,
+    ProcessControl,
   },
   data() {
     return {

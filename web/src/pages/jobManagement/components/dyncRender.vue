@@ -34,18 +34,21 @@ export default defineComponent({
       );
     } else {
       // 输入框
-      return h(
-        "input",
-        {
-          value: this.param.value,
-          onChange: ($event) => {
-            let res = toRaw(this.param);
-            res.value = $event.target.value;
-            this.$emit("updateInfo", res);
+      return h("div", {}, [
+        h(
+          "input",
+          {
+            value: this.param.value,
+            onChange: ($event) => {
+              let res = toRaw(this.param);
+              res.value = $event.target.value;
+              this.$emit("updateInfo", res);
+            },
           },
-        },
-        ""
-      );
+          ""
+        ),
+        h("span", {}, this.param.unit ? this.param.unit : ""),
+      ]);
     }
   },
 });
