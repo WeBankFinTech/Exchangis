@@ -2,21 +2,30 @@
   <div class="container">
     <div class="tools-bar">
       <span @click="modalCfg.visible = true"><SettingOutlined />配置</span>
+      <div class="divider"></div>
       <span><CaretRightOutlined />执行</span>
+      <div class="divider"></div>
       <span><SaveOutlined />保存</span>
+      <div class="divider"></div>
       <span><HistoryOutlined />执行历史</span>
     </div>
     <div class="jd-content">
       <div class="jd_left">
-        <DatabaseFilled /><span>子任务列表</span><PlusSquareOutlined />
+        <div class="sub-title">
+          <DatabaseFilled />
+          <span>子任务列表</span>
+          <PlusSquareOutlined />
+        </div>
         <div v-for="(item, idx) in list" :key="idx">
           <div>
             {{ item.subjobName }}<CopyOutlined @click="copySub(item)" />
             <DeleteOutlined @click="deleteSub(idx)" />
           </div>
-          <div>xxxxxx</div>
-          <div><ArrowDownOutlined /></div>
-          <div>xxxxxx</div>
+          <template v-if="item.dataSourceIds">
+            <div >{{ item.dataSourceIds.source.db + '.' +  item.dataSourceIds.source.table }}</div>
+            <div><ArrowDownOutlined /></div>
+            <div>{{ item.dataSourceIds.sink.db + '.' +  item.dataSourceIds.sink.table }}</div>
+          </template>
         </div>
       </div>
       <div class="jd_right">
@@ -144,10 +153,39 @@ export default {
 </script>
 <style scoped lang="less">
 .container {
+  .tools-bar {
+    width: 100%;
+    border-top: 1px solid rgb(228, 228, 228);
+    border-bottom: 1px solid rgb(228, 228, 228);
+    background: rgb(242, 242, 242);
+    padding: 10px 30px;
+    font-size: 16px;
+    >span {
+    }
+    .anticon {
+      margin-right: 5px;
+    }
+    .divider {
+      width: 1px;
+      height: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      margin-left: 20px;
+      margin-right: 20px;
+      display: inline-block;
+      position: relative;
+      top: 5px;
+    }
+  }
   .jd-content {
     display: flex;
     .jd_left {
       flex: 1;
+      padding-left: 25px;
+      .sub-title {
+        font-size: 16px;
+        font-weight: bolder;
+        margin-top: 15px;
+      }
     }
     .jd_right {
       flex: 4;
