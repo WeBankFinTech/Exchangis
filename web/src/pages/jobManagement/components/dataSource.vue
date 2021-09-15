@@ -19,32 +19,25 @@
         <!-- left -->
         <div class="data-source-warp-l">
           <div class="data-source-warp-l-content">
-            <a-form ref="formRef" :model="formState" :rules="rules">
-              <a-form-item ref="dsInfo" label="数据源信息" name="dsInfo">
-                <SelectDataSource @updateDsInfo="updateDsInfo" />
-              </a-form-item>
-              <a-form-item label="传输方式" name="transMode">
-                <a-select
-                  v-model:value="formState.transMode"
-                  placeholder="please select your transmission mode"
-                >
-                  <a-select-option value="Record">Record</a-select-option>
-                  <a-select-option value="Binary">二进制</a-select-option>
-                </a-select>
-              </a-form-item>
-              <a-form-item ref="partInfo" label="分区信息" name="partInfo">
-                <span>ds1=</span>
-                <a-input
-                  v-model:value="formState.partInfo"
-                  style="width: 200px"
+            <a-form ref="formRef">
+              <a-form-item label="数据源信息" name="dsInfo">
+                <SelectDataSource
+                  @updateDsInfo="updateDsInfo"
+                  v-bind:title="sourceTitle"
                 />
               </a-form-item>
+              <!-- 动态组件 -->
               <a-form-item
-                ref="nullCharacter"
-                label="空值字符"
-                name="nullCharacter"
+                v-for="item in sourceParams"
+                :key="item.field"
+                :label="item.label"
+                :name="item.label"
+                :required="item.required"
               >
-                <a-input v-model:value="formState.nullCharacter" />
+                <dync-render
+                  v-bind:param="item"
+                  @updateInfo="updateSourceParams"
+                />
               </a-form-item>
             </a-form>
           </div>
@@ -56,22 +49,25 @@
         <!-- right -->
         <div class="data-source-warp-r">
           <div class="data-source-warp-r-content">
-            <a-form ref="formRef" :model="formState2" :rules="rules2">
+            <a-form ref="formRef">
               <a-form-item ref="dsInfo2" label="数据源信息" name="dsInfo2">
-                <SelectDataSource @updateDsInfo="updateDsInfo2" />
+                <SelectDataSource
+                  @updateDsInfo="updateDsInfo2"
+                  :title="sinkTitle"
+                />
               </a-form-item>
-              <a-form-item label="写入方式" name="writeMode">
-                <a-select
-                  v-model:value="formState2.writeMode"
-                  placeholder="please select your write mode"
-                >
-                  <a-select-option value="Insert">Insert</a-select-option>
-                  <a-select-option value="Replace">Replace</a-select-option>
-                  <a-select-option value="Update">Update</a-select-option>
-                </a-select>
-              </a-form-item>
-              <a-form-item ref="batchSize" label="批量大小" name="batchSize">
-                <a-input v-model:value="formState2.batchSize" />
+              <!-- 动态组件 -->
+              <a-form-item
+                v-for="item in sinkParams"
+                :key="item.field"
+                :label="item.label"
+                :name="item.label"
+                :required="item.required"
+              >
+                <dync-render
+                  v-bind:param="item"
+                  @updateInfo="updateSinkParams"
+                />
               </a-form-item>
             </a-form>
           </div>
@@ -84,41 +80,29 @@
 <script>
 import { defineComponent, ref, reactive, toRaw } from "vue";
 import SelectDataSource from "./selectDataSource";
+import DyncRender from "./dyncRender.vue";
 export default defineComponent({
+  props: {
+    dsData: Object,
+  },
   components: {
     SelectDataSource,
+    DyncRender,
   },
-  setup() {
+  setup(props, context) {
+    // 对象转标题
+    const objToTitle = function (obj) {
+      if (typeof obj !== "object") return "";
+      const { type, db, table } = obj;
+      return `${type}-数据源-${db}.${table}`;
+    };
+    const sourceTitle = objToTitle(props.dsData.dataSourceIds.source);
+    const sinkTitle = objToTitle(props.dsData.dataSourceIds.sink);
+
+    let sourceParams = props.dsData.params.sources;
+    let sinkParams = props.dsData.params.sinks;
+
     const formRef = ref();
-    const formState = reactive({
-      dsInfo: "",
-      transMode: undefined,
-      partInfo: "",
-      nullCharacter: "",
-    });
-    const formState2 = reactive({
-      dsInfo2: "",
-      writeMode: undefined,
-      batchSize: "",
-    });
-    const rules = {
-      transMode: [
-        {
-          required: true,
-          message: "Please select transmission mode",
-          trigger: "change",
-        },
-      ],
-    };
-    const rules2 = {
-      writeMode: [
-        {
-          required: true,
-          message: "Please select write mode",
-          trigger: "change",
-        },
-      ],
-    };
     const updateDsInfo = (dsInfo) => {
       formState.dsInfo = dsInfo;
       console.log(formState);
@@ -127,13 +111,36 @@ export default defineComponent({
       formState2.dsInfo = dsInfo;
       console.log(formState2);
     };
+    const updateSourceParams = (info) => {
+      const _sourceParams = toRaw(sourceParams).slice(0);
+      _sourceParams.forEach((item) => {
+        if (item.field === info.field) {
+          return (item.value = info.value);
+        }
+      });
+      sourceParams = _sourceParams;
+      console.log("sourceParams", sourceParams);
+    };
+    const updateSinkParams = (info) => {
+      const _sinkParams = toRaw(sinkParams).slice(0);
+      _sinkParams.forEach((item) => {
+        if (item.field === info.field) {
+          return (item.value = info.value);
+        }
+      });
+      sinkParams = _sinkParams;
+      console.log("sinkParams", sinkParams);
+    };
     return {
       formRef,
-      formState,
-      rules,
-      formState2,
-      rules2,
       updateDsInfo,
+      updateDsInfo2,
+      sourceTitle,
+      sinkTitle,
+      sourceParams,
+      sinkParams,
+      updateSourceParams,
+      updateSinkParams,
     };
   },
 });
