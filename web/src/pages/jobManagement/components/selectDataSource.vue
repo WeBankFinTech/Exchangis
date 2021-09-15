@@ -83,7 +83,7 @@ import {
 
 export default defineComponent({
   props: {
-    dsInfo: String,
+    title: String,
   },
   emits: ["updateDsInfo"],
   setup(props, context) {
@@ -93,7 +93,7 @@ export default defineComponent({
       dataBaseTypes,
       colonyData,
       colony: colonyData[dataBase][0],
-      defaultSelect: "Hive-A集群-a1",
+      defaultSelect: props.title,
     });
     const visible = ref(false);
 
