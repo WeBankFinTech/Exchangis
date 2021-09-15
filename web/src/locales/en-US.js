@@ -28,7 +28,7 @@ export default {
       form: {
         fields: {
           projectName: {
-            label: "Project Name",
+            label: "Name",
             placeholder: "please enter Project Name",
           },
           tags: {
