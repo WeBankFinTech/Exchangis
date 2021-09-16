@@ -1,5 +1,5 @@
 <template>
-  <div class="field-map-warp">
+  <div class="field-map-wrap">
     <!-- left -->
     <div class="fm-l">
       <span>字段映射</span>
@@ -17,16 +17,77 @@
 
       <div class="main-content">
         <!-- left -->
-        <div class="filed-map-warp-l">
-          <div class="filed-map-warp-l-content"></div>
+        <div class="filed-map-wrap-l">
+          <div class="filed-map-wrap-l-content">
+            <a-table
+              :dataSource="sourceDS"
+              :columns="columns"
+              size="small"
+              :pagination="false"
+              v-if="type === 'MAPPING'"
+            >
+              <template #fieldName="{ record }">
+                <a-select
+                  ref="select"
+                  :value="record.fieldName"
+                  style="width: 150px"
+                  :options="record.fieldOptions"
+                >
+                </a-select>
+              </template>
+              <template #fieldType="{ record }">
+                <a-select
+                  ref="select"
+                  :value="record.fieldType"
+                  style="width: 150px"
+                  :options="record.typeOptions"
+                >
+                </a-select>
+              </template>
+            </a-table>
+          </div>
         </div>
 
         <!-- mid -->
-        <div class="filed-map-warp-mid"></div>
+        <div class="field-map-wrap-mid">
+          <template v-for="item in transformerList" :key="item.key">
+            <Transformer
+              v-bind:tfData="item"
+              @updateTransformer="updateTransformer"
+            />
+          </template>
+        </div>
 
         <!-- right -->
-        <div class="field-map-warp-r">
-          <div class="field-map-warp-r-content"></div>
+        <div class="field-map-wrap-r">
+          <div class="field-map-wrap-r-content">
+            <a-table
+              :dataSource="sinkDS"
+              :columns="columns"
+              size="small"
+              :pagination="false"
+              v-if="type === 'MAPPING'"
+            >
+              <template #fieldName="{ record }">
+                <a-select
+                  ref="select"
+                  :value="record.fieldName"
+                  style="width: 150px"
+                  :options="record.fieldOptions"
+                >
+                </a-select>
+              </template>
+              <template #fieldType="{ record }">
+                <a-select
+                  ref="select"
+                  :value="record.fieldType"
+                  style="width: 150px"
+                  :options="record.typeOptions"
+                >
+                </a-select>
+              </template>
+            </a-table>
+          </div>
         </div>
       </div>
     </div>
@@ -35,14 +96,142 @@
 
 <script>
 import { defineComponent, ref, reactive, toRaw } from "vue";
+import Transformer from "./transformer.vue";
 export default defineComponent({
-  components: {},
-  setup() {},
+  props: {
+    fmData: Object,
+  },
+  components: {
+    Transformer,
+  },
+  setup(props) {
+    const { type } = props.fmData;
+    console.log("fmData", toRaw(props.fmData));
+    const typeOptions = [
+      {
+        value: "varchar",
+        label: "varchar",
+      },
+      {
+        value: "text",
+        label: "text",
+      },
+      {
+        value: "int",
+        label: "int",
+      },
+      {
+        value: "char",
+        label: "char",
+      },
+      {
+        value: "float",
+        label: "float",
+      },
+      {
+        value: "double",
+        label: "double",
+      },
+    ];
+    const fieldOptions = [
+      {
+        value: "field_1",
+        label: "field_1",
+      },
+      {
+        value: "field_2",
+        label: "field_2",
+      },
+      {
+        value: "field_3",
+        label: "field_3",
+      },
+    ];
+
+    // crate dataSource
+    const createDataSource = (map, fieldOptions, typeOptions) => {
+      if (typeof map !== "object") return {};
+      const sourceDS = [],
+        sinkDS = [],
+        transformerList = [];
+      map.forEach((item, idx) => {
+        let sourceItem = Object.create(null);
+        let sinkItem = Object.create(null);
+        let transformerItem = Object.create(null);
+
+        sourceItem.key = idx + "";
+        sourceItem.fieldName = item.source_field_name && item.source_field_name;
+        sourceItem.fieldOptions = fieldOptions;
+        sourceItem.fieldType = item.source_field_type && item.source_field_type;
+        sourceItem.typeOptions = typeOptions;
+
+        sinkItem.key = idx + "";
+        sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
+        sinkItem.fieldOptions = fieldOptions;
+        sinkItem.fieldType = item.sink_field_type && item.sink_field_type;
+        sinkItem.typeOptions = typeOptions;
+
+        transformerItem.key = idx + "";
+        transformerItem.validator = item.validator && item.validator;
+        transformerItem.transformer = item.transformer && item.transformer;
+
+        transformerList.push(transformerItem);
+        sourceDS.push(sourceItem);
+        sinkDS.push(sinkItem);
+      });
+      return {
+        sourceDS,
+        sinkDS,
+        transformerList,
+        updateTransformer,
+      };
+    };
+
+    const { sourceDS, sinkDS, transformerList } = createDataSource(
+      toRaw(props.fmData).mapping,
+      fieldOptions,
+      typeOptions
+    );
+
+    console.log("sourceDS", sourceDS);
+    console.log("sinkDS", sinkDS);
+    console.log("transformerList", transformerList);
+
+    const updateTransformer = (res) => {
+      console.log("res", res);
+    };
+
+    return {
+      type,
+      sourceDS,
+      sinkDS,
+      transformerList,
+      columns: [
+        {
+          title: "字段名",
+          dataIndex: "fieldName",
+          key: "fieldName",
+          slots: {
+            customRender: "fieldName",
+          },
+        },
+        {
+          title: "类型",
+          dataIndex: "fieldType",
+          key: "fieldType",
+          slots: {
+            customRender: "fieldType",
+          },
+        },
+      ],
+      updateTransformer,
+    };
+  },
 });
 </script>
 
 <style lang="less" scoped>
-.field-map-warp {
+.field-map-wrap {
   margin-top: 30px;
   width: 1100px;
   display: flex;
@@ -81,21 +270,25 @@ export default defineComponent({
     display: flex;
   }
 }
-.field-map-warp-l {
+.field-map-wrap-l {
   flex: 1;
-  .fm-warp-l-c-item {
+  .fm-wrap-l-c-item {
     > div {
       display: inline;
     }
   }
 }
-.field-map-warp-r {
+.field-map-wrap-r {
   flex: 1;
 }
-.field-map-warp-mid {
+.field-map-wrap-mid {
   width: 248px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
-.field-map-label {
+.feld-map-label {
   font-size: 14px;
   text-align: left;
 }
