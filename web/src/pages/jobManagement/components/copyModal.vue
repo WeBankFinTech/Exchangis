@@ -65,7 +65,8 @@ export default {
     async handleOk() {
       await this.$refs.formRef.validate();
       const formatData = {
-        ...this.origin
+        ...this.origin,
+        subjobName: this.formState.jobName
       };
       try {
         this.confirmLoading = true;
