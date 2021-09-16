@@ -3,6 +3,9 @@
     <!-- top -->
     <div class="tf-top">
       <span>校验：</span>
+      <span v-for="domain in dynamicValidateForm.domains" :key="domain.key">{{
+        `${domain.optionVal}${domain.value}`
+      }}</span>
     </div>
     <!-- mid -->
     <div class="tf-mid" @click="showModal">
@@ -11,6 +14,9 @@
     <!-- bottom -->
     <div class="tf-bottom">
       <span>转换：</span>
+      <span>{{
+        `${dynamicValidateForm.transf.value}(${dynamicValidateForm.transf.startIndex},${dynamicValidateForm.transf.endIndex})`
+      }}</span>
     </div>
 
     <!-- 弹窗 -->
@@ -126,6 +132,7 @@ import {
 export default defineComponent({
   props: {
     tfData: Object,
+    id: String | Number,
   },
   emits: ["updateTransformer"],
   components: {
@@ -135,6 +142,7 @@ export default defineComponent({
   },
   setup(props, context) {
     const { validator, transformer } = props.tfData;
+    const id = props.id;
     const visible = ref(false);
 
     const showModal = () => {
@@ -157,6 +165,7 @@ export default defineComponent({
       transformer.params = params;
 
       context.emit("updateTransformer", {
+        key: id,
         validator,
         transformer,
       });
@@ -303,5 +312,22 @@ export default defineComponent({
 }
 .tf-modal-title {
   margin-bottom: 20px;
+}
+.tf-bottom {
+  > span {
+    font-size: 12px;
+  }
+}
+.tf-top {
+  > span {
+    margin-left: 8px;
+    font-size: 12px;
+  }
+  :nth-of-type(2) {
+    margin: 0;
+  }
+  :nth-of-type(1) {
+    max-width: 0;
+  }
 }
 </style>
