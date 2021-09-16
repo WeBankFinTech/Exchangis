@@ -6,7 +6,11 @@ import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisData
 import com.webank.wedatasphere.exchangis.job.datax.domain.LaunchCode;
 import com.webank.wedatasphere.exchangis.job.datax.handler.HiveJobHandler;
 import com.webank.wedatasphere.exchangis.job.datax.handler.MysqlJobHandler;
+import com.webank.wedatasphere.exchangis.job.datax.reader.HiveReader;
+import com.webank.wedatasphere.exchangis.job.datax.reader.MysqlReader;
 import com.webank.wedatasphere.exchangis.job.datax.reader.Reader;
+import com.webank.wedatasphere.exchangis.job.datax.writer.HiveWriter;
+import com.webank.wedatasphere.exchangis.job.datax.writer.MysqlWriter;
 import com.webank.wedatasphere.exchangis.job.datax.writer.Writer;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
@@ -63,11 +67,13 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
         switch (source) {
             case MYSQL:
                 jobhandler = new MysqlJobHandler();
-                reader = jobhandler.handleReader(subjob, jobId);
+                reader = new MysqlReader();
+                jobhandler.handleReader(subjob, jobId, reader);
                 break;
             case HIVE:
                 jobhandler = new HiveJobHandler();
-                reader = jobhandler.handleReader(subjob, jobId);
+                reader = new HiveReader();
+                jobhandler.handleReader(subjob, jobId, reader);
                 break;
             default:
                 break;
@@ -76,11 +82,13 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
         switch (sink) {
             case MYSQL:
                 jobhandler = new MysqlJobHandler();
-                writer = jobhandler.handleWriter(subjob, jobId);
+                writer = new MysqlWriter();
+                jobhandler.handleWriter(subjob, jobId, writer);
                 break;
             case HIVE:
                 jobhandler = new HiveJobHandler();
-                writer = jobhandler.handleWriter(subjob, jobId);
+                writer = new HiveWriter();
+                jobhandler.handleWriter(subjob, jobId, writer);
                 break;
             default:
                 break;
