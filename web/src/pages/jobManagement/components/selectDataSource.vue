@@ -48,14 +48,15 @@ const tables = {
     {
       title: "default",
       key: "default",
+      selectable: false,
       children: [
-        { title: "a1", key: "a1" },
-        { title: "test_table", key: "test_table" },
+        { title: "a1", key: "default-a1" },
+        { title: "test_table", key: "default-test_table" },
       ],
     },
-    { title: "db_test_mask", key: "db_test_mask" },
-    { title: "db_test_mask1", key: "db_test_mask1" },
-    { title: "db_test_mask2", key: "db_test_mask2" },
+    { title: "db_test_mask", selectable: false, key: "db_test_mask" },
+    { title: "db_test_mask1", selectable: false, key: "db_test_mask1" },
+    { title: "db_test_mask2", selectable: false, key: "db_test_mask2" },
   ],
   D集群: [
     {

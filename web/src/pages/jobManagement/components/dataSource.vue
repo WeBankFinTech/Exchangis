@@ -22,7 +22,7 @@
             <a-form ref="formRef">
               <a-form-item label="数据源信息" name="dsInfo">
                 <SelectDataSource
-                  @updateDsInfo="updateDsInfo"
+                  @updateDsInfo="updateSourceInfo"
                   v-bind:title="sourceTitle"
                 />
               </a-form-item>
@@ -52,7 +52,7 @@
             <a-form ref="formRef">
               <a-form-item ref="dsInfo2" label="数据源信息" name="dsInfo2">
                 <SelectDataSource
-                  @updateDsInfo="updateDsInfo2"
+                  @updateDsInfo="updateSinkInfo"
                   :title="sinkTitle"
                 />
               </a-form-item>
@@ -85,6 +85,7 @@ export default defineComponent({
   props: {
     dsData: Object,
   },
+  emits: ["updateDataSource"],
   components: {
     SelectDataSource,
     DyncRender,
@@ -96,20 +97,56 @@ export default defineComponent({
       const { type, db, table } = obj;
       return `${type}-数据源-${db}.${table}`;
     };
-    const sourceTitle = objToTitle(props.dsData.dataSourceIds.source);
-    const sinkTitle = objToTitle(props.dsData.dataSourceIds.sink);
+    let sourceTitle = objToTitle(props.dsData.dataSourceIds.source);
+    let sinkTitle = objToTitle(props.dsData.dataSourceIds.sink);
+
+    let { source, sink } = props.dsData.dataSourceIds;
 
     let sourceParams = props.dsData.params.sources;
     let sinkParams = props.dsData.params.sinks;
 
     const formRef = ref();
-    const updateDsInfo = (dsInfo) => {
-      formState.dsInfo = dsInfo;
-      console.log(formState);
+    const createDataSoure = (source, sink, sourceParams, sinkParams) => {
+      const dataSourceIds = Object.create(null);
+      const params = Object.create(null);
+
+      dataSourceIds.source = source;
+      dataSourceIds.sink = sink;
+      params.sources = sourceParams;
+      params.sinks = sinkParams;
+
+      return {
+        dataSourceIds,
+        params,
+      };
     };
-    const updateDsInfo2 = (dsInfo) => {
-      formState2.dsInfo = dsInfo;
-      console.log(formState2);
+    const updateSourceInfo = (dsInfo) => {
+      const info = dsInfo.split("-");
+      source.type = info[0];
+      source.db = info[2];
+      source.table = info[3];
+
+      const dataSource = createDataSoure(
+        source,
+        sink,
+        sourceParams,
+        sinkParams
+      );
+      context.emit("updateDataSource", dataSource);
+    };
+    const updateSinkInfo = (dsInfo) => {
+      const info = dsInfo.split("-");
+      sink.type = info[0];
+      sink.db = info[2];
+      sink.table = info[3];
+
+      const dataSource = createDataSoure(
+        source,
+        sink,
+        sourceParams,
+        sinkParams
+      );
+      context.emit("updateDataSource", dataSource);
     };
     const updateSourceParams = (info) => {
       const _sourceParams = toRaw(sourceParams).slice(0);
@@ -119,7 +156,14 @@ export default defineComponent({
         }
       });
       sourceParams = _sourceParams;
-      console.log("sourceParams", sourceParams);
+
+      const dataSource = createDataSoure(
+        source,
+        sink,
+        sourceParams,
+        sinkParams
+      );
+      context.emit("updateDataSource", dataSource);
     };
     const updateSinkParams = (info) => {
       const _sinkParams = toRaw(sinkParams).slice(0);
@@ -129,12 +173,20 @@ export default defineComponent({
         }
       });
       sinkParams = _sinkParams;
-      console.log("sinkParams", sinkParams);
+
+      const dataSource = createDataSoure(
+        source,
+        sink,
+        sourceParams,
+        sinkParams
+      );
+      context.emit("updateDataSource", dataSource);
     };
+
     return {
       formRef,
-      updateDsInfo,
-      updateDsInfo2,
+      updateSourceInfo,
+      updateSinkInfo,
       sourceTitle,
       sinkTitle,
       sourceParams,
