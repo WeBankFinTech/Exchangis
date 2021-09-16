@@ -8,7 +8,6 @@ import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisLaunchTaskService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,6 @@ public class ExchangisJobController {
     private ExchangisJobService exchangisJobService;
 
     @Autowired
-    private ExchangisLaunchTaskService exchangisLaunchTaskService;
 
     @GET
     @Path("/testbuildjob")
