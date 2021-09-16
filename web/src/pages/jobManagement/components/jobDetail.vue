@@ -25,7 +25,7 @@
           <DataSource v-bind:dsData="list[0]" />
         </div>
         <div>
-          <FieldMap />
+          <FieldMap v-bind:fmData="list[0].transforms" />
         </div>
         <div>
           <ProcessControl v-bind:psData="list[0].settings" />
