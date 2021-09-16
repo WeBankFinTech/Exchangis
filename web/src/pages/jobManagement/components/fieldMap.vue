@@ -32,6 +32,7 @@
                   :value="record.fieldName"
                   style="width: 150px"
                   :options="record.fieldOptions"
+                  @change="updateSourceFieldName(record, $event)"
                 >
                 </a-select>
               </template>
@@ -41,6 +42,7 @@
                   :value="record.fieldType"
                   style="width: 150px"
                   :options="record.typeOptions"
+                  @change="updateSourceTypeName(record, $event)"
                 >
                 </a-select>
               </template>
@@ -53,6 +55,7 @@
           <template v-for="item in transformerList" :key="item.key">
             <Transformer
               v-bind:tfData="item"
+              v-bind:id="item.key"
               @updateTransformer="updateTransformer"
             />
           </template>
@@ -74,6 +77,7 @@
                   :value="record.fieldName"
                   style="width: 150px"
                   :options="record.fieldOptions"
+                  @change="updateSinkFieldName(record, $event)"
                 >
                 </a-select>
               </template>
@@ -83,6 +87,7 @@
                   :value="record.fieldType"
                   style="width: 150px"
                   :options="record.typeOptions"
+                  @change="updateSinkTypeName(record, $event)"
                 >
                 </a-select>
               </template>
@@ -96,17 +101,18 @@
 
 <script>
 import { defineComponent, ref, reactive, toRaw } from "vue";
+import { cloneDeep } from "lodash-es";
 import Transformer from "./transformer.vue";
 export default defineComponent({
   props: {
     fmData: Object,
   },
+  emits: ["updateFieldMap"],
   components: {
     Transformer,
   },
-  setup(props) {
+  setup(props, context) {
     const { type } = props.fmData;
-    console.log("fmData", toRaw(props.fmData));
     const typeOptions = [
       {
         value: "varchar",
@@ -187,7 +193,7 @@ export default defineComponent({
       };
     };
 
-    const { sourceDS, sinkDS, transformerList } = createDataSource(
+    let { sourceDS, sinkDS, transformerList } = createDataSource(
       toRaw(props.fmData).mapping,
       fieldOptions,
       typeOptions
@@ -197,8 +203,92 @@ export default defineComponent({
     console.log("sinkDS", sinkDS);
     console.log("transformerList", transformerList);
 
+    const createTransforms = (sourceDS, sinkDS, transformerList) => {
+      const mapping = [];
+      sourceDS.forEach((source) => {
+        let o = Object.create(null);
+        const { key } = source;
+        sinkDS.forEach((sink) => {
+          if (sink.key == key) {
+            o.sink_field_name = sink.fieldName;
+            o.sink_field_type = sink.fieldType;
+          }
+        });
+        transformerList.forEach((tf) => {
+          if (tf.key == key) {
+            o.validator = tf.validator;
+            o.transformer = tf.transformer;
+          }
+        });
+        o.source_field_name = source.fieldName;
+        o.source_field_type = source.fieldType;
+        mapping.push(o);
+      });
+      const { type, sql } = props.fmData;
+      return {
+        type,
+        mapping,
+        sql,
+      };
+    };
+
     const updateTransformer = (res) => {
-      console.log("res", res);
+      const _transformerList = transformerList.filter(
+        (item) => item.key != res.key
+      );
+      _transformerList.push(res);
+      transformerList = _transformerList;
+
+      const transforms = createTransforms(sourceDS, sinkDS, transformerList);
+      context.emit("updateFieldMap", transforms);
+    };
+
+    const updateSourceFieldName = (info, e) => {
+      const { key } = info;
+      sourceDS.forEach((item) => {
+        if (item.key == key) {
+          return (item.fieldName = e);
+        }
+      });
+
+      const transforms = createTransforms(sourceDS, sinkDS, transformerList);
+      context.emit("updateFieldMap", transforms);
+    };
+
+    const updateSourceTypeName = (info, e) => {
+      const { key } = info;
+      sourceDS.forEach((item) => {
+        if (item.key == key) {
+          return (item.fieldType = e);
+        }
+      });
+
+      const transforms = createTransforms(sourceDS, sinkDS, transformerList);
+      context.emit("updateFieldMap", transforms);
+    };
+
+    const updateSinkFieldName = (info, e) => {
+      const { key } = info;
+      sinkDS.forEach((item) => {
+        if (item.key == key) {
+          return (item.fieldName = e);
+        }
+      });
+
+      const transforms = createTransforms(sourceDS, sinkDS, transformerList);
+      context.emit("updateFieldMap", transforms);
+    };
+
+    const updateSinkTypeName = (info, e) => {
+      const { key } = info;
+      sinkDS.forEach((item) => {
+        if (item.key == key) {
+          return (item.fieldType = e);
+        }
+      });
+
+      const transforms = createTransforms(sourceDS, sinkDS, transformerList);
+      context.emit("updateFieldMap", transforms);
     };
 
     return {
@@ -225,6 +315,10 @@ export default defineComponent({
         },
       ],
       updateTransformer,
+      updateSourceFieldName,
+      updateSourceTypeName,
+      updateSinkFieldName,
+      updateSinkTypeName,
     };
   },
 });
