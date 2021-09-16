@@ -14,15 +14,41 @@
         <div class="sub-title">
           <DatabaseFilled class="database-icon"/>
           <span>子任务列表</span>
-          <PlusSquareOutlined class="ps-icon"/>
+          <a-popconfirm
+            title="是否新增子任务?"
+            ok-text="确定"
+            cancel-text="取消"
+            @confirm="addNewTask"
+            @cancel="cancel"
+          >
+            <PlusSquareOutlined class="ps-icon"/>
+          </a-popconfirm>
         </div>
-        <div v-for="(item, idx) in list" :key="idx" class="sub-content">
+        <div v-for="(item, idx) in list" :key="idx" :class="getClass(idx)">
           <div class="task-title">
-            <span class="subjobName">{{ item.subjobName }}</span>
-            <DeleteOutlined class="delete-icon" @click="deleteSub(idx)" />
-            <CopyOutlined class="copy-icon" @click="copySub(item)" />
+            <span class="subjobName" @click="changeCurTask(idx)" v-if="activeIndex !== idx || (activeIndex === idx && !nameEditable)">{{ item.subjobName }}</span>
+            <a-input @pressEnter="nameEditable=false" v-model:value="item.subjobName" v-if="activeIndex === idx && nameEditable"></a-input>
+            <EditOutlined @click="nameEditable=true" v-if="activeIndex === idx && !nameEditable" />
+            <a-popconfirm
+              title="是否删除子任务?"
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm="deleteSub(idx)"
+              @cancel="cancel"
+            >
+              <DeleteOutlined class="delete-icon"/>
+            </a-popconfirm>
+            <a-popconfirm
+              title="是否复制子任务?"
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm="copySub(item)"
+              @cancel="cancel"
+            >
+              <CopyOutlined class="copy-icon" />
+            </a-popconfirm>
           </div>
-          <template v-if="item.dataSourceIds">
+          <template v-if="item.dataSourceIds && item.dataSourceIds.source && item.dataSourceIds.source.db">
             <div class="sub-table" :title="item.dataSourceIds.source.db + '.' +  item.dataSourceIds.source.table">{{ item.dataSourceIds.source.db + '.' +  item.dataSourceIds.source.table }}</div>
             <div class="arrow-down-icon"><ArrowDownOutlined /></div>
             <div class="sub-table" :title="item.dataSourceIds.sink.db + '.' +  item.dataSourceIds.sink.table">{{ item.dataSourceIds.sink.db + '.' +  item.dataSourceIds.sink.table }}</div>
@@ -32,13 +58,13 @@
       <div class="jd_right">
         <CheckCircleOutlined />
         <div>
-          <DataSource v-bind:dsData="list[0]" />
+          <DataSource v-bind:dsData="curTask" />
         </div>
         <div>
-          <FieldMap v-bind:fmData="list[0].transforms" />
+          <FieldMap v-bind:fmData="curTask.transforms" />
         </div>
         <div>
-          <ProcessControl v-bind:psData="list[0].settings" />
+          <ProcessControl v-bind:psData="curTask.settings" />
         </div>
       </div>
     </div>
@@ -67,6 +93,7 @@ import {
   DeleteOutlined,
   ArrowDownOutlined,
   CheckCircleOutlined,
+  EditOutlined
 } from "@ant-design/icons-vue";
 import configModal from "./configModal";
 import copyModal from "./copyModal";
@@ -87,6 +114,7 @@ export default {
     DeleteOutlined,
     ArrowDownOutlined,
     CheckCircleOutlined,
+    EditOutlined,
     configModal,
     copyModal,
     DataSource,
@@ -106,6 +134,9 @@ export default {
       jobData: {},
       copyObj: {},
       list: [],
+      activeIndex: -1,
+      curTask: {},
+      nameEditable: false
     };
   },
   props: {
@@ -114,7 +145,7 @@ export default {
   watch: {
     curTab(n, o) {
       this.init();
-    },
+    }
   },
   created() {
     this.init();
@@ -132,7 +163,10 @@ export default {
         });
         this.jobData = jobInfo;
         this.list = this.jobData.content.subJobs;
-        console.log("jobData", this.jobData);
+        if (this.list.length) {
+          this.activeIndex = 0
+          this.curTask = this.list[this.activeIndex]
+        }
       } catch (error) {}
     },
     handleModalFinish() {},
@@ -140,7 +174,6 @@ export default {
       if(data) {
         this.jobData.content.subJobs.push(data)
       }
-      console.log(this.list, this.jobData.content.subJobs)
     },
     copySub(item) {
       this.copyObj = item;
@@ -148,6 +181,45 @@ export default {
     },
     deleteSub(index) {
       this.jobData.content.subJobs.splice(index, 1)
+      if (this.activeIndex === index && this.list.length) {
+        this.activeIndex = 0
+        this.curTask = this.list[this.activeIndex]
+      }
+    },
+    cancel(){
+    },
+    getClass(index) {
+      if (this.activeIndex === index) {
+        return 'sub-content active'
+      } else {
+        return 'sub-content'
+      }
+    },
+    changeCurTask(index) {
+      this.activeIndex = index
+      this.curTask = this.list[this.activeIndex]
+    },
+    addNewTask() {
+      let task = {
+        subjobName: "new",
+        dataSourceIds: {
+          source: {
+            type: "",
+            id: "",
+            db: "",
+            table: ""
+          },
+          sink: {
+            type: "",
+            id: "",
+            db: "",
+            table: ""
+          }
+        }
+      }
+      this.jobData.content.subJobs.push(task)
+      this.activeIndex = this.jobData.content.subJobs.length - 1
+      this.curTask = this.list[this.activeIndex]
     }
   },
 };
@@ -202,14 +274,26 @@ export default {
       .sub-content {
         width: 200px;
         margin: 10px 0;
-        border: 1px solid rgb(102, 102, 255);
+        border: 1px solid rgba(155,155,155,0.5);
         padding: 10px 15px;
         border-radius: 5px;
+        position: relative;
+        &.active {
+          border: 1px solid rgb(102, 102, 255);
+          .task-title {
+            font-weight: bolder;
+            .subjobName{
+              color: rgb(102, 102, 255);
+            }
+          }
+          .sub-table {
+            color: rgb(22, 155, 213);
+          }
+        }
         .task-title {
           font-size: 15px;
-          font-weight: bolder;
           .subjobName{
-            color: rgb(102, 102, 255);
+            color: rgba(155,155,155,0.5);
             cursor: pointer;
           }
           .delete-icon {
@@ -226,7 +310,7 @@ export default {
           }
         }
         .sub-table {
-          color: rgb(22, 155, 213);
+          color: rgba(155,155,155,0.5);
           text-align: center;
           margin: 5px 0;
           width: 100%;
@@ -238,6 +322,14 @@ export default {
           text-align: center;
           font-weight: bolder;
           font-size: 16px;
+        }
+        .mask {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          background-color: rgba(255, 255, 255, 0.6);
+          top: 0;
+          left: 0;
         }
       }
     }
