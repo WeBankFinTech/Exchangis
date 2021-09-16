@@ -22,22 +22,41 @@
             <DeleteOutlined @click="deleteSub(idx)" />
           </div>
           <template v-if="item.dataSourceIds">
-            <div >{{ item.dataSourceIds.source.db + '.' +  item.dataSourceIds.source.table }}</div>
+            <div>
+              {{
+                item.dataSourceIds.source.db +
+                "." +
+                item.dataSourceIds.source.table
+              }}
+            </div>
             <div><ArrowDownOutlined /></div>
-            <div>{{ item.dataSourceIds.sink.db + '.' +  item.dataSourceIds.sink.table }}</div>
+            <div>
+              {{
+                item.dataSourceIds.sink.db + "." + item.dataSourceIds.sink.table
+              }}
+            </div>
           </template>
         </div>
       </div>
       <div class="jd_right">
         <CheckCircleOutlined />
         <div>
-          <DataSource v-bind:dsData="list[0]" />
+          <DataSource
+            v-bind:dsData="list[0]"
+            @updateDataSource="updateDataSource"
+          />
         </div>
         <div>
-          <FieldMap v-bind:fmData="list[0].transforms" />
+          <FieldMap
+            v-bind:fmData="list[0].transforms"
+            @updateFieldMap="updateFieldMap"
+          />
         </div>
         <div>
-          <ProcessControl v-bind:psData="list[0].settings" />
+          <ProcessControl
+            v-bind:psData="list[0].settings"
+            @updateProcessControl="updateProcessControl"
+          />
         </div>
       </div>
     </div>
@@ -136,18 +155,29 @@ export default {
     },
     handleModalFinish() {},
     handleModalCopy(data) {
-      if(data) {
-        this.jobData.content.subJobs.push(data)
+      if (data) {
+        this.jobData.content.subJobs.push(data);
       }
-      console.log(this.list, this.jobData.content.subJobs)
+      console.log(this.list, this.jobData.content.subJobs);
     },
     copySub(item) {
       this.copyObj = item;
       this.modalCopy.visible = true;
     },
     deleteSub(index) {
-      this.jobData.content.subJobs.splice(index, 1)
-    }
+      this.jobData.content.subJobs.splice(index, 1);
+    },
+    updateFieldMap(transforms) {
+      console.log(transforms);
+    },
+    updateProcessControl(settings) {
+      console.log(settings);
+    },
+    updateDataSource(dataSource) {
+      const { dataSourceIds, params } = dataSource;
+      console.log("dataSourceIds", dataSourceIds);
+      console.log("params", params);
+    },
   },
 };
 </script>
@@ -160,7 +190,7 @@ export default {
     background: rgb(242, 242, 242);
     padding: 10px 30px;
     font-size: 16px;
-    >span {
+    > span {
     }
     .anticon {
       margin-right: 5px;

@@ -40,10 +40,11 @@ export default defineComponent({
   props: {
     psData: Array,
   },
+  emits: ["updateProcessControl"],
   components: {
     DyncRender,
   },
-  setup(props) {
+  setup(props, context) {
     const formRef = ref();
     let settingParams = props.psData;
     const updateSettingParams = (info) => {
@@ -55,6 +56,7 @@ export default defineComponent({
       });
       settingParams = _settingParams;
       console.log("sourceParams", settingParams);
+      context.emit("updateProcessControl", settingParams);
     };
     return {
       formRef,
