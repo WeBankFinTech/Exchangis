@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class DataxJobHandler implements JobHandler {
+public class DataxJobHandler implements JobHandler {
 
 
     @Autowired
