@@ -102,7 +102,6 @@ export default {
 </script>
 <style scoped lang="less">
 .content {
-  padding: 16px;
   box-sizing: border-box;
 }
 .navWrap {
