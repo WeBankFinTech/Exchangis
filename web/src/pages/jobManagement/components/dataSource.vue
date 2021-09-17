@@ -2,7 +2,9 @@
   <div class="data-source-warp">
     <!-- left -->
     <div class="ds-l">
-      <span>数据源</span>
+      <div class="main-header">
+        <span class="main-header-label">数据源</span>
+      </div>
     </div>
     <!-- right -->
     <div class="ds-r">
@@ -32,7 +34,10 @@
                 :key="item.field"
                 :label="item.label"
                 :name="item.label"
-                :required="item.required"
+                :rules="{
+                  required: item.required,
+                  trigger: 'change',
+                }"
               >
                 <dync-render
                   v-bind:param="item"
@@ -44,7 +49,9 @@
         </div>
 
         <!-- mid -->
-        <div class="data-source-warp-mid"></div>
+        <div class="data-source-warp-mid">
+          <RightCircleOutlined style="font-size: 50px; color: #66f" />
+        </div>
 
         <!-- right -->
         <div class="data-source-warp-r">
@@ -78,6 +85,7 @@
 </template>
 
 <script>
+import { RightCircleOutlined } from "@ant-design/icons-vue";
 import { defineComponent, ref, reactive, toRaw } from "vue";
 import SelectDataSource from "./selectDataSource";
 import DyncRender from "./dyncRender.vue";
@@ -89,6 +97,7 @@ export default defineComponent({
   components: {
     SelectDataSource,
     DyncRender,
+    RightCircleOutlined,
   },
   setup(props, context) {
     // 对象转标题
@@ -195,6 +204,15 @@ export default defineComponent({
       updateSinkParams,
     };
   },
+  watch: {
+    dsData: {
+      handler: function (newVal) {
+        console.log("watch props");
+        this.props = newVal;
+      },
+      deep: true,
+    },
+  },
 });
 </script>
 
@@ -202,9 +220,31 @@ export default defineComponent({
 .data-source-warp {
   width: 1100px;
   display: flex;
+  margin-top: 15px;
 }
 .ds-l {
   width: 122px;
+  .main-header {
+    height: 33px;
+    background: inherit;
+    background-color: rgba(102, 102, 255, 1);
+    border: none;
+    display: flex;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    :nth-of-type(1) {
+      width: 100%;
+      text-align: center;
+      line-height: 33px;
+      font-size: 16px;
+    }
+    .main-header-label {
+      font-family: "Arial Negreta", "Arial Normal", "Arial";
+      font-weight: 700;
+      font-style: normal;
+      color: #ffffff;
+    }
+  }
 }
 .ds-r {
   flex: 1;
@@ -222,6 +262,8 @@ export default defineComponent({
     display: flex;
     > div {
       flex: 1;
+      text-align: center;
+      line-height: 33px;
     }
     .main-header-label {
       font-family: "Arial Negreta", "Arial Normal", "Arial";
@@ -250,6 +292,9 @@ export default defineComponent({
 }
 .data-source-warp-mid {
   width: 172px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .data-source-label {
   font-size: 14px;

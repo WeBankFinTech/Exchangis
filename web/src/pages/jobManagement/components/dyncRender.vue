@@ -51,5 +51,14 @@ export default defineComponent({
       ]);
     }
   },
+  watch: {
+    param: {
+      handler: function (newVal) {
+        console.log("watch props");
+        this.props = newVal;
+      },
+      deep: true,
+    },
+  },
 });
 </script>
