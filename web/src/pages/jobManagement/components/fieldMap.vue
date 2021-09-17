@@ -245,7 +245,7 @@ export default defineComponent({
         (item) => item.key != res.key
       );
       _transformerList.push(res);
-      transformerList = _transformerList;
+      transformerList = ref(_transformerList);
 
       const transforms = createTransforms(sourceDS, sinkDS, transformerList);
       context.emit("updateFieldMap", transforms);
@@ -300,9 +300,9 @@ export default defineComponent({
     };
 
     const addTableRow = () => {
-      let sourceLen = sourceDS.length;
-      let sinkLen = sinkDS.length;
-      let tfLen = transformerList.length;
+      let sourceLen = sourceDS.value.length;
+      let sinkLen = sinkDS.value.length;
+      let tfLen = transformerList.value.length;
 
       let sourceItem = Object.create(null);
       let sinkItem = Object.create(null);
