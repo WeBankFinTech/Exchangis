@@ -136,6 +136,15 @@ export default defineComponent({
       handleOk,
     };
   },
+  watch: {
+    title: {
+      handler: function (newVal) {
+        console.log("watch props");
+        this.props = newVal;
+      },
+      deep: true,
+    },
+  },
 });
 </script>
 

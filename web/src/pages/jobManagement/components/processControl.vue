@@ -2,7 +2,9 @@
   <div class="process-control-warp">
     <!-- left -->
     <div class="ps-l">
-      <span>过程控制</span>
+      <div class="main-header">
+        <span class="main-header-label">过程控制</span>
+      </div>
     </div>
     <!-- right -->
     <div class="ps-r">
@@ -20,7 +22,10 @@
             :key="item.field"
             :label="item.label"
             :name="item.label"
-            :required="item.required"
+            :rules="{
+              required: item.required,
+              trigger: 'change',
+            }"
           >
             <dync-render
               v-bind:param="item"
@@ -64,6 +69,15 @@ export default defineComponent({
       updateSettingParams,
     };
   },
+  watch: {
+    psData: {
+      handler: function (newVal) {
+        console.log("watch props");
+        this.props = newVal;
+      },
+      deep: true,
+    },
+  },
 });
 </script>
 
@@ -75,6 +89,27 @@ export default defineComponent({
 }
 .ps-l {
   width: 122px;
+  .main-header {
+    height: 33px;
+    background: inherit;
+    background-color: rgba(102, 102, 255, 1);
+    border: none;
+    display: flex;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    :nth-of-type(1) {
+      width: 100%;
+      text-align: center;
+      line-height: 33px;
+      font-size: 16px;
+    }
+    .main-header-label {
+      font-family: "Arial Negreta", "Arial Normal", "Arial";
+      font-weight: 700;
+      font-style: normal;
+      color: #ffffff;
+    }
+  }
 }
 .ps-r {
   flex: 1;
@@ -92,6 +127,8 @@ export default defineComponent({
     display: flex;
     > div {
       flex: 1;
+      text-align: center;
+      line-height: 33px;
     }
     .main-header-label {
       font-family: "Arial Negreta", "Arial Normal", "Arial";

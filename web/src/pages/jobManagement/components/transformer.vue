@@ -282,6 +282,22 @@ export default defineComponent({
       addDomain,
     };
   },
+  watch: {
+    tfData: {
+      handler: function (newVal) {
+        console.log("watch props");
+        this.props = newVal;
+      },
+      deep: true,
+    },
+    id: {
+      handler: function (newVal) {
+        console.log("watch props");
+        this.props = newVal;
+      },
+      deep: true,
+    },
+  },
 });
 </script>
 
