@@ -2,7 +2,9 @@
   <div class="data-source-warp">
     <!-- left -->
     <div class="ds-l">
-      <span>数据源</span>
+      <div class="main-header">
+        <span class="main-header-label">数据源</span>
+      </div>
     </div>
     <!-- right -->
     <div class="ds-r">
@@ -19,59 +21,60 @@
         <!-- left -->
         <div class="data-source-warp-l">
           <div class="data-source-warp-l-content">
-            <a-form ref="formRef" :model="formState" :rules="rules">
-              <a-form-item ref="dsInfo" label="数据源信息" name="dsInfo">
-                <SelectDataSource @updateDsInfo="updateDsInfo" />
-              </a-form-item>
-              <a-form-item label="传输方式" name="transMode">
-                <a-select
-                  v-model:value="formState.transMode"
-                  placeholder="please select your transmission mode"
-                >
-                  <a-select-option value="Record">Record</a-select-option>
-                  <a-select-option value="Binary">二进制</a-select-option>
-                </a-select>
-              </a-form-item>
-              <a-form-item ref="partInfo" label="分区信息" name="partInfo">
-                <span>ds1=</span>
-                <a-input
-                  v-model:value="formState.partInfo"
-                  style="width: 200px"
+            <a-form ref="formRef">
+              <a-form-item label="数据源信息" name="dsInfo">
+                <SelectDataSource
+                  @updateDsInfo="updateSourceInfo"
+                  v-bind:title="sourceTitle"
                 />
               </a-form-item>
+              <!-- 动态组件 -->
               <a-form-item
-                ref="nullCharacter"
-                label="空值字符"
-                name="nullCharacter"
+                v-for="item in sourceParams"
+                :key="item.field"
+                :label="item.label"
+                :name="item.label"
+                :rules="{
+                  required: item.required,
+                  trigger: 'change',
+                }"
               >
-                <a-input v-model:value="formState.nullCharacter" />
+                <dync-render
+                  v-bind:param="item"
+                  @updateInfo="updateSourceParams"
+                />
               </a-form-item>
             </a-form>
           </div>
         </div>
 
         <!-- mid -->
-        <div class="data-source-warp-mid"></div>
+        <div class="data-source-warp-mid">
+          <RightCircleOutlined style="font-size: 50px; color: #66f" />
+        </div>
 
         <!-- right -->
         <div class="data-source-warp-r">
           <div class="data-source-warp-r-content">
-            <a-form ref="formRef" :model="formState2" :rules="rules2">
+            <a-form ref="formRef">
               <a-form-item ref="dsInfo2" label="数据源信息" name="dsInfo2">
-                <SelectDataSource @updateDsInfo="updateDsInfo2" />
+                <SelectDataSource
+                  @updateDsInfo="updateSinkInfo"
+                  :title="sinkTitle"
+                />
               </a-form-item>
-              <a-form-item label="写入方式" name="writeMode">
-                <a-select
-                  v-model:value="formState2.writeMode"
-                  placeholder="please select your write mode"
-                >
-                  <a-select-option value="Insert">Insert</a-select-option>
-                  <a-select-option value="Replace">Replace</a-select-option>
-                  <a-select-option value="Update">Update</a-select-option>
-                </a-select>
-              </a-form-item>
-              <a-form-item ref="batchSize" label="批量大小" name="batchSize">
-                <a-input v-model:value="formState2.batchSize" />
+              <!-- 动态组件 -->
+              <a-form-item
+                v-for="item in sinkParams"
+                :key="item.field"
+                :label="item.label"
+                :name="item.label"
+                :required="item.required"
+              >
+                <dync-render
+                  v-bind:param="item"
+                  @updateInfo="updateSinkParams"
+                />
               </a-form-item>
             </a-form>
           </div>
@@ -82,59 +85,133 @@
 </template>
 
 <script>
+import { RightCircleOutlined } from "@ant-design/icons-vue";
 import { defineComponent, ref, reactive, toRaw } from "vue";
 import SelectDataSource from "./selectDataSource";
+import DyncRender from "./dyncRender.vue";
 export default defineComponent({
+  props: {
+    dsData: Object,
+  },
+  emits: ["updateDataSource"],
   components: {
     SelectDataSource,
+    DyncRender,
+    RightCircleOutlined,
   },
-  setup() {
+  setup(props, context) {
+    // 对象转标题
+    const objToTitle = function (obj) {
+      if (typeof obj !== "object") return "";
+      const { type, db, table } = obj;
+      return `${type}-数据源-${db}.${table}`;
+    };
+    let sourceTitle = objToTitle(props.dsData.dataSourceIds.source);
+    let sinkTitle = objToTitle(props.dsData.dataSourceIds.sink);
+
+    let { source, sink } = props.dsData.dataSourceIds;
+
+    let sourceParams = props.dsData.params.sources;
+    let sinkParams = props.dsData.params.sinks;
+
     const formRef = ref();
-    const formState = reactive({
-      dsInfo: "",
-      transMode: undefined,
-      partInfo: "",
-      nullCharacter: "",
-    });
-    const formState2 = reactive({
-      dsInfo2: "",
-      writeMode: undefined,
-      batchSize: "",
-    });
-    const rules = {
-      transMode: [
-        {
-          required: true,
-          message: "Please select transmission mode",
-          trigger: "change",
-        },
-      ],
+    const createDataSoure = (source, sink, sourceParams, sinkParams) => {
+      const dataSourceIds = Object.create(null);
+      const params = Object.create(null);
+
+      dataSourceIds.source = source;
+      dataSourceIds.sink = sink;
+      params.sources = sourceParams;
+      params.sinks = sinkParams;
+
+      return {
+        dataSourceIds,
+        params,
+      };
     };
-    const rules2 = {
-      writeMode: [
-        {
-          required: true,
-          message: "Please select write mode",
-          trigger: "change",
-        },
-      ],
+    const updateSourceInfo = (dsInfo) => {
+      const info = dsInfo.split("-");
+      source.type = info[0];
+      source.db = info[2];
+      source.table = info[3];
+
+      const dataSource = createDataSoure(
+        source,
+        sink,
+        sourceParams,
+        sinkParams
+      );
+      context.emit("updateDataSource", dataSource);
     };
-    const updateDsInfo = (dsInfo) => {
-      formState.dsInfo = dsInfo;
-      console.log(formState);
+    const updateSinkInfo = (dsInfo) => {
+      const info = dsInfo.split("-");
+      sink.type = info[0];
+      sink.db = info[2];
+      sink.table = info[3];
+
+      const dataSource = createDataSoure(
+        source,
+        sink,
+        sourceParams,
+        sinkParams
+      );
+      context.emit("updateDataSource", dataSource);
     };
-    const updateDsInfo2 = (dsInfo) => {
-      formState2.dsInfo = dsInfo;
-      console.log(formState2);
+    const updateSourceParams = (info) => {
+      const _sourceParams = toRaw(sourceParams).slice(0);
+      _sourceParams.forEach((item) => {
+        if (item.field === info.field) {
+          return (item.value = info.value);
+        }
+      });
+      sourceParams = _sourceParams;
+
+      const dataSource = createDataSoure(
+        source,
+        sink,
+        sourceParams,
+        sinkParams
+      );
+      context.emit("updateDataSource", dataSource);
     };
+    const updateSinkParams = (info) => {
+      const _sinkParams = toRaw(sinkParams).slice(0);
+      _sinkParams.forEach((item) => {
+        if (item.field === info.field) {
+          return (item.value = info.value);
+        }
+      });
+      sinkParams = _sinkParams;
+
+      const dataSource = createDataSoure(
+        source,
+        sink,
+        sourceParams,
+        sinkParams
+      );
+      context.emit("updateDataSource", dataSource);
+    };
+
     return {
       formRef,
-      formState,
-      rules,
-      formState2,
-      rules2,
-      updateDsInfo,
+      updateSourceInfo,
+      updateSinkInfo,
+      sourceTitle,
+      sinkTitle,
+      sourceParams,
+      sinkParams,
+      updateSourceParams,
+      updateSinkParams,
     };
+  },
+  watch: {
+    dsData: {
+      handler: function (newVal) {
+        console.log("watch props");
+        this.props = newVal;
+      },
+      deep: true,
+    },
   },
 });
 </script>
@@ -143,9 +220,31 @@ export default defineComponent({
 .data-source-warp {
   width: 1100px;
   display: flex;
+  margin-top: 15px;
 }
 .ds-l {
   width: 122px;
+  .main-header {
+    height: 33px;
+    background: inherit;
+    background-color: rgba(102, 102, 255, 1);
+    border: none;
+    display: flex;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    :nth-of-type(1) {
+      width: 100%;
+      text-align: center;
+      line-height: 33px;
+      font-size: 16px;
+    }
+    .main-header-label {
+      font-family: "Arial Negreta", "Arial Normal", "Arial";
+      font-weight: 700;
+      font-style: normal;
+      color: #ffffff;
+    }
+  }
 }
 .ds-r {
   flex: 1;
@@ -163,6 +262,8 @@ export default defineComponent({
     display: flex;
     > div {
       flex: 1;
+      text-align: center;
+      line-height: 33px;
     }
     .main-header-label {
       font-family: "Arial Negreta", "Arial Normal", "Arial";
@@ -191,6 +292,9 @@ export default defineComponent({
 }
 .data-source-warp-mid {
   width: 172px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .data-source-label {
   font-size: 14px;
