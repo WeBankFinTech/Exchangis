@@ -115,12 +115,26 @@ export default {
     },
   },
   job: {
+    list: '任务列表',
+    type: {
+      offline: '离线任务',
+      stream: '流式任务'
+    },
     action: {
       createJob: "新增任务",
       copyJob: "复制任务",
+      import: '导入',
+      export: '导出',
+      save: '保存',
+      cancel: '取消',
     },
     jobDetail: {
+      originJob: '原任务',
       name: "任务名",
+      label: '业务标签',
+      type: '任务类型',
+      engine: '执行引擎',
+      description: '任务描述',
     },
   },
 };

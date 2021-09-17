@@ -24,11 +24,12 @@
         </div>
         <div class="btnWrap">
           <a-button
+            v-if="!managementVisible"
             type="primary"
             @click="changeManagement"
-            v-if="!managementVisible"
-            >管理</a-button
           >
+            管理
+          </a-button>
           <div v-if="managementVisible">
             <CopyOutlined class="icon" @click="handleJobCopy" />
             <a-popconfirm
@@ -39,7 +40,7 @@
             >
               <DeleteOutlined class="icon" />
             </a-popconfirm>
-            <FormOutlined class="icon" @click="changeManagement" />
+            <ExportOutlined class="icon" @click="changeManagement" />
           </div>
         </div>
       </div>
@@ -51,21 +52,23 @@ import { defineComponent, reactive, ref, toRaw } from "vue";
 import {
   CopyOutlined,
   DeleteOutlined,
-  FormOutlined,
+  ExportOutlined,
 } from "@ant-design/icons-vue";
 import { useI18n } from "@fesjs/fes";
 import { message } from "ant-design-vue";
+
 export default {
   components: {
     CopyOutlined,
     DeleteOutlined,
-    FormOutlined,
+    ExportOutlined,
   },
   props: {
     jobData: Object,
   },
   emits: ["showJobDetail", "handleJobCopy"],
   setup(props, context) {
+    const { t } = useI18n({ useScope: "global" });
     const jobData = toRaw(props.jobData);
     const { engineType } = jobData;
     const imageName =

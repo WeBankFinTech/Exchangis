@@ -2017,10 +2017,10 @@ ansi-styles@^4.0.0, ansi-styles@^4.1.0:
   dependencies:
     color-convert "^2.0.1"
 
-ant-design-vue@^2.2.0:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/ant-design-vue/-/ant-design-vue-2.2.2.tgz#197388583c4e0b8ccd9c50ed19831ede27c2b919"
-  integrity sha512-Gmed9dVw4oqYmuO3ubkXbRBadldE82XSt6Gqq3F2grvORKXYoJF/3CaMwfyRN81UaoRhWVTHmLeGLzuVpwJepw==
+ant-design-vue@^2.2.7:
+  version "2.2.7"
+  resolved "https://registry.yarnpkg.com/ant-design-vue/-/ant-design-vue-2.2.7.tgz#d306d478003862f1a4cec3d52edb99c19064730a"
+  integrity sha512-aUk9HO2/LpUrZ1Sf2lVx561VrNkZz/aRJ1CInyxyuIy4xksMywZLt6OOUazODWZyNn6LbPtRMoqiFrecXb+ceg==
   dependencies:
     "@ant-design/icons-vue" "^6.0.0"
     "@babel/runtime" "^7.10.5"
@@ -2033,6 +2033,7 @@ ant-design-vue@^2.2.0:
     lodash-es "^4.17.15"
     moment "^2.27.0"
     omit.js "^2.0.0"
+    resize-observer-polyfill "^1.5.1"
     scroll-into-view-if-needed "^2.2.25"
     shallow-equal "^1.0.0"
     vue-types "^3.0.0"
@@ -6834,6 +6835,11 @@ requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
+
+resize-observer-polyfill@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/resize-observer-polyfill/-/resize-observer-polyfill-1.5.1.tgz#0e9020dd3d21024458d4ebd27e23e40269810464"
+  integrity sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==
 
 resolve-cwd@^2.0.0:
   version "2.0.0"
