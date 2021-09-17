@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <a-row :gutter="[16, 16]">
-      <a-col :span="24"> <TopLine @create="handleCreate" :sourceTypeList="sourceTypeList" @search="handleSearch" /> </a-col>
+      <a-col :span="24"> <TopLine @create="handleCreate" :loading="loading" :sourceTypeList="sourceTypeList" @search="handleSearch" /> </a-col>
       <a-col :span="24">
         <a-table :columns="columns" :data-source="dataSourceList" :loading="loading" rowKey="id">
           <template #tags="{ text: tags }">
@@ -12,7 +12,7 @@
             </span>
           </template>
           <template #status="{ text: expire }">
-            <span> {{ expire ? "已过期" : "未过期" }} </span>
+            <span> {{ expire ? "已过期" : "可用" }} </span>
           </template>
           <template #dataSourceTypeId="{ text: dataSourceTypeId }">
             <span> {{ (sourceTypeList.find((item) => item.id == dataSourceTypeId) || { option: "无" }).name }} </span>
@@ -20,7 +20,7 @@
           <template #action="row">
             <a-space>
               <a-button size="small" @click="handleEdit(row.text.id, row.text.dataSourceTypeId)">{{ $t("dataSource.table.list.columns.actions.editButton") }}</a-button>
-              <!-- <a-button size="small">{{ $t("dataSource.table.list.columns.actions.expireButton") }}</a-button> -->
+              <a-button size="small" v-show="!row.text.expire" @click="handleExpire(row.text.id)">{{ $t("dataSource.table.list.columns.actions.expireButton") }}</a-button>
               <a-button size="small" @click="handleTestConnect(row)">{{ $t("dataSource.table.list.columns.actions.testConnectButton") }}</a-button>
               <a-button size="small" @click="handleDelete(row)">{{ $t("dataSource.table.list.columns.actions.deleteButton") }}</a-button>
             </a-space>
@@ -29,7 +29,7 @@
             <a-button size="small" @click="handleOpenVersionModal(text.id)" type="link">查看</a-button>
           </template>
           <template #modifyTime="{ text }">
-            {{ dateFormat(text) }}
+            {{ text && dateFormat(text) }}
           </template>
         </a-table>
       </a-col>
@@ -47,7 +47,7 @@ import EditModal from "./components/editModal.vue";
 import VersionModal from "./components/versionModal.vue";
 import { useI18n } from "@fesjs/fes";
 import { computed } from "vue";
-import { getDataSourceList, deleteDataSource, getDataSourceTypes, testDataSourceConnect } from "@/common/service";
+import { getDataSourceList, deleteDataSource, expireDataSource, getDataSourceTypes, testDataSourceConnect } from "@/common/service";
 import { message } from "ant-design-vue";
 import { dateFormat } from "@/common/utils";
 
@@ -117,7 +117,6 @@ export default {
         slots: { customRender: "action" },
       },
     ]);
-
     return {
       columns,
     };
@@ -150,6 +149,12 @@ export default {
     };
   },
   methods: {
+    // 处理过期
+    async handleExpire(id) {
+      await expireDataSource(id);
+      message.success("操作成功");
+      this.getDataSourceList();
+    },
     // 处理搜索
     handleSearch(data) {
       this.getDataSourceList(data);
@@ -192,7 +197,6 @@ export default {
     },
     // 弹框操作完成
     handleModalFinish() {
-      this.modalCfg.visible = false;
       this.getDataSourceList();
     },
     // 测试链接
