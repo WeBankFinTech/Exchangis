@@ -32,6 +32,18 @@ public class DataSourceCreateVO {
 
     private String comment;
 
+    private Map<String, Object> connectParams;
+
+//    private Map<String, Object> parameters;
+//
+//    public Map<String, Object> getParameters() {
+//        return parameters;
+//    }
+//
+//    public void setParameters(Map<String, Object> parameters) {
+//        this.parameters = parameters;
+//    }
+
     public String getDataSourceName() {
         return dataSourceName;
     }
@@ -136,7 +148,7 @@ public class DataSourceCreateVO {
         this.expire = expire;
     }
 
-    private Map<String, Object> connectParams;
+
 
     public Map<String, Object> getConnectParams() {
         return connectParams;

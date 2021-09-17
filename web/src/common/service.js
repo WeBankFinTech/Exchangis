@@ -59,8 +59,18 @@ export const getDataSourceById = (id) => {
   return request(`/datasources/${id}`, {}, { method: "GET" });
 };
 
+<<<<<<< HEAD
 export const getJobInfo = (id) => {
   return request(`/job/${id}`, null, {
     method: "GET",
   });
 };
+=======
+export const expireDataSource = (id) => {
+  return request(`/datasources/${id}/expire`, {}, { method: "PUT" });
+};
+
+export const publishDataSource = (id, versionId) => {
+  return request(`/datasources/${id}/${versionId}/publish`, {}, { method: "PUT" });
+};
+>>>>>>> e0479712c69db332d441b090f520ceb4c4f84f1b
