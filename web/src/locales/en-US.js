@@ -122,12 +122,26 @@ export default {
     ui: "UI components",
   },
   job: {
+    list: 'Job List',
+    type: {
+      offline: 'Offline Job',
+      stream: 'Stream Job'
+    },
     action: {
       createJob: "Create Job",
       copyJob: "Copy Job",
+      import: 'Import',
+      export: 'Export',
+      save: 'Save',
+      cancel: 'Cancel',
     },
     jobDetail: {
+      originJob: 'Original Job',
       name: "Job name",
+      label: 'Job label',
+      type: 'Job type',
+      engine: 'Engine',
+      description: 'Description',
     },
   },
 };
