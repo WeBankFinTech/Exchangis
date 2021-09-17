@@ -29,7 +29,7 @@ public class ExchangisDataSourceRestfulApi {
         this.exchangisDataSourceService = exchangisDataSourceService;
     }
 
-    // 获取所有数据源类型
+    // list all datasource types
     @GET
     @Path("datasources/type")
     public Response listDataSourceTypes(@Context HttpServletRequest request) {
@@ -37,7 +37,7 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
-    // 分页查询数据源列表
+    // query paged datasource
     @POST
     @Path("datasources/query")
     public Response create(@Context HttpServletRequest request, @RequestBody DataSourceQueryVO vo) throws Exception {
@@ -45,7 +45,7 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
-    // 获取所有数据源
+    // list all datasources
     @GET
     @Path("datasources")
     public Response listAllDataSources(@Context HttpServletRequest request) throws Exception {
@@ -53,7 +53,7 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
-    // 获取数据源版本号列表
+    // get datasource version list
     @GET
     @Path("datasources/{id}/versions")
     public Response getDataSourceVersionsById(@Context HttpServletRequest request, @PathParam("id") Long id) throws Exception {
@@ -61,7 +61,7 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
-    // 创建数据源
+    // create datasource
     @POST
     @Path("datasources")
     public Response create(@Context HttpServletRequest request, /*@PathParam("type") String type, */@RequestBody Map<String, Object> json) throws Exception {
@@ -69,7 +69,7 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
-    // 获取某个数据源详情
+    // get datasource details
     @GET
     @Path("datasources/{id}")
     public Response getDataSourceInfoById(@Context HttpServletRequest request, @PathParam("id") Long id) throws Exception {
@@ -77,7 +77,14 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
-    // 更新数据源
+    @GET
+    @Path("datasources/{id}/connect_params")
+    public Response getDataSourceConnectParamsById(@Context HttpServletRequest request, @PathParam("id") Long id) throws Exception {
+        Message message = this.exchangisDataSourceService.getDataSourceConnectParamsById(request, id);
+        return Message.messageToResponse(message);
+    }
+
+    // update datasource and parameters (insert new record in datasource_version table)
     @PUT
 //    @Path("datasources/{type}/{id}")
     @Path("datasources/{id}")
@@ -86,7 +93,7 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
-    // 发布数据源
+    // publish datasource
     @PUT
 //    @Path("datasources/{type}/{id}")
     @Path("datasources/{id}/{version}/publish")
@@ -95,7 +102,15 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
-    // 测试连接
+    // expire datasource
+    @PUT
+    @Path("datasources/{id}/expire")
+    public Response expireDataSource(@Context HttpServletRequest request,/* @PathParam("type") String type, */@PathParam("id") Long id) throws Exception {
+        Message message = this.exchangisDataSourceService.expireDataSource(request, /*type, */id);
+        return Message.messageToResponse(message);
+    }
+
+    // test datasource connect
     @PUT
 //    @Path("datasources/{type}/{id}")
     @Path("datasources/{id}/{version}/connect")
@@ -104,7 +119,7 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
-    // 删除数据源
+    // delete datasource (physical)
     @DELETE
 //    @Path("datasources/{type}/{id}")
     @Path("datasources/{id}")
