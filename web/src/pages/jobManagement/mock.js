@@ -128,4 +128,38 @@ const jobInfo = {
   jobParams: "参数",
 };
 
-export { jobInfo };
+const fieldInfo = [
+  {
+    name: "field1",
+    type: "VARCHAR",
+  },
+  {
+    name: "field2",
+    type: "VARCHAR",
+  },
+];
+
+const SQLlist = [
+  {
+    classifier: "关系型数据库",
+    name: "MYSQL",
+    icon: "icon-mysql",
+    description: "MYSQL description",
+    id: "1",
+    option: "mysql",
+  },
+  {
+    classifier: "大数据存储",
+    name: "HIVE",
+    icon: "icon-hive",
+    description: "Hive description",
+    id: "2",
+    option: "hive",
+  },
+];
+
+const dbs = ["db1", "db2"];
+
+const tables = ["table1", "table2"];
+
+export { jobInfo, fieldInfo, SQLlist, dbs, tables };
