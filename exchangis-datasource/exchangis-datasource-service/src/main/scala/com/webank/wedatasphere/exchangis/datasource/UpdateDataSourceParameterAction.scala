@@ -9,8 +9,6 @@ import java.lang.reflect.Type
 import scala.collection.JavaConversions._
 
 class UpdateDataSourceParameterAction(val id: Long) extends POSTAction with DataSourceAction {
-//  override def getRequestPayload: String = "{\"dataSourceName\": \"123\"}"
-
   implicit val gson: Gson = new GsonBuilder().setPrettyPrinting().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").serializeNulls
     .registerTypeAdapter(classOf[java.lang.Double], new JsonSerializer[java.lang.Double] {
       override def serialize(t: lang.Double, `type`: Type, jsonSerializationContext: JsonSerializationContext): JsonElement =

@@ -37,6 +37,7 @@ public class GetDataSourceInfoResultDTO extends ResultDTO {
         private String createUser;
         private String labels;
         private Long versionId;
+        private Long publishedVersionId;
         private Boolean expire;
         private DataSourceItemDsTypeDTO dataSourceType;
 
@@ -118,6 +119,14 @@ public class GetDataSourceInfoResultDTO extends ResultDTO {
 
         public void setLabels(String labels) {
             this.labels = labels;
+        }
+
+        public Long getPublishedVersionId() {
+            return publishedVersionId;
+        }
+
+        public void setPublishedVersionId(Long publishedVersionId) {
+            this.publishedVersionId = publishedVersionId;
         }
 
         public Long getVersionId() {
