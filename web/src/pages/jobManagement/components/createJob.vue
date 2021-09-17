@@ -11,14 +11,17 @@
       @cancel="handleCancel"
     >
       <template #footer>
-        <a-button key="back" @click="handleCancel">取消</a-button>
+        <a-button key="back" @click="handleCancel">{{
+          $t('job.action.cancel')
+        }}</a-button>
         <a-button
           key="submit"
           type="primary"
           :loading="loading"
           @click="handleOk"
-          >保存</a-button
         >
+          {{ $t('job.action.save') }}
+        </a-button>
       </template>
       <a-form
         ref="formRef"
@@ -28,26 +31,30 @@
         :wrapper-col="wrapperCol"
       >
         <a-form-item
-          ref="originName"
-          label="元任务"
-          name="originName"
           v-if="!!formState.originName"
+          ref="originName"
+          :label="$t('job.jobDetail.originJob')"
+          name="originName"
         >
           <a-input v-model:value="formState.originName" disabled />
         </a-form-item>
-        <a-form-item ref="jobName" label="任务名" name="jobName">
+        <a-form-item ref="jobName" :label="$t('job.jobDetail.name')" name="jobName">
           <a-input v-model:value="formState.jobName" />
         </a-form-item>
-        <a-form-item label="业务标签" name="jobLabels">
+        <a-form-item :label="$t('job.jobDetail.label')" name="jobLabels">
           <a-input v-model:value="formState.jobLabels" />
         </a-form-item>
-        <a-form-item label="任务类型" name="jobType" v-if="!formState.originName">
+        <a-form-item
+          :label="$t('job.jobDetail.type')"
+          name="jobType"
+          v-if="!formState.originName"
+        >
           <a-select v-model:value="formState.jobType">
             <a-select-option value="OFFLINE">离线任务</a-select-option>
             <a-select-option value="STREAM">流式任务 </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="执行引擎" name="engineType">
+        <a-form-item :label="$t('job.jobDetail.engine')" name="engineType">
           <a-select
             v-model:value="formState.engineType"
             :disabled="!!formState.originName"
@@ -57,7 +64,7 @@
             <a-select-option value="Flink">Flink</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="任务描述" name="jobDesc">
+        <a-form-item :label="$t('job.jobDetail.description')" name="jobDesc">
           <a-textarea v-model:value="formState.jobDesc" />
         </a-form-item>
       </a-form>
@@ -72,22 +79,24 @@ import {
   toRaw,
   watchEffect,
   toRefs,
-} from "vue";
+} from 'vue';
+import { useI18n } from '@fesjs/fes';
 export default defineComponent({
   props: {
     visible: Boolean,
     editData: Object,
   },
-  emits: ["handleJobAction"], //需要声明emits
+  emits: ['handleJobAction'], //需要声明emits
   setup(props, context) {
+    const { t } = useI18n({ useScope: 'global' });
     const formRef = ref();
     const formState = reactive({
-      originName: "",
-      jobName: "",
-      jobType: "OFFLINE",
-      engineType: "DataX",
-      jobLabels: "",
-      jobDesc: "",
+      originName: '',
+      jobName: '',
+      jobType: 'OFFLINE',
+      engineType: 'DataX',
+      jobLabels: '',
+      jobDesc: '',
     });
     watchEffect(() => {
       const editData = toRaw(props.editData);
@@ -96,30 +105,30 @@ export default defineComponent({
         formState.originName = editData.jobName;
         formState.engineType = editData.engineType;
       } else {
-        formState.originName = "";
-        formState.engineType = "DataX";
+        formState.originName = '';
+        formState.engineType = 'DataX';
       }
     });
     const rules = {
       jobName: [
         {
           required: true,
-          message: "任务名不能为空",
-          trigger: "blur",
+          message: '任务名不能为空',
+          trigger: 'blur',
         },
       ],
       jobType: [
         {
           required: true,
-          message: "任务类型不能为空",
-          trigger: "change",
+          message: '任务类型不能为空',
+          trigger: 'change',
         },
       ],
       engineType: [
         {
           required: true,
-          message: "执行引擎不能为空",
-          trigger: "change",
+          message: '执行引擎不能为空',
+          trigger: 'change',
         },
       ],
     };
@@ -129,7 +138,7 @@ export default defineComponent({
         .validate()
         .then(() => {
           console.log(toRaw(formState));
-          context.emit("handleJobAction", "success");
+          context.emit('handleJobAction', 'success');
           formRef.value.resetFields();
         })
         .catch((e) => {
@@ -137,7 +146,7 @@ export default defineComponent({
         });
     };
     const handleCancel = () => {
-      context.emit("handleJobAction", "cancel");
+      context.emit('handleJobAction', 'cancel');
       formRef.value.resetFields();
     };
 

@@ -9,45 +9,58 @@
       />
       <a-button
         type="primary"
-        @click="addJob"
         style="width: 160px; margin-left: 30px"
+        @click="addJob"
       >
-        <template #icon> <PlusOutlined /></template>新增任务</a-button
-      >
+        <template #icon> <PlusOutlined /></template>{{t('job.action.createJob')}}
+      </a-button>
       <a-button type="primary" style="width: 160px; margin-left: 30px">
-        <template #icon> <DownloadOutlined /></template>导入</a-button
-      >
+        <template #icon> <DownloadOutlined /></template>{{t('job.action.import')}}
+      </a-button>
     </div>
     <div>
       <a-tabs v-model:activeKey="activeKey">
-        <a-tab-pane key="1"
-          ><template #tab>
+        <a-tab-pane key="1">
+          <template #tab>
             <span>
               <ApiOutlined />
-              离线任务
+              {{t('job.type.offline')}}
             </span>
           </template>
           <div class="cardWrap">
             <div v-for="(item, index) in jobList" :key="index" class="card">
-              <job-card :jobData="item" @showJobDetail="showJobDetail" @handleJobCopy="handleJobCopy"/>
+              <job-card
+                :jobData="item"
+                @showJobDetail="showJobDetail"
+                @handleJobCopy="handleJobCopy"
+              />
             </div>
           </div>
         </a-tab-pane>
-        <a-tab-pane key="2"
-          ><template #tab>
+        <a-tab-pane key="2">
+          <template #tab>
             <span>
               <NodeIndexOutlined />
-              流式任务
+              {{t('job.type.stream')}}
             </span>
           </template>
           <div class="cardWrap">
             <div v-for="(item, index) in jobList" :key="index" class="card">
-              <job-card :jobData="item" @showJobDetail="showJobDetail" @handleJobCopy="handleJobCopy"/>
-            </div></div
-        ></a-tab-pane>
+              <job-card
+                :jobData="item"
+                @showJobDetail="showJobDetail"
+                @handleJobCopy="handleJobCopy"
+              />
+            </div>
+          </div>
+        </a-tab-pane>
       </a-tabs>
     </div>
-    <CreateJob :visible="visible" :editData="editJobData" @handleJobAction="handleJobAction" />
+    <CreateJob
+      :visible="visible"
+      :editData="editJobData"
+      @handleJobAction="handleJobAction"
+    />
   </div>
 </template>
 <script>
@@ -56,9 +69,11 @@ import {
   NodeIndexOutlined,
   ApiOutlined,
   PlusOutlined,
-} from "@ant-design/icons-vue";
-import CreateJob from "./createJob.vue";
-import JobCard from "./job_card.vue";
+} from '@ant-design/icons-vue';
+import { useI18n } from "@fesjs/fes";
+import CreateJob from './createJob';
+import JobCard from './job_card';
+
 export default {
   components: {
     DownloadOutlined,
@@ -69,10 +84,12 @@ export default {
     JobCard,
   },
   data() {
+    const { t } = useI18n({ useScope: "global" });
     return {
-      search: "1222",
-      userName: "safdsaf",
-      activeKey: "1",
+      t,
+      search: '1222',
+      userName: 'safdsaf',
+      activeKey: '1',
       visible: false,
       loading: false,
       editJobData: {},
@@ -80,21 +97,21 @@ export default {
         {
           id: 1, // 任务id
           projectId: 1, // 所属项目id
-          jobName: "任务名1",
-          jobType: "OFFLINE",
-          engineType: "DataX", // 执行引擎
-          jobLabels: "renwu, hello, hello",
-          jobDesc: "任务描述",
+          jobName: '任务名1',
+          jobType: 'OFFLINE',
+          engineType: 'DataX', // 执行引擎
+          jobLabels: 'renwu, hello, hello',
+          jobDesc: '任务描述',
         },
         {
           id: 2, // 任务id
           projectId: 1, // 所属项目id
-          jobName: "任务名2",
-          jobType: "STREAM",
-          engineType: "Sqoop", // 执行引擎
-          jobLabels: "renwu, hello, hello",
+          jobName: '任务名2',
+          jobType: 'STREAM',
+          engineType: 'Sqoop', // 执行引擎
+          jobLabels: 'renwu, hello, hello',
           jobDesc:
-            "任务描述ets how a flex item will grow or shrink to fit the space available in itsets how a flex item will grow or shrink to fit the space available in its",
+            '任务描述ets how a flex item will grow or shrink to fit the space available in itsets how a flex item will grow or shrink to fit the space available in its',
         },
       ],
     };
@@ -120,7 +137,7 @@ export default {
     },
     showJobDetail(data) {
       console.log(data);
-      this.$emit("showJobDetail", data);
+      this.$emit('showJobDetail', data);
     },
   },
 };

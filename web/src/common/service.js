@@ -64,3 +64,31 @@ export const getJobInfo = (id) => {
     method: "GET",
   });
 };
+
+//获取任务列表
+export const getJobList = (query) => {
+  return request(`/job?${query}`, null, {
+    method: "GET",
+  });
+}
+
+//获取执行引擎列表
+export const getEngineType = () => {
+  return request(`/engineType`, null, {
+    method: "GET",
+  });
+}
+
+//新建任务
+export const createJob = (params) => {
+  return request(`/job`, {...params}, {
+    method: "POST",
+  });
+}
+
+//复制任务
+export const copyJob = (id, params) => {
+  return request(`/job/${id}/copy`, {...params}, {
+    method: "POST",
+  });
+}
