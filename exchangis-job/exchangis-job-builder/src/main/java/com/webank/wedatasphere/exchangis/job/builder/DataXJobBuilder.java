@@ -4,16 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.job.datax.domain.LaunchCode;
-import com.webank.wedatasphere.exchangis.job.datax.handler.HiveJobHandler;
-import com.webank.wedatasphere.exchangis.job.datax.handler.MysqlJobHandler;
+import com.webank.wedatasphere.exchangis.job.datax.handler.DataxJobHandler;
 import com.webank.wedatasphere.exchangis.job.datax.reader.Reader;
 import com.webank.wedatasphere.exchangis.job.datax.writer.Writer;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
 import com.webank.wedatasphere.exchangis.job.domain.Setting;
-import com.webank.wedatasphere.exchangis.job.enums.DataSourceTypeEnum;
 import com.webank.wedatasphere.exchangis.job.handler.JobHandler;
+import com.webank.wedatasphere.exchangis.job.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,11 +21,16 @@ import java.util.Map;
 
 public class DataXJobBuilder implements ExchangisJobBuilder {
 
+    protected static final String HANDLER_PACKAGE_NAME = "com.webank.wedatasphere.exchangis.job.datax.handler";
+    protected static final String READER_PACKAGE_NAME = "com.webank.wedatasphere.exchangis.job.datax.reader";
+    protected static final String WRITER_PACKAGE_NAME = "com.webank.wedatasphere.exchangis.job.datax.writer";
+
     GsonBuilder builder = new GsonBuilder();
     Gson gson = builder.create();
 
     @Override
     public ExchangisLaunchTask[] buildJob(ExchangisJob job) throws ExchangisDataSourceException {
+
         String content = job.getContent();
         Long jobId = job.getId();
         ExchangisSubJob[] exchangisSubJobs = gson.fromJson(content, ExchangisSubJob[].class);
@@ -52,38 +56,44 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
     }
 
     private List generateContents(ExchangisSubJob subjob, Long jobId) throws ExchangisDataSourceException {
-        DataSourceTypeEnum source = getDataSourceType(subjob.getDataSources().get("source_id").toString());
-        DataSourceTypeEnum sink = getDataSourceType(subjob.getDataSources().get("sink_id").toString());
-        JobHandler jobhandler;
+        String source = getDataSourceType(subjob.getDataSources().get("source_id").toString());
+        String sink = getDataSourceType(subjob.getDataSources().get("sink_id").toString());
 
-        Reader reader = null;
-        Writer writer = null;
-        List contents = new ArrayList();
-
-        switch (source) {
-            case MYSQL:
-                jobhandler = new MysqlJobHandler();
-                reader = jobhandler.handleReader(subjob, jobId);
-                break;
-            case HIVE:
-                jobhandler = new HiveJobHandler();
-                reader = jobhandler.handleReader(subjob, jobId);
-                break;
-            default:
-                break;
+        List<String> classList = Utils.getClazzName(HANDLER_PACKAGE_NAME, true);
+        List<String> newClassList = new ArrayList<>(classList.size());
+        for (int i = 0; i < classList.size(); i++) {
+            newClassList.add(classList.get(i).replace(HANDLER_PACKAGE_NAME + ".", "").replace("JobHandler", ""));
         }
 
-        switch (sink) {
-            case MYSQL:
-                jobhandler = new MysqlJobHandler();
-                writer = jobhandler.handleWriter(subjob, jobId);
-                break;
-            case HIVE:
-                jobhandler = new HiveJobHandler();
-                writer = jobhandler.handleWriter(subjob, jobId);
-                break;
-            default:
-                break;
+        JobHandler jobhandler;
+        Reader reader;
+        Writer writer;
+        List contents = new ArrayList();
+
+        try {
+            if (newClassList.stream().anyMatch(c -> c.equalsIgnoreCase(source))) {
+                String name = newClassList.stream().filter(f -> f.equalsIgnoreCase(source)).findAny().get();
+                jobhandler = (JobHandler) Class.forName(HANDLER_PACKAGE_NAME + "." + name + "JobHandler").newInstance();
+                reader = (Reader) Class.forName(READER_PACKAGE_NAME + "." + name + "Reader").newInstance();
+            } else {
+                jobhandler = new DataxJobHandler();
+                reader = new Reader();
+            }
+            jobhandler.handleReader(subjob, jobId, reader);
+
+            if (newClassList.stream().anyMatch(c -> c.equalsIgnoreCase(sink))) {
+                String name = newClassList.stream().filter(f -> f.equalsIgnoreCase(sink)).findAny().get();
+                jobhandler = (JobHandler) Class.forName(HANDLER_PACKAGE_NAME + "." + name + "JobHandler").newInstance();
+                writer = (Writer) Class.forName(WRITER_PACKAGE_NAME + "." + name + "Writer").newInstance();
+
+            } else {
+                jobhandler = new DataxJobHandler();
+                writer = new Writer();
+            }
+            jobhandler.handleWriter(subjob, jobId, writer);
+
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            throw new ExchangisDataSourceException(23001, e.getLocalizedMessage());
         }
 
         contents.add(reader);
@@ -106,11 +116,9 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
         return tasksettings;
     }
 
-    private DataSourceTypeEnum getDataSourceType(String id) {
-        if (id.toLowerCase().startsWith("hive")) {
-            return DataSourceTypeEnum.HIVE;
-        } else if (id.toLowerCase().startsWith("mysql")) {
-            return DataSourceTypeEnum.MYSQL;
-        } else return DataSourceTypeEnum.TEXT;
+    private String getDataSourceType(String id) {
+        return id.substring(0, id.indexOf("."));
+
     }
+
 }

@@ -74,6 +74,7 @@ export default {
       await this.$refs.formRef.validate();
       const formatData = {
         ...this.origin,
+        subjobName: this.formState.jobName
       };
       try {
         this.confirmLoading = true;
