@@ -1,12 +1,21 @@
 <template>
   <a-modal title="版本列表" footer="" :visible="visible" :width="600" :confirm-loading="confirmLoading" @cancel="$emit('update:visible', false)">
-    <a-table size="small" :pagination="false" :columns="columns" :loading="confirmLoading" :data-source="data"> </a-table>
+    <a-table size="small" :pagination="false" :columns="columns" :loading="confirmLoading" :data-source="data">
+      <template #published="{ text }">
+        {{ text ? "是" : "否" }}
+      </template>
+      <template #action="row">
+        <a-space>
+          <a-button v-show="!row.text.published" size="small" @click="publishDataSource(row.text.versionId)">发布</a-button>
+        </a-space>
+      </template>
+    </a-table>
   </a-modal>
 </template>
 
 <script>
-import { getDataSourceVersionList } from "@/common/service";
-import { version } from "ant-design-vue";
+import { getDataSourceVersionList, publishDataSource } from "@/common/service";
+import { message } from "ant-design-vue";
 const columns = [
   {
     title: "版本ID",
@@ -19,6 +28,12 @@ const columns = [
     align: "center",
   },
   {
+    title: "是否发布",
+    dataIndex: "published",
+    align: "center",
+    slots: { customRender: "published" },
+  },
+  {
     title: "HOST",
     dataIndex: ["connectParams", "host"],
     align: "center",
@@ -29,14 +44,9 @@ const columns = [
     align: "center",
   },
   {
-    title: "用户名",
-    dataIndex: ["connectParams", "username"],
+    title: "操作",
     align: "center",
-  },
-  {
-    title: "密码",
-    dataIndex: ["connectParams", "password"],
-    align: "center",
+    slots: { customRender: "action" },
   },
 ];
 export default {
@@ -47,9 +57,7 @@ export default {
   },
   watch: {
     visible(val) {
-      if (val === true) {
-        this.getDataSourceVersionList();
-      }
+      if (val === true) this.getDataSourceVersionList();
     },
   },
   data() {
@@ -65,6 +73,13 @@ export default {
       let { versions } = await getDataSourceVersionList(this.id);
       this.confirmLoading = false;
       this.data = versions;
+    },
+    async publishDataSource(versionId) {
+      this.confirmLoading = true;
+      await publishDataSource(this.id, versionId);
+      this.confirmLoading = false;
+      await this.getDataSourceVersionList();
+      message.success("发布成功");
     },
   },
 };
