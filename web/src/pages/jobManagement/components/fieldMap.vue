@@ -30,7 +30,7 @@
                 :columns="columns"
                 size="small"
                 :pagination="false"
-                v-if="type === 'MAPPING'"
+                v-if="type === 'MAPPING' && sourceDS.length > 0"
               >
                 <template #fieldName="{ record }">
                   <a-select
@@ -75,7 +75,7 @@
                 :columns="columns"
                 size="small"
                 :pagination="false"
-                v-if="type === 'MAPPING'"
+                v-if="type === 'MAPPING' && sinkDS.length > 0"
               >
                 <template #fieldName="{ record }">
                   <a-select
@@ -161,10 +161,15 @@ export default defineComponent({
 
     // crate dataSource
     const createDataSource = (map, fieldOptions, typeOptions) => {
-      if (typeof map !== "object") return {};
       const sourceDS = [],
         sinkDS = [],
         transformerList = [];
+      if (typeof map !== "object")
+        return {
+          sourceDS,
+          sinkDS,
+          transformerList,
+        };
       map.forEach((item, idx) => {
         let sourceItem = Object.create(null);
         let sinkItem = Object.create(null);
@@ -198,7 +203,7 @@ export default defineComponent({
     };
 
     let { sourceDS, sinkDS, transformerList } = createDataSource(
-      toRaw(props.fmData).mapping,
+      toRaw(props.fmData).mapping || [],
       fieldOptions,
       typeOptions
     );
@@ -421,6 +426,15 @@ export default defineComponent({
       text-align: center;
       line-height: 33px;
     }
+    &::before {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 33px;
+      background-color: #66f;
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
     .main-header-label {
       font-family: "Arial Negreta", "Arial Normal", "Arial";
       font-weight: 700;
@@ -438,6 +452,7 @@ export default defineComponent({
 }
 .field-map-wrap-l {
   flex: 1;
+  min-width: 332px;
   .fm-wrap-l-c-item {
     > div {
       display: inline;
@@ -445,6 +460,7 @@ export default defineComponent({
   }
 }
 .field-map-wrap-r {
+  min-width: 332px;
   flex: 1;
 }
 .field-map-wrap-mid {
