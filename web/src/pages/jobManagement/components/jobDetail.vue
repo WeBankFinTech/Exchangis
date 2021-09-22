@@ -207,11 +207,11 @@ export default {
     },
     async getInfo() {
       try {
-        //await getJobInfo(this.curTab.id);
-        jobInfo.content.subJobs.forEach((item) => {
-          item.engineType = jobInfo.engineType;
+        let data = await getJobInfo(this.curTab.id);
+        data.content.subJobs.forEach((item) => {
+          item.engineType = data.engineType;
         });
-        this.jobData = jobInfo;
+        this.jobData = data;
         this.list = this.jobData.content.subJobs;
         if (this.list.length) {
           this.activeIndex = 0;
