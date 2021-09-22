@@ -14,9 +14,9 @@
       >
         <template #icon> <PlusOutlined /></template>新增任务</a-button
       >
-      <a-button type="primary" style="width: 160px; margin-left: 30px">
+      <!--<a-button type="primary" style="width: 160px; margin-left: 30px">
         <template #icon> <DownloadOutlined /></template>导入</a-button
-      >
+      >-->
     </div>
     <div>
       <a-tabs v-model:activeKey="activeKey">
@@ -115,6 +115,7 @@ export default {
       this.visible = false;
       this.editJobData = {};
       console.log(status);
+      this.$emit('changeType')
     },
     handleJobCopy(data) {
       this.visible = true;
