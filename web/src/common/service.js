@@ -64,6 +64,13 @@ export const getJobInfo = (id) => {
     method: "GET",
   });
 };
+
+export const getJobs = (id, jobType) => {
+  return request(`/job?projectId=${id}&jobType=${jobType}`, null, {
+    method: "GET",
+  });
+};
+
 export const expireDataSource = (id) => {
   return request(`/datasources/${id}/expire`, {}, { method: "PUT" });
 };
