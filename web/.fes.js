@@ -60,13 +60,15 @@ export default {
     ],
   },
   devServer: {
+    host:'0.0.0.0',
     port: 8000,
   },
   proxy: {
     "/api": {
-      target: "http://192.168.0.157:9321/",
+      //target: "http://192.168.0.157:9321/",
+      target: "http://172.24.8.51:9321/",
       changeOrigin: true,
-      pathRewrite: { "^/api": "" },
+      pathRewrite: { "^/api": "/api" },
     },
   },
   locale: {
