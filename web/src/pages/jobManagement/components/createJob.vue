@@ -52,9 +52,7 @@
             v-model:value="formState.engineType"
             :disabled="!!formState.originName"
           >
-            <a-select-option value="DataX">DataX</a-select-option>
-            <a-select-option value="Sqoop">Sqoop</a-select-option>
-            <a-select-option value="Flink">Flink</a-select-option>
+            <a-select-option v-for="item in engineList" :value="item">{{item}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="任务描述" name="jobDesc">
@@ -73,10 +71,21 @@ import {
   watchEffect,
   toRefs,
 } from "vue";
+
+import { createJob, getEngineType } from "@/common/service"
+
 export default defineComponent({
   props: {
     visible: Boolean,
     editData: Object,
+  },
+  data() {
+    return {
+      engineList: []
+    }
+  },
+  async mounted(){
+    this.engineList = (await getEngineType()).result
   },
   emits: ["handleJobAction"], //需要声明emits
   setup(props, context) {
@@ -128,7 +137,7 @@ export default defineComponent({
       formRef.value
         .validate()
         .then(() => {
-          console.log(toRaw(formState));
+          createJob(toRaw(formState))
           context.emit("handleJobAction", "success");
           formRef.value.resetFields();
         })

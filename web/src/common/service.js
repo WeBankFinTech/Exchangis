@@ -71,6 +71,16 @@ export const getJobs = (id, jobType) => {
   });
 };
 
+export const createJob = (params) => {
+  return request("/job", { ...params }, { method: "POST" });
+};
+
+export const getEngineType = () => {
+  return request(`/job/engineType`, null, {
+    method: "GET",
+  });
+};
+
 export const expireDataSource = (id) => {
   return request(`/datasources/${id}/expire`, {}, { method: "PUT" });
 };
