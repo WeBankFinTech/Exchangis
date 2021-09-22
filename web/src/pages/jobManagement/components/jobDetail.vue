@@ -249,6 +249,7 @@ export default {
     changeCurTask(index) {
       this.activeIndex = index;
       this.curTask = this.list[this.activeIndex];
+      console.log("this.curTask", this.curTask);
     },
     addNewTask() {
       let task = {
