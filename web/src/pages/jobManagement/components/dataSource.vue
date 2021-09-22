@@ -232,6 +232,16 @@ export default defineComponent({
     display: flex;
     border-top-left-radius: 16px;
     border-bottom-left-radius: 16px;
+    &::before {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 33px;
+      background-color: #66f;
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+      right: 962px;
+    }
     :nth-of-type(1) {
       width: 100%;
       text-align: center;
