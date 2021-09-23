@@ -45,7 +45,8 @@
 </template>
 
 <script>
-import { SQLlist, dbs, tables } from "../mock";
+//import { SQLlist, dbs, tables } from "../mock";
+import { getDataSourceTypes } from "@/common/service"
 // const dataBaseTypes = ["Hive", "HBase"];
 // const colonyData = {
 //   Hive: ["A集群", "B集群", "C集群"],
@@ -88,6 +89,7 @@ import {
   watch,
   ref,
   toRaw,
+  onMounted
 } from "vue";
 
 export default defineComponent({
@@ -96,6 +98,12 @@ export default defineComponent({
   },
   emits: ["updateDsInfo"],
   setup(props, context) {
+    let SQLlist, dbs, tables
+    async function init () {
+      dbs = (await getDataSourceTypes()).list
+    }
+    init()
+    console.log(123)
     // 数据源
     const sqlList = [];
     SQLlist.forEach((sql) => {

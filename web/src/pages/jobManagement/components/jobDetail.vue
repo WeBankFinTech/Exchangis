@@ -100,18 +100,21 @@
       <div class="jd_right">
         <div>
           <DataSource
+            v-if="curTask"
             v-bind:dsData="curTask"
             @updateDataSource="updateDataSource"
           />
         </div>
         <div>
           <FieldMap
+            v-if="curTask"
             v-bind:fmData="curTask.transforms"
             @updateFieldMap="updateFieldMap"
           />
         </div>
         <div>
           <ProcessControl
+            v-if="curTask"
             v-bind:psData="curTask.settings"
             @updateProcessControl="updateProcessControl"
           />
@@ -185,7 +188,7 @@ export default {
       copyObj: {},
       list: [],
       activeIndex: -1,
-      curTask: {},
+      curTask: null,
       nameEditable: false,
     };
   },
@@ -207,7 +210,14 @@ export default {
     },
     async getInfo() {
       try {
-        let data = await getJobInfo(this.curTab.id);
+        let data = (await getJobInfo(this.curTab.id)).result;
+        if (!data.content || data.content === "[]") {
+          data.content = {
+            subJobs: []
+          }
+        } else {
+          data.content = JSON.parse(data.content)
+        }
         data.content.subJobs.forEach((item) => {
           item.engineType = data.engineType;
         });
@@ -216,7 +226,6 @@ export default {
         if (this.list.length) {
           this.activeIndex = 0;
           this.curTask = this.list[this.activeIndex];
-          console.log("this.curTask", this.curTask);
         }
       } catch (error) {}
     },
@@ -236,6 +245,9 @@ export default {
       if (this.activeIndex === index && this.list.length) {
         this.activeIndex = 0;
         this.curTask = this.list[this.activeIndex];
+      } else {
+        this.activeIndex = -1;
+        this.curTask = null
       }
     },
     cancel() {},
@@ -268,24 +280,32 @@ export default {
             table: "",
           },
         },
+        params: {
+          sources: [],
+          sinks: []
+        },
+        transforms: {
+          type: "MAPPING",
+          mapping: []
+        },
+        settings: []
       };
       this.jobData.content.subJobs.push(task);
-      this.activeIndex = this.jobData.content.subJobs.length - 1;
-      this.curTask = this.list[this.activeIndex];
+      this.$nextTick(()=>{
+        this.activeIndex = this.jobData.content.subJobs.length - 1
+        this.curTask = this.list[this.activeIndex]
+      })
     },
     updateFieldMap(transforms) {
       this.curTask.transforms = transforms;
-      console.log("curTask", this.curTask);
     },
     updateProcessControl(settings) {
       this.curTask.settings = settings;
-      console.log("curTask", this.curTask);
     },
     updateDataSource(dataSource) {
       const { dataSourceIds, params } = dataSource;
       this.curTask.dataSourceIds = dataSourceIds;
       this.curTask.params = params;
-      console.log("curTask", this.curTask);
     },
   },
 };

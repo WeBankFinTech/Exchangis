@@ -106,6 +106,7 @@ export default defineComponent({
       const { type, db, table } = obj;
       return `${type}-数据源-${db}.${table}`;
     };
+    console.log(props.dsData.dataSourceIds.source)
     let sourceTitle = objToTitle(props.dsData.dataSourceIds.source);
     let sinkTitle = objToTitle(props.dsData.dataSourceIds.sink);
 
