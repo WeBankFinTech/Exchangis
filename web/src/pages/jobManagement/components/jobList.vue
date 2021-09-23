@@ -4,7 +4,7 @@
       <a-input-search
         v-model:value="search"
         placeholder="input search text"
-        style="width: 200px"
+        style="width: 300px"
         @search="handleSearch"
       />
       <a-button
@@ -12,27 +12,32 @@
         style="width: 160px; margin-left: 30px"
         @click="addJob"
       >
-        <template #icon> <PlusOutlined /></template>{{t('job.action.createJob')}}
+        <template #icon> <PlusOutlined /></template
+        >{{ t('job.action.createJob') }}
       </a-button>
       <a-button type="primary" style="width: 160px; margin-left: 30px">
-        <template #icon> <DownloadOutlined /></template>{{t('job.action.import')}}
+        <template #icon> <DownloadOutlined /></template
+        >{{ t('job.action.import') }}
       </a-button>
     </div>
-    <div>
+    <a-spin :spinning="spinning">
+    <div class="tabWrap">
       <a-tabs v-model:activeKey="activeKey">
         <a-tab-pane key="1">
           <template #tab>
             <span>
               <ApiOutlined />
-              {{t('job.type.offline')}}
+              {{ t('job.type.offline') }}
             </span>
           </template>
           <div class="cardWrap">
-            <div v-for="(item, index) in jobList" :key="index" class="card">
+            <div v-for="item in offlineList" :key="item.id" class="card">
               <job-card
                 :jobData="item"
+                type='OFFLINE'
                 @showJobDetail="showJobDetail"
                 @handleJobCopy="handleJobCopy"
+                @refreshList='getJobs'
               />
             </div>
           </div>
@@ -41,24 +46,28 @@
           <template #tab>
             <span>
               <NodeIndexOutlined />
-              {{t('job.type.stream')}}
+              {{ t('job.type.stream') }}
             </span>
           </template>
           <div class="cardWrap">
-            <div v-for="(item, index) in jobList" :key="index" class="card">
+            <div v-for="item in streamList" :key="item.id" class="card">
               <job-card
                 :jobData="item"
+                type='STREAM'
                 @showJobDetail="showJobDetail"
                 @handleJobCopy="handleJobCopy"
+                @refreshList='getJobs'
               />
             </div>
           </div>
         </a-tab-pane>
       </a-tabs>
     </div>
+    </a-spin>
     <CreateJob
       :visible="visible"
       :editData="editJobData"
+      :projectId="projectId"
       @handleJobAction="handleJobAction"
     />
   </div>
@@ -70,9 +79,10 @@ import {
   ApiOutlined,
   PlusOutlined,
 } from '@ant-design/icons-vue';
-import { useI18n } from "@fesjs/fes";
+import { useI18n } from '@fesjs/fes';
 import CreateJob from './createJob';
 import JobCard from './job_card';
+import { getJobs } from '@/common/service';
 
 export default {
   components: {
@@ -84,7 +94,7 @@ export default {
     JobCard,
   },
   data() {
-    const { t } = useI18n({ useScope: "global" });
+    const { t } = useI18n({ useScope: 'global' });
     return {
       t,
       search: '1222',
@@ -93,30 +103,28 @@ export default {
       visible: false,
       loading: false,
       editJobData: {},
-      jobList: [
-        {
-          id: 1, // 任务id
-          projectId: 1, // 所属项目id
-          jobName: '任务名1',
-          jobType: 'OFFLINE',
-          engineType: 'DataX', // 执行引擎
-          jobLabels: 'renwu, hello, hello',
-          jobDesc: '任务描述',
-        },
-        {
-          id: 2, // 任务id
-          projectId: 1, // 所属项目id
-          jobName: '任务名2',
-          jobType: 'STREAM',
-          engineType: 'Sqoop', // 执行引擎
-          jobLabels: 'renwu, hello, hello',
-          jobDesc:
-            '任务描述ets how a flex item will grow or shrink to fit the space available in itsets how a flex item will grow or shrink to fit the space available in its',
-        },
-      ],
+      offlineList: [],
+      streamList: [],
+      projectId: 1,
+      spinning: false,
     };
   },
+  mounted() {
+    this.getJobs('OFFLINE', 1);
+    this.getJobs('STREAM', 1);
+  },
   methods: {
+    async getJobs(type, id) {
+      this.spinning = true;
+      const list = await getJobs(id, type);
+      this.spinning = false;
+      const result = list && list.result || [];
+      if(type === 'OFFLINE'){
+        this.offlineList = result;
+      }else{
+        this.streamList = result;
+      }
+    },
     handleSearch(element) {
       const value = element.target.value;
       this.search = value;
@@ -125,9 +133,13 @@ export default {
       console.log(122);
       this.visible = true;
     },
-    handleJobAction(status) {
+    handleJobAction(newJobData) {
       this.visible = false;
       this.editJobData = {};
+      if(newJobData){
+        this.getJobs(newJobData.jobType, newJobData.projectId);
+
+      }
       console.log(status);
     },
     handleJobCopy(data) {
@@ -140,9 +152,25 @@ export default {
       this.$emit('showJobDetail', data);
     },
   },
+  watch: {
+    activeKey: {
+      handler: function (newVal) {
+        console.log(newVal);
+      },
+      deep: true,
+    },
+  },
 };
 </script>
 <style scoped lang="less">
+.formWrap{
+  margin-top: 20px;
+  padding: 0px 15px;
+}
+.tabWrap{
+  margin-top: 10px;
+  padding: 0px 15px;
+}
 .cardWrap {
   display: flex;
   flex-wrap: wrap;

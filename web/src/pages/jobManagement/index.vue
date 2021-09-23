@@ -17,7 +17,7 @@
         </div>
       </div>
     </div>
-    <job-list v-show="!activeTabId" @showJobDetail="showJobDetail" />
+    <job-list v-show="!activeTabId" @showJobDetail="showJobDetail"/>
     <job-detail v-if="activeTabId" :curTab="curTab"></job-detail>
   </div>
 </template>
@@ -43,35 +43,12 @@ export default {
     const { t } = useI18n({ useScope: 'global' });
     return {
       t,
-      name: 'jobManagement11',
-      choosedTab: 'jobList',
-      activeTabId: '',
-      curTab: '',
-      tabs: [
-        {
-          id: 1, // 任务id
-          projectId: 1, // 所属项目id
-          jobName: '任务名1',
-          jobType: 'OFFLINE',
-          engineType: 'DataX', // 执行引擎
-          jobLabels: 'renwu, hello, hello',
-          jobDesc: '任务描述',
-        },
-        {
-          id: 2, // 任务id
-          projectId: 1, // 所属项目id
-          jobName: '任务名2',
-          jobType: 'STREAM',
-          engineType: 'Sqoop', // 执行引擎
-          jobLabels: 'renwu, hello, hello',
-          jobDesc:
-            '任务描述ets how a flex item will grow or shrink to fit the space available in itsets how a flex item will grow or shrink to fit the space available in its',
-        },
-      ],
+      name: "jobManagement11",
+      choosedTab: "jobList",
+      activeTabId: "",
+      curTab: "",
+      tabs: []
     };
-  },
-  mounted() {
-    console.log('mounted');
   },
   methods: {
     showJobDetail(data) {
