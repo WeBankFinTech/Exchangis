@@ -73,6 +73,7 @@ import {
 } from "vue";
 
 import { createJob, getEngineType } from "@/common/service"
+import { useRoute } from 'vue-router'
 
 export default defineComponent({
   props: {
@@ -89,6 +90,7 @@ export default defineComponent({
   },
   emits: ["handleJobAction"], //需要声明emits
   setup(props, context) {
+    const route = useRoute()
     const formRef = ref();
     const formState = reactive({
       originName: "",
@@ -137,7 +139,7 @@ export default defineComponent({
       formRef.value
         .validate()
         .then(() => {
-          createJob(toRaw(formState))
+          createJob({ ...toRaw(formState), projectId: route.query.projectId })
           context.emit("handleJobAction", "success");
           formRef.value.resetFields();
         })
