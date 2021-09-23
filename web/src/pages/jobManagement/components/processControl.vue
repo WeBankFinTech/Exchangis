@@ -103,6 +103,16 @@ export default defineComponent({
       line-height: 33px;
       font-size: 16px;
     }
+    &::before {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 33px;
+      background-color: #66f;
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+      right: 962px;
+    }
     .main-header-label {
       font-family: "Arial Negreta", "Arial Normal", "Arial";
       font-weight: 700;
