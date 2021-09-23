@@ -14,7 +14,9 @@
     <version>1.0.0-RC1</version>
 
     <modules>
+        <module>exchangis-job-common</module>
         <module>exchangis-job-server</module>
+        <module>exchangis-job-builder</module>
     </modules>
 
     <properties>

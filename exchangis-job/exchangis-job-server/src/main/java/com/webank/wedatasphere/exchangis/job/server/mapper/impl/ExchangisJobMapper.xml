@@ -3,7 +3,7 @@
 <mapper namespace="com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob">
+    <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.domain.ExchangisJob">
         <id column="id" property="id"/>
         <result column="project_id" property="projectId"/>
         <result column="job_name" property="jobName"/>
