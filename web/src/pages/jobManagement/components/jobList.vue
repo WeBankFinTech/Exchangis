@@ -20,7 +20,7 @@
     </div>
     <div>
       <a-tabs v-model:activeKey="activeKey">
-        <a-tab-pane key="1"
+        <a-tab-pane key="OFFLINE"
           ><template #tab>
             <span>
               <ApiOutlined />
@@ -33,7 +33,7 @@
             </div>
           </div>
         </a-tab-pane>
-        <a-tab-pane key="2"
+        <a-tab-pane key="STREAM"
           ><template #tab>
             <span>
               <NodeIndexOutlined />
@@ -68,15 +68,18 @@ export default {
     CreateJob,
     JobCard,
   },
+  props: {
+    jobList: Array
+  },
   data() {
     return {
       search: "1222",
       userName: "safdsaf",
-      activeKey: "1",
+      activeKey: "OFFLINE",
       visible: false,
       loading: false,
       editJobData: {},
-      jobList: [
+      /*jobList: [
         {
           id: 1, // 任务id
           projectId: 1, // 所属项目id
@@ -96,7 +99,7 @@ export default {
           jobDesc:
             "任务描述ets how a flex item will grow or shrink to fit the space available in itsets how a flex item will grow or shrink to fit the space available in its",
         },
-      ],
+      ],*/
     };
   },
   methods: {
@@ -121,6 +124,14 @@ export default {
     showJobDetail(data) {
       console.log(data);
       this.$emit("showJobDetail", data);
+    },
+  },
+  watch: {
+    activeKey: {
+      handler: function (newVal) {
+        this.$emit('changeType' ,newVal)
+      },
+      deep: true,
     },
   },
 };

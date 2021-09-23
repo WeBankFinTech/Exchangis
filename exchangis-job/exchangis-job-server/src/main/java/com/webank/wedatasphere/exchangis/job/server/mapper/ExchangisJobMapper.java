@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.mapper;
 
-import com.webank.wedatasphere.exchangis.job.server.domain.ExchangisJob;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 
 /**
  * <p>

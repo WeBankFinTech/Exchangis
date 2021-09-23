@@ -17,13 +17,15 @@
         </div>
       </div>
     </div>
-    <job-list v-show="!activeTabId" @showJobDetail="showJobDetail" />
+    <job-list v-show="!activeTabId" @showJobDetail="showJobDetail" @changeType="getJobs" :job-List="tabs" />
+    <job-detail v-if="activeTabId" :curTab="curTab"></job-detail>
   </div>
 </template>
 <script>
 import { toRaw } from "vue";
 import JobList from "./components/jobList.vue";
 import JobDetail from "./components/jobDetail.vue";
+import { getJobs } from "@/common/service"
 import {
   UnorderedListOutlined,
   ClusterOutlined,
@@ -35,40 +37,24 @@ export default {
     JobDetail,
     UnorderedListOutlined,
     ClusterOutlined,
-    CloseOutlined,
+    CloseOutlined
   },
   data() {
     return {
       name: "jobManagement11",
       choosedTab: "jobList",
       activeTabId: "",
-      tabs: [
-        {
-          id: 1, // 任务id
-          projectId: 1, // 所属项目id
-          jobName: "任务名1",
-          jobType: "OFFLINE",
-          engineType: "DataX", // 执行引擎
-          jobLabels: "renwu, hello, hello",
-          jobDesc: "任务描述",
-        },
-        {
-          id: 2, // 任务id
-          projectId: 1, // 所属项目id
-          jobName: "任务名2",
-          jobType: "STREAM",
-          engineType: "Sqoop", // 执行引擎
-          jobLabels: "renwu, hello, hello",
-          jobDesc:
-            "任务描述ets how a flex item will grow or shrink to fit the space available in itsets how a flex item will grow or shrink to fit the space available in its",
-        },
-      ],
+      curTab: "",
+      tabs: []
     };
   },
   mounted() {
-    console.log("mounted");
+    this.getJobs()
   },
   methods: {
+    async getJobs(type='OFFLINE', id=1) {
+      this.tabs = (await getJobs(id, type)).result
+    },
     showJobDetail(data) {
       data = toRaw(data);
       console.log(data);
@@ -82,6 +68,7 @@ export default {
     changeTab(data) {
       data = toRaw(data);
       console.log(data);
+      this.curTab = data
       this.activeTabId = data.id;
     },
     deleteTab(data) {
@@ -93,13 +80,12 @@ export default {
       }
       this.activeTabId = undefined;
       this.tabs = tabs;
-    },
+    }
   },
 };
 </script>
 <style scoped lang="less">
 .content {
-  padding: 16px;
   box-sizing: border-box;
 }
 .navWrap {
