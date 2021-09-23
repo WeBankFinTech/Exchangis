@@ -92,6 +92,20 @@ export const copyJob = (id, params) => {
     method: "POST",
   });
 }
+
+//删除任务
+export const deleteJob = (id) => {
+  return request(`/job/${id}`, null, {
+    method: "DELETE",
+  });
+}
+
+export const getJobs = (id, jobType) => {
+  return request(`/job?projectId=${id}&jobType=${jobType}`, null, {
+    method: "GET",
+  });
+};
+
 export const expireDataSource = (id) => {
   return request(`/datasources/${id}/expire`, {}, { method: "PUT" });
 };
