@@ -111,6 +111,7 @@ import {
 } from 'vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import { useI18n } from '@fesjs/fes';
+import { createJob, copyJob, getEngineType } from '@/common/service';
 export default defineComponent({
   components: {
     PlusOutlined,
@@ -118,6 +119,7 @@ export default defineComponent({
   props: {
     visible: Boolean,
     editData: Object,
+    projectId: Number,
   },
   emits: ['handleJobAction'], //需要声明emits
   setup(props, context) {
@@ -131,12 +133,18 @@ export default defineComponent({
       jobLabels: '',
       jobDesc: '',
     });
+    const inputRef = ref();
+    const state = reactive({
+      tags: [],
+      inputVisible: false,
+      inputValue: '',
+    });
     watchEffect(() => {
       const editData = toRaw(props.editData);
-      console.log(editData);
       if (editData.id) {
         formState.originName = editData.jobName;
         formState.engineType = editData.engineType;
+        state.tags = editData.jobLabels ? editData.jobLabels.split(',') : [];
       } else {
         formState.originName = '';
         formState.engineType = 'DataX';
@@ -169,22 +177,42 @@ export default defineComponent({
     const handleOk = () => {
       formRef.value
         .validate()
-        .then(() => {
-          console.log(toRaw(formState));
-          context.emit('handleJobAction', 'success');
-          formRef.value.resetFields();
-          Object.assign(state, {
-            tags: [],
-            inputVisible: false,
-            inputValue: '',
-          });
+        .then(async () => {
+          const data = toRaw(formState);
+          const tags = toRaw(state.tags);
+          const { originName, ...rest } = data;
+          const editData = toRaw(props.editData);
+          const isCopy = !!editData.id;
+          const params = isCopy
+            ? {
+                jobName: rest.jobName,
+                jobLabels: tags.join(','),
+                jobDesc: rest.jobDesc,
+              }
+            : {
+                ...rest,
+                projectId: props.projectId,
+                jobLabels: tags.join(','),
+              };
+          const res = isCopy
+            ? await copyJob(editData.id, params)
+            : await createJob(params);
+          if (res && res.result) {
+            context.emit('handleJobAction', { ...params, ...editData });
+            formRef.value.resetFields();
+            Object.assign(state, {
+              tags: [],
+              inputVisible: false,
+              inputValue: '',
+            });
+          }
         })
         .catch((e) => {
           console.log(e);
         });
     };
     const handleCancel = () => {
-      context.emit('handleJobAction', 'cancel');
+      context.emit('handleJobAction');
       formRef.value.resetFields();
       Object.assign(state, {
         tags: [],
@@ -192,13 +220,6 @@ export default defineComponent({
         inputValue: '',
       });
     };
-
-    const inputRef = ref();
-    const state = reactive({
-      tags: [],
-      inputVisible: false,
-      inputValue: '',
-    });
 
     const handleClose = (removedTag) => {
       const tags = state.tags.filter((tag) => tag !== removedTag);
@@ -216,8 +237,8 @@ export default defineComponent({
     const handleInputConfirm = () => {
       const inputValue = state.inputValue;
       let tags = state.tags;
-      if (inputValue && !tags.includes(inputValue)) {
-        tags = [...tags, inputValue];
+      if (inputValue && !tags.includes(inputValue.trim())) {
+        tags = [...tags, inputValue.trim()];
       }
       console.log(tags);
       Object.assign(state, {
