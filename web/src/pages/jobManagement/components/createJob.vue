@@ -38,11 +38,39 @@
         >
           <a-input v-model:value="formState.originName" disabled />
         </a-form-item>
-        <a-form-item ref="jobName" :label="$t('job.jobDetail.name')" name="jobName">
+        <a-form-item
+          ref="jobName"
+          :label="$t('job.jobDetail.name')"
+          name="jobName"
+        >
           <a-input v-model:value="formState.jobName" />
         </a-form-item>
         <a-form-item :label="$t('job.jobDetail.label')" name="jobLabels">
-          <a-input v-model:value="formState.jobLabels" />
+          <a-tag
+            v-for="tag in tags"
+            :key="tag"
+            closable
+            @close="handleClose(tag)"
+          >
+            {{ tag }}
+          </a-tag>
+          <a-input
+            v-if="inputVisible"
+            ref="inputRef"
+            type="text"
+            size="small"
+            :style="{ width: '100px' }"
+            v-model:value="inputValue"
+            @blur="handleInputConfirm"
+            @keyup.enter="handleInputConfirm"
+          />
+          <a-tag
+            v-else
+            @click="showInput"
+            style="background: #fff; border-style: dashed"
+          >
+            <plus-outlined />
+          </a-tag>
         </a-form-item>
         <a-form-item
           :label="$t('job.jobDetail.type')"
@@ -79,9 +107,14 @@ import {
   toRaw,
   watchEffect,
   toRefs,
+  nextTick,
 } from 'vue';
+import { PlusOutlined } from '@ant-design/icons-vue';
 import { useI18n } from '@fesjs/fes';
 export default defineComponent({
+  components: {
+    PlusOutlined,
+  },
   props: {
     visible: Boolean,
     editData: Object,
@@ -140,6 +173,11 @@ export default defineComponent({
           console.log(toRaw(formState));
           context.emit('handleJobAction', 'success');
           formRef.value.resetFields();
+          Object.assign(state, {
+            tags: [],
+            inputVisible: false,
+            inputValue: '',
+          });
         })
         .catch((e) => {
           console.log(e);
@@ -148,6 +186,45 @@ export default defineComponent({
     const handleCancel = () => {
       context.emit('handleJobAction', 'cancel');
       formRef.value.resetFields();
+      Object.assign(state, {
+        tags: [],
+        inputVisible: false,
+        inputValue: '',
+      });
+    };
+
+    const inputRef = ref();
+    const state = reactive({
+      tags: [],
+      inputVisible: false,
+      inputValue: '',
+    });
+
+    const handleClose = (removedTag) => {
+      const tags = state.tags.filter((tag) => tag !== removedTag);
+      console.log(tags);
+      state.tags = [...tags];
+    };
+
+    const showInput = () => {
+      state.inputVisible = true;
+      nextTick(() => {
+        inputRef.value.focus();
+      });
+    };
+
+    const handleInputConfirm = () => {
+      const inputValue = state.inputValue;
+      let tags = state.tags;
+      if (inputValue && !tags.includes(inputValue)) {
+        tags = [...tags, inputValue];
+      }
+      console.log(tags);
+      Object.assign(state, {
+        tags,
+        inputVisible: false,
+        inputValue: '',
+      });
     };
 
     return {
@@ -159,6 +236,11 @@ export default defineComponent({
       rules,
       handleOk,
       handleCancel,
+      ...toRefs(state),
+      handleClose,
+      showInput,
+      handleInputConfirm,
+      inputRef,
     };
   },
 });
