@@ -36,7 +36,7 @@
               title="确认删除该任务？"
               ok-text="是"
               cancel-text="不"
-              @confirm="confirm"
+              @confirm="confirmDelete"
             >
               <DeleteOutlined class="icon" />
             </a-popconfirm>
@@ -56,6 +56,7 @@ import {
 } from "@ant-design/icons-vue";
 import { useI18n } from "@fesjs/fes";
 import { message } from "ant-design-vue";
+import { deleteJob } from '@/common/service';
 
 export default {
   components: {
@@ -65,12 +66,13 @@ export default {
   },
   props: {
     jobData: Object,
+    type: String
   },
-  emits: ["showJobDetail", "handleJobCopy"],
+  emits: ["showJobDetail", "handleJobCopy", 'refreshList'],
   setup(props, context) {
     const { t } = useI18n({ useScope: "global" });
     const jobData = toRaw(props.jobData);
-    const { engineType } = jobData;
+    const { engineType, id, projectId } = jobData;
     const imageName =
       engineType === "DataX"
         ? "datax.png"
@@ -82,8 +84,15 @@ export default {
       console.log(managementVisible.value);
       managementVisible.value = !managementVisible.value;
     };
-    const confirm = () => {
-      message.success("删除成功");
+    const confirmDelete = async () => {
+      const result = await deleteJob(id);
+      console.log(result);
+      if(result){
+        message.success("删除成功");
+        context.emit("refreshList", props.type, projectId);
+        changeManagement();
+      }
+
     };
 
     const gotoDetail = () => {
@@ -98,7 +107,7 @@ export default {
       imageSrc: require(`../../../images/${imageName}`),
       changeManagement,
       managementVisible,
-      confirm,
+      confirmDelete,
       gotoDetail,
       handleJobCopy,
     };
