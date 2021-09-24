@@ -100,6 +100,13 @@ export const deleteJob = (id) => {
   });
 }
 
+//导入任务
+export const importJob = (id, params) => {
+  return request(`/job/import`, {...params}, {
+    method: "POST",
+  });
+}
+
 export const getJobs = (id, jobType) => {
   return request(`/job?projectId=${id}&jobType=${jobType}`, null, {
     method: "GET",

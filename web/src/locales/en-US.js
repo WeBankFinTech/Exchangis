@@ -141,6 +141,9 @@ export default {
       no: 'NO',
       confirmDelete: 'Are you sure to delete this task?',
       manage: 'MANAGE',
+      fileUpSuccess: 'File uploaded successfully',
+      fileUpFailed: 'File upload failed.',
+      jobSearch: 'Please input text for search job',
     },
     jobDetail: {
       originJob: 'Original Job',

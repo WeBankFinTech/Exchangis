@@ -134,7 +134,9 @@ export default {
       no: '不',
       confirmDelete: '确认删除该任务？',
       manage: '管理',
-
+      fileUpSuccess: '文件上传成功',
+      fileUpFailed: '文件上传失败',
+      jobSearch: '输入搜索任务',
     },
     jobDetail: {
       originJob: '原任务',

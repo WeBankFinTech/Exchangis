@@ -5,7 +5,9 @@
       <div class="imageText" v-if="!imageSrc">{{ imageText }}</div>
       <div class="infoWrap">
         <div class="jobNameWrap">
-          <div class="jobName" @click="gotoDetail">{{ jobData.jobName }}</div>
+          <div class="jobName" @click="gotoDetail">
+            {{ jobData.jobName }}
+          </div>
           <div
             :class="{
               available: true,
@@ -162,6 +164,10 @@ export default {
       font-weight: 700;
       color: #000;
       cursor: pointer;
+      width: 140px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
     .available {
       background: rgba(0, 128, 0, 1);
