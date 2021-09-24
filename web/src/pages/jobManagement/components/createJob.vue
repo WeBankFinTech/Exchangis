@@ -78,8 +78,8 @@
           v-if="!formState.originName"
         >
           <a-select v-model:value="formState.jobType">
-            <a-select-option value="OFFLINE">离线任务</a-select-option>
-            <a-select-option value="STREAM">流式任务 </a-select-option>
+            <a-select-option value="OFFLINE">{{$t('job.type.offline')}}</a-select-option>
+            <a-select-option value="STREAM">{{$t('job.type.stream')}} </a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item :label="$t('job.jobDetail.engine')" name="engineType">
@@ -87,9 +87,7 @@
             v-model:value="formState.engineType"
             :disabled="!!formState.originName"
           >
-            <a-select-option value="DataX">DataX</a-select-option>
-            <a-select-option value="Sqoop">Sqoop</a-select-option>
-            <a-select-option value="Flink">Flink</a-select-option>
+            <a-select-option v-for="engine in engines" :value="engine" :key='engine'>{{engine}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item :label="$t('job.jobDetail.description')" name="jobDesc">
@@ -108,10 +106,12 @@ import {
   watchEffect,
   toRefs,
   nextTick,
+  onMounted
 } from 'vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import { useI18n } from '@fesjs/fes';
 import { createJob, copyJob, getEngineType } from '@/common/service';
+import { message } from 'ant-design-vue';
 export default defineComponent({
   components: {
     PlusOutlined,
@@ -129,7 +129,7 @@ export default defineComponent({
       originName: '',
       jobName: '',
       jobType: 'OFFLINE',
-      engineType: 'DataX',
+      engineType: '',
       jobLabels: '',
       jobDesc: '',
     });
@@ -147,28 +147,36 @@ export default defineComponent({
         state.tags = editData.jobLabels ? editData.jobLabels.split(',') : [];
       } else {
         formState.originName = '';
-        formState.engineType = 'DataX';
+        formState.engineType = '';
       }
     });
+    const engines = reactive({
+      engines: [],
+    })
+    onMounted(async () => {
+      const data = await getEngineType();
+      engines.engines = data && data.result || [];
+      console.log(data);
+    })
     const rules = {
       jobName: [
         {
           required: true,
-          message: '任务名不能为空',
+          message: t('job.jobDetail.jobNameEmpty'),
           trigger: 'blur',
         },
       ],
       jobType: [
         {
           required: true,
-          message: '任务类型不能为空',
+          message: t('job.jobDetail.jobTypeEmpty'),
           trigger: 'change',
         },
       ],
       engineType: [
         {
           required: true,
-          message: '执行引擎不能为空',
+          message: t('job.jobDetail.engineEmpty'),
           trigger: 'change',
         },
       ],
@@ -198,6 +206,7 @@ export default defineComponent({
             ? await copyJob(editData.id, params)
             : await createJob(params);
           if (res && res.result) {
+            message.success(t(isCopy ? 'job.action.copyJobSuccess' : 'job.action.addJobSuccess'))
             context.emit('handleJobAction', { ...params, ...editData });
             formRef.value.resetFields();
             Object.assign(state, {
@@ -251,13 +260,14 @@ export default defineComponent({
     return {
       formRef,
       loading: false,
-      labelCol: { span: 6 },
-      wrapperCol: { span: 18 },
+      labelCol: { span: 5 },
+      wrapperCol: { span: 19 },
       formState,
       rules,
       handleOk,
       handleCancel,
       ...toRefs(state),
+      ...toRefs(engines),
       handleClose,
       showInput,
       handleInputConfirm,
