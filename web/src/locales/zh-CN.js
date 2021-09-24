@@ -127,6 +127,14 @@ export default {
       export: '导出',
       save: '保存',
       cancel: '取消',
+      addJobSuccess: '新建任务成功',
+      copyJobSuccess: '复制任务成功',
+      deleteJobSuccess: '删除任务成功',
+      yes: '是',
+      no: '不',
+      confirmDelete: '确认删除该任务？',
+      manage: '管理',
+
     },
     jobDetail: {
       originJob: '原任务',
@@ -135,6 +143,9 @@ export default {
       type: '任务类型',
       engine: '执行引擎',
       description: '任务描述',
+      jobNameEmpty: '任务名不能为空',
+      jobTypeEmpty: '任务类型不能为空',
+      engineEmpty: '执行引擎不能为空',
     },
   },
 };
