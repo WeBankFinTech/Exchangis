@@ -2,22 +2,23 @@
   <div class="content">
     <div class="navWrap">
       <div @click="() => changeTab({})" class="listTitle">
-        <UnorderedListOutlined />{{t('job.list')}}
+        <UnorderedListOutlined />{{ t('job.list') }}
       </div>
       <div class="divider"></div>
-      <div
-        v-for="(item, index) in tabs"
-        :key="index"
-        :class="{ detailTitle: true, choosed: item.id === activeTabId }"
-        @click="() => changeTab(item)"
-      >
-        <ClusterOutlined />{{ item.jobName }}
+      <div class="titleWrap" v-for="(item, index) in tabs" :key="index">
+        <div
+          :class="{ detailTitle: true, choosed: item.id === activeTabId }"
+          @click="() => changeTab(item)"
+        >
+          <ClusterOutlined />
+          <div class="jobNameWrap">{{ item.jobName }}</div>
+        </div>
         <div class="closeIcon" @click="() => deleteTab(item)">
           <CloseOutlined />
         </div>
       </div>
     </div>
-    <job-list v-show="!activeTabId" @showJobDetail="showJobDetail"/>
+    <job-list v-show="!activeTabId" @showJobDetail="showJobDetail" />
     <job-detail v-if="activeTabId" :curTab="curTab"></job-detail>
   </div>
 </template>
@@ -43,11 +44,11 @@ export default {
     const { t } = useI18n({ useScope: 'global' });
     return {
       t,
-      name: "jobManagement11",
-      choosedTab: "jobList",
-      activeTabId: "",
-      curTab: "",
-      tabs: []
+      name: 'jobManagement11',
+      choosedTab: 'jobList',
+      activeTabId: '',
+      curTab: '',
+      tabs: [],
     };
   },
   methods: {
@@ -89,9 +90,10 @@ export default {
   justify-content: flex-start;
   align-items: center;
   padding-left: 15px;
+  margin-top: 10px;
   .listTitle {
     font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
-    font-weight: 700;
+    font-weight: 600;
     font-style: normal;
     font-size: 16px;
     cursor: pointer;
@@ -103,20 +105,31 @@ export default {
     margin-left: 20px;
     margin-right: 20px;
   }
-  .detailTitle {
-    width: 120px;
-    height: 35px;
-    font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
-    font-weight: 700;
-    font-style: normal;
-    font-size: 14px;
-    color: #000000;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding-left: 5px;
+  .titleWrap {
     position: relative;
-    cursor: pointer;
+    .detailTitle {
+      height: 35px;
+      font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+      font-weight: 600;
+      font-style: normal;
+      font-size: 14px;
+      color: #000000;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding-left: 5px;
+      padding-right: 10px;
+      cursor: pointer;
+    }
+    .choosed {
+      background: #fff;
+    }
+    .jobNameWrap {
+      width: 100px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
     .closeIcon {
       position: absolute;
       top: 2px;
@@ -126,9 +139,6 @@ export default {
       font-size: 12px;
       font-weight: 700;
     }
-  }
-  .choosed {
-    background: #fff;
   }
 }
 </style>
