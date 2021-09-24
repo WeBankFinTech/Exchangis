@@ -74,7 +74,7 @@ export const getJobList = (query) => {
 
 //获取执行引擎列表
 export const getEngineType = () => {
-  return request(`/engineType`, null, {
+  return request(`/job/engineType`, null, {
     method: "GET",
   });
 }
