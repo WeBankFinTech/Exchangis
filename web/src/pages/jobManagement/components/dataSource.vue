@@ -133,8 +133,8 @@ export default defineComponent({
     const updateSourceInfo = (dsInfo) => {
       const info = dsInfo.split("-");
       source.type = info[0];
-      source.db = info[2];
-      source.table = info[3];
+      source.db = info[1];
+      source.table = info[2];
 
       const dataSource = createDataSoure(
         source,
@@ -147,8 +147,8 @@ export default defineComponent({
     const updateSinkInfo = (dsInfo) => {
       const info = dsInfo.split("-");
       sink.type = info[0];
-      sink.db = info[2];
-      sink.table = info[3];
+      sink.db = info[1];
+      sink.table = info[2];
 
       const dataSource = createDataSoure(
         source,
@@ -233,7 +233,7 @@ export default defineComponent({
     display: flex;
     border-top-left-radius: 16px;
     border-bottom-left-radius: 16px;
-    &::before {
+    /*&::before {
       content: "";
       position: absolute;
       width: 16px;
@@ -242,7 +242,7 @@ export default defineComponent({
       border-top-right-radius: 16px;
       border-bottom-right-radius: 16px;
       right: 962px;
-    }
+    }*/
     :nth-of-type(1) {
       width: 100%;
       text-align: center;
