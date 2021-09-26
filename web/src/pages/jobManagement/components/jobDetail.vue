@@ -155,6 +155,7 @@ import { jobInfo } from "../mock";
 import DataSource from "./dataSource";
 import FieldMap from "./fieldMap.vue";
 import ProcessControl from "./processControl.vue";
+import { message } from "ant-design-vue"
 export default {
   components: {
     SettingOutlined,
@@ -308,7 +309,58 @@ export default {
       this.curTask.params = params;
     },
     saveAll() {
-      saveProject(this.jobData.id, this.jobData.content)
+      let saveContent = []
+      if (!this.jobData.content || !this.jobData.content.subJobs) {
+        return message.error("缺失保存对象");
+      }
+      for (let i = 0; i < this.jobData.content.subJobs; i++) {
+        const jobData = this.jobData.content.subJobs[i]
+        let cur = {}
+        cur.subjobName = jobData.subjobName
+        if (!jobData.dataSourceIds || !jobData.dataSourceIds.source || !jobData.dataSourceIds.sink) {
+          return message.error("未选择数据源库表");
+        }
+        cur.dataSources = {
+          source_id : `${jobData.dataSourceIds.source.type}.${jobData.dataSourceIds.source.id}.${jobData.dataSourceIds.source.db}.${jobData.dataSourceIds.source.table}`,
+          sink_id : `${jobData.dataSourceIds.sink.type}.${jobData.dataSourceIds.sink.id}.${jobData.dataSourceIds.sink.db}.${jobData.dataSourceIds.sink.table}`
+        }
+        if (!jobData.params || !jobData.params.sources || !jobData.params.sinks) {
+          return message.error("缺失数据源信息");
+        }
+        cur.params = {
+          sources: [],
+          sinks: []
+        }
+        jobData.params.sources.forEach(source => {
+          cur.params.sources.push({
+            config_key: source.field,  // UI中field
+            config_name: source.label,  // UI中label
+            config_value: source.value,  // UI中value
+            sort: source.sort
+          })
+        })
+        jobData.params.sinks.forEach(source => {
+          cur.params.sinks.push({
+            config_key: source.field,  // UI中field
+            config_name: source.label,  // UI中label
+            config_value: source.value,  // UI中value
+            sort: source.sort
+          })
+        })
+        cur.transforms = jobData.transforms
+        if (jobData.settings && jobData.settings.length) {
+          jobData.settings.forEach(setting => {
+            cur.params.sources.push({
+              config_key: setting.field,  // UI中field
+              config_name: setting.label,  // UI中label
+              config_value: setting.value,  // UI中value
+              sort: setting.sort
+            })
+          })
+        }
+        saveContent.push(cur)
+      }
+      saveProject(this.jobData.id, saveContent)
     }
   },
 };
