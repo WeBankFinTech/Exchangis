@@ -426,7 +426,7 @@ export default defineComponent({
       text-align: center;
       line-height: 33px;
     }
-    &::before {
+    /*&::before {
       content: "";
       position: absolute;
       width: 16px;
@@ -434,7 +434,7 @@ export default defineComponent({
       background-color: #66f;
       border-top-right-radius: 16px;
       border-bottom-right-radius: 16px;
-    }
+    }*/
     .main-header-label {
       font-family: "Arial Negreta", "Arial Normal", "Arial";
       font-weight: 700;
