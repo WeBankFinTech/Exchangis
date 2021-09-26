@@ -168,6 +168,7 @@ export default {
         this.getJobs(newJobData.jobType, newJobData.projectId);
       }
       console.log(status);
+      this.$emit('changeType')
     },
     handleJobCopy(data) {
       this.visible = true;

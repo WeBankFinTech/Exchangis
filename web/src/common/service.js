@@ -32,8 +32,17 @@ export const getDataSourceList = (params) => {
 };
 
 export const getDataSourceTypes = () => {
-  return request("/datasources/type", {}, { method: "GET" });
+  return request(`/datasources/type?t=_${new Date().getTime()}`, {}, { method: "GET" });
 };
+
+export const getDBs = (type, id) => {
+  return request(`/datasources/${type}/${id}/dbs`, {}, { method: "GET" });
+}
+
+export const getTables = (type, id, dbName) => {
+  return request(`/datasources/${type}/${id}/dbs/${dbName}/tables`, {}, { method: "GET" });
+}
+
 
 export const createDataSource = (params) => {
   return request("/datasources", { ...params }, { method: "POST" });
@@ -110,6 +119,12 @@ export const importJob = (id, params) => {
 export const getJobs = (id, jobType) => {
   return request(`/job?projectId=${id}&jobType=${jobType}`, null, {
     method: "GET",
+  });
+};
+
+export const saveProject = (id, body) => {
+  return request(`/job/${id}/content`, body, {
+    method: "PUT",
   });
 };
 
