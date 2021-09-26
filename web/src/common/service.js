@@ -135,3 +135,7 @@ export const expireDataSource = (id) => {
 export const publishDataSource = (id, versionId) => {
   return request(`/datasources/${id}/${versionId}/publish`, {}, { method: "PUT" });
 };
+
+export const getSourceParams = (type) => {
+  return request(`/datasources/${type}/params/ui`, {}, { method: "GET" });
+}
