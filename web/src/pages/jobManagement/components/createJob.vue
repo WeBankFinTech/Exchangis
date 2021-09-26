@@ -119,7 +119,7 @@ export default defineComponent({
   props: {
     visible: Boolean,
     editData: Object,
-    projectId: Number,
+    projectId: String,
   },
   emits: ['handleJobAction'], //需要声明emits
   setup(props, context) {
