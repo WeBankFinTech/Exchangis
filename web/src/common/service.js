@@ -32,7 +32,7 @@ export const getDataSourceList = (params) => {
 };
 
 export const getDataSourceTypes = () => {
-  return request("/datasources/type", {}, { method: "GET" });
+  return request(`/datasources/type?t=_${new Date().getTime()}`, {}, { method: "GET" });
 };
 
 export const getDBs = (type, id) => {
@@ -118,16 +118,6 @@ export const importJob = (id, params) => {
 
 export const getJobs = (id, jobType) => {
   return request(`/job?projectId=${id}&jobType=${jobType}`, null, {
-    method: "GET",
-  });
-};
-
-export const createJob = (params) => {
-  return request("/job", { ...params }, { method: "POST" });
-};
-
-export const getEngineType = () => {
-  return request(`/job/engineType`, null, {
     method: "GET",
   });
 };
