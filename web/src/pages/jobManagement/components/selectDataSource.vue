@@ -137,7 +137,6 @@ export default defineComponent({
     };
     const handleOk = () => {
       visible.value = false;
-      debugger
       context.emit("updateDsInfo", state.defaultSelect);
     };
     return {
