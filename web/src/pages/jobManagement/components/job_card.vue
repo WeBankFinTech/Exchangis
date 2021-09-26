@@ -1,17 +1,20 @@
 <template>
   <div class="content">
     <div class="main">
-      <img class="img" :src="imageSrc" />
+      <img class="img" :src="imageSrc" v-if="imageSrc" />
+      <div class="imageText" v-if="!imageSrc">{{ imageText }}</div>
       <div class="infoWrap">
         <div class="jobNameWrap">
-          <div class="jobName" @click="gotoDetail">{{ jobData.jobName }}</div>
+          <div class="jobName" @click="gotoDetail">
+            {{ jobData.jobName }}
+          </div>
           <div
             :class="{
               available: true,
               disable: jobData.jobStatus !== 'valid',
             }"
           >
-            {{ jobData.jobStatus === "valid" ? "Available" : "Disable" }}
+            {{ jobData.jobStatus === 'valid' ? 'Available' : 'Disable' }}
           </div>
         </div>
         <div class="jobDesc">{{ jobData.jobDesc }}</div>
@@ -24,22 +27,23 @@
         </div>
         <div class="btnWrap">
           <a-button
+            v-if="!managementVisible"
             type="primary"
             @click="changeManagement"
-            v-if="!managementVisible"
-            >管理</a-button
           >
+            {{ $t('job.action.manage') }}
+          </a-button>
           <div v-if="managementVisible">
             <CopyOutlined class="icon" @click="handleJobCopy" />
             <a-popconfirm
-              title="确认删除该任务？"
-              ok-text="是"
-              cancel-text="不"
-              @confirm="confirm"
+              :title="$t('job.action.confirmDelete')"
+              :ok-text="$t('job.action.yes')"
+              :cancel-text="$t('job.action.no')"
+              @confirm="confirmDelete"
             >
               <DeleteOutlined class="icon" />
             </a-popconfirm>
-            <FormOutlined class="icon" @click="changeManagement" />
+            <ExportOutlined class="icon" @click="changeManagement" />
           </div>
         </div>
       </div>
@@ -47,55 +51,69 @@
   </div>
 </template>
 <script>
-import { defineComponent, reactive, ref, toRaw } from "vue";
+import { defineComponent, reactive, ref, toRaw } from 'vue';
 import {
   CopyOutlined,
   DeleteOutlined,
-  FormOutlined,
-} from "@ant-design/icons-vue";
-import { useI18n } from "@fesjs/fes";
-import { message } from "ant-design-vue";
+  ExportOutlined,
+} from '@ant-design/icons-vue';
+import { useI18n } from '@fesjs/fes';
+import { message } from 'ant-design-vue';
+import { deleteJob } from '@/common/service';
+
 export default {
   components: {
     CopyOutlined,
     DeleteOutlined,
-    FormOutlined,
+    ExportOutlined,
   },
   props: {
     jobData: Object,
+    type: String,
   },
-  emits: ["showJobDetail", "handleJobCopy"],
+  emits: ['showJobDetail', 'handleJobCopy', 'refreshList'],
   setup(props, context) {
+    const { t } = useI18n({ useScope: 'global' });
     const jobData = toRaw(props.jobData);
-    const { engineType } = jobData;
+    const { engineType, id, projectId } = jobData;
+    const imageText = engineType.toUpperCase();
     const imageName =
-      engineType === "DataX"
-        ? "datax.png"
-        : engineType === "Flink"
-        ? "flink.svg"
-        : "sqoop.svg";
+      imageText === 'DATAX'
+        ? 'datax.png'
+        : imageText === 'SQOOP'
+        ? 'sqoop.svg'
+        : imageText === 'FLINK'
+        ? 'flink.svg'
+        : '';
     const managementVisible = ref(false);
     const changeManagement = () => {
       console.log(managementVisible.value);
       managementVisible.value = !managementVisible.value;
     };
-    const confirm = () => {
-      message.success("删除成功");
+    const confirmDelete = async () => {
+      const result = await deleteJob(id);
+      console.log(result);
+      if (result) {
+        message.success(t('job.action.deleteJobSuccess'));
+        context.emit('refreshList', props.type, projectId);
+        changeManagement();
+      }
     };
 
     const gotoDetail = () => {
-      context.emit("showJobDetail", jobData);
+      context.emit('showJobDetail', jobData);
     };
 
     const handleJobCopy = () => {
-      context.emit("handleJobCopy", jobData);
+      context.emit('handleJobCopy', jobData);
     };
 
     return {
-      imageSrc: require(`../../../images/${imageName}`),
+      imageSrc: imageName ? require(`../../../images/${imageName}`) : '',
+      imageText,
       changeManagement,
       managementVisible,
-      confirm,
+      confirmDelete,
       gotoDetail,
       handleJobCopy,
     };
@@ -121,6 +139,17 @@ export default {
   width: 40px;
   height: 40px;
 }
+.imageText {
+  margin-top: 10px;
+  height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 40px;
+  padding: 0 4px;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
 .infoWrap {
   flex: 1;
   height: 200px;
@@ -135,13 +164,17 @@ export default {
       font-weight: 700;
       color: #000;
       cursor: pointer;
+      width: 140px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
     .available {
       background: rgba(0, 128, 0, 1);
       font-size: 13px;
       font-weight: 700;
-      font-family: "Comic Sans MS Negreta", "Comic Sans MS Normal",
-        "Comic Sans MS";
+      font-family: 'Comic Sans MS Negreta', 'Comic Sans MS Normal',
+        'Comic Sans MS';
       color: #fff;
       padding: 0px 4px;
     }
