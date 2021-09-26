@@ -5,7 +5,7 @@
       <div class="divider"></div>
       <span><CaretRightOutlined />执行</span>
       <div class="divider"></div>
-      <span><SaveOutlined />保存</span>
+      <span @click="saveAll()"><SaveOutlined />保存</span>
       <div class="divider"></div>
       <span><HistoryOutlined />执行历史</span>
     </div>
@@ -100,18 +100,21 @@
       <div class="jd_right">
         <div>
           <DataSource
+            v-if="curTask"
             v-bind:dsData="curTask"
             @updateDataSource="updateDataSource"
           />
         </div>
         <div>
           <FieldMap
+            v-if="curTask"
             v-bind:fmData="curTask.transforms"
             @updateFieldMap="updateFieldMap"
           />
         </div>
         <div>
           <ProcessControl
+            v-if="curTask"
             v-bind:psData="curTask.settings"
             @updateProcessControl="updateProcessControl"
           />
@@ -147,11 +150,12 @@ import {
 } from "@ant-design/icons-vue";
 import configModal from "./configModal";
 import copyModal from "./copyModal";
-import { getJobInfo } from "@/common/service";
+import { getJobInfo, saveProject } from "@/common/service";
 import { jobInfo } from "../mock";
 import DataSource from "./dataSource";
 import FieldMap from "./fieldMap.vue";
 import ProcessControl from "./processControl.vue";
+import { message } from "ant-design-vue"
 export default {
   components: {
     SettingOutlined,
@@ -185,7 +189,7 @@ export default {
       copyObj: {},
       list: [],
       activeIndex: -1,
-      curTask: {},
+      curTask: null,
       nameEditable: false,
     };
   },
@@ -207,7 +211,14 @@ export default {
     },
     async getInfo() {
       try {
-        let data = await getJobInfo(this.curTab.id);
+        let data = (await getJobInfo(this.curTab.id)).result;
+        if (!data.content || data.content === "[]") {
+          data.content = {
+            subJobs: []
+          }
+        } else {
+          data.content = JSON.parse(data.content)
+        }
         data.content.subJobs.forEach((item) => {
           item.engineType = data.engineType;
         });
@@ -216,7 +227,6 @@ export default {
         if (this.list.length) {
           this.activeIndex = 0;
           this.curTask = this.list[this.activeIndex];
-          console.log("this.curTask", this.curTask);
         }
       } catch (error) {}
     },
@@ -236,6 +246,9 @@ export default {
       if (this.activeIndex === index && this.list.length) {
         this.activeIndex = 0;
         this.curTask = this.list[this.activeIndex];
+      } else {
+        this.activeIndex = -1;
+        this.curTask = null
       }
     },
     cancel() {},
@@ -268,25 +281,87 @@ export default {
             table: "",
           },
         },
+        params: {
+          sources: [],
+          sinks: []
+        },
+        transforms: {
+          type: "MAPPING",
+          mapping: []
+        },
+        settings: []
       };
       this.jobData.content.subJobs.push(task);
-      this.activeIndex = this.jobData.content.subJobs.length - 1;
-      this.curTask = this.list[this.activeIndex];
+      this.$nextTick(()=>{
+        this.activeIndex = this.jobData.content.subJobs.length - 1
+        this.curTask = this.list[this.activeIndex]
+      })
     },
     updateFieldMap(transforms) {
       this.curTask.transforms = transforms;
-      console.log("curTask", this.curTask);
     },
     updateProcessControl(settings) {
       this.curTask.settings = settings;
-      console.log("curTask", this.curTask);
     },
     updateDataSource(dataSource) {
       const { dataSourceIds, params } = dataSource;
       this.curTask.dataSourceIds = dataSourceIds;
       this.curTask.params = params;
-      console.log("curTask", this.curTask);
     },
+    saveAll() {
+      let saveContent = []
+      if (!this.jobData.content || !this.jobData.content.subJobs) {
+        return message.error("缺失保存对象");
+      }
+      for (let i = 0; i < this.jobData.content.subJobs; i++) {
+        const jobData = this.jobData.content.subJobs[i]
+        let cur = {}
+        cur.subjobName = jobData.subjobName
+        if (!jobData.dataSourceIds || !jobData.dataSourceIds.source || !jobData.dataSourceIds.sink) {
+          return message.error("未选择数据源库表");
+        }
+        cur.dataSources = {
+          source_id : `${jobData.dataSourceIds.source.type}.${jobData.dataSourceIds.source.id}.${jobData.dataSourceIds.source.db}.${jobData.dataSourceIds.source.table}`,
+          sink_id : `${jobData.dataSourceIds.sink.type}.${jobData.dataSourceIds.sink.id}.${jobData.dataSourceIds.sink.db}.${jobData.dataSourceIds.sink.table}`
+        }
+        if (!jobData.params || !jobData.params.sources || !jobData.params.sinks) {
+          return message.error("缺失数据源信息");
+        }
+        cur.params = {
+          sources: [],
+          sinks: []
+        }
+        jobData.params.sources.forEach(source => {
+          cur.params.sources.push({
+            config_key: source.field,  // UI中field
+            config_name: source.label,  // UI中label
+            config_value: source.value,  // UI中value
+            sort: source.sort
+          })
+        })
+        jobData.params.sinks.forEach(source => {
+          cur.params.sinks.push({
+            config_key: source.field,  // UI中field
+            config_name: source.label,  // UI中label
+            config_value: source.value,  // UI中value
+            sort: source.sort
+          })
+        })
+        cur.transforms = jobData.transforms
+        if (jobData.settings && jobData.settings.length) {
+          jobData.settings.forEach(setting => {
+            cur.params.sources.push({
+              config_key: setting.field,  // UI中field
+              config_name: setting.label,  // UI中label
+              config_value: setting.value,  // UI中value
+              sort: setting.sort
+            })
+          })
+        }
+        saveContent.push(cur)
+      }
+      saveProject(this.jobData.id, saveContent)
+    }
   },
 };
 </script>
