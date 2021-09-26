@@ -37,6 +37,7 @@
               </span>
             </template>
             <div class="cardWrap">
+              <div v-if='offlineList.length === 0' class="emptyTab">暂无任务</div>
               <div v-for="item in offlineList" :key="item.id" class="card">
                 <job-card
                   :jobData="item"
@@ -56,6 +57,7 @@
               </span>
             </template>
             <div class="cardWrap">
+              <div v-if='streamList.length === 0' class="emptyTab">暂无任务</div>
               <div v-for="item in streamList" :key="item.id" class="card">
                 <job-card
                   :jobData="item"
@@ -73,7 +75,7 @@
     <CreateJob
       :visible="visible"
       :editData="editJobData"
-      :projectId="projectId"
+      :projectId='projectId'
       @handleJobAction="handleJobAction"
     />
   </div>
@@ -114,18 +116,18 @@ export default {
       streamList: [],
       offlineListOrigin: [],
       streamListOrigin: [],
-      projectId: 1,
+      projectId: this.$route.query.id,
       spinning: false,
     };
   },
   mounted() {
-    this.getJobs('OFFLINE', 1);
-    this.getJobs('STREAM', 1);
+    this.getJobs('OFFLINE');
+    this.getJobs('STREAM');
   },
   methods: {
-    async getJobs(type, id) {
+    async getJobs(type) {
       this.spinning = true;
-      const list = await getJobs(id, type);
+      const list = await getJobs(this.projectId, type);
       this.spinning = false;
       const result = (list && list.result) || [];
       if (type === 'OFFLINE') {
@@ -165,7 +167,7 @@ export default {
         if (newKey !== this.activeKey) {
           this.activeKey = newKey;
         }
-        this.getJobs(newJobData.jobType, newJobData.projectId);
+        this.getJobs(newJobData.jobType);
       }
       console.log(status);
     },
@@ -184,8 +186,8 @@ export default {
       }
       if (info.file.status === 'done') {
         message.success(this.t('job.action.fileUpSuccess'));
-        this.getJobs('OFFLINE', 1);
-        this.getJobs('STREAM', 1);
+        this.getJobs('OFFLINE');
+        this.getJobs('STREAM');
       } else if (info.file.status === 'error') {
         message.error(this.t('job.action.fileUpFailed'));
       }
@@ -214,6 +216,14 @@ export default {
   display: flex;
   flex-wrap: wrap;
   padding-bottom: 30px;
+  .emptyTab{
+    font-size: 16px;
+    height: 100px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   .card {
     margin: 10px 20px 10px 0px;
   }
