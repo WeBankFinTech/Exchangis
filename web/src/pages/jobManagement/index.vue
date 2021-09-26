@@ -62,6 +62,9 @@ export default {
     };
   },
   methods: {
+    async getJobs(type='OFFLINE') {
+      this.tabs = (await getJobs(this.$route.query.projectId, type)).result
+    },
     showJobDetail(data) {
       data = toRaw(data);
       console.log(data);
@@ -70,6 +73,7 @@ export default {
         tabs.push(data);
       }
       this.activeTabId = data.id;
+      this.curTab = data
       this.tabs = tabs;
     },
     changeTab(data) {
