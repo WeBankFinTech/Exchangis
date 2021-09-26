@@ -32,11 +32,11 @@
               v-if="
                 activeIndex !== idx || (activeIndex === idx && !nameEditable)
               "
-              >{{ item.subjobName }}</span
+              >{{ item.subJobName }}</span
             >
             <a-input
               @pressEnter="nameEditable = false"
-              v-model:value="item.subjobName"
+              v-model:value="item.subJobName"
               v-if="activeIndex === idx && nameEditable"
             ></a-input>
             <EditOutlined
@@ -222,7 +222,7 @@ export default {
         data.content.subJobs.forEach((item) => {
           item.engineType = data.engineType;
         });
-        this.jobData = data;
+        this.jobData = data
         this.list = this.jobData.content.subJobs;
         if (this.list.length) {
           this.activeIndex = 0;
@@ -266,7 +266,8 @@ export default {
     },
     addNewTask() {
       let task = {
-        subjobName: "new",
+        subJobName: "new",
+        engineType: this.jobData.engineType,
         dataSourceIds: {
           source: {
             type: "",
@@ -309,14 +310,15 @@ export default {
       this.curTask.params = params;
     },
     saveAll() {
-      let saveContent = []
-      if (!this.jobData.content || !this.jobData.content.subJobs) {
+      let saveContent = [],
+          data = toRaw(this.jobData)
+      if (!data.content || !data.content.subJobs) {
         return message.error("缺失保存对象");
       }
-      for (let i = 0; i < this.jobData.content.subJobs; i++) {
-        const jobData = this.jobData.content.subJobs[i]
+      for (let i = 0; i < data.content.suJbJobs.length; i++) {
+        const jobData = toRaw(data.content.subJobs[i])
         let cur = {}
-        cur.subjobName = jobData.subjobName
+        cur.subJobName = jobData.subJobName
         if (!jobData.dataSourceIds || !jobData.dataSourceIds.source || !jobData.dataSourceIds.sink) {
           return message.error("未选择数据源库表");
         }
@@ -360,7 +362,9 @@ export default {
         }
         saveContent.push(cur)
       }
-      saveProject(this.jobData.id, saveContent)
+      saveProject(this.jobData.id,{
+        content:  JSON.stringify(saveContent)
+      })
     }
   },
 };
