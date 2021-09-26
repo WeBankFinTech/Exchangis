@@ -5,7 +5,7 @@
       <div class="divider"></div>
       <span><CaretRightOutlined />执行</span>
       <div class="divider"></div>
-      <span><SaveOutlined />保存</span>
+      <span @click="saveAll()"><SaveOutlined />保存</span>
       <div class="divider"></div>
       <span><HistoryOutlined />执行历史</span>
     </div>
@@ -150,7 +150,7 @@ import {
 } from "@ant-design/icons-vue";
 import configModal from "./configModal";
 import copyModal from "./copyModal";
-import { getJobInfo } from "@/common/service";
+import { getJobInfo, saveProject } from "@/common/service";
 import { jobInfo } from "../mock";
 import DataSource from "./dataSource";
 import FieldMap from "./fieldMap.vue";
@@ -307,6 +307,9 @@ export default {
       this.curTask.dataSourceIds = dataSourceIds;
       this.curTask.params = params;
     },
+    saveAll() {
+      saveProject(this.jobData.id, this.jobData.content)
+    }
   },
 };
 </script>

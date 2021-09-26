@@ -35,6 +35,15 @@ export const getDataSourceTypes = () => {
   return request("/datasources/type", {}, { method: "GET" });
 };
 
+export const getDBs = (type, id) => {
+  return request(`/datasources/${type}/${id}/dbs`, {}, { method: "GET" });
+}
+
+export const getTables = (type, id, dbName) => {
+  return request(`/datasources/${type}/${id}/dbs/${dbName}/tables`, {}, { method: "GET" });
+}
+
+
 export const createDataSource = (params) => {
   return request("/datasources", { ...params }, { method: "POST" });
 };
@@ -78,6 +87,12 @@ export const createJob = (params) => {
 export const getEngineType = () => {
   return request(`/job/engineType`, null, {
     method: "GET",
+  });
+};
+
+export const saveProject = (id, body) => {
+  return request(`/job/${id}/content`, body, {
+    method: "PUT",
   });
 };
 
