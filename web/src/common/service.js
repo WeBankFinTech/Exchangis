@@ -43,6 +43,9 @@ export const getTables = (type, id, dbName) => {
   return request(`/datasources/${type}/${id}/dbs/${dbName}/tables`, {}, { method: "GET" });
 }
 
+export const getFields = (type, id, dbName, tableName) => {
+  return request(`/datasources/${type}/${id}/dbs/${dbName}/tables/${tableName}/fields`, {}, { method: "GET" });
+}
 
 export const createDataSource = (params) => {
   return request("/datasources", { ...params }, { method: "POST" });
@@ -135,3 +138,11 @@ export const expireDataSource = (id) => {
 export const publishDataSource = (id, versionId) => {
   return request(`/datasources/${id}/${versionId}/publish`, {}, { method: "PUT" });
 };
+
+export const getSourceParams = (type) => {
+  return request(`/datasources/${type}/params/ui`, {}, { method: "GET" });
+}
+
+export const getSettingsParams = (engineType) => {
+  return request(`/jobs/engine/${engineType}/settings/ui`, {}, { method: "GET" });
+}

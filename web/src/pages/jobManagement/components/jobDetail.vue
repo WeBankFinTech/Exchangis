@@ -32,11 +32,11 @@
               v-if="
                 activeIndex !== idx || (activeIndex === idx && !nameEditable)
               "
-              >{{ item.subjobName }}</span
+              >{{ item.subJobName }}</span
             >
             <a-input
               @pressEnter="nameEditable = false"
-              v-model:value="item.subjobName"
+              v-model:value="item.subJobName"
               v-if="activeIndex === idx && nameEditable"
             ></a-input>
             <EditOutlined
@@ -102,13 +102,18 @@
           <DataSource
             v-if="curTask"
             v-bind:dsData="curTask"
-            @updateDataSource="updateDataSource"
+            @updateSourceInfo="updateSourceInfo"
+            @updateSinkInfo="updateSinkInfo"
+            @updateSourceParams="updateSourceParams"
+            @updateSinkParams="updateSinkParams"
           />
         </div>
         <div>
           <FieldMap
             v-if="curTask"
             v-bind:fmData="curTask.transforms"
+            v-bind:fieldsSink="fieldsSink"
+            v-bind:fieldsSource="fieldsSource"
             @updateFieldMap="updateFieldMap"
           />
         </div>
@@ -150,12 +155,12 @@ import {
 } from "@ant-design/icons-vue";
 import configModal from "./configModal";
 import copyModal from "./copyModal";
-import { getJobInfo, saveProject } from "@/common/service";
-import { jobInfo } from "../mock";
+import { getJobInfo, saveProject, getSettingsParams, getFields } from "@/common/service";
 import DataSource from "./dataSource";
 import FieldMap from "./fieldMap.vue";
 import ProcessControl from "./processControl.vue";
 import { message } from "ant-design-vue"
+
 export default {
   components: {
     SettingOutlined,
@@ -191,6 +196,8 @@ export default {
       activeIndex: -1,
       curTask: null,
       nameEditable: false,
+      fieldsSource: [],
+      fieldsSink: []
     };
   },
   props: {
@@ -222,11 +229,13 @@ export default {
         data.content.subJobs.forEach((item) => {
           item.engineType = data.engineType;
         });
-        this.jobData = data;
+        this.jobData = data
         this.list = this.jobData.content.subJobs;
         if (this.list.length) {
           this.activeIndex = 0;
           this.curTask = this.list[this.activeIndex];
+          this.updateSourceInfo(this.curTask)
+          this.updateSinkInfo(this.curTask)
         }
       } catch (error) {}
     },
@@ -266,7 +275,8 @@ export default {
     },
     addNewTask() {
       let task = {
-        subjobName: "new",
+        subJobName: "new",
+        engineType: this.jobData.engineType,
         dataSourceIds: {
           source: {
             type: "",
@@ -290,11 +300,14 @@ export default {
           mapping: []
         },
         settings: []
-      };
-      this.jobData.content.subJobs.push(task);
-      this.$nextTick(()=>{
-        this.activeIndex = this.jobData.content.subJobs.length - 1
-        this.curTask = this.list[this.activeIndex]
+      }
+      getSettingsParams(this.jobData.engineType).then(res => {
+        task.settings = res.ui || []
+        this.jobData.content.subJobs.push(task);
+        this.$nextTick(()=>{
+          this.activeIndex = this.jobData.content.subJobs.length - 1
+          this.curTask = this.list[this.activeIndex]
+        })
       })
     },
     updateFieldMap(transforms) {
@@ -303,20 +316,42 @@ export default {
     updateProcessControl(settings) {
       this.curTask.settings = settings;
     },
-    updateDataSource(dataSource) {
+    updateSourceInfo(dataSource){
       const { dataSourceIds, params } = dataSource;
       this.curTask.dataSourceIds = dataSourceIds;
       this.curTask.params = params;
+      const source = this.curTask.dataSourceIds.source
+      getFields(source.type, source.id, source.db, source.table).then(res => {
+        this.fieldsSource = res.columns
+      })
+    },
+    updateSinkInfo(dataSource){
+      const { dataSourceIds, params } = dataSource;
+      this.curTask.dataSourceIds = dataSourceIds;
+      this.curTask.params = params;
+      const sink = this.curTask.dataSourceIds.sink
+      getFields(sink.type, sink.id, sink.db, sink.table).then(res => {
+        this.fieldsSink = res.columns
+      })
+    },
+    updateSourceParams(dataSource){
+      const { params } = dataSource;
+      this.curTask.params = params;
+    },
+    updateSinkParams(dataSource){
+      const { params } = dataSource;
+      this.curTask.params = params;
     },
     saveAll() {
-      let saveContent = []
-      if (!this.jobData.content || !this.jobData.content.subJobs) {
+      let saveContent = [],
+          data = toRaw(this.jobData)
+      if (!data.content || !data.content.subJobs) {
         return message.error("缺失保存对象");
       }
-      for (let i = 0; i < this.jobData.content.subJobs; i++) {
-        const jobData = this.jobData.content.subJobs[i]
+      for (let i = 0; i < data.content.subJobs.length; i++) {
+        const jobData = toRaw(data.content.subJobs[i])
         let cur = {}
-        cur.subjobName = jobData.subjobName
+        cur.subJobName = jobData.subJobName
         if (!jobData.dataSourceIds || !jobData.dataSourceIds.source || !jobData.dataSourceIds.sink) {
           return message.error("未选择数据源库表");
         }
@@ -348,9 +383,10 @@ export default {
           })
         })
         cur.transforms = jobData.transforms
+        cur.settings = []
         if (jobData.settings && jobData.settings.length) {
           jobData.settings.forEach(setting => {
-            cur.params.sources.push({
+            cur.settings.push({
               config_key: setting.field,  // UI中field
               config_name: setting.label,  // UI中label
               config_value: setting.value,  // UI中value
@@ -360,7 +396,9 @@ export default {
         }
         saveContent.push(cur)
       }
-      saveProject(this.jobData.id, saveContent)
+      saveProject(this.jobData.id,{
+        content:  JSON.stringify(saveContent)
+      })
     }
   },
 };
