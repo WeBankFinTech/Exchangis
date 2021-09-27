@@ -12,8 +12,8 @@
       :model="formState"
       :label-col="{ span: 4 }"
     >
-      <a-form-item label="原任务" name="subjobName">
-        <a-input v-model:value="origin.subjobName" disabled />
+      <a-form-item label="原任务" name="subJobName">
+        <a-input v-model:value="origin.subJobName" disabled />
       </a-form-item>
       <a-form-item label="任务名" name="jobName">
         <a-input v-model:value="formState.jobName" />
@@ -74,7 +74,7 @@ export default {
       await this.$refs.formRef.validate();
       const formatData = {
         ...this.origin,
-        subjobName: this.formState.jobName
+        subJobName: this.formState.jobName
       };
       try {
         this.confirmLoading = true;
