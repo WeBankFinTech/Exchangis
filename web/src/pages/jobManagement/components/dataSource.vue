@@ -84,16 +84,16 @@
 
 <script>
 import { RightCircleOutlined } from "@ant-design/icons-vue";
-import { defineComponent, ref, reactive, toRaw, watch } from "vue";
+import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
 import SelectDataSource from "./selectDataSource";
 import DyncRender from "./dyncRender.vue";
-import { getSourceParams } from "@/common/service"
+import { getSourceParams, getSettingsParams } from "@/common/service"
 
 export default defineComponent({
   props: {
     dsData: Object,
   },
-  emits: ["updateDataSource"],
+  emits: ["updateSourceInfo", "updateSinkInfo", "updateSourceParams", "updateSinkParams"],
   components: {
     SelectDataSource,
     DyncRender,
@@ -102,7 +102,7 @@ export default defineComponent({
   setup(props, context) {
     // 对象转标题
     const objToTitle = function (obj) {
-      if (typeof obj !== "object") return "";
+      if (typeof obj !== "object") return ""
       const { type, db, table } = obj;
       return `${type}-数据源-${db}.${table}`;
     };
@@ -121,7 +121,9 @@ export default defineComponent({
       }
     })
 
-    watch(props.dsData, (newVal, oldVal) => {
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.dsData)))
+    watch(newProps, (val, oldVal) => {
+      const newVal = typeof val === 'string' ? JSON.parse(val): val
       sourceTitle.value = objToTitle(newVal.dataSourceIds.source);
       sinkTitle.value = objToTitle(newVal.dataSourceIds.sink);
       dataSource.dataSourceIds = {
@@ -132,44 +134,32 @@ export default defineComponent({
         sources: newVal.params.sources || [],
         sinks: newVal.params.sinks || []
       }
-      console.log(newVal)
     })
 
     const formRef = ref();
-    const createDataSoure = (source, sink, sourceParams, sinkParams) => {
-      const dataSourceIds = Object.create(null);
-      const params = Object.create(null);
-
-      dataSourceIds.source = source;
-      dataSourceIds.sink = sink;
-      params.sources = sourceParams;
-      params.sinks = sinkParams;
-
-      return {
-        dataSourceIds,
-        params,
-      };
-    };
-    const updateSourceInfo = (dsInfo) => {
+    const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
       dataSource.dataSourceIds.source.type = info[0];
       dataSource.dataSourceIds.source.db = info[1];
       dataSource.dataSourceIds.source.table = info[2];
+      dataSource.dataSourceIds.source.id = id;
 
       getSourceParams(dataSource.dataSourceIds.source.type).then(res => {
         dataSource.params.sources = res.uis || []
-        context.emit("updateDataSource", dataSource);
+        context.emit("updateSourceInfo", dataSource);
       })
+
     };
-    const updateSinkInfo = (dsInfo) => {
+    const updateSinkInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
       dataSource.dataSourceIds.sink.type = info[0];
       dataSource.dataSourceIds.sink.db = info[1];
       dataSource.dataSourceIds.sink.table = info[2];
+      dataSource.dataSourceIds.sink.id = id;
 
       getSourceParams(dataSource.dataSourceIds.sink.type).then(res => {
         dataSource.params.sinks = res.uis || []
-        context.emit("updateDataSource", dataSource);
+        context.emit("updateSinkInfo", dataSource);
       })
     };
     const updateSourceParams = (info) => {
@@ -180,7 +170,7 @@ export default defineComponent({
         }
       });
       dataSource.params.sources = _sourceParams;
-      context.emit("updateDataSource", dataSource);
+      context.emit("updateSourceParams", dataSource);
     };
     const updateSinkParams = (info) => {
       const _sinkParams = dataSource.params.sinks.slice(0);
@@ -190,7 +180,7 @@ export default defineComponent({
         }
       });
       dataSource.params.sinks = _sinkParams;
-      context.emit("updateDataSource", dataSource);
+      context.emit("updateSinkParams", dataSource);
     };
 
     return {

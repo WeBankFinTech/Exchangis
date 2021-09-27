@@ -14,7 +14,7 @@
     <!-- bottom -->
     <div class="tf-bottom">
       <span>转换：</span>
-      <span>{{
+      <span v-if="dynamicValidateForm.transf.value">{{
         `${dynamicValidateForm.transf.value}(${dynamicValidateForm.transf.startIndex},${dynamicValidateForm.transf.endIndex})`
       }}</span>
     </div>
