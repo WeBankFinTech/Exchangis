@@ -5,16 +5,18 @@
       <div class="imageText" v-if="!imageSrc">{{ imageText }}</div>
       <div class="infoWrap">
         <div class="jobNameWrap">
-          <div class="jobName" @click="gotoDetail">
-            {{ jobData.jobName }}
-          </div>
+          <a-tooltip :title="jobData.jobName">
+            <div class="jobName" @click="gotoDetail">
+              {{ jobData.jobName }}
+            </div>
+          </a-tooltip>
           <div
             :class="{
               available: true,
-              disable: jobData.jobStatus !== 'valid',
+              disable: jobData.jobStatus === 'valid',
             }"
           >
-            {{ jobData.jobStatus === 'valid' ? 'Available' : 'Disable' }}
+            {{ jobData.jobStatus !== 'valid' ? 'Available' : 'Disable' }}
           </div>
         </div>
         <div class="jobDesc">{{ jobData.jobDesc }}</div>
