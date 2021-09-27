@@ -1,5 +1,13 @@
 <template>
   <div class="content">
+    <div class="projectNav">
+      <img class="img" src="../../images/u32.svg" />
+      <router-link to="/projectManage"
+        ><div class="link">{{ t('projectManage.topLine.title') }}</div></router-link
+      >
+      <div class="divider">/</div>
+      <div class="name">{{ name }}</div>
+    </div>
     <div class="navWrap">
       <div @click="() => changeTab({})" class="listTitle">
         <UnorderedListOutlined />{{ t('job.list') }}
@@ -11,7 +19,9 @@
           @click="() => changeTab(item)"
         >
           <ClusterOutlined />
-          <div class="jobNameWrap">{{ item.jobName }}</div>
+          <a-tooltip :title="item.jobName">
+            <div class="jobNameWrap">{{ item.jobName }}</div>
+          </a-tooltip>
         </div>
         <div class="closeIcon" @click="() => deleteTab(item)">
           <CloseOutlined />
@@ -44,7 +54,7 @@ export default {
     const { t } = useI18n({ useScope: 'global' });
     return {
       t,
-      name: 'jobManagement11',
+      name: this.$route.query.name,
       choosedTab: 'jobList',
       activeTabId: '',
       curTab: '',
@@ -89,12 +99,40 @@ export default {
 .content {
   box-sizing: border-box;
 }
-.navWrap {
+.projectNav {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   padding-left: 15px;
   margin-top: 10px;
+  .img {
+    width: 25px;
+  }
+  .link {
+    color: #000000;
+    font-size: 16px;
+    margin-left: 10px;
+    cursor: pointer;
+    &:hover {
+      color: #1890ff;
+    }
+  }
+  .divider{
+    color: #949494;
+    padding: 0px 10px;
+  }
+  .name{
+    color: #333333;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+.navWrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 15px;
+  margin-top: 15px;
   .listTitle {
     font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
     font-weight: 600;
