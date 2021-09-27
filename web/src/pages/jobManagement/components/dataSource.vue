@@ -30,12 +30,11 @@
               </a-form-item>
               <!-- 动态组件 -->
               <a-form-item
-                v-for="item in sourceParams"
+                v-for="item in dataSource.params.sources"
                 :key="item.field"
                 :label="item.label"
                 :name="item.label"
                 :rules="{
-                  required: item.required,
                   trigger: 'change',
                 }"
               >
@@ -65,11 +64,10 @@
               </a-form-item>
               <!-- 动态组件 -->
               <a-form-item
-                v-for="item in sinkParams"
+                v-for="item in dataSource.params.sinks"
                 :key="item.field"
                 :label="item.label"
                 :name="item.label"
-                :required="item.required"
               >
                 <dync-render
                   v-bind:param="item"
@@ -86,14 +84,16 @@
 
 <script>
 import { RightCircleOutlined } from "@ant-design/icons-vue";
-import { defineComponent, ref, reactive, toRaw } from "vue";
+import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
 import SelectDataSource from "./selectDataSource";
 import DyncRender from "./dyncRender.vue";
+import { getSourceParams, getSettingsParams } from "@/common/service"
+
 export default defineComponent({
   props: {
     dsData: Object,
   },
-  emits: ["updateDataSource"],
+  emits: ["updateSourceInfo", "updateSinkInfo", "updateSourceParams", "updateSinkParams"],
   components: {
     SelectDataSource,
     DyncRender,
@@ -102,95 +102,85 @@ export default defineComponent({
   setup(props, context) {
     // 对象转标题
     const objToTitle = function (obj) {
-      if (typeof obj !== "object") return "";
+      if (typeof obj !== "object") return ""
       const { type, db, table } = obj;
       return `${type}-数据源-${db}.${table}`;
     };
-    console.log(props.dsData.dataSourceIds.source)
-    let sourceTitle = objToTitle(props.dsData.dataSourceIds.source);
-    let sinkTitle = objToTitle(props.dsData.dataSourceIds.sink);
 
-    let { source, sink } = props.dsData.dataSourceIds;
+    let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source))
+    let sinkTitle = ref(objToTitle(props.dsData.dataSourceIds.sink))
 
-    let sourceParams = props.dsData.params.sources;
-    let sinkParams = props.dsData.params.sinks;
+    const dataSource = reactive({
+      dataSourceIds: {
+        source: props.dsData.dataSourceIds.source  || {},
+        sink: props.dsData.dataSourceIds.sink || {}
+      },
+      params: {
+        sources: props.dsData.params.sources || [],
+        sinks: props.dsData.params.sinks || []
+      }
+    })
+
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.dsData)))
+    watch(newProps, (val, oldVal) => {
+      const newVal = typeof val === 'string' ? JSON.parse(val): val
+      sourceTitle.value = objToTitle(newVal.dataSourceIds.source);
+      sinkTitle.value = objToTitle(newVal.dataSourceIds.sink);
+      dataSource.dataSourceIds = {
+        source: newVal.dataSourceIds.source  || {},
+        sink: newVal.dataSourceIds.sink || {}
+      }
+      dataSource.params = {
+        sources: newVal.params.sources || [],
+        sinks: newVal.params.sinks || []
+      }
+    })
 
     const formRef = ref();
-    const createDataSoure = (source, sink, sourceParams, sinkParams) => {
-      const dataSourceIds = Object.create(null);
-      const params = Object.create(null);
-
-      dataSourceIds.source = source;
-      dataSourceIds.sink = sink;
-      params.sources = sourceParams;
-      params.sinks = sinkParams;
-
-      return {
-        dataSourceIds,
-        params,
-      };
-    };
-    const updateSourceInfo = (dsInfo) => {
+    const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
-      source.type = info[0];
-      source.db = info[1];
-      source.table = info[2];
+      dataSource.dataSourceIds.source.type = info[0];
+      dataSource.dataSourceIds.source.db = info[1];
+      dataSource.dataSourceIds.source.table = info[2];
+      dataSource.dataSourceIds.source.id = id;
 
-      const dataSource = createDataSoure(
-        source,
-        sink,
-        sourceParams,
-        sinkParams
-      );
-      context.emit("updateDataSource", dataSource);
+      getSourceParams(dataSource.dataSourceIds.source.type).then(res => {
+        dataSource.params.sources = res.uis || []
+        context.emit("updateSourceInfo", dataSource);
+      })
+
     };
-    const updateSinkInfo = (dsInfo) => {
+    const updateSinkInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
-      sink.type = info[0];
-      sink.db = info[1];
-      sink.table = info[2];
+      dataSource.dataSourceIds.sink.type = info[0];
+      dataSource.dataSourceIds.sink.db = info[1];
+      dataSource.dataSourceIds.sink.table = info[2];
+      dataSource.dataSourceIds.sink.id = id;
 
-      const dataSource = createDataSoure(
-        source,
-        sink,
-        sourceParams,
-        sinkParams
-      );
-      context.emit("updateDataSource", dataSource);
+      getSourceParams(dataSource.dataSourceIds.sink.type).then(res => {
+        dataSource.params.sinks = res.uis || []
+        context.emit("updateSinkInfo", dataSource);
+      })
     };
     const updateSourceParams = (info) => {
-      const _sourceParams = toRaw(sourceParams).slice(0);
+      const _sourceParams = dataSource.params.sources.slice(0);
       _sourceParams.forEach((item) => {
         if (item.field === info.field) {
           return (item.value = info.value);
         }
       });
-      sourceParams = _sourceParams;
-
-      const dataSource = createDataSoure(
-        source,
-        sink,
-        sourceParams,
-        sinkParams
-      );
-      context.emit("updateDataSource", dataSource);
+      dataSource.params.sources = _sourceParams;
+      context.emit("updateSourceParams", dataSource);
     };
     const updateSinkParams = (info) => {
-      const _sinkParams = toRaw(sinkParams).slice(0);
+      const _sinkParams = dataSource.params.sinks.slice(0);
       _sinkParams.forEach((item) => {
         if (item.field === info.field) {
           return (item.value = info.value);
         }
       });
-      sinkParams = _sinkParams;
-
-      const dataSource = createDataSoure(
-        source,
-        sink,
-        sourceParams,
-        sinkParams
-      );
-      context.emit("updateDataSource", dataSource);
+      dataSource.params.sinks = _sinkParams;
+      context.emit("updateSinkParams", dataSource);
     };
 
     return {
@@ -199,21 +189,12 @@ export default defineComponent({
       updateSinkInfo,
       sourceTitle,
       sinkTitle,
-      sourceParams,
-      sinkParams,
+      dataSource,
       updateSourceParams,
       updateSinkParams,
     };
   },
-  watch: {
-    dsData: {
-      handler: function (newVal) {
-        console.log("watch props");
-        this.props = newVal;
-      },
-      deep: true,
-    },
-  },
+  watch: {},
 });
 </script>
 

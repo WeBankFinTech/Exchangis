@@ -45,7 +45,6 @@
 <script>
 //import { SQLlist, dbs, tables } from "../mock";
 import { getDataSourceTypes, getDBs, getTables } from "@/common/service"
-
 import {
   defineComponent,
   reactive,
@@ -70,7 +69,12 @@ export default defineComponent({
       sqlList,
       defaultSelect: props.title,
       treeData,
+      id: ''
     });
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.title)))
+    watch(newProps, (val, oldVal) => {
+      state.defaultSelect = val
+    })
     async function init () {
       SQLlist = (await getDataSourceTypes()).list
       // 数据源
@@ -87,7 +91,9 @@ export default defineComponent({
     init()
     const handleChangeSql = async (sql) => {
       createTree(sql, () => {
-        state.treeData = treeData;
+        state.treeData = treeData
+        const cur = sqlList.filter(item => { return item.value === sql })[0]
+        state.id = cur.id
       })
     };
     // 创建 db & tables tree
@@ -132,12 +138,11 @@ export default defineComponent({
       visible.value = true;
     };
     const selectItem = (e) => {
-      let _defaultSelect = `${state.sqlSource}-${e.join("")}`;
-      state.defaultSelect = _defaultSelect;
+      state.defaultSelect = `${state.sqlSource}-${e.join("")}`
     };
     const handleOk = () => {
       visible.value = false;
-      context.emit("updateDsInfo", state.defaultSelect);
+      context.emit("updateDsInfo", state.defaultSelect, state.id);
     };
     return {
       ...toRefs(state),
@@ -148,16 +153,7 @@ export default defineComponent({
       sqlList,
       handleChangeSql,
     };
-  },
-  watch: {
-    title: {
-      handler: function (newVal) {
-        console.log("watch props");
-        this.props = newVal;
-      },
-      deep: true,
-    },
-  },
+  }
 });
 </script>
 
