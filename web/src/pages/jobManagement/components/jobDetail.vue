@@ -317,16 +317,18 @@ export default {
       this.curTask.settings = settings;
     },
     updateSourceInfo(dataSource){
-      const { dataSourceIds } = dataSource;
+      const { dataSourceIds, params } = dataSource;
       this.curTask.dataSourceIds = dataSourceIds;
+      this.curTask.params = params;
       const source = this.curTask.dataSourceIds.source
       getFields(source.type, source.id, source.db, source.table).then(res => {
         this.fieldsSource = res.columns
       })
     },
     updateSinkInfo(dataSource){
-      const { dataSourceIds } = dataSource;
+      const { dataSourceIds, params } = dataSource;
       this.curTask.dataSourceIds = dataSourceIds;
+      this.curTask.params = params;
       const sink = this.curTask.dataSourceIds.sink
       getFields(sink.type, sink.id, sink.db, sink.table).then(res => {
         this.fieldsSink = res.columns

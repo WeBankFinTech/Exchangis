@@ -63,7 +63,7 @@ export default {
   },
   methods: {
     async getJobs(type='OFFLINE') {
-      this.tabs = (await getJobs(this.$route.query.projectId, type)).result
+      this.tabs = (await getJobs(this.$route.query.id, type)).result
     },
     showJobDetail(data) {
       data = toRaw(data);
