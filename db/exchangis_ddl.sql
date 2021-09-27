@@ -6,7 +6,7 @@ CREATE TABLE `exchangis_job_param_config`  (
     config_direction varchar(16),
     type varchar(32) not null,
     ui_type varchar(32),
-    ui_field varchar(32),
+    ui_field varchar(64),
     ui_label varchar(32),
     unit varchar(32),
     required bit default 0,
