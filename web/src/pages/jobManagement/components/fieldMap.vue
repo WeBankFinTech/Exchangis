@@ -18,7 +18,7 @@
       </div>
 
       <div class="main-content">
-        <div style="margin-bottom: 15px">
+        <div style="margin-bottom: 15px" v-if="fieldsSource.length && fieldsSink.length">
           <a-button type="dashed" @click="addTableRow">新增</a-button>
         </div>
         <!-- left -->
@@ -43,14 +43,12 @@
                   </a-select>
                 </template>
                 <template #fieldType="{ record }">
-                  <a-select
-                    ref="select"
+                  <a-input
                     :value="record.fieldType"
                     style="width: 150px"
-                    :options="record.typeOptions"
-                    @change="updateSourceTypeName(record, $event)"
+                    disabled
                   >
-                  </a-select>
+                  </a-input>
                 </template>
               </a-table>
             </div>
@@ -88,14 +86,12 @@
                   </a-select>
                 </template>
                 <template #fieldType="{ record }">
-                  <a-select
-                    ref="select"
+                  <a-input
                     :value="record.fieldType"
                     style="width: 150px"
-                    :options="record.typeOptions"
-                    @change="updateSinkTypeName(record, $event)"
+                    disabled
                   >
-                  </a-select>
+                  </a-input>
                 </template>
               </a-table>
             </div>
@@ -114,6 +110,8 @@ import { fieldInfo } from "../mock";
 export default defineComponent({
   props: {
     fmData: Object,
+    fieldsSource: Array,
+    fieldsSink: Array
   },
   emits: ["updateFieldMap"],
   components: {
@@ -121,46 +119,24 @@ export default defineComponent({
   },
   setup(props, context) {
     const { type } = props.fmData;
-    const typeOptions = [
-      {
-        value: "varchar",
-        label: "varchar",
-      },
-      {
-        value: "text",
-        label: "text",
-      },
-      {
-        value: "int",
-        label: "int",
-      },
-      {
-        value: "char",
-        label: "char",
-      },
-      {
-        value: "float",
-        label: "float",
-      },
-      {
-        value: "double",
-        label: "double",
-      },
-    ];
+
     const createFieldOptions = (fieldInfo) => {
       const fieldOptions = [];
-      fieldInfo.forEach((info) => {
-        const o = Object.create(null);
-        o.value = info.name;
-        o.label = info.name;
-        fieldOptions.push(o);
-      });
+      if (fieldInfo) {
+        const fieldList = toRaw(fieldInfo)
+        fieldList.forEach((info) => {
+          const o = Object.create(null);
+          o.value = info.name;
+          o.label = info.name;
+          o.type = info.type;
+          fieldOptions.push(o);
+        })
+      }
       return fieldOptions;
     };
-    const fieldOptions = createFieldOptions(fieldInfo);
 
     // crate dataSource
-    const createDataSource = (map, fieldOptions, typeOptions) => {
+    const createDataSource = (map) => {
       const sourceDS = [],
         sinkDS = [],
         transformerList = [];
@@ -177,15 +153,13 @@ export default defineComponent({
 
         sourceItem.key = idx + "";
         sourceItem.fieldName = item.source_field_name && item.source_field_name;
-        sourceItem.fieldOptions = fieldOptions;
+        sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
         sourceItem.fieldType = item.source_field_type && item.source_field_type;
-        sourceItem.typeOptions = typeOptions;
 
         sinkItem.key = idx + "";
         sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
-        sinkItem.fieldOptions = fieldOptions;
+        sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
         sinkItem.fieldType = item.sink_field_type && item.sink_field_type;
-        sinkItem.typeOptions = typeOptions;
 
         transformerItem.key = idx + "";
         transformerItem.validator = item.validator && item.validator;
@@ -203,9 +177,7 @@ export default defineComponent({
     };
 
     let { sourceDS, sinkDS, transformerList } = createDataSource(
-      toRaw(props.fmData).mapping || [],
-      fieldOptions,
-      typeOptions
+      toRaw(props.fmData).mapping || []
     );
 
     sourceDS = ref(sourceDS);
@@ -257,10 +229,16 @@ export default defineComponent({
     };
 
     const updateSourceFieldName = (info, e) => {
-      const { key } = info;
+      const { key, fieldOptions } = info;
       sourceDS.value.forEach((item) => {
         if (item.key == key) {
-          return (item.fieldName = e);
+          item.fieldName = e
+          fieldOptions.forEach(field => {
+            if (field.value === item.fieldName) {
+              item.fieldType = field.type
+            }
+          })
+          return
         }
       });
 
@@ -281,10 +259,16 @@ export default defineComponent({
     };
 
     const updateSinkFieldName = (info, e) => {
-      const { key } = info;
+      const { key, fieldOptions } = info;
       sinkDS.value.forEach((item) => {
         if (item.key == key) {
-          return (item.fieldName = e);
+          item.fieldName = e
+          fieldOptions.forEach(field => {
+            if (field.value === item.fieldName) {
+              item.fieldType = field.type
+            }
+          })
+          return
         }
       });
 
@@ -315,15 +299,13 @@ export default defineComponent({
 
       sourceItem.key = sourceLen + "";
       sourceItem.fieldName = "";
-      sourceItem.fieldOptions = fieldOptions;
+      sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
       sourceItem.fieldType = "";
-      sourceItem.typeOptions = typeOptions;
 
       sinkItem.key = sinkLen + "";
       sinkItem.fieldName = "";
-      sinkItem.fieldOptions = fieldOptions;
+      sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
       sinkItem.fieldType = "";
-      sinkItem.typeOptions = typeOptions;
 
       transformerItem.key = tfLen + "";
       transformerItem.validator = [];

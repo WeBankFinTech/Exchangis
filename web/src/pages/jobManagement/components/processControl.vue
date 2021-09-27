@@ -18,7 +18,7 @@
         <a-form ref="formRef">
           <!-- 动态组件 -->
           <a-form-item
-            v-for="item in settingParams"
+            v-for="item in settingData.psData"
             :key="item.field"
             :label="item.label"
             :name="item.label"
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, toRaw } from "vue";
+import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
 import DyncRender from "./dyncRender.vue";
 export default defineComponent({
   props: {
@@ -51,33 +51,32 @@ export default defineComponent({
   },
   setup(props, context) {
     const formRef = ref();
-    let settingParams = props.psData;
+    let settingData = reactive({
+      psData: toRaw(props.psData)
+    })
+
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.psData)))
+    watch(newProps, (val, oldVal) => {
+      settingData.psData = typeof val === 'string' ? JSON.parse(val): val
+      console.log(val, 123)
+    })
     const updateSettingParams = (info) => {
-      const _settingParams = toRaw(settingParams).slice(0);
+      const _settingParams = toRaw(settingData.psData).slice(0);
       _settingParams.forEach((item) => {
         if (item.field === info.field) {
           return (item.value = info.value);
         }
       });
-      settingParams = _settingParams;
-      console.log("sourceParams", settingParams);
-      context.emit("updateProcessControl", settingParams);
+      settingData.psData = _settingParams;
+      console.log("sourceParams", settingData.psData);
+      context.emit("updateProcessControl", settingData.psData);
     };
     return {
       formRef,
-      settingParams,
+      settingData,
       updateSettingParams,
     };
-  },
-  watch: {
-    psData: {
-      handler: function (newVal) {
-        console.log("watch props");
-        this.props = newVal;
-      },
-      deep: true,
-    },
-  },
+  }
 });
 </script>
 
