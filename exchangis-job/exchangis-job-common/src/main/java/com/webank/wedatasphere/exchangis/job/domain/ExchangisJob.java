@@ -14,7 +14,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
  * @author yuxin.yuan
  * @since 2021-08-10
  */
-@TableName("exchangis_job")
+@TableName("exchangis_job_info")
 public class ExchangisJob {
 
     @TableId(type = IdType.AUTO)

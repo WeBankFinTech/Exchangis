@@ -4,7 +4,7 @@
     <div class="tf-top">
       <span>校验：</span>
       <span v-for="domain in dynamicValidateForm.domains" :key="domain.key">{{
-        `${domain.optionVal}${domain.value}`
+        `${domain.optionVal} ${domain.value}`
       }}</span>
     </div>
     <!-- mid -->
@@ -14,7 +14,7 @@
     <!-- bottom -->
     <div class="tf-bottom">
       <span>转换：</span>
-      <span>{{
+      <span v-if="dynamicValidateForm.transf.value && dynamicValidateForm.transf.startIndex && dynamicValidateForm.transf.endIndex">{{
         `${dynamicValidateForm.transf.value}(${dynamicValidateForm.transf.startIndex},${dynamicValidateForm.transf.endIndex})`
       }}</span>
     </div>
@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, toRaw } from "vue";
+import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
 import {
   SyncOutlined,
   MinusCircleOutlined,
@@ -131,8 +131,7 @@ import {
 } from "@ant-design/icons-vue";
 export default defineComponent({
   props: {
-    tfData: Object,
-    id: String | Number,
+    tfData: Object
   },
   emits: ["updateTransformer"],
   components: {
@@ -141,8 +140,19 @@ export default defineComponent({
     PlusOutlined,
   },
   setup(props, context) {
-    const { validator, transformer } = props.tfData;
-    const id = props.id;
+    let transformerMap = reactive({
+      validator: props.tfData.validator || [],
+      transformer: props.tfData.transformer || [],
+      id: props.tfData.key
+    })
+
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.tfData)))
+    watch(newProps, (val, oldVal) => {
+      const newVal = typeof val === 'string' ? JSON.parse(val): val
+      dynamicValidateForm.domains = transF(newVal.validator)
+      dynamicValidateForm.transf = createTransformFunc(newVal.transformer)
+    })
+
     const visible = ref(false);
 
     const showModal = () => {
@@ -165,7 +175,7 @@ export default defineComponent({
       transformer.params = params;
 
       context.emit("updateTransformer", {
-        key: id,
+        key: props.tfData.key,
         validator,
         transformer,
       });
@@ -246,11 +256,9 @@ export default defineComponent({
 
     const formRef = ref();
 
-    const domains = transF(toRaw(validator));
-    const transf = createTransformFunc(toRaw(transformer));
-    const dynamicValidateForm = reactive({
-      domains,
-      transf,
+    let dynamicValidateForm = reactive({
+      domains: transF(transformerMap.validator),
+      transf: createTransformFunc(transformerMap.transformer),
     });
 
     const removeDomain = (item) => {
