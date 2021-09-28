@@ -244,7 +244,6 @@ export default {
       if (data) {
         this.jobData.content.subJobs.push(data);
       }
-      console.log(this.list, this.jobData.content.subJobs);
     },
     copySub(item) {
       this.copyObj = item;
@@ -398,6 +397,8 @@ export default {
       }
       saveProject(this.jobData.id,{
         content:  JSON.stringify(saveContent)
+      }).then(res => {
+        message.success("保存成功");
       })
     }
   },
