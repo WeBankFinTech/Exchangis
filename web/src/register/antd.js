@@ -28,6 +28,7 @@ import {
   message,
   Radio,
   Tree,
+  Tooltip
 } from "ant-design-vue";
 
 /**
@@ -65,4 +66,5 @@ export default function loadComponent(app) {
   app.use(Typography);
   app.use(Radio);
   app.use(Tree);
+  app.use(Tooltip);
 }
