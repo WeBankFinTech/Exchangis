@@ -4,7 +4,7 @@ import com.webank.wedatasphere.linkis.datasource.client.request.DataSourceAction
 import com.webank.wedatasphere.linkis.httpclient.request.PutAction
 
 class ExpireDataSourceAction(val id: Long) extends PutAction with DataSourceAction {
-  override def getRequestPayload: String = _
+  override def getRequestPayload: String = ???
 
   private var user: String = _
 
