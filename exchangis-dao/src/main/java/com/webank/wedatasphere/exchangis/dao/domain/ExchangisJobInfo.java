@@ -1,65 +1,50 @@
 package com.webank.wedatasphere.exchangis.dao.domain;
 
+import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
-import java.util.Date;
 
 @TableName("exchangis_job_info")
 public class ExchangisJobInfo {
 
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @TableField(value = "job_name")
+    private Long projectId;
+
     private String jobName;
 
-    @TableField(value = "job_desc")
-    private String jobDesc;
+    private String jobType;
 
-    @TableField(value = "engine_type")
     private String engineType;
 
-    @TableField(value = "alarm_user")
-    private String alarmUser;
+    private String jobLabels;
 
-    @TableField(value = "alarm_level")
-    private Integer alarmLevel;
+    private String jobDesc;
 
-    @TableField(value = "content")
     private String content;
 
-    @TableField(value = "label_map")
-    private String labelMap;
+    private String alarmUser;
 
-    @TableField(value = "create_time")
+    private Integer alarmLevel;
+
+    private String proxyUser;
+
+    private String executeNode;
+
+    private String syncType;
+
+    private String jobParams;
+
     private Date createTime;
 
-    @TableField(value = "modify_time")
-    private Date modifyTime;
-
-    @TableField(value = "create_user")
     private String createUser;
 
-    @TableField(value = "modify_user")
+    private Date modifyTime;
+
     private String modifyUser;
-
-    @TableField(value = "to_proxy_user")
-    private String toProxyUser;
-
-    @TableField(value = "exec_nodes")
-    private String execNodes;
-
-    @TableField(value = "last_launch_time")
-    private Date lastLaunchTime;
-
-    @TableField(value = "project_id")
-    private Integer projectId;
-
-    @TableField(value = "parent_id")
-    private Long parentId;
 
     public Long getId() {
         return id;
@@ -67,6 +52,14 @@ public class ExchangisJobInfo {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     public String getJobName() {
@@ -77,12 +70,12 @@ public class ExchangisJobInfo {
         this.jobName = jobName;
     }
 
-    public String getJobDesc() {
-        return jobDesc;
+    public String getJobType() {
+        return jobType;
     }
 
-    public void setJobDesc(String jobDesc) {
-        this.jobDesc = jobDesc;
+    public void setJobType(String jobType) {
+        this.jobType = jobType;
     }
 
     public String getEngineType() {
@@ -91,6 +84,30 @@ public class ExchangisJobInfo {
 
     public void setEngineType(String engineType) {
         this.engineType = engineType;
+    }
+
+    public String getJobLabels() {
+        return jobLabels;
+    }
+
+    public void setJobLabels(String jobLabels) {
+        this.jobLabels = jobLabels;
+    }
+
+    public String getJobDesc() {
+        return jobDesc;
+    }
+
+    public void setJobDesc(String jobDesc) {
+        this.jobDesc = jobDesc;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getAlarmUser() {
@@ -109,20 +126,36 @@ public class ExchangisJobInfo {
         this.alarmLevel = alarmLevel;
     }
 
-    public String getContent() {
-        return content;
+    public String getProxyUser() {
+        return proxyUser;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setProxyUser(String proxyUser) {
+        this.proxyUser = proxyUser;
     }
 
-    public String getLabelMap() {
-        return labelMap;
+    public String getExecuteNode() {
+        return executeNode;
     }
 
-    public void setLabelMap(String labelMap) {
-        this.labelMap = labelMap;
+    public void setExecuteNode(String executeNode) {
+        this.executeNode = executeNode;
+    }
+
+    public String getSyncType() {
+        return syncType;
+    }
+
+    public void setSyncType(String syncType) {
+        this.syncType = syncType;
+    }
+
+    public String getJobParams() {
+        return jobParams;
+    }
+
+    public void setJobParams(String jobParams) {
+        this.jobParams = jobParams;
     }
 
     public Date getCreateTime() {
@@ -133,20 +166,20 @@ public class ExchangisJobInfo {
         this.createTime = createTime;
     }
 
-    public Date getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(Date modifyTime) {
-        this.modifyTime = modifyTime;
-    }
-
     public String getCreateUser() {
         return createUser;
     }
 
     public void setCreateUser(String createUser) {
         this.createUser = createUser;
+    }
+
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     public String getModifyUser() {
@@ -157,44 +190,14 @@ public class ExchangisJobInfo {
         this.modifyUser = modifyUser;
     }
 
-    public String getToProxyUser() {
-        return toProxyUser;
-    }
-
-    public void setToProxyUser(String toProxyUser) {
-        this.toProxyUser = toProxyUser;
-    }
-
-    public String getExecNodes() {
-        return execNodes;
-    }
-
-    public void setExecNodes(String execNodes) {
-        this.execNodes = execNodes;
-    }
-
-    public Date getLastLaunchTime() {
-        return lastLaunchTime;
-    }
-
-    public void setLastLaunchTime(Date lastLaunchTime) {
-        this.lastLaunchTime = lastLaunchTime;
-    }
-
-    public Integer getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Integer projectId) {
-        this.projectId = projectId;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
+    @Override
+    public String toString() {
+        return "ExchangisJob{" + "id=" + id + ", projectId=" + projectId + ", jobName=" + jobName + ", jobType="
+            + jobType + ", engineType=" + engineType + ", jobLabels=" + jobLabels + ", jobDesc=" + jobDesc
+            + ", content=" + content + ", alarmUser=" + alarmUser + ", alarmLevel=" + alarmLevel + ", proxyUser="
+            + proxyUser + ", executeNode=" + executeNode + ", syncType=" + syncType + ", jobParams=" + jobParams
+            + ", createTime=" + createTime + ", createUser=" + createUser + ", modifyTime=" + modifyTime
+            + ", modifyUser=" + modifyUser + "}";
     }
 
 }
