@@ -25,7 +25,7 @@
     </resultMap>
 
     <sql id="TableName">
-        exchangis_job
+        exchangis_job_info
     </sql>
 
     <!-- 通用查询结果列 -->
