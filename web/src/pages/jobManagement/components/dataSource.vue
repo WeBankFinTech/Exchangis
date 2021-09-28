@@ -22,7 +22,7 @@
         <div class="data-source-warp-l">
           <div class="data-source-warp-l-content">
             <a-form ref="formRef">
-              <a-form-item label="数据源信息" name="dsInfo">
+              <a-form-item label="数据源信息" name="dsInfo" width="300" class="source-title">
                 <SelectDataSource
                   @updateDsInfo="updateSourceInfo"
                   v-bind:title="sourceTitle"
@@ -56,7 +56,7 @@
         <div class="data-source-warp-r">
           <div class="data-source-warp-r-content">
             <a-form ref="formRef">
-              <a-form-item ref="dsInfo2" label="数据源信息" name="dsInfo2">
+              <a-form-item ref="dsInfo2" label="数据源信息" name="dsInfo2" class="source-title">
                 <SelectDataSource
                   @updateDsInfo="updateSinkInfo"
                   :title="sinkTitle"
@@ -291,5 +291,11 @@ export default defineComponent({
 .data-source-label {
   font-size: 14px;
   text-align: left;
+}
+.source-title {
+  ::v-deep .ant-form-item-label {
+    width: 100%;
+    text-align: left;
+  }
 }
 </style>
