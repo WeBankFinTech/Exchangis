@@ -2,6 +2,9 @@ package com.webank.wedatasphere.exchangis.datasource.core.vo;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExchangisJobInfoContent {
 
     private String subJobName;
