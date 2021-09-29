@@ -119,7 +119,7 @@ export default {
         },
         addGroup() {
             const userRole = this.FesStorage.get('userRole');
-            if (!['super', 'admin'].includes(userRole)) return this.$Toast.warn(this.$t('message.newAllPage.Noaddgrouppermissions'));
+            if (!['super', 'admin'].includes(userRole)) return this.$Toast.warn($t('message.newAllPage.Noaddgrouppermissions'));
             this.$router.push({ path: '/group/groupDetail' });
         },
         changePage({ current, size }) {
