@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 @TableName("exchangis_job_param_config")
 public class ExchangisJobParamConfig {
+    public static final String DIRECTION_SOURCE = "SOURCE";
+    public static final String DIRECTION_SINK = "SINK";
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;

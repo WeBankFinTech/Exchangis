@@ -18,8 +18,8 @@
         </Cell>
         <Cell span="24">
             <Form-item :label="$t('uiTemplate.TABLENAMW')" prop="tableTow" :label-width="120">
-                <Wb-select v-model="subData.table" filterable @on-change="tableValueChange"  @on-search="filterSearch">
-                    <wb-option v-for="(item,index) in tableList" :key="index" :value="item" :label="item" />
+                <Wb-select v-model="subData.table" filterable @on-change="tableValueChange">
+                    <wb-option v-for="(item,index) in tableList" :key="index" :value="item" />
                     <Loading v-show="table_loading" size="16px" class="loading-position" />
                 </Wb-select>
             </Form-item>
@@ -70,7 +70,7 @@ export default {
             showSelect: false,
             optionIndex: '',
             alias: [],
-            tableNameContact: {},
+            tableNameContact: {}
         }
     },
     watch: {
@@ -108,15 +108,7 @@ export default {
             this.$emit('dbSeleted', val);
         },
         tableValueChange(val) {
-            
             this.$emit('tableValueChange', val);
-        },
-        filterSearch(val) {
-            if (val) {
-                if (!this.tableList.some(item => item.includes(val))) {
-                    this.$emit('tablesAddInputValue', val);
-                }
-            }
         }
     }
 }
