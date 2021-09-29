@@ -11,7 +11,7 @@ public interface DataSourceUIGetter {
     List<ExchangisDataSourceUIViewer> getJobDataSourceUIs(Long jobId);
 
     // 在新建 Job 的时候，右侧需要根据选择的数据源类型来获取参数设置项
-    List<ElementUI> getDataSourceParamsUI(String dsType);
+    List<ElementUI> getDataSourceParamsUI(String dsType, String dir);
 
     // 在新建 Job 的时候，右侧需要根据选择的引擎类型来获取参数设置项
     List<ElementUI> getJobEngineSettingsUI(String engineType);
