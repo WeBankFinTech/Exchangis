@@ -1,7 +1,10 @@
 package com.webank.wedatasphere.exchangis.job.server.dto;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import com.webank.wedatasphere.exchangis.job.enums.JobTypeEnum;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExchangisJobBasicInfoDTO {
 
     private Long projectId;

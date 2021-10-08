@@ -25,7 +25,9 @@
           <a-select
             v-model:value="sqlSource"
             style="width: 120px"
-            :options="sqlList.map((sqlSource) => ({ value: sqlSource }))"
+            :options="
+              sqlList.map((sql) => ({ value: sql.value, label: sql.name }))
+            "
             @change="handleChangeSql"
           >
           </a-select>
@@ -35,8 +37,6 @@
       <div class="sds-wrap-b">
         <a-directory-tree
           :tree-data="treeData"
-          v-model:expandedKeys="expandedKeys"
-          v-model:selectedKeys="selectedKeys"
           @select="selectItem"
         ></a-directory-tree>
       </div>
@@ -45,41 +45,8 @@
 </template>
 
 <script>
-import { SQLlist, dbs, tables } from "../mock";
-// const dataBaseTypes = ["Hive", "HBase"];
-// const colonyData = {
-//   Hive: ["A集群", "B集群", "C集群"],
-//   HBase: ["D集群", "E集群", "F集群"],
-// };
-// const tables = {
-//   Hive: [
-//     {
-//       title: "default",
-//       key: "default",
-//       selectable: false,
-//       children: [
-//         { title: "a1", key: "default-a1" },
-//         { title: "test_table", key: "default-test_table" },
-//       ],
-//     },
-//     { title: "db_test_mask", selectable: false, key: "db_test_mask" },
-//     { title: "db_test_mask1", selectable: false, key: "db_test_mask1" },
-//     { title: "db_test_mask2", selectable: false, key: "db_test_mask2" },
-//   ],
-//   MYSQL: [
-//     {
-//       title: "default2",
-//       key: "default2",
-//       children: [
-//         { title: "a2", key: "a2" },
-//         { title: "test_table2", key: "test_table2" },
-//       ],
-//     },
-//     { title: "db_test_mask3", key: "db_test_mask3" },
-//     { title: "db_test_mask4", key: "db_test_mask4" },
-//     { title: "db_test_mask5", key: "db_test_mask5" },
-//   ],
-// };
+//import { SQLlist, dbs, tables } from "../mock";
+import { getDataSourceTypes, getDBs, getTables } from "@/common/service";
 import {
   defineComponent,
   reactive,
@@ -88,6 +55,7 @@ import {
   watch,
   ref,
   toRaw,
+  onMounted,
 } from "vue";
 
 export default defineComponent({
@@ -96,65 +64,97 @@ export default defineComponent({
   },
   emits: ["updateDsInfo"],
   setup(props, context) {
-    // 数据源
+    let SQLlist, treeData;
     const sqlList = [];
-    SQLlist.forEach((sql) => {
-      sqlList.push(sql.name);
-    });
-    const handleChangeSql = (sql) => {
-      const tree = createTree(sql, dbs, tables);
-      console.log(tree);
-      state.treeData = tree;
-    };
     const state = reactive({
-      sqlSource: sqlList[0],
+      sqlSource: sqlList.length ? sqlList[0].value : "",
       sqlList,
       defaultSelect: props.title,
       treeData,
+      id: "",
     });
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.title)));
+    watch(newProps, (val, oldVal) => {
+      state.defaultSelect = val;
+    });
+    async function init() {
+      SQLlist = (await getDataSourceTypes()).list;
+      // 数据源
+      SQLlist.forEach((sql) => {
+        sqlList.push({
+          name: sql.option,
+          value: sql.name,
+          id: sql.id,
+        });
+      });
+      if (state.sqlSource) await createTree(state.sqlSource);
+    }
+    init();
+    const handleChangeSql = async (sql) => {
+      createTree(sql, () => {
+        state.treeData = treeData;
+        const cur = sqlList.filter((item) => {
+          return item.value === sql;
+        })[0];
+        state.id = cur.id;
+      });
+    };
     // 创建 db & tables tree
-    const createTree = (sql, dbs, tables) => {
-      console.log(sql);
+    const createTree = async (sql, cb) => {
+      if (!sql) return;
       const tree = [];
       // 这里 根据数据源请求 dbs
-      dbs.forEach((db) => {
+      const cur = sqlList.filter((item) => {
+        return item.value === sql;
+      })[0];
+      let dbs = (await getDBs(cur.value, cur.id)).dbs;
+      let promises = [];
+      dbs.forEach((db, index) => {
         const o = Object.create(null);
         o.selectable = false;
         o.title = db;
         o.key = db;
         o.children = [];
-
-        // 这里 根据数据源和db请求 tables
-        tables.forEach((table) => {
-          const oo = Object.create(null);
-          oo.title = table;
-          oo.key = `${db}-${table}`;
-          o.children.push(oo);
-        });
-
-        tree.push(o);
+        promises.push(
+          new Promise((resolve, reject) => {
+            getTables(cur.value, cur.id, db).then((res) => {
+              let tables = res.tbs || [];
+              tables.forEach((table) => {
+                const oo = Object.create(null);
+                oo.title = table;
+                oo.key = `${db}-${table}`;
+                o.children.push(oo);
+              });
+              tree.push(o);
+              resolve();
+            });
+          })
+        );
       });
-      return tree;
+      Promise.all(promises)
+        .then((result) => {
+          treeData = tree;
+          cb && cb();
+        })
+        .catch((error) => {
+          console.log(error);
+          treeData = "";
+          cb && cb();
+        });
     };
     const visible = ref(false);
     const showModal = () => {
       visible.value = true;
     };
-    const treeData = createTree(state.sqlSource, dbs, tables);
-    const expandedKeys = ref([]);
-    const selectedKeys = ref();
     const selectItem = (e) => {
-      let _defaultSelect = `${sqlSource}-${e.join("")}`;
-      state.defaultSelect = _defaultSelect;
+      state.defaultSelect = `${state.sqlSource}-${e.join("")}`;
     };
     const handleOk = () => {
       visible.value = false;
-      context.emit("updateDsInfo", state.defaultSelect);
+      context.emit("updateDsInfo", state.defaultSelect, state.id);
     };
     return {
       ...toRefs(state),
-      expandedKeys,
-      selectedKeys,
       selectItem,
       visible,
       showModal,
@@ -162,15 +162,6 @@ export default defineComponent({
       sqlList,
       handleChangeSql,
     };
-  },
-  watch: {
-    title: {
-      handler: function (newVal) {
-        console.log("watch props");
-        this.props = newVal;
-      },
-      deep: true,
-    },
   },
 });
 </script>

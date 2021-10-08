@@ -1,11 +1,11 @@
-package com.webank.wedatasphere.exchangis.job.domain;
+package com.webank.wedatasphere.exchangis.job.datax.domain;
 
 import java.util.List;
 import java.util.Map;
 
-public class LaunchTask {
+public class LaunchCode {
 
-    private List content;
+    private List<Content> content;
 
     private Map settings;
 
@@ -24,5 +24,4 @@ public class LaunchTask {
     public void setSettings(Map settings) {
         this.settings = settings;
     }
-
 }

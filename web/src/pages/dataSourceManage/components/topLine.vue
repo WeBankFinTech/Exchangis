@@ -1,17 +1,17 @@
 <template>
   <div class="top-line">
     <span>
-      <a-select @change="changeType" style="width: 120px" :allowClear="true" :placeholder="$t('dataSource.topLine.searchBar.dataTypePlaceholder')">
-        <a-select-option v-for="item of sourceTypeList" :value="item.id" :key="item.id">{{ item.name }}</a-select-option>
+      <a-select v-model:value="seartParams.typeId" @change="changeType" style="width: 140px" :allowClear="true" :placeholder="$t('dataSource.topLine.searchBar.dataTypePlaceholder')">
+        <a-select-option v-for="item of sourceTypeList" :value="Number(item.id)" :key="item.id">{{ item.name }}</a-select-option>
       </a-select>
-      <a-input @change="changeName" style="width: 120px" :placeholder="$t('dataSource.topLine.searchBar.namePlaceholder')" />
-      <a-button type="primary" @click="$emit('search', seartParams)">
+      <a-input v-model:value="seartParams.name" style="width: 220px" :placeholder="$t('dataSource.topLine.searchBar.namePlaceholder')" />
+      <a-button :loading="loading" type="primary" @click="$emit('search', seartParams)">
         <template v-slot:icon> <icon-searchOutlined /></template>
         {{ $t("dataSource.topLine.searchBar.searchButtonText") }}
       </a-button>
     </span>
     <a-space>
-      <a-button type="primary" @click="$emit('create')">
+      <a-button :loading="loading" type="primary" @click="$emit('create')">
         <template v-slot:icon> <icon-plusOutlined /></template>
         {{ $t("dataSource.topLine.createDataSourceButton") }}
       </a-button>
@@ -31,24 +31,15 @@ export default {
     iconImportOutlined: ImportOutlined,
     iconSearchOutlined: SearchOutlined,
   },
-  props: ["sourceTypeList"],
+  props: ["sourceTypeList", "loading"],
   emits: ["search", "export", "import", "create"],
   data() {
     return {
       seartParams: {
-        typeId: "",
+        typeId: undefined,
         name: "",
       },
-      typeOptions: [],
     };
-  },
-  methods: {
-    changeName(val) {
-      this.seartParams.name = val.target.value;
-    },
-    changeType(val) {
-      this.seartParams.typeId = Number(val);
-    },
   },
 };
 </script>
