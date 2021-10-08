@@ -1,13 +1,25 @@
 <template>
   <a-card class="view-card" size="small" bordered>
-    <template v-slot:title> <icon-apartment-outlined style="color: #1890ff" /> {{ name }} </template>
+    <template v-slot:title>
+      <router-link :to="`/jobManagement?id=${id}&name=${name}`">
+        <div class="title">
+          <icon-apartment-outlined style="color: #1890ff" /> {{ name }}
+        </div>
+      </router-link>
+    </template>
     <template v-slot:extra>
       <a-dropdown placement="bottomCenter" trigger="click">
-        <a class="ant-dropdown-link"> {{ $t("projectManage.viewCard.actionTitle") }} </a>
+        <a class="ant-dropdown-link">
+          {{ $t('projectManage.viewCard.actionTitle') }}
+        </a>
         <template v-slot:overlay>
           <a-menu>
-            <a-menu-item @click="$emit('edit', id)"> {{ $t("projectManage.viewCard.action.edit") }} </a-menu-item>
-            <a-menu-item @click="$emit('delete', id)"> {{ $t("projectManage.viewCard.action.delete") }} </a-menu-item>
+            <a-menu-item @click="$emit('edit', id)">
+              {{ $t('projectManage.viewCard.action.edit') }}
+            </a-menu-item>
+            <a-menu-item @click="$emit('delete', id)">
+              {{ $t('projectManage.viewCard.action.delete') }}
+            </a-menu-item>
           </a-menu>
         </template>
       </a-dropdown>
@@ -22,9 +34,11 @@
 </template>
 
 <script>
-import { ApartmentOutlined } from "@ant-design/icons-vue";
+import { ApartmentOutlined } from '@ant-design/icons-vue';
+import { useRouter } from '@fesjs/fes';
+const router = useRouter();
 export default {
-  name: "ProjectViewCard",
+  name: 'ProjectViewCard',
   components: {
     iconApartmentOutlined: ApartmentOutlined,
   },
@@ -37,12 +51,12 @@ export default {
     name: {
       type: String,
       required: true,
-      default: "",
+      default: '',
     },
     // 项目描述
     describe: {
       type: String,
-      default: "",
+      default: '',
     },
     // tag
     tags: {
@@ -50,11 +64,17 @@ export default {
       default: [],
     },
   },
-  emits: ["delete", "edit"],
+  emits: ['delete', 'edit'],
 };
 </script>
 
 <style scoped lang="less">
+.title {
+  cursor: pointer;
+  &:hover {
+    color: #1890ff;
+  }
+}
 .view-card {
   height: 180px;
 }

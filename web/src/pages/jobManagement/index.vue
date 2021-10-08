@@ -1,17 +1,28 @@
 <template>
   <div class="content">
+    <div class="projectNav">
+      <img class="img" src="../../images/u32.svg" />
+      <router-link to="/projectManage"
+        ><div class="link">{{ t('projectManage.topLine.title') }}</div></router-link
+      >
+      <div class="divider">/</div>
+      <div class="name">{{ name }}</div>
+    </div>
     <div class="navWrap">
       <div @click="() => changeTab({})" class="listTitle">
-        <UnorderedListOutlined />任务列表
+        <UnorderedListOutlined />{{ t('job.list') }}
       </div>
       <div class="divider"></div>
-      <div
-        v-for="(item, index) in tabs"
-        :key="index"
-        :class="{ detailTitle: true, choosed: item.id === activeTabId }"
-        @click="() => changeTab(item)"
-      >
-        <ClusterOutlined />{{ item.jobName }}
+      <div class="titleWrap" v-for="(item, index) in tabs" :key="index">
+        <div
+          :class="{ detailTitle: true, choosed: item.id === activeTabId }"
+          @click="() => changeTab(item)"
+        >
+          <ClusterOutlined />
+          <a-tooltip :title="item.jobName">
+            <div class="jobNameWrap">{{ item.jobName }}</div>
+          </a-tooltip>
+        </div>
         <div class="closeIcon" @click="() => deleteTab(item)">
           <CloseOutlined />
         </div>
@@ -22,55 +33,38 @@
   </div>
 </template>
 <script>
-import { toRaw } from "vue";
-import JobList from "./components/jobList.vue";
-import JobDetail from "./components/jobDetail.vue";
+import { toRaw } from 'vue';
+import JobList from './components/jobList.vue';
+import JobDetail from './components/jobDetail.vue';
+import { useI18n } from '@fesjs/fes';
 import {
   UnorderedListOutlined,
   ClusterOutlined,
   CloseOutlined,
-} from "@ant-design/icons-vue";
+} from '@ant-design/icons-vue';
 export default {
   components: {
     JobList,
     JobDetail,
     UnorderedListOutlined,
     ClusterOutlined,
-    CloseOutlined
+    CloseOutlined,
   },
   data() {
+    const { t } = useI18n({ useScope: 'global' });
     return {
-      name: "jobManagement11",
-      choosedTab: "jobList",
-      activeTabId: "",
-      curTab: "",
-      tabs: [
-        {
-          id: 1, // 任务id
-          projectId: 1, // 所属项目id
-          jobName: "任务名1",
-          jobType: "OFFLINE",
-          engineType: "DataX", // 执行引擎
-          jobLabels: "renwu, hello, hello",
-          jobDesc: "任务描述",
-        },
-        {
-          id: 2, // 任务id
-          projectId: 1, // 所属项目id
-          jobName: "任务名2",
-          jobType: "STREAM",
-          engineType: "Sqoop", // 执行引擎
-          jobLabels: "renwu, hello, hello",
-          jobDesc:
-            "任务描述ets how a flex item will grow or shrink to fit the space available in itsets how a flex item will grow or shrink to fit the space available in its",
-        },
-      ],
+      t,
+      name: this.$route.query.name,
+      choosedTab: 'jobList',
+      activeTabId: '',
+      curTab: '',
+      tabs: [],
     };
   },
-  mounted() {
-    console.log("mounted");
-  },
   methods: {
+    async getJobs(type='OFFLINE') {
+      this.tabs = (await getJobs(this.$route.query.id, type)).result
+    },
     showJobDetail(data) {
       data = toRaw(data);
       console.log(data);
@@ -79,12 +73,13 @@ export default {
         tabs.push(data);
       }
       this.activeTabId = data.id;
+      this.curTab = data
       this.tabs = tabs;
     },
     changeTab(data) {
       data = toRaw(data);
       console.log(data);
-      this.curTab = data
+      this.curTab = data;
       this.activeTabId = data.id;
     },
     deleteTab(data) {
@@ -96,7 +91,7 @@ export default {
       }
       this.activeTabId = undefined;
       this.tabs = tabs;
-    }
+    },
   },
 };
 </script>
@@ -104,14 +99,43 @@ export default {
 .content {
   box-sizing: border-box;
 }
+.projectNav {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 15px;
+  margin-top: 10px;
+  .img {
+    width: 25px;
+  }
+  .link {
+    color: #000000;
+    font-size: 16px;
+    margin-left: 10px;
+    cursor: pointer;
+    &:hover {
+      color: #1890ff;
+    }
+  }
+  .divider{
+    color: #949494;
+    padding: 0px 10px;
+  }
+  .name{
+    color: #333333;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
 .navWrap {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   padding-left: 15px;
+  margin-top: 15px;
   .listTitle {
-    font-family: "Arial Negreta", "Arial Normal", "Arial";
-    font-weight: 700;
+    font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+    font-weight: 600;
     font-style: normal;
     font-size: 16px;
     cursor: pointer;
@@ -123,20 +147,31 @@ export default {
     margin-left: 20px;
     margin-right: 20px;
   }
-  .detailTitle {
-    width: 120px;
-    height: 35px;
-    font-family: "Arial Negreta", "Arial Normal", "Arial";
-    font-weight: 700;
-    font-style: normal;
-    font-size: 14px;
-    color: #000000;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding-left: 5px;
+  .titleWrap {
     position: relative;
-    cursor: pointer;
+    .detailTitle {
+      height: 35px;
+      font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+      font-weight: 600;
+      font-style: normal;
+      font-size: 14px;
+      color: #000000;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding-left: 5px;
+      padding-right: 10px;
+      cursor: pointer;
+    }
+    .choosed {
+      background: #fff;
+    }
+    .jobNameWrap {
+      width: 100px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
     .closeIcon {
       position: absolute;
       top: 2px;
@@ -146,9 +181,6 @@ export default {
       font-size: 12px;
       font-weight: 700;
     }
-  }
-  .choosed {
-    background: #fff;
   }
 }
 </style>
