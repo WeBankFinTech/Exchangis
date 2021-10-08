@@ -140,9 +140,7 @@ export default defineComponent({
     const showModal = () => {
       visible.value = true;
     };
-    const treeData = computed(() => {
-      return createTree(state.sqlSource, dbs, tables);
-    });
+    const treeData = createTree(state.sqlSource, dbs, tables);
     const expandedKeys = ref([]);
     const selectedKeys = ref();
     const selectItem = (e) => {
