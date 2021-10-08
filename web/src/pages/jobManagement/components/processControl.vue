@@ -3,7 +3,7 @@
     <!-- left -->
     <div class="ps-l">
       <div class="main-header">
-        <span class="main-header-label">过程控制</span>
+        <span class="main-header-label" @click="showInfo">过程控制</span>
       </div>
     </div>
     <!-- right -->
@@ -14,7 +14,7 @@
         </div>
       </div>
 
-      <div class="main-content">
+      <div class="main-content" v-if="isFold">
         <a-form ref="formRef">
           <!-- 动态组件 -->
           <a-form-item
@@ -52,14 +52,14 @@ export default defineComponent({
   setup(props, context) {
     const formRef = ref();
     let settingData = reactive({
-      psData: toRaw(props.psData)
-    })
+      psData: toRaw(props.psData),
+    });
 
-    const newProps = computed(() => JSON.parse(JSON.stringify(props.psData)))
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.psData)));
     watch(newProps, (val, oldVal) => {
-      settingData.psData = typeof val === 'string' ? JSON.parse(val): val
-      console.log(val, 123)
-    })
+      settingData.psData = typeof val === "string" ? JSON.parse(val) : val;
+      console.log(val, 123);
+    });
     const updateSettingParams = (info) => {
       const _settingParams = toRaw(settingData.psData).slice(0);
       _settingParams.forEach((item) => {
@@ -71,12 +71,18 @@ export default defineComponent({
       console.log("sourceParams", settingData.psData);
       context.emit("updateProcessControl", settingData.psData);
     };
+    let isFold = ref(true);
+    const showInfo = () => {
+      isFold.value = !isFold.value;
+    };
     return {
       formRef,
       settingData,
       updateSettingParams,
+      isFold,
+      showInfo,
     };
-  }
+  },
 });
 </script>
 
