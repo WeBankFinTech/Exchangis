@@ -2,16 +2,15 @@
   <div class="content">
     <a-spin :spinning="loading">
       <a-row :gutter="[16, 16]">
-        <!-- 搜索行 -->
         <a-col :span="24">
           <div class="title-line">
             <span class="title">
               <a-typography-title :level="5" style="margin-bottom: 0">{{ $t("projectManage.topLine.title") }}</a-typography-title>
             </span>
-            <a-input-search :placeholder="$t('projectManage.topLine.searchBar.searchInputPlaceholder')" :allowClear="true" style="width: 300px" @search="handleOnSearch">
+            <a-input-search :loading="loading" :placeholder="$t('projectManage.topLine.searchBar.searchInputPlaceholder')" :allowClear="true" style="width: 300px" @search="handleOnSearch">
               <template #enterButton>
                 <a-button type="primary">
-                  <template #icon> <icon-plusOutlined /></template>
+                  <template #icon> <icon-searchOutlined /></template>
                   {{ $t("projectManage.topLine.searchBar.searchButtonText") }}
                 </a-button>
               </template>
@@ -39,17 +38,18 @@
 
 <script>
 import { useI18n } from "@fesjs/fes";
-import { PlusOutlined } from "@ant-design/icons-vue";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons-vue";
 import ProjectCreateCard from "./components/projectCreateCard.vue";
 import ProjectViewCard from "./components/projectViewCard.vue";
 import EditModal from "./components/editModal.vue";
 import { getProjectList, deleteProject } from "@/common/service";
+import { message } from "ant-design-vue";
 export default {
   components: {
     ProjectViewCard,
     ProjectCreateCard,
     EditModal,
-    iconPlusOutlined: PlusOutlined,
+    iconSearchOutlined: SearchOutlined,
   },
   data() {
     return {
@@ -109,6 +109,7 @@ export default {
     // 删除项目
     async handleOnDelteProject(id) {
       await deleteProject(id);
+      message.success("删除成功");
       this.getDataList();
     },
     // 编辑项目

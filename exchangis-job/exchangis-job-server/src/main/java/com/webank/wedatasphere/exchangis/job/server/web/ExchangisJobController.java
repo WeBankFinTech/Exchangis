@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
-import com.webank.wedatasphere.exchangis.job.builder.DataXJobBuilder;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilder;
+import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
@@ -35,12 +35,18 @@ public class ExchangisJobController {
     @Autowired
     private ExchangisJobService exchangisJobService;
 
+    @Autowired
+
     @GET
     @Path("/testbuildjob")
-    public Message testbuildjob() {
-        ExchangisJobBuilder jobbuilder = new DataXJobBuilder();
+    public Message testbuildjob() throws Exception {
+        ExchangisJobBuilder jobbuilder = ExchangisJobBuilderManager.getJobBuilder(EngineTypeEnum.DATAX);
         ExchangisJob job = new ExchangisJob();
-        job.setContent("[{\"subjobName\":\"subjob1\",\"dataSources\":{\"source_id\":\"HIVE.10001.db_test.table_test\",\"sink_id\":\"MYSQL.10002.db_mask.table_mask\"},\"params\":{\"sources\":[{\"config_key\":\"exchangis.job.hive.transform_type\",\"config_name\":\"传输方式\",\"config_value\":\"二进制\",\"sort\":1},{\"config_key\":\"exchangis.job.hive.partition\",\"config_name\":\"分区信息\",\"config_value\":\"2021-08-17\",\"sort\":2}],\"sinks\":[{\"config_key\":\"exchangis.job.mysql.write_type\",\"config_name\":\"写入方式\",\"config_value\":\"insert\",\"sort\":1},{\"config_key\":\"exchangis.job.mysql.batch_size\",\"config_name\":\"批量大小\",\"config_value\":1000,\"sort\":2}]},\"transforms\":{\"type\":\"SQL|MAPPING\",\"sql\":\"\",\"mapping\":[{\"source_field_name\":\"field1\",\"source_field_type\":\"varchar\",\"sink_field_name\":\"field2\",\"sink_field_type\":\"varchar\",\"validator\":[\">100\",\"<200\"],\"transformer\":{\"name\":\"ex_substr\",\"params\":[\"1\",\"3\"]}},{\"source_field_name\":\"field3\",\"source_field_type\":\"varchar\",\"sink_field_name\":\"field4\",\"sink_field_type\":\"varchar\",\"validator\":[\"like'%example'\"],\"transformer\":{\"name\":\"ex_replace\",\"params\":[\"1\",\"3\",\"***\"]}}]},\"settings\":[{\"config_key\":\"errorlimit_percentage\",\"config_name\":\"脏数据占比阈值\",\"config_value\":\"insert\",\"sort\":1},{\"config_key\":\"errorlimit_record\",\"config_name\":\"脏数据最大记录数\",\"config_value\":\"10\",\"sort\":2}]}]");
+        job.setContent("[{\"subjobName\":\"subjob1\",\"dataSources\":{\"source_id\":\"MYSQL.10002.db_mask.table_source\",\"sink_id\":\"MYSQL.10002.db_mask.table_sink\"},\"params\":{\"sources\":[{\"config_key\":\"exchangis.job.mysql.write_type\",\"config_name\":\"写入方式\",\"config_value\":\"insert\",\"sort\":1},{\"config_key\":\"exchangis.job.mysql.batch_size\",\"config_name\":\"批量大小\",\"config_value\":1000,\"sort\":2}],\"sinks\":[{\"config_key\":\"exchangis.job.mysql.write_type\",\"config_name\":\"写入方式\",\"config_value\":\"insert\",\"sort\":1},{\"config_key\":\"exchangis.job.mysql.batch_size\",\"config_name\":\"批量大小\",\"config_value\":1000,\"sort\":2}]},\"transforms\":{\"type\":\"MAPPING\",\"sql\":\"\",\"mapping\":[{\"source_field_name\":\"field1\",\"source_field_type\":\"varchar\",\"sink_field_name\":\"field2\",\"sink_field_type\":\"varchar\",\"validator\":[\">100\",\"<200\"],\"transformer\":{\"name\":\"ex_substr\",\"params\":[\"1\",\"3\"]}},{\"source_field_name\":\"field3\",\"source_field_type\":\"varchar\",\"sink_field_name\":\"field4\",\"sink_field_type\":\"varchar\",\"validator\":[\"like'%example'\"],\"transformer\":{\"name\":\"ex_replace\",\"params\":[\"1\",\"3\",\"***\"]}}]},\"settings\":[{\"config_key\":\"errorlimit_percentage\",\"config_name\":\"脏数据占比阈值\",\"config_value\":\"insert\",\"sort\":1},{\"config_key\":\"errorlimit_record\",\"config_name\":\"脏数据最大记录数\",\"config_value\":\"10\",\"sort\":2}]}]");
+        job.setEngineType("datax");
+        job.setCreateUser("IDE");
+        job.setProxyUser("hadoop");
+        job.setId(1L);
         jobbuilder.buildJob(job);
 
         return Message.ok().data("result", EngineTypeEnum.values());
@@ -101,12 +107,44 @@ public class ExchangisJobController {
         return Message.ok().data("result", job);
     }
 
-    @POST
-    @Path("/{id}/save")
-    public Message saveJobConfigAndSubjobs(@PathParam("id") Long id,
-                                           @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException {
-        ExchangisJob exchangisJob = exchangisJobService.updateJob(exchangisJobContentDTO, id);
+    @PUT
+    @Path("/{id}/config")
+    public Message saveJobConfig(@PathParam("id") Long id,
+                                 @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException {
+        ExchangisJob exchangisJob = exchangisJobService.updateJobConfig(exchangisJobContentDTO, id);
         return Message.ok().data("result", exchangisJob);
     }
+
+    @PUT
+    @Path("/{id}/content")
+    public Message saveSubjobs(@PathParam("id") Long id,
+                               @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException {
+        ExchangisJob exchangisJob = exchangisJobService.updateJobContent(exchangisJobContentDTO, id);
+        return Message.ok().data("result", exchangisJob);
+    }
+
+//    @POST
+//    @Path("/{id}/save")
+//    public Message saveJobConfigAndSubjobs(@PathParam("id") Long id,
+//                                           @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException {
+//        ExchangisJob exchangisJob = exchangisJobService.updateJob(exchangisJobContentDTO, id);
+//        return Message.ok().data("result", exchangisJob);
+//    }
+
+//    @POST
+//    @Path("/{id}")
+//    public Message executeJob(@PathParam("id") Long id) throws Exception {
+//        ExchangisJob job = exchangisJobService.getJob(id);
+//        ExchangisJobBuilder jobBuiler =
+//            ExchangisJobBuilderManager.getJobBuilder(EngineTypeEnum.valueOf(job.getEngineType()));
+//        ExchangisLaunchTask[] exchangisLaunchTasks = jobBuiler.buildJob(job);
+//
+//        List<ExchangisLaunchTask> launchTaskList = Arrays.asList(exchangisLaunchTasks);
+//        exchangisLaunchTaskService.saveBatch(launchTaskList);
+//
+//        LinkisExchangisJobLanuncher jobLanuncher = new LinkisExchangisJobLanuncher();
+//        launchTaskList.forEach(launchTask -> jobLanuncher.launch(launchTask));
+//        return Message.ok();
+//    }
 
 }

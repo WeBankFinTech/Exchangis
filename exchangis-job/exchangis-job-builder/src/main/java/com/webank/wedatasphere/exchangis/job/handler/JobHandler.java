@@ -6,7 +6,7 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
 
 public interface JobHandler {
 
-    Reader handlerReader(ExchangisSubJob job);
+    void handleReader(ExchangisSubJob job, Long jobId, Reader reader);
 
-    Writer handlerWriter(ExchangisSubJob job);
+    void handleWriter(ExchangisSubJob job, Long jobId, Writer writer);
 }
