@@ -3,7 +3,7 @@
     <!-- left -->
     <div class="fm-l">
       <div class="main-header">
-        <span class="main-header-label">字段映射</span>
+        <span class="main-header-label" @click="showInfo">字段映射</span>
       </div>
     </div>
     <!-- right -->
@@ -17,8 +17,11 @@
         </div>
       </div>
 
-      <div class="main-content">
-        <div style="margin-bottom: 15px" v-if="fieldsSource.length && fieldsSink.length">
+      <div class="main-content" v-if="isFold">
+        <div
+          style="margin-bottom: 15px"
+          v-if="fieldsSource.length && fieldsSink.length"
+        >
           <a-button type="dashed" @click="addTableRow">新增</a-button>
         </div>
         <!-- left -->
@@ -110,7 +113,7 @@ export default defineComponent({
   props: {
     fmData: Object,
     fieldsSource: Array,
-    fieldsSink: Array
+    fieldsSink: Array,
   },
   emits: ["updateFieldMap"],
   components: {
@@ -120,41 +123,39 @@ export default defineComponent({
     const { type } = props.fmData;
 
     let fieldMap = reactive({
-      sourceDS : [],
+      sourceDS: [],
       sinkDS: [],
-      transformerList: []
-    })
+      transformerList: [],
+    });
 
-    const newProps = computed(() => JSON.parse(JSON.stringify(props.fmData)))
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.fmData)));
     watch(newProps, (val, oldVal) => {
-      const newVal = typeof val === 'string' ? JSON.parse(val): val
-      createDataSource(
-        toRaw(newVal).mapping || []
-      )
-    })
+      const newVal = typeof val === "string" ? JSON.parse(val) : val;
+      createDataSource(toRaw(newVal).mapping || []);
+    });
 
     const createFieldOptions = (fieldInfo) => {
       const fieldOptions = [];
       if (fieldInfo) {
-        const fieldList = toRaw(fieldInfo)
+        const fieldList = toRaw(fieldInfo);
         fieldList.forEach((info) => {
           const o = Object.create(null);
           o.value = info.name;
           o.label = info.name;
           o.type = info.type;
           fieldOptions.push(o);
-        })
+        });
       }
       return fieldOptions;
     };
 
     // crate dataSource
     const createDataSource = (map) => {
-      fieldMap.sourceDS = []
-      fieldMap.sinkDS = []
-      fieldMap.transformerList = []
+      fieldMap.sourceDS = [];
+      fieldMap.sinkDS = [];
+      fieldMap.transformerList = [];
       if (typeof map !== "object") {
-        return
+        return;
       }
 
       map.forEach((item, idx) => {
@@ -179,11 +180,9 @@ export default defineComponent({
         fieldMap.transformerList.push(transformerItem);
         fieldMap.sourceDS.push(sourceItem);
         fieldMap.sinkDS.push(sinkItem);
-      })
+      });
     };
-    createDataSource(
-      toRaw(props.fmData).mapping || []
-    )
+    createDataSource(toRaw(props.fmData).mapping || []);
 
     console.log("sourceDS", fieldMap);
 
@@ -223,7 +222,11 @@ export default defineComponent({
       _transformerList.push(res);
       fieldMap.transformerList = _transformerList;
 
-      const transforms = createTransforms(fieldMap.sourceDS, fieldMap.sinkDS, fieldMap.transformerList);
+      const transforms = createTransforms(
+        fieldMap.sourceDS,
+        fieldMap.sinkDS,
+        fieldMap.transformerList
+      );
       context.emit("updateFieldMap", transforms);
     };
 
@@ -231,36 +234,43 @@ export default defineComponent({
       const { key, fieldOptions } = info;
       fieldMap.sourceDS.forEach((item) => {
         if (item.key == key) {
-          item.fieldName = e
-          fieldOptions.forEach(field => {
+          item.fieldName = e;
+          fieldOptions.forEach((field) => {
             if (field.value === item.fieldName) {
-              item.fieldType = field.type
+              item.fieldType = field.type;
             }
-          })
-          return
+          });
+          return;
         }
       });
 
-      const transforms = createTransforms(fieldMap.sourceDS, fieldMap.sinkDS, fieldMap.transformerList);
+      const transforms = createTransforms(
+        fieldMap.sourceDS,
+        fieldMap.sinkDS,
+        fieldMap.transformerList
+      );
       context.emit("updateFieldMap", transforms);
     };
-
 
     const updateSinkFieldName = (info, e) => {
       const { key, fieldOptions } = info;
       fieldMap.sinkDS.forEach((item) => {
         if (item.key == key) {
-          item.fieldName = e
-          fieldOptions.forEach(field => {
+          item.fieldName = e;
+          fieldOptions.forEach((field) => {
             if (field.value === item.fieldName) {
-              item.fieldType = field.type
+              item.fieldType = field.type;
             }
-          })
-          return
+          });
+          return;
         }
       });
 
-      const transforms = createTransforms(fieldMap.sourceDS, fieldMap.sinkDS, fieldMap.transformerList);
+      const transforms = createTransforms(
+        fieldMap.sourceDS,
+        fieldMap.sinkDS,
+        fieldMap.transformerList
+      );
       context.emit("updateFieldMap", transforms);
     };
 
@@ -291,6 +301,10 @@ export default defineComponent({
       fieldMap.sourceDS.push(sourceItem);
       fieldMap.sinkDS.push(sinkItem);
     };
+    let isFold = ref(true);
+    const showInfo = () => {
+      isFold.value = !isFold.value;
+    };
 
     return {
       type,
@@ -317,8 +331,10 @@ export default defineComponent({
       updateSourceFieldName,
       updateSinkFieldName,
       addTableRow,
+      isFold,
+      showInfo,
     };
-  }
+  },
 });
 </script>
 
