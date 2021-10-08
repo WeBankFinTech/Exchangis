@@ -3,7 +3,7 @@
     <!-- left -->
     <div class="ds-l">
       <div class="main-header">
-        <span class="main-header-label">数据源</span>
+        <span class="main-header-label" @click="showInfo">数据源</span>
       </div>
     </div>
     <!-- right -->
@@ -17,12 +17,17 @@
         </div>
       </div>
 
-      <div class="main-content">
+      <div class="main-content" v-if="isFlod">
         <!-- left -->
         <div class="data-source-warp-l">
           <div class="data-source-warp-l-content">
             <a-form ref="formRef">
-              <a-form-item label="数据源信息" name="dsInfo" width="300" class="source-title">
+              <a-form-item
+                label="数据源信息"
+                name="dsInfo"
+                width="300"
+                class="source-title"
+              >
                 <SelectDataSource
                   @updateDsInfo="updateSourceInfo"
                   v-bind:title="sourceTitle"
@@ -56,7 +61,12 @@
         <div class="data-source-warp-r">
           <div class="data-source-warp-r-content">
             <a-form ref="formRef">
-              <a-form-item ref="dsInfo2" label="数据源信息" name="dsInfo2" class="source-title">
+              <a-form-item
+                ref="dsInfo2"
+                label="数据源信息"
+                name="dsInfo2"
+                class="source-title"
+              >
                 <SelectDataSource
                   @updateDsInfo="updateSinkInfo"
                   :title="sinkTitle"
@@ -87,13 +97,18 @@ import { RightCircleOutlined } from "@ant-design/icons-vue";
 import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
 import SelectDataSource from "./selectDataSource";
 import DyncRender from "./dyncRender.vue";
-import { getSourceParams, getSettingsParams } from "@/common/service"
+import { getSourceParams, getSettingsParams } from "@/common/service";
 
 export default defineComponent({
   props: {
     dsData: Object,
   },
-  emits: ["updateSourceInfo", "updateSinkInfo", "updateSourceParams", "updateSinkParams"],
+  emits: [
+    "updateSourceInfo",
+    "updateSinkInfo",
+    "updateSourceParams",
+    "updateSinkParams",
+  ],
   components: {
     SelectDataSource,
     DyncRender,
@@ -102,39 +117,39 @@ export default defineComponent({
   setup(props, context) {
     // 对象转标题
     const objToTitle = function (obj) {
-      if (typeof obj !== "object") return ""
+      if (typeof obj !== "object") return "";
       const { type, db, table } = obj;
       return `${type}-数据源-${db}.${table}`;
     };
 
-    let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source))
-    let sinkTitle = ref(objToTitle(props.dsData.dataSourceIds.sink))
-
+    let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source));
+    let sinkTitle = ref(objToTitle(props.dsData.dataSourceIds.sink));
+    let isFlod = ref(true);
     const dataSource = reactive({
       dataSourceIds: {
-        source: props.dsData.dataSourceIds.source  || {},
-        sink: props.dsData.dataSourceIds.sink || {}
+        source: props.dsData.dataSourceIds.source || {},
+        sink: props.dsData.dataSourceIds.sink || {},
       },
       params: {
         sources: props.dsData.params.sources || [],
-        sinks: props.dsData.params.sinks || []
-      }
-    })
+        sinks: props.dsData.params.sinks || [],
+      },
+    });
 
-    const newProps = computed(() => JSON.parse(JSON.stringify(props.dsData)))
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.dsData)));
     watch(newProps, (val, oldVal) => {
-      const newVal = typeof val === 'string' ? JSON.parse(val): val
+      const newVal = typeof val === "string" ? JSON.parse(val) : val;
       sourceTitle.value = objToTitle(newVal.dataSourceIds.source);
       sinkTitle.value = objToTitle(newVal.dataSourceIds.sink);
       dataSource.dataSourceIds = {
-        source: newVal.dataSourceIds.source  || {},
-        sink: newVal.dataSourceIds.sink || {}
-      }
+        source: newVal.dataSourceIds.source || {},
+        sink: newVal.dataSourceIds.sink || {},
+      };
       dataSource.params = {
         sources: newVal.params.sources || [],
-        sinks: newVal.params.sinks || []
-      }
-    })
+        sinks: newVal.params.sinks || [],
+      };
+    });
 
     const formRef = ref();
     const updateSourceInfo = (dsInfo, id) => {
@@ -144,11 +159,10 @@ export default defineComponent({
       dataSource.dataSourceIds.source.table = info[2];
       dataSource.dataSourceIds.source.id = id;
 
-      getSourceParams(dataSource.dataSourceIds.source.type).then(res => {
-        dataSource.params.sources = res.uis || []
+      getSourceParams(dataSource.dataSourceIds.source.type).then((res) => {
+        dataSource.params.sources = res.uis || [];
         context.emit("updateSourceInfo", dataSource);
-      })
-
+      });
     };
     const updateSinkInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
@@ -157,10 +171,10 @@ export default defineComponent({
       dataSource.dataSourceIds.sink.table = info[2];
       dataSource.dataSourceIds.sink.id = id;
 
-      getSourceParams(dataSource.dataSourceIds.sink.type).then(res => {
-        dataSource.params.sinks = res.uis || []
+      getSourceParams(dataSource.dataSourceIds.sink.type).then((res) => {
+        dataSource.params.sinks = res.uis || [];
         context.emit("updateSinkInfo", dataSource);
-      })
+      });
     };
     const updateSourceParams = (info) => {
       const _sourceParams = dataSource.params.sources.slice(0);
@@ -182,7 +196,9 @@ export default defineComponent({
       dataSource.params.sinks = _sinkParams;
       context.emit("updateSinkParams", dataSource);
     };
-
+    const showInfo = () => {
+      isFlod.value = !isFlod.value;
+    };
     return {
       formRef,
       updateSourceInfo,
@@ -192,6 +208,8 @@ export default defineComponent({
       dataSource,
       updateSourceParams,
       updateSinkParams,
+      showInfo,
+      isFlod,
     };
   },
   watch: {},
