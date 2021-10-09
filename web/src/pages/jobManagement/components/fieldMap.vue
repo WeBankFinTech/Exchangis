@@ -3,6 +3,17 @@
     <!-- left -->
     <div class="fm-l">
       <div class="main-header">
+        <img src="../../../images/jobDetail/u2664.png" />
+        <img
+          src="../../../images/jobDetail/u2666.png"
+          style="
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            left: 16px;
+            top: 3px;
+          "
+        />
         <span class="main-header-label" @click="showInfo">字段映射</span>
       </div>
     </div>
@@ -17,7 +28,7 @@
         </div>
       </div>
 
-      <div class="main-content" v-if="isFold">
+      <div class="main-content" v-show="isFold">
         <div
           style="margin-bottom: 15px"
           v-if="fieldsSource.length && fieldsSink.length"
@@ -349,13 +360,13 @@ export default defineComponent({
   .main-header {
     height: 33px;
     background: inherit;
-    background-color: rgba(102, 102, 255, 1);
     border: none;
     display: flex;
-    border-top-left-radius: 16px;
-    border-bottom-left-radius: 16px;
+    border-top-left-radius: 100%;
+    border-bottom-left-radius: 100%;
+    position: relative;
+    background-color: #6b6b6b;
     :nth-of-type(1) {
-      width: 100%;
       text-align: center;
       line-height: 33px;
       font-size: 16px;
@@ -365,6 +376,8 @@ export default defineComponent({
       font-weight: 700;
       font-style: normal;
       color: #ffffff;
+      position: absolute;
+      left: 46px;
     }
   }
 }

@@ -3,6 +3,17 @@
     <!-- left -->
     <div class="ds-l">
       <div class="main-header">
+        <img src="../../../images/jobDetail/u2664.png" />
+        <img
+          src="../../../images/jobDetail/u2666.png"
+          style="
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            left: 16px;
+            top: 3px;
+          "
+        />
         <span class="main-header-label" @click="showInfo">数据源</span>
       </div>
     </div>
@@ -17,7 +28,7 @@
         </div>
       </div>
 
-      <div class="main-content" v-if="isFlod">
+      <div class="main-content" v-show="isFlod">
         <!-- left -->
         <div class="data-source-warp-l">
           <div class="data-source-warp-l-content">
@@ -227,11 +238,12 @@ export default defineComponent({
   .main-header {
     height: 33px;
     background: inherit;
-    background-color: rgba(102, 102, 255, 1);
     border: none;
     display: flex;
-    border-top-left-radius: 16px;
-    border-bottom-left-radius: 16px;
+    border-top-left-radius: 100%;
+    border-bottom-left-radius: 100%;
+    background-color: #6b6b6b;
+    position: relative;
     /*&::before {
       content: "";
       position: absolute;
@@ -243,7 +255,6 @@ export default defineComponent({
       right: 962px;
     }*/
     :nth-of-type(1) {
-      width: 100%;
       text-align: center;
       line-height: 33px;
       font-size: 16px;
@@ -253,6 +264,8 @@ export default defineComponent({
       font-weight: 700;
       font-style: normal;
       color: #ffffff;
+      position: absolute;
+      left: 46px;
     }
   }
 }
