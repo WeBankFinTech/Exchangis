@@ -141,6 +141,7 @@ export default defineComponent({
 
     const newProps = computed(() => JSON.parse(JSON.stringify(props.fmData)));
     watch(newProps, (val, oldVal) => {
+      console.log("watch newProps in fieldMap", val, oldVal);
       const newVal = typeof val === "string" ? JSON.parse(val) : val;
       createDataSource(toRaw(newVal).mapping || []);
     });
@@ -227,6 +228,7 @@ export default defineComponent({
     };
 
     const updateTransformer = (res) => {
+      console.log("field map update", res);
       const _transformerList = fieldMap.transformerList.filter(
         (item) => item.key != res.key
       );

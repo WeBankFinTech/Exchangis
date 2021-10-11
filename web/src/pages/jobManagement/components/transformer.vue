@@ -8,7 +8,11 @@
       >
     </div>
     <!-- mid -->
-    <div class="tf-mid" @click="showModal">
+    <div
+      class="tf-mid"
+      @click="showModal"
+      :class="{ 'tf-mid-sync': !dynamicValidateForm.domains.length }"
+    >
       <img src="../../../images/jobDetail/u6239.png" />
       <img
         src="../../../images/jobDetail/u6240.png"
@@ -153,6 +157,7 @@ export default defineComponent({
 
     const newProps = computed(() => JSON.parse(JSON.stringify(props.tfData)));
     watch(newProps, (val, oldVal) => {
+      console.log("watch newProps in transformer", val, oldVal);
       const newVal = typeof val === "string" ? JSON.parse(val) : val;
       dynamicValidateForm.domains = transF(newVal.validator);
       dynamicValidateForm.transf = createTransformFunc(newVal.transformer);
@@ -318,6 +323,10 @@ export default defineComponent({
 .tf-mid {
   text-align: center;
   position: relative;
+}
+
+.tf-mid-sync {
+  margin-top: 30px;
 }
 .tf-modal-content {
   display: flex;
