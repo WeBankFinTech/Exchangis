@@ -17,6 +17,7 @@
         <module>exchangis-job-common</module>
         <module>exchangis-job-server</module>
         <module>exchangis-job-builder</module>
+        <module>exchangis-job-launcher</module>
     </modules>
 
     <properties>
