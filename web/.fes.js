@@ -31,10 +31,10 @@ export default {
       {
         path: "/jobManagement",
         component: "@/pages/jobManagement",
-        meta: {
-          name: "jobManagement",
-          title: "globalMenu.jobManagement",
-        },
+        // meta: {
+        //   name: "jobManagement",
+        //   title: "globalMenu.jobManagement",
+        // },
       },
     ],
   },
