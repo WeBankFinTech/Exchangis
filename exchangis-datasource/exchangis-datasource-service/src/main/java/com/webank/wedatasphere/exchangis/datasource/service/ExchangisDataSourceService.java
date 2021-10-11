@@ -71,10 +71,19 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     // 根据数据源类型获取参数
     @Override
-    public List<ElementUI> getDataSourceParamsUI(String dsType) {
+    public List<ElementUI> getDataSourceParamsUI(String dsType, String dir) {
+        if (Strings.isNullOrEmpty(dir)) {
+            dir = ExchangisJobParamConfig.DIRECTION_SOURCE;
+        }
         ExchangisDataSource exchangisDataSource = this.context.getExchangisDataSource(dsType);
         List<ExchangisJobParamConfig> paramConfigs = exchangisDataSource.getDataSourceParamConfigs();
-        return this.buildDataSourceParamsUI(paramConfigs);
+        List<ExchangisJobParamConfig> filteredConfigs = new ArrayList<>();
+        for (ExchangisJobParamConfig paramConfig : paramConfigs) {
+            if (paramConfig.getConfigDirection().equalsIgnoreCase(dir)) {
+                filteredConfigs.add(paramConfig);
+            }
+        }
+        return this.buildDataSourceParamsUI(filteredConfigs);
     }
 
     @Override

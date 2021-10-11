@@ -1,28 +1,33 @@
 <script>
-import { defineComponent, h, toRaw } from "vue";
+import { defineComponent, h, toRaw, watch, computed } from "vue";
 
 export default defineComponent({
   props: {
     param: Object,
   },
   emits: ["updateInfo"],
-  render() {
-    const { type, field } = this.param;
+  setup(props, context){
+    let { type, field , value } = props.param;
     let tmlName = field.split(".").pop();
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.param)))
+    watch(newProps, (val, oldVal) => {
+      value = val.value
+      console.log(val, 123123)
+    })
+
     if (type === "OPTION") {
       // 下拉框
-      const { values, value } = this.param;
-      return h(
+      return () => h(
         "select",
         {
           value: value,
           onChange: ($event) => {
-            let res = toRaw(this.param);
+            let res = toRaw(props.param);
             res.value = $event.target.value;
-            this.$emit("updateInfo", res);
+            context.emit("updateInfo", res);
           },
         },
-        values.map((item) => {
+        props.param.values.map((item) => {
           return h(
             "option",
             {
@@ -34,31 +39,22 @@ export default defineComponent({
       );
     } else {
       // 输入框
-      return h("div", {}, [
+      return () => h("div", {}, [
         h(
           "input",
           {
-            value: this.param.value,
+            value: value,
             onChange: ($event) => {
-              let res = toRaw(this.param);
+              let res = toRaw(props.param);
               res.value = $event.target.value;
-              this.$emit("updateInfo", res);
+              context.emit("updateInfo", res);
             },
           },
           ""
         ),
-        h("span", {}, this.param.unit ? this.param.unit : ""),
+        h("span", {}, props.param.unit ? props.param.unit : ""),
       ]);
     }
-  },
-  watch: {
-    param: {
-      handler: function (newVal) {
-        console.log("watch props");
-        this.props = newVal;
-      },
-      deep: true,
-    },
-  },
+  }
 });
 </script>
