@@ -38,6 +38,7 @@
         <a-directory-tree
           :tree-data="treeData"
           @select="selectItem"
+          @expand="handleExpandSql"
         ></a-directory-tree>
       </div>
     </a-modal>
@@ -72,6 +73,7 @@ export default defineComponent({
       defaultSelect: props.title,
       treeData,
       id: "",
+      curSql: "",
     });
     const newProps = computed(() => JSON.parse(JSON.stringify(props.title)));
     watch(newProps, (val, oldVal) => {
@@ -89,8 +91,9 @@ export default defineComponent({
       });
       if (state.sqlSource) await createTree(state.sqlSource);
     }
-    init();
+    onMounted(init());
     const handleChangeSql = async (sql) => {
+      state.curSql = sql;
       createTree(sql, () => {
         state.treeData = treeData;
         const cur = sqlList.filter((item) => {
@@ -108,39 +111,52 @@ export default defineComponent({
         return item.value === sql;
       })[0];
       let dbs = (await getDBs(cur.value, cur.id)).dbs;
-      let promises = [];
+      // let promises = [];
+      // dbs.forEach((db, index) => {
+      //   const o = Object.create(null);
+      //   o.selectable = false;
+      //   o.title = db;
+      //   o.key = db;
+      //   o.children = [];
+      //   promises.push(
+      //     new Promise((resolve, reject) => {
+      //       getTables(cur.value, cur.id, db).then((res) => {
+      //         let tables = res.tbs || [];
+      //         tables.forEach((table) => {
+      //           const oo = Object.create(null);
+      //           oo.title = table;
+      //           oo.key = `${db}-${table}`;
+      //           o.children.push(oo);
+      //         });
+      //         tree.push(o);
+      //         resolve();
+      //       });
+      //     })
+      //   );
+      // });
+      // Promise.all(promises)
+      //   .then((result) => {
+      //     treeData = tree;
+      //     cb && cb();
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //     treeData = [];
+      //     cb && cb();
+      //   });
       dbs.forEach((db, index) => {
         const o = Object.create(null);
         o.selectable = false;
         o.title = db;
         o.key = db;
         o.children = [];
-        promises.push(
-          new Promise((resolve, reject) => {
-            getTables(cur.value, cur.id, db).then((res) => {
-              let tables = res.tbs || [];
-              tables.forEach((table) => {
-                const oo = Object.create(null);
-                oo.title = table;
-                oo.key = `${db}-${table}`;
-                o.children.push(oo);
-              });
-              tree.push(o);
-              resolve();
-            });
-          })
-        );
+        const oo = Object.create(null);
+        (oo.key = ""), (oo.title = ""), o.children.push(oo);
+        tree.push(o);
       });
-      Promise.all(promises)
-        .then((result) => {
-          treeData = tree;
-          cb && cb();
-        })
-        .catch((error) => {
-          console.log(error);
-          treeData = "";
-          cb && cb();
-        });
+
+      treeData = tree;
+      cb();
     };
     const visible = ref(false);
     const showModal = () => {
@@ -153,6 +169,36 @@ export default defineComponent({
       visible.value = false;
       context.emit("updateDsInfo", state.defaultSelect, state.id);
     };
+    /**
+     * 获取数据库下 所有表
+     * @param (sql, dbName)
+     * @returns tbales
+     */
+    const asyncGetTables = async (sql, dbName) => {
+      let tables;
+      const res = [];
+      const cur = sqlList.filter((item) => {
+        return item.value === sql;
+      })[0];
+      tables = (await getTables(cur.value, cur.id, dbName)).tbs || [];
+      tables.forEach((table) => {
+        const o = Object.create(null);
+        o.title = table;
+        o.key = `${dbName}-${table}`;
+        res.push(o);
+      });
+      return res;
+    };
+    const handleExpandSql = (expandedKeys, { expanded, node }) => {
+      const dbName = node.title;
+      state.treeData.forEach(async (td) => {
+        if (td.title === dbName) {
+          if (td.children.length > 0 && td.children[0].title) return;
+          let tables = await asyncGetTables(state.curSql, dbName);
+          return (td.children = tables.slice());
+        }
+      });
+    };
     return {
       ...toRefs(state),
       selectItem,
@@ -161,6 +207,7 @@ export default defineComponent({
       handleOk,
       sqlList,
       handleChangeSql,
+      handleExpandSql,
     };
   },
 });
