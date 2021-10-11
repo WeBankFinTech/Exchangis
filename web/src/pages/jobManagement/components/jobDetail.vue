@@ -315,6 +315,7 @@ export default {
       });
     },
     updateFieldMap(transforms) {
+      console.log("update field map", transforms);
       this.curTask.transforms = transforms;
     },
     updateProcessControl(settings) {
