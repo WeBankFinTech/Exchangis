@@ -3,7 +3,7 @@
     <div class="tools-bar">
       <span @click="modalCfg.visible = true"><SettingOutlined />配置</span>
       <div class="divider"></div>
-      <span><CaretRightOutlined />执行</span>
+      <span @click="executeTask"><CaretRightOutlined />执行</span>
       <div class="divider"></div>
       <span @click="saveAll()"><SaveOutlined />保存</span>
       <div class="divider"></div>
@@ -160,6 +160,8 @@ import {
   saveProject,
   getSettingsParams,
   getFields,
+  executeTask,
+  updateTaskConfiguration,
 } from "@/common/service";
 import DataSource from "./dataSource";
 import FieldMap from "./fieldMap.vue";
@@ -244,7 +246,37 @@ export default {
         }
       } catch (error) {}
     },
-    handleModalFinish() {},
+    // 更新保存任务配置
+    handleModalFinish(config) {
+      const { id } = this.curTab;
+      const _config = Object.assign(
+        {},
+        JSON.parse(JSON.stringify(toRaw(config)))
+      );
+      if (_config.syncType && _config.syncType == 1) {
+        _config.syncType = "FULL";
+      } else {
+        _config.syncType = "INCREMENTAL";
+      }
+      if (_config.taskVariable) {
+        let jobParams = Object.create(null);
+        _config.taskVariable.forEach((item) => {
+          // jobParams = Object.assign(jobParams, item);
+          jobParams[item.key] = item.value;
+        });
+        _config.jobParams = jobParams;
+        delete _config.taskVariable;
+      }
+      console.log("_config", _config);
+      // updateTaskConfiguration(id, _config)
+      //   .then((res) => {
+      //     message.success("更新/保存成功");
+      //   })
+      //   .catch((err) => {
+      //     message.error("更新/保存失败");
+      //     console.log("updateTaskConfiguration error", err);
+      //   });
+    },
     handleModalCopy(data) {
       if (data) {
         this.jobData.content.subJobs.push(data);
@@ -414,6 +446,17 @@ export default {
       }).then((res) => {
         message.success("保存成功");
       });
+    },
+    // 执行任务
+    executeTask() {
+      // const { id } = this.curTab;
+      // executeTask(id)
+      //   .then((res) => {
+      //     message.info("执行成功");
+      //   })
+      //   .catch((err) => {
+      //     console.log("executeTask error", err);
+      //   });
     },
   },
 };
