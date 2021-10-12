@@ -1,14 +1,15 @@
 package com.webank.wedatasphere.exchangis.job.server.service;
 
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 /**
  * The interface Exchangis job service.

@@ -1,24 +1,37 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
-import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilder;
-import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderManager;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
-import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
-import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
-import com.webank.wedatasphere.linkis.server.Message;
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.util.List;
+import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilder;
+import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderManager;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
+import com.webank.wedatasphere.exchangis.job.launcher.linkis.LinkisExchangisJobLanuncher;
+import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
+import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
+import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
+import com.webank.wedatasphere.exchangis.job.server.service.ExchangisLaunchTaskService;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
+import com.webank.wedatasphere.linkis.server.Message;
 
 /**
  * The type Exchangis job controller.
@@ -34,8 +47,6 @@ public class ExchangisJobController {
 
     @Autowired
     private ExchangisJobService exchangisJobService;
-
-    @Autowired
 
     @GET
     @Path("/testbuildjob")
@@ -131,20 +142,22 @@ public class ExchangisJobController {
 //        return Message.ok().data("result", exchangisJob);
 //    }
 
-//    @POST
-//    @Path("/{id}")
-//    public Message executeJob(@PathParam("id") Long id) throws Exception {
-//        ExchangisJob job = exchangisJobService.getJob(id);
-//        ExchangisJobBuilder jobBuiler =
-//            ExchangisJobBuilderManager.getJobBuilder(EngineTypeEnum.valueOf(job.getEngineType()));
-//        ExchangisLaunchTask[] exchangisLaunchTasks = jobBuiler.buildJob(job);
-//
-//        List<ExchangisLaunchTask> launchTaskList = Arrays.asList(exchangisLaunchTasks);
-//        exchangisLaunchTaskService.saveBatch(launchTaskList);
-//
-//        LinkisExchangisJobLanuncher jobLanuncher = new LinkisExchangisJobLanuncher();
-//        launchTaskList.forEach(launchTask -> jobLanuncher.launch(launchTask));
-//        return Message.ok();
-//    }
+    @Autowired
+    private ExchangisLaunchTaskService exchangisLaunchTaskService;
+
+    @POST
+    @Path("/{id}/action/execute")
+    public Message executeJob(@PathParam("id") Long id) throws Exception {
+        ExchangisJob job = exchangisJobService.getById(id);
+        ExchangisJobBuilder jobBuiler =
+            ExchangisJobBuilderManager.getJobBuilder(EngineTypeEnum.valueOf(job.getEngineType()));
+        List<ExchangisLaunchTask> exchangisLaunchTasks = jobBuiler.buildJob(job);
+
+        exchangisLaunchTaskService.saveBatch(exchangisLaunchTasks);
+
+        LinkisExchangisJobLanuncher jobLanuncher = new LinkisExchangisJobLanuncher();
+        exchangisLaunchTasks.forEach(launchTask -> jobLanuncher.launch(launchTask));
+        return Message.ok();
+    }
 
 }
