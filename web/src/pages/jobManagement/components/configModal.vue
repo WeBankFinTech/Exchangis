@@ -1,6 +1,17 @@
 <template>
-  <a-modal title="设置" :visible="visible" :confirm-loading="confirmLoading" @ok="handleOk" @cancel="$emit('update:visible', false)">
-    <a-form ref="formRef" :rules="rules" :model="formState" :label-col="{ span: 4 }">
+  <a-modal
+    title="设置"
+    :visible="visible"
+    :confirm-loading="confirmLoading"
+    @ok="handleOk"
+    @cancel="$emit('update:visible', false)"
+  >
+    <a-form
+      ref="formRef"
+      :rules="rules"
+      :model="formState"
+      :label-col="{ span: 4 }"
+    >
       <h2>任务配置</h2>
       <a-form-item label="执行用户" name="execUser">
         <a-input v-model:value="formState.execUser" />
@@ -9,18 +20,18 @@
         <a-input v-model:value="formState.execPoint" />
       </a-form-item>
       <a-form-item label="同步方式" name="syncType">
-        <a-radio-group v-model="formState.syncType" name="syncType">
-          <a-radio :value="1">
-            全量
-          </a-radio>
-          <a-radio :value="2">
-            增量
-          </a-radio>
+        <a-radio-group v-model:value="formState.syncType" name="syncType">
+          <a-radio :value="1"> 全量 </a-radio>
+          <a-radio :value="2"> 增量 </a-radio>
         </a-radio-group>
       </a-form-item>
-      <h2>任务变量 <PlusOutlined class="fr" @click="createTask"/></h2>
-      <div v-for="(item, index) in formState.taskVariable" style="overflow: hidden">
-        <a-form-item class="w40 fl" :label="index + 1" name="taskVariableKey" >
+      <h2>任务变量 <PlusOutlined class="fr" @click="createTask" /></h2>
+      <div
+        v-for="(item, index) in formState.taskVariable"
+        style="overflow: hidden"
+        :key="index"
+      >
+        <a-form-item class="w40 fl" :label="index + 1" name="taskVariableKey">
           <a-input v-model:value="item.key" />
         </a-form-item>
         <span class="fl separator">=</span>
@@ -35,14 +46,12 @@
 <script>
 import { toRaw } from "vue";
 import { message } from "ant-design-vue";
-import {
-  PlusOutlined,
-} from "@ant-design/icons-vue";
+import { PlusOutlined } from "@ant-design/icons-vue";
 import { createProject, getProjectById, updateProject } from "@/common/service";
 export default {
   name: "JobManagementConfigModal",
   components: {
-    PlusOutlined
+    PlusOutlined,
   },
   props: {
     // 是否可见
@@ -61,22 +70,26 @@ export default {
       // 是否加载中
       confirmLoading: false,
       // 表单数据
-      formState: { execUser: '', execPoint: '', syncType: '', taskVariable: []},
+      formState: {
+        execUser: "",
+        execPoint: "",
+        syncType: "",
+        taskVariable: [],
+      },
       // 验证
       rules: {
-        execUser: [{ required: true}],
-        execPoint: [{ required: true}],
-        syncType: [{ required: true}]
+        execUser: [{ required: true }],
+        execPoint: [{ required: true }],
+        syncType: [{ required: true }],
       },
     };
   },
-  watch: {
-  },
+  watch: {},
   methods: {
     async handleOk() {
       await this.$refs.formRef.validate();
       const formatData = {
-        ...this.formState
+        ...this.formState,
       };
       try {
         if (this.mode === "create") {
@@ -92,26 +105,26 @@ export default {
       } catch (error) {}
       this.confirmLoading = false;
       this.$emit("update:visible", false);
-      this.$emit("finish");
+      this.$emit("finish", formatData);
     },
-    createTask(){
-      this.formState.taskVariable.push({key:'' , value:''})
-    }
-  }
+    createTask() {
+      this.formState.taskVariable.push({ key: "", value: "" });
+    },
+  },
 };
 </script>
 
 <style scoped lang="less">
-  .fr{
-    float: right;
-  }
-  .fl {
-    float: left;
-  }
-  .w40{
-    width: 40%;
-  }
-  .separator {
-    margin: 5px;
-  }
+.fr {
+  float: right;
+}
+.fl {
+  float: left;
+}
+.w40 {
+  width: 40%;
+}
+.separator {
+  margin: 5px;
+}
 </style>
