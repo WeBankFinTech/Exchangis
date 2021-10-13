@@ -1,11 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -21,6 +15,11 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
 import com.webank.wedatasphere.exchangis.job.handler.JobHandler;
 import com.webank.wedatasphere.exchangis.job.utils.Utils;
 import com.webank.wedatasphere.linkis.common.utils.JsonUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class DataXJobBuilder implements ExchangisJobBuilder {
 
@@ -34,7 +33,8 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
         String content = job.getContent();
         List<ExchangisSubJob> exchangisSubJobs;
         try {
-            exchangisSubJobs = JsonUtils.jackson().readValue(content, new TypeReference<List<ExchangisSubJob>>() {});
+            exchangisSubJobs = JsonUtils.jackson().readValue(content, new TypeReference<List<ExchangisSubJob>>() {
+            });
         } catch (JsonProcessingException e) {
             throw new ExchangisDataSourceException(31101, e.getMessage());
         }
@@ -48,15 +48,15 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
 
             ExchangisLaunchTask task = new ExchangisLaunchTask();
             try {
-                task.setCode(JsonUtils.jackson().writeValueAsString(code));
+                task.setContent(JsonUtils.jackson().writeValueAsString(code));
             } catch (JsonProcessingException e) {
                 throw new ExchangisDataSourceException(31101, e.getMessage());
             }
             task.setJobId(jobId);
             task.setEngineType(job.getEngineType());
-            task.setRunType(subjob.getTransforms().getType());
-            task.setCreator(job.getCreateUser());
-            task.setExecuteUser(job.getProxyUser());
+//            task.setRunType(subjob.getTransforms().getType());
+            task.setCreateUser(job.getCreateUser());
+            task.setProxyUser(job.getProxyUser());
 
             launchTasks.add(task);
         }
@@ -119,7 +119,7 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
             String configKey = subjobSetting.getConfigKey();
             // exchangis.datax.setting.speed.channel
             if (!configKey.startsWith("exchangis.datax.setting")
-                || StringUtils.isBlank(subjobSetting.getConfigValue())) {
+                    || StringUtils.isBlank(subjobSetting.getConfigValue())) {
                 return;
             }
             String[] keys = StringUtils.split(configKey, ".");
@@ -128,7 +128,7 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
             for (int i = 2; i < keys.length - 1; i++) {
                 ObjectNode subNode;
                 if (node.has(keys[i])) {
-                    subNode = (ObjectNode)node.get(keys[i]);
+                    subNode = (ObjectNode) node.get(keys[i]);
                 } else {
                     subNode = JsonUtils.jackson().createObjectNode();
                     node.set(keys[i], subNode);
