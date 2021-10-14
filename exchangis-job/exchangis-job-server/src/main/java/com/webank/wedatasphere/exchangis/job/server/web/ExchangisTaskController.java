@@ -27,8 +27,8 @@ public class ExchangisTaskController {
 
     @GET
     public Message getTaskList(@QueryParam(value = "taskId") long taskId,
-                               @QueryParam(value = "taskName") String taskName) {
-        List<ExchangisTaskInfoVO> taskList = exchangisLaunchTaskService.getTaskList(taskId, taskName);
+                               @QueryParam(value = "taskName") String taskName, @QueryParam(value = "status") String status, @QueryParam(value = "launchTime") long launchTime, @QueryParam(value = "completeTime") long completeTime, @QueryParam(value = "current") int current, @QueryParam(value = "size") int size) {
+        List<ExchangisTaskInfoVO> taskList = exchangisLaunchTaskService.getTaskList(taskId, taskName, status, launchTime, completeTime, current, size);
         return Message.ok().data("result", taskList);
     }
 }
