@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.mapper;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -18,6 +19,6 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
 public interface ExchangisLaunchTaskMapper extends BaseMapper<ExchangisLaunchTask> {
 
     List<ExchangisLaunchTask> getTaskList(@Param("taskId") Long taskId, @Param("taskName") String taskName,
-        @Param("status") String status, @Param("launchStartTime") Long launchStartTime,
-        @Param("launchEndTime") Long launchEndTime, @Param("start") int start, @Param("size") int size);
+        @Param("status") String status, @Param("launchStartTime") Date launchStartTime,
+        @Param("launchEndTime") Date launchEndTime, @Param("start") int start, @Param("size") int size);
 }
