@@ -35,9 +35,10 @@ public class ExchangisLaunchTaskServiceImpl extends ServiceImpl<ExchangisLaunchT
         }
         int start = (current - 1) * size;
 
+        Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
+        Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
         List<ExchangisLaunchTask> taskList =
-            this.baseMapper.getTaskList(taskId, taskName, status, new Date(launchStartTime), new Date(launchEndTime),
-                start, size);
+            this.baseMapper.getTaskList(taskId, taskName, status, startTime, endTime, start, size);
 
         return taskList.stream().map(task -> {
             return modelMapper.map(task, ExchangisTaskInfoVO.class);
