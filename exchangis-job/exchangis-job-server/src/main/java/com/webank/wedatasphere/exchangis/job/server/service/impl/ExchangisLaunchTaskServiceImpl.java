@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,8 @@ public class ExchangisLaunchTaskServiceImpl extends ServiceImpl<ExchangisLaunchT
         int start = (current - 1) * size;
 
         List<ExchangisLaunchTask> taskList =
-            this.baseMapper.getTaskList(taskId, taskName, status, launchStartTime, launchEndTime, start, size);
+            this.baseMapper.getTaskList(taskId, taskName, status, new Date(launchStartTime), new Date(launchEndTime),
+                start, size);
 
         return taskList.stream().map(task -> {
             return modelMapper.map(task, ExchangisTaskInfoVO.class);
