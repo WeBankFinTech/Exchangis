@@ -1,7 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.dto;
 
-import java.util.Map;
-
 public class ExchangisJobContentDTO {
 
     private String content;
@@ -12,7 +10,7 @@ public class ExchangisJobContentDTO {
 
     private String syncType;
 
-    private Map<String, String> jobParams;
+    private String jobParams;
 
     public String getContent() {
         return content;
@@ -46,11 +44,11 @@ public class ExchangisJobContentDTO {
         this.syncType = syncType;
     }
 
-    public Map<String, String> getJobParams() {
+    public String getJobParams() {
         return jobParams;
     }
 
-    public void setJobParams(Map<String, String> jobParams) {
+    public void setJobParams(String jobParams) {
         this.jobParams = jobParams;
     }
 
