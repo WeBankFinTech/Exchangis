@@ -1,14 +1,20 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisLaunchTaskService;
-import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskInfoVO;
-import com.webank.wedatasphere.linkis.server.Message;
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.util.List;
+import com.webank.wedatasphere.exchangis.job.server.service.ExchangisLaunchTaskService;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskInfoVO;
+import com.webank.wedatasphere.linkis.server.Message;
 
 /**
  * The type Exchangis task controller.
@@ -19,16 +25,20 @@ import java.util.List;
 @Component
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Path("exchangis/task")
+@Path("exchangis/tasks")
 public class ExchangisTaskController {
 
     @Autowired
     private ExchangisLaunchTaskService exchangisLaunchTaskService;
 
     @GET
-    public Message getTaskList(@QueryParam(value = "taskId") long taskId,
-                               @QueryParam(value = "taskName") String taskName, @QueryParam(value = "status") String status, @QueryParam(value = "launchTime") long launchTime, @QueryParam(value = "completeTime") long completeTime, @QueryParam(value = "current") int current, @QueryParam(value = "size") int size) {
-        List<ExchangisTaskInfoVO> taskList = exchangisLaunchTaskService.getTaskList(taskId, taskName, status, launchTime, completeTime, current, size);
+    public Message getTaskList(@QueryParam(value = "taskId") Long taskId,
+        @QueryParam(value = "taskName") String taskName, @QueryParam(value = "status") String status,
+        @QueryParam(value = "launchStartTime") Long launchStartTime,
+        @QueryParam(value = "launchEndTime") Long launchEndTime, @QueryParam(value = "current") int current,
+        @QueryParam(value = "size") int size) {
+        List<ExchangisTaskInfoVO> taskList = exchangisLaunchTaskService.getTaskList(taskId, taskName, status,
+            launchStartTime, launchEndTime, current, size);
         return Message.ok().data("result", taskList);
     }
 }

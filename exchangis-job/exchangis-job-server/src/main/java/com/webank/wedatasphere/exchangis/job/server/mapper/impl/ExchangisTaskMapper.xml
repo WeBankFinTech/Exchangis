@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisLaunchTaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask">
+        <id column="id" property="id"/>
+        <result column="task_name" property="taskName"/>
+        <result column="job_id" property="jobId"/>
+        <result column="job_name" property="jobName"/>
+        <result column="content" property="content"/>
+        <result column="execute_node" property="executeNode"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="launch_time" property="launchTime"/>
+        <result column="proxy_user" property="proxyUser"/>
+        <result column="params_json" property="paramsJson"/>
+        <result column="status" property="status"/>
+        <result column="complete_time" property="completeTime"/>
+        <result column="engine_type" property="engineType"/>
+    </resultMap>
+
+    <sql id="TableName">
+        exchangis_launch_task
+    </sql>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        id,task_name, job_id, job_name, content, execute_node, create_time, create_user, launch_time, proxy_user, params_json, status, complete_time, engine_type
+    </sql>
+
+    <select id="getTaskList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM
+        <include refid="TableName"/>
+        <where>
+            <if test="taskId != null">
+                and task_id = #{taskId}
+            </if>
+            <if test="taskName != null and taskName.trim() != ''">
+                and task_name like concat('%', #{taskName}, '%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="launchStartTime != null">
+                and launch_time &gt;= #{launchStartTime}
+            </if>
+            <if test="launchEndTime != null">
+                and launch_time &lt;= #{launchEndTime}
+            </if>
+        </where>
+        limit ${start}, ${size}
+    </select>
+
+</mapper>
