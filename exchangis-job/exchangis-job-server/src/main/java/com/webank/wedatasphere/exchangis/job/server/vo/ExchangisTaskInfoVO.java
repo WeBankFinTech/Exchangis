@@ -1,14 +1,20 @@
 package com.webank.wedatasphere.exchangis.job.server.vo;
 
+import java.util.Date;
+
 public class ExchangisTaskInfoVO {
 
     private Long id;
 
     private String taskName;
 
-    private Long jobId;
+    private Date launchTime;
 
-    private String jobName;
+    private String createUser;
+
+    private String status;
+
+    private Date completeTime;
     
     public Long getId() {
         return id;
@@ -26,19 +32,35 @@ public class ExchangisTaskInfoVO {
         this.taskName = taskName;
     }
 
-    public Long getJobId() {
-        return jobId;
+    public Date getLaunchTime() {
+        return launchTime;
     }
 
-    public void setJobId(Long jobId) {
-        this.jobId = jobId;
+    public void setLaunchTime(Date launchTime) {
+        this.launchTime = launchTime;
     }
 
-    public String getJobName() {
-        return jobName;
+    public String getCreateUser() {
+        return createUser;
     }
 
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
     }
 }
