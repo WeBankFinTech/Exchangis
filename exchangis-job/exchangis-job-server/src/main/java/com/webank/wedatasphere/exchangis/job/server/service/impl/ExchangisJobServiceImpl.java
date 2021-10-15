@@ -132,11 +132,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         exchangisJob.setProxyUser(exchangisJobContentDTO.getProxyUser());
         exchangisJob.setExecuteNode(exchangisJobContentDTO.getExecuteNode());
         exchangisJob.setSyncType(exchangisJobContentDTO.getSyncType());
-        try {
-            exchangisJob.setJobParams(JsonUtils.jackson().writeValueAsString(exchangisJobContentDTO.getJobParams()));
-        } catch (JsonProcessingException e) {
-            throw new ExchangisJobErrorException(31101, e.getMessage(), e);
-        }
+        exchangisJob.setJobParams(exchangisJobContentDTO.getJobParams());
         exchangisJobService.updateById(exchangisJob);
         return this.getJob(id);
     }
