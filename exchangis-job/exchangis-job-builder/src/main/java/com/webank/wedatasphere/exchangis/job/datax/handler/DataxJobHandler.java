@@ -2,16 +2,19 @@ package com.webank.wedatasphere.exchangis.job.datax.handler;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsItem;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
-import com.webank.wedatasphere.exchangis.job.datax.domain.Mapping;
-import com.webank.wedatasphere.exchangis.job.datax.reader.Reader;
-import com.webank.wedatasphere.exchangis.job.datax.writer.Writer;
+import com.webank.wedatasphere.exchangis.job.datax.reader.DataxReader;
+import com.webank.wedatasphere.exchangis.job.datax.writer.DataxWriter;
 import com.webank.wedatasphere.exchangis.job.domain.Connection;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
+import com.webank.wedatasphere.exchangis.job.domain.Reader;
+import com.webank.wedatasphere.exchangis.job.domain.Writer;
 import com.webank.wedatasphere.exchangis.job.handler.JobHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DataxJobHandler implements JobHandler {
@@ -24,7 +27,9 @@ public class DataxJobHandler implements JobHandler {
     Gson gson = builder.create();
 
     @Override
-    public void handleReader(ExchangisSubJob subjob, Long jobId, Reader reader) {
+    public void handleReader(ExchangisSubJob subjob, Long jobId, Reader rd) {
+
+        DataxReader reader = (DataxReader) rd;
 
         if (reader.getName() == null) {
             reader.setName("reader");
@@ -45,7 +50,7 @@ public class DataxJobHandler implements JobHandler {
 
         params.put("column", getSourceColumnArray(subjob));
 
-        String sourceId = subjob.getDataSources().get("source_id").toString();
+        String sourceId = subjob.getDataSources().getSourceId();
         String databaseName = getDatabaseNameFromId(sourceId);
         String tableName = getTableNameFromId(sourceId);
         String[] tableNameList = {tableName};
@@ -61,7 +66,9 @@ public class DataxJobHandler implements JobHandler {
 
 
     @Override
-    public void handleWriter(ExchangisSubJob subjob, Long jobId, Writer writer) {
+    public void handleWriter(ExchangisSubJob subjob, Long jobId, Writer wt) {
+
+        DataxWriter writer = (DataxWriter) wt;
         if (writer.getName() == null) {
             writer.setName("writer");
         }
@@ -81,7 +88,7 @@ public class DataxJobHandler implements JobHandler {
 
         params.put("column", getSinkColumnArray(subjob));
 
-        String sinkId = subjob.getDataSources().get("sink_id").toString();
+        String sinkId = subjob.getDataSources().getSinkId();
         String databaseName = getDatabaseNameFromId(sinkId);
         String tableName = getTableNameFromId(sinkId);
         String[] tableNameList = {tableName};
@@ -96,10 +103,11 @@ public class DataxJobHandler implements JobHandler {
 
 
     protected String[] getSinkColumnArray(ExchangisSubJob subjob) {
-        Mapping[] mappings = gson.fromJson(subjob.getTransforms().get("mapping").toString(), Mapping[].class);
-        String[] columnArray = new String[mappings.length];
-        for (int i = 0; i < mappings.length; i++) {
-            columnArray[i] = mappings[i].getSink_field_name();
+        List<ExchangisJobTransformsItem> mappings = subjob.getTransforms().getMapping();
+
+        String[] columnArray = new String[mappings.size()];
+        for (int i = 0; i < mappings.size(); i++) {
+            columnArray[i] = mappings.get(i).getSinkFieldName();
         }
 
         return columnArray;
@@ -122,10 +130,11 @@ public class DataxJobHandler implements JobHandler {
 
 
     protected String[] getSourceColumnArray(ExchangisSubJob subjob) {
-        Mapping[] mappings = gson.fromJson(subjob.getTransforms().get("mapping").toString(), Mapping[].class);
-        String[] columnArray = new String[mappings.length];
-        for (int i = 0; i < mappings.length; i++) {
-            columnArray[i] = mappings[i].getSource_field_name();
+        List<ExchangisJobTransformsItem> mappings = subjob.getTransforms().getMapping();
+
+        String[] columnArray = new String[mappings.size()];
+        for (int i = 0; i < mappings.size(); i++) {
+            columnArray[i] = mappings.get(i).getSourceFieldName();
         }
 
         return columnArray;
