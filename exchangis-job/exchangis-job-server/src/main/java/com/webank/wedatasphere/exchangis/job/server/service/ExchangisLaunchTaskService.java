@@ -27,6 +27,23 @@ public interface ExchangisLaunchTaskService extends IService<ExchangisLaunchTask
      *            the size
      * @return the task list
      */
-    List<ExchangisTaskInfoVO> getTaskList(Long taskId, String taskName, String status, Long launchStartTime,
+    List<ExchangisTaskInfoVO> listTasks(Long taskId, String taskName, String status, Long launchStartTime,
         Long launchEndTime, int current, int size);
+
+    /**
+     * Count int.
+     *
+     * @param taskId
+     *            the task id
+     * @param taskName
+     *            the task name
+     * @param status
+     *            the status
+     * @param launchStartTime
+     *            the launch start time
+     * @param launchEndTime
+     *            the launch end time
+     * @return the int
+     */
+    int count(Long taskId, String taskName, String status, Long launchStartTime, Long launchEndTime);
 }
