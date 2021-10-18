@@ -29,7 +29,7 @@
         id,task_name, job_id, job_name, content, execute_node, create_time, create_user, launch_time, proxy_user, params_json, status, complete_time, engine_type
     </sql>
 
-    <select id="getTaskList" resultMap="BaseResultMap">
+    <select id="listTasks" resultMap="BaseResultMap">
         SELECT
         <include refid="BaseColumnList"/>
         FROM
@@ -41,7 +41,7 @@
             <if test="taskName != null and taskName.trim() != ''">
                 and task_name like concat('%', #{taskName}, '%')
             </if>
-            <if test="status != null">
+            <if test="status != null and status.trim() != ''">
                 and status = #{status}
             </if>
             <if test="launchStartTime != null">
@@ -52,6 +52,30 @@
             </if>
         </where>
         limit ${start}, ${size}
+    </select>
+
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM
+        <include refid="TableName"/>
+        <where>
+            <if test="taskId != null">
+                and task_id = #{taskId}
+            </if>
+            <if test="taskName != null and taskName.trim() != ''">
+                and task_name like concat('%', #{taskName}, '%')
+            </if>
+            <if test="status != null and status.trim() != ''">
+                and status = #{status}
+            </if>
+            <if test="launchStartTime != null">
+                and launch_time &gt;= #{launchStartTime}
+            </if>
+            <if test="launchEndTime != null">
+                and launch_time &lt;= #{launchEndTime}
+            </if>
+        </where>
     </select>
 
 </mapper>

@@ -32,13 +32,14 @@ public class ExchangisTaskController {
     private ExchangisLaunchTaskService exchangisLaunchTaskService;
 
     @GET
-    public Message getTaskList(@QueryParam(value = "taskId") Long taskId,
+    public Message listTasks(@QueryParam(value = "taskId") Long taskId,
         @QueryParam(value = "taskName") String taskName, @QueryParam(value = "status") String status,
         @QueryParam(value = "launchStartTime") Long launchStartTime,
         @QueryParam(value = "launchEndTime") Long launchEndTime, @QueryParam(value = "current") int current,
         @QueryParam(value = "size") int size) {
-        List<ExchangisTaskInfoVO> taskList = exchangisLaunchTaskService.getTaskList(taskId, taskName, status,
+        List<ExchangisTaskInfoVO> taskList = exchangisLaunchTaskService.listTasks(taskId, taskName, status,
             launchStartTime, launchEndTime, current, size);
-        return Message.ok().data("result", taskList);
+        int total = exchangisLaunchTaskService.count(taskId, taskName, status, launchStartTime, launchEndTime);
+        return Message.ok().data("result", taskList).data("total", total);
     }
 }
