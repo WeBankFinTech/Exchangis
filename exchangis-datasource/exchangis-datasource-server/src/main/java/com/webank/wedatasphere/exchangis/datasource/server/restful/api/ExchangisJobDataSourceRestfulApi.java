@@ -66,7 +66,7 @@ public class ExchangisJobDataSourceRestfulApi {
     // 根据 任务ID 获取该任务的数据源引擎配置项 UI 数据
     @GET
     @Path("jobs/{jobId}/{jobName}/datasource/settings/ui")
-    public Response getJobSettingsUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId, @PathParam("jobName")String jobName) {
+    public Response getJobSettingsUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId, @PathParam("jobName")String jobName) throws Exception {
         Message message = this.exchangisDataSourceService.getJobDataSourceSettingsUI(jobId, jobName);
         return Message.messageToResponse(message);
     }
