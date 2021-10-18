@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilder;
-import com.webank.wedatasphere.exchangis.job.domain.*;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
 import com.webank.wedatasphere.exchangis.job.handler.JobHandler;
 import com.webank.wedatasphere.exchangis.job.sqoop.handler.SqoopJobHandler;
 import com.webank.wedatasphere.exchangis.job.sqoop.reader.SqoopReader;
@@ -63,14 +65,14 @@ public class SqoopJobBuilder extends ExchangisJobBuilder {
         }
 
         JobHandler jobhandler;
-        Reader reader;
-        Writer writer;
+        SqoopReader reader;
+        SqoopWriter writer;
 
         try {
             if (newClassList.stream().anyMatch(c -> c.equalsIgnoreCase(source))) {
                 String name = newClassList.stream().filter(f -> f.equalsIgnoreCase(source)).findAny().get();
                 jobhandler = (JobHandler) Class.forName(HANDLER_PACKAGE_NAME + "." + name + "JobHandler").newInstance();
-                reader = (Reader) Class.forName(READER_PACKAGE_NAME + "." + name + "Reader").newInstance();
+                reader = (SqoopReader) Class.forName(READER_PACKAGE_NAME + "." + name + "Reader").newInstance();
             } else {
                 jobhandler = new SqoopJobHandler();
                 reader = new SqoopReader();
@@ -92,8 +94,17 @@ public class SqoopJobBuilder extends ExchangisJobBuilder {
             throw new ExchangisDataSourceException(23001, e.getLocalizedMessage());
         }
 
-        String code = "import --connect jdbc:mysql://172.24.2.61:3306/test --username root --password 123456 --table sqooptest --delete-target-dir --num-mappers 1 --hive-import --hive-database test --hive-table sqooptest --hive-overwrite --verbose";
+        String code = makeCodeString(reader, writer);
         return code;
+    }
+
+    private String makeCodeString(SqoopReader reader, SqoopWriter writer) {
+        String readerString = reader.getReaderString();
+        String writerString = writer.getWriterString();
+        String head = "import";
+        String settings = "--delete-target-dir --num-mappers 1";
+        String all = head + " " + readerString + " " + writerString + " " + settings;
+        return all;
     }
 
     private String getDataSourceType(String id) {
