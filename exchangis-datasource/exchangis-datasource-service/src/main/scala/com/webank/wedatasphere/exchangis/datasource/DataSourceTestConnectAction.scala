@@ -10,7 +10,7 @@ class DataSourceTestConnectAction(val id: Long, val version: Long) extends PutAc
 
   override def getUser: String = this.user
 
-  override def suffixURLs: Array[String] = Array("datasourcemanager", id+"", version+"", "op", "connect")
+  override def suffixURLs: Array[String] = Array("datasourcesmanager", id+"", version+"", "op", "connect")
 
   override def getRequestPayload: String = ""
 }

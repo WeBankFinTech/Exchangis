@@ -5,7 +5,7 @@ import com.webank.wedatasphere.linkis.httpclient.dws.response.DWSResult
 
 import scala.beans.BeanProperty
 
-@DWSHttpMessageResult("/api/rest_j/v\\d+/datasourcemanager/info/json")
+@DWSHttpMessageResult("/api/rest_j/v\\d+/datasourcesmanager/info/json")
 class CreateDataSourceResult extends scala.AnyRef with DWSResult {
 
   @BeanProperty var type_data: java.util.Map[String, Any] = _
