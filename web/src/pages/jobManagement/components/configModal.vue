@@ -13,29 +13,32 @@
       :label-col="{ span: 4 }"
     >
       <h2>任务配置</h2>
-      <a-form-item label="执行用户" name="execUser">
-        <a-input v-model:value="formState.execUser" />
+      <a-form-item label="执行用户" name="proxyUser">
+        <a-input v-model:value="formState.proxyUser" />
       </a-form-item>
-      <a-form-item label="执行用户" name="execPoint">
-        <a-input v-model:value="formState.execPoint" />
+      <a-form-item label="执行节点" name="executeNode">
+        <a-input v-model:value="formState.executeNode" />
       </a-form-item>
       <a-form-item label="同步方式" name="syncType">
-        <a-radio-group v-model:value="formState.syncType" name="syncType">
-          <a-radio :value="1"> 全量 </a-radio>
-          <a-radio :value="2"> 增量 </a-radio>
+        <a-radio-group
+          v-model:defaultValue="formState.syncType"
+          name="syncType"
+        >
+          <a-radio :value="'FULL'"> 全量 </a-radio>
+          <a-radio :value="'INCREMENTAL'"> 增量 </a-radio>
         </a-radio-group>
       </a-form-item>
       <h2>任务变量 <PlusOutlined class="fr" @click="createTask" /></h2>
       <div
-        v-for="(item, index) in formState.taskVariable"
+        v-for="(item, index) in formState.jobParams"
         style="overflow: hidden"
         :key="index"
       >
-        <a-form-item class="w40 fl" :label="index + 1" name="taskVariableKey">
+        <a-form-item class="w40 fl" :label="index + 1" name="jobParamsKey">
           <a-input v-model:value="item.key" />
         </a-form-item>
         <span class="fl separator">=</span>
-        <a-form-item class="w40 fl" name="taskVariableValue">
+        <a-form-item class="w40 fl" name="jobParamsValue">
           <a-input v-model:value="item.value" />
         </a-form-item>
       </div>
@@ -63,6 +66,10 @@ export default {
       type: String,
       default: "",
     },
+    formData: {
+      type: Object,
+      default: () => {},
+    },
   },
   emits: ["finish", "cancel", "update:visible"],
   data() {
@@ -70,21 +77,38 @@ export default {
       // 是否加载中
       confirmLoading: false,
       // 表单数据
-      formState: {
-        execUser: "",
-        execPoint: "",
-        syncType: "",
-        taskVariable: [],
-      },
+      formState: this.formData,
       // 验证
       rules: {
-        execUser: [{ required: true }],
-        execPoint: [{ required: true }],
+        proxyUser: [{ required: true }],
+        executeNode: [{ required: true }],
         syncType: [{ required: true }],
       },
     };
   },
-  watch: {},
+  watch: {
+    formData: {
+      handler(newVal, oldVal) {
+        const formData = Object.assign(
+          {},
+          JSON.parse(JSON.stringify(toRaw(newVal)))
+        );
+        const keys = Object.keys(formData["jobParams"]);
+        const jobParams = [];
+        for (let i = 0; i < keys.length; i++) {
+          let key = keys[i];
+          let value = formData["jobParams"][key];
+          const o = Object.create(null);
+          o.key = key;
+          o.value = value;
+          jobParams.push(o);
+        }
+        formData["jobParams"] = jobParams;
+        this.formState = formData;
+      },
+      deep: true,
+    },
+  },
   methods: {
     async handleOk() {
       await this.$refs.formRef.validate();
@@ -108,7 +132,7 @@ export default {
       this.$emit("finish", formatData);
     },
     createTask() {
-      this.formState.taskVariable.push({ key: "", value: "" });
+      this.formState.jobParams.push({ key: "", value: "" });
     },
   },
 };
