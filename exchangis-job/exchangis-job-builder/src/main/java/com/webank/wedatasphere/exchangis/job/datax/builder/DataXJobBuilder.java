@@ -1,14 +1,15 @@
-package com.webank.wedatasphere.exchangis.job.builder;
+package com.webank.wedatasphere.exchangis.job.datax.builder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
-import com.webank.wedatasphere.exchangis.job.datax.domain.LaunchCode;
+import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilder;
+import com.webank.wedatasphere.exchangis.job.datax.domain.DataxLaunchCode;
 import com.webank.wedatasphere.exchangis.job.datax.handler.DataxJobHandler;
-import com.webank.wedatasphere.exchangis.job.datax.reader.Reader;
-import com.webank.wedatasphere.exchangis.job.datax.writer.Writer;
+import com.webank.wedatasphere.exchangis.job.datax.reader.DataxReader;
+import com.webank.wedatasphere.exchangis.job.datax.writer.DataxWriter;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DataXJobBuilder implements ExchangisJobBuilder {
+public class DataXJobBuilder extends ExchangisJobBuilder {
 
     protected static final String HANDLER_PACKAGE_NAME = "com.webank.wedatasphere.exchangis.job.datax.handler";
     protected static final String READER_PACKAGE_NAME = "com.webank.wedatasphere.exchangis.job.datax.reader";
@@ -42,7 +43,7 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
         Long jobId = job.getId();
         List<ExchangisLaunchTask> launchTasks = new ArrayList<>();
         for (ExchangisSubJob subjob : exchangisSubJobs) {
-            LaunchCode code = new LaunchCode();
+            DataxLaunchCode code = new DataxLaunchCode();
             code.setContent(generateContents(subjob, jobId));
             code.setSettings(generateSettings(subjob));
 
@@ -75,29 +76,29 @@ public class DataXJobBuilder implements ExchangisJobBuilder {
         }
 
         JobHandler jobhandler;
-        Reader reader;
-        Writer writer;
+        DataxReader reader;
+        DataxWriter writer;
         List contents = new ArrayList();
 
         try {
             if (newClassList.stream().anyMatch(c -> c.equalsIgnoreCase(source))) {
                 String name = newClassList.stream().filter(f -> f.equalsIgnoreCase(source)).findAny().get();
                 jobhandler = (JobHandler) Class.forName(HANDLER_PACKAGE_NAME + "." + name + "JobHandler").newInstance();
-                reader = (Reader) Class.forName(READER_PACKAGE_NAME + "." + name + "Reader").newInstance();
+                reader = (DataxReader) Class.forName(READER_PACKAGE_NAME + "." + name + "Reader").newInstance();
             } else {
                 jobhandler = new DataxJobHandler();
-                reader = new Reader();
+                reader = new DataxReader();
             }
             jobhandler.handleReader(subjob, jobId, reader);
 
             if (newClassList.stream().anyMatch(c -> c.equalsIgnoreCase(sink))) {
                 String name = newClassList.stream().filter(f -> f.equalsIgnoreCase(sink)).findAny().get();
                 jobhandler = (JobHandler) Class.forName(HANDLER_PACKAGE_NAME + "." + name + "JobHandler").newInstance();
-                writer = (Writer) Class.forName(WRITER_PACKAGE_NAME + "." + name + "Writer").newInstance();
+                writer = (DataxWriter) Class.forName(WRITER_PACKAGE_NAME + "." + name + "Writer").newInstance();
 
             } else {
                 jobhandler = new DataxJobHandler();
-                writer = new Writer();
+                writer = new DataxWriter();
             }
             jobhandler.handleWriter(subjob, jobId, writer);
 
