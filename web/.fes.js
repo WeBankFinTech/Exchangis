@@ -66,8 +66,9 @@ export default {
   proxy: {
     "/api": {
       //target: "http://192.168.0.157:9321/",
-      target: "http://127.0.0.1:9321/",
-      changeOrigin: true,
+      //target: "http://127.0.0.1:9321/",
+      target: "http://124.70.31.149:29001",
+	  changeOrigin: true,
       pathRewrite: { "^/api": "/api" },
     },
   },
