@@ -18,7 +18,10 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
 @Mapper
 public interface ExchangisLaunchTaskMapper extends BaseMapper<ExchangisLaunchTask> {
 
-    List<ExchangisLaunchTask> getTaskList(@Param("taskId") Long taskId, @Param("taskName") String taskName,
+    List<ExchangisLaunchTask> listTasks(@Param("taskId") Long taskId, @Param("taskName") String taskName,
         @Param("status") String status, @Param("launchStartTime") Date launchStartTime,
         @Param("launchEndTime") Date launchEndTime, @Param("start") int start, @Param("size") int size);
+
+    int count(@Param("taskId") Long taskId, @Param("taskName") String taskName, @Param("status") String status,
+        @Param("launchStartTime") Date launchStartTime, @Param("launchEndTime") Date launchEndTime);
 }

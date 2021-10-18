@@ -25,7 +25,7 @@ public class ExchangisLaunchTaskServiceImpl extends ServiceImpl<ExchangisLaunchT
     private ExchangisLaunchTaskService exchangisLaunchTaskService;
 
     @Override
-    public List<ExchangisTaskInfoVO> getTaskList(Long taskId, String taskName, String status, Long launchStartTime,
+    public List<ExchangisTaskInfoVO> listTasks(Long taskId, String taskName, String status, Long launchStartTime,
         Long launchEndTime, int current, int size) {
         if (current <= 0) {
             current = 1;
@@ -38,10 +38,18 @@ public class ExchangisLaunchTaskServiceImpl extends ServiceImpl<ExchangisLaunchT
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
         List<ExchangisLaunchTask> taskList =
-            this.baseMapper.getTaskList(taskId, taskName, status, startTime, endTime, start, size);
+            this.baseMapper.listTasks(taskId, taskName, status, startTime, endTime, start, size);
 
         return taskList.stream().map(task -> {
             return modelMapper.map(task, ExchangisTaskInfoVO.class);
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public int count(Long taskId, String taskName, String status, Long launchStartTime, Long launchEndTime) {
+        Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
+        Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
+
+        return this.baseMapper.count(taskId, taskName, status, startTime, endTime);
     }
 }
