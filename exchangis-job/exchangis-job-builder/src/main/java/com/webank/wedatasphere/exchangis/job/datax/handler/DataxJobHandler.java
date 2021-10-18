@@ -1,20 +1,21 @@
 package com.webank.wedatasphere.exchangis.job.datax.handler;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsItem;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
-import com.webank.wedatasphere.exchangis.job.datax.reader.Reader;
-import com.webank.wedatasphere.exchangis.job.datax.writer.Writer;
+import com.webank.wedatasphere.exchangis.job.datax.reader.DataxReader;
+import com.webank.wedatasphere.exchangis.job.datax.writer.DataxWriter;
 import com.webank.wedatasphere.exchangis.job.domain.Connection;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
+import com.webank.wedatasphere.exchangis.job.domain.Reader;
+import com.webank.wedatasphere.exchangis.job.domain.Writer;
 import com.webank.wedatasphere.exchangis.job.handler.JobHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DataxJobHandler implements JobHandler {
 
@@ -26,7 +27,9 @@ public class DataxJobHandler implements JobHandler {
     Gson gson = builder.create();
 
     @Override
-    public void handleReader(ExchangisSubJob subjob, Long jobId, Reader reader) {
+    public void handleReader(ExchangisSubJob subjob, Long jobId, Reader rd) {
+
+        DataxReader reader = (DataxReader) rd;
 
         if (reader.getName() == null) {
             reader.setName("reader");
@@ -63,7 +66,9 @@ public class DataxJobHandler implements JobHandler {
 
 
     @Override
-    public void handleWriter(ExchangisSubJob subjob, Long jobId, Writer writer) {
+    public void handleWriter(ExchangisSubJob subjob, Long jobId, Writer wt) {
+
+        DataxWriter writer = (DataxWriter) wt;
         if (writer.getName() == null) {
             writer.setName("writer");
         }

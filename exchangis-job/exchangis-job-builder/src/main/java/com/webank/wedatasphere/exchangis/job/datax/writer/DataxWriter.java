@@ -1,10 +1,10 @@
 package com.webank.wedatasphere.exchangis.job.datax.writer;
 
-import com.webank.wedatasphere.exchangis.job.datax.domain.Content;
+import com.webank.wedatasphere.exchangis.job.domain.Writer;
 
 import java.util.Map;
 
-public class Writer extends Content {
+public class DataxWriter extends Writer {
     private Map parameter;
 
     public Map getParameter() {
