@@ -32,7 +32,7 @@ public class ExchangisDataSourceRestfulApi {
     // list all datasource types
     @GET
     @Path("datasources/type")
-    public Response listDataSourceTypes(@Context HttpServletRequest request) {
+    public Response listDataSourceTypes(@Context HttpServletRequest request) throws Exception {
         Message message = this.exchangisDataSourceService.listDataSources(request);
         return Message.messageToResponse(message);
     }
@@ -48,8 +48,14 @@ public class ExchangisDataSourceRestfulApi {
     // list all datasources
     @GET
     @Path("datasources")
-    public Response listAllDataSources(@Context HttpServletRequest request) throws Exception {
-        Message message = this.exchangisDataSourceService.listAllDataSources(request);
+    public Response listAllDataSources(
+            @Context HttpServletRequest request,
+            @QueryParam("typeId") Long typeId,
+            @QueryParam("typeName") String typeName,
+            @QueryParam("page") Integer page,
+            @QueryParam("size") Integer size
+    ) throws Exception {
+        Message message = this.exchangisDataSourceService.listAllDataSources(request, typeName, typeId, page, size);
         return Message.messageToResponse(message);
     }
 
