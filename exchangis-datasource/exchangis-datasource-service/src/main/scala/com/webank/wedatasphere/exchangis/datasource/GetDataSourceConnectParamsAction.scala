@@ -10,5 +10,5 @@ class GetDataSourceConnectParamsAction(resourceId: String) extends GetAction wit
 
   override def getUser: String = this.user
 
-  override def suffixURLs: Array[String] = Array("datasourcemanager", resourceId, "connect_params")
+  override def suffixURLs: Array[String] = Array("datasourcesmanager", resourceId, "connect_params")
 }

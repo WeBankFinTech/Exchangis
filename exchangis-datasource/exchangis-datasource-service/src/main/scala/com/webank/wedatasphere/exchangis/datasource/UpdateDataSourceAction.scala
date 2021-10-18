@@ -23,7 +23,7 @@ class UpdateDataSourceAction(val id: Long) extends PutAction with DataSourceActi
 
   override def getUser: String = this.user
 
-  override def suffixURLs: Array[String] = Array("datasourcemanager", "info", id+"", "json")
+  override def suffixURLs: Array[String] = Array("datasourcesmanager", "info", id+"", "json")
 }
 
 
