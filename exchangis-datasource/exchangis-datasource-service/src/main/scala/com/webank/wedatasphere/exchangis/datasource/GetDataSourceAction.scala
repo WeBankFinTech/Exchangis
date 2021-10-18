@@ -10,5 +10,5 @@ class GetDataSourceAction(resourceId: String) extends GetAction with DataSourceA
 
   override def getUser: String = this.user
 
-  override def suffixURLs: Array[String] = Array("datasourcemanager", "info", resourceId)
+  override def suffixURLs: Array[String] = Array("datasourcesmanager", "info", resourceId)
 }
