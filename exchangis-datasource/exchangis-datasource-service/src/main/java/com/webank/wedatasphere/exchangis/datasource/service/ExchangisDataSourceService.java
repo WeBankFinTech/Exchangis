@@ -202,7 +202,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             // 创建完成后发布数据源参数，形成一个版本
             Result versionExec = client.execute(
                     UpdateDataSourceParameterAction.builder()
-                            .setDataSourceId(dataSourceId)
+                            .setDataSourceId(dataSourceId+"")
                             .addRequestPayloads(json)
                             .build()
             );
@@ -247,7 +247,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         try {
             Result execute = client.execute(UpdateDataSourceAction.builder()
                     .setUser(user)
-                    .setDataSourceId(id)
+                    .setDataSourceId(id+"")
                     .addRequestPayloads(json)
                     .build()
             );
@@ -275,7 +275,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         try {
             Result versionExec = client.execute(
                     UpdateDataSourceParameterAction.builder()
-                            .setDataSourceId(id)
+                            .setDataSourceId(id+"")
                             .addRequestPayloads(json)
                             .build()
             );
@@ -307,7 +307,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String responseBody;
         try {
             Result execute = dataSourceRemoteClient.execute(
-                    new DeleteDataSourceAction(id + "")
+                    new DeleteDataSourceAction.Builder().setResourceId(id+"").builder()
             );
             responseBody = execute.getResponseBody();
         } catch (Exception e) {
@@ -680,7 +680,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String versionResponseBody;
         try {
             Result versionExecute = linkisDataSourceRemoteClient.execute(
-                    new GetDataSourceVersionsAction(id + "")
+                    new GetDataSourceVersionsAction.Builder().setResourceId(id+"").build()
             );
             versionResponseBody = versionExecute.getResponseBody();
         } catch (Exception e) {
@@ -719,7 +719,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String responseBody;
         try {
             Result execute = linkisDataSourceRemoteClient.execute(
-                    new DataSourceTestConnectAction(id, version)
+                    new DataSourceTestConnectAction.Builder().setDataSourceId(id+"").setVersion(version+"").build()
             );
             responseBody = execute.getResponseBody();
         } catch (Exception e) {
@@ -749,7 +749,8 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String responseBody;
         try {
             Result execute = linkisDataSourceRemoteClient.execute(
-                    new PublishDataSourceVersionAction(id, version)
+                    new PublishDataSourceVersionAction.Builder().setDataSourceId(id+"").setVersion(version+"").build()
+//                    new PublishDataSourceVersionAction(id, version)
             );
 
             responseBody = execute.getResponseBody();
@@ -809,7 +810,8 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String responseBody;
         try {
             Result execute = linkisDataSourceRemoteClient.execute(
-                    new ExpireDataSourceAction(id)
+                    new ExpireDataSourceAction.Builder().setDataSourceId(id+"").build()
+//                    new ExpireDataSourceAction(id)
             );
             responseBody = execute.getResponseBody();
         } catch (Exception e) {
