@@ -129,6 +129,7 @@
     <config-modal
       v-model:visible="modalCfg.visible"
       :id="modalCfg.id"
+      :formData="configModalData"
       @finish="handleModalFinish"
     />
     <copy-modal
@@ -205,6 +206,7 @@ export default {
       nameEditable: false,
       fieldsSource: [],
       fieldsSink: [],
+      configModalData: {},
     };
   },
   props: {
@@ -237,6 +239,16 @@ export default {
           item.engineType = data.engineType;
         });
         this.jobData = data;
+
+        const configData = Object.create(null);
+        configData["executeNode"] = data["executeNode"] || "";
+        configData["proxyUser"] = data["proxyUser"] || "";
+        configData["syncType"] = data["syncType"] || "";
+        configData["jobParams"] = JSON.parse(data["jobParams"]);
+        this.configModalData = configData;
+
+        console.log("configData", configData);
+
         this.list = this.jobData.content.subJobs;
         if (this.list.length) {
           this.activeIndex = 0;
@@ -253,29 +265,23 @@ export default {
         {},
         JSON.parse(JSON.stringify(toRaw(config)))
       );
-      if (_config.syncType && _config.syncType == 1) {
-        _config.syncType = "FULL";
-      } else {
-        _config.syncType = "INCREMENTAL";
-      }
-      if (_config.taskVariable) {
+      if (_config.jobParams) {
         let jobParams = Object.create(null);
-        _config.taskVariable.forEach((item) => {
+        _config.jobParams.forEach((item) => {
           // jobParams = Object.assign(jobParams, item);
           jobParams[item.key] = item.value;
         });
-        _config.jobParams = jobParams;
-        delete _config.taskVariable;
+        _config.jobParams = JSON.stringify(jobParams);
       }
       console.log("_config", _config);
-      // updateTaskConfiguration(id, _config)
-      //   .then((res) => {
-      //     message.success("更新/保存成功");
-      //   })
-      //   .catch((err) => {
-      //     message.error("更新/保存失败");
-      //     console.log("updateTaskConfiguration error", err);
-      //   });
+      updateTaskConfiguration(id, _config)
+        .then((res) => {
+          message.success("更新/保存成功");
+        })
+        .catch((err) => {
+          message.error("更新/保存失败");
+          console.log("updateTaskConfiguration error", err);
+        });
     },
     handleModalCopy(data) {
       if (data) {

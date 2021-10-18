@@ -192,3 +192,10 @@ export const getSettingsParams = (engineType) => {
     { method: "GET" }
   );
 };
+
+// 同步历史
+export const getSyncHistory = (body) => {
+  return request("/tasks", body, {
+    method: "GET",
+  });
+};
