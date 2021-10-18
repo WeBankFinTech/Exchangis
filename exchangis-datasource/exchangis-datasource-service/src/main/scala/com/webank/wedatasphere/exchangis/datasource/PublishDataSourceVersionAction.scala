@@ -13,5 +13,5 @@ class PublishDataSourceVersionAction(resourceId: Long, versionId: Long) extends 
   override def getUser: String = this.user
 
 //  override def suffixURLs: Array[String] = Array("datasourcemanager", "info", resourceId+"", "version")
-  override def suffixURLs: Array[String] = Array("datasourcemanager", "publish", resourceId+"", versionId+"")
+  override def suffixURLs: Array[String] = Array("datasourcesmanager", "publish", resourceId+"", versionId+"")
 }
