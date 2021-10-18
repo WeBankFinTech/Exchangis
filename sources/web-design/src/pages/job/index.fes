@@ -51,7 +51,7 @@
                         <Column prop="createTime" :name="$t('job.creatTime')" />
                         <Column :component="optionComponent" :name="$t('job.action')" width="350px" />
                     </Wb-table>
-                    <div class="page-pagination-fix">
+                    <div class="page-pagination">
                         <Pagination :loking="pagination.locking" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
                     </div>
                 </fes-list-panel>

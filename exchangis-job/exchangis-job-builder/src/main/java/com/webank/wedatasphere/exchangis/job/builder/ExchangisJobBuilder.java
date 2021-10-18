@@ -4,6 +4,8 @@ import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisData
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
 
-public interface ExchangisJobBuilder {
-    ExchangisLaunchTask[] buildJob(ExchangisJob job) throws ExchangisDataSourceException;
+import java.util.List;
+
+public abstract class ExchangisJobBuilder {
+    public abstract List<ExchangisLaunchTask> buildJob(ExchangisJob job) throws ExchangisDataSourceException;
 }
