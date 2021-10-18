@@ -10,5 +10,5 @@ class DeleteDataSourceAction(resourceId: String) extends DeleteAction with DataS
 
   override def getUser: String = this.user
 
-  override def suffixURLs: Array[String] = Array("datasourcemanager", "info", resourceId)
+  override def suffixURLs: Array[String] = Array("datasourcesmanager", "info", resourceId)
 }
