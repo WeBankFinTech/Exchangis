@@ -36,6 +36,14 @@ export default {
           title: "globalMenu.jobManagement",
         },
       },
+      {
+        path: "/synchronizationHistory",
+        component: "@/pages/synchronizationHistory",
+        meta: {
+          name: "synchronizationHistory",
+          title: "globalMenu.synchronizationHistory",
+        },
+      },
     ],
   },
   request: {
@@ -61,6 +69,9 @@ export default {
       },
       {
         name: "jobManagement",
+      },
+      {
+        name: "synchronizationHistory",
       },
     ],
   },
