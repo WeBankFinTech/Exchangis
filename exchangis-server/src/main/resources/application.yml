@@ -1,5 +1,5 @@
 server:
-  port: 9321
+  port: 9322
 spring:
   application:
     name: exchangis-server

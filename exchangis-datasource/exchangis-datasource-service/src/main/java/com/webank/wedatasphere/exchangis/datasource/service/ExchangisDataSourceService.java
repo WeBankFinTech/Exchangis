@@ -625,7 +625,8 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         try {
             Result execute = linkisDataSourceRemoteClient.execute(
-                    new GetDataSourceAction(id + "")
+//                    new GetDataSourceAction(id + "")
+                    GetInfoByDataSourceIdAction.builder().setDataSourceId(id).build()
             );
             String responseBody = execute.getResponseBody();
             GetDataSourceInfoResultDTO result = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
@@ -649,7 +650,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         try {
             // 先根据ID获取数据源详情
             Result execute = linkisDataSourceRemoteClient.execute(
-                    new GetDataSourceAction(id + "")
+                    GetInfoByDataSourceIdAction.builder().setDataSourceId(id).build()
             );
             responseBody = execute.getResponseBody();
         } catch (Exception e) {
@@ -779,7 +780,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String responseBody;
         try {
             Result execute = linkisDataSourceRemoteClient.execute(
-                    new GetDataSourceConnectParamsAction(id + "")
+                    GetConnectParamsByDataSourceIdAction.builder().setDataSourceId(id).build()
             );
 
             responseBody = execute.getResponseBody();
