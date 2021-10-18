@@ -1,10 +1,10 @@
 package com.webank.wedatasphere.exchangis.job.datax.reader;
 
-import com.webank.wedatasphere.exchangis.job.datax.domain.Content;
+import com.webank.wedatasphere.exchangis.job.domain.Reader;
 
 import java.util.Map;
 
-public class Reader extends Content {
+public class DataxReader extends Reader {
 
     private Map parameter;
 
