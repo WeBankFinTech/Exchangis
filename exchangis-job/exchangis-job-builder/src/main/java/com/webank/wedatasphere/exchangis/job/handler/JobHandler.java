@@ -1,8 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.handler;
 
-import com.webank.wedatasphere.exchangis.job.datax.reader.Reader;
-import com.webank.wedatasphere.exchangis.job.datax.writer.Writer;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
+import com.webank.wedatasphere.exchangis.job.domain.Reader;
+import com.webank.wedatasphere.exchangis.job.domain.Writer;
 
 public interface JobHandler {
 

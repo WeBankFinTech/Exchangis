@@ -6,42 +6,20 @@ export default defineComponent({
     param: Object,
   },
   emits: ["updateInfo"],
-  setup(props, context){
-    let { type, field , value } = props.param;
+  setup(props, context) {
+    let { type, field, value } = props.param;
     let tmlName = field.split(".").pop();
-    const newProps = computed(() => JSON.parse(JSON.stringify(props.param)))
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.param)));
     watch(newProps, (val, oldVal) => {
-      value = val.value
-      console.log(val, 123123)
-    })
+      value = val.value;
+      console.log(val, 123123);
+    });
 
     if (type === "OPTION") {
       // 下拉框
-      return () => h(
-        "select",
-        {
-          value: value,
-          onChange: ($event) => {
-            let res = toRaw(props.param);
-            res.value = $event.target.value;
-            context.emit("updateInfo", res);
-          },
-        },
-        props.param.values.map((item) => {
-          return h(
-            "option",
-            {
-              value: item,
-            },
-            item
-          );
-        })
-      );
-    } else {
-      // 输入框
-      return () => h("div", {}, [
+      return () =>
         h(
-          "input",
+          "select",
           {
             value: value,
             onChange: ($event) => {
@@ -50,11 +28,53 @@ export default defineComponent({
               context.emit("updateInfo", res);
             },
           },
-          ""
-        ),
-        h("span", {}, props.param.unit ? props.param.unit : ""),
-      ]);
+          props.param.values.map((item) => {
+            return h(
+              "option",
+              {
+                value: item,
+              },
+              item
+            );
+          })
+        );
+    } else {
+      // 输入框
+      return () =>
+        h("div", {}, [
+          h(
+            "input",
+            {
+              value: value,
+              class: "custom_input",
+              onChange: ($event) => {
+                let res = toRaw(props.param);
+                res.value = $event.target.value;
+                context.emit("updateInfo", res);
+              },
+            },
+            ""
+          ),
+          h(
+            "span",
+            {
+              class: "custom_span_unit",
+            },
+            props.param.unit ? props.param.unit : ""
+          ),
+        ]);
     }
-  }
+  },
 });
 </script>
+
+<style scoped>
+.custom_input {
+  width: 226px;
+  height: 25px;
+}
+.custom_span_unit {
+  margin-left: 8px;
+  white-space: nowrap;
+}
+</style>

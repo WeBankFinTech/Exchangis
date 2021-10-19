@@ -1,9 +1,11 @@
 package com.webank.wedatasphere.exchangis.job.datax.domain;
 
+import com.webank.wedatasphere.exchangis.job.domain.Content;
+
 import java.util.List;
 import java.util.Map;
 
-public class LaunchCode {
+public class DataxLaunchCode {
 
     private List<Content> content;
 

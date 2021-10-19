@@ -69,11 +69,19 @@ CREATE TABLE `exchangis_project`  (
 DROP TABLE IF EXISTS `exchangis_launch_task`;
 CREATE TABLE `exchangis_launch_task`  (
     id bigint auto_increment,
-    job_id bigint,
+    task_name varchar(100) comment '子任务名称',
+    job_id bigint comment '所属任务id',
+    job_name varchar(100) comment '所属任务名称',
+    content text comment '子任务执行内容',
+    execute_node varchar(255) comment '执行节点',
+    create_time datetime comment '子任务创建时间',
+    create_user varchar(50) comment '创建用户',
+    launch_time  datetime comment '触发时间',
+    proxy_user varchar(50) comment '执行/代理用户',
+    params_json text comment '作业参数',
+    status varchar(50) comment '状态',
+    complete_time datetime comment '完成/中止时间',
     engine_type varchar(64),
-    run_type varchar(64),
-    code text,
-    creator varchar(64),
-    execute_user varchar(64),
     primary key (id)
 ) ENGINE = InnoDB CHARACTER SET = utf8;
+
