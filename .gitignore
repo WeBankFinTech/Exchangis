@@ -32,3 +32,5 @@ exchangis-server/exchangis-extds
 /web/package-lock.json
 package-lock.json
 .DS_Store
+
+web/dist

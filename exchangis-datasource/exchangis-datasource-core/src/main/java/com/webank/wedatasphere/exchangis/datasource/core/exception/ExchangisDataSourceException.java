@@ -11,4 +11,5 @@ public class ExchangisDataSourceException extends ErrorException {
     public ExchangisDataSourceException(int errCode, String desc, String ip, int port, String serviceKind) {
         super(errCode, desc, ip, port, serviceKind);
     }
+
 }
