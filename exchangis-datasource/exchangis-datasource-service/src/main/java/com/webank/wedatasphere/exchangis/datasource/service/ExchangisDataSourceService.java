@@ -643,7 +643,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             LOGGER.info("getDataSource userName:"+userName);
 
             Result execute = linkisDataSourceRemoteClient.execute(
-                    GetInfoByDataSourceIdAction.builder().setUser(userName).setDataSourceId(id).build()
+                    GetInfoByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
             );
             String responseBody = execute.getResponseBody();
             GetDataSourceInfoResultDTO result = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
@@ -671,7 +671,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
             // 先根据ID获取数据源详情
             Result execute = linkisDataSourceRemoteClient.execute(
-                    GetInfoByDataSourceIdAction.builder().setUser(userName).setDataSourceId(id).build()
+                    GetInfoByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
             );
             responseBody = execute.getResponseBody();
         } catch (Exception e) {

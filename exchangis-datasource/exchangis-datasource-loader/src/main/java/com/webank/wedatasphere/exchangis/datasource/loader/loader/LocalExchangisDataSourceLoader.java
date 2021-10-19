@@ -38,14 +38,15 @@ public class LocalExchangisDataSourceLoader implements ExchangisDataSourceLoader
     public void init(MapperHook mapperHook) throws Exception {
         // 初始化磁盘扫描加载
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-//        String loadClassPath =  Objects.requireNonNull(currentClassLoader.getResource("")).getPath();
+        String loadClassPath =  Objects.requireNonNull(currentClassLoader.getResource("")).getPath();
 //        String libPathUrl = loadClassPath + ".." + File.separator + ".." + File.separator + EXCHANGIS_DIR_NAME;
-        LOGGER.info("libPath url is {}",  EXCHANGIS_DIR_NAME);
-
-        List<URL> jars = ExtDsUtils.getJarsUrlsOfPath(EXCHANGIS_DIR_NAME);
+        String libPathUrl = loadClassPath + ".." + File.separator + EXCHANGIS_DIR_NAME;
+        LOGGER.info("libPath url is {}",  libPathUrl);
+        List<URL> jars = ExtDsUtils.getJarsUrlsOfPath(libPathUrl);
+//        List<URL> jars = ExtDsUtils.getJarsUrlsOfPath(EXCHANGIS_DIR_NAME);
         ClassLoader classLoader = new ExchangisDataSourceClassLoader(jars.toArray(new URL[1]), currentClassLoader);
 
-        List<String> classNames = ExtDsUtils.getExchangisExtDataSourceClassNames(EXCHANGIS_DIR_NAME, classLoader);
+        List<String> classNames = ExtDsUtils.getExchangisExtDataSourceClassNames(libPathUrl, classLoader);
         for (String clazzName: classNames) {
             Class<?> clazz = null;
             try {
