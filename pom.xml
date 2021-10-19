@@ -38,7 +38,7 @@
 
 	<properties>
 		<dss.version>1.0.0-RC1</dss.version>
-		<linkis.version>1.0.1</linkis.version>
+		<linkis.version>1.0.2</linkis.version>
 		<streamis.version>0.1.0-SNAPSHOT</streamis.version>
 		<scala.version>2.11.8</scala.version>
 		<jdk.compile.version>1.8</jdk.compile.version>
