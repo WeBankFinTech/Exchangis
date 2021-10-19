@@ -4,7 +4,7 @@ import com.webank.wedatasphere.linkis.datasource.client.impl.{LinkisDataSourceRe
 import com.webank.wedatasphere.linkis.datasource.client.request._
 import com.webank.wedatasphere.linkis.datasource.client.response._
 import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.{DataSource, DataSourceType}
-import com.webank.wedatasphere.linkis.httpclient.dws.authentication.StaticAuthenticationStrategy
+import com.webank.wedatasphere.linkis.httpclient.dws.authentication.{StaticAuthenticationStrategy, TokenAuthenticationStrategy}
 import com.webank.wedatasphere.linkis.httpclient.dws.config.{DWSClientConfig, DWSClientConfigBuilder}
 
 import java.lang
@@ -49,7 +49,7 @@ object ExchangisLinkisRemoteClient {
     .maxConnectionSize(maxConnectionSize)
     .retryEnabled(retryEnabled)
     .readTimeout(readTimeout)
-    .setAuthenticationStrategy(new StaticAuthenticationStrategy())
+    .setAuthenticationStrategy(new TokenAuthenticationStrategy())
     .setAuthTokenKey(authTokenKey)
     .setAuthTokenValue(authTokenValue)
     .setDWSVersion(dwsVersion)
