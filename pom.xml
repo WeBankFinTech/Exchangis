@@ -73,6 +73,7 @@
         <module>exchangis-dao</module>
         <module>exchangis-server</module>
 		<module>exchangis-job</module>
+        <module>assembly-package</module>
     </modules>
 	<dependencyManagement>
 		<dependencies>
