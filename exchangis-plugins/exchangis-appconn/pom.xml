@@ -22,13 +22,13 @@
             <artifactId>linkis-module</artifactId>
             <version>${linkis.version}</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-            </exclusions>
-            <optional>true</optional>
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <artifactId>httpclient</artifactId>-->
+<!--                    <groupId>org.apache.httpcomponents</groupId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--            <optional>true</optional>-->
         </dependency>
 
         <dependency>
