@@ -89,6 +89,8 @@
                     <descriptors>
                         <descriptor>src/main/assembly/distribution.xml</descriptor>
                     </descriptors>
+                    <finalName>${project.artifactId}_${project.version}</finalName>
+                    <outputDirectory>${basedir}/target/packages</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
