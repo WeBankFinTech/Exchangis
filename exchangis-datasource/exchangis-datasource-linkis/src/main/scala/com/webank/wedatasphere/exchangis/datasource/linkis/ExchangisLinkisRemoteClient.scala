@@ -49,7 +49,7 @@ object ExchangisLinkisRemoteClient {
     .maxConnectionSize(maxConnectionSize)
     .retryEnabled(retryEnabled)
     .readTimeout(readTimeout)
-    .setAuthenticationStrategy(new TokenAuthenticationStrategy())
+    .setAuthenticationStrategy(new StaticAuthenticationStrategy())
     .setAuthTokenKey(authTokenKey)
     .setAuthTokenValue(authTokenValue)
     .setDWSVersion(dwsVersion)
