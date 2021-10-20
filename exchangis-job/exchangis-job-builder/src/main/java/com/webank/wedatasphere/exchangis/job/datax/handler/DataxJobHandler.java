@@ -11,7 +11,7 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
 import com.webank.wedatasphere.exchangis.job.domain.Reader;
 import com.webank.wedatasphere.exchangis.job.domain.Writer;
 import com.webank.wedatasphere.exchangis.job.handler.JobHandler;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.webank.wedatasphere.exchangis.job.utils.SpringContextHolder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +19,10 @@ import java.util.Map;
 
 public class DataxJobHandler implements JobHandler {
 
+    public DataxJobHandler() {
+        dataSourceService = SpringContextHolder.getBean(ExchangisDataSourceService.class);
+    }
 
-    @Autowired
     ExchangisDataSourceService dataSourceService;
 
     GsonBuilder builder = new GsonBuilder();
@@ -36,8 +38,10 @@ public class DataxJobHandler implements JobHandler {
         }
 
         Map params = new HashMap<String, String>();
-        //Map connectParams = dataSourceServiceservice.getGetDataSourceInfoResultDTO(jobId).getData().getInfo().getConnectParams();
+//        Map connectParams = dataSourceService.getGetDataSourceInfoResultDTO(jobId).getData().getInfo().getConnectParams();
         Map connectParams = new HashMap();
+        dataSourceService.getDataSourceParamsUI("", "");
+
         connectParams.put("host", "127.0.0.1");
         connectParams.put("port", "3306");
         connectParams.put("username", "root");
