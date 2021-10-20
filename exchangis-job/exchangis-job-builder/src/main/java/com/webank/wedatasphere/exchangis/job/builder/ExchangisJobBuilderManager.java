@@ -1,6 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.builder;
 
+import com.webank.wedatasphere.exchangis.job.datax.builder.DataXJobBuilder;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
+import com.webank.wedatasphere.exchangis.job.sqoop.builder.SqoopJobBuilder;
 
 public class ExchangisJobBuilderManager {
 

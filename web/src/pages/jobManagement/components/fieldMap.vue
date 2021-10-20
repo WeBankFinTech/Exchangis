@@ -3,7 +3,18 @@
     <!-- left -->
     <div class="fm-l">
       <div class="main-header">
-        <span class="main-header-label">字段映射</span>
+        <img src="../../../images/jobDetail/u2664.png" />
+        <img
+          src="../../../images/jobDetail/u2666.png"
+          style="
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            left: 16px;
+            top: 3px;
+          "
+        />
+        <span class="main-header-label" @click="showInfo">字段映射</span>
       </div>
     </div>
     <!-- right -->
@@ -17,8 +28,11 @@
         </div>
       </div>
 
-      <div class="main-content">
-        <div style="margin-bottom: 15px" v-if="fieldsSource.length && fieldsSink.length">
+      <div class="main-content" v-show="isFold">
+        <div
+          style="margin-bottom: 15px"
+          v-if="fieldsSource.length && fieldsSink.length"
+        >
           <a-button type="dashed" @click="addTableRow">新增</a-button>
         </div>
         <!-- left -->
@@ -110,7 +124,7 @@ export default defineComponent({
   props: {
     fmData: Object,
     fieldsSource: Array,
-    fieldsSink: Array
+    fieldsSink: Array,
   },
   emits: ["updateFieldMap"],
   components: {
@@ -120,41 +134,40 @@ export default defineComponent({
     const { type } = props.fmData;
 
     let fieldMap = reactive({
-      sourceDS : [],
+      sourceDS: [],
       sinkDS: [],
-      transformerList: []
-    })
+      transformerList: [],
+    });
 
-    const newProps = computed(() => JSON.parse(JSON.stringify(props.fmData)))
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.fmData)));
     watch(newProps, (val, oldVal) => {
-      const newVal = typeof val === 'string' ? JSON.parse(val): val
-      createDataSource(
-        toRaw(newVal).mapping || []
-      )
-    })
+      console.log("watch newProps in fieldMap", val, oldVal);
+      const newVal = typeof val === "string" ? JSON.parse(val) : val;
+      createDataSource(toRaw(newVal).mapping || []);
+    });
 
     const createFieldOptions = (fieldInfo) => {
       const fieldOptions = [];
       if (fieldInfo) {
-        const fieldList = toRaw(fieldInfo)
+        const fieldList = toRaw(fieldInfo);
         fieldList.forEach((info) => {
           const o = Object.create(null);
           o.value = info.name;
           o.label = info.name;
           o.type = info.type;
           fieldOptions.push(o);
-        })
+        });
       }
       return fieldOptions;
     };
 
     // crate dataSource
     const createDataSource = (map) => {
-      fieldMap.sourceDS = []
-      fieldMap.sinkDS = []
-      fieldMap.transformerList = []
+      fieldMap.sourceDS = [];
+      fieldMap.sinkDS = [];
+      fieldMap.transformerList = [];
       if (typeof map !== "object") {
-        return
+        return;
       }
 
       map.forEach((item, idx) => {
@@ -179,11 +192,9 @@ export default defineComponent({
         fieldMap.transformerList.push(transformerItem);
         fieldMap.sourceDS.push(sourceItem);
         fieldMap.sinkDS.push(sinkItem);
-      })
+      });
     };
-    createDataSource(
-      toRaw(props.fmData).mapping || []
-    )
+    createDataSource(toRaw(props.fmData).mapping || []);
 
     console.log("sourceDS", fieldMap);
 
@@ -217,13 +228,18 @@ export default defineComponent({
     };
 
     const updateTransformer = (res) => {
+      console.log("field map update", res);
       const _transformerList = fieldMap.transformerList.filter(
         (item) => item.key != res.key
       );
       _transformerList.push(res);
       fieldMap.transformerList = _transformerList;
 
-      const transforms = createTransforms(fieldMap.sourceDS, fieldMap.sinkDS, fieldMap.transformerList);
+      const transforms = createTransforms(
+        fieldMap.sourceDS,
+        fieldMap.sinkDS,
+        fieldMap.transformerList
+      );
       context.emit("updateFieldMap", transforms);
     };
 
@@ -231,36 +247,43 @@ export default defineComponent({
       const { key, fieldOptions } = info;
       fieldMap.sourceDS.forEach((item) => {
         if (item.key == key) {
-          item.fieldName = e
-          fieldOptions.forEach(field => {
+          item.fieldName = e;
+          fieldOptions.forEach((field) => {
             if (field.value === item.fieldName) {
-              item.fieldType = field.type
+              item.fieldType = field.type;
             }
-          })
-          return
+          });
+          return;
         }
       });
 
-      const transforms = createTransforms(fieldMap.sourceDS, fieldMap.sinkDS, fieldMap.transformerList);
+      const transforms = createTransforms(
+        fieldMap.sourceDS,
+        fieldMap.sinkDS,
+        fieldMap.transformerList
+      );
       context.emit("updateFieldMap", transforms);
     };
-
 
     const updateSinkFieldName = (info, e) => {
       const { key, fieldOptions } = info;
       fieldMap.sinkDS.forEach((item) => {
         if (item.key == key) {
-          item.fieldName = e
-          fieldOptions.forEach(field => {
+          item.fieldName = e;
+          fieldOptions.forEach((field) => {
             if (field.value === item.fieldName) {
-              item.fieldType = field.type
+              item.fieldType = field.type;
             }
-          })
-          return
+          });
+          return;
         }
       });
 
-      const transforms = createTransforms(fieldMap.sourceDS, fieldMap.sinkDS, fieldMap.transformerList);
+      const transforms = createTransforms(
+        fieldMap.sourceDS,
+        fieldMap.sinkDS,
+        fieldMap.transformerList
+      );
       context.emit("updateFieldMap", transforms);
     };
 
@@ -291,6 +314,10 @@ export default defineComponent({
       fieldMap.sourceDS.push(sourceItem);
       fieldMap.sinkDS.push(sinkItem);
     };
+    let isFold = ref(true);
+    const showInfo = () => {
+      isFold.value = !isFold.value;
+    };
 
     return {
       type,
@@ -317,8 +344,10 @@ export default defineComponent({
       updateSourceFieldName,
       updateSinkFieldName,
       addTableRow,
+      isFold,
+      showInfo,
     };
-  }
+  },
 });
 </script>
 
@@ -333,13 +362,13 @@ export default defineComponent({
   .main-header {
     height: 33px;
     background: inherit;
-    background-color: rgba(102, 102, 255, 1);
     border: none;
     display: flex;
-    border-top-left-radius: 16px;
-    border-bottom-left-radius: 16px;
+    border-top-left-radius: 100%;
+    border-bottom-left-radius: 100%;
+    position: relative;
+    background-color: #6b6b6b;
     :nth-of-type(1) {
-      width: 100%;
       text-align: center;
       line-height: 33px;
       font-size: 16px;
@@ -349,6 +378,8 @@ export default defineComponent({
       font-weight: 700;
       font-style: normal;
       color: #ffffff;
+      position: absolute;
+      left: 46px;
     }
   }
 }

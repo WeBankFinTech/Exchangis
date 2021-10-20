@@ -45,11 +45,11 @@
             <artifactId>exchangis-job-builder</artifactId>
             <version>1.0.0-RC1</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>com.webank.wedatasphere.exchangis</groupId>-->
-        <!--            <artifactId>exchangis-job-launcher</artifactId>-->
-        <!--            <version>1.0.0-RC1</version>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-job-launcher</artifactId>
+            <version>1.0.0-RC1</version>
+        </dependency>
 
     </dependencies>
 
