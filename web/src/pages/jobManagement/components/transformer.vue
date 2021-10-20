@@ -2,21 +2,37 @@
   <div class="transformer-wrap">
     <!-- top -->
     <div class="tf-top">
-      <span>校验：</span>
-      <span v-for="domain in dynamicValidateForm.domains" :key="domain.key">{{
-        `${domain.optionVal} ${domain.value}`
-      }}</span>
+      <span v-for="domain in dynamicValidateForm.domains" :key="domain.key">
+        <span>校验：</span>
+        {{ `${domain.optionVal} ${domain.value}` }}</span
+      >
     </div>
     <!-- mid -->
-    <div class="tf-mid" @click="showModal">
-      <SyncOutlined :style="{ fontSize: '15px', color: '#66f' }" />
+    <div
+      class="tf-mid"
+      @click="showModal"
+      :class="{ 'tf-mid-sync': !dynamicValidateForm.domains.length }"
+    >
+      <img src="../../../images/jobDetail/u6239.png" />
+      <img
+        src="../../../images/jobDetail/u6240.png"
+        style="position: absolute; left: 72px; top: 6px"
+      />
     </div>
     <!-- bottom -->
     <div class="tf-bottom">
-      <span>转换：</span>
-      <span v-if="dynamicValidateForm.transf.value && dynamicValidateForm.transf.startIndex && dynamicValidateForm.transf.endIndex">{{
-        `${dynamicValidateForm.transf.value}(${dynamicValidateForm.transf.startIndex},${dynamicValidateForm.transf.endIndex})`
-      }}</span>
+      <span
+        v-if="
+          dynamicValidateForm.transf.value &&
+          dynamicValidateForm.transf.startIndex &&
+          dynamicValidateForm.transf.endIndex
+        "
+      >
+        <span>转换：</span>
+        {{
+          `${dynamicValidateForm.transf.value}(${dynamicValidateForm.transf.startIndex},${dynamicValidateForm.transf.endIndex})`
+        }}</span
+      >
     </div>
 
     <!-- 弹窗 -->
@@ -99,14 +115,7 @@
                 style="width: 80px"
                 size="small"
               />
-              <span
-                style="
-                   {
-                    lineheight: 'initial';
-                  }
-                "
-                >.</span
-              >
+              <span style="line-height: initial">.</span>
               <a-input
                 v-model:value="dynamicValidateForm.transf.endIndex"
                 placeholder="Length"
@@ -131,7 +140,7 @@ import {
 } from "@ant-design/icons-vue";
 export default defineComponent({
   props: {
-    tfData: Object
+    tfData: Object,
   },
   emits: ["updateTransformer"],
   components: {
@@ -143,15 +152,16 @@ export default defineComponent({
     let transformerMap = reactive({
       validator: props.tfData.validator || [],
       transformer: props.tfData.transformer || [],
-      id: props.tfData.key
-    })
+      id: props.tfData.key,
+    });
 
-    const newProps = computed(() => JSON.parse(JSON.stringify(props.tfData)))
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.tfData)));
     watch(newProps, (val, oldVal) => {
-      const newVal = typeof val === 'string' ? JSON.parse(val): val
-      dynamicValidateForm.domains = transF(newVal.validator)
-      dynamicValidateForm.transf = createTransformFunc(newVal.transformer)
-    })
+      console.log("watch newProps in transformer", val, oldVal);
+      const newVal = typeof val === "string" ? JSON.parse(val) : val;
+      dynamicValidateForm.domains = transF(newVal.validator);
+      dynamicValidateForm.transf = createTransformFunc(newVal.transformer);
+    });
 
     const visible = ref(false);
 
@@ -183,7 +193,7 @@ export default defineComponent({
 
     // 校验函数生成
     const transF = (arr) => {
-      if (typeof arr !== "object") return [];
+      if (!arr) return [];
       const domains = [];
       arr.forEach((item, idx) => {
         let domain = Object.create(null);
@@ -197,7 +207,7 @@ export default defineComponent({
 
     // 转换函数生成
     const createTransformFunc = (transformer) => {
-      if (typeof transformer !== "object") return {};
+      if (!transformer) return {};
       let value = transformer.name && transformer.name;
       let startIndex = transformer.params && transformer.params[0];
       let endIndex = transformer.params && transformer.params.slice(-1).pop();
@@ -290,30 +300,33 @@ export default defineComponent({
       addDomain,
     };
   },
-  watch: {
-    tfData: {
-      handler: function (newVal) {
-        console.log("watch props");
-        this.props = newVal;
-      },
-      deep: true,
-    },
-    id: {
-      handler: function (newVal) {
-        console.log("watch props");
-        this.props = newVal;
-      },
-      deep: true,
-    },
-  },
+  // watch: {
+  //   tfData: {
+  //     handler: function (newVal) {
+  //       console.log("watch props");
+  //       this.props = newVal;
+  //     },
+  //     deep: true,
+  //   },
+  //   id: {
+  //     handler: function (newVal) {
+  //       console.log("watch props");
+  //       this.props = newVal;
+  //     },
+  //     deep: true,
+  //   },
+  // },
 });
 </script>
 
 <style lang="less" scoped>
-.transformer-wrap {
-}
 .tf-mid {
   text-align: center;
+  position: relative;
+}
+
+.tf-mid-sync {
+  margin-top: 30px;
 }
 .tf-modal-content {
   display: flex;
@@ -338,13 +351,14 @@ export default defineComponent({
   margin-bottom: 20px;
 }
 .tf-bottom {
+  text-align: center;
   > span {
     font-size: 12px;
   }
 }
 .tf-top {
+  text-align: center;
   > span {
-    margin-left: 8px;
     font-size: 12px;
   }
   :nth-of-type(2) {

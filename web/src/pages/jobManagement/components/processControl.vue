@@ -3,7 +3,18 @@
     <!-- left -->
     <div class="ps-l">
       <div class="main-header">
-        <span class="main-header-label">过程控制</span>
+        <img src="../../../images/jobDetail/u2664.png" />
+        <img
+          src="../../../images/jobDetail/u2666.png"
+          style="
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            left: 16px;
+            top: 3px;
+          "
+        />
+        <span class="main-header-label" @click="showInfo">过程控制</span>
       </div>
     </div>
     <!-- right -->
@@ -14,8 +25,8 @@
         </div>
       </div>
 
-      <div class="main-content">
-        <a-form ref="formRef">
+      <div class="main-content" v-show="isFold">
+        <a-form ref="formRef" layout="inline">
           <!-- 动态组件 -->
           <a-form-item
             v-for="item in settingData.psData"
@@ -26,6 +37,7 @@
               required: item.required,
               trigger: 'change',
             }"
+            class="process-control-label"
           >
             <dync-render
               v-bind:param="item"
@@ -52,14 +64,14 @@ export default defineComponent({
   setup(props, context) {
     const formRef = ref();
     let settingData = reactive({
-      psData: toRaw(props.psData)
-    })
+      psData: toRaw(props.psData),
+    });
 
-    const newProps = computed(() => JSON.parse(JSON.stringify(props.psData)))
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.psData)));
     watch(newProps, (val, oldVal) => {
-      settingData.psData = typeof val === 'string' ? JSON.parse(val): val
-      console.log(val, 123)
-    })
+      settingData.psData = typeof val === "string" ? JSON.parse(val) : val;
+      console.log(val, 123);
+    });
     const updateSettingParams = (info) => {
       const _settingParams = toRaw(settingData.psData).slice(0);
       _settingParams.forEach((item) => {
@@ -71,12 +83,18 @@ export default defineComponent({
       console.log("sourceParams", settingData.psData);
       context.emit("updateProcessControl", settingData.psData);
     };
+    let isFold = ref(true);
+    const showInfo = () => {
+      isFold.value = !isFold.value;
+    };
     return {
       formRef,
       settingData,
       updateSettingParams,
+      isFold,
+      showInfo,
     };
-  }
+  },
 });
 </script>
 
@@ -91,13 +109,13 @@ export default defineComponent({
   .main-header {
     height: 33px;
     background: inherit;
-    background-color: rgba(102, 102, 255, 1);
     border: none;
     display: flex;
-    border-top-left-radius: 16px;
-    border-bottom-left-radius: 16px;
+    border-top-left-radius: 100%;
+    border-bottom-left-radius: 100%;
+    background-color: #6b6b6b;
+    position: relative;
     :nth-of-type(1) {
-      width: 100%;
       text-align: center;
       line-height: 33px;
       font-size: 16px;
@@ -117,6 +135,8 @@ export default defineComponent({
       font-weight: 700;
       font-style: normal;
       color: #ffffff;
+      position: absolute;
+      left: 46px;
     }
   }
 }
@@ -155,6 +175,7 @@ export default defineComponent({
 }
 .process-control-label {
   font-size: 14px;
-  text-align: left;
+  text-align: right;
+  width: 385px;
 }
 </style>
