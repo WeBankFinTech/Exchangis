@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.job.datax.domain;
 
 import java.util.Map;
 
-public class Mapping {
+public class DataxMapping {
 
     private String source_field_name;
     private String source_field_type;

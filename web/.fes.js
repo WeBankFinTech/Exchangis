@@ -31,17 +31,30 @@ export default {
       {
         path: "/jobManagement",
         component: "@/pages/jobManagement",
-        // meta: {
-        //   name: "jobManagement",
-        //   title: "globalMenu.jobManagement",
-        // },
+        meta: {
+          name: "jobManagement",
+          title: "globalMenu.jobManagement",
+        },
+      },
+      {
+        path: "/synchronizationHistory",
+        component: "@/pages/synchronizationHistory",
+        meta: {
+          name: "synchronizationHistory",
+          title: "globalMenu.synchronizationHistory",
+        },
       },
     ],
   },
   request: {
     dataField: "data",
   },
-  extraBabelPlugins: [["import", { libraryName: "ant-design-vue", libraryDirectory: "es", style: "css" }]],
+  extraBabelPlugins: [
+    [
+      "import",
+      { libraryName: "ant-design-vue", libraryDirectory: "es", style: "css" },
+    ],
+  ],
   layout: {
     title: "",
     footer: "",
@@ -57,10 +70,13 @@ export default {
       {
         name: "jobManagement",
       },
+      {
+        name: "synchronizationHistory",
+      },
     ],
   },
   devServer: {
-    host:'0.0.0.0',
+    host: "0.0.0.0",
     port: 8000,
   },
   proxy: {
@@ -68,7 +84,7 @@ export default {
       //target: "http://192.168.0.157:9321/",
       //target: "http://127.0.0.1:9321/",
       target: "http://124.70.31.149:29001",
-	  changeOrigin: true,
+	    changeOrigin: true,
       pathRewrite: { "^/api": "/api" },
     },
   },
