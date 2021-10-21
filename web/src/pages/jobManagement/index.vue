@@ -30,8 +30,10 @@
         </div>
       </div>
     </div>
-    <job-list v-if="!activeTabId" @showJobDetail="showJobDetail" />
-    <job-detail v-show="activeTabId" :curTab="curTab"></job-detail>
+    <job-list v-show="!activeTabId" @showJobDetail="showJobDetail" />
+    <template v-for="job in tabs">
+      <job-detail v-show="activeTabId == job.id" :curTab="job"></job-detail>
+    </template>
   </div>
 </template>
 <script>
@@ -69,18 +71,17 @@ export default {
     },
     showJobDetail(data) {
       data = toRaw(data);
-      console.log(data);
       const tabs = [...this.tabs];
       if (!tabs.find((item) => item.id === data.id)) {
         tabs.push(data);
       }
+      this.tabs = tabs;
       this.activeTabId = data.id;
       this.curTab = data;
-      this.tabs = tabs;
     },
     changeTab(data) {
       data = toRaw(data);
-      console.log(data);
+      console.log(data, data.id);
       this.curTab = data;
       this.activeTabId = data.id;
     },
@@ -91,8 +92,8 @@ export default {
       if (index !== -1) {
         tabs.splice(index, 1);
       }
-      this.activeTabId = "";
       this.tabs = tabs;
+      this.activeTabId = undefined;
     },
   },
 };
