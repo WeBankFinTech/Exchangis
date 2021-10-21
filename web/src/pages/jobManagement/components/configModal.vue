@@ -92,7 +92,10 @@ export default {
         const formData = Object.assign(
           {},
           JSON.parse(JSON.stringify(toRaw(newVal)))
-        );
+        )
+        if (!formData.jobParams) {
+          formData.jobParams = {}
+        }
         const keys = Object.keys(formData["jobParams"]);
         const jobParams = [];
         for (let i = 0; i < keys.length; i++) {
