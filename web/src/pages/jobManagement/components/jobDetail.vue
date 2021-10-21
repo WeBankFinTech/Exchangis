@@ -210,12 +210,7 @@ export default {
     };
   },
   props: {
-    curTab: Object,
-  },
-  watch: {
-    curTab(n, o) {
-      this.init();
-    },
+    curTab: Object
   },
   created() {
     this.init();
@@ -576,9 +571,6 @@ export default {
         }
       }
     }
-    // .jd_right {
-    //   flex: 5;
-    // }
   }
 }
 </style>
