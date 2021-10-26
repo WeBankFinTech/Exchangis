@@ -28,7 +28,11 @@
         </div>
       </div>
 
-      <div class="main-content" v-show="isFold">
+      <div
+        class="main-content"
+        v-show="isFold"
+        :class="{ 'text-danger': !fieldsSource.length && !fieldsSink.length }"
+      >
         <div
           style="margin-bottom: 15px"
           v-if="fieldsSource.length && fieldsSink.length"
@@ -424,6 +428,10 @@ export default defineComponent({
     padding: 15px 30px;
     display: flex;
     flex-direction: column;
+  }
+  .text-danger {
+    padding: 0px;
+    border: none;
   }
 }
 .field-map-wrap-l {
