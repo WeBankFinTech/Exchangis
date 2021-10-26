@@ -20,10 +20,7 @@
         <a-input v-model:value="formState.executeNode" />
       </a-form-item>
       <a-form-item label="同步方式" name="syncType">
-        <a-radio-group
-          v-model:defaultValue="formState.syncType"
-          name="syncType"
-        >
+        <a-radio-group v-model:value="formState.syncType" name="syncType">
           <a-radio :value="'FULL'"> 全量 </a-radio>
           <a-radio :value="'INCREMENTAL'"> 增量 </a-radio>
         </a-radio-group>
@@ -47,7 +44,7 @@
 </template>
 
 <script>
-import { toRaw, ref, watch, reactive } from "vue";
+import { toRaw, ref, watch, reactive, watchEffect } from "vue";
 import { message } from "ant-design-vue";
 import { PlusOutlined } from "@ant-design/icons-vue";
 import { createProject, getProjectById, updateProject } from "@/common/service";

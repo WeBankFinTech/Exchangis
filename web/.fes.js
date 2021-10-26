@@ -67,9 +67,9 @@ export default {
       {
         name: "dataSourceManage",
       },
-      {
-        name: "jobManagement",
-      },
+      // {
+      //   name: "jobManagement",
+      // },
       {
         name: "synchronizationHistory",
       },
@@ -83,8 +83,8 @@ export default {
     "/api": {
       //target: "http://192.168.0.157:9321/",
       //target: "http://172.24.8.51:9321/",
-      target: "http://124.70.31.149:29001",
-	    changeOrigin: true,
+      target: "http://121.36.12.247:8088",
+      changeOrigin: true,
       pathRewrite: { "^/api": "/api" },
     },
   },
