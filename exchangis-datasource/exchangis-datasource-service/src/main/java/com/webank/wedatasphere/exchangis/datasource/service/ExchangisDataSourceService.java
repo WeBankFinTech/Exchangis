@@ -173,8 +173,15 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         if (!Objects.isNull(connectParams)) {
             json.put("parameter", mapper.writeValueAsString(connectParams));
         }
+//        CreateDataSourceResult result;
         String responseBody;
         try {
+//            result = client.createDataSource(CreateDataSourceAction.builder()
+//                    .setUser(user)
+//                    .addRequestPayloads(json)
+//                    .build()
+//            );
+
             Result execute = client.execute(CreateDataSourceAction.builder()
                     .setUser(user)
                     .addRequestPayloads(json)
@@ -190,28 +197,27 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             }
         }
 
+//        if (Objects.isNull(result)) {
         if (Strings.isNullOrEmpty(responseBody)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_CREATE_ERROR.getCode(), "datasource create response null or empty");
         }
 
-        CreateDataSourceSuccessResultDTO rest = Json.fromJson(responseBody, CreateDataSourceSuccessResultDTO.class);
-
-        if (rest.getStatus() != 0) {
-            throw new ExchangisDataSourceException(rest.getStatus(), rest.getMessage());
+        CreateDataSourceSuccessResultDTO result = Json.fromJson(responseBody, CreateDataSourceSuccessResultDTO.class);
+        if (result.getStatus() != 0) {
+            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
         }
-
-        Long dataSourceId = rest.getData().getId();
-        String versionResponseBody;
+//        Long dataSourceId = result.getInsert_id();
+        Long dataSourceId = result.getData().getId();
+        UpdateDataSourceParameterResult updateDataSourceParameterResult;
         try {
             // 创建完成后发布数据源参数，形成一个版本
-            Result versionExec = client.execute(
+            updateDataSourceParameterResult = client.updateDataSourceParameter(
                     UpdateDataSourceParameterAction.builder()
                             .setUser(user)
-                            .setDataSourceId(dataSourceId+"")
+                            .setDataSourceId(dataSourceId + "")
                             .addRequestPayloads(json)
                             .build()
             );
-            versionResponseBody = versionExec.getResponseBody();
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
@@ -221,13 +227,12 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             }
         }
 
-        if (Strings.isNullOrEmpty(versionResponseBody)) {
+        if (Objects.isNull(updateDataSourceParameterResult)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), "datasource update params version null or empty");
         }
 
-        UpdateParamsVersionResultDTO versionRest = Json.fromJson(versionResponseBody, UpdateParamsVersionResultDTO.class);
-        if (versionRest.getStatus() != 0) {
-            throw new ExchangisDataSourceException(versionRest.getStatus(), versionRest.getMessage());
+        if (updateDataSourceParameterResult.getStatus() != 0) {
+            throw new ExchangisDataSourceException(updateDataSourceParameterResult.getStatus(), updateDataSourceParameterResult.getMessage());
         }
         return Message.ok().data("id", dataSourceId);
     }
@@ -249,11 +254,18 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         }
 
         LinkisDataSourceRemoteClient client = exchangisDataSource.getDataSourceRemoteClient();
+//        UpdateDataSourceResult updateDataSourceResult;
         String responseBody;
         try {
+//            updateDataSourceResult = client.updateDataSource(UpdateDataSourceAction.builder()
+//                    .setUser(user)
+//                    .setDataSourceId(id+"")
+//                    .addRequestPayloads(json)
+//                    .build()
+//            );
             Result execute = client.execute(UpdateDataSourceAction.builder()
                     .setUser(user)
-                    .setDataSourceId(id+"")
+                    .setDataSourceId(id + "")
                     .addRequestPayloads(json)
                     .build()
             );
@@ -267,26 +279,26 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             }
         }
 
+//        if (Objects.isNull(updateDataSourceResult)) {
         if (Strings.isNullOrEmpty(responseBody)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), "datasource update null or empty");
         }
 
-        UpdateDataSourceSuccessResultDTO rest = Json.fromJson(responseBody, UpdateDataSourceSuccessResultDTO.class);
+        UpdateDataSourceSuccessResultDTO updateDataSourceResult = Json.fromJson(responseBody, UpdateDataSourceSuccessResultDTO.class);
 
-        if (rest.getStatus() != 0) {
-            throw new ExchangisDataSourceException(rest.getStatus(), rest.getMessage());
+        if (updateDataSourceResult.getStatus() != 0) {
+            throw new ExchangisDataSourceException(updateDataSourceResult.getStatus(), updateDataSourceResult.getMessage());
         }
 
-        String versionResponseBody;
+        UpdateDataSourceParameterResult updateDataSourceParameterResult;
         try {
-            Result versionExec = client.execute(
+            updateDataSourceParameterResult = client.updateDataSourceParameter(
                     UpdateDataSourceParameterAction.builder()
                             .setDataSourceId(id+"")
                             .setUser(user)
                             .addRequestPayloads(json)
                             .build()
             );
-            versionResponseBody = versionExec.getResponseBody();
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
@@ -296,13 +308,12 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             }
         }
 
-        if (Strings.isNullOrEmpty(versionResponseBody)) {
-        throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), "datasource update params version null or empty");
-    }
+        if (Objects.isNull(updateDataSourceParameterResult)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), "datasource update params version null or empty");
+        }
 
-        UpdateParamsVersionResultDTO versionRest = Json.fromJson(versionResponseBody, UpdateParamsVersionResultDTO.class);
-        if (versionRest.getStatus() != 0) {
-            throw new ExchangisDataSourceException(versionRest.getStatus(), versionRest.getMessage());
+        if (updateDataSourceParameterResult.getStatus() != 0) {
+            throw new ExchangisDataSourceException(updateDataSourceParameterResult.getStatus(), updateDataSourceParameterResult.getMessage());
         }
 
         return Message.ok();
@@ -311,14 +322,20 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     @Transactional
     public Message deleteDataSource(HttpServletRequest request, /*String type,*/ Long id) throws Exception {
         LinkisDataSourceRemoteClient dataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+//        DeleteDataSourceResult result;
         String responseBody;
         try {
             String user = SecurityFilter.getLoginUsername(request);
             LOGGER.info("deleteDataSource userName:"+user);
+//            result = dataSourceRemoteClient.deleteDataSource(
+//                    new DeleteDataSourceAction.Builder().setUser(user).setResourceId(id+"").builder()
+//            );
+
             Result execute = dataSourceRemoteClient.execute(
-                    new DeleteDataSourceAction.Builder().setUser(user).setResourceId(id+"").builder()
+                    new DeleteDataSourceAction.Builder().setUser(user).setResourceId(id + "").builder()
             );
             responseBody = execute.getResponseBody();
+
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
@@ -328,17 +345,18 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             }
         }
 
+//        if (Objects.isNull(result)) {
         if (Strings.isNullOrEmpty(responseBody)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "datasource delete null or empty");
         }
 
+        DeleteDataSourceSuccessResultDTO result = Json.fromJson(responseBody, DeleteDataSourceSuccessResultDTO.class);
 
-        DeleteDataSourceSuccessResultDTO rest = Json.fromJson(responseBody, DeleteDataSourceSuccessResultDTO.class);
-
-        if (rest.getStatus() != 0) {
-            throw new ExchangisDataSourceException(rest.getStatus(), rest.getMessage());
+        if (result.getStatus() != 0) {
+            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
         }
-        return Message.ok().data("id", rest.getData().getId());
+//        return Message.ok().data("id", result.getRemove_id());
+        return Message.ok().data("id", result.getData().getId());
     }
 
     public Message queryDataSourceDBs(HttpServletRequest request, String type, Long id) throws Exception {
@@ -642,15 +660,13 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             String userName = SecurityFilter.getLoginUsername(request);
             LOGGER.info("getDataSource userName:"+userName);
 
-            Result execute = linkisDataSourceRemoteClient.execute(
+            GetInfoByDataSourceIdResult result = linkisDataSourceRemoteClient.getInfoByDataSourceId(
                     GetInfoByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
             );
-            String responseBody = execute.getResponseBody();
-            GetDataSourceInfoResultDTO result = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
             if (result.getStatus() != 0) {
                 throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
             }
-            return Message.ok().data("info", Objects.isNull(result.getData()) ? null : result.getData().getInfo());
+            return Message.ok().data("info", Objects.isNull(result.getInfo()) ? null : result.getInfo());
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
@@ -663,17 +679,14 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     public Message getDataSourceVersionsById(HttpServletRequest request, Long id) throws ErrorException  {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
-        String responseBody;
         String userName = SecurityFilter.getLoginUsername(request);
         LOGGER.info("getDataSourceVersionsById userName:"+userName);
+        GetInfoByDataSourceIdResult result;
         try {
-
-
             // 先根据ID获取数据源详情
-            Result execute = linkisDataSourceRemoteClient.execute(
+            result = linkisDataSourceRemoteClient.getInfoByDataSourceId(
                     GetInfoByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
             );
-            responseBody = execute.getResponseBody();
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
@@ -682,29 +695,25 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                 throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_GET_DATASOURCE_ERROR.getCode(), e.getMessage());
             }
         }
-        if (Strings.isNullOrEmpty(responseBody)) {
+        if (Objects.isNull(result)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_GET_DATASOURCE_ERROR.getCode(), "response body null or empty");
         }
 
-        GetDataSourceInfoResultDTO getResult = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
-        if (getResult.getStatus() != 0) {
-            throw new ExchangisDataSourceException(getResult.getStatus(), getResult.getMessage());
+        if (result.getStatus() != 0) {
+            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
         }
         Long publishedVersionId = null;
-        GetDataSourceInfoResultDTO.DataSourceInfoDTO data = getResult.getData();
-        if (!Objects.isNull(data)) {
-            GetDataSourceInfoResultDTO.DataSourceItemDTO info = data.getInfo();
-            if (!Objects.isNull(info)) {
-                publishedVersionId = info.getPublishedVersionId();
-            }
+        Map<String, Object> info = result.getInfo();
+
+        if (!Objects.isNull(info)) {
+            publishedVersionId = Long.parseLong(info.getOrDefault("publishedVersionId", "-1").toString());
         }
 
-        String versionResponseBody;
+        GetDataSourceVersionsResult versionsResult;
         try {
-            Result versionExecute = linkisDataSourceRemoteClient.execute(
+            versionsResult = linkisDataSourceRemoteClient.getDataSourceVersions(
                     new GetDataSourceVersionsAction.Builder().setUser(userName).setResourceId(id+"").build()
             );
-            versionResponseBody = versionExecute.getResponseBody();
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
@@ -713,27 +722,25 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                 throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_GET_DATASOURCE_VERSION_ERROR.getCode(), e.getMessage());
             }
         }
-        if (Strings.isNullOrEmpty(versionResponseBody)) {
+        if (Objects.isNull(versionsResult)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_GET_DATASOURCE_VERSION_ERROR.getCode(), "datasource version response body null or empty");
         }
 
-        GetDataSourceVersionsResultDTO result = Json.fromJson(versionResponseBody, GetDataSourceVersionsResultDTO.class);
-        if (result.getStatus() != 0) {
-            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
+        if (versionsResult.getStatus() != 0) {
+            throw new ExchangisDataSourceException(versionsResult.getStatus(), versionsResult.getMessage());
         }
 
-        GetDataSourceVersionsResultDTO.VersionDataDTO versionData = result.getData();
-        if (!Objects.isNull(versionData)) {
-            List<GetDataSourceVersionsResultDTO.VersionDTO> versions = versionData.getVersions();
-            if (!Objects.isNull(versions)) {
-                for (GetDataSourceVersionsResultDTO.VersionDTO version : versions) {
-                    if (Objects.equals(version.getVersionId(), publishedVersionId)) {
-                        version.setPublished(true);
-                    }
+
+        List<Map<String, Object>> versions = versionsResult.getVersions();
+
+        if (!Objects.isNull(versions)) {
+            for (Map<String, Object> version : versions) {
+                if (Objects.equals(version.get("versionId"), publishedVersionId)) {
+                    version.put("published", true);
                 }
             }
         }
-        return Message.ok().data("versions", result.getData().getVersions());
+        return Message.ok().data("versions", versions);
     }
 
     public Message testConnect(HttpServletRequest request, Long id, Long version) throws ErrorException {
@@ -741,11 +748,11 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String responseBody;
         String userName = SecurityFilter.getLoginUsername(request);
         LOGGER.info("testConnect userName:"+userName);
+        DataSourceTestConnectResult result;
         try {
-            Result execute = linkisDataSourceRemoteClient.execute(
+            result = linkisDataSourceRemoteClient.getDataSourceTestConnect(
                     new DataSourceTestConnectAction.Builder().setUser(userName).setDataSourceId(id+"").setVersion(version+"").build()
             );
-            responseBody = execute.getResponseBody();
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
@@ -755,11 +762,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             }
         }
 
-        if (Strings.isNullOrEmpty(responseBody)) {
+        if (Objects.isNull(result)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_TEST_CONNECTION_ERROR.getCode(), "datasource test connection response body null or empty");
         }
 
-        DataSourceTestConnectResultDTO result = Json.fromJson(responseBody, DataSourceTestConnectResultDTO.class);
         if (result.getStatus() != 0) {
             throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
         }
@@ -773,11 +779,11 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String responseBody;
         String userName = SecurityFilter.getLoginUsername(request);
         LOGGER.info("publishDataSource userName:"+userName);
+        PublishDataSourceVersionResult result;
         try {
-            Result execute = linkisDataSourceRemoteClient.execute(
+            result = linkisDataSourceRemoteClient.publishDataSourceVersion(
                    new PublishDataSourceVersionAction.Builder().setUser(userName).setDataSourceId(id+"").setVersion(version+"").build()
             );
-            responseBody = execute.getResponseBody();
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
@@ -786,11 +792,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                 throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_PUBLISH_VERSION_ERROR.getCode(), e.getMessage());
             }
         }
-        if (Strings.isNullOrEmpty(responseBody)) {
+        if (Objects.isNull(result)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_PUBLISH_VERSION_ERROR.getCode(), "datasource publish version response body null or empty");
         }
 
-        ResultDTO result = Json.fromJson(responseBody, ResultDTO.class);
         if (result.getStatus() != 0) {
             throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
         }
@@ -803,11 +808,11 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String responseBody;
         String userName = SecurityFilter.getLoginUsername(request);
         LOGGER.info("getDataSourceConnectParamsById userName:"+userName);
+        GetConnectParamsByDataSourceIdResult result;
         try {
-            Result execute = linkisDataSourceRemoteClient.execute(
+            result = linkisDataSourceRemoteClient.getConnectParams(
                     GetConnectParamsByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
             );
-            responseBody = execute.getResponseBody();
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
@@ -816,16 +821,15 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                 throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_PARAMS_GET_ERROR.getCode(), e.getMessage());
             }
         }
-            if (Strings.isNullOrEmpty(responseBody)) {
+        if (Objects.isNull(result)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_PARAMS_GET_ERROR.getCode(), "datasource params get response body null or empty");
         }
 
-        GetDataSourceConnectParamsResultDTO result = Json.fromJson(responseBody, GetDataSourceConnectParamsResultDTO.class);
         if (result.getStatus() != 0) {
             throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
         }
 
-        return Message.ok().data("info", Objects.isNull(result.getData()) ? null : result.getData());
+        return Message.ok().data("info", Objects.isNull(result.getConnectParams()) ? null : result.getConnectParams());
     }
 
     @Transactional
@@ -835,9 +839,14 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String responseBody;
         String userName = SecurityFilter.getLoginUsername(request);
         LOGGER.info("getDataSourceConnectParamsById userName:"+userName);
+//        ExpireDataSourceResult result;
         try {
+//            result = linkisDataSourceRemoteClient.expireDataSource(
+//                    new ExpireDataSourceAction.Builder().setUser(userName).setDataSourceId(id+"").build()
+//            );
+
             Result execute = linkisDataSourceRemoteClient.execute(
-                    new ExpireDataSourceAction.Builder().setUser(userName).setDataSourceId(id+"").build()
+                    new ExpireDataSourceAction.Builder().setUser(userName).setDataSourceId(id + "").build()
             );
             responseBody = execute.getResponseBody();
         } catch (Exception e) {
@@ -848,15 +857,49 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                 throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_EXPIRE_ERROR.getCode(), e.getMessage());
             }
         }
+//        if (Objects.isNull(result)) {
         if (Strings.isNullOrEmpty(responseBody)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_EXPIRE_ERROR.getCode(), "datasource expire response body null or empty");
         }
 
         ExpireDataSourceSuccessResultDTO result = Json.fromJson(responseBody, ExpireDataSourceSuccessResultDTO.class);
+
         if (result.getStatus() != 0) {
             throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
         }
 
         return Message.ok();
+    }
+
+    public Message getDataSourceKeyDefine(HttpServletRequest request, Long dataSourceTypeId) throws ErrorException {
+        if (Objects.isNull(dataSourceTypeId)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "dataSourceType id should not be null");
+        }
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+
+        String userName = SecurityFilter.getLoginUsername(request);
+        LOGGER.info("getDataSourceKeyDefine userName:"+userName);
+        GetKeyTypeDatasourceResult result;
+        try {
+            GetKeyTypeDatasourceAction action = new GetKeyTypeDatasourceAction.Builder().setUser(userName).setDataSourceTypeId(dataSourceTypeId).build();
+            result = linkisDataSourceRemoteClient.getKeyDefinitionsByType(action);
+        } catch (Exception e) {
+            if (e instanceof ErrorException) {
+                ErrorException ee = (ErrorException) e;
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_KEY_DEFINES_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
+            } else {
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_KEY_DEFINES_ERROR.getCode(), e.getMessage());
+            }
+        }
+
+        if (Objects.isNull(result)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_KEY_DEFINES_ERROR.getCode(), "get datasource type key defines response body null or empty");
+        }
+
+        if (result.getStatus() != 0) {
+            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
+        }
+
+        return Message.ok().data("list", Objects.isNull(result.getKey_define()) ? null : result.getKey_define());
     }
 }
