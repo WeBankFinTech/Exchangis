@@ -6,7 +6,7 @@
         <a-table :columns="columns" :data-source="dataSourceList" :loading="loading" rowKey="id">
           <template #tags="{ text: tags }">
             <span>
-              <a-tag v-for="tag in tags.split(',')" :key="tag" :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'">
+              <a-tag v-if="tags" v-for="tag in tags.split(',')" :key="tag" :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'">
                 {{ tag.toUpperCase() }}
               </a-tag>
             </span>
