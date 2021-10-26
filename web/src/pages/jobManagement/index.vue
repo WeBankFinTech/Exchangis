@@ -3,14 +3,16 @@
     <div class="projectNav">
       <img class="img" src="../../images/u32.svg" />
       <router-link to="/projectManage"
-        ><div class="link">{{ t('projectManage.topLine.title') }}</div></router-link
+        ><div class="link">
+          {{ t("projectManage.topLine.title") }}
+        </div></router-link
       >
       <div class="divider">/</div>
       <div class="name">{{ name }}</div>
     </div>
     <div class="navWrap">
       <div @click="() => changeTab({})" class="listTitle">
-        <UnorderedListOutlined />{{ t('job.list') }}
+        <UnorderedListOutlined />{{ t("job.list") }}
       </div>
       <div class="divider"></div>
       <div class="titleWrap" v-for="(item, index) in tabs" :key="index">
@@ -29,19 +31,21 @@
       </div>
     </div>
     <job-list v-show="!activeTabId" @showJobDetail="showJobDetail" />
-    <job-detail v-if="activeTabId" :curTab="curTab"></job-detail>
+    <template v-for="job in tabs">
+      <job-detail v-show="activeTabId == job.id" :curTab="job"></job-detail>
+    </template>
   </div>
 </template>
 <script>
-import { toRaw } from 'vue';
-import JobList from './components/jobList.vue';
-import JobDetail from './components/jobDetail.vue';
-import { useI18n } from '@fesjs/fes';
+import { toRaw } from "vue";
+import JobList from "./components/jobList.vue";
+import JobDetail from "./components/jobDetail.vue";
+import { useI18n } from "@fesjs/fes";
 import {
   UnorderedListOutlined,
   ClusterOutlined,
   CloseOutlined,
-} from '@ant-design/icons-vue';
+} from "@ant-design/icons-vue";
 export default {
   components: {
     JobList,
@@ -51,34 +55,33 @@ export default {
     CloseOutlined,
   },
   data() {
-    const { t } = useI18n({ useScope: 'global' });
+    const { t } = useI18n({ useScope: "global" });
     return {
       t,
       name: this.$route.query.name,
-      choosedTab: 'jobList',
-      activeTabId: '',
-      curTab: '',
+      choosedTab: "jobList",
+      activeTabId: "",
+      curTab: "",
       tabs: [],
     };
   },
   methods: {
-    async getJobs(type='OFFLINE') {
-      this.tabs = (await getJobs(this.$route.query.id, type)).result
+    async getJobs(type = "OFFLINE") {
+      this.tabs = (await getJobs(this.$route.query.id, type)).result;
     },
     showJobDetail(data) {
       data = toRaw(data);
-      console.log(data);
       const tabs = [...this.tabs];
       if (!tabs.find((item) => item.id === data.id)) {
         tabs.push(data);
       }
-      this.activeTabId = data.id;
-      this.curTab = data
       this.tabs = tabs;
+      this.activeTabId = data.id;
+      this.curTab = data;
     },
     changeTab(data) {
       data = toRaw(data);
-      console.log(data);
+      console.log(data, data.id);
       this.curTab = data;
       this.activeTabId = data.id;
     },
@@ -89,8 +92,8 @@ export default {
       if (index !== -1) {
         tabs.splice(index, 1);
       }
-      this.activeTabId = undefined;
       this.tabs = tabs;
+      this.activeTabId = undefined;
     },
   },
 };
@@ -117,11 +120,11 @@ export default {
       color: #1890ff;
     }
   }
-  .divider{
+  .divider {
     color: #949494;
     padding: 0px 10px;
   }
-  .name{
+  .name {
     color: #333333;
     font-size: 16px;
     font-weight: 600;
@@ -134,7 +137,7 @@ export default {
   padding-left: 15px;
   margin-top: 15px;
   .listTitle {
-    font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+    font-family: "Arial Negreta", "Arial Normal", "Arial";
     font-weight: 600;
     font-style: normal;
     font-size: 16px;
@@ -151,7 +154,7 @@ export default {
     position: relative;
     .detailTitle {
       height: 35px;
-      font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+      font-family: "Arial Negreta", "Arial Normal", "Arial";
       font-weight: 600;
       font-style: normal;
       font-size: 14px;
