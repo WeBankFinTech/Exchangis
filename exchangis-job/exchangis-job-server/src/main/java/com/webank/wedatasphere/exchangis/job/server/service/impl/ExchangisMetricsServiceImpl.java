@@ -29,7 +29,12 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
     public Message getTaskStateMetrics(HttpServletRequest request) {
         Map<String, Object> params = new HashMap<>();
         List<ExchangisTaskStatusMetricsDTO> metrices = exchangisLaunchTaskMapper.statTaskStatus(params);
-        return Message.ok().data("metrices", metrices);
+
+        Message message = Message.ok();
+        message.setMethod("/exchangis/metrics/taskstate");
+        message.data("metrices", metrices);
+        return message;
+//        return Message.ok().data("metrices", metrices);
     }
 
     @Override
@@ -39,6 +44,8 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
 
         // total
         ExchangisTaskProcessMetricsDTO total = new ExchangisTaskProcessMetricsDTO();
+        total.setKey("total");
+        total.setTitle("总进度");
         total.setRunning(50);
         total.setInitialized(10);
         total.setTotal(120);
@@ -47,6 +54,8 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
 
         // bdp
         ExchangisTaskProcessMetricsDTO bdp = new ExchangisTaskProcessMetricsDTO();
+        bdp.setKey("bdp");
+        bdp.setTitle("BDP");
         bdp.setRunning(20);
         bdp.setInitialized(10);
         bdp.setTotal(60);
@@ -55,6 +64,8 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
 
         // es
         ExchangisTaskProcessMetricsDTO es = new ExchangisTaskProcessMetricsDTO();
+        es.setKey("es");
+        es.setTitle("ES");
         es.setRunning(20);
         es.setInitialized(0);
         es.setTotal(40);
@@ -63,13 +74,18 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
 
         // fps
         ExchangisTaskProcessMetricsDTO fps = new ExchangisTaskProcessMetricsDTO();
+        fps.setKey("fps");
+        fps.setTitle("FPS");
         fps.setRunning(10);
         fps.setInitialized(0);
         fps.setTotal(20);
         fps.setPercentOfComplete("50%");
         list.add(fps);
 
-        return Message.ok().data("list", list);
+        Message message = Message.ok();
+        message.setMethod("/exchangis/metrics/taskprocess");
+        message.data("list", list);
+        return message;
     }
 
     // mock data for echarts
@@ -117,10 +133,10 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
         ds1Data.add("ds1");
 
         List<Object> ds2Data = new ArrayList<>();
-        ds1Data.add("ds2");
+        ds2Data.add("ds2");
 
         List<Object> ds3Data = new ArrayList<>();
-        ds1Data.add("ds3");
+        ds3Data.add("ds3");
         for (int i = 1; i <= loopNum; i++) {
             ds1Data.add(i * RandomUtils.nextInt(1024));
             ds2Data.add(i * RandomUtils.nextInt(512));
@@ -129,8 +145,10 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
         dataset.add(ds1Data);
         dataset.add(ds2Data);
         dataset.add(ds3Data);
-
-        return Message.ok().data("dataset", dataset);
+        Message message = Message.ok();
+        message.setMethod("/exchangis/metrics/datasourceflow");
+        message.data("dataset", dataset);
+        return message;
     }
 
     @Override
@@ -154,7 +172,10 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
         datax.setMem("4196Mi");
         list.add(datax);
 
-        return Message.ok().data("list", list);
+        Message message = Message.ok();
+        message.setMethod("/exchangis/metrics/engineresource");
+        message.data("list", list);
+        return message;
     }
 
 
