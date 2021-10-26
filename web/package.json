@@ -54,7 +54,7 @@
     "@fesjs/plugin-locale": "^2.0.3",
     "@fesjs/plugin-model": "^2.0.0",
     "@fesjs/plugin-request": "^2.0.2",
-    "@vue/compiler-sfc": "3.1.5",
+    "@vue/compiler-sfc": "3.2.20",
     "ant-design-vue": "^2.2.7",
     "lodash-es": "4.17.21",
     "moment": "2.29.1",

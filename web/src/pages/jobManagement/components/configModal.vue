@@ -47,10 +47,18 @@
 </template>
 
 <script>
-import { toRaw } from "vue";
+import { toRaw, ref, watch, reactive } from "vue";
 import { message } from "ant-design-vue";
 import { PlusOutlined } from "@ant-design/icons-vue";
 import { createProject, getProjectById, updateProject } from "@/common/service";
+import { cloneDeep } from "lodash-es";
+
+// 抒写JS代码与组件低耦合
+const rules = {
+  proxyUser: [{ required: true }],
+  executeNode: [{ required: true }],
+  syncType: [{ required: true }],
+};
 export default {
   name: "JobManagementConfigModal",
   components: {
@@ -72,28 +80,21 @@ export default {
     },
   },
   emits: ["finish", "cancel", "update:visible"],
-  data() {
-    return {
-      // 是否加载中
-      confirmLoading: false,
-      // 表单数据
-      formState: this.formData,
-      // 验证
-      rules: {
-        proxyUser: [{ required: true }],
-        executeNode: [{ required: true }],
-        syncType: [{ required: true }],
-      },
-    };
-  },
-  watch: {
-    formData: {
-      handler(newVal, oldVal) {
-        const formData = Object.assign(
-          {},
-          JSON.parse(JSON.stringify(toRaw(newVal)))
-        );
-        const keys = Object.keys(formData["jobParams"]);
+  setup(props, context) {
+    let confirmLoading = ref(false);
+    let formState = ref(cloneDeep(props.formData));
+    const formRef = ref();
+
+    watch(
+      () => props.formData,
+      (newVal, odlVal) => {
+        const formData = cloneDeep(newVal);
+        if (!formData.jobParams) {
+          formData.jobParams = [];
+        }
+        const keys = formData["jobParams"]
+          ? Object.keys(formData["jobParams"])
+          : [];
         const jobParams = [];
         for (let i = 0; i < keys.length; i++) {
           let key = keys[i];
@@ -104,36 +105,42 @@ export default {
           jobParams.push(o);
         }
         formData["jobParams"] = jobParams;
-        this.formState = formData;
-      },
-      deep: true,
-    },
-  },
-  methods: {
-    async handleOk() {
-      await this.$refs.formRef.validate();
-      const formatData = {
-        ...this.formState,
-      };
-      try {
-        if (this.mode === "create") {
-          this.confirmLoading = true;
-          await createProject(formatData);
-          message.success("创建成功");
-        }
-        if (this.mode === "edit") {
-          this.confirmLoading = true;
-          await updateProject(formatData);
-          message.success("修改成功");
-        }
-      } catch (error) {}
-      this.confirmLoading = false;
-      this.$emit("update:visible", false);
-      this.$emit("finish", formatData);
-    },
-    createTask() {
-      this.formState.jobParams.push({ key: "", value: "" });
-    },
+        formState.value = formData;
+      }
+    );
+
+    const createTask = () => {
+      formState.value.jobParams.push({ key: "", value: "" });
+    };
+
+    const handleOk = async () => {
+      await formRef.value.validate();
+      const formatData = cloneDeep(formState.value);
+      // try {
+      //   if (this.mode === "create") {
+      //     confirmLoading.value = true;
+      //     await createProject(formatData);
+      //     message.success("创建成功");
+      //   }
+      //   if (this.mode === "edit") {
+      //     this.confirmLoading.value = true;
+      //     await updateProject(formatData);
+      //     message.success("修改成功");
+      //   }
+      // } catch(error) {}
+      confirmLoading.value = false;
+      context.emit("update:visible", false);
+      context.emit("finish", formatData);
+    };
+
+    return {
+      formRef,
+      rules,
+      confirmLoading,
+      formState,
+      createTask,
+      handleOk,
+    };
   },
 };
 </script>
