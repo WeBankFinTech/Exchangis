@@ -3,31 +3,36 @@
     <a-spin :spinning="confirmLoading">
       <a-form ref="formRef" :model="formState" :label-col="{ span: 6 }">
         <a-form-item :label="$t(`dataSource.editModal.form.fields.dataSourceName.label`)" name="dataSourceName">
-          <a-input v-model:value="formState.dataSourceName" :placeholder="$t(`dataSource.editModal.form.fields.dataSourceName.placeholder`)" />
+          <a-input :maxLength="30" v-model:value="formState.dataSourceName" :placeholder="$t(`dataSource.editModal.form.fields.dataSourceName.placeholder`)" />
         </a-form-item>
         <a-form-item label="地址" :name="['connectParams', 'host']">
-          <a-input v-model:value="formState.connectParams.host" placeholder="数据源host" />
+          <a-input :maxLength="100" v-model:value="formState.connectParams.host" placeholder="数据源host" />
         </a-form-item>
-        <a-form-item label="端口" :name="['connectParams', 'port']">
-          <a-input v-model:value="formState.connectParams.port" placeholder="端口" />
+        <a-form-item
+          :validate-status="portValidateStatus"
+          :help="portErrorMsg"
+          label="端口" :name="['connectParams', 'port']" >
+          <a-input
+            :maxLength="6" v-model:value="formState.connectParams.port" placeholder="端口" @change="validatePort" />
         </a-form-item>
-        <a-form-item label="用户名" :name="['connectParams', 'username']">
-          <a-input v-model:value="formState.connectParams.username" placeholder="用户名" />
+        <a-form-item v-if="type == 1" label="用户名" :name="['connectParams', 'username']">
+          <a-input :maxLength="30" v-model:value="formState.connectParams.username" placeholder="用户名" />
         </a-form-item>
-        <a-form-item label="密码" :name="['connectParams', 'password']">
-          <a-input v-model:value="formState.connectParams.password" placeholder="密码" />
+        <a-form-item v-if="type == 1" label="密码" :name="['connectParams', 'password']">
+          <a-input :maxLength="30" v-model:value="formState.connectParams.password" placeholder="密码" type="password"/>
         </a-form-item>
         <a-form-item label="标签" :name="['connectParams', 'labels']">
-          <a-select mode="multiple" v-model:value="formState.labels" placeholder="请选择标签">
-            <a-select-option value="用户1">用户1</a-select-option>
-            <a-select-option value="用户2">用户2</a-select-option>
-          </a-select>
+          <a-input :maxLength="200" v-model:value="formState.labels" placeholder="逗号分割"/>
+          <!--<a-select mode="multiple" v-model:value="formState.labels" placeholder="请选择标签">-->
+            <!--<a-select-option value="用户1">用户1</a-select-option>-->
+            <!--<a-select-option value="用户2">用户2</a-select-option>-->
+          <!--</a-select>-->
         </a-form-item>
         <a-form-item label="注释" :name="['connectParams', 'comment']">
-          <a-input v-model:value="formState.connectParams.comment" placeholder="注释" />
+          <a-input :maxLength="200" v-model:value="formState.connectParams.comment" placeholder="注释" />
         </a-form-item>
         <a-form-item :label="$t(`dataSource.editModal.form.fields.dataSourceDesc.label`)" name="dataSourceDesc">
-          <a-textarea v-model:value="formState.dataSourceDesc" :placeholder="$t(`dataSource.editModal.form.fields.dataSourceDesc.placeholder`)" />
+          <a-textarea :maxLength="300" v-model:value="formState.dataSourceDesc" :placeholder="$t(`dataSource.editModal.form.fields.dataSourceDesc.placeholder`)" />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -80,17 +85,56 @@ export default {
           username: "",
           password: "",
         },
-        labels: [],
+        labels: '',
         comment: "",
       },
+
+      //port 
+      portValidateStatus: '',
+      portErrorMsg: null
     };
   },
   watch: {
     id(val) {
       if (val) this.getDataSourceById();
     },
+    type() {
+      if (!this.id) {
+        this.init()
+      }
+    }
   },
   methods: {
+    init() {
+      this.formState = {
+        // 数据源名称
+        dataSourceName: "",
+        // 数据源描述
+        dataSourceDesc: "",
+        // 连接参数
+        connectParams: {
+        host: "",
+          port: "",
+          username: "",
+          password: "",
+        },
+        labels: '',
+        comment: ""
+      }
+      //port
+      this.portValidateStatus = ''
+      this.portErrorMsg = null
+      this.confirmLoading = false
+    },
+    validatePort() {
+      if (!/^[0-9]*$/.test(this.formState.connectParams.port)) {
+        this.portValidateStatus = 'error'
+        this.portErrorMsg = '请正确输入端口号'
+      } else {
+        this.portValidateStatus = 'success'
+        this.portErrorMsg = null
+      }
+    },
     async getDataSourceById() {
       this.confirmLoading = true;
       let { info } = await getDataSourceById(this.id);
@@ -99,7 +143,7 @@ export default {
         dataSourceName: info.dataSourceName,
         dataSourceDesc: info.dataSourceDesc,
         connectParams: info.connectParams,
-        labels: info.labels.split(","),
+        labels: info.labels,
         comment: info.comment || "",
       };
     },
@@ -111,7 +155,7 @@ export default {
         if (this.mode === "create") {
           await createDataSource({
             ...toRaw(this.formState),
-            labels: this.formState.labels.join(","),
+            labels: this.formState.labels,
             dataSourceTypeId: this.type,
             createSystem: "",
             createIdentify: "",
@@ -121,7 +165,7 @@ export default {
         if (this.mode === "edit") {
           await updateDataSource(this.id, {
             ...toRaw(this.formState),
-            labels: this.formState.labels.join(","),
+            labels: this.formState.labels,
             dataSourceTypeId: this.type,
             createSystem: "",
             createIdentify: "",

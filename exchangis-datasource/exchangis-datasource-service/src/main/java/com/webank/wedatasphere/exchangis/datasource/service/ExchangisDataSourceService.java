@@ -532,7 +532,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         QueryDataSourceResult result;
         try {
             QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
-                    .setSystem("")
+                    .setSystem("system")
                     .setName(dataSourceName)
     //                .setTypeId()
     //                .setTypeId(typeId)
@@ -588,7 +588,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
-                .setSystem("")
+                .setSystem("system")
                 .setIdentifies("")
                 .setUser(userName);
 
@@ -805,7 +805,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         LOGGER.info("getDataSourceConnectParamsById userName:"+userName);
         try {
             Result execute = linkisDataSourceRemoteClient.execute(
-                    GetConnectParamsByDataSourceIdAction.builder().setUser(userName).setDataSourceId(id).build()
+                    GetConnectParamsByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
             );
             responseBody = execute.getResponseBody();
         } catch (Exception e) {
