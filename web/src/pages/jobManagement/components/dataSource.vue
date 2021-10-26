@@ -41,7 +41,7 @@
               >
                 <SelectDataSource
                   @updateDsInfo="updateSourceInfo"
-                  v-bind:title="sourceTitle"
+                  :title="sourceTitle"
                 />
               </a-form-item>
               <!-- 动态组件 -->
