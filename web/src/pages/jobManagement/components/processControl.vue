@@ -25,7 +25,11 @@
         </div>
       </div>
 
-      <div class="main-content" v-show="isFold">
+      <div
+        class="main-content"
+        v-show="isFold"
+        :class="{ 'text-danger': !settingData.psData.length }"
+      >
         <a-form ref="formRef" layout="inline">
           <!-- 动态组件 -->
           <a-form-item
@@ -171,6 +175,11 @@ export default defineComponent({
     border-top: none;
     padding: 25px 30px;
     display: flex;
+  }
+
+  .text-danger {
+    padding: 0px;
+    border: none;
   }
 }
 .process-control-label {

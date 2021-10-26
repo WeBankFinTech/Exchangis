@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.dto;
 
-public abstract class ResultDTO {
+public class ResultDTO {
 
     private String method;
 
