@@ -169,6 +169,20 @@ import FieldMap from "./fieldMap.vue";
 import ProcessControl from "./processControl.vue";
 import { message } from "ant-design-vue";
 
+/**
+ * 用于判断一个对象是否有空 value,如果有返回 true
+ */
+
+const objectValueEmpty = (obj) => {
+  let isEmpty = false;
+  Object.keys(obj).forEach((o) => {
+    if (obj[o] == null || obj[o] == "" || obj[o] == undefined) {
+      isEmpty = true;
+    }
+  });
+  return isEmpty;
+};
+
 export default {
   components: {
     SettingOutlined,
@@ -211,11 +225,6 @@ export default {
   },
   props: {
     curTab: Object,
-  },
-  watch: {
-    curTab(n, o) {
-      this.init();
-    },
   },
   created() {
     this.init();
@@ -397,8 +406,8 @@ export default {
         cur.subJobName = jobData.subJobName;
         if (
           !jobData.dataSourceIds ||
-          !jobData.dataSourceIds.source ||
-          !jobData.dataSourceIds.sink
+          objectValueEmpty(jobData.dataSourceIds.source) ||
+          objectValueEmpty(jobData.dataSourceIds.sink)
         ) {
           return message.error("未选择数据源库表");
         }
@@ -408,8 +417,8 @@ export default {
         };
         if (
           !jobData.params ||
-          !jobData.params.sources ||
-          !jobData.params.sinks
+          !jobData.params.sources.length ||
+          !jobData.params.sinks.length
         ) {
           return message.error("缺失数据源信息");
         }
@@ -576,9 +585,6 @@ export default {
         }
       }
     }
-    // .jd_right {
-    //   flex: 5;
-    // }
   }
 }
 </style>
