@@ -79,13 +79,16 @@ export default {
   emits: ["finish", "cancel", "update:visible"],
   setup(props, context) {
     let confirmLoading = ref(false);
-    let formState = ref(cloneDeep(props.formData));
+    let formState = reactive({
+      ...props.formData,
+      jobParams: props.formData.jobParams || [],
+    });
     const formRef = ref();
 
     watch(
       () => props.formData,
       (newVal, odlVal) => {
-        const formData = cloneDeep(newVal);
+        const formData = newVal;
         if (!formData.jobParams) {
           formData.jobParams = [];
         }
@@ -102,17 +105,21 @@ export default {
           jobParams.push(o);
         }
         formData["jobParams"] = jobParams;
-        formState.value = formData;
+        formState["executeNode"] = formData["executeNode"] || "";
+        formState["proxyUser"] = formData["proxyUser"] || "";
+        formState["syncType"] = formData["syncType"] || "";
+        formState["jobParams"] = formData["jobParams"] || "";
       }
     );
 
     const createTask = () => {
-      formState.value.jobParams.push({ key: "", value: "" });
+      formState.jobParams.push({ key: "", value: "" });
+      console.log(formState, formState.jobParams);
     };
 
     const handleOk = async () => {
       await formRef.value.validate();
-      const formatData = cloneDeep(formState.value);
+      const formatData = cloneDeep(formState);
       // try {
       //   if (this.mode === "create") {
       //     confirmLoading.value = true;
