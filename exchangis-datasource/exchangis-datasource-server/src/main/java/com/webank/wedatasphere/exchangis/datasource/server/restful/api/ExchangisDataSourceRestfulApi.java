@@ -170,7 +170,7 @@ public class ExchangisDataSourceRestfulApi {
     }
 
     @POST
-    @Path("datasources/{type}/{id}/dbs/{dbName}/tables/{tableName}/fieldsmapping")
+    @Path("datasources/fieldsmapping")
     public Response queryDataSourceDBTableFieldsMapping(@Context HttpServletRequest request, @RequestBody FieldMappingVO vo) throws Exception {
         Message message = this.exchangisDataSourceService.queryDataSourceDBTableFieldsMapping(request, vo);
         return Message.messageToResponse(message);
