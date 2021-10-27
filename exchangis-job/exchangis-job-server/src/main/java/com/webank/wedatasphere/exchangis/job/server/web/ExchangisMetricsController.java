@@ -59,4 +59,18 @@ public class ExchangisMetricsController {
         return Message.messageToResponse(message);
     }
 
+    @GET
+    @Path("metrics/engineresourcecpu")
+    public Response getEngineResourceCpuMetrics(@Context HttpServletRequest request) throws Exception {
+        Message message = this.exchangisMetricsService.getEngineResourceCpuMetrics(request);
+        return Message.messageToResponse(message);
+    }
+
+    @GET
+    @Path("metrics/engineresourcemem")
+    public Response getEngineResourceMemMetrics(@Context HttpServletRequest request) throws Exception {
+        Message message = this.exchangisMetricsService.getEngineResourceMemMetrics(request);
+        return Message.messageToResponse(message);
+    }
+
 }

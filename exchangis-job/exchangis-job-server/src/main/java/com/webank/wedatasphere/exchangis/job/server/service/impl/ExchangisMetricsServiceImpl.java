@@ -27,14 +27,26 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
 
     @Override
     public Message getTaskStateMetrics(HttpServletRequest request) {
-        Map<String, Object> params = new HashMap<>();
-        List<ExchangisTaskStatusMetricsDTO> metrices = exchangisLaunchTaskMapper.statTaskStatus(params);
+        List<ExchangisTaskStatusMetricsDTO> metrices = new ArrayList<>();
+        // TODO hard code
+        ExchangisTaskStatusMetricsDTO success = exchangisLaunchTaskMapper.getTaskMetricsByStatus("SUCCESS");
+        ExchangisTaskStatusMetricsDTO failed = exchangisLaunchTaskMapper.getTaskMetricsByStatus("FAILED");
+        ExchangisTaskStatusMetricsDTO running = exchangisLaunchTaskMapper.getTaskMetricsByStatus("RUNNING");
+        ExchangisTaskStatusMetricsDTO busy = exchangisLaunchTaskMapper.getTaskMetricsByStatus("BUSY");
+        ExchangisTaskStatusMetricsDTO idle = exchangisLaunchTaskMapper.getTaskMetricsByStatus("IDLE");
+        ExchangisTaskStatusMetricsDTO unlock = exchangisLaunchTaskMapper.getTaskMetricsByStatus("UNLOCK");
+
+        Optional.ofNullable(success).ifPresent(metrices::add);
+        Optional.ofNullable(failed).ifPresent(metrices::add);
+        Optional.ofNullable(running).ifPresent(metrices::add);
+        Optional.ofNullable(busy).ifPresent(metrices::add);
+        Optional.ofNullable(idle).ifPresent(metrices::add);
+        Optional.ofNullable(unlock).ifPresent(metrices::add);
 
         Message message = Message.ok();
         message.setMethod("/exchangis/metrics/taskstate");
         message.data("metrices", metrices);
         return message;
-//        return Message.ok().data("metrices", metrices);
     }
 
     @Override
@@ -107,7 +119,7 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
         // make last past 4 hours data, dimension is min
         String fromDateTime = "2021-10-25 15:00";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date parsedFrom = new Date();
+        Date parsedFrom;
         try {
             parsedFrom = sdf.parse(fromDateTime);
         } catch (Exception e) {
@@ -152,6 +164,106 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
     }
 
     @Override
+    public Message getEngineResourceCpuMetrics(HttpServletRequest request) {
+        // make last past 4 hours data, dimension is min
+        String fromDateTime = "2021-10-25 15:00";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date parsedFrom;
+        try {
+            parsedFrom = sdf.parse(fromDateTime);
+        } catch (Exception e) {
+            parsedFrom = new Date();
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(parsedFrom);
+
+        List<List<Object>> dataset = new ArrayList<>();
+        List<Object> header = new ArrayList<>();
+        int loopNum = 4 * 60;
+
+        // 添加第一行，头信息
+        header.add("引擎");
+        for (int i = 1; i <= loopNum; i++) {
+            header.add(sdf.format(calendar.getTime()));
+            calendar.add(Calendar.MINUTE, 1);
+        }
+        dataset.add(header);
+
+        // 添加数据信息
+        List<Object> ds1Data = new ArrayList<>();
+        ds1Data.add("datax");
+
+        List<Object> ds2Data = new ArrayList<>();
+        ds2Data.add("sqoop");
+
+        List<Object> ds3Data = new ArrayList<>();
+        ds3Data.add("linkis");
+        for (int i = 1; i <= loopNum; i++) {
+            ds1Data.add(i * RandomUtils.nextInt(4));
+            ds2Data.add(i * RandomUtils.nextInt(4));
+            ds3Data.add(i * RandomUtils.nextInt(4));
+        }
+        dataset.add(ds1Data);
+        dataset.add(ds2Data);
+        dataset.add(ds3Data);
+        Message message = Message.ok();
+        message.setMethod("/exchangis/metrics/engineresourcecpu");
+        message.data("dataset", dataset);
+        return message;
+
+
+    }
+
+    @Override
+    public Message getEngineResourceMemMetrics(HttpServletRequest request) {
+        // make last past 4 hours data, dimension is min
+        String fromDateTime = "2021-10-25 15:00";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date parsedFrom;
+        try {
+            parsedFrom = sdf.parse(fromDateTime);
+        } catch (Exception e) {
+            parsedFrom = new Date();
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(parsedFrom);
+
+        List<List<Object>> dataset = new ArrayList<>();
+        List<Object> header = new ArrayList<>();
+        int loopNum = 4 * 60;
+
+        // 添加第一行，头信息
+        header.add("引擎");
+        for (int i = 1; i <= loopNum; i++) {
+            header.add(sdf.format(calendar.getTime()));
+            calendar.add(Calendar.MINUTE, 1);
+        }
+        dataset.add(header);
+
+        // 添加数据信息
+        List<Object> ds1Data = new ArrayList<>();
+        ds1Data.add("datax");
+
+        List<Object> ds2Data = new ArrayList<>();
+        ds2Data.add("sqoop");
+
+        List<Object> ds3Data = new ArrayList<>();
+        ds3Data.add("linkis");
+        for (int i = 1; i <= loopNum; i++) {
+            ds1Data.add(i * RandomUtils.nextInt(4192));
+            ds2Data.add(i * RandomUtils.nextInt(2048));
+            ds3Data.add(i * RandomUtils.nextInt(1024));
+        }
+        dataset.add(ds1Data);
+        dataset.add(ds2Data);
+        dataset.add(ds3Data);
+        Message message = Message.ok();
+        message.setMethod("/exchangis/metrics/engineresourcemem");
+        message.data("dataset", dataset);
+        return message;
+    }
+
+    @Override
     public Message getEngineResourceMetrics(HttpServletRequest request) {
         List<ExchangisEngineResourceMetricsDTO> list = new ArrayList<>();
         ExchangisEngineResourceMetricsDTO sqoop = new ExchangisEngineResourceMetricsDTO();
@@ -167,10 +279,10 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
         list.add(datax);
 
         ExchangisEngineResourceMetricsDTO linkis = new ExchangisEngineResourceMetricsDTO();
-        datax.setEngine("linkis");
-        datax.setCpu("78%");
-        datax.setMem("4196Mi");
-        list.add(datax);
+        linkis.setEngine("linkis");
+        linkis.setCpu("78%");
+        linkis.setMem("4196Mi");
+        list.add(linkis);
 
         Message message = Message.ok();
         message.setMethod("/exchangis/metrics/engineresource");

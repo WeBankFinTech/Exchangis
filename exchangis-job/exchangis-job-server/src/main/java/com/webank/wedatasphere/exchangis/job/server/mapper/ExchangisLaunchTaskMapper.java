@@ -27,6 +27,6 @@ public interface ExchangisLaunchTaskMapper extends BaseMapper<ExchangisLaunchTas
     int count(@Param("taskId") Long taskId, @Param("taskName") String taskName, @Param("status") String status,
         @Param("launchStartTime") Date launchStartTime, @Param("launchEndTime") Date launchEndTime);
 
-    List<ExchangisTaskStatusMetricsDTO> statTaskStatus(Map<String, Object> params);
+    ExchangisTaskStatusMetricsDTO getTaskMetricsByStatus(String status);
 
 }
