@@ -26,7 +26,7 @@ export const updateProject = (body) => {
     method: "PUT",
   });
 };
-////////////////////////////////////////////////////////////////////
+
 export const getDataSourceList = (params) => {
   return request("/datasources/query", { ...params }, { method: "POST" });
 };
@@ -37,6 +37,11 @@ export const getDataSourceTypes = () => {
     {},
     { method: "GET" }
   );
+};
+
+// 查询数据源
+export const getDataSource = (body) => {
+  return request("/datasources/query", body, { method: "POST" });
 };
 
 export const getDBs = (type, id) => {
