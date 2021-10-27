@@ -60,6 +60,7 @@ import DyncRender from "./dyncRender.vue";
 export default defineComponent({
   props: {
     psData: Array,
+    engineType: String,
   },
   emits: ["updateProcessControl"],
   components: {
