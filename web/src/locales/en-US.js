@@ -4,6 +4,7 @@ export default {
     dataSourceManage: "data source",
     jobManagement: "job management",
     synchronizationHistory: "synchronization history",
+    homePage: "home page",
   },
   projectManage: {
     topLine: {

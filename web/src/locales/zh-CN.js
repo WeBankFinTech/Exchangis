@@ -4,6 +4,7 @@ export default {
     dataSourceManage: "数据源管理",
     jobManagement: "数据任务管理",
     synchronizationHistory: "同步历史",
+    homePage: "首页",
   },
   projectManage: {
     topLine: {
