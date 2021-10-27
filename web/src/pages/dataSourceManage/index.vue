@@ -201,7 +201,7 @@ export default {
     },
     // 测试链接
     async handleTestConnect(row) {
-      await testDataSourceConnect(row.text.dataSourceTypeId, row.text.id);
+      await testDataSourceConnect(row.text.id, row.text.versionId);
       message.success("连接成功");
     },
     // 获取列表数据
