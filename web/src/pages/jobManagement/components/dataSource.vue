@@ -129,8 +129,9 @@ export default defineComponent({
     // 对象转标题
     const objToTitle = function (obj) {
       if (typeof obj !== "object") return "";
-      const { type, db, table } = obj;
-      return `${type}-数据源-${db}.${table}`;
+      const { type, db, table, ds } = obj;
+      if (!type && !db && !table && !ds) return "请点击后选择";
+      return `${type}-${ds}-${db}.${table}`;
     };
 
     let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source));
@@ -166,8 +167,9 @@ export default defineComponent({
     const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
       dataSource.dataSourceIds.source.type = info[0];
-      dataSource.dataSourceIds.source.db = info[1];
-      dataSource.dataSourceIds.source.table = info[2];
+      dataSource.dataSourceIds.source.ds = info[1];
+      dataSource.dataSourceIds.source.db = info[2];
+      dataSource.dataSourceIds.source.table = info[3];
       dataSource.dataSourceIds.source.id = id;
 
       getSourceParams(dataSource.dataSourceIds.source.type).then((res) => {
@@ -178,8 +180,9 @@ export default defineComponent({
     const updateSinkInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
       dataSource.dataSourceIds.sink.type = info[0];
-      dataSource.dataSourceIds.sink.db = info[1];
-      dataSource.dataSourceIds.sink.table = info[2];
+      dataSource.dataSourceIds.sink.ds = info[1];
+      dataSource.dataSourceIds.sink.db = info[2];
+      dataSource.dataSourceIds.sink.table = info[3];
       dataSource.dataSourceIds.sink.id = id;
 
       getSourceParams(dataSource.dataSourceIds.sink.type).then((res) => {

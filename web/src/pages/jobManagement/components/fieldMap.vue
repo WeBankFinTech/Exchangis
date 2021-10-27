@@ -74,12 +74,17 @@
 
           <!-- mid -->
           <div class="field-map-wrap-mid">
-            <template v-for="item in fieldMap.transformerList" :key="item.key">
-              <Transformer
-                v-bind:tfData="item"
-                @updateTransformer="updateTransformer"
-              />
-            </template>
+            <div v-if="engineType !== 'SQOOP'">
+              <template
+                v-for="item in fieldMap.transformerList"
+                :key="item.key"
+              >
+                <Transformer
+                  v-bind:tfData="item"
+                  @updateTransformer="updateTransformer"
+                />
+              </template>
+            </div>
           </div>
 
           <!-- right -->
@@ -129,6 +134,7 @@ export default defineComponent({
     fmData: Object,
     fieldsSource: Array,
     fieldsSink: Array,
+    engineType: String,
   },
   emits: ["updateFieldMap"],
   components: {
