@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
+import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
 import com.webank.wedatasphere.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -168,11 +169,18 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
+    @POST
+    @Path("datasources/{type}/{id}/dbs/{dbName}/tables/{tableName}/fieldsmapping")
+    public Response queryDataSourceDBTableFieldsMapping(@Context HttpServletRequest request, @RequestBody FieldMappingVO vo) throws Exception {
+        Message message = this.exchangisDataSourceService.queryDataSourceDBTableFieldsMapping(request, vo);
+        return Message.messageToResponse(message);
+    }
+
     @GET
     @Path("datasources/{type}/params/ui")
     public Response getParamsUI(
             @Context HttpServletRequest request,
-            @PathParam("type")String type,
+            @PathParam("type") String type,
             @QueryParam(value = "dir") String dir
     ) {
         List<ElementUI> uis = this.exchangisDataSourceService.getDataSourceParamsUI(type, dir);
