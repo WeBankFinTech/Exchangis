@@ -50,6 +50,7 @@ public class ExchangisDataSourceRestfulApi {
     // list all datasources
     @GET
     @Path("datasources")
+    @Deprecated
     public Response listAllDataSources(
             @Context HttpServletRequest request,
             @QueryParam("typeId") Long typeId,
