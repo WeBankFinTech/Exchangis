@@ -6,6 +6,7 @@ import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +59,18 @@ public class ExchangisDataSourceRestfulApi {
         Message message = this.exchangisDataSourceService.listAllDataSources(request, typeName, typeId, page, size);
         return Message.messageToResponse(message);
     }
+
+    // get datasource key define
+    @GET
+    @Path("datasources/types/{dataSourceTypeId}/keydefines")
+    public Response getDataSourceKeyDefine(
+            @Context HttpServletRequest request,
+            @PathParam("dataSourceTypeId") Long dataSourceTypeId
+    ) throws Exception {
+        Message message = this.exchangisDataSourceService.getDataSourceKeyDefine(request, dataSourceTypeId);
+        return Message.messageToResponse(message);
+    }
+
 
     // get datasource version list
     @GET
