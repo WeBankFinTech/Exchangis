@@ -44,6 +44,14 @@ export default {
           title: "globalMenu.synchronizationHistory",
         },
       },
+      {
+        path: "/homePage",
+        component: "@/pages/homePage",
+        meta: {
+          name: "homePage",
+          title: "globalMenu.homePage",
+        },
+      },
     ],
   },
   request: {
@@ -62,14 +70,14 @@ export default {
     multiTabs: false,
     menus: [
       {
+        name: "homePage",
+      },
+      {
         name: "projectManage",
       },
       {
         name: "dataSourceManage",
       },
-      // {
-      //   name: "jobManagement",
-      // },
       {
         name: "synchronizationHistory",
       },
