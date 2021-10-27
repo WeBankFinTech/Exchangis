@@ -114,6 +114,7 @@
             v-bind:fmData="curTask.transforms"
             v-bind:fieldsSink="fieldsSink"
             v-bind:fieldsSource="fieldsSource"
+            v-bind:engineType="curTask.engineType"
             @updateFieldMap="updateFieldMap"
           />
         </div>
@@ -121,6 +122,7 @@
           <ProcessControl
             v-if="curTask"
             v-bind:psData="curTask.settings"
+            v-bind:engineType="curTask.engineType"
             @updateProcessControl="updateProcessControl"
           />
         </div>
@@ -334,12 +336,14 @@ export default {
             id: "",
             db: "",
             table: "",
+            ds: "",
           },
           sink: {
             type: "",
             id: "",
             db: "",
             table: "",
+            ds: "",
           },
         },
         params: {
