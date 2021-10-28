@@ -390,7 +390,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_DATABASES_ERROR.getCode(), "metadata get databases null or empty");
         }
 
-        List<String> dbs = databases.getDbs();
+        List<String> dbs = Optional.ofNullable(databases.getDbs()).orElse(new ArrayList<>());
 
         return Message.ok().data("dbs", dbs);
     }
@@ -423,7 +423,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_TABLES_ERROR.getCode(), "metadata get tables null or empty");
         }
 
-        List<String> tbs = tables.getTables();
+        List<String> tbs = Optional.ofNullable(tables.getTables()).orElse(new ArrayList<>());
 
         return Message.ok().data("tbs", tbs);
     }
