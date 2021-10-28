@@ -79,11 +79,11 @@
     </select>
 
 
-    <select id="statTaskStatus" resultType="com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskStatusMetricsDTO">
-        select status, count(1) as num
+    <select id="getTaskMetricsByStatus" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskStatusMetricsDTO">
+        select job_name as jobName, task_name as taskName, create_user as createUser, proxy_user as proxyUser, status, sum(1) as num
         from
         <include refid="TableName" />
-        group by status
+        where status = #{status}
     </select>
 
 </mapper>
