@@ -102,6 +102,7 @@
           <DataSource
             v-if="curTask"
             v-bind:dsData="curTask"
+            v-bind:engineType="curTask.engineType"
             @updateSourceInfo="updateSourceInfo"
             @updateSinkInfo="updateSinkInfo"
             @updateSourceParams="updateSourceParams"
@@ -419,13 +420,13 @@ export default {
           source_id: `${jobData.dataSourceIds.source.type}.${jobData.dataSourceIds.source.id}.${jobData.dataSourceIds.source.db}.${jobData.dataSourceIds.source.table}`,
           sink_id: `${jobData.dataSourceIds.sink.type}.${jobData.dataSourceIds.sink.id}.${jobData.dataSourceIds.sink.db}.${jobData.dataSourceIds.sink.table}`,
         };
-        if (
+        /*if (
           !jobData.params ||
           !jobData.params.sources.length ||
           !jobData.params.sinks.length
         ) {
-          return message.error("缺失数据源信息");
-        }
+          return message.error("缺失数据源参数");
+        }*/
         cur.params = {
           sources: [],
           sinks: [],
