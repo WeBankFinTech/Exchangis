@@ -76,13 +76,14 @@
           <div class="field-map-wrap-mid">
             <div v-if="engineType !== 'SQOOP'">
               <template
-                v-for="item in fieldMap.transformerList"
+                v-for="(item, index) in fieldMap.transformerList"
                 :key="item.key"
               >
                 <Transformer
                   v-bind:tfData="item"
                   @updateTransformer="updateTransformer"
                 />
+                <DeleteOutlined  @click="deleteField(index)" style="position: absolute;right: 8px;margin-top: -18px;"/>
               </template>
             </div>
           </div>
@@ -129,16 +130,19 @@ import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
 import { cloneDeep } from "lodash-es";
 import Transformer from "./transformer.vue";
 import { fieldInfo } from "../mock";
+import { DeleteOutlined } from "@ant-design/icons-vue";
+
 export default defineComponent({
   props: {
     fmData: Object,
     fieldsSource: Array,
     fieldsSink: Array,
-    engineType: String,
+    engineType: String
   },
   emits: ["updateFieldMap"],
   components: {
     Transformer,
+    DeleteOutlined
   },
   setup(props, context) {
     const { type } = props.fmData;
@@ -324,6 +328,11 @@ export default defineComponent({
       fieldMap.sourceDS.push(sourceItem);
       fieldMap.sinkDS.push(sinkItem);
     };
+    const deleteField = (index) => {
+      fieldMap.transformerList.splice(index, 1);
+      fieldMap.sourceDS.splice(index, 1);
+      fieldMap.sinkDS.splice(index, 1);
+    }
     let isFold = ref(true);
     const showInfo = () => {
       isFold.value = !isFold.value;
@@ -356,6 +365,7 @@ export default defineComponent({
       addTableRow,
       isFold,
       showInfo,
+      deleteField
     };
   },
 });
@@ -459,6 +469,7 @@ export default defineComponent({
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 .feld-map-label {
   font-size: 14px;
