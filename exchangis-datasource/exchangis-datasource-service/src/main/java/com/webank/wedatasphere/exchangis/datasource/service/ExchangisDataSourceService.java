@@ -81,7 +81,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         List<ExchangisJobParamConfig> paramConfigs = exchangisDataSource.getDataSourceParamConfigs();
         List<ExchangisJobParamConfig> filteredConfigs = new ArrayList<>();
         for (ExchangisJobParamConfig paramConfig : paramConfigs) {
-            if (paramConfig.getConfigDirection().equalsIgnoreCase(engineAndDirection)) {
+            if (Optional.ofNullable(paramConfig.getConfigDirection()).orElse("").equalsIgnoreCase(engineAndDirection)) {
                 filteredConfigs.add(paramConfig);
             }
         }
