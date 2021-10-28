@@ -113,6 +113,7 @@ import { getSourceParams, getSettingsParams } from "@/common/service";
 export default defineComponent({
   props: {
     dsData: Object,
+    engineType: String
   },
   emits: [
     "updateSourceInfo",
@@ -131,7 +132,7 @@ export default defineComponent({
       if (typeof obj !== "object") return "";
       const { type, db, table, ds } = obj;
       if (!type && !db && !table && !ds) return "请点击后选择";
-      return `${type}-${ds}-${db}.${table}`;
+      return `${type}-${ds}-${db}-${table}`;
     };
 
     let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source));
@@ -172,7 +173,7 @@ export default defineComponent({
       dataSource.dataSourceIds.source.table = info[3];
       dataSource.dataSourceIds.source.id = id;
 
-      getSourceParams(dataSource.dataSourceIds.source.type).then((res) => {
+      getSourceParams(props.engineType, dataSource.dataSourceIds.source.type).then((res) => {
         dataSource.params.sources = res.uis || [];
         context.emit("updateSourceInfo", dataSource);
       });
@@ -185,7 +186,7 @@ export default defineComponent({
       dataSource.dataSourceIds.sink.table = info[3];
       dataSource.dataSourceIds.sink.id = id;
 
-      getSourceParams(dataSource.dataSourceIds.sink.type).then((res) => {
+      getSourceParams(props.engineType, dataSource.dataSourceIds.sink.type).then((res) => {
         dataSource.params.sinks = res.uis || [];
         context.emit("updateSinkInfo", dataSource);
       });
