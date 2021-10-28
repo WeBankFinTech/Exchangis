@@ -28,7 +28,8 @@ import {
   message,
   Radio,
   Tree,
-  Tooltip
+  Tooltip,
+  Progress,
 } from "ant-design-vue";
 
 /**
@@ -67,4 +68,5 @@ export default function loadComponent(app) {
   app.use(Radio);
   app.use(Tree);
   app.use(Tooltip);
+  app.use(Progress);
 }
