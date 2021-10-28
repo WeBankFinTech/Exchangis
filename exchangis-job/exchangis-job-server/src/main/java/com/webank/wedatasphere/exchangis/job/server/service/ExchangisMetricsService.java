@@ -11,5 +11,9 @@ public interface ExchangisMetricsService {
 
     Message getDataSourceFlowMetrics(HttpServletRequest request);
 
+    Message getEngineResourceCpuMetrics(HttpServletRequest request);
+
+    Message getEngineResourceMemMetrics(HttpServletRequest request);
+
     Message getEngineResourceMetrics(HttpServletRequest request);
 }
