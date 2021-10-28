@@ -75,15 +75,13 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     // 根据数据源类型获取参数
     @Override
-    public List<ElementUI> getDataSourceParamsUI(String dsType, String dir) {
-        if (Strings.isNullOrEmpty(dir)) {
-            dir = ExchangisJobParamConfig.DIRECTION_SOURCE;
-        }
+    public List<ElementUI> getDataSourceParamsUI(String dsType, String engineAndDirection) {
+
         ExchangisDataSource exchangisDataSource = this.context.getExchangisDataSource(dsType);
         List<ExchangisJobParamConfig> paramConfigs = exchangisDataSource.getDataSourceParamConfigs();
         List<ExchangisJobParamConfig> filteredConfigs = new ArrayList<>();
         for (ExchangisJobParamConfig paramConfig : paramConfigs) {
-            if (paramConfig.getConfigDirection().equalsIgnoreCase(dir)) {
+            if (Optional.ofNullable(paramConfig.getConfigDirection()).orElse("").equalsIgnoreCase(engineAndDirection)) {
                 filteredConfigs.add(paramConfig);
             }
         }
@@ -390,7 +388,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_DATABASES_ERROR.getCode(), "metadata get databases null or empty");
         }
 
-        List<String> dbs = databases.getDbs();
+        List<String> dbs = Optional.ofNullable(databases.getDbs()).orElse(new ArrayList<>());
 
         return Message.ok().data("dbs", dbs);
     }
@@ -423,7 +421,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_TABLES_ERROR.getCode(), "metadata get tables null or empty");
         }
 
-        List<String> tbs = tables.getTables();
+        List<String> tbs = Optional.ofNullable(tables.getTables()).orElse(new ArrayList<>());
 
         return Message.ok().data("tbs", tbs);
     }
@@ -698,7 +696,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     public Message getDataSourceVersionsById(HttpServletRequest request, Long id) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         String userName = SecurityFilter.getLoginUsername(request);
-        LOGGER.info("getDataSourceVersionsById userName:"+userName);
+        LOGGER.info("getDataSourceVersionsById userName:" + userName);
 //        GetInfoByDataSourceIdResult result;
         GetDataSourceInfoResultDTO result;
         try {
