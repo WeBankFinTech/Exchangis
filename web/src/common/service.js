@@ -204,3 +204,33 @@ export const getSyncHistory = (body) => {
     method: "GET",
   });
 };
+
+// 首页相关
+
+// 任务状态
+export const getTaskState = () => {
+  return request("/metrics/taskstate", {}, { method: "GET" });
+};
+
+// 任务进度
+export const getTaskProcess = () => {
+  return request("/metrics/taskprocess", {}, { method: "GET" });
+};
+
+// 流量监控
+export const getDataSourceFlow = () => {
+  return request("/metrics/datasourceflow", {}, { method: "GET" });
+};
+
+// 资源使用
+export const getEngineriesSource = () => {
+  return request("/metrics/engineresource", {}, { method: "GET" });
+};
+
+export const getEngineriesSourceCpu = () => {
+  return request("/metrics/engineresourcecpu", {}, { method: "GET" });
+};
+
+export const getEngineriesSourceMem = () => {
+  return request("/metrics/engineresourcemem", {}, { method: "GET" });
+};
