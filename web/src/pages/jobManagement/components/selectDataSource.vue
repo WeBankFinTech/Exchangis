@@ -82,6 +82,7 @@ export default defineComponent({
     });
     const newProps = computed(() => JSON.parse(JSON.stringify(props.title)));
     watch(newProps, (val, oldVal) => {
+      console.log(val)
       state.defaultSelect = val;
     });
     async function init() {
