@@ -178,13 +178,14 @@ public class ExchangisDataSourceRestfulApi {
     }
 
     @GET
-    @Path("datasources/{type}/params/ui")
+    @Path("datasources/{engine}/{type}/params/ui")
     public Response getParamsUI(
             @Context HttpServletRequest request,
+            @PathParam("engine") String engine,
             @PathParam("type") String type,
             @QueryParam(value = "dir") String dir
     ) {
-        List<ElementUI> uis = this.exchangisDataSourceService.getDataSourceParamsUI(type, dir);
+        List<ElementUI> uis = this.exchangisDataSourceService.getDataSourceParamsUI(String.format("%s-%s", engine, type), dir);
         Message message = Message.ok().data("uis", uis);
         return Message.messageToResponse(message);
     }
