@@ -209,7 +209,7 @@ const initOptions = (ori, tar) => {
   const _tar = cloneDeep(tar);
   _tar.legend = ori[0].slice(1);
   _tar.legend.forEach((item) => {
-    let o = Object.create(null);
+    let o = {}
     o["type"] = "line";
     o["stack"] = "Total";
     o["data"] = [];
@@ -349,8 +349,7 @@ export default {
       } catch (err) {
         console.log("initEngineriesChartData error", err);
       }
-      const chartData = cloneDeep(that.engineriesChartData);
-      console.log("chartData", chartData);
+      const chartData = toRaw(that.engineriesChartData);
       if (chartDom) {
         const myChart_1 = echarts.init(chartDom);
         const option = {
