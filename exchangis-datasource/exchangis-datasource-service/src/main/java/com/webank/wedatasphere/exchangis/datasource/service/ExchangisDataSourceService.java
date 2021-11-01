@@ -168,6 +168,13 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         LinkisDataSourceRemoteClient client = exchangisDataSource.getDataSourceRemoteClient();
         Map<String, Object> connectParams = vo.getConnectParams();
         if (!Objects.isNull(connectParams)) {
+            // 如果是 hive 类型，需要处理成连接字符串 TODO
+            Object host = connectParams.get("host");
+            Object port = connectParams.get("port");
+            if (!Objects.isNull(host) && !Objects.isNull(port)) {
+                String uris = "thrift://" + connectParams.get("host") + ":" + connectParams.get("port");
+                connectParams.put("uris", uris);
+            }
             json.put("parameter", mapper.writeValueAsString(connectParams));
         }
         LOGGER.info("create datasource json as follows");
@@ -253,6 +260,18 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         ExchangisDataSource exchangisDataSource = context.getExchangisDataSource(vo.getDataSourceTypeId());
         if (Objects.isNull(exchangisDataSource)) {
             throw new ExchangisDataSourceException(30401, "exchangis.datasource.null");
+        }
+
+        Map<String, Object> connectParams = vo.getConnectParams();
+        if (!Objects.isNull(connectParams)) {
+            // 如果是 hive 类型，需要处理成连接字符串 TODO
+            Object host = connectParams.get("host");
+            Object port = connectParams.get("port");
+            if (!Objects.isNull(host) && !Objects.isNull(port)) {
+                String uris = "thrift://" + connectParams.get("host") + ":" + connectParams.get("port");
+                connectParams.put("uris", uris);
+            }
+            json.put("parameter", mapper.writeValueAsString(connectParams));
         }
 
         LinkisDataSourceRemoteClient client = exchangisDataSource.getDataSourceRemoteClient();
@@ -681,6 +700,13 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             if (result.getStatus() != 0) {
                 throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
             }
+//            GetDataSourceInfoResultDTO.DataSourceItemDTO info = result.getData().getInfo();
+//            Map<String, Object> connectParams = info.getConnectParams();
+//            // TODO HARD CODE
+//            if (info.getCreateSystem().equalsIgnoreCase("hive")) {
+//                // 需要拆解成 host port 给前端
+//            }
+
             return Message.ok().data("info", result.getData().getInfo());
 //            return Message.ok().data("info", Objects.isNull(result.getInfo()) ? null : result.getInfo());
         } catch (Exception e) {
@@ -786,7 +812,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     public Message testConnect(HttpServletRequest request, Long id, Long version) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
-        String responseBody;
         String userName = SecurityFilter.getLoginUsername(request);
         LOGGER.info("testConnect userName:" + userName);
         DataSourceTestConnectResult result;
@@ -817,7 +842,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     public Message publishDataSource(HttpServletRequest request, Long id, Long version) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
 
-        String responseBody;
         String userName = SecurityFilter.getLoginUsername(request);
         LOGGER.info("publishDataSource userName:" + userName);
         PublishDataSourceVersionResult result;
@@ -846,7 +870,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     public Message getDataSourceConnectParamsById(HttpServletRequest request, Long id) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
-        String responseBody;
         String userName = SecurityFilter.getLoginUsername(request);
         LOGGER.info("getDataSourceConnectParamsById userName:" + userName);
         GetConnectParamsByDataSourceIdResult result;

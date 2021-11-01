@@ -6,7 +6,6 @@ import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskStatusMetri
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisLaunchTaskMapper;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisMetricsService;
 import com.webank.wedatasphere.linkis.server.Message;
-import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -133,30 +132,47 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
         int loopNum = 4 * 60;
 
         // 添加第一行，头信息
-        header.add("数据源");
-        for (int i = 1; i <= loopNum; i++) {
-            header.add(sdf.format(calendar.getTime()));
-            calendar.add(Calendar.MINUTE, 1);
-        }
+//        header.add("数据源");
+//        for (int i = 1; i <= loopNum; i++) {
+//            header.add(sdf.format(calendar.getTime()));
+//            calendar.add(Calendar.MINUTE, 1);
+//        }
+        header.add("时间");
+        header.add("ds1");
+        header.add("ds2");
+        header.add("ds3");
         dataset.add(header);
 
-        // 添加数据信息
-        List<Object> ds1Data = new ArrayList<>();
-        ds1Data.add("ds1");
-
-        List<Object> ds2Data = new ArrayList<>();
-        ds2Data.add("ds2");
-
-        List<Object> ds3Data = new ArrayList<>();
-        ds3Data.add("ds3");
+        List<Object> realData;
+        int max = 10240;
+        int min = 512;
         for (int i = 1; i <= loopNum; i++) {
-            ds1Data.add(i * RandomUtils.nextInt(1024));
-            ds2Data.add(i * RandomUtils.nextInt(512));
-            ds3Data.add(i * RandomUtils.nextInt(2048));
+            realData = new ArrayList<>();
+            realData.add(sdf.format(calendar.getTime()));
+            calendar.add(Calendar.MINUTE, 1);
+            realData.add(Math.random() * (max - min) + min);
+            realData.add(Math.random() * (max - min) + min);
+            realData.add( Math.random() * (max - min) + min);
+            dataset.add(realData);
         }
-        dataset.add(ds1Data);
-        dataset.add(ds2Data);
-        dataset.add(ds3Data);
+
+        // 添加数据信息
+//        List<Object> ds1Data = new ArrayList<>();
+//        ds1Data.add("ds1");
+//
+//        List<Object> ds2Data = new ArrayList<>();
+//        ds2Data.add("ds2");
+//
+//        List<Object> ds3Data = new ArrayList<>();
+//        ds3Data.add("ds3");
+//        for (int i = 1; i <= loopNum; i++) {
+//            ds1Data.add(i * RandomUtils.nextInt(1024));
+//            ds2Data.add(i * RandomUtils.nextInt(512));
+//            ds3Data.add(i * RandomUtils.nextInt(2048));
+//        }
+//        dataset.add(ds1Data);
+//        dataset.add(ds2Data);
+//        dataset.add(ds3Data);
         Message message = Message.ok();
         message.setMethod("/exchangis/metrics/datasourceflow");
         message.data("dataset", dataset);
@@ -182,30 +198,40 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
         int loopNum = 4 * 60;
 
         // 添加第一行，头信息
-        header.add("引擎");
-        for (int i = 1; i <= loopNum; i++) {
-            header.add(sdf.format(calendar.getTime()));
-            calendar.add(Calendar.MINUTE, 1);
-        }
+        header.add("时间");
+        header.add("datax");
+        header.add("sqoop");
+        header.add("linkis");
+//        for (int i = 1; i <= loopNum; i++) {
+//            header.add(sdf.format(calendar.getTime()));
+//            calendar.add(Calendar.MINUTE, 1);
+//        }
         dataset.add(header);
 
         // 添加数据信息
-        List<Object> ds1Data = new ArrayList<>();
-        ds1Data.add("datax");
+        List<Object> realData;
+//        ds1Data.add("datax");
 
-        List<Object> ds2Data = new ArrayList<>();
-        ds2Data.add("sqoop");
-
-        List<Object> ds3Data = new ArrayList<>();
-        ds3Data.add("linkis");
+//        List<Object> ds2Data = new ArrayList<>();
+//        ds2Data.add("sqoop");
+//
+//        List<Object> ds3Data = new ArrayList<>();
+//        ds3Data.add("linkis");
+        int min = 1;
+        int max = 8;
         for (int i = 1; i <= loopNum; i++) {
-            ds1Data.add(i * RandomUtils.nextInt(4));
-            ds2Data.add(i * RandomUtils.nextInt(4));
-            ds3Data.add(i * RandomUtils.nextInt(4));
+            realData = new ArrayList<>();
+            realData.add(sdf.format(calendar.getTime()));
+            calendar.add(Calendar.MINUTE, 1);
+            realData.add(Math.random() * (max - min) + min);
+            realData.add(Math.random() * (max - min) + min);
+            realData.add( Math.random() * (max - min) + min);
+            dataset.add(realData);
         }
-        dataset.add(ds1Data);
-        dataset.add(ds2Data);
-        dataset.add(ds3Data);
+//        dataset.add(ds1Data);
+//        dataset.add(ds2Data);
+//        dataset.add(ds3Data);
+//        dataset.add(realData);
         Message message = Message.ok();
         message.setMethod("/exchangis/metrics/engineresourcecpu");
         message.data("dataset", dataset);
@@ -233,30 +259,58 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
         int loopNum = 4 * 60;
 
         // 添加第一行，头信息
-        header.add("引擎");
-        for (int i = 1; i <= loopNum; i++) {
-            header.add(sdf.format(calendar.getTime()));
-            calendar.add(Calendar.MINUTE, 1);
-        }
+//        header.add("引擎");
+//        for (int i = 1; i <= loopNum; i++) {
+//            header.add(sdf.format(calendar.getTime()));
+//            calendar.add(Calendar.MINUTE, 1);
+//        }
+//        dataset.add(header);
+//
+//        // 添加数据信息
+//        List<Object> ds1Data = new ArrayList<>();
+//        ds1Data.add("datax");
+//
+//        List<Object> ds2Data = new ArrayList<>();
+//        ds2Data.add("sqoop");
+//
+//        List<Object> ds3Data = new ArrayList<>();
+//        ds3Data.add("linkis");
+//        for (int i = 1; i <= loopNum; i++) {
+//            ds1Data.add(i * RandomUtils.nextInt(4192));
+//            ds2Data.add(i * RandomUtils.nextInt(2048));
+//            ds3Data.add(i * RandomUtils.nextInt(1024));
+//        }
+
+        // 添加第一行，头信息
+        header.add("时间");
+        header.add("datax");
+        header.add("sqoop");
+        header.add("linkis");
+//        for (int i = 1; i <= loopNum; i++) {
+//            header.add(sdf.format(calendar.getTime()));
+//            calendar.add(Calendar.MINUTE, 1);
+//        }
         dataset.add(header);
 
         // 添加数据信息
-        List<Object> ds1Data = new ArrayList<>();
-        ds1Data.add("datax");
-
-        List<Object> ds2Data = new ArrayList<>();
-        ds2Data.add("sqoop");
-
-        List<Object> ds3Data = new ArrayList<>();
-        ds3Data.add("linkis");
+        List<Object> realData;
+        int max = 8192;
+        int min = 1024;
         for (int i = 1; i <= loopNum; i++) {
-            ds1Data.add(i * RandomUtils.nextInt(4192));
-            ds2Data.add(i * RandomUtils.nextInt(2048));
-            ds3Data.add(i * RandomUtils.nextInt(1024));
+            realData = new ArrayList<>();
+            realData.add(sdf.format(calendar.getTime()));
+            calendar.add(Calendar.MINUTE, 1);
+            realData.add(Math.random() * (max - min) + min);
+            realData.add(Math.random() * (max - min) + min);
+            realData.add( Math.random() * (max - min) + min);
+//            realData.add(i * RandomUtils.nextInt(4));
+//            realData.add(i * RandomUtils.nextInt(4));
+//            realData.add(i * RandomUtils.nextInt(4));
+            dataset.add(realData);
         }
-        dataset.add(ds1Data);
-        dataset.add(ds2Data);
-        dataset.add(ds3Data);
+//        dataset.add(ds1Data);
+//        dataset.add(ds2Data);
+//        dataset.add(ds3Data);
         Message message = Message.ok();
         message.setMethod("/exchangis/metrics/engineresourcemem");
         message.data("dataset", dataset);
