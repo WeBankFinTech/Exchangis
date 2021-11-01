@@ -192,7 +192,7 @@
 </template>
 
 <script>
-import { onMounted, reactive, computed, toRaw } from "@vue/runtime-core";
+import { onMounted, reactive, computed } from "@vue/runtime-core";
 import { cloneDeep } from "lodash-es";
 import {
   getTaskState,
@@ -203,6 +203,8 @@ import {
   getEngineriesSourceMem,
 } from "@/common/service";
 import * as echarts from "echarts";
+
+let chartList = [];
 
 // 轉換函數 後端二維數組 to echarts 數據
 const initOptions = (ori, tar) => {
@@ -318,9 +320,11 @@ export default {
         xAxis: [],
         series: [],
       },
+      myInterval: "",
     };
   },
   async mounted() {
+    const that = this;
     try {
       await this.initEngineriesChart();
       await this.initCpuChart();
@@ -328,6 +332,17 @@ export default {
     } catch (err) {
       console.log("init chart error", err);
     }
+
+    // that.$nextTick(function () {
+    //   // 通过 轮询 去获取 实时数据流
+    //   that.myInterval = setInterval(() => {
+    //     console.log("chartList", chartList);
+    //   }, 500);
+    // });
+  },
+  beforeUnmount() {
+    // chartList = [];
+    // clearInterval(this.myInterval);
   },
   methods: {
     async initEngineriesChartData() {
@@ -350,7 +365,6 @@ export default {
         console.log("initEngineriesChartData error", err);
       }
       const chartData = cloneDeep(that.engineriesChartData);
-      console.log("chartData", chartData);
       if (chartDom) {
         const myChart_1 = echarts.init(chartDom);
         const option = {
@@ -383,6 +397,7 @@ export default {
         };
 
         option && myChart_1.setOption(option);
+        chartList.push(myChart_1);
       }
     },
     async initCpuChartData() {
@@ -443,6 +458,7 @@ export default {
         };
 
         option && myChart_2.setOption(option);
+        chartList.push(myChart_2);
       }
     },
     async initMemChartData() {
@@ -503,6 +519,7 @@ export default {
         };
 
         option && myChart_3.setOption(option);
+        chartList.push(myChart_3);
       }
     },
   },
