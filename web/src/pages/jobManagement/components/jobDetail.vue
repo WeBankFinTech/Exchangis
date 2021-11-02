@@ -7,7 +7,7 @@
       <div class="divider"></div>
       <span @click="saveAll()"><SaveOutlined />保存</span>
       <div class="divider"></div>
-      <span><HistoryOutlined />执行历史</span>
+      <span @click="executeHistory"><HistoryOutlined />执行历史</span>
     </div>
     <div class="jd-content">
       <div class="jd_left">
@@ -129,6 +129,32 @@
         </div>
       </div>
     </div>
+    <!-- 执行历史  jd-bottom -->
+    <div class="jd-bottom" v-show="visibleDrawer">
+      <div class="jd-bottom-top" @click="onCloseDrawer">
+        <MinusOutlined
+          style="color: #fff; position: absolute; right: 24px; top: 7px;cursor: pointer;"
+          height="1"
+        />
+      </div>
+      <div class="sh-b-table">
+        <a-table
+          :columns="ehColumns"
+          :data-source="ehTableData"
+          :pagination="ehPagination"
+          @change="onPageChange"
+        >
+          <template #operation="{ record }">
+            <a @click="showInfoLog(record.key)">详细日志</a>
+            <a-divider type="vertical" />
+            <a @click="onDelete(record.key)">删除</a>
+            <a-divider type="vertical" />
+            <a @click="dyncSpeedlimit(record.key)">动态限速</a>
+          </template>
+        </a-table>
+      </div>
+    </div>
+
     <config-modal
       v-model:visible="modalCfg.visible"
       :id="modalCfg.id"
@@ -156,6 +182,7 @@ import {
   ArrowDownOutlined,
   CheckCircleOutlined,
   EditOutlined,
+  MinusOutlined,
 } from "@ant-design/icons-vue";
 import configModal from "./configModal";
 import copyModal from "./copyModal";
@@ -166,6 +193,7 @@ import {
   getFields,
   executeTask,
   updateTaskConfiguration,
+  getSyncHistory,
 } from "@/common/service";
 import DataSource from "./dataSource";
 import FieldMap from "./fieldMap.vue";
@@ -186,6 +214,57 @@ const objectValueEmpty = (obj) => {
   return isEmpty;
 };
 
+const formatDate = (d) => {
+  let date = new Date(d);
+  let YY = date.getFullYear() + "-";
+  let MM =
+    (date.getMonth() + 1 < 10
+      ? "0" + (date.getMonth() + 1)
+      : date.getMonth() + 1) + "-";
+  let DD = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+  let hh =
+    (date.getHours() < 10 ? "0" + date.getHours() : date.getHours()) + ":";
+  let mm =
+    (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()) +
+    ":";
+  let ss = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+  return YY + MM + DD + " " + hh + mm + ss;
+};
+
+const ehColumns = [
+  {
+    title: "ID",
+    dataIndex: "id",
+  },
+  {
+    title: "任务名称",
+    dataIndex: "taskName",
+  },
+  {
+    title: "触发时间",
+    dataIndex: "launchTime",
+  },
+  {
+    title: "创建用户",
+    dataIndex: "createUser",
+  },
+  {
+    title: "状态",
+    dataIndex: "status",
+  },
+  {
+    title: "完成时间",
+    dataIndex: "completeTime",
+  },
+  {
+    title: "操作",
+    dataIndex: "options",
+    slots: {
+      customRender: "operation",
+    },
+  },
+];
+
 export default {
   components: {
     SettingOutlined,
@@ -204,6 +283,7 @@ export default {
     DataSource,
     FieldMap,
     ProcessControl,
+    MinusOutlined,
   },
   data() {
     return {
@@ -224,6 +304,16 @@ export default {
       fieldsSource: [],
       fieldsSink: [],
       configModalData: {},
+
+      visibleDrawer: false,
+      pageSize: 10,
+      currentPage: 1,
+      ehColumns: ehColumns,
+      ehTableData: [],
+      ehPagination: {
+        total: 0,
+        pageSize: 10,
+      },
     };
   },
   props: {
@@ -478,6 +568,62 @@ export default {
       //     console.log("executeTask error", err);
       //   });
     },
+    executeHistory() {
+      this.visibleDrawer = true;
+      this.getTableFormCurrent(1, "search");
+    },
+    getTableFormCurrent(current, type) {
+      let _this = this;
+      if (
+        _this.ehTableData.length == _this.ehPagination.total &&
+        _this.ehPagination.total > 0 &&
+        type !== "search"
+      )
+        return;
+      if (_this.currentPage == current && type !== "search") return;
+      let jobId = _this.curTab.id || "";
+      let _pageSize = _this.pageSize;
+      getSyncHistory({ jobId, current, size: _pageSize })
+        .then((res) => {
+          if (res.result.length > 0) {
+            const result = res.result || [];
+            result.forEach((item) => {
+              item["launchTime"] = formatDate(item["launchTime"]);
+              item["completeTime"] = formatDate(item["completeTime"]);
+              switch (item["status"]) {
+                case "SUCCESS":
+                  item["status"] = "执行成功";
+                  break;
+                case "FAILED":
+                  item["status"] = "执行失败";
+                  break;
+                case "RUNNING":
+                  item["status"] = "运行中";
+              }
+              item["key"] = item["id"];
+            });
+            if (type == "search") {
+              _this.TableData = [];
+            }
+            _this.ehPagination.total = res["total"];
+            _this.ehTableData = _this.ehTableData.concat(result);
+          }
+        })
+        .catch((err) => {
+          console.log("syncHistory error", err);
+        });
+    },
+    onPageChange(page) {
+      debugger;
+      const { current } = page;
+      this.getTableFormCurrent(current, "onChange");
+    },
+    onCloseDrawer() {
+      this.visibleDrawer = false;
+    },
+    showInfoLog() {},
+    onDelete() {},
+    dyncSpeedlimit() {},
   },
 };
 </script>
@@ -589,6 +735,22 @@ export default {
           left: 0;
         }
       }
+    }
+  }
+
+  .jd-bottom {
+    overflow: auto;
+    width: calc(100% - 200px);
+    position: fixed;
+    height: 30%;
+    bottom: 0;
+    background-color: white;
+    .jd-bottom-top {
+      width: calc(100% - 200px);
+      height: 30px;
+      position: fixed;
+      bottom: 30%;
+      background-color: rgba(67, 67, 67, 1);
     }
   }
 }

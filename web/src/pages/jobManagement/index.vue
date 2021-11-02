@@ -25,8 +25,16 @@
             <div class="jobNameWrap">{{ item.jobName }}</div>
           </a-tooltip>
         </div>
-        <div class="closeIcon" @click="() => deleteTab(item)">
-          <CloseOutlined />
+        <div class="closeIcon">
+          <a-popconfirm
+            title="确定未保存就离开？"
+            @confirm="() => deleteTab(item)"
+          >
+            <template #icon
+              ><QuestionCircleOutlined style="color: red"
+            /></template>
+            <CloseOutlined />
+          </a-popconfirm>
         </div>
       </div>
     </div>
@@ -45,6 +53,7 @@ import {
   UnorderedListOutlined,
   ClusterOutlined,
   CloseOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons-vue";
 export default {
   components: {
@@ -53,6 +62,7 @@ export default {
     UnorderedListOutlined,
     ClusterOutlined,
     CloseOutlined,
+    QuestionCircleOutlined,
   },
   data() {
     const { t } = useI18n({ useScope: "global" });
