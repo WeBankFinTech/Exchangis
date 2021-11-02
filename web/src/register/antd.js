@@ -30,6 +30,7 @@ import {
   Tree,
   Tooltip,
   Progress,
+  Drawer,
 } from "ant-design-vue";
 
 /**
@@ -69,4 +70,5 @@ export default function loadComponent(app) {
   app.use(Tree);
   app.use(Tooltip);
   app.use(Progress);
+  app.use(Drawer);
 }
