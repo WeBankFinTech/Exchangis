@@ -198,7 +198,8 @@ export default defineComponent({
 
       getSourceParams(
         props.engineType,
-        dataSource.dataSourceIds.source.type
+        dataSource.dataSourceIds.source.type,
+        "source"
       ).then((res) => {
         dataSource.params.sources = res.uis || [];
         context.emit("updateSourceInfo", dataSource);
@@ -214,7 +215,8 @@ export default defineComponent({
 
       getSourceParams(
         props.engineType,
-        dataSource.dataSourceIds.sink.type
+        dataSource.dataSourceIds.sink.type,
+        "sink"
       ).then((res) => {
         dataSource.params.sinks = res.uis || [];
         context.emit("updateSinkInfo", dataSource);
