@@ -205,12 +205,12 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         });
         content.forEach(c -> {
             JsonObject task = c.getAsJsonObject();
-            if (task.get("subJobName").equals(taskName)) {
+            if (task.get("subJobName").getAsString().equals(taskName)) {
                 task.remove("settings");
                 task.add("settings", newSet);
             }
         });
-        exchangisJob.setContent(content.getAsString());
+        exchangisJob.setContent(content.toString());
         exchangisJobService.updateById(exchangisJob);
     }
 
