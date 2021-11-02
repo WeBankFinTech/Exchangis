@@ -186,8 +186,12 @@ export const publishDataSource = (id, versionId) => {
   );
 };
 
-export const getSourceParams = (engineType, type) => {
-  return request(`/datasources/${engineType}/${type}/params/ui`, {}, { method: "GET" });
+export const getSourceParams = (engineType, type, ds) => {
+  return request(
+    `/datasources/${engineType}/${type}/params/ui?dir=${ds}`,
+    {},
+    { method: "GET" }
+  );
 };
 
 export const getSettingsParams = (engineType) => {
