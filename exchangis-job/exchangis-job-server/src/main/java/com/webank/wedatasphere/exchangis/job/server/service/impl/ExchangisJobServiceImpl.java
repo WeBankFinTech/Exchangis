@@ -1,20 +1,13 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
@@ -25,6 +18,16 @@ import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobMapper;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.linkis.common.utils.JsonUtils;
+import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -144,6 +147,25 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         exchangisJob.setContent(exchangisJobContentDTO.getContent());
         exchangisJobService.updateById(exchangisJob);
         return this.getJob(id);
+    }
+
+    public void getSpeedLimitSettings(Long id, String taskName) {
+        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+        Map<String, String> values = new HashMap<>();
+        if (null != exchangisJob && null != exchangisJob.getContent() && !"".equals(exchangisJob.getContent())) {
+            new JsonParser().parse(exchangisJob.getContent()).getAsJsonArray().forEach( i -> {
+                JsonObject task = i.getAsJsonObject();
+                if (task.get("subJobName").getAsString().equals(taskName)) {
+                    if (task.has("settings")) {
+                        task.get("settings").getAsJsonArray().forEach(s -> {
+                            JsonObject setting = s.getAsJsonObject();
+                            values.put(setting.get("config_key").getAsString(), setting.get("config_value").getAsString());
+                        });
+                    }
+                }
+            });
+        }
+
     }
 
 }
