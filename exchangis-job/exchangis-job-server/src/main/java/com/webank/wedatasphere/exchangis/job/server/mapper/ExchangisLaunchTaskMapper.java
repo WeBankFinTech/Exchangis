@@ -2,7 +2,9 @@ package com.webank.wedatasphere.exchangis.job.server.mapper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskStatusMetricsDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,4 +26,7 @@ public interface ExchangisLaunchTaskMapper extends BaseMapper<ExchangisLaunchTas
 
     int count(@Param("taskId") Long taskId, @Param("taskName") String taskName, @Param("status") String status,
         @Param("launchStartTime") Date launchStartTime, @Param("launchEndTime") Date launchEndTime);
+
+    ExchangisTaskStatusMetricsDTO getTaskMetricsByStatus(String status);
+
 }
