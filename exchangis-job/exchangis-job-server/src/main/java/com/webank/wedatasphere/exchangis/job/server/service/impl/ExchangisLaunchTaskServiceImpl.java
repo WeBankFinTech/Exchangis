@@ -62,7 +62,7 @@ public class ExchangisLaunchTaskServiceImpl extends ServiceImpl<ExchangisLaunchT
         if (null == task) {
             throw new ExchangisJobErrorException(ExchangisDataSourceExceptionCode.DELETE_HISTORY_ERROR.getCode(), "Task " + historyId + " not exists.");
         }
-        if (task.getStatus().equals("'SUCCESS") || task.getStatus().equals("FAILED")) {
+        if (task.getStatus().equals("SUCCESS") || task.getStatus().equals("FAILED")) {
             this.baseMapper.deleteById(historyId);
         } else {
             throw new ExchangisJobErrorException(ExchangisDataSourceExceptionCode.DELETE_HISTORY_ERROR.getCode(), "The status of task " + historyId + " is " + task.getStatus() + ", " +
