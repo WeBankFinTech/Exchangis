@@ -10,10 +10,10 @@
       <!-- top -->
       <div class="sds-wrap-t">
         <a-space size="middle">
-          <span>数据库</span>
+          <span>数据类型</span>
           <a-select
-            v-model:value="sqlSource"
-            style="width: 120px"
+            v-model:value="curSql"
+            style="width: 150px"
             placeholder="请先选择数据库"
             :options="
               sqlList.map((sql) => ({ value: sql.value, label: sql.name }))
@@ -24,6 +24,8 @@
           <span>数据源</span>
           <a-select
             placeholder="请先选择数据源"
+            style="width: 150px"
+            v-model:value="dataSource"
             @change="handleChangeDS"
             :options="
               dataSourceList.map((ds) => ({ value: ds.value, label: ds.name }))
@@ -60,6 +62,7 @@ import {
   toRaw,
   onMounted,
 } from "vue";
+import { message } from "ant-design-vue";
 
 export default defineComponent({
   props: {
@@ -79,10 +82,11 @@ export default defineComponent({
       curSql: "",
       dataSource: "",
       dataSourceList: [],
+      selectTable: "",
     });
     const newProps = computed(() => JSON.parse(JSON.stringify(props.title)));
     watch(newProps, (val, oldVal) => {
-      console.log(val)
+      console.log(val);
       state.defaultSelect = val;
     });
     async function init() {
@@ -168,13 +172,29 @@ export default defineComponent({
       visible.value = true;
     };
     const selectItem = (e) => {
-      state.defaultSelect = `${state.sqlSource}-${state.dataSource}-${e.join(
-        ""
-      )}`;
+      state.selectTable = e.join("");
+      // state.defaultSelect = `${state.sqlSource}-${state.dataSource}-${e.join(
+      //   ""
+      // )}`;
     };
     const handleOk = () => {
+      if (!state.curSql) {
+        return message.error("未正确选择数据类型");
+      }
+      if (!state.dataSource) {
+        return message.error("未正确选择数据源");
+      }
+      if (!state.selectTable) {
+        return message.error("未正确选择库表");
+      }
+      state.defaultSelect = `${state.curSql}-${state.dataSource}-${state.selectTable}`;
       visible.value = false;
       context.emit("updateDsInfo", state.defaultSelect, state.dsId);
+      // 选择完 初始化数据
+      state.curSql = "";
+      state.dataSource = "";
+      state.selectTable = "";
+      state.treeData = [];
     };
     /**
      * 获取数据库下 所有表
