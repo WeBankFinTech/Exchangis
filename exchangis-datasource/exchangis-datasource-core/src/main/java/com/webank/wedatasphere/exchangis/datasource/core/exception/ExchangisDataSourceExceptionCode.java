@@ -25,6 +25,7 @@ public enum ExchangisDataSourceExceptionCode {
     PARSE_JSON_ERROR(39000),    // Parse Json Error
     CONTEXT_GET_DATASOURCE_NULL(39001), // DataSource Context Error
     PARAMETER_INVALID(39002), // DataSource Context Error
+    DELETE_HISTORY_ERROR(39003)
 
     ;
 

@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
@@ -156,5 +157,13 @@ public class ExchangisJobController {
         exchangisLaunchTasks.forEach(launchTask -> jobLanuncher.launch(launchTask));
         return Message.ok();
     }
+
+    @GET
+    @Path("{id}/speedlimit/{task_name}/params/ui")
+    public Response getSpeedLimitSettings(@PathParam("id") Long id, @PathParam("task_name") String taskName) {
+
+        return Message.messageToResponse(Message.ok());
+    }
+
 
 }
