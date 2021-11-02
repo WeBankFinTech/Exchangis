@@ -193,6 +193,7 @@
 
 <script>
 import { onMounted, reactive, computed } from "@vue/runtime-core";
+import { toRaw } from "vue";
 import { cloneDeep } from "lodash-es";
 import {
   getTaskState,
@@ -211,7 +212,7 @@ const initOptions = (ori, tar) => {
   const _tar = cloneDeep(tar);
   _tar.legend = ori[0].slice(1);
   _tar.legend.forEach((item) => {
-    let o = Object.create(null);
+    let o = {}
     o["type"] = "line";
     o["stack"] = "Total";
     o["data"] = [];
@@ -364,7 +365,7 @@ export default {
       } catch (err) {
         console.log("initEngineriesChartData error", err);
       }
-      const chartData = cloneDeep(that.engineriesChartData);
+      const chartData = toRaw(that.engineriesChartData);
       if (chartDom) {
         const myChart_1 = echarts.init(chartDom);
         const option = {
