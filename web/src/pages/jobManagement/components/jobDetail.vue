@@ -133,7 +133,7 @@
     <div class="jd-bottom" v-show="visibleDrawer">
       <div class="jd-bottom-top" @click="onCloseDrawer">
         <MinusOutlined
-          style="color: #fff; position: absolute; right: 24px; top: 7px"
+          style="color: #fff; position: absolute; right: 24px; top: 7px;cursor: pointer;"
           height="1"
         />
       </div>
@@ -739,14 +739,17 @@ export default {
   }
 
   .jd-bottom {
-    overflow-x: auto;
-    width: 100%;
-    margin-top: 18px;
-
+    overflow: auto;
+    width: calc(100% - 200px);
+    position: fixed;
+    height: 30%;
+    bottom: 0;
+    background-color: white;
     .jd-bottom-top {
-      width: 100%;
+      width: calc(100% - 200px);
       height: 30px;
-      position: relative;
+      position: fixed;
+      bottom: 30%;
       background-color: rgba(67, 67, 67, 1);
     }
   }
