@@ -26,7 +26,7 @@ export const updateProject = (body) => {
     method: "PUT",
   });
 };
-////////////////////////////////////////////////////////////////////
+
 export const getDataSourceList = (params) => {
   return request("/datasources/query", { ...params }, { method: "POST" });
 };
@@ -37,6 +37,11 @@ export const getDataSourceTypes = () => {
     {},
     { method: "GET" }
   );
+};
+
+// 查询数据源
+export const getDataSource = (body) => {
+  return request("/datasources/query", body, { method: "POST" });
 };
 
 export const getDBs = (type, id) => {
@@ -181,8 +186,12 @@ export const publishDataSource = (id, versionId) => {
   );
 };
 
-export const getSourceParams = (type) => {
-  return request(`/datasources/${type}/params/ui`, {}, { method: "GET" });
+export const getSourceParams = (engineType, type, ds) => {
+  return request(
+    `/datasources/${engineType}/${type}/params/ui?dir=${ds}`,
+    {},
+    { method: "GET" }
+  );
 };
 
 export const getSettingsParams = (engineType) => {
@@ -198,4 +207,34 @@ export const getSyncHistory = (body) => {
   return request("/tasks", body, {
     method: "GET",
   });
+};
+
+// 首页相关
+
+// 任务状态
+export const getTaskState = () => {
+  return request("/metrics/taskstate", {}, { method: "GET" });
+};
+
+// 任务进度
+export const getTaskProcess = () => {
+  return request("/metrics/taskprocess", {}, { method: "GET" });
+};
+
+// 流量监控
+export const getDataSourceFlow = () => {
+  return request("/metrics/datasourceflow", {}, { method: "GET" });
+};
+
+// 资源使用
+export const getEngineriesSource = () => {
+  return request("/metrics/engineresource", {}, { method: "GET" });
+};
+
+export const getEngineriesSourceCpu = () => {
+  return request("/metrics/engineresourcecpu", {}, { method: "GET" });
+};
+
+export const getEngineriesSourceMem = () => {
+  return request("/metrics/engineresourcemem", {}, { method: "GET" });
 };

@@ -50,9 +50,9 @@
                 :key="item.field"
                 :label="item.label"
                 :name="item.label"
-                :rules="{
-                  trigger: 'change',
-                }"
+                :help="sourcesHelpMsg[item.key.split('.').pop()]"
+                :validate-status="sourcesHelpStatus[item.key.split('.').pop()]"
+                required
               >
                 <dync-render
                   v-bind:param="item"
@@ -89,6 +89,9 @@
                 :key="item.field"
                 :label="item.label"
                 :name="item.label"
+                :help="sinksHelpMsg[item.key.split('.').pop()]"
+                :validate-status="sinksHelpStatus[item.key.split('.').pop()]"
+                required
               >
                 <dync-render
                   v-bind:param="item"
@@ -109,10 +112,12 @@ import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
 import SelectDataSource from "./selectDataSource";
 import DyncRender from "./dyncRender.vue";
 import { getSourceParams, getSettingsParams } from "@/common/service";
+import { connect } from "echarts";
 
 export default defineComponent({
   props: {
     dsData: Object,
+    engineType: String,
   },
   emits: [
     "updateSourceInfo",
@@ -129,13 +134,15 @@ export default defineComponent({
     // 对象转标题
     const objToTitle = function (obj) {
       if (typeof obj !== "object") return "";
-      const { type, db, table } = obj;
-      return `${type}-数据源-${db}.${table}`;
+      const { type, db, table, ds } = obj;
+      if (!type && !db && !table && !ds) return "请点击后选择";
+      return `${type}-${ds}-${db}-${table}`;
     };
 
     let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source));
     let sinkTitle = ref(objToTitle(props.dsData.dataSourceIds.sink));
     let isFlod = ref(true);
+
     const dataSource = reactive({
       dataSourceIds: {
         source: props.dsData.dataSourceIds.source || {},
@@ -145,6 +152,24 @@ export default defineComponent({
         sources: props.dsData.params.sources || [],
         sinks: props.dsData.params.sinks || [],
       },
+    });
+
+    const sourcesHelpMsg = reactive({});
+    const sourcesHelpStatus = reactive({});
+
+    const sinksHelpMsg = reactive({});
+    const sinksHelpStatus = reactive({});
+
+    dataSource["params"]["sources"].forEach((item) => {
+      let key = item.key.split(".").pop();
+      sourcesHelpMsg[key] = "";
+      sourcesHelpStatus[key] = "success";
+    });
+
+    dataSource["params"]["sinks"].forEach((item) => {
+      let key = item.key.split(".").pop();
+      sinksHelpMsg[key] = "";
+      sinksHelpStatus[key] = "success";
     });
 
     const newProps = computed(() => JSON.parse(JSON.stringify(props.dsData)));
@@ -166,11 +191,16 @@ export default defineComponent({
     const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
       dataSource.dataSourceIds.source.type = info[0];
-      dataSource.dataSourceIds.source.db = info[1];
-      dataSource.dataSourceIds.source.table = info[2];
+      dataSource.dataSourceIds.source.ds = info[1];
+      dataSource.dataSourceIds.source.db = info[2];
+      dataSource.dataSourceIds.source.table = info[3];
       dataSource.dataSourceIds.source.id = id;
 
-      getSourceParams(dataSource.dataSourceIds.source.type).then((res) => {
+      getSourceParams(
+        props.engineType,
+        dataSource.dataSourceIds.source.type,
+        "source"
+      ).then((res) => {
         dataSource.params.sources = res.uis || [];
         context.emit("updateSourceInfo", dataSource);
       });
@@ -178,27 +208,94 @@ export default defineComponent({
     const updateSinkInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
       dataSource.dataSourceIds.sink.type = info[0];
-      dataSource.dataSourceIds.sink.db = info[1];
-      dataSource.dataSourceIds.sink.table = info[2];
+      dataSource.dataSourceIds.sink.ds = info[1];
+      dataSource.dataSourceIds.sink.db = info[2];
+      dataSource.dataSourceIds.sink.table = info[3];
       dataSource.dataSourceIds.sink.id = id;
 
-      getSourceParams(dataSource.dataSourceIds.sink.type).then((res) => {
+      getSourceParams(
+        props.engineType,
+        dataSource.dataSourceIds.sink.type,
+        "sink"
+      ).then((res) => {
         dataSource.params.sinks = res.uis || [];
         context.emit("updateSinkInfo", dataSource);
       });
     };
     const updateSourceParams = (info) => {
       const _sourceParams = dataSource.params.sources.slice(0);
+      let _key = info.key.split(".").pop();
+      if (!info.value) {
+        sourcesHelpMsg[_key] = `请正确输入${info.label}`;
+        sourcesHelpStatus[_key] = "error";
+      } else {
+        sourcesHelpMsg[_key] = "";
+        sourcesHelpStatus[_key] = "success";
+      }
+      switch (_key) {
+        case "batch_size":
+          if (!/^[0-9]*$/.test(info.value)) {
+            sourcesHelpMsg[_key] = "请正确输入批量大小";
+            sourcesHelpStatus[_key] = "error";
+          } else {
+            sourcesHelpMsg[_key] = "";
+            sourcesHelpStatus[_key] = "success";
+          }
+          break;
+        case "percentage":
+          if (_key == "percentage") {
+            if (!/^[0-9]*$/.test(info.value)) {
+              sourcesHelpMsg[_key] = "请正确输入脏数据占比阈值";
+              sourcesHelpStatus[_key] = "error";
+            } else {
+              sourcesHelpMsg[_key] = "";
+              sourcesHelpStatus[_key] = "success";
+            }
+          }
+          break;
+      }
+
       _sourceParams.forEach((item) => {
         if (item.field === info.field) {
           return (item.value = info.value);
         }
       });
+
       dataSource.params.sources = _sourceParams;
       context.emit("updateSourceParams", dataSource);
     };
     const updateSinkParams = (info) => {
       const _sinkParams = dataSource.params.sinks.slice(0);
+      let _key = info.key.split(".").pop();
+      if (!info.value) {
+        sinksHelpMsg[_key] = `请正确输入${info.label}`;
+        sinksHelpStatus[_key] = "error";
+      } else {
+        sinksHelpMsg[_key] = "";
+        sinksHelpStatus[_key] = "success";
+      }
+      switch (_key) {
+        case "batch_size":
+          if (!/^[0-9]*$/.test(info.value)) {
+            sinksHelpMsg[_key] = "请正确输入批量大小";
+            sinksHelpStatus[_key] = "error";
+          } else {
+            sinksHelpMsg[_key] = "";
+            sinksHelpStatus[_key] = "success";
+          }
+          break;
+        case "percentage":
+          if (_key == "percentage") {
+            if (!/^[0-9]*$/.test(info.value)) {
+              sinksHelpMsg[_key] = "请正确输入脏数据占比阈值";
+              sinksHelpStatus[_key] = "error";
+            } else {
+              sinksHelpMsg[_key] = "";
+              sinksHelpStatus[_key] = "success";
+            }
+          }
+          break;
+      }
       _sinkParams.forEach((item) => {
         if (item.field === info.field) {
           return (item.value = info.value);
@@ -221,6 +318,11 @@ export default defineComponent({
       updateSinkParams,
       showInfo,
       isFlod,
+
+      sourcesHelpMsg,
+      sourcesHelpStatus,
+      sinksHelpMsg,
+      sinksHelpStatus,
     };
   },
   watch: {},
@@ -314,7 +416,7 @@ export default defineComponent({
   flex: 1;
 }
 .data-source-warp-mid {
-  width: 172px;
+  width: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
