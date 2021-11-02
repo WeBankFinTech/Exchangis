@@ -3,9 +3,11 @@ package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
+import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
 import com.webank.wedatasphere.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +50,7 @@ public class ExchangisDataSourceRestfulApi {
     // list all datasources
     @GET
     @Path("datasources")
+    @Deprecated
     public Response listAllDataSources(
             @Context HttpServletRequest request,
             @QueryParam("typeId") Long typeId,
@@ -58,6 +61,18 @@ public class ExchangisDataSourceRestfulApi {
         Message message = this.exchangisDataSourceService.listAllDataSources(request, typeName, typeId, page, size);
         return Message.messageToResponse(message);
     }
+
+    // get datasource key define
+    @GET
+    @Path("datasources/types/{dataSourceTypeId}/keydefines")
+    public Response getDataSourceKeyDefine(
+            @Context HttpServletRequest request,
+            @PathParam("dataSourceTypeId") Long dataSourceTypeId
+    ) throws Exception {
+        Message message = this.exchangisDataSourceService.getDataSourceKeyDefine(request, dataSourceTypeId);
+        return Message.messageToResponse(message);
+    }
+
 
     // get datasource version list
     @GET
@@ -155,14 +170,22 @@ public class ExchangisDataSourceRestfulApi {
         return Message.messageToResponse(message);
     }
 
+    @POST
+    @Path("datasources/fieldsmapping")
+    public Response queryDataSourceDBTableFieldsMapping(@Context HttpServletRequest request, @RequestBody FieldMappingVO vo) throws Exception {
+        Message message = this.exchangisDataSourceService.queryDataSourceDBTableFieldsMapping(request, vo);
+        return Message.messageToResponse(message);
+    }
+
     @GET
-    @Path("datasources/{type}/params/ui")
+    @Path("datasources/{engine}/{type}/params/ui")
     public Response getParamsUI(
             @Context HttpServletRequest request,
-            @PathParam("type")String type,
+            @PathParam("engine") String engine,
+            @PathParam("type") String type,
             @QueryParam(value = "dir") String dir
     ) {
-        List<ElementUI> uis = this.exchangisDataSourceService.getDataSourceParamsUI(type, dir);
+        List<ElementUI> uis = this.exchangisDataSourceService.getDataSourceParamsUI(type, String.format("%s-%s", engine, dir));
         Message message = Message.ok().data("uis", uis);
         return Message.messageToResponse(message);
     }

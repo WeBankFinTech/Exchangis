@@ -110,6 +110,8 @@ public class ExtDsUtils {
 
     public static List<URL> getJarsUrlsOfPath(String path) {
         File file = new File(path);
+        logger.info(file.getPath());
+        logger.info(file.getAbsolutePath());
         List<URL> jars = new ArrayList<>();
         if (file.listFiles() != null) {
             for (File f : file.listFiles()) {

@@ -164,14 +164,9 @@ export default {
       total: 0,
       pageSize: pageSize,
     });
-    let pageList = [];
 
     // 根据 current 获取当前页的数据
     const getTableFormCurrent = (current, type) => {
-      if (pageList.indexOf(current) > -1) {
-        return;
-      }
-      pageList.push(current);
       if (
         tableData.value.length == pagination.value.total &&
         pagination.value.total > 0 &&

@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
+import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
@@ -12,6 +13,7 @@ import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorE
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisLaunchTaskService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
 import com.webank.wedatasphere.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
@@ -156,5 +159,21 @@ public class ExchangisJobController {
         exchangisLaunchTasks.forEach(launchTask -> jobLanuncher.launch(launchTask));
         return Message.ok();
     }
+
+    @GET
+    @Path("{id}/speedlimit/{task_name}/params/ui")
+    public Response getSpeedLimitSettings(@PathParam("id") Long id, @PathParam("task_name") String taskName) {
+        List<ElementUI> speedLimitSettings = this.exchangisJobService.getSpeedLimitSettings(id, taskName);
+        Message message = Message.ok().data("ui", speedLimitSettings);
+        return Message.messageToResponse(message);
+    }
+
+    @PUT
+    @Path("{id}/speedlimit/{task_name}")
+    public Response setSpeedLimitSettings(@PathParam("id") Long id, @PathParam("task_name") String taskName, @RequestBody ExchangisTaskSpeedLimitVO settings) {
+        this.exchangisJobService.setSpeedLimitSettings(id, taskName, settings);
+        return Message.messageToResponse(Message.ok());
+    }
+
 
 }
