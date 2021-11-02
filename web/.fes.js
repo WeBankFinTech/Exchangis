@@ -44,6 +44,14 @@ export default {
           title: "globalMenu.synchronizationHistory",
         },
       },
+      {
+        path: "/homePage",
+        component: "@/pages/homePage",
+        meta: {
+          name: "homePage",
+          title: "globalMenu.homePage",
+        },
+      },
     ],
   },
   request: {
@@ -62,13 +70,13 @@ export default {
     multiTabs: false,
     menus: [
       {
+        name: "homePage",
+      },
+      {
         name: "projectManage",
       },
       {
         name: "dataSourceManage",
-      },
-      {
-        name: "jobManagement",
       },
       {
         name: "synchronizationHistory",
@@ -83,8 +91,8 @@ export default {
     "/api": {
       //target: "http://192.168.0.157:9321/",
       //target: "http://127.0.0.1:9321/",
-      target: "http://124.70.31.149:29001",
-	    changeOrigin: true,
+      target: "http://121.36.12.247:8088",
+      changeOrigin: true,
       pathRewrite: { "^/api": "/api" },
     },
   },

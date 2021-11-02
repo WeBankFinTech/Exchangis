@@ -2,6 +2,8 @@ package com.webank.wedatasphere.exchangis.job.server.service;
 
 import java.util.List;
 
+import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -80,4 +82,8 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      */
     public ExchangisJob updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
             throws ExchangisJobErrorException;
+
+    public  List<ElementUI> getSpeedLimitSettings(Long id, String taskName);
+
+    public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings);
 }
