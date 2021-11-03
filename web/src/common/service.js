@@ -208,6 +208,29 @@ export const getSyncHistory = (body) => {
     method: "GET",
   });
 };
+// 删除同步历史
+export const delSyncHistory = (taskId) => {
+  debugger;
+  return request(`/tasks/${taskId}`, null, {
+    method: "DELETE",
+  });
+};
+// 读取Task限速配置
+export const getSpeedLimit = (params) => {
+  return request(
+    `/job/${params.jobId}/speedlimit/${params.taskName}/params/ui`,
+    {},
+    {
+      method: "GET",
+    }
+  );
+};
+// 保存Task限速配置
+export const saveSpeedLimit = (params, body) => {
+  return request(`/job/${params.jobId}/speedlimit/${params.taskName}`, body, {
+    method: "PUT",
+  });
+};
 
 // 首页相关
 
