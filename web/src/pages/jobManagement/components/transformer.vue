@@ -1,5 +1,5 @@
 <template>
-  <div class="transformer-wrap">
+  <div class="transformer-wrap" style="float: left">
     <!-- top -->
     <div class="tf-top">
       <span v-for="domain in dynamicValidateForm.domains" :key="domain.key">
