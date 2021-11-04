@@ -74,16 +74,19 @@
 
           <!-- mid -->
           <div class="field-map-wrap-mid">
-            <div v-if="engineType !== 'SQOOP'">
+            <div>
               <template
                 v-for="(item, index) in fieldMap.transformerList"
                 :key="item.key"
               >
                 <Transformer
+                  v-if="engineType === 'DATAX'"
                   v-bind:tfData="item"
                   @updateTransformer="updateTransformer"
                 />
-                <DeleteOutlined  @click="deleteField(index)" style="position: absolute;right: 8px;margin-top: -18px;"/>
+                <div style="width: 200px;position: relative;min-height: 50px;">
+                  <DeleteOutlined  @click="deleteField(index)" style="position: absolute;right: 8px;top: 35px;"/>
+                </div>
               </template>
             </div>
           </div>
