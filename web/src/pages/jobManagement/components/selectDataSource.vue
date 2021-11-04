@@ -94,7 +94,7 @@ export default defineComponent({
       // 数据源
       SQLlist.forEach((sql) => {
         sqlList.push({
-          name: sql.option,
+          name: sql.name,
           value: sql.name,
           id: sql.id,
         });
