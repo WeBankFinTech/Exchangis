@@ -37,7 +37,6 @@
               v-model:value="formState.time"
               show-time
               type="date"
-              placeholder="请选择日期"
               style="width: 100%"
             />
           </a-form-item>
@@ -76,9 +75,19 @@
           <template #operation="{ record }">
             <a @click="showInfoLog(record.key)">详细日志</a>
             <a-divider type="vertical" />
-            <a @click="onDelete(record.key)">删除</a>
+            <a-popconfirm
+              title="确定要删除这条历史吗？"
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm="onConfirmDel(record.id)"
+              @cancel="onCancelDel"
+            >
+              <a href="#">删除</a>
+            </a-popconfirm>
             <a-divider type="vertical" />
-            <a @click="dyncSpeedlimit(record.key)">动态限速</a>
+            <a @click="dyncSpeedlimit(record.taskName, record.jobId)"
+              >动态限速</a
+            >
           </template>
         </a-table>
       </div>
@@ -86,13 +95,42 @@
       <!-- 分页 -->
       <div class="sh-b-pagination"></div>
     </div>
+
+    <!-- 动态限速 弹窗 -->
+    <a-modal
+      v-model:visible="visibleSpeedLimit"
+      title="动态限速"
+      @ok="putSpeedLimit"
+      okText="保存"
+    >
+      <a-form :label-col="labelCol">
+        <!-- 动态组件 -->
+        <a-form-item
+          v-for="item in speedLimit.speedLimitData"
+          :key="item.field"
+          :label="item.label"
+          :name="item.label"
+          class="speed-limit-label"
+        >
+          <dync-render v-bind:param="item" @updateInfo="updateSpeedLimitData" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script>
 import { defineComponent, reactive, toRaw, ref, onMounted } from "vue";
+import dyncRender from "../jobManagement/components/dyncRender.vue";
 import { SearchOutlined } from "@ant-design/icons-vue";
-import { getSyncHistory } from "@/common/service";
+import { cloneDeep } from "lodash-es";
+import {
+  getSyncHistory,
+  delSyncHistory,
+  getSpeedLimit,
+  saveSpeedLimit,
+} from "@/common/service";
+import { message } from "ant-design-vue";
 const columns = [
   {
     title: "ID",
@@ -146,6 +184,7 @@ const columns = [
 export default {
   components: {
     SearchOutlined,
+    dyncRender,
   },
   setup() {
     const state = reactive({
@@ -156,7 +195,11 @@ export default {
         time: [],
       },
     });
-
+    const visibleSpeedLimit = ref(false);
+    const speedLimit = reactive({
+      speedLimitData: [],
+      selectItem: {},
+    });
     let pageSize = 10;
     let currentPage = 1;
     let tableData = ref([]);
@@ -245,9 +288,65 @@ export default {
 
     const showInfoLog = (key) => {};
 
-    const onDelete = (key) => {};
+    const onCancelDel = () => {};
 
-    const dyncSpeedlimit = (key) => {};
+    const onConfirmDel = (id) => {
+      let tmp, idx;
+      tableData.value.forEach((item, index) => {
+        if (item.id == id) {
+          tmp = item;
+          idx = index;
+        }
+      });
+      if (tmp) {
+        delSyncHistory(tmp.id)
+          .then((res) => {
+            tableData.value.splice(idx, 1);
+            message.success("删除成功");
+          })
+          .catch((err) => {
+            console.log("delSyncHistory error", err);
+          });
+      }
+    };
+
+    const dyncSpeedlimit = (taskName, jobId) => {
+      debugger;
+      visibleSpeedLimit.value = true;
+      speedLimit.selectItem = { taskName, jobId };
+      getSpeedLimit({ taskName, jobId })
+        .then((res) => {
+          res.ui && (speedLimit.speedLimitData = res.ui);
+        })
+        .catch((err) => {
+          console.log("dyncSpeedlimit error", err);
+        });
+    };
+
+    const updateSpeedLimitData = (e) => {
+      const _data = cloneDeep(speedLimit.speedLimitData);
+      _data.forEach((item) => {
+        if (item.key == e.key) {
+          item = e;
+        }
+      });
+      speedLimit.speedLimitData = _data;
+    };
+
+    const putSpeedLimit = () => {
+      const params = toRaw(speedLimit.selectItem);
+      const body = toRaw(speedLimit.speedLimitData);
+      saveSpeedLimit(params, body)
+        .then((res) => {
+          console.log(res, "res");
+          speedLimit.selectItem = {};
+          speedLimit.speedLimitData = [];
+          message.success("保存成功");
+        })
+        .catch((err) => {
+          console.log("saveSpeedLimit error", err);
+        });
+    };
 
     onMounted(() => {
       search();
@@ -260,9 +359,19 @@ export default {
       tableData,
       pagination,
       showInfoLog,
-      onDelete,
       dyncSpeedlimit,
       onChange,
+      onConfirmDel,
+      onCancelDel,
+      speedLimit,
+      visibleSpeedLimit,
+      updateSpeedLimitData,
+      putSpeedLimit,
+      labelCol: {
+        style: {
+          width: "150px",
+        },
+      },
     };
   },
 };
