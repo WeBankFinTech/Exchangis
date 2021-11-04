@@ -133,7 +133,13 @@
     <div class="jd-bottom" v-show="visibleDrawer">
       <div class="jd-bottom-top" @click="onCloseDrawer">
         <MinusOutlined
-          style="color: #fff; position: absolute; right: 24px; top: 7px;cursor: pointer;"
+          style="
+            color: #fff;
+            position: absolute;
+            right: 24px;
+            top: 7px;
+            cursor: pointer;
+          "
           height="1"
         />
       </div>
@@ -144,13 +150,6 @@
           :pagination="ehPagination"
           @change="onPageChange"
         >
-          <template #operation="{ record }">
-            <a @click="showInfoLog(record.key)">详细日志</a>
-            <a-divider type="vertical" />
-            <a @click="onDelete(record.key)">删除</a>
-            <a-divider type="vertical" />
-            <a @click="dyncSpeedlimit(record.key)">动态限速</a>
-          </template>
         </a-table>
       </div>
     </div>
@@ -621,9 +620,6 @@ export default {
     onCloseDrawer() {
       this.visibleDrawer = false;
     },
-    showInfoLog() {},
-    onDelete() {},
-    dyncSpeedlimit() {},
   },
 };
 </script>
