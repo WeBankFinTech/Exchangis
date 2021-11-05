@@ -968,7 +968,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         return Message.ok().data("list", Objects.isNull(result.getKey_define()) ? null : result.getKey_define());
     }
 
-    private void checkDSSupportDegree(String engine, String sourceDsType, String sinkDsType) throws ExchangisDataSourceException {
+    public void checkDSSupportDegree(String engine, String sourceDsType, String sinkDsType) throws ExchangisDataSourceException {
         switch (engine) {
             case "SQOOP":
                 this.checkSqoopDSSupportDegree(sourceDsType, sinkDsType);
