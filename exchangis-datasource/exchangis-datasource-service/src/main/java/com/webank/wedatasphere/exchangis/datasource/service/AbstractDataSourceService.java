@@ -18,11 +18,12 @@ import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobDataSour
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
+import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
 import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import com.webank.wedatasphere.linkis.datasource.client.request.GetInfoByDataSourceIdAction;
-import com.webank.wedatasphere.linkis.datasource.client.response.GetInfoByDataSourceIdResult;
+import com.webank.wedatasphere.linkis.httpclient.response.Result;
+import com.webank.wedatasphere.linkis.metadatamanager.common.Json;
 import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
-import scala.tools.jline_embedded.internal.Log;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -60,6 +61,7 @@ public class AbstractDataSourceService {
     }
 
     private ExchangisDataSourceIdsUI buildDataSourceIdsUI(HttpServletRequest request, ExchangisJobInfoContent content) {
+        String loginUser = Optional.ofNullable(request).isPresent() ? SecurityFilter.getLoginUsername(request) : null;
         ExchangisJobDataSourcesContent dataSources = content.getDataSources();
         if (Objects.isNull(dataSources)) {
             return null;
@@ -78,15 +80,20 @@ public class AbstractDataSourceService {
             ExchangisDataSourceIdUI source = new ExchangisDataSourceIdUI();
             source.setType(split[0]);
             source.setId(split[1]);
-            Optional.ofNullable(this.context.getExchangisDataSource(split[0])).ifPresent(o -> {
-                LinkisDataSourceRemoteClient dsClient = o.getDataSourceRemoteClient();
-                GetInfoByDataSourceIdAction action = GetInfoByDataSourceIdAction.builder()
-                        .setDataSourceId(Long.parseLong(split[1]))
-                        .setUser(SecurityFilter.getLoginUsername(request))
-                        .setSystem(split[0])
-                        .build();
-                GetInfoByDataSourceIdResult dsInfo = dsClient.getInfoByDataSourceId(action);
-                System.out.println(dsInfo);
+            Optional.ofNullable(loginUser).ifPresent(u -> {
+                Optional.ofNullable(this.context.getExchangisDataSource(split[0])).ifPresent(o -> {
+                    LinkisDataSourceRemoteClient dsClient = o.getDataSourceRemoteClient();
+                    GetInfoByDataSourceIdAction action = GetInfoByDataSourceIdAction.builder()
+                            .setDataSourceId(Long.parseLong(split[1]))
+                            .setUser(u)
+                            .setSystem(split[0])
+                            .build();
+
+                    Result execute = dsClient.execute(action);
+                    String responseBody = execute.getResponseBody();
+                    GetDataSourceInfoResultDTO dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+                    source.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                });
             });
             source.setDb(split[2]);
             source.setTable(split[3]);
@@ -99,7 +106,21 @@ public class AbstractDataSourceService {
             ExchangisDataSourceIdUI sink = new ExchangisDataSourceIdUI();
             sink.setType(split[0]);
             sink.setId(split[1]);
-            Optional.ofNullable(this.context.getExchangisDataSource(Long.parseLong(split[1]))).ifPresent(o -> sink.setDs(o.name()));
+            Optional.ofNullable(loginUser).ifPresent(u -> {
+                Optional.ofNullable(this.context.getExchangisDataSource(split[0])).ifPresent(o -> {
+                    LinkisDataSourceRemoteClient dsClient = o.getDataSourceRemoteClient();
+                    GetInfoByDataSourceIdAction action = GetInfoByDataSourceIdAction.builder()
+                            .setDataSourceId(Long.parseLong(split[1]))
+                            .setUser(u)
+                            .setSystem(split[0])
+                            .build();
+                    Result execute = dsClient.execute(action);
+                    String responseBody = execute.getResponseBody();
+                    GetDataSourceInfoResultDTO dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+                    sink.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                });
+            });
+
             sink.setDb(split[2]);
             sink.setTable(split[3]);
 
