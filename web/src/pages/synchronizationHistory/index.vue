@@ -40,16 +40,6 @@
               style="width: 100%"
             />
           </a-form-item>
-
-          <!-- <a-form-item label="结束时间">
-            <a-date-picker
-              v-model:value="formState.completeTime"
-              show-time
-              type="date"
-              placeholder="请选择日期"
-              style="width: 100%"
-            />
-          </a-form-item> -->
         </a-form>
       </div>
 
@@ -80,7 +70,6 @@
               ok-text="确定"
               cancel-text="取消"
               @confirm="onConfirmDel(record.id)"
-              @cancel="onCancelDel"
             >
               <a href="#">删除</a>
             </a-popconfirm>
@@ -131,6 +120,7 @@ import {
   saveSpeedLimit,
 } from "@/common/service";
 import { message } from "ant-design-vue";
+import { dateFormat } from "@/common/utils";
 const columns = [
   {
     title: "ID",
@@ -218,9 +208,7 @@ export default {
         return;
       if (currentPage == current && type !== "search") return;
 
-      const formData = Object.assign(
-        JSON.parse(JSON.stringify(toRaw(state.formState)))
-      );
+      const formData = cloneDeep(state.formState);
       formData["launchStartTime"] = Date.parse(formData.time[0]) || "";
       formData["launchEndTime"] = Date.parse(formData.time[1]) || "";
       currentPage = current;
@@ -230,11 +218,11 @@ export default {
 
       getSyncHistory(formData)
         .then((res) => {
-          if (res.result.length > 0) {
-            const result = res.result || [];
+          const { result } = res;
+          if (result.length > 0) {
             result.forEach((item) => {
-              item["launchTime"] = formatDate(item["launchTime"]);
-              item["completeTime"] = formatDate(item["completeTime"]);
+              item["launchTime"] = dateFormat(item["launchTime"]);
+              item["completeTime"] = dateFormat(item["completeTime"]);
               switch (item["status"]) {
                 case "SUCCESS":
                   item["status"] = "执行成功";
@@ -263,32 +251,12 @@ export default {
       getTableFormCurrent(1, "search");
     };
 
-    function formatDate(d) {
-      let date = new Date(d);
-      let YY = date.getFullYear() + "-";
-      let MM =
-        (date.getMonth() + 1 < 10
-          ? "0" + (date.getMonth() + 1)
-          : date.getMonth() + 1) + "-";
-      let DD = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-      let hh =
-        (date.getHours() < 10 ? "0" + date.getHours() : date.getHours()) + ":";
-      let mm =
-        (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()) +
-        ":";
-      let ss =
-        date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
-      return YY + MM + DD + " " + hh + mm + ss;
-    }
-
     const onChange = (page) => {
       const { current } = page;
       getTableFormCurrent(current, "onChange");
     };
 
     const showInfoLog = (key) => {};
-
-    const onCancelDel = () => {};
 
     const onConfirmDel = (id) => {
       let tmp, idx;
@@ -311,7 +279,6 @@ export default {
     };
 
     const dyncSpeedlimit = (taskName, jobId) => {
-      debugger;
       visibleSpeedLimit.value = true;
       speedLimit.selectItem = { taskName, jobId };
       getSpeedLimit({ taskName, jobId })
@@ -338,7 +305,6 @@ export default {
       const body = toRaw(speedLimit.speedLimitData);
       saveSpeedLimit(params, body)
         .then((res) => {
-          console.log(res, "res");
           speedLimit.selectItem = {};
           speedLimit.speedLimitData = [];
           message.success("保存成功");
@@ -362,7 +328,6 @@ export default {
       dyncSpeedlimit,
       onChange,
       onConfirmDel,
-      onCancelDel,
       speedLimit,
       visibleSpeedLimit,
       updateSpeedLimitData,
