@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
@@ -82,7 +83,7 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      * @return the exchangis job
      */
     public ExchangisJob updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
-            throws ExchangisJobErrorException;
+            throws ExchangisJobErrorException, ExchangisDataSourceException;
 
     public  List<ElementUI> getSpeedLimitSettings(Long id, String taskName);
 

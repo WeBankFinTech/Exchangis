@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderManager;
@@ -131,7 +132,7 @@ public class ExchangisJobController {
     @PUT
     @Path("/{id}/content")
     public Message saveSubjobs(@PathParam("id") Long id,
-                               @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException {
+                               @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException, ExchangisDataSourceException {
         ExchangisJob exchangisJob = exchangisJobService.updateJobContent(exchangisJobContentDTO, id);
         return Message.ok().data("result", exchangisJob);
     }
