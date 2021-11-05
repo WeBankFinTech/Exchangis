@@ -181,6 +181,8 @@ public class AbstractDataSourceService {
 
         // ----------- 构建 dataSourceTransformsUI
         ExchangisJobTransformsContent transforms = content.getTransforms();
+        transforms.setAddEnable(!("HIVE".equals(dataSourceIdsUI.getSource().getType()) || "HIVE".equals(dataSourceIdsUI.getSink().getType())));
+
 //        ExchangisDataSourceTransformsUI dataSourceTransFormsUI = ExchangisDataSourceUIViewBuilder.getDataSourceTransFormsUI(transforms);
 
         List<ElementUI> jobDataSourceSettingsUI = this.buildJobSettingsUI(job.getEngineType(), content);
