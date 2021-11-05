@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -113,8 +115,8 @@ public class ExchangisJobController {
 
     @GET
     @Path("/{id}")
-    public Message getJob(@PathParam("id") Long id) throws ExchangisJobErrorException {
-        ExchangisJob job = exchangisJobService.getJob(id);
+    public Message getJob(@Context HttpServletRequest request, @PathParam("id") Long id) throws ExchangisJobErrorException {
+        ExchangisJob job = exchangisJobService.getJob(request, id);
         return Message.ok().data("result", job);
     }
 
