@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -112,13 +113,16 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         exchangisJobService.removeById(id);
     }
 
-    @Override
     public ExchangisJob getJob(Long id) throws ExchangisJobErrorException {
+        return this.getJob(null, id);
+    }
+
+    @Override
+    public ExchangisJob getJob(HttpServletRequest request, Long id) throws ExchangisJobErrorException {
         ExchangisJob exchangisJob = exchangisJobService.getById(id);
         if (exchangisJob != null) {
             // generate subjobs ui content
-            List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(id);
-
+            List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(request, id);
             ObjectMapper objectMapper = JsonUtils.jackson();
             try {
                 String content = objectMapper.writeValueAsString(jobDataSourceUIs);
