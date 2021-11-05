@@ -6,6 +6,8 @@ public class ExchangisTaskInfoVO {
 
     private Long id;
 
+    private Long jobId;
+
     private String taskName;
 
     private Date launchTime;
@@ -62,5 +64,13 @@ public class ExchangisTaskInfoVO {
 
     public void setCompleteTime(Date completeTime) {
         this.completeTime = completeTime;
+    }
+
+    public Long getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(Long jobId) {
+        this.jobId = jobId;
     }
 }
