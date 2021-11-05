@@ -34,6 +34,16 @@ public abstract class ExchangisBatchDataSource implements ExchangisDataSource {
         return exchangisJobParamConfigMapper.selectList(queryWrapper);
     }
 
+    protected List<ExchangisJobParamConfig> getDataSourceParamConfigs(String type, String dir) {
+        ExchangisJobParamConfigMapper exchangisJobParamConfigMapper = this.mapperHook.getExchangisJobParamConfigMapper();
+        QueryWrapper<ExchangisJobParamConfig> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("config_direction", dir);
+        queryWrapper.eq("type", type);
+        queryWrapper.eq("is_hidden", 0);
+        queryWrapper.eq("status", 1);
+        return exchangisJobParamConfigMapper.selectList(queryWrapper);
+    }
+
     @Override
     public LinkisDataSourceRemoteClient getDataSourceRemoteClient() {
         return ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();

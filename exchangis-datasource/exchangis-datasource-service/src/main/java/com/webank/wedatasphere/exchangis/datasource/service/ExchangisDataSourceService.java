@@ -53,7 +53,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     }
 
     @Override
-    public List<ExchangisDataSourceUIViewer> getJobDataSourceUIs(Long jobId) {
+    public List<ExchangisDataSourceUIViewer> getJobDataSourceUIs(HttpServletRequest request, Long jobId) {
         if (Objects.isNull(jobId)) {
             return null;
         }
@@ -66,7 +66,8 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         List<ExchangisJobInfoContent> jobInfoContents = this.parseJobContent(job.getContent());
         List<ExchangisDataSourceUIViewer> uis = new ArrayList<>();
         for (ExchangisJobInfoContent cnt : jobInfoContents) {
-            ExchangisDataSourceUIViewer viewer = buildAllUI(job, cnt);
+            cnt.setEngine(job.getEngineType());
+            ExchangisDataSourceUIViewer viewer = buildAllUI(request, job, cnt);
             uis.add(viewer);
         }
 
