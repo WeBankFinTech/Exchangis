@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform;
 
-import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;;
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobBase;
