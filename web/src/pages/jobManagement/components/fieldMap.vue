@@ -83,7 +83,10 @@
                   v-bind:tfData="item"
                   @updateTransformer="updateTransformer"
                 />
-                <DeleteOutlined  @click="deleteField(index)" style="position: absolute;right: 8px;margin-top: -18px;"/>
+                <DeleteOutlined
+                  @click="deleteField(index)"
+                  style="position: absolute; right: 8px; margin-top: -18px"
+                />
               </template>
             </div>
           </div>
@@ -137,12 +140,12 @@ export default defineComponent({
     fmData: Object,
     fieldsSource: Array,
     fieldsSink: Array,
-    engineType: String
+    engineType: String,
   },
   emits: ["updateFieldMap"],
   components: {
     Transformer,
-    DeleteOutlined
+    DeleteOutlined,
   },
   setup(props, context) {
     const { type } = props.fmData;
@@ -332,7 +335,7 @@ export default defineComponent({
       fieldMap.transformerList.splice(index, 1);
       fieldMap.sourceDS.splice(index, 1);
       fieldMap.sinkDS.splice(index, 1);
-    }
+    };
     let isFold = ref(true);
     const showInfo = () => {
       isFold.value = !isFold.value;
@@ -365,7 +368,7 @@ export default defineComponent({
       addTableRow,
       isFold,
       showInfo,
-      deleteField
+      deleteField,
     };
   },
 });
@@ -374,7 +377,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .field-map-wrap {
   margin-top: 30px;
-  width: 1100px;
+  width: 1215px;
   display: flex;
 }
 .fm-l {

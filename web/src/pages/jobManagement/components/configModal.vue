@@ -114,7 +114,6 @@ export default {
 
     const createTask = () => {
       formState.jobParams.push({ key: "", value: "" });
-      console.log(formState, formState.jobParams);
     };
 
     const handleOk = async () => {
