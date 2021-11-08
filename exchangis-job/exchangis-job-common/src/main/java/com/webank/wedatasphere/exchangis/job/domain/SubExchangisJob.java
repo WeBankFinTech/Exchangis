@@ -13,6 +13,15 @@ import java.util.stream.Collectors;
  */
 public class SubExchangisJob extends ExchangisJobBase{
 
+    /**
+     * Engine name
+     */
+    protected String engine;
+
+    protected String sourceType;
+
+    protected String sinkType;
+
     public static final String REALM_JOB_SETTINGS = "job.realm.settings";
 
     public static final String REALM_JOB_DATA_SOURCE = "job.realm.data-source";
@@ -27,6 +36,30 @@ public class SubExchangisJob extends ExchangisJobBase{
      * Realm params set
      */
     private Map<String, JobParamSet> realmParamSet = new ConcurrentHashMap<>();
+
+    public String getEngine() {
+        return engine;
+    }
+
+    public void setEngine(String engine) {
+        this.engine = engine;
+    }
+
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
+    }
+
+    public String getSinkType() {
+        return sinkType;
+    }
+
+    public void setSinkType(String sinkType) {
+        this.sinkType = sinkType;
+    }
 
     /**
      * Add
@@ -54,7 +87,7 @@ public class SubExchangisJob extends ExchangisJobBase{
     public Map<String, Object> getParamsToMap(String realm){
         JobParamSet jobParamSet = getRealmParams(realm);
         return jobParamSet.toList().stream().collect(
-                Collectors.toMap(JobParam::getParamStrKey, JobParam::getParamValue));
+                Collectors.toMap(JobParam::getStrKey, JobParam::getValue));
     }
 
     /**
@@ -63,6 +96,7 @@ public class SubExchangisJob extends ExchangisJobBase{
      */
     public Map<String, Object> getParamsToMap(){
         return realmParamSet.values().stream().flatMap(realmParam -> realmParam.toList().stream())
-                .collect(Collectors.toMap(JobParam::getParamStrKey, JobParam::getParamValue));
+                .collect(Collectors.toMap(JobParam::getStrKey, JobParam::getValue));
     }
+
 }
