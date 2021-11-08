@@ -13,6 +13,8 @@ public class ExchangisJobTransformsItem {
     private String sinkFieldName;
     @JsonProperty("sink_field_type")
     private String sinkFieldType;
+    @JsonProperty("delete_enable")
+    private boolean deleteEnable;
 
     private List<String> validator;
 
