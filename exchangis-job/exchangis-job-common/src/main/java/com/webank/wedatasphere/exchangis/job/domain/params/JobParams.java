@@ -10,42 +10,56 @@ import java.util.function.Supplier;
  */
 public class JobParams {
 
-    public static <T, U>JobParam<T> define(String key, BiFunction<String, U, T> valueLoader){
-        return new DefaultJobParam<>(key, key, valueLoader);
-    }
-
     /**
      * Define default job param
      * @param key key
      * @param valueLoader value loader
-     * @param mappingKey mapping key
      * @param <T>
      * @param <U>
      * @return
      */
-    public static <T, U>JobParam<T> define(String key, String mappingKey, BiFunction<String, U, T> valueLoader){
-        return new DefaultJobParam<>(key, mappingKey, valueLoader);
+    public static <T, U>JobParamDefine<T> define(String key, BiFunction<String, U, T> valueLoader){
+        return new JobParamDefine<>(key, valueLoader);
     }
 
-    public static JobParam<Object> define(String key){
-        return define(key, key);
+    public static JobParamDefine<?> define(String key){
+        return new JobParamDefine<>(key, (BiFunction<String, JobParamSet, ?>) (paramKey, source) -> {
+            if(Objects.nonNull(source)){
+                return source.get(key);
+            }
+            return null;
+        });
     }
 
-    public static <T>JobParam<T> defineWithValue(String key, T value){
-        JobParam<T> result =  define(key, () -> value);
-        result.setParamValue(value);
-        return result;
+    @SuppressWarnings("unchecked")
+    public static <T>JobParamDefine<T> define(String key, Class<T> valueType){
+        return new JobParamDefine<T>(key, (BiFunction<String, JobParamSet, T>) (paramKey, source) -> {
+            if(Objects.nonNull(source)){
+                return (T)source.get(key);
+            }
+            return null;
+        });
     }
     /**
-     * Use default value loader: (string, JobParamSet) -> Object
+     * Use default value loader: (string, JobParamSet) -> ?
      * @param key key
      * @param mappingKey mapping key
      * @return
      */
-    public static JobParam<Object> define(String key, String mappingKey){
-        return new DefaultJobParam<>(key, mappingKey, (BiFunction<String, JobParamSet, Object>) (paramKey, source) -> {
+    public static JobParamDefine<?> define(String key, String mappingKey){
+        return new JobParamDefine<>(key, (BiFunction<String, JobParamSet, ?>) (paramKey, source) -> {
             if(Objects.nonNull(source)){
-                return source.get(mappingKey);
+                return source.remove(mappingKey);
+            }
+            return null;
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T>JobParamDefine<T> define(String key, String mappingKey, Class<T> valueType){
+        return new JobParamDefine<T>(key, (BiFunction<String, JobParamSet, T>) (paramKey, source) -> {
+            if(Objects.nonNull(source)){
+                return (T)source.remove(mappingKey);
             }
             return null;
         });
@@ -58,8 +72,13 @@ public class JobParams {
      * @param <T>
      * @return
      */
-    public static <T>JobParam<T> define(String key, Supplier<T> operator){
-        return new DefaultJobParam<>(key, key, (paramKey, source) -> operator.get());
+    public static <T>JobParamDefine<T> define(String key, Supplier<T> operator){
+        return new JobParamDefine<>(key, (paramKey, source) -> operator.get());
+    }
+
+    public static <T>JobParam<T> newOne(String key, T value){
+        JobParamDefine<T> result =  define(key, () -> value);
+        return result.newParam(value);
     }
 
 }

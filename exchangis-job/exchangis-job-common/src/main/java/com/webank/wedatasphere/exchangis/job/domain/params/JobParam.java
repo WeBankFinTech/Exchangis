@@ -12,32 +12,33 @@ public interface JobParam<T> {
      * Key of parameter, always string
      * @return nullable
      */
-    String getParamStrKey();
+    String getStrKey();
 
     /**
      * Value of parameter
      * @return nullable
      */
-    T getParamValue();
+    T getValue();
 
     /**
      * Get value of parameter form source obj
      * @param source
      * @return
      */
-    T getParamValue(Object source);
+    T getValue(Object source);
     /**
      * Set string key
      * @param key nullable
      */
-    void setParamKey(String key);
+    void setKey(String key);
 
     /**
      * Set value
      * @param value nullable
      */
-    void setParamValue(T value);
+    void setValue(T value);
 
+    JobParam<T> loadValue(Object source);
     /**
      * Value loader
      * @param valueLoader
