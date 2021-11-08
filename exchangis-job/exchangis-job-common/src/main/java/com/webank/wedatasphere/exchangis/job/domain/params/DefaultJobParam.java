@@ -6,11 +6,6 @@ import java.util.function.BiFunction;
 public class DefaultJobParam<T> implements JobParam<T> {
     private String key;
 
-    /**
-     * Map the key in source
-     */
-    private String mappingKey;
-
     private T value;
 
     private BiFunction<String, Object, T> valueLoader;
@@ -23,23 +18,22 @@ public class DefaultJobParam<T> implements JobParam<T> {
 
     }
 
-    <U>DefaultJobParam(String key, String mappingKey, BiFunction<String, U, T> valueLoader){
+    <U>DefaultJobParam(String key, BiFunction<String, U, T> valueLoader){
         this.key = key;
-        this.mappingKey = mappingKey;
         setValueLoader(valueLoader);
     }
     @Override
-    public String getParamStrKey() {
+    public String getStrKey() {
         return key;
     }
 
     @Override
-    public T getParamValue() {
+    public T getValue() {
         return value;
     }
 
     @Override
-    public T getParamValue(Object source) {
+    public T getValue(Object source) {
         if(Objects.nonNull(source)) {
             if (!Objects.equals(sourceReference, source) &&
                     Objects.nonNull(valueLoader) &&
@@ -51,22 +45,23 @@ public class DefaultJobParam<T> implements JobParam<T> {
         return value;
     }
 
-    public T reloadParamValue(Object source){
+    @Override
+    public JobParam<T> loadValue(Object source){
         if(Objects.nonNull(source) &&
                 Objects.nonNull(valueLoader) &&
                 sourceType.isAssignableFrom(source.getClass())){
             this.value = this.valueLoader.apply(key, source);
             this.sourceReference = source;
         }
-        return value;
+        return this;
     }
     @Override
-    public void setParamKey(String key) {
+    public void setKey(String key) {
         this.key = key;
     }
 
     @Override
-    public void setParamValue(T value) {
+    public void setValue(T value) {
         this.value = value;
     }
 

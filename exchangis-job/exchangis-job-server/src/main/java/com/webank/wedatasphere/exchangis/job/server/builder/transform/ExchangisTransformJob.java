@@ -1,12 +1,15 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobDataSourcesContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobBase;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.AbstractExchangisJobHandler;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,16 +43,6 @@ public class ExchangisTransformJob extends ExchangisJobBase {
     public static class SubExchangisJobAdapter extends SubExchangisJob{
 
         /**
-         * Engine name
-         */
-        private String engine;
-
-        /**
-         * Name of sub job
-         */
-        private String subJobName;
-
-        /**
          * Content VO
          */
         private ExchangisJobInfoContent jobInfoContent;
@@ -57,25 +50,24 @@ public class ExchangisTransformJob extends ExchangisJobBase {
         public SubExchangisJobAdapter(ExchangisJobInfoContent jobInfoContent){
             if(Objects.nonNull(jobInfoContent)) {
                 this.engine = jobInfoContent.getEngine();
-                this.subJobName = jobInfoContent.getSubJobName();
+                this.jobName = jobInfoContent.getSubJobName();
+                ExchangisJobDataSourcesContent dataSourcesContent = jobInfoContent.getDataSources();
+                if(Objects.nonNull(dataSourcesContent)) {
+                    Optional.ofNullable(dataSourcesContent.getSinkId()).ifPresent( sinkId ->{
+                        String[] idSerial = sinkId.split(AbstractExchangisJobHandler.ID_SPLIT_SYMBOL);
+                        if(idSerial.length > 0){
+                            this.sinkType = idSerial[0];
+                        }
+                    });
+                    Optional.ofNullable(dataSourcesContent.getSourceId()).ifPresent( sourceId ->{
+                        String[] idSerial = sourceId.split(AbstractExchangisJobHandler.ID_SPLIT_SYMBOL);
+                        if(idSerial.length > 0){
+                            this.sourceType = idSerial[0];
+                        }
+                    });
+                }
                 convertContentToParams(jobInfoContent);
             }
-        }
-
-        public String getEngine() {
-            return engine;
-        }
-
-        public void setEngine(String engine) {
-            this.engine = engine;
-        }
-
-        public String getSubJobName() {
-            return subJobName;
-        }
-
-        public void setSubJobName(String subJobName) {
-            this.subJobName = subJobName;
         }
 
         public ExchangisJobInfoContent getJobInfoContent() {
@@ -120,8 +112,8 @@ public class ExchangisTransformJob extends ExchangisJobBase {
         private void setIntoParams(String realm, Supplier<Map<String, Object>> paramsSupplier){
             Optional<Map<String,Object>> dataSourceMap = Optional.ofNullable(paramsSupplier.get());
             dataSourceMap.ifPresent( map -> {
-                JobParamSet paramSet = map.entrySet().stream().map(entry -> JobParams.defineWithValue(entry.getKey(), entry.getValue()))
-                        .reduce(new JobParamSet(), JobParamSet::append, JobParamSet::combine);
+                JobParamSet paramSet = map.entrySet().stream().map(entry -> JobParams.newOne(entry.getKey(), entry.getValue()))
+                        .reduce(new JobParamSet(), JobParamSet::add, JobParamSet::combine);
                 LOG.trace("Set params into sub exchangis job, realm: [" + realm + "], paramSet: [" + paramSet.toString() + "]");
                 super.addRealmParams(realm, paramSet);
             });
