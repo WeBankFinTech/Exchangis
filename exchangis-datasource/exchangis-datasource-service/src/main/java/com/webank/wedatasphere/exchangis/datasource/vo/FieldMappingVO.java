@@ -2,6 +2,8 @@ package com.webank.wedatasphere.exchangis.datasource.vo;
 
 public class FieldMappingVO {
 
+    private String engine;
+
     private String sourceTypeId;
     private Long sourceDataSourceId;
     private String sourceDataBase;
@@ -11,6 +13,14 @@ public class FieldMappingVO {
     private Long sinkDataSourceId;
     private String sinkDataBase;
     private String sinkTable;
+
+    public String getEngine() {
+        return engine;
+    }
+
+    public void setEngine(String engine) {
+        this.engine = engine;
+    }
 
     public String getSourceTypeId() {
         return sourceTypeId;

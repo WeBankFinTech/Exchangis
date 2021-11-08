@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderManager;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -113,8 +116,8 @@ public class ExchangisJobController {
 
     @GET
     @Path("/{id}")
-    public Message getJob(@PathParam("id") Long id) throws ExchangisJobErrorException {
-        ExchangisJob job = exchangisJobService.getJob(id);
+    public Message getJob(@Context HttpServletRequest request, @PathParam("id") Long id) throws ExchangisJobErrorException {
+        ExchangisJob job = exchangisJobService.getJob(request, id);
         return Message.ok().data("result", job);
     }
 
@@ -129,7 +132,7 @@ public class ExchangisJobController {
     @PUT
     @Path("/{id}/content")
     public Message saveSubjobs(@PathParam("id") Long id,
-                               @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException {
+                               @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException, ExchangisDataSourceException {
         ExchangisJob exchangisJob = exchangisJobService.updateJobContent(exchangisJobContentDTO, id);
         return Message.ok().data("result", exchangisJob);
     }
