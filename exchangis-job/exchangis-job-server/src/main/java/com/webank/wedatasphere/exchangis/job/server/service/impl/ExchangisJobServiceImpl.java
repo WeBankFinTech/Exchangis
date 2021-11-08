@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
@@ -159,14 +158,13 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         ExchangisJob exchangisJob = exchangisJobService.getById(id);
         final String engine = exchangisJob.getEngineType();
 
-        String content = exchangisJobContentDTO.getContent();
+        String content = exchangisJobContentDTO.getContent( );
         Set<String> taskNames = new HashSet<>();
         JsonArray tasks = new JsonParser().parse(content).getAsJsonArray();
         for (int i = 0; i < tasks.size(); i++) {
             JsonObject task = tasks.get(i).getAsJsonObject();
             String taskName = task.get("subJobName").getAsString().trim();
             if (!taskNames.add(taskName)) {
-                // 任务重名
                 throw new ExchangisJobErrorException(31101, "存在重复子任务名");
             }
             String sourceType = task.get("dataSources").getAsJsonObject().get("source_id").getAsString().split("\\.")[0];
