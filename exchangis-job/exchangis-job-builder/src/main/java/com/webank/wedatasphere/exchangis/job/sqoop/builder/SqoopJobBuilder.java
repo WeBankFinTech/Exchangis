@@ -3,7 +3,6 @@ package com.webank.wedatasphere.exchangis.job.sqoop.builder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
-import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisSubJob;
@@ -17,13 +16,12 @@ import com.webank.wedatasphere.linkis.common.utils.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SqoopJobBuilder extends ExchangisJobBuilder {
+public class SqoopJobBuilder {
 
     protected static final String HANDLER_PACKAGE_NAME = "com.webank.wedatasphere.exchangis.job.sqoop.handler";
     protected static final String READER_PACKAGE_NAME = "com.webank.wedatasphere.exchangis.job.sqoop.reader";
     protected static final String WRITER_PACKAGE_NAME = "com.webank.wedatasphere.exchangis.job.sqoop.writer";
 
-    @Override
     public List<ExchangisLaunchTask> buildJob(ExchangisJob job) throws ExchangisDataSourceException {
 
         String content = job.getContent();
