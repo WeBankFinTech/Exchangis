@@ -192,7 +192,7 @@
 </template>
 
 <script>
-import { onMounted, reactive, computed } from "@vue/runtime-core";
+import { onMounted, reactive, computed, toRefs } from "@vue/runtime-core";
 import { toRaw } from "vue";
 import { cloneDeep } from "lodash-es";
 import {
@@ -212,7 +212,7 @@ const initOptions = (ori, tar) => {
   const _tar = cloneDeep(tar);
   _tar.legend = ori[0].slice(1);
   _tar.legend.forEach((item) => {
-    let o = {}
+    let o = {};
     o["type"] = "line";
     o["stack"] = "Total";
     o["data"] = [];
@@ -297,7 +297,7 @@ export default {
     onMounted(init());
 
     return {
-      ...state,
+      ...toRefs(state),
       totalTitle,
       bdpTitle,
       esTitle,
