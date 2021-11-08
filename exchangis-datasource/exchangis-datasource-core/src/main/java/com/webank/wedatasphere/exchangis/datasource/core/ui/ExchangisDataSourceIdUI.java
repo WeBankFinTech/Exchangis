@@ -7,6 +7,8 @@ public class ExchangisDataSourceIdUI {
 
     private String id;
 
+    private String ds;
+
     private String db;
 
     private String table;
@@ -25,6 +27,14 @@ public class ExchangisDataSourceIdUI {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getDs() {
+        return ds;
+    }
+
+    public void setDs(String ds) {
+        this.ds = ds;
     }
 
     public String getDb() {

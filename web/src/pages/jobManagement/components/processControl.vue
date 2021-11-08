@@ -30,17 +30,17 @@
         v-show="isFold"
         :class="{ 'text-danger': !settingData.psData.length }"
       >
-        <a-form ref="formRef" layout="inline">
+        <a-form ref="formRef" layout="inline" :label-col="labelCol">
           <!-- 动态组件 -->
           <a-form-item
             v-for="item in settingData.psData"
             :key="item.field"
             :label="item.label"
             :name="item.label"
-            :rules="{
-              required: item.required,
-              trigger: 'change',
-            }"
+            :model="formState"
+            :help="helpMsg[item.key]"
+            :validate-status="helpStatus[item.key]"
+            required
             class="process-control-label"
           >
             <dync-render
@@ -57,6 +57,7 @@
 <script>
 import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
 import DyncRender from "./dyncRender.vue";
+import cloneDeep from "lodash-es";
 export default defineComponent({
   props: {
     psData: Array,
@@ -71,13 +72,27 @@ export default defineComponent({
     let settingData = reactive({
       psData: toRaw(props.psData),
     });
-
+    const formState = reactive({});
+    const helpMsg = reactive({});
+    const helpStatus = reactive({});
+    props.psData.forEach((item) => {
+      formState[item.key] = "";
+      helpMsg[item.key] = "";
+      helpStatus[item.key] = "success";
+    });
     const newProps = computed(() => JSON.parse(JSON.stringify(props.psData)));
     watch(newProps, (val, oldVal) => {
       settingData.psData = typeof val === "string" ? JSON.parse(val) : val;
-      console.log(val, 123);
     });
     const updateSettingParams = (info) => {
+      formState[info.key] = info.value;
+      if (!info.value) {
+        helpMsg[info.key] = `请正确输入${info.label}`;
+        helpStatus[info.key] = "error";
+      } else {
+        helpMsg[info.key] = "";
+        helpStatus[info.key] = "success";
+      }
       const _settingParams = toRaw(settingData.psData).slice(0);
       _settingParams.forEach((item) => {
         if (item.field === info.field) {
@@ -85,7 +100,6 @@ export default defineComponent({
         }
       });
       settingData.psData = _settingParams;
-      console.log("sourceParams", settingData.psData);
       context.emit("updateProcessControl", settingData.psData);
     };
     let isFold = ref(true);
@@ -94,10 +108,18 @@ export default defineComponent({
     };
     return {
       formRef,
+      formState,
+      helpMsg,
+      helpStatus,
       settingData,
       updateSettingParams,
       isFold,
       showInfo,
+      labelCol: {
+        style: {
+          width: "150px",
+        },
+      },
     };
   },
 });
@@ -106,7 +128,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .process-control-warp {
   margin-top: 30px;
-  width: 1100px;
+  width: 1215px;
   display: flex;
 }
 .ps-l {
@@ -186,6 +208,6 @@ export default defineComponent({
 .process-control-label {
   font-size: 14px;
   text-align: right;
-  width: 385px;
+  width: 440px;
 }
 </style>

@@ -12,9 +12,7 @@ export default defineComponent({
     const newProps = computed(() => JSON.parse(JSON.stringify(props.param)));
     watch(newProps, (val, oldVal) => {
       value = val.value;
-      console.log(val, 123123);
     });
-
     if (type === "OPTION") {
       // 下拉框
       return () =>
@@ -22,6 +20,7 @@ export default defineComponent({
           "select",
           {
             value: value,
+            class: "custom_select",
             onChange: ($event) => {
               let res = toRaw(props.param);
               res.value = $event.target.value;
@@ -73,8 +72,16 @@ export default defineComponent({
   width: 226px;
   height: 25px;
 }
+
+.custom_select {
+  width: 226px;
+  height: 25px;
+}
 .custom_span_unit {
+  width: 30px;
   margin-left: 8px;
   white-space: nowrap;
+  display: inline-block;
+  text-align: start;
 }
 </style>
