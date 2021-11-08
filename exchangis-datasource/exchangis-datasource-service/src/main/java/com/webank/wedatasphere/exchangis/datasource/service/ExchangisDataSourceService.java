@@ -53,7 +53,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     }
 
     @Override
-    public List<ExchangisDataSourceUIViewer> getJobDataSourceUIs(Long jobId) {
+    public List<ExchangisDataSourceUIViewer> getJobDataSourceUIs(HttpServletRequest request, Long jobId) {
         if (Objects.isNull(jobId)) {
             return null;
         }
@@ -66,7 +66,8 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         List<ExchangisJobInfoContent> jobInfoContents = this.parseJobContent(job.getContent());
         List<ExchangisDataSourceUIViewer> uis = new ArrayList<>();
         for (ExchangisJobInfoContent cnt : jobInfoContents) {
-            ExchangisDataSourceUIViewer viewer = buildAllUI(job, cnt);
+            cnt.setEngine(job.getEngineType());
+            ExchangisDataSourceUIViewer viewer = buildAllUI(request, job, cnt);
             uis.add(viewer);
         }
 
@@ -967,8 +968,39 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         return Message.ok().data("list", Objects.isNull(result.getKey_define()) ? null : result.getKey_define());
     }
 
+    public void checkDSSupportDegree(String engine, String sourceDsType, String sinkDsType) throws ExchangisDataSourceException {
+        switch (engine) {
+            case "SQOOP":
+                this.checkSqoopDSSupportDegree(sourceDsType, sinkDsType);
+                break;
+            case "DATAX":
+                this.checkDataXDSSupportDegree(sourceDsType, sinkDsType);
+                break;
+            default:
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.UNSUPPORTEd_ENGINE.getCode(), "不支持的引擎");
+        }
+    }
+
+    private void checkSqoopDSSupportDegree(String sourceDsType, String sinkDsType) throws ExchangisDataSourceException {
+        if (!("HIVE".equals(sourceDsType) || "HIVE".equals(sinkDsType))) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.DS_MAPPING_MUST_CONTAIN_HIVE.getCode(), "SQOOP引擎输入/输出数据源必须包含HIVE");
+        }
+        if (sourceDsType.equals(sinkDsType)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.DS_TYPE_MUST_DIFFERENT.getCode(), "SQOOP引擎读写类型不可相同");
+        }
+    }
+
+    private void checkDataXDSSupportDegree(String sourceDsType, String sinkDsType) throws ExchangisDataSourceException {
+
+    }
+
     public Message queryDataSourceDBTableFieldsMapping(HttpServletRequest request, FieldMappingVO vo) throws Exception {
+
+        this.checkDSSupportDegree(vo.getEngine(), vo.getSourceTypeId(), vo.getSinkTypeId());
+        boolean containHive = "HIVE".equals(vo.getSourceTypeId()) || "HIVE".equals(vo.getSinkTypeId());
+
         Message message = Message.ok();
+        message.data("addEnabled", !containHive);
 
         Message sourceMessage = this.queryDataSourceDBTableFields(request, vo.getSourceTypeId(), vo.getSourceDataSourceId(), vo.getSourceDataBase(), vo.getSourceTable());
         List<DataSourceDbTableColumnDTO> sourceFields = (List<DataSourceDbTableColumnDTO>) sourceMessage.getData().get("columns");
@@ -980,29 +1012,29 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
 
         // field mapping deduction
-        List<Map<String, DataSourceDbTableColumnDTO>> deductions = new ArrayList<>();
-        boolean[] matchedIndex = new boolean[sinkFields.size()];
+        List<Map<String, Object>> deductions = new ArrayList<>();
+//        boolean[] matchedIndex = new boolean[sinkFields.size()];
+        List<DataSourceDbTableColumnDTO> left = sourceFields;
+        List<DataSourceDbTableColumnDTO> right = sinkFields;
+        boolean exchanged = false;
+        if (containHive && "HIVE".equals(vo.getSinkTypeId())) {
+            left = sinkFields;
+            right = sourceFields;
+            exchanged = !exchanged;
+        }
 
-        for (DataSourceDbTableColumnDTO sourceField : sourceFields) {
-            String sourceName = sourceField.getName().replaceAll("[-_]", "").toLowerCase().trim();
-
-            for (int i = 0; i < sinkFields.size(); i++) {
-                if (matchedIndex[i]) {
-                    continue;
-                }
-                DataSourceDbTableColumnDTO sinkField = sinkFields.get(i);
-                String sinkName = sinkField.getName().replaceAll("[-_]", "").toLowerCase().trim();
-                if (sourceName.equals(sinkName)) {
-                    Map<String, DataSourceDbTableColumnDTO> deduction = new HashMap<>();
-                    deduction.put("source", sourceField);
-                    deduction.put("sink", sinkField);
+        for (DataSourceDbTableColumnDTO l : left) {
+            String lname = l.getName();
+            for (DataSourceDbTableColumnDTO r : right) {
+                String rname = r.getName();
+                if (lname.equals(rname)) {
+                    Map<String, Object> deduction = new HashMap<>();
+                    deduction.put("source", exchanged ? r : l);
+                    deduction.put("sink", exchanged ? l : r);
+                    deduction.put("deleteEnable", !containHive);
                     deductions.add(deduction);
-                    matchedIndex[i] = true;
-                    break;
                 }
             }
-
-
         }
 
         message.data("deductions", deductions);

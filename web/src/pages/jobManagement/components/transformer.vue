@@ -157,7 +157,6 @@ export default defineComponent({
 
     const newProps = computed(() => JSON.parse(JSON.stringify(props.tfData)));
     watch(newProps, (val, oldVal) => {
-      console.log("watch newProps in transformer", val, oldVal);
       const newVal = typeof val === "string" ? JSON.parse(val) : val;
       dynamicValidateForm.domains = transF(newVal.validator);
       dynamicValidateForm.transf = createTransformFunc(newVal.transformer);
@@ -300,22 +299,6 @@ export default defineComponent({
       addDomain,
     };
   },
-  // watch: {
-  //   tfData: {
-  //     handler: function (newVal) {
-  //       console.log("watch props");
-  //       this.props = newVal;
-  //     },
-  //     deep: true,
-  //   },
-  //   id: {
-  //     handler: function (newVal) {
-  //       console.log("watch props");
-  //       this.props = newVal;
-  //     },
-  //     deep: true,
-  //   },
-  // },
 });
 </script>
 

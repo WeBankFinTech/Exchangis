@@ -32,7 +32,7 @@
         <!-- left -->
         <div class="data-source-warp-l">
           <div class="data-source-warp-l-content">
-            <a-form ref="formRef">
+            <a-form ref="formRef" :label-col="labelCol">
               <a-form-item
                 label="数据源信息"
                 name="dsInfo"
@@ -71,7 +71,7 @@
         <!-- right -->
         <div class="data-source-warp-r">
           <div class="data-source-warp-r-content">
-            <a-form ref="formRef">
+            <a-form ref="formRef" :label-col="labelCol">
               <a-form-item
                 ref="dsInfo2"
                 label="数据源信息"
@@ -323,6 +323,13 @@ export default defineComponent({
       sourcesHelpStatus,
       sinksHelpMsg,
       sinksHelpStatus,
+
+      labelCol: {
+        style: {
+          width: "120px",
+          "text-align": "start",
+        },
+      },
     };
   },
   watch: {},
@@ -331,7 +338,7 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .data-source-warp {
-  width: 1100px;
+  width: 1215px;
   display: flex;
   margin-top: 15px;
 }

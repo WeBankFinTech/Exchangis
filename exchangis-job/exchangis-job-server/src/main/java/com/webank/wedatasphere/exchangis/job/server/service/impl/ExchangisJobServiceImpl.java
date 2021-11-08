@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.InputElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.OptionElementUI;
@@ -29,10 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 /**
  * <p>
@@ -112,13 +112,16 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         exchangisJobService.removeById(id);
     }
 
-    @Override
     public ExchangisJob getJob(Long id) throws ExchangisJobErrorException {
+        return this.getJob(null, id);
+    }
+
+    @Override
+    public ExchangisJob getJob(HttpServletRequest request, Long id) throws ExchangisJobErrorException {
         ExchangisJob exchangisJob = exchangisJobService.getById(id);
         if (exchangisJob != null) {
             // generate subjobs ui content
-            List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(id);
-
+            List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(request, id);
             ObjectMapper objectMapper = JsonUtils.jackson();
             try {
                 String content = objectMapper.writeValueAsString(jobDataSourceUIs);
@@ -145,10 +148,31 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         return this.getJob(id);
     }
 
+    public void main(String[] args) {
+        String content = "[{\"subJobName\":\"new\",\"dataSources\":{\"source_id\":\"MYSQL.28.test.t_psn\",\"sink_id\":\"HIVE.11.test.psn\"},\"params\":{\"sources\":[{\"config_key\":\"exchangis.job.ds.params.sqoop.mysql.r.join_condition\",\"config_name\":\"连接条件\",\"config_value\":\"\",\"sort\":1},{\"config_key\":\"exchangis.job.ds.params.sqoop.mysql.r.where_condition\",\"config_name\":\"WHERE条件\",\"config_value\":\"\",\"sort\":2}],\"sinks\":[{\"config_key\":\"exchangis.job.ds.params.sqoop.hive.w.trans_proto\",\"config_name\":\"传输方式\",\"config_value\":\"\",\"sort\":1},{\"config_key\":\"exchangis.job.ds.params.sqoop.hive.w.partition\",\"config_name\":\"分股信息\",\"config_value\":\"\",\"sort\":2},{\"config_key\":\"exchangis.job.ds.params.sqoop.hive.w.row_format\",\"config_name\":\"字段格式\",\"config_value\":\"\",\"sort\":3}]},\"transforms\":{\"addEnable\":false,\"type\":\"MAPPING\",\"sql\":null,\"mapping\":[{\"validator\":[],\"transformer\":{\"name\":null,\"params\":null},\"source_field_name\":\"CHARACTER_SET_NAME\",\"source_field_type\":\"VARCHAR\",\"sink_field_name\":\"CHARACTER_SET_NAME\",\"sink_field_type\":\"VARCHAR\",\"delete_enable\":false}]},\"settings\":[{\"config_key\":\"exchangis.sqoop.setting.max.parallelism\",\"config_name\":\"作业最大并行数\",\"config_value\":\"1\",\"sort\":1},{\"config_key\":\"exchangis.sqoop.setting.max.memory\",\"config_name\":\"作业最大内存\",\"config_value\":\"1000\",\"sort\":2}]}]";
+
+    }
+
     @Override
     public ExchangisJob updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
-            throws ExchangisJobErrorException {
+            throws ExchangisJobErrorException, ExchangisDataSourceException {
         ExchangisJob exchangisJob = exchangisJobService.getById(id);
+        final String engine = exchangisJob.getEngineType();
+
+        String content = exchangisJobContentDTO.getContent();
+        Set<String> taskNames = new HashSet<>();
+        JsonArray tasks = new JsonParser().parse(content).getAsJsonArray();
+        for (int i = 0; i < tasks.size(); i++) {
+            JsonObject task = tasks.get(i).getAsJsonObject();
+            String taskName = task.get("subJobName").getAsString().trim();
+            if (!taskNames.add(taskName)) {
+                // 任务重名
+                throw new ExchangisJobErrorException(31101, "存在重复子任务名");
+            }
+            String sourceType = task.get("dataSources").getAsJsonObject().get("source_id").getAsString().split("\\.")[0];
+            String sinkType = task.get("dataSources").getAsJsonObject().get("sink_id").getAsString().split("\\.")[0];
+            this.exchangisDataSourceService.checkDSSupportDegree(engine, sourceType, sinkType);
+        }
         exchangisJob.setContent(exchangisJobContentDTO.getContent());
         exchangisJobService.updateById(exchangisJob);
         return this.getJob(id);
