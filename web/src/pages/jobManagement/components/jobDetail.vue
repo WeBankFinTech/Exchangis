@@ -115,6 +115,8 @@
             v-bind:fmData="curTask.transforms"
             v-bind:fieldsSink="fieldsSink"
             v-bind:fieldsSource="fieldsSource"
+            v-bind:deductions="deductions"
+            v-bind:addEnabled="addEnabled"
             v-bind:engineType="curTask.engineType"
             @updateFieldMap="updateFieldMap"
           />
@@ -300,8 +302,12 @@ export default {
       activeIndex: -1,
       curTask: null,
       nameEditable: false,
+
       fieldsSource: [],
       fieldsSink: [],
+      deductions: [],
+      addEnabled: true,
+
       configModalData: {},
 
       visibleDrawer: false,
@@ -462,23 +468,52 @@ export default {
     updateProcessControl(settings) {
       this.curTask.settings = settings;
     },
-    updateSourceInfo(dataSource) {
+    getFieldsParams(dataSource){
       const { dataSourceIds, params } = dataSource;
       this.curTask.dataSourceIds = dataSourceIds;
       this.curTask.params = params;
       const source = this.curTask.dataSourceIds.source;
-      getFields(source.type, source.id, source.db, source.table).then((res) => {
-        this.fieldsSource = res.columns;
-      });
+      const sink = this.curTask.dataSourceIds.sink;
+      if (!source.type || !source.id || !sink.type || !sink.id) return null
+      return {
+        sourceTypeId: source.type,
+        sourceDataSourceId: source.id,
+        sourceDataBase: source.db,
+        sourceTable: source.table,
+        sinkTypeId: sink.type,
+        sinkDataSourceId: sink.id,
+        sinkDataBase: sink.db,
+        sinkTable: sink.table,
+        engine: this.jobData.engineType
+      }
+    },
+    updateSourceInfo(dataSource) {
+      /*getFields(source.type, source.id, source.db, source.table).then((res) => {
+       this.fieldsSource = res.columns;
+       })*/
+      const data = this.getFieldsParams(dataSource)
+      if (data) {
+        getFields(data).then((res) => {
+          this.fieldsSource = res.sourceFields
+          this.fieldsSink = res.sinkFields
+          this.deductions = res.deductions
+          this.addEnabled = res.addEnabled
+        })
+      }
     },
     updateSinkInfo(dataSource) {
-      const { dataSourceIds, params } = dataSource;
-      this.curTask.dataSourceIds = dataSourceIds;
-      this.curTask.params = params;
-      const sink = this.curTask.dataSourceIds.sink;
-      getFields(sink.type, sink.id, sink.db, sink.table).then((res) => {
+      /*getFields(sink.type, sink.id, sink.db, sink.table).then((res) => {
         this.fieldsSink = res.columns;
-      });
+      })*/
+      const data = this.getFieldsParams(dataSource)
+      if (data) {
+        getFields(data).then((res) => {
+          this.fieldsSource = res.sourceFields
+          this.fieldsSink = res.sinkFields
+          this.deductions = res.deductions
+          this.addEnabled = res.addEnabled
+        })
+      }
     },
     updateSourceParams(dataSource) {
       const { params } = dataSource;

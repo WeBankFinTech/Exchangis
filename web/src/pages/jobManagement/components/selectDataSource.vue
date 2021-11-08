@@ -86,7 +86,6 @@ export default defineComponent({
     });
     const newProps = computed(() => JSON.parse(JSON.stringify(props.title)));
     watch(newProps, (val, oldVal) => {
-      console.log(val);
       state.defaultSelect = val;
     });
     async function init() {
@@ -94,7 +93,7 @@ export default defineComponent({
       // 数据源
       SQLlist.forEach((sql) => {
         sqlList.push({
-          name: sql.option,
+          name: sql.name,
           value: sql.name,
           id: sql.id,
         });

@@ -1,5 +1,5 @@
 <template>
-  <div class="transformer-wrap">
+  <div class="transformer-wrap" style="float: left">
     <!-- top -->
     <div class="tf-top">
       <span v-for="domain in dynamicValidateForm.domains" :key="domain.key">
@@ -16,7 +16,7 @@
       <img src="../../../images/jobDetail/u6239.png" />
       <img
         src="../../../images/jobDetail/u6240.png"
-        style="position: absolute; left: 72px; top: 6px"
+        style="position: absolute; left: 72px; top: 6px; cursor: pointer"
       />
     </div>
     <!-- bottom -->
@@ -24,13 +24,27 @@
       <span
         v-if="
           dynamicValidateForm.transf.value &&
-          dynamicValidateForm.transf.startIndex &&
-          dynamicValidateForm.transf.endIndex
+          dynamicValidateForm.transf.param1 &&
+          dynamicValidateForm.transf.param2 &&
+          !dynamicValidateForm.transf.param3
         "
       >
         <span>转换：</span>
         {{
-          `${dynamicValidateForm.transf.value}(${dynamicValidateForm.transf.startIndex},${dynamicValidateForm.transf.endIndex})`
+          `${dynamicValidateForm.transf.value}(${dynamicValidateForm.transf.param1},${dynamicValidateForm.transf.param2})`
+        }}</span
+      >
+      <span
+        v-if="
+          dynamicValidateForm.transf.value &&
+          dynamicValidateForm.transf.param1 &&
+          dynamicValidateForm.transf.param2 &&
+          dynamicValidateForm.transf.param3
+        "
+      >
+        <span>转换：</span>
+        {{
+          `${dynamicValidateForm.transf.value}(${dynamicValidateForm.transf.param1},${dynamicValidateForm.transf.param2},${dynamicValidateForm.transf.param3})`
         }}</span
       >
     </div>
@@ -77,7 +91,7 @@
                   />
                 </div>
               </a-form-item>
-              <a-form-item>
+              <a-form-item v-if="!dynamicValidateForm.domains.length">
                 <div style="display: flex; justify-content: center">
                   <a-button
                     type="dashed"
@@ -104,22 +118,30 @@
                 v-model:value="dynamicValidateForm.transf.value"
                 style="width: 120px"
                 :options="transformFuncOptions"
+                @change="changeDynamicValidateValue"
               >
               </a-select>
             </div>
             <div class="tf-modal-content-l">
               <span>(</span>
               <a-input
-                v-model:value="dynamicValidateForm.transf.startIndex"
-                placeholder="StartIndex"
-                style="width: 80px"
+                v-model:value="dynamicValidateForm.transf.param1"
+                :placeholder="placeholder1"
+                style="width: 130px"
                 size="small"
               />
-              <span style="line-height: initial">.</span>
+              <!--<span style="line-height: initial">.</span>-->
               <a-input
-                v-model:value="dynamicValidateForm.transf.endIndex"
-                placeholder="Length"
-                style="width: 80px"
+                v-model:value="dynamicValidateForm.transf.param2"
+                :placeholder="placeholder2"
+                style="width: 130px"
+                size="small"
+              />
+              <a-input
+                v-if="dynamicValidateForm.transf.value && dynamicValidateForm.transf.value !== 'ex_substr'"
+                v-model:value="dynamicValidateForm.transf.param3"
+                :placeholder="placeholder3"
+                style="width: 130px"
                 size="small"
               />
               <span>)</span>
@@ -157,7 +179,6 @@ export default defineComponent({
 
     const newProps = computed(() => JSON.parse(JSON.stringify(props.tfData)));
     watch(newProps, (val, oldVal) => {
-      console.log("watch newProps in transformer", val, oldVal);
       const newVal = typeof val === "string" ? JSON.parse(val) : val;
       dynamicValidateForm.domains = transF(newVal.validator);
       dynamicValidateForm.transf = createTransformFunc(newVal.transformer);
@@ -179,8 +200,10 @@ export default defineComponent({
         validator.push(str);
       });
       const params = [];
-      params.push(transf.startIndex);
-      params.push(transf.endIndex);
+      params.push(transf.param1);
+      params.push(transf.param2);
+      if (transf.param3)
+        params.push(transf.param3);
       transformer.name = transf.value;
       transformer.params = params;
 
@@ -209,12 +232,14 @@ export default defineComponent({
     const createTransformFunc = (transformer) => {
       if (!transformer) return {};
       let value = transformer.name && transformer.name;
-      let startIndex = transformer.params && transformer.params[0];
-      let endIndex = transformer.params && transformer.params.slice(-1).pop();
+      let param1 = transformer.params && transformer.params.length && transformer.params[0];
+      let param2 = transformer.params && transformer.params.length > 1 && transformer.params[1];
+      let param3 = transformer.params && transformer.params.length > 2 && transformer.params[2];
       return {
         value,
-        startIndex,
-        endIndex,
+        param1,
+        param2,
+        param3
       };
     };
 
@@ -286,7 +311,39 @@ export default defineComponent({
         optionVal: "like",
         key,
       });
-    };
+    }
+
+    let placeholder1 = ref(''),
+      placeholder2 = ref(''),
+      placeholder3 = ref('')
+
+    const changeDynamicValidateValue = () => {
+      dynamicValidateForm.transf.param1 = ''
+      dynamicValidateForm.transf.param2 = ''
+      dynamicValidateForm.transf.param3 = ''
+      switch (dynamicValidateForm.transf.value) {
+        case 'ex_substr':
+          placeholder1.value = 'startIndex'
+          placeholder2.value = 'length'
+          placeholder3.value = ''
+          break;
+        case 'ex_pad':
+          placeholder1.value = 'padType(r or l)'
+          placeholder2.value = 'length'
+          placeholder3.value = 'padString'
+          break;
+        case 'ex_replace':
+          placeholder1.value = 'startIndex'
+          placeholder2.value = 'length'
+          placeholder3.value = 'replaceString'
+          break;
+        default:
+          placeholder1.value = ''
+          placeholder2.value = ''
+          placeholder3.value = ''
+          break;
+      }
+    }
 
     return {
       visible,
@@ -298,24 +355,12 @@ export default defineComponent({
       dynamicValidateForm,
       removeDomain,
       addDomain,
+      changeDynamicValidateValue,
+      placeholder1,
+      placeholder2,
+      placeholder3
     };
   },
-  // watch: {
-  //   tfData: {
-  //     handler: function (newVal) {
-  //       console.log("watch props");
-  //       this.props = newVal;
-  //     },
-  //     deep: true,
-  //   },
-  //   id: {
-  //     handler: function (newVal) {
-  //       console.log("watch props");
-  //       this.props = newVal;
-  //     },
-  //     deep: true,
-  //   },
-  // },
 });
 </script>
 
@@ -333,8 +378,6 @@ export default defineComponent({
   flex-direction: row;
 }
 .tf-modal-content-l {
-  display: flex;
-  flex-direction: row;
   margin-left: 20px;
   line-height: 32px;
   > span {
