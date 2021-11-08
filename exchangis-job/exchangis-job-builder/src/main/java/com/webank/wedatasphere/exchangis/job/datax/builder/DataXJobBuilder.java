@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
-import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.datax.domain.DataxLaunchCode;
 import com.webank.wedatasphere.exchangis.job.datax.handler.DataxJobHandler;
 import com.webank.wedatasphere.exchangis.job.datax.reader.DataxReader;
@@ -22,13 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DataXJobBuilder extends ExchangisJobBuilder {
+public class DataXJobBuilder{
 
     protected static final String HANDLER_PACKAGE_NAME = "com.webank.wedatasphere.exchangis.job.datax.handler";
     protected static final String READER_PACKAGE_NAME = "com.webank.wedatasphere.exchangis.job.datax.reader";
     protected static final String WRITER_PACKAGE_NAME = "com.webank.wedatasphere.exchangis.job.datax.writer";
 
-    @Override
     public List<ExchangisLaunchTask> buildJob(ExchangisJob job) throws ExchangisDataSourceException {
 
         String content = job.getContent();
