@@ -56,11 +56,19 @@ export const getTables = (type, id, dbName) => {
   );
 };
 
-export const getFields = (type, id, dbName, tableName) => {
+/*export const getFields = (type, id, dbName, tableName) => {
   return request(
     `/datasources/${type}/${id}/dbs/${dbName}/tables/${tableName}/fields`,
     {},
     { method: "GET" }
+  );
+};*/
+
+export const getFields = (params) => {
+  return request(
+    `/datasources/fieldsmapping`,
+    { ...params },
+    { method: "POST" }
   );
 };
 
@@ -162,6 +170,7 @@ export const getJobs = (id, jobType) => {
 };
 
 export const saveProject = (id, body) => {
+  debugger;
   return request(`/job/${id}/content`, body, {
     method: "PUT",
   });
@@ -210,7 +219,6 @@ export const getSyncHistory = (body) => {
 };
 // 删除同步历史
 export const delSyncHistory = (taskId) => {
-  debugger;
   return request(`/tasks/${taskId}`, null, {
     method: "DELETE",
   });
