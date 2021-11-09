@@ -84,8 +84,19 @@
                   v-bind:tfData="item"
                   @updateTransformer="updateTransformer"
                 />
-                <div style="width: 30px;position: relative;min-height: 50px;margin-left: 170px;" v-if="item.deleteEnable">
-                  <DeleteOutlined  @click="deleteField(index)" style="position: absolute;right: 8px;top: 35px;"/>
+                <div
+                  style="
+                    width: 30px;
+                    position: relative;
+                    min-height: 50px;
+                    margin-left: 170px;
+                  "
+                  v-if="item.deleteEnable"
+                >
+                  <DeleteOutlined
+                    @click="deleteField(index)"
+                    style="position: absolute; right: 8px; top: 35px"
+                  />
                 </div>
               </template>
             </div>
@@ -164,18 +175,19 @@ export default defineComponent({
       createDataSource(toRaw(newVal).mapping || []);
     });
 
-    const deductionsArray = computed(() => JSON.parse(JSON.stringify(props.deductions)));
+    const deductionsArray = computed(() =>
+      JSON.parse(JSON.stringify(props.deductions))
+    );
     watch(deductionsArray, (val, oldVal) => {
-      if (val && val.length)
-        createDataSource([])
-    })
+      if (val && val.length) createDataSource([]);
+    });
 
     const createFieldOptions = (fieldInfo) => {
       const fieldOptions = [];
       if (fieldInfo) {
         const fieldList = toRaw(fieldInfo);
         fieldList.forEach((info) => {
-          const o = {}
+          const o = {};
           o.value = info.name;
           o.label = info.name;
           o.type = info.type;
@@ -188,7 +200,7 @@ export default defineComponent({
     const createTransforms = (sourceDS, sinkDS, transformerList) => {
       const mapping = [];
       sourceDS.forEach((source) => {
-        let o = Object.create(null);
+        let o = {};
         const { key } = source;
         sinkDS.forEach((sink) => {
           if (sink.key == key) {
@@ -200,7 +212,7 @@ export default defineComponent({
           if (tf.key == key) {
             o.validator = tf.validator;
             o.transformer = tf.transformer;
-            o.deleteEnable = tf.deleteEnable
+            o.deleteEnable = tf.deleteEnable;
           }
         });
         o.source_field_name = source.fieldName;
@@ -225,46 +237,48 @@ export default defineComponent({
       }
 
       if (!map.length) {
-        toRaw(props.deductions).forEach((item, idx)=> {
-          let sourceItem = Object.create(null);
-          let sinkItem = Object.create(null);
-          let transformerItem = Object.create(null);
+        toRaw(props.deductions).forEach((item, idx) => {
+          let sourceItem = {};
+          let sinkItem = {};
+          let transformerItem = {};
 
-          sourceItem.key = idx + ""
-          sourceItem.fieldName = item.source.name
-          sourceItem.fieldOptions = createFieldOptions(props.fieldsSource)
-          sourceItem.fieldType = item.source.type
+          sourceItem.key = idx + "";
+          sourceItem.fieldName = item.source.name;
+          sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
+          sourceItem.fieldType = item.source.type;
 
-          sinkItem.key = idx + ""
-          sinkItem.fieldName = item.sink.name
-          sinkItem.fieldOptions = createFieldOptions(props.fieldsSink)
-          sinkItem.fieldType = item.sink.type
+          sinkItem.key = idx + "";
+          sinkItem.fieldName = item.sink.name;
+          sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
+          sinkItem.fieldType = item.sink.type;
 
           transformerItem.key = idx + "";
           transformerItem.validator = [];
           transformerItem.transformer = {};
-          transformerItem.deleteEnable = item.deleteEnable
+          transformerItem.deleteEnable = item.deleteEnable;
 
           fieldMap.transformerList.push(transformerItem);
           fieldMap.sourceDS.push(sourceItem);
           fieldMap.sinkDS.push(sinkItem);
-        })
-        const transforms = createTransforms(
-          fieldMap.sourceDS,
-          fieldMap.sinkDS,
-          fieldMap.transformerList
-        );
-        context.emit("updateFieldMap", transforms);
+        });
+        // const transforms = createTransforms(
+        //   fieldMap.sourceDS,
+        //   fieldMap.sinkDS,
+        //   fieldMap.transformerList
+        // );
+        // context.emit("updateFieldMap", transforms);
       } else {
         map.forEach((item, idx) => {
-          let sourceItem = Object.create(null);
-          let sinkItem = Object.create(null);
-          let transformerItem = Object.create(null);
+          let sourceItem = {};
+          let sinkItem = {};
+          let transformerItem = {};
 
           sourceItem.key = idx + "";
-          sourceItem.fieldName = item.source_field_name && item.source_field_name;
+          sourceItem.fieldName =
+            item.source_field_name && item.source_field_name;
           sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
-          sourceItem.fieldType = item.source_field_type && item.source_field_type;
+          sourceItem.fieldType =
+            item.source_field_type && item.source_field_type;
 
           sinkItem.key = idx + "";
           sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
@@ -274,7 +288,7 @@ export default defineComponent({
           transformerItem.key = idx + "";
           transformerItem.validator = item.validator && item.validator;
           transformerItem.transformer = item.transformer && item.transformer;
-          transformerItem.deleteEnable = item.deleteEnable
+          transformerItem.deleteEnable = item.deleteEnable;
 
           fieldMap.transformerList.push(transformerItem);
           fieldMap.sourceDS.push(sourceItem);
@@ -351,9 +365,9 @@ export default defineComponent({
       let sinkLen = fieldMap.sinkDS.length;
       let tfLen = fieldMap.transformerList.length;
 
-      let sourceItem = Object.create(null);
-      let sinkItem = Object.create(null);
-      let transformerItem = Object.create(null);
+      let sourceItem = {};
+      let sinkItem = {};
+      let transformerItem = {};
 
       sourceItem.key = sourceLen + "";
       sourceItem.fieldName = "";
@@ -368,7 +382,7 @@ export default defineComponent({
       transformerItem.key = tfLen + "";
       transformerItem.validator = [];
       transformerItem.transformer = {};
-      transformerItem.deleteEnable = true
+      transformerItem.deleteEnable = true;
 
       fieldMap.transformerList.push(transformerItem);
       fieldMap.sourceDS.push(sourceItem);
@@ -378,6 +392,13 @@ export default defineComponent({
       fieldMap.transformerList.splice(index, 1);
       fieldMap.sourceDS.splice(index, 1);
       fieldMap.sinkDS.splice(index, 1);
+
+      const transforms = createTransforms(
+        fieldMap.sourceDS,
+        fieldMap.sinkDS,
+        fieldMap.transformerList
+      );
+      context.emit("updateFieldMap", transforms);
     };
     let isFold = ref(true);
     const showInfo = () => {
