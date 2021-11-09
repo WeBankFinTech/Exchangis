@@ -468,13 +468,13 @@ export default {
     updateProcessControl(settings) {
       this.curTask.settings = settings;
     },
-    getFieldsParams(dataSource){
+    getFieldsParams(dataSource) {
       const { dataSourceIds, params } = dataSource;
       this.curTask.dataSourceIds = dataSourceIds;
       this.curTask.params = params;
       const source = this.curTask.dataSourceIds.source;
       const sink = this.curTask.dataSourceIds.sink;
-      if (!source.type || !source.id || !sink.type || !sink.id) return null
+      if (!source.type || !source.id || !sink.type || !sink.id) return null;
       return {
         sourceTypeId: source.type,
         sourceDataSourceId: source.id,
@@ -484,35 +484,35 @@ export default {
         sinkDataSourceId: sink.id,
         sinkDataBase: sink.db,
         sinkTable: sink.table,
-        engine: this.jobData.engineType
-      }
+        engine: this.jobData.engineType,
+      };
     },
     updateSourceInfo(dataSource) {
       /*getFields(source.type, source.id, source.db, source.table).then((res) => {
        this.fieldsSource = res.columns;
        })*/
-      const data = this.getFieldsParams(dataSource)
+      const data = this.getFieldsParams(dataSource);
       if (data) {
         getFields(data).then((res) => {
-          this.fieldsSource = res.sourceFields
-          this.fieldsSink = res.sinkFields
-          this.deductions = res.deductions
-          this.addEnabled = res.addEnabled
-        })
+          this.fieldsSource = res.sourceFields;
+          this.fieldsSink = res.sinkFields;
+          this.deductions = res.deductions;
+          this.addEnabled = res.addEnabled;
+        });
       }
     },
     updateSinkInfo(dataSource) {
       /*getFields(sink.type, sink.id, sink.db, sink.table).then((res) => {
         this.fieldsSink = res.columns;
       })*/
-      const data = this.getFieldsParams(dataSource)
+      const data = this.getFieldsParams(dataSource);
       if (data) {
         getFields(data).then((res) => {
-          this.fieldsSource = res.sourceFields
-          this.fieldsSink = res.sinkFields
-          this.deductions = res.deductions
-          this.addEnabled = res.addEnabled
-        })
+          this.fieldsSource = res.sourceFields;
+          this.fieldsSink = res.sinkFields;
+          this.deductions = res.deductions;
+          this.addEnabled = res.addEnabled;
+        });
       }
     },
     updateSourceParams(dataSource) {
@@ -648,7 +648,6 @@ export default {
         });
     },
     onPageChange(page) {
-      debugger;
       const { current } = page;
       this.getTableFormCurrent(current, "onChange");
     },
