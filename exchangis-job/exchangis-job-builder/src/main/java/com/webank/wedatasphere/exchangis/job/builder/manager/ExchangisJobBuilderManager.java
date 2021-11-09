@@ -22,6 +22,8 @@ public interface ExchangisJobBuilderManager {
      <T extends ExchangisJobBase, E extends ExchangisJobBase>E doBuild(T originJob, Class<E> expectJobClass,
                                                                        ExchangisJobBuilderContext ctx) throws ExchangisJobException;
 
+    <T extends ExchangisJobBase, E extends ExchangisJobBase>E doBuild(T originJob, Class<T> inputJobClass, Class<E> expectJobClass,
+                                                                      ExchangisJobBuilderContext ctx) throws ExchangisJobException;
     /**
      *
      * @param jobBuilder job builder

@@ -26,7 +26,13 @@ public class DefaultExchangisJobBuilderManager implements ExchangisJobBuilderMan
     @SuppressWarnings("unchecked")
     public <T extends ExchangisJobBase, E extends ExchangisJobBase> E doBuild(T originJob, Class<E> expectJobClass,
                                                                               ExchangisJobBuilderContext ctx) throws ExchangisJobException {
-        BuilderDirection direction = new BuilderDirection(originJob.getClass(), expectJobClass);
+        return doBuild(originJob, (Class<T>)originJob.getClass(), expectJobClass, ctx);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends ExchangisJobBase, E extends ExchangisJobBase> E doBuild(T originJob, Class<T> inputJobClass, Class<E> expectJobClass, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+        BuilderDirection direction = new BuilderDirection(inputJobClass, expectJobClass);
         ExchangisJobBuilderChain<T, E> chain = (ExchangisJobBuilderChain<T, E>) jobBuilderChains.get(direction);
         if(Objects.nonNull(chain)){
             return chain.build(originJob, ctx);
