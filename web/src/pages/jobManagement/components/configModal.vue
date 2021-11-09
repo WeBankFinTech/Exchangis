@@ -51,10 +51,26 @@ import { createProject, getProjectById, updateProject } from "@/common/service";
 import { cloneDeep } from "lodash-es";
 
 // 抒写JS代码与组件低耦合
+const validateExecuteNode = async (rule, value) => {
+  const ip_reg =
+    /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
+  if (value == "") {
+    return Promise.resolve();
+  }
+  if (!ip_reg.test(value)) {
+    return Promise.reject("请正确填写执行节点");
+  } else {
+    return Promise.resolve();
+  }
+};
 const rules = {
-  proxyUser: [{ required: true }],
-  executeNode: [{ required: true }],
-  syncType: [{ required: true }],
+  proxyUser: [
+    { required: true, message: "请正确填写执行用户", trigger: "blur" },
+  ],
+  syncType: [
+    { required: true, message: "请正确填写同步方式", trigger: "change" },
+  ],
+  executeNode: [{ validator: validateExecuteNode, trigger: "change" }],
 };
 export default {
   name: "JobManagementConfigModal",
@@ -80,8 +96,10 @@ export default {
   setup(props, context) {
     let confirmLoading = ref(false);
     let formState = reactive({
-      ...props.formData,
+      executeNode: props.formData.executeNode || "",
       jobParams: props.formData.jobParams || [],
+      proxyUser: props.formData.proxyUser || "",
+      syncType: props.formData.syncType || "FULL",
     });
     const formRef = ref();
 
@@ -107,7 +125,7 @@ export default {
         formData["jobParams"] = jobParams;
         formState["executeNode"] = formData["executeNode"] || "";
         formState["proxyUser"] = formData["proxyUser"] || "";
-        formState["syncType"] = formData["syncType"] || "";
+        formState["syncType"] = formData["syncType"] || "FULL";
         formState["jobParams"] = formData["jobParams"] || "";
       }
     );
