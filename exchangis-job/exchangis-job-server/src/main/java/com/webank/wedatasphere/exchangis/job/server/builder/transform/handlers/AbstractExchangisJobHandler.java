@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 public abstract class AbstractExchangisJobHandler implements SubExchangisJobHandler{
 
-    public static final String ID_SPLIT_SYMBOL = ".";
+    public static final String ID_SPLIT_SYMBOL = "\\.";
 
     private static final JobParamDefine<String> SOURCE_ID = JobParams.define("sourceId", String.class);
 
@@ -31,7 +31,7 @@ public abstract class AbstractExchangisJobHandler implements SubExchangisJobHand
         JobParamSet idParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_DATA_SOURCE);
         JobParamSet sourceParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sourceParamSet)){
-            appendDataSourceParams(idParamSet.load(SOURCE_ID),  sourceParamSet, originJob.getCreateUser());
+//            appendDataSourceParams(idParamSet.load(SOURCE_ID),  sourceParamSet, originJob.getCreateUser());
         }
 
     }
@@ -42,7 +42,7 @@ public abstract class AbstractExchangisJobHandler implements SubExchangisJobHand
         JobParamSet idParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_DATA_SOURCE);
         JobParamSet sinkParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK);
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sinkParamSet)){
-            appendDataSourceParams(idParamSet.load(SINK_ID),  sinkParamSet, originJob.getCreateUser());
+//            appendDataSourceParams(idParamSet.load(SINK_ID),  sinkParamSet, originJob.getCreateUser());
         }
     }
 
