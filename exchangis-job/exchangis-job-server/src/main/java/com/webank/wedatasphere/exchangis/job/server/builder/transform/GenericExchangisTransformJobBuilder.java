@@ -47,7 +47,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                 }
             }
             return null;
-        }).filter(Objects::nonNull).collect(Collectors.toMap(SubExchangisJobHandler::dataSourceType, handler -> handler));
+        }).filter(handler -> Objects.nonNull(handler) && Objects.nonNull(handler.dataSourceType())).collect(Collectors.toMap(SubExchangisJobHandler::dataSourceType, handler -> handler));
         handlerHolders.putAll(reflectedHandlers);
     }
     @Override
@@ -59,7 +59,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
         try {
             if (StringUtils.isNotBlank(inputJob.getContent())) {
                 //First to convert content to "ExchangisJobInfoContent"
-                List<ExchangisJobInfoContent> contents = Json.fromJson(inputJob.getContent(), ExchangisJobInfoContent.class);
+                List<ExchangisJobInfoContent> contents = Json.fromJson(inputJob.getContent(), List.class, ExchangisJobInfoContent.class);
                 if (Objects.nonNull(contents) ) {
                     LOG.info("To parse content ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() +
                             "], expect subJobs: [" + contents.size() + "]");
@@ -70,12 +70,15 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                     LOG.info("Invoke job handlers to handle the subJobs, ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() + "]");
                     //Do handle of the sub jobs
                     for (SubExchangisJob subExchangisJob : subExchangisJobs){
-                        SubExchangisJobHandler sourceHandler = handlerHolders.get(subExchangisJob.getSourceType());
+                        if(StringUtils.isBlank(subExchangisJob.getEngine())){
+                            subExchangisJob.setEngine(inputJob.getEngineType());
+                        }
+                        SubExchangisJobHandler sourceHandler = handlerHolders.get(subExchangisJob.getSourceType().toLowerCase());
                         if(Objects.isNull(sourceHandler)){
                             LOG.warn("Cannot find source handler for subJob named: [" + subExchangisJob.getJobName() + "], sourceType: [" + subExchangisJob.getSourceType() +
                                     "], ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() + "]");
                         }
-                        SubExchangisJobHandler sinkHandler = handlerHolders.get(subExchangisJob.getSinkType());
+                        SubExchangisJobHandler sinkHandler = handlerHolders.get(subExchangisJob.getSinkType().toLowerCase());
                         if(Objects.isNull(sinkHandler)){
                             LOG.warn("Cannot find sink handler for subJob named: [" + subExchangisJob.getJobName() + "], sinkType: [" + subExchangisJob.getSourceType() +
                                     "], ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() + "]");
@@ -83,8 +86,12 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                         LOG.info("Invoke handles for subJob: [" + subExchangisJob.getJobName() + "], sourceHandler: [" +
                                 sourceHandler + "], sinkHandler: [" + sinkHandler + "]");
                         //TODO Handle the subExchangisJob parallel
-                        sourceHandler.handleSource(subExchangisJob, ctx);
-                        sinkHandler.handleSource(subExchangisJob, ctx);
+                        if (Objects.nonNull(sourceHandler)) {
+                            sourceHandler.handleSource(subExchangisJob, ctx);
+                        }
+                        if (Objects.nonNull(sinkHandler)){
+                            sinkHandler.handleSource(subExchangisJob, ctx);
+                        }
                     }
                 }else{
                     throw new ExchangisJobException(ExchangisJobExceptionCode.TRANSFORM_JOB_ERROR.getCode(),
@@ -94,6 +101,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                 LOG.warn("It looks like an empty job ? id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() + "]");
             }
         }catch(Exception e){
+            e.printStackTrace();
             throw new ExchangisJobException(ExchangisJobExceptionCode.TRANSFORM_JOB_ERROR.getCode(),
                     "Fail to build transformJob from input job, message: [" + e.getMessage() + "]", e);
         }

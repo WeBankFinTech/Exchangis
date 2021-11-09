@@ -16,6 +16,12 @@ public class ExchangisJobTransformsItem {
     @JsonProperty("delete_enable")
     private boolean deleteEnable;
 
+    @JsonProperty("source_field_index")
+    private Integer sourceFieldIndex;
+
+    @JsonProperty("sink_field_index")
+    private Integer sinkFieldIndex;
+
     private List<String> validator;
 
     private ExchangisJobTransformer transformer;
@@ -66,5 +72,21 @@ public class ExchangisJobTransformsItem {
 
     public void setTransformer(ExchangisJobTransformer transformer) {
         this.transformer = transformer;
+    }
+
+    public Integer getSourceFieldIndex() {
+        return sourceFieldIndex;
+    }
+
+    public void setSourceFieldIndex(Integer sourceFieldIndex) {
+        this.sourceFieldIndex = sourceFieldIndex;
+    }
+
+    public Integer getSinkFieldIndex() {
+        return sinkFieldIndex;
+    }
+
+    public void setSinkFieldIndex(Integer sinkFieldIndex) {
+        this.sinkFieldIndex = sinkFieldIndex;
     }
 }

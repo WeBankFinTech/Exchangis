@@ -32,6 +32,9 @@ public class Json {
 //            mapper.configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), false);
     }
 
+    public static ObjectMapper getMapper(){
+        return mapper;
+    }
     /**
      * Generate json string
      *

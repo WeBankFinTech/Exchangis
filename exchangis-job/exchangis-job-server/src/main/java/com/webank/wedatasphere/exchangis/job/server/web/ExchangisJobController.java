@@ -2,10 +2,17 @@ package com.webank.wedatasphere.exchangis.job.server.web;
 
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
+import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
-import com.webank.wedatasphere.exchangis.job.launcher.linkis.LinkisExchangisJobLanuncher;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
+import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
@@ -25,7 +32,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The type Exchangis job controller.
@@ -42,6 +51,8 @@ public class ExchangisJobController {
     @Autowired
     private ExchangisJobService exchangisJobService;
 
+    @Autowired
+    private ExchangisJobBuilderManager jobBuilderManager;
 
     @GET
     public Message getJobList(@QueryParam(value = "projectId") long projectId,
@@ -129,15 +140,27 @@ public class ExchangisJobController {
     @Path("/{id}/action/execute")
     public Message executeJob(@PathParam("id") Long id) throws Exception {
         ExchangisJob job = exchangisJobService.getById(id);
-//        ExchangisJobBuilder jobBuiler =
-//                ExchangisJobBuilderManager.getJobBuilder(EngineTypeEnum.valueOf(job.getEngineType()));
-//        List<ExchangisLaunchTask> exchangisLaunchTasks = jobBuiler.buildJob(job);
-//
-//        exchangisLaunchTaskService.saveBatch(exchangisLaunchTasks);
-//
-//        LinkisExchangisJobLanuncher jobLanuncher = new LinkisExchangisJobLanuncher();
-//        exchangisLaunchTasks.forEach(launchTask -> jobLanuncher.launch(launchTask));
-        //TODO new strategy
+        ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
+        ctx.setOriginalJob(job);
+        // ExchangisJob -> ExchangisTransformJob(SubExchangisJob)
+        ExchangisTransformJob transformJob = jobBuilderManager.doBuild(job, ExchangisTransformJob.class, ctx);
+        List<ExchangisEngineJob> engineJobs = new ArrayList<>();
+        // ExchangisTransformJob(SubExchangisJob) -> List<ExchangisEngineJob>
+        for(SubExchangisJob subExchangisJob : transformJob.getSubJobSet()){
+            Optional.ofNullable(jobBuilderManager.doBuild(subExchangisJob,
+                    SubExchangisJob.class, ExchangisEngineJob.class, ctx)).ifPresent(engineJobs::add);
+        }
+        //  List<ExchangisEngineJob> -> List<ExchangisLauncherJob>
+        List<ExchangisLauncherJob> launcherJobs = new ArrayList<>();
+        for(ExchangisEngineJob engineJob : engineJobs){
+            Optional.ofNullable(jobBuilderManager.doBuild(engineJob,
+                    ExchangisEngineJob.class, ExchangisLauncherJob.class, ctx)).ifPresent(launcherJobs::add);
+        }
+        if(launcherJobs.isEmpty()){
+            throw new ExchangisJobException(ExchangisJobExceptionCode.JOB_BUILDER_ERROR.getCode(),
+                    "The result set of launcher job is empty, please examine your job entity, [ 生成LauncherJob为空 ]", null);
+        }
+        //TODO do launch
         return Message.ok();
     }
 
@@ -157,4 +180,7 @@ public class ExchangisJobController {
     }
 
 
+    public static void main(String[] args) throws Exception{
+
+    }
 }
