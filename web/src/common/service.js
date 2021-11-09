@@ -170,6 +170,7 @@ export const getJobs = (id, jobType) => {
 };
 
 export const saveProject = (id, body) => {
+  debugger;
   return request(`/job/${id}/content`, body, {
     method: "PUT",
   });
@@ -218,7 +219,6 @@ export const getSyncHistory = (body) => {
 };
 // 删除同步历史
 export const delSyncHistory = (taskId) => {
-  debugger;
   return request(`/tasks/${taskId}`, null, {
     method: "DELETE",
   });
