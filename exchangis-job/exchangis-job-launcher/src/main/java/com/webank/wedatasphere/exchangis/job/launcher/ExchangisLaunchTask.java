@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.domain;
+package com.webank.wedatasphere.exchangis.job.launcher;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

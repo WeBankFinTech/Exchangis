@@ -23,6 +23,6 @@ public class HiveExchangisJobHandler extends AbstractExchangisJobParamsHandler{
 
     @Override
     public String dataSourceType() {
-        return "Hive";
+        return "hive";
     }
 }
