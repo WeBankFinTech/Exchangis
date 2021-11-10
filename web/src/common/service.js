@@ -170,7 +170,6 @@ export const getJobs = (id, jobType) => {
 };
 
 export const saveProject = (id, body) => {
-  debugger;
   return request(`/job/${id}/content`, body, {
     method: "PUT",
   });
