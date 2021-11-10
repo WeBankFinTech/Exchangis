@@ -101,8 +101,13 @@ public class JobParams {
     }
 
     public static <T>JobParam<T> newOne(String key, T value){
-        JobParamDefine<T> result =  define(key, () -> value);
-        return result.newParam(value);
+        return newOne(key, value, false);
     }
 
+    public static <T>JobParam<T> newOne(String key, T value, boolean isTemp){
+        JobParamDefine<T> result =  define(key, () -> value);
+        JobParam<T> param = result.newParam(value);
+        param.setTemp(isTemp);
+        return param;
+    }
 }

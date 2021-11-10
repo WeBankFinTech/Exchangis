@@ -24,7 +24,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         try {
             SqoopExchangisEngineJob engineJob = new SqoopExchangisEngineJob();
             //pass-through the params
-            engineJob.getJobContent().putAll(inputJob.getParamsToMap());
+            engineJob.getJobContent().putAll(inputJob.getParamsToMap(false));
             if (Objects.nonNull(expectJob)) {
                 engineJob.setJobName(expectJob.getJobName());
                 engineJob.setRuntimeParams(expectJob.getRuntimeParams());
