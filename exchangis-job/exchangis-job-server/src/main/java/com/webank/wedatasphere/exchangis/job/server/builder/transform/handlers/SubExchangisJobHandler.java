@@ -9,12 +9,21 @@ import com.webank.wedatasphere.linkis.common.exception.ErrorException;
  */
 public interface SubExchangisJobHandler {
 
+    String DEFAULT_DATA_SOURCE_TYPE = "default";
     /**
-     * Accepted data source type
+     * Associated data source type
      * @return string
      */
     String dataSourceType();
 
+    /**
+     * If accept engine type
+     * @param engineType engine type
+     * @return boolean
+     */
+    default boolean acceptEngine(String engineType){
+        return true;
+    }
     /**
      * Handle source
      * @param subExchangisJob sub job
@@ -29,4 +38,12 @@ public interface SubExchangisJobHandler {
      * @param ctx
      */
     void handleSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException;
+
+    /**
+     * Order
+     * @return value
+     */
+    default int order(){
+        return Integer.MAX_VALUE;
+    }
 }

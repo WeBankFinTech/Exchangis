@@ -1,24 +1,24 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform;
 
+import com.netflix.config.ChainedDynamicProperty;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
+import com.webank.wedatasphere.exchangis.job.builder.api.ExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.SubExchangisJobHandler;
+import com.webank.wedatasphere.linkis.common.exception.ErrorException;
 import com.webank.wedatasphere.linkis.common.utils.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -32,12 +32,12 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
     /**
      * Handlers
      */
-    private static final Map<String, SubExchangisJobHandler> handlerHolders = new ConcurrentHashMap<>();
+    private static final Map<String, SubExchangisJobHandlerChain> handlerHolders = new ConcurrentHashMap<>();
 
     public synchronized void initHandlers() {
         //Should define wds.linkis.reflect.scan.package in properties
         Set<Class<? extends SubExchangisJobHandler>> jobHandlerSet = ClassUtils.reflections().getSubTypesOf(SubExchangisJobHandler.class);
-        Map<String, SubExchangisJobHandler> reflectedHandlers = jobHandlerSet.stream().map(handlerClass -> {
+        List<SubExchangisJobHandler> reflectedHandlers = jobHandlerSet.stream().map(handlerClass -> {
             if (!Modifier.isAbstract(handlerClass.getModifiers()) &&
                     !Modifier.isInterface(handlerClass.getModifiers())) {
                 try {
@@ -47,8 +47,22 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                 }
             }
             return null;
-        }).filter(handler -> Objects.nonNull(handler) && Objects.nonNull(handler.dataSourceType())).collect(Collectors.toMap(SubExchangisJobHandler::dataSourceType, handler -> handler));
-        handlerHolders.putAll(reflectedHandlers);
+        }).filter(handler -> Objects.nonNull(handler) && Objects.nonNull(handler.dataSourceType())).collect(Collectors.toList());
+        reflectedHandlers.forEach(reflectedHandler -> handlerHolders.compute(reflectedHandler.dataSourceType(), (type, handlerChain) -> {
+           if (Objects.isNull(handlerChain)){
+               handlerChain = new SubExchangisJobHandlerChain(type);
+           }
+           handlerChain.addHandler(reflectedHandler);
+           return handlerChain;
+        }));
+        LOG.trace("Sort the handler chain");
+        handlerHolders.values().forEach(SubExchangisJobHandlerChain::sort);
+        LOG.trace("Add the default handlerChain to the head");
+        //Add the default handlerChain to the head
+        Optional.ofNullable(handlerHolders.get(SubExchangisJobHandler.DEFAULT_DATA_SOURCE_TYPE)).ifPresent(defaultHandlerChain ->
+                handlerHolders.forEach( (s, handlerChain) -> {if(!Objects.equals(handlerChain, defaultHandlerChain)){
+                    handlerChain.addFirstHandler(defaultHandlerChain);
+        }}));
     }
     @Override
     public ExchangisTransformJob buildJob(ExchangisJob inputJob, ExchangisTransformJob expectJob, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
@@ -75,15 +89,17 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                         }
                         SubExchangisJobHandler sourceHandler = handlerHolders.get(subExchangisJob.getSourceType().toLowerCase());
                         if(Objects.isNull(sourceHandler)){
-                            LOG.warn("Cannot find source handler for subJob named: [" + subExchangisJob.getJobName() + "], sourceType: [" + subExchangisJob.getSourceType() +
-                                    "], ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() + "]");
+                            LOG.warn("Not find source handler for subJob named: [" + subExchangisJob.getJobName() + "], sourceType: [" + subExchangisJob.getSourceType() +
+                                    "], ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() + "], use default instead");
+                            sourceHandler = handlerHolders.get(SubExchangisJobHandler.DEFAULT_DATA_SOURCE_TYPE);
                         }
                         SubExchangisJobHandler sinkHandler = handlerHolders.get(subExchangisJob.getSinkType().toLowerCase());
                         if(Objects.isNull(sinkHandler)){
-                            LOG.warn("Cannot find sink handler for subJob named: [" + subExchangisJob.getJobName() + "], sinkType: [" + subExchangisJob.getSourceType() +
-                                    "], ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() + "]");
+                            LOG.warn("Not find sink handler for subJob named: [" + subExchangisJob.getJobName() + "], sinkType: [" + subExchangisJob.getSourceType() +
+                                    "], ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() + "], use default instead");
+                            sinkHandler = handlerHolders.get(SubExchangisJobHandler.DEFAULT_DATA_SOURCE_TYPE);
                         }
-                        LOG.info("Invoke handles for subJob: [" + subExchangisJob.getJobName() + "], sourceHandler: [" +
+                        LOG.trace("Invoke handles for subJob: [" + subExchangisJob.getJobName() + "], sourceHandler: [" +
                                 sourceHandler + "], sinkHandler: [" + sinkHandler + "]");
                         //TODO Handle the subExchangisJob parallel
                         if (Objects.nonNull(sourceHandler)) {
@@ -106,5 +122,51 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                     "Fail to build transformJob from input job, message: [" + e.getMessage() + "]", e);
         }
         return outputJob;
+    }
+
+    /**
+     * Chain
+     */
+    private static class SubExchangisJobHandlerChain implements SubExchangisJobHandler{
+
+        private String dataSourceType;
+
+        private LinkedList<SubExchangisJobHandler> handlers = new LinkedList<>();
+
+        public SubExchangisJobHandlerChain(String dataSourceType){
+            this.dataSourceType = dataSourceType;
+        }
+        public void addFirstHandler(SubExchangisJobHandler handler){
+            handlers.addFirst(handler);
+        }
+
+        public void addHandler(SubExchangisJobHandler handler){
+            handlers.add(handler);
+        }
+        public void sort(){
+            handlers.sort(Comparator.comparingInt(SubExchangisJobHandler::order));
+        }
+        @Override
+        public String dataSourceType() {
+            return dataSourceType;
+        }
+
+        @Override
+        public void handleSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
+            for(SubExchangisJobHandler handler : handlers){
+                if(handler.acceptEngine(subExchangisJob.getEngine())) {
+                    handler.handleSource(subExchangisJob, ctx);
+                }
+            }
+        }
+
+        @Override
+        public void handleSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
+            for(SubExchangisJobHandler handler : handlers){
+                if(handler.acceptEngine(subExchangisJob.getEngine())) {
+                    handler.handleSink(subExchangisJob, ctx);
+                }
+            }
+        }
     }
 }

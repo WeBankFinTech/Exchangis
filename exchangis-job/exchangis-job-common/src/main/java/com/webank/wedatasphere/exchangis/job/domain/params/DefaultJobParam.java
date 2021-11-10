@@ -12,6 +12,8 @@ public class DefaultJobParam<T> implements JobParam<T> {
 
     private Object sourceReference = null;
 
+    private boolean isTemp = false;
+
     private Class<?> sourceType = Object.class;
 
     DefaultJobParam(){
@@ -70,5 +72,15 @@ public class DefaultJobParam<T> implements JobParam<T> {
     public <U> void setValueLoader(BiFunction<String, U, T> valueLoader) {
         Class<U> obj = null;
         this.valueLoader = (BiFunction<String, Object, T>) valueLoader;
+    }
+
+    @Override
+    public boolean isTemp() {
+        return isTemp;
+    }
+
+    @Override
+    public void setTemp(boolean isTemp) {
+        this.isTemp = isTemp;
     }
 }
