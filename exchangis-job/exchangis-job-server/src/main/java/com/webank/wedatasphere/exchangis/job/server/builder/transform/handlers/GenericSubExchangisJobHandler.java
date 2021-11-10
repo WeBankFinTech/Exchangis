@@ -18,13 +18,19 @@ import java.util.Optional;
 /**
  * Abstract implement, to fetch the data source params of job
  */
-public abstract class AbstractExchangisJobHandler implements SubExchangisJobHandler{
+public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
 
     public static final String ID_SPLIT_SYMBOL = "\\.";
 
     private static final JobParamDefine<String> SOURCE_ID = JobParams.define("sourceId", String.class);
 
     private static final JobParamDefine<String> SINK_ID = JobParams.define("sinkId", String.class);
+
+    @Override
+    public String dataSourceType() {
+        return DEFAULT_DATA_SOURCE_TYPE;
+    }
+
     @Override
     public void handleSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
         ExchangisJob originJob = ctx.getOriginalJob();
@@ -63,7 +69,7 @@ public abstract class AbstractExchangisJobHandler implements SubExchangisJobHand
                 GetDataSourceInfoResultDTO infoResult = dataSourceService.getDataSource(userName, Long.valueOf(idSerial[1]));
                 Optional.ofNullable(infoResult.getData()).ifPresent(info ->{
                     if(Objects.nonNull(info.getInfo())){
-                        info.getInfo().getConnectParams().forEach((key, value) -> paramSet.add(JobParams.newOne(key, value)));
+                        info.getInfo().getConnectParams().forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, true)));
                     }
                 });
             }

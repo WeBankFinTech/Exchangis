@@ -84,9 +84,9 @@ public class SubExchangisJob extends ExchangisJobBase{
      * @param realm realm info
      * @return map
      */
-    public Map<String, Object> getParamsToMap(String realm){
+    public Map<String, Object> getParamsToMap(String realm, boolean isTemp){
         JobParamSet jobParamSet = getRealmParams(realm);
-        return jobParamSet.toList().stream().collect(
+        return jobParamSet.toList(isTemp).stream().collect(
                 Collectors.toMap(JobParam::getStrKey, JobParam::getValue));
     }
 
@@ -97,6 +97,11 @@ public class SubExchangisJob extends ExchangisJobBase{
     public Map<String, Object> getParamsToMap(){
         return realmParamSet.values().stream().flatMap(realmParam -> realmParam.toList().stream())
                 .collect(Collectors.toMap(JobParam::getStrKey, JobParam::getValue));
+    }
+
+    public Map<String, Object> getParamsToMap(boolean isTemp){
+        return realmParamSet.values().stream().flatMap(realmParam -> realmParam.toList(isTemp).stream())
+                .collect(Collectors.toMap(JobParam::getStrKey, JobParam::getValue, (left, right) -> right));
     }
 
 }

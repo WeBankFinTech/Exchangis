@@ -146,7 +146,8 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     private Map<String, Object> buildContentParam(JobParamSet paramSet, JobParamSet transformJobParamSet,
                                                   JobParamDefine<List<Map<String, Object>>> columnJobParamDefine){
         JsonConfiguration item = JsonConfiguration.from("{}");
-        paramSet.toList().forEach(param -> item.set(param.getStrKey(), param.getValue()));
+        //Ignore temp params
+        paramSet.toList(false).forEach(param -> item.set(param.getStrKey(), param.getValue()));
         if(Objects.nonNull(transformJobParamSet)){
             item.set(columnJobParamDefine.getKey(), columnJobParamDefine.newParam(transformJobParamSet).getValue());
         }
