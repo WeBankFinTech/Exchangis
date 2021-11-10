@@ -1,5 +1,5 @@
 <template>
-  <div class="transformer-wrap" style="float: left">
+  <div class="transformer-wrap">
     <!-- top -->
     <div class="tf-top">
       <span v-for="domain in dynamicValidateForm.domains" :key="domain.key">
@@ -175,6 +175,7 @@ export default defineComponent({
       validator: props.tfData.validator || [],
       transformer: props.tfData.transformer || [],
       id: props.tfData.key,
+      deleteEnable: props.tfData.deleteEnable
     });
 
     const newProps = computed(() => JSON.parse(JSON.stringify(props.tfData)));
@@ -211,6 +212,7 @@ export default defineComponent({
         key: props.tfData.key,
         validator,
         transformer,
+        deleteEnable: props.tfData.deleteEnable
       });
     };
 
