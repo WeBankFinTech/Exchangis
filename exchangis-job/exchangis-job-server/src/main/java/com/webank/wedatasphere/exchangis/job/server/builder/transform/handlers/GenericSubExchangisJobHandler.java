@@ -65,7 +65,7 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
         if(Objects.nonNull(sourceId)){
             // {TYPE}.{ID}.{DB}.{TABLE}
             String[] idSerial = sourceId.split(ID_SPLIT_SYMBOL);
-            if (idSerial.length > 2){
+            if (idSerial.length >= 2){
                 GetDataSourceInfoResultDTO infoResult = dataSourceService.getDataSource(userName, Long.valueOf(idSerial[1]));
                 Optional.ofNullable(infoResult.getData()).ifPresent(info ->{
                     if(Objects.nonNull(info.getInfo())){
