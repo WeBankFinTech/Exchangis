@@ -161,6 +161,11 @@ public class ExchangisJobController {
             throw new ExchangisJobException(ExchangisJobExceptionCode.JOB_BUILDER_ERROR.getCode(),
                     "The result set of launcher job is empty, please examine your job entity, [ 生成LauncherJob为空 ]", null);
         }
+        launcherJobs.forEach(launcherJob ->{
+            String launchName = launcherJob.getLaunchName();
+            //LauncherJob launcherjob = LaunchManager.getLauncher(launchName);
+            //launcherJob.launch(LauncherJob)
+        });
         //TODO do launch
         return Message.ok();
     }
