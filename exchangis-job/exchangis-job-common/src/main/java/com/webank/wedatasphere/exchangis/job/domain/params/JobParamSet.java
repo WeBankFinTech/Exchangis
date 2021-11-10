@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Collection of JobParam<Type>
@@ -27,7 +28,13 @@ public class JobParamSet {
         return add(prepare(jobParamDefine));
     }
 
-
+    public JobParamSet addNonNull(JobParamDefine<?> jobParamDefine){
+        JobParam<?> prepared = prepare(jobParamDefine);
+        if(Objects.nonNull(prepared.getValue())){
+            return add(prepared);
+        }
+        return null;
+    }
     /**
      * Append
      * @param key custom key
@@ -81,6 +88,10 @@ public class JobParamSet {
      */
     public List<JobParam<?>> toList(){
         return new ArrayList<>(jobParamStore.values());
+    }
+
+    public List<JobParam<?>> toList(boolean isTemp){
+        return jobParamStore.values().stream().filter(param -> isTemp == param.isTemp()).collect(Collectors.toList());
     }
 
     /**

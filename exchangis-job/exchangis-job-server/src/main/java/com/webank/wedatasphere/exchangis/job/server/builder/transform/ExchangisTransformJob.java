@@ -6,10 +6,9 @@ import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoCont
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobBase;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
-import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
-import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.AbstractExchangisJobHandler;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.GenericSubExchangisJobHandler;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,13 +53,13 @@ public class ExchangisTransformJob extends ExchangisJobBase {
                 ExchangisJobDataSourcesContent dataSourcesContent = jobInfoContent.getDataSources();
                 if(Objects.nonNull(dataSourcesContent)) {
                     Optional.ofNullable(dataSourcesContent.getSinkId()).ifPresent( sinkId ->{
-                        String[] idSerial = sinkId.split(AbstractExchangisJobHandler.ID_SPLIT_SYMBOL);
+                        String[] idSerial = sinkId.split(GenericSubExchangisJobHandler.ID_SPLIT_SYMBOL);
                         if(idSerial.length > 0){
                             this.sinkType = idSerial[0];
                         }
                     });
                     Optional.ofNullable(dataSourcesContent.getSourceId()).ifPresent( sourceId ->{
-                        String[] idSerial = sourceId.split(AbstractExchangisJobHandler.ID_SPLIT_SYMBOL);
+                        String[] idSerial = sourceId.split(GenericSubExchangisJobHandler.ID_SPLIT_SYMBOL);
                         if(idSerial.length > 0){
                             this.sourceType = idSerial[0];
                         }

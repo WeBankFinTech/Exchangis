@@ -45,4 +45,16 @@ public interface JobParam<T> {
      * @param <U>
      */
     <U>void setValueLoader(BiFunction<String, U, T> valueLoader);
+
+    /**
+     * Is temporary
+     * @return
+     */
+    default boolean isTemp(){
+        return false;
+    }
+
+    default void setTemp(boolean isTemp){
+        //Empty
+    }
 }

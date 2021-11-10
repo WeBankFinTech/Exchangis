@@ -12,6 +12,7 @@ import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.server.builder.SpringExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
@@ -180,7 +181,5 @@ public class ExchangisJobController {
     }
 
 
-    public static void main(String[] args) throws Exception{
 
-    }
 }
