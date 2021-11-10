@@ -5,7 +5,6 @@ import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
@@ -122,7 +121,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
        //To construct content
        Content content = new Content();
        code.getContent().add(content);
-       JobParamSet transformJobParamSet = inputJob.getRealmParams(SubExchangisJob.REALM_JOB_MAPPING);
+       JobParamSet transformJobParamSet = inputJob.getRealmParams(SubExchangisJob.REALM_JOB_COLUMN_MAPPING);
        paramSet = inputJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
        JsonConfiguration reader = JsonConfiguration.from(content.getReader());
        if(Objects.nonNull(paramSet)){

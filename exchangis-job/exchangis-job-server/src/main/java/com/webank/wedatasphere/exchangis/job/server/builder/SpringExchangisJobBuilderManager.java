@@ -1,6 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.server.builder;
 
 import com.webank.wedatasphere.exchangis.job.builder.manager.DefaultExchangisJobBuilderManager;
+import com.webank.wedatasphere.exchangis.job.launcher.builder.LinkisExchangisLauncherJobBuilder;
+import com.webank.wedatasphere.exchangis.job.launcher.linkis.LinkisExchangisJobLanuncher;
 import com.webank.wedatasphere.exchangis.job.server.builder.engine.DataxExchangisEngineJobBuilder;
 import com.webank.wedatasphere.exchangis.job.server.builder.engine.DefaultExchangisEngineJobBuilder;
 import com.webank.wedatasphere.exchangis.job.server.builder.engine.SqoopExchangisEngineJobBuilder;
@@ -20,16 +22,21 @@ public class SpringExchangisJobBuilderManager  extends DefaultExchangisJobBuilde
     private static final Logger LOG = LoggerFactory.getLogger(SpringExchangisJobBuilderManager.class);
     @PostConstruct
     public void init(){
+        //TransformJobBuilder
         GenericExchangisTransformJobBuilder transformJobBuilder = new GenericExchangisTransformJobBuilder();
         LOG.info("Init to load job handlers in [" + transformJobBuilder.getClass().getSimpleName() + "]");
         transformJobBuilder.initHandlers();
+        //EngineJobBuilder
         DefaultExchangisEngineJobBuilder engineJobBuilder = new DefaultExchangisEngineJobBuilder();
         DataxExchangisEngineJobBuilder dataxExchangisEngineJobBuilder = new DataxExchangisEngineJobBuilder();
         SqoopExchangisEngineJobBuilder sqoopExchangisEngineJobBuilder = new SqoopExchangisEngineJobBuilder();
+        //LaunchJobBuilder
+        LinkisExchangisLauncherJobBuilder linkisExchangisLauncherJobBuilder = new LinkisExchangisLauncherJobBuilder();
         super.addJobBuilder(transformJobBuilder);
         super.addJobBuilder(engineJobBuilder);
         super.addJobBuilder(dataxExchangisEngineJobBuilder);
         super.addJobBuilder(sqoopExchangisEngineJobBuilder);
+        super.addJobBuilder(linkisExchangisLauncherJobBuilder);
         super.initBuilderChains();
     }
 }
