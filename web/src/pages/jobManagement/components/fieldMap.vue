@@ -46,7 +46,7 @@
               <a-table
                 :dataSource="fieldMap.sourceDS"
                 :columns="columns"
-                size="small"
+                size="large"
                 :pagination="false"
                 v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
               >
@@ -79,23 +79,16 @@
                 v-for="(item, index) in fieldMap.transformerList"
                 :key="item.key"
               >
-                <Transformer
-                  v-if="engineType === 'DATAX'"
-                  v-bind:tfData="item"
-                  @updateTransformer="updateTransformer"
-                />
-                <div
-                  style="
-                    width: 30px;
-                    position: relative;
-                    min-height: 50px;
-                    margin-left: 170px;
-                  "
-                  v-if="item.deleteEnable"
-                >
+                <div style="position: relative;height: 66px;float: left;margin-left: 30px">
+                  <Transformer
+                    v-if="engineType === 'DATAX'"
+                    v-bind:tfData="item"
+                    @updateTransformer="updateTransformer"
+                  />
                   <DeleteOutlined
+                    v-if="item.deleteEnable"
                     @click="deleteField(index)"
-                    style="position: absolute; right: 8px; top: 35px"
+                    style="position: absolute; right: -10px; top: 33px"
                   />
                 </div>
               </template>
@@ -108,7 +101,7 @@
               <a-table
                 :dataSource="fieldMap.sinkDS"
                 :columns="columns"
-                size="small"
+                size="large"
                 :pagination="false"
                 v-if="type === 'MAPPING' && fieldMap.sinkDS.length > 0"
               >
@@ -179,7 +172,7 @@ export default defineComponent({
       JSON.parse(JSON.stringify(props.deductions))
     );
     watch(deductionsArray, (val, oldVal) => {
-      if (val && val.length) createDataSource([]);
+      if (val && val.length) createDataSource(toRaw(props.fmData.mapping) || []);
     });
 
     const createFieldOptions = (fieldInfo) => {
@@ -534,9 +527,8 @@ export default defineComponent({
   width: 248px;
   display: flex;
   justify-content: center;
-  flex-direction: column;
-  align-items: center;
   position: relative;
+  margin-top: 54px;
 }
 .feld-map-label {
   font-size: 14px;
