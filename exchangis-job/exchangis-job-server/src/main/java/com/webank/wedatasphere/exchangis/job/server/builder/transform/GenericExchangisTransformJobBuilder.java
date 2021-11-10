@@ -87,13 +87,15 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                         if(StringUtils.isBlank(subExchangisJob.getEngine())){
                             subExchangisJob.setEngine(inputJob.getEngineType());
                         }
-                        SubExchangisJobHandler sourceHandler = handlerHolders.get(subExchangisJob.getSourceType().toLowerCase());
+                        SubExchangisJobHandler sourceHandler = handlerHolders.get( StringUtils
+                                .isNotBlank(subExchangisJob.getSourceType())? subExchangisJob.getSourceType().toLowerCase():"");
                         if(Objects.isNull(sourceHandler)){
                             LOG.warn("Not find source handler for subJob named: [" + subExchangisJob.getJobName() + "], sourceType: [" + subExchangisJob.getSourceType() +
                                     "], ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() + "], use default instead");
                             sourceHandler = handlerHolders.get(SubExchangisJobHandler.DEFAULT_DATA_SOURCE_TYPE);
                         }
-                        SubExchangisJobHandler sinkHandler = handlerHolders.get(subExchangisJob.getSinkType().toLowerCase());
+                        SubExchangisJobHandler sinkHandler = handlerHolders.get( StringUtils
+                                .isNotBlank(subExchangisJob.getSinkType())? subExchangisJob.getSinkType().toLowerCase():"");
                         if(Objects.isNull(sinkHandler)){
                             LOG.warn("Not find sink handler for subJob named: [" + subExchangisJob.getJobName() + "], sinkType: [" + subExchangisJob.getSourceType() +
                                     "], ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() + "], use default instead");
