@@ -28,17 +28,15 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     private static final JobParamDefine<String> SINK_FIELD_NAME = JobParams.define("name", "sink_field_name", String.class);
     private static final JobParamDefine<String> QUERY_STRING = JobParams.define("sqoop.args.query");
 
-    private static final JobParamDefine<String> COLUMN_SERIAL = JobParams.define("sqoop.args.columns", (BiFunction<String, JobParamSet,String>) (key, paramSet)->{
-        List<Map<String, Object>> mappings = TRANSFORM_MAPPING.newParam(paramSet).getValue();
+    private static final JobParamDefine<String> COLUMN_SERIAL = JobParams.define("sqoop.args.columns", (BiFunction<String, DataSourceJobParamSet,String>) (key, paramSet)->{
+        List<Map<String, Object>> mappings = TRANSFORM_MAPPING.newParam(paramSet.jobParamSet).getValue();
         List<String> columnSerial = new ArrayList<>();
         if(Objects.nonNull(mappings)){
-            mappings.forEach(mapping ->{
-                String column = SOURCE_FIELD_NAME.newParam(mapping).getValue();
-                if(StringUtils.isNotBlank(column)){
-                    column = SINK_FIELD_NAME.newParam(mapping).getValue();
-                }
-                columnSerial.add(column);
-            });
+            if("mysql".equalsIgnoreCase(paramSet.sourceType)) {
+                mappings.forEach(mapping -> Optional.ofNullable(SOURCE_FIELD_NAME.newParam(mapping).getValue()).ifPresent(columnSerial::add));
+            }else if("mysql".equalsIgnoreCase(paramSet.sinkType)){
+                mappings.forEach(mapping -> Optional.ofNullable(SINK_FIELD_NAME.newParam(mapping).getValue()).ifPresent(columnSerial::add));
+            }
         }
         return StringUtils.join(columnSerial, ",");
     });
@@ -57,7 +55,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             sqoopParams.putAll(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
             sqoopParams.putAll(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_CONTENT_SINK, false));
             sqoopParams.putAll(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_CONTENT_SOURCE, false));
-            resolveTransformMappings(inputJob.getRealmParams(SubExchangisJob.REALM_JOB_COLUMN_MAPPING), sqoopParams);
+            resolveTransformMappings(inputJob, inputJob.getRealmParams(SubExchangisJob.REALM_JOB_COLUMN_MAPPING), sqoopParams);
             if (Objects.nonNull(expectJob)) {
                 engineJob.setJobName(expectJob.getJobName());
                 engineJob.setRuntimeParams(expectJob.getRuntimeParams());
@@ -79,11 +77,28 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      * Resolve transform jobParams
      * @param transformJobParamSet param set
      */
-    private void resolveTransformMappings(JobParamSet transformJobParamSet, Map<String, Object> sqoopParams){
+    private void resolveTransformMappings(SubExchangisJob subExchangisJob, JobParamSet transformJobParamSet, Map<String, Object> sqoopParams){
         String queryString = QUERY_STRING.newParam(sqoopParams).getValue();
         if(StringUtils.isBlank(queryString)){
-            String column = COLUMN_SERIAL.newParam(transformJobParamSet).getValue();
+            DataSourceJobParamSet dataSourceJobParamSet = new DataSourceJobParamSet();
+            dataSourceJobParamSet.sourceType = subExchangisJob.getSourceType();
+            dataSourceJobParamSet.sinkType = subExchangisJob.getSinkType();
+            dataSourceJobParamSet.jobParamSet = transformJobParamSet;
+            String column = COLUMN_SERIAL.newParam(dataSourceJobParamSet).getValue();
             sqoopParams.put(COLUMN_SERIAL.getKey(), column);
         }
+    }
+
+    private static class DataSourceJobParamSet{
+        /**
+         * type
+         */
+        private String sinkType;
+
+        private String sourceType;
+        /**
+         * Job param set
+         */
+        private JobParamSet jobParamSet;
     }
 }
