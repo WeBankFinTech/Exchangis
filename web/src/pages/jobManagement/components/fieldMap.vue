@@ -79,7 +79,14 @@
                 v-for="(item, index) in fieldMap.transformerList"
                 :key="item.key"
               >
-                <div style="position: relative;height: 66px;float: left;margin-left: 30px">
+                <div
+                  style="
+                    position: relative;
+                    height: 66px;
+                    float: left;
+                    margin-left: 30px;
+                  "
+                >
                   <Transformer
                     v-if="engineType === 'DATAX'"
                     v-bind:tfData="item"
@@ -133,10 +140,16 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
+import {
+  defineComponent,
+  ref,
+  reactive,
+  toRaw,
+  watch,
+  computed,
+  defineAsyncComponent,
+} from "vue";
 import { cloneDeep } from "lodash-es";
-import Transformer from "./transformer.vue";
-import { fieldInfo } from "../mock";
 import { DeleteOutlined } from "@ant-design/icons-vue";
 
 export default defineComponent({
@@ -150,7 +163,7 @@ export default defineComponent({
   },
   emits: ["updateFieldMap"],
   components: {
-    Transformer,
+    Transformer: defineAsyncComponent(() => import("./transformer.vue")),
     DeleteOutlined,
   },
   setup(props, context) {
@@ -172,7 +185,8 @@ export default defineComponent({
       JSON.parse(JSON.stringify(props.deductions))
     );
     watch(deductionsArray, (val, oldVal) => {
-      if (val && val.length) createDataSource(toRaw(props.fmData.mapping) || []);
+      if (val && val.length)
+        createDataSource(toRaw(props.fmData.mapping) || []);
     });
 
     const createFieldOptions = (fieldInfo) => {
