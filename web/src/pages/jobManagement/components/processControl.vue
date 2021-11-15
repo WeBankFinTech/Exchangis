@@ -86,12 +86,18 @@ export default defineComponent({
     });
     const updateSettingParams = (info) => {
       formState[info.key] = info.value;
+      const num_reg = /^\d+$/;
       if (!info.value) {
         helpMsg[info.key] = `请正确输入${info.label}`;
         helpStatus[info.key] = "error";
       } else {
-        helpMsg[info.key] = "";
-        helpStatus[info.key] = "success";
+        if (!num_reg.test(info.value)) {
+          helpMsg[info.key] = `请正确输入${info.label}`;
+          helpStatus[info.key] = "error";
+        } else {
+          helpMsg[info.key] = "";
+          helpStatus[info.key] = "success";
+        }
       }
       const _settingParams = toRaw(settingData.psData).slice(0);
       _settingParams.forEach((item) => {
