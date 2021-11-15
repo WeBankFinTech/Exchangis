@@ -45,9 +45,7 @@
   </div>
 </template>
 <script>
-import { toRaw } from "vue";
-import JobList from "./components/jobList.vue";
-import JobDetail from "./components/jobDetail.vue";
+import { toRaw, defineAsyncComponent } from "vue";
 import { useI18n } from "@fesjs/fes";
 import {
   UnorderedListOutlined,
@@ -57,8 +55,8 @@ import {
 } from "@ant-design/icons-vue";
 export default {
   components: {
-    JobList,
-    JobDetail,
+    JobList: defineAsyncComponent(() => import("./components/jobList.vue")),
+    JobDetail: defineAsyncComponent(() => import("./components/jobDetail.vue")),
     UnorderedListOutlined,
     ClusterOutlined,
     CloseOutlined,
