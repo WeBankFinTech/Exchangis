@@ -170,7 +170,7 @@
   </div>
 </template>
 <script>
-import { toRaw, h } from "vue";
+import { toRaw, h, defineAsyncComponent } from "vue";
 import {
   SettingOutlined,
   CaretRightOutlined,
@@ -185,8 +185,6 @@ import {
   EditOutlined,
   MinusOutlined,
 } from "@ant-design/icons-vue";
-import configModal from "./configModal";
-import copyModal from "./copyModal";
 import {
   getJobInfo,
   saveProject,
@@ -196,9 +194,6 @@ import {
   updateTaskConfiguration,
   getSyncHistory,
 } from "@/common/service";
-import DataSource from "./dataSource";
-import FieldMap from "./fieldMap.vue";
-import ProcessControl from "./processControl.vue";
 import { message, notification } from "ant-design-vue";
 
 /**
@@ -279,11 +274,11 @@ export default {
     ArrowDownOutlined,
     CheckCircleOutlined,
     EditOutlined,
-    configModal,
-    copyModal,
-    DataSource,
-    FieldMap,
-    ProcessControl,
+    "config-modal": defineAsyncComponent(() => import("./configModal.vue")),
+    "copy-modal": defineAsyncComponent(() => import("./copyModal.vue")),
+    DataSource: defineAsyncComponent(() => import("./dataSource.vue")),
+    FieldMap: defineAsyncComponent(() => import("./fieldMap.vue")),
+    ProcessControl: defineAsyncComponent(() => import("./processControl.vue")),
     MinusOutlined,
   },
   data() {
@@ -367,6 +362,7 @@ export default {
     },
     // 更新保存任务配置
     handleModalFinish(config) {
+      let _this = this;
       const { id } = this.curTab;
       const _config = Object.assign(
         {},
@@ -384,6 +380,7 @@ export default {
       updateTaskConfiguration(id, _config)
         .then((res) => {
           message.success("更新/保存成功");
+          _this.jobData["proxyUser"] = _config["proxyUser"];
         })
         .catch((err) => {
           message.error("更新/保存失败");
