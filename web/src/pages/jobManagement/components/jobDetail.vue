@@ -362,6 +362,7 @@ export default {
     },
     // 更新保存任务配置
     handleModalFinish(config) {
+      let _this = this;
       const { id } = this.curTab;
       const _config = Object.assign(
         {},
@@ -379,6 +380,7 @@ export default {
       updateTaskConfiguration(id, _config)
         .then((res) => {
           message.success("更新/保存成功");
+          _this.jobData["proxyUser"] = _config["proxyUser"];
         })
         .catch((err) => {
           message.error("更新/保存失败");
