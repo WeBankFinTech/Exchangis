@@ -55,8 +55,15 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
-import DyncRender from "./dyncRender.vue";
+import {
+  defineComponent,
+  ref,
+  reactive,
+  toRaw,
+  watch,
+  computed,
+  defineAsyncComponent,
+} from "vue";
 import cloneDeep from "lodash-es";
 export default defineComponent({
   props: {
@@ -65,7 +72,7 @@ export default defineComponent({
   },
   emits: ["updateProcessControl"],
   components: {
-    DyncRender,
+    "dync-render": defineAsyncComponent(() => import("./dyncRender.vue")),
   },
   setup(props, context) {
     const formRef = ref();
