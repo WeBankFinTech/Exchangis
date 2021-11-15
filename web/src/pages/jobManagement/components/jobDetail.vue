@@ -170,7 +170,7 @@
   </div>
 </template>
 <script>
-import { toRaw } from "vue";
+import { toRaw, h } from "vue";
 import {
   SettingOutlined,
   CaretRightOutlined,
@@ -199,7 +199,7 @@ import {
 import DataSource from "./dataSource";
 import FieldMap from "./fieldMap.vue";
 import ProcessControl from "./processControl.vue";
-import { message } from "ant-design-vue";
+import { message, notification } from "ant-design-vue";
 
 /**
  * 用于判断一个对象是否有空 value,如果有返回 true
@@ -523,9 +523,48 @@ export default {
       const { params } = dataSource;
       this.curTask.params = params;
     },
+    // 提交前 对 必填数据进行校验
+    checkPostData(data) {
+      const res = [];
+      const { proxyUser, content } = data;
+      const jobs = content.subJobs.slice();
+      if (!proxyUser) {
+        res.push("配置任务中执行用户不可为空");
+      }
+      jobs.forEach((job) => {
+        const { params, settings } = job;
+        for (let key in params) {
+          params[key].forEach((i) => {
+            if (!i.value) {
+              res.push(`${i.label}不可为空`);
+            }
+          });
+        }
+
+        settings.forEach((i) => {
+          if (!i.value) {
+            res.push(`${i.label}不可为空`);
+          }
+        });
+      });
+
+      return res;
+    },
     saveAll() {
       let saveContent = [],
         data = toRaw(this.jobData);
+      const tips = this.checkPostData(data);
+      if (tips.length > 0) {
+        return notification["warning"]({
+          message: "任务信息未完整填写",
+          description: h(
+            "ul",
+            {},
+            tips.map((tip) => h("li", {}, tip))
+          ),
+          duration: null,
+        });
+      }
       if (!data.content || !data.content.subJobs) {
         return message.error("缺失保存对象");
       }
