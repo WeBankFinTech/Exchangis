@@ -559,7 +559,7 @@ export default {
             {},
             tips.map((tip) => h("li", {}, tip))
           ),
-          duration: null,
+          duration: 5,
         });
       }
       if (!data.content || !data.content.subJobs) {
