@@ -300,6 +300,8 @@ public class AbstractDataSourceService {
         ui.setSort(config.getSort());
         ui.setRequired(config.getRequired());
         ui.setUnit(config.getUnit());
+        ui.setValidateType(config.getValidateType());
+        ui.setValidateRange(config.getValidateRange());
         return ui;
     }
 }
