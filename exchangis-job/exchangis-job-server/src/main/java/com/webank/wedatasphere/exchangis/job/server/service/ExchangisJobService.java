@@ -28,7 +28,7 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      * @param exchangisJobBasicInfoDTO the exchangis job basic info dto
      * @return the exchangis job basic info vo
      */
-    public ExchangisJobBasicInfoVO createJob(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO);
+    public ExchangisJobBasicInfoVO createJob(HttpServletRequest request, ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO);
 
     /**
      * Gets job list(return job basic info).
@@ -85,7 +85,7 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
     public ExchangisJob updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
             throws ExchangisJobErrorException, ExchangisDataSourceException;
 
-    public  List<ElementUI> getSpeedLimitSettings(Long id, String taskName);
+    // public  List<ElementUI> getSpeedLimitSettings(Long id, String taskName);
 
-    public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings);
+    // public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings);
 }
