@@ -13,7 +13,7 @@
         @click="addJob"
       >
         <template #icon> <PlusOutlined /></template
-        >{{ t('job.action.createJob') }}
+        >{{ t("job.action.createJob") }}
       </a-button>
       <a-upload
         action="/api/rest_j/v1/exchangis/job/import"
@@ -22,7 +22,7 @@
       >
         <a-button type="primary" style="width: 160px; margin-left: 30px">
           <template #icon> <DownloadOutlined /></template
-          >{{ t('job.action.import') }}
+          >{{ t("job.action.import") }}
         </a-button>
       </a-upload>
     </div>
@@ -33,11 +33,13 @@
             <template #tab>
               <span>
                 <ApiOutlined />
-                {{ t('job.type.offline') }}
+                {{ t("job.type.offline") }}
               </span>
             </template>
             <div class="cardWrap">
-              <div v-if='offlineList.length === 0' class="emptyTab">暂无任务</div>
+              <div v-if="offlineList.length === 0" class="emptyTab">
+                暂无任务
+              </div>
               <div v-for="item in offlineList" :key="item.id" class="card">
                 <job-card
                   :jobData="item"
@@ -53,11 +55,13 @@
             <template #tab>
               <span>
                 <NodeIndexOutlined />
-                {{ t('job.type.stream') }}
+                {{ t("job.type.stream") }}
               </span>
             </template>
             <div class="cardWrap">
-              <div v-if='streamList.length === 0' class="emptyTab">暂无任务</div>
+              <div v-if="streamList.length === 0" class="emptyTab">
+                暂无任务
+              </div>
               <div v-for="item in streamList" :key="item.id" class="card">
                 <job-card
                   :jobData="item"
@@ -75,7 +79,7 @@
     <CreateJob
       :visible="visible"
       :editData="editJobData"
-      :projectId='projectId'
+      :projectId="projectId"
       @handleJobAction="handleJobAction"
     />
   </div>
@@ -86,12 +90,11 @@ import {
   NodeIndexOutlined,
   ApiOutlined,
   PlusOutlined,
-} from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
-import { useI18n } from '@fesjs/fes';
-import CreateJob from './createJob';
-import JobCard from './job_card';
-import { getJobs } from '@/common/service';
+} from "@ant-design/icons-vue";
+import { defineAsyncComponent } from "vue";
+import { message } from "ant-design-vue";
+import { useI18n } from "@fesjs/fes";
+import { getJobs } from "@/common/service";
 
 export default {
   components: {
@@ -99,16 +102,16 @@ export default {
     NodeIndexOutlined,
     ApiOutlined,
     PlusOutlined,
-    CreateJob,
-    JobCard,
+    CreateJob: defineAsyncComponent(() => import("./createJob.vue")),
+    JobCard: defineAsyncComponent(() => import("./job_card.vue")),
   },
   data() {
-    const { t } = useI18n({ useScope: 'global' });
+    const { t } = useI18n({ useScope: "global" });
     return {
       t,
-      search: '',
-      userName: 'safdsaf',
-      activeKey: '1',
+      search: "",
+      userName: "safdsaf",
+      activeKey: "1",
       visible: false,
       loading: false,
       editJobData: {},
@@ -121,8 +124,8 @@ export default {
     };
   },
   mounted() {
-    this.getJobs('OFFLINE');
-    this.getJobs('STREAM');
+    this.getJobs("OFFLINE");
+    this.getJobs("STREAM");
   },
   methods: {
     async getJobs(type) {
@@ -130,14 +133,14 @@ export default {
       const list = await getJobs(this.projectId, type);
       this.spinning = false;
       const result = (list && list.result) || [];
-      if (type === 'OFFLINE') {
+      if (type === "OFFLINE") {
         this.offlineList = result;
         this.offlineListOrigin = result;
       } else {
         this.streamList = result;
         this.streamListOrigin = result;
       }
-      this.search = '';
+      this.search = "";
       this.handleSearch();
     },
     handleSearch() {
@@ -163,14 +166,14 @@ export default {
       this.visible = false;
       this.editJobData = {};
       if (newJobData) {
-        const newKey = newJobData.jobType === 'OFFLINE' ? '1' : '2';
+        const newKey = newJobData.jobType === "OFFLINE" ? "1" : "2";
         if (newKey !== this.activeKey) {
           this.activeKey = newKey;
         }
         this.getJobs(newJobData.jobType);
       }
       console.log(status);
-      this.$emit('changeType')
+      this.$emit("changeType");
     },
     handleJobCopy(data) {
       this.visible = true;
@@ -179,18 +182,18 @@ export default {
     },
     showJobDetail(data) {
       console.log(data);
-      this.$emit('showJobDetail', data);
+      this.$emit("showJobDetail", data);
     },
     handleImport(info) {
-      if (info.file.status !== 'uploading') {
+      if (info.file.status !== "uploading") {
         console.log(info.file);
       }
-      if (info.file.status === 'done') {
-        message.success(this.t('job.action.fileUpSuccess'));
-        this.getJobs('OFFLINE');
-        this.getJobs('STREAM');
-      } else if (info.file.status === 'error') {
-        message.error(this.t('job.action.fileUpFailed'));
+      if (info.file.status === "done") {
+        message.success(this.t("job.action.fileUpSuccess"));
+        this.getJobs("OFFLINE");
+        this.getJobs("STREAM");
+      } else if (info.file.status === "error") {
+        message.error(this.t("job.action.fileUpFailed"));
       }
     },
   },
@@ -217,7 +220,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   padding-bottom: 30px;
-  .emptyTab{
+  .emptyTab {
     font-size: 16px;
     height: 100px;
     width: 100%;

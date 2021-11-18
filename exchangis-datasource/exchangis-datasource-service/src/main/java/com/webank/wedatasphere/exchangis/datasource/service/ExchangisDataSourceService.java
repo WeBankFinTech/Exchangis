@@ -682,10 +682,16 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     }
 
     public Message getDataSource(HttpServletRequest request, Long id) throws ErrorException {
+        String userName = SecurityFilter.getLoginUsername(request);
+        LOGGER.info("getDataSource userName:" + userName);
+        GetDataSourceInfoResultDTO result = getDataSource(userName, id);
+        return Message.ok().data("info", result.getData().getInfo());
+    }
+
+    public GetDataSourceInfoResultDTO  getDataSource(String userName, Long id) throws ErrorException{
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         try {
-            String userName = SecurityFilter.getLoginUsername(request);
-            LOGGER.info("getDataSource userName:" + userName);
+
 
 //            GetDataSourceInfoResultDTO
             Result execute = linkisDataSourceRemoteClient.execute(
@@ -707,8 +713,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 //            if (info.getCreateSystem().equalsIgnoreCase("hive")) {
 //                // 需要拆解成 host port 给前端
 //            }
-
-            return Message.ok().data("info", result.getData().getInfo());
+            return result;
 //            return Message.ok().data("info", Objects.isNull(result.getInfo()) ? null : result.getInfo());
         } catch (Exception e) {
             if (e instanceof ErrorException) {

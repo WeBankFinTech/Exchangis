@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.domain;
 
-import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -15,22 +14,19 @@ import com.baomidou.mybatisplus.annotation.TableName;
  * @since 2021-08-10
  */
 @TableName("exchangis_job_info")
-public class ExchangisJob {
+public class ExchangisJob extends ExchangisJobBase{
+
 
     @TableId(type = IdType.AUTO)
     private Long id;
 
     private Long projectId;
 
-    private String jobName;
-
     private String jobType;
 
     private String engineType;
 
     private String jobLabels;
-
-    private String jobDesc;
 
     private String content;
 
@@ -46,21 +42,9 @@ public class ExchangisJob {
 
     private String jobParams;
 
-    private Date createTime;
-
     private String createUser;
 
-    private Date modifyTime;
-
     private String modifyUser;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Long getProjectId() {
         return projectId;
@@ -68,14 +52,6 @@ public class ExchangisJob {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
-    }
-
-    public String getJobName() {
-        return jobName;
-    }
-
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
     }
 
     public String getJobType() {
@@ -102,13 +78,6 @@ public class ExchangisJob {
         this.jobLabels = jobLabels;
     }
 
-    public String getJobDesc() {
-        return jobDesc;
-    }
-
-    public void setJobDesc(String jobDesc) {
-        this.jobDesc = jobDesc;
-    }
 
     public String getContent() {
         return content;
@@ -166,28 +135,12 @@ public class ExchangisJob {
         this.jobParams = jobParams;
     }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
     public String getCreateUser() {
         return createUser;
     }
 
     public void setCreateUser(String createUser) {
         this.createUser = createUser;
-    }
-
-    public Date getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(Date modifyTime) {
-        this.modifyTime = modifyTime;
     }
 
     public String getModifyUser() {
