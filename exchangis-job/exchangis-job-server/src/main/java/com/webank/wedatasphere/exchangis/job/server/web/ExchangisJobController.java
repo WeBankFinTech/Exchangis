@@ -170,13 +170,13 @@ public class ExchangisJobController {
         return Message.ok();
     }
 
-    @GET
-    @Path("{id}/speedlimit/{task_name}/params/ui")
-    public Response getSpeedLimitSettings(@PathParam("id") Long id, @PathParam("task_name") String taskName) {
-        List<ElementUI> speedLimitSettings = this.exchangisJobService.getSpeedLimitSettings(id, taskName);
-        Message message = Message.ok().data("ui", speedLimitSettings);
-        return Message.messageToResponse(message);
-    }
+//    @GET
+//    @Path("{id}/speedlimit/{task_name}/params/ui")
+//    public Response getSpeedLimitSettings(@PathParam("id") Long id, @PathParam("task_name") String taskName) {
+//        List<ElementUI> speedLimitSettings = this.exchangisJobService.getSpeedLimitSettings(id, taskName);
+//        Message message = Message.ok().data("ui", speedLimitSettings);
+//        return Message.messageToResponse(message);
+//    }
 
 //    @PUT
 //    @Path("{id}/speedlimit/{task_name}")
