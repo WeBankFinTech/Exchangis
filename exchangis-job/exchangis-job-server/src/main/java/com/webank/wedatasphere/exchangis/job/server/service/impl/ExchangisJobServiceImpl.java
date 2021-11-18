@@ -14,6 +14,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.InputElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.OptionElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
@@ -24,6 +25,8 @@ import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
 import com.webank.wedatasphere.linkis.common.utils.JsonUtils;
+import com.webank.wedatasphere.linkis.manager.label.utils.LabelUtils.Jackson;
+import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +57,15 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     private ExchangisDataSourceService exchangisDataSourceService;
 
     @Override
-    public ExchangisJobBasicInfoVO createJob(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
+    public ExchangisJobBasicInfoVO createJob(HttpServletRequest request, ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
         ExchangisJob exchangisJob = modelMapper.map(exchangisJobBasicInfoDTO, ExchangisJob.class);
+        String proxyUser = "";
+        try {
+            proxyUser = SecurityFilter.getLoginUsername(request);
+        } catch (Exception e) {
+            log.error("Get proxy user error.", e);
+        }
+        exchangisJob.setProxyUser(proxyUser);
         exchangisJobService.save(exchangisJob);
         return modelMapper.map(exchangisJob, ExchangisJobBasicInfoVO.class);
     }
@@ -147,18 +157,13 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         return this.getJob(id);
     }
 
-    public void main(String[] args) {
-        String content = "[{\"subJobName\":\"new\",\"dataSources\":{\"source_id\":\"MYSQL.28.test.t_psn\",\"sink_id\":\"HIVE.11.test.psn\"},\"params\":{\"sources\":[{\"config_key\":\"exchangis.job.ds.params.sqoop.mysql.r.join_condition\",\"config_name\":\"连接条件\",\"config_value\":\"\",\"sort\":1},{\"config_key\":\"exchangis.job.ds.params.sqoop.mysql.r.where_condition\",\"config_name\":\"WHERE条件\",\"config_value\":\"\",\"sort\":2}],\"sinks\":[{\"config_key\":\"exchangis.job.ds.params.sqoop.hive.w.trans_proto\",\"config_name\":\"传输方式\",\"config_value\":\"\",\"sort\":1},{\"config_key\":\"exchangis.job.ds.params.sqoop.hive.w.partition\",\"config_name\":\"分股信息\",\"config_value\":\"\",\"sort\":2},{\"config_key\":\"exchangis.job.ds.params.sqoop.hive.w.row_format\",\"config_name\":\"字段格式\",\"config_value\":\"\",\"sort\":3}]},\"transforms\":{\"addEnable\":false,\"type\":\"MAPPING\",\"sql\":null,\"mapping\":[{\"validator\":[],\"transformer\":{\"name\":null,\"params\":null},\"source_field_name\":\"CHARACTER_SET_NAME\",\"source_field_type\":\"VARCHAR\",\"sink_field_name\":\"CHARACTER_SET_NAME\",\"sink_field_type\":\"VARCHAR\",\"delete_enable\":false}]},\"settings\":[{\"config_key\":\"exchangis.sqoop.setting.max.parallelism\",\"config_name\":\"作业最大并行数\",\"config_value\":\"1\",\"sort\":1},{\"config_key\":\"exchangis.sqoop.setting.max.memory\",\"config_name\":\"作业最大内存\",\"config_value\":\"1000\",\"sort\":2}]}]";
-
-    }
-
     @Override
     public ExchangisJob updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
             throws ExchangisJobErrorException, ExchangisDataSourceException {
         ExchangisJob exchangisJob = exchangisJobService.getById(id);
         final String engine = exchangisJob.getEngineType();
 
-        String content = exchangisJobContentDTO.getContent( );
+        String content = exchangisJobContentDTO.getContent();
         Set<String> taskNames = new HashSet<>();
         JsonArray tasks = new JsonParser().parse(content).getAsJsonArray();
         for (int i = 0; i < tasks.size(); i++) {
@@ -176,64 +181,70 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         return this.getJob(id);
     }
 
-    @Override
-    public List<ElementUI> getSpeedLimitSettings(Long id, String taskName) {
-        ExchangisJob exchangisJob = exchangisJobService.getById(id);
-        Map<String, String> values = new HashMap<>();
-        if (null != exchangisJob && null != exchangisJob.getContent() && !"".equals(exchangisJob.getContent())) {
-            new JsonParser().parse(exchangisJob.getContent()).getAsJsonArray().forEach(i -> {
-                JsonObject task = i.getAsJsonObject();
-                if (task.get("subJobName").getAsString().equals(taskName)) {
-                    if (task.has("settings")) {
-                        task.get("settings").getAsJsonArray().forEach(s -> {
-                            JsonObject setting = s.getAsJsonObject();
-                            values.put(setting.get("config_key").getAsString(), setting.get("config_value").getAsString());
-                        });
-                    }
-                }
-            });
-        }
-
-        List<ElementUI> jobEngineSettingsUI = this.exchangisDataSourceService.getJobEngineSettingsUI(exchangisJob.getEngineType());
-        jobEngineSettingsUI.forEach(s -> {
-            if (values.containsKey(s.getField())) {
-                if (s instanceof InputElementUI) {
-                    InputElementUI e = (InputElementUI) s;
-                    e.setValue(values.get(s.getField()));
-                }
-                if (s instanceof OptionElementUI) {
-                    OptionElementUI e = (OptionElementUI) s;
-                    e.setValue(values.get(s.getField()));
-                }
-            }
+    public static void main(String[] args) {
+        String json = "[{\"subJobName\":\"job0001\",\"dataSources\":{\"source_id\":\"MYSQL.1.test_db.test_table\",\"sink_id\":\"MYSQL.1.mask_db.mask_table\"},\"params\":{\"sources\":[{\"config_key\":\"exchangis.job.ds.params.mysql.transform_type\",\"config_name\":\"传输方式\",\"config_value\":\"二进制\",\"sort\":1},{\"config_key\":\"exchangis.job.ds.params.mysql.partitioned_by\",\"config_name\":\"分区信息\",\"config_value\":\"2021-07-30\",\"sort\":2}],\"sinks\":[{\"config_key\":\"exchangis.job.ds.params.mysql.write_type\",\"config_name\":\"写入方式\",\"config_value\":\"insert\",\"sort\":1},{\"config_key\":\"exchangis.job.ds.params.mysql.batch_size\",\"config_name\":\"批量大小\",\"config_value\":1000,\"sort\":2}]},\"transforms\":{\"type\":\"MAPPING\",\"mapping\":[{\"source_field_name\":\"name\",\"source_field_type\":\"VARCHAR\",\"sink_field_name\":\"c_name\",\"sink_field_type\":\"VARCHAR\"},{\"source_field_name\":\"year\",\"source_field_type\":\"VARCHAR\",\"sink_field_name\":\"d_year\",\"sink_field_type\":\"VARCHAR\"}]},\"settings\":[{\"config_key\":\"exchangis.datax.setting.speed.byte\",\"config_name\":\"传输速率\",\"config_value\":102400,\"sort\":1},{\"config_key\":\"exchangis.datax.setting.errorlimit.record\",\"config_name\":\"脏数据最大记录数\",\"config_value\":10000,\"sort\":2},{\"config_key\":\"exchangis.datax.setting.errorlimit.percentage\",\"config_name\":\"脏数据占比阈值\",\"config_value\":100,\"sort\":3}]}]";
+        List<ExchangisJobInfoContent> o = Jackson.fromJson(json, List.class, ExchangisJobInfoContent.class);
+        o.forEach(c -> {
+            System.out.println(c.getSubJobName());
         });
-
-        return jobEngineSettingsUI;
 
     }
 
-    @Override
-    public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings) {
-        ExchangisJob exchangisJob = exchangisJobService.getById(id);
-        JsonArray content = new JsonParser().parse(exchangisJob.getContent()).getAsJsonArray();
-        JsonArray newSet = new JsonArray();
-        settings.getSettings().forEach(s -> {
-            JsonObject json = new JsonObject();
-            json.addProperty("config_key", s.getConfig_key());
-            json.addProperty("config_name", s.getConfig_name());
-            json.addProperty("config_value", s.getConfig_value());
-            json.addProperty("sort", s.getSort());
-            newSet.add(json);
-        });
-        content.forEach(c -> {
-            JsonObject task = c.getAsJsonObject();
-            if (task.get("subJobName").getAsString().equals(taskName)) {
-                task.remove("settings");
-                task.add("settings", newSet);
-            }
-        });
-        exchangisJob.setContent(content.toString());
-        exchangisJobService.updateById(exchangisJob);
-    }
+//    @Override
+//    public List<ElementUI> getSpeedLimitSettings(Long id, String taskName) {
+//        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+//        Map<String, String> values = new HashMap<>();
+//        if (null != exchangisJob && null != exchangisJob.getContent() && !"".equals(exchangisJob.getContent())) {
+//            List<ExchangisJobInfoContent> o = Jackson.fromJson(exchangisJob.getContent(), List.class, ExchangisJobInfoContent.class);
+//            o.forEach(task -> {
+//                if (task.getSubJobName().equals(taskName)) {
+//                    Optional.ofNullable(task.getSettings()).orElse(new ArrayList<>()).forEach(setting -> {
+//                        values.put(setting.getConfigKey(), setting.getConfigValue());
+//                    });
+//                }
+//            });
+//        }
+//
+//        List<ElementUI> jobEngineSettingsUI = this.exchangisDataSourceService.getJobEngineSettingsUI(exchangisJob.getEngineType());
+//        jobEngineSettingsUI.forEach(s -> {
+//            if (values.containsKey(s.getField())) {
+//                if (s instanceof InputElementUI) {
+//                    InputElementUI e = (InputElementUI) s;
+//                    e.setValue(values.get(s.getField()));
+//                }
+//                if (s instanceof OptionElementUI) {
+//                    OptionElementUI e = (OptionElementUI) s;
+//                    e.setValue(values.get(s.getField()));
+//                }
+//            }
+//        });
+//
+//        return jobEngineSettingsUI;
+//
+//    }
+
+//    @Override
+//    public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings) {
+//        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+//        JsonArray content = new JsonParser().parse(exchangisJob.getContent()).getAsJsonArray();
+//        JsonArray newSet = new JsonArray();
+//        settings.getSettings().forEach(s -> {
+//            JsonObject json = new JsonObject();
+//            json.addProperty("config_key", s.getConfig_key());
+//            json.addProperty("config_name", s.getConfig_name());
+//            json.addProperty("config_value", s.getConfig_value());
+//            json.addProperty("sort", s.getSort());
+//            newSet.add(json);
+//        });
+//        content.forEach(c -> {
+//            JsonObject task = c.getAsJsonObject();
+//            if (task.get("subJobName").getAsString().equals(taskName)) {
+//                task.remove("settings");
+//                task.add("settings", newSet);
+//            }
+//        });
+//        exchangisJob.setContent(content.toString());
+//        exchangisJobService.updateById(exchangisJob);
+//    }
 
 }

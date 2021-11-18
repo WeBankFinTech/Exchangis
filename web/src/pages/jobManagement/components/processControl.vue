@@ -55,8 +55,15 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
-import DyncRender from "./dyncRender.vue";
+import {
+  defineComponent,
+  ref,
+  reactive,
+  toRaw,
+  watch,
+  computed,
+  defineAsyncComponent,
+} from "vue";
 import cloneDeep from "lodash-es";
 export default defineComponent({
   props: {
@@ -65,7 +72,7 @@ export default defineComponent({
   },
   emits: ["updateProcessControl"],
   components: {
-    DyncRender,
+    "dync-render": defineAsyncComponent(() => import("./dyncRender.vue")),
   },
   setup(props, context) {
     const formRef = ref();
@@ -86,12 +93,18 @@ export default defineComponent({
     });
     const updateSettingParams = (info) => {
       formState[info.key] = info.value;
+      const num_reg = /^\d+$/;
       if (!info.value) {
         helpMsg[info.key] = `请正确输入${info.label}`;
         helpStatus[info.key] = "error";
       } else {
-        helpMsg[info.key] = "";
-        helpStatus[info.key] = "success";
+        if (!num_reg.test(info.value)) {
+          helpMsg[info.key] = `请正确输入${info.label}`;
+          helpStatus[info.key] = "error";
+        } else {
+          helpMsg[info.key] = "";
+          helpStatus[info.key] = "success";
+        }
       }
       const _settingParams = toRaw(settingData.psData).slice(0);
       _settingParams.forEach((item) => {

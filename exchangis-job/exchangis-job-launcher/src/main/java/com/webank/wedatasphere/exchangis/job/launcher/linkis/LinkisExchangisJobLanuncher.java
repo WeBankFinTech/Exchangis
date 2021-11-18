@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLauncher;
 
 public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<ExchangisLaunchTask> {

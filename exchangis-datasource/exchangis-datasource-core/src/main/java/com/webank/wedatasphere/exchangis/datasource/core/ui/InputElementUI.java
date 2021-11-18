@@ -8,6 +8,8 @@ public class InputElementUI implements ElementUI {
     private String value;
     private String unit;
     private Boolean required;
+    private String validateType;
+    private String validateRange;
 
     public String getKey() {
         return key;
@@ -72,5 +74,21 @@ public class InputElementUI implements ElementUI {
 
     public void setRequired(Boolean required) {
         this.required = required;
+    }
+
+    public String getValidateType() {
+        return validateType;
+    }
+
+    public void setValidateType(String validateType) {
+        this.validateType = validateType;
+    }
+
+    public String getValidateRange() {
+        return validateRange;
+    }
+
+    public void setValidateRange(String validateRange) {
+        this.validateRange = validateRange;
     }
 }
