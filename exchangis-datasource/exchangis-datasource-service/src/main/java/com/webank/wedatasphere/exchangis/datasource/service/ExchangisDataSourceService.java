@@ -1,9 +1,12 @@
 package com.webank.wedatasphere.exchangis.datasource.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
+import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
+import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
@@ -51,6 +54,9 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     public ExchangisDataSourceService(ExchangisDataSourceContext context, ExchangisJobInfoMapper exchangisJobInfoMapper, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper) {
         super(context, exchangisJobParamConfigMapper, exchangisJobInfoMapper);
     }
+
+    @Autowired
+    private ExchangisJobDsBindMapper exchangisJobDsBindMapper;
 
     @Override
     public List<ExchangisDataSourceUIViewer> getJobDataSourceUIs(HttpServletRequest request, Long jobId) {
@@ -343,8 +349,16 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     @Transactional
     public Message deleteDataSource(HttpServletRequest request, /*String type,*/ Long id) throws Exception {
+
+        QueryWrapper<ExchangisJobDsBind> condition = new QueryWrapper<>();
+        condition.eq("sourceDsId", id).or().eq("sinkDsId", id);
+        Integer inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
+        if (inUseCount > 0) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "目前存在引用依赖");
+        }
+
         LinkisDataSourceRemoteClient dataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
-//        DeleteDataSourceResult result;
+        //        DeleteDataSourceResult result;
         String responseBody;
         try {
             String user = SecurityFilter.getLoginUsername(request);
@@ -1009,10 +1023,20 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         Message sourceMessage = this.queryDataSourceDBTableFields(request, vo.getSourceTypeId(), vo.getSourceDataSourceId(), vo.getSourceDataBase(), vo.getSourceTable());
         List<DataSourceDbTableColumnDTO> sourceFields = (List<DataSourceDbTableColumnDTO>) sourceMessage.getData().get("columns");
+        for (int i = 0; i < sourceFields.size(); i++) {
+            DataSourceDbTableColumnDTO field = sourceFields.get(i);
+            field.setFieldIndex(i);
+            field.setFieldEditable(!"HIVE".equals(vo.getSourceTypeId()));
+        }
         message.data("sourceFields", sourceFields);
 
         Message sinkMessage = this.queryDataSourceDBTableFields(request, vo.getSinkTypeId(), vo.getSinkDataSourceId(), vo.getSinkDataBase(), vo.getSinkTable());
         List<DataSourceDbTableColumnDTO> sinkFields = (List<DataSourceDbTableColumnDTO>) sinkMessage.getData().get("columns");
+        for (int i = 0; i < sinkFields.size(); i++) {
+            DataSourceDbTableColumnDTO field = sinkFields.get(i);
+            field.setFieldIndex(i);
+            field.setFieldEditable(!"HIVE".equals(vo.getSinkTypeId()));
+        }
         message.data("sinkFields", sinkFields);
 
 
