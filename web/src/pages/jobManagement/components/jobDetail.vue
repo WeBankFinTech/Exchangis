@@ -115,6 +115,8 @@
             v-bind:fmData="curTask.transforms"
             v-bind:fieldsSink="fieldsSink"
             v-bind:fieldsSource="fieldsSource"
+            v-bind:deductions="deductions"
+            v-bind:addEnabled="addEnabled"
             v-bind:engineType="curTask.engineType"
             @updateFieldMap="updateFieldMap"
           />
@@ -168,7 +170,7 @@
   </div>
 </template>
 <script>
-import { toRaw } from "vue";
+import { toRaw, h, defineAsyncComponent } from "vue";
 import {
   SettingOutlined,
   CaretRightOutlined,
@@ -183,8 +185,6 @@ import {
   EditOutlined,
   MinusOutlined,
 } from "@ant-design/icons-vue";
-import configModal from "./configModal";
-import copyModal from "./copyModal";
 import {
   getJobInfo,
   saveProject,
@@ -194,10 +194,7 @@ import {
   updateTaskConfiguration,
   getSyncHistory,
 } from "@/common/service";
-import DataSource from "./dataSource";
-import FieldMap from "./fieldMap.vue";
-import ProcessControl from "./processControl.vue";
-import { message } from "ant-design-vue";
+import { message, notification } from "ant-design-vue";
 
 /**
  * 用于判断一个对象是否有空 value,如果有返回 true
@@ -277,11 +274,11 @@ export default {
     ArrowDownOutlined,
     CheckCircleOutlined,
     EditOutlined,
-    configModal,
-    copyModal,
-    DataSource,
-    FieldMap,
-    ProcessControl,
+    "config-modal": defineAsyncComponent(() => import("./configModal.vue")),
+    "copy-modal": defineAsyncComponent(() => import("./copyModal.vue")),
+    DataSource: defineAsyncComponent(() => import("./dataSource.vue")),
+    FieldMap: defineAsyncComponent(() => import("./fieldMap.vue")),
+    ProcessControl: defineAsyncComponent(() => import("./processControl.vue")),
     MinusOutlined,
   },
   data() {
@@ -300,8 +297,12 @@ export default {
       activeIndex: -1,
       curTask: null,
       nameEditable: false,
+
       fieldsSource: [],
       fieldsSink: [],
+      deductions: [],
+      addEnabled: true,
+
       configModalData: {},
 
       visibleDrawer: false,
@@ -355,12 +356,13 @@ export default {
           this.activeIndex = 0;
           this.curTask = this.list[this.activeIndex];
           this.updateSourceInfo(this.curTask);
-          this.updateSinkInfo(this.curTask);
+          // this.updateSinkInfo(this.curTask); 当sink和source都有值的时候,请求的结果是一致的,所以省去一次多余重复请求
         }
       } catch (error) {}
     },
     // 更新保存任务配置
     handleModalFinish(config) {
+      let _this = this;
       const { id } = this.curTab;
       const _config = Object.assign(
         {},
@@ -378,6 +380,7 @@ export default {
       updateTaskConfiguration(id, _config)
         .then((res) => {
           message.success("更新/保存成功");
+          _this.jobData["proxyUser"] = _config["proxyUser"];
         })
         .catch((err) => {
           message.error("更新/保存失败");
@@ -462,23 +465,52 @@ export default {
     updateProcessControl(settings) {
       this.curTask.settings = settings;
     },
-    updateSourceInfo(dataSource) {
+    getFieldsParams(dataSource) {
       const { dataSourceIds, params } = dataSource;
       this.curTask.dataSourceIds = dataSourceIds;
       this.curTask.params = params;
       const source = this.curTask.dataSourceIds.source;
-      getFields(source.type, source.id, source.db, source.table).then((res) => {
-        this.fieldsSource = res.columns;
-      });
+      const sink = this.curTask.dataSourceIds.sink;
+      if (!source.type || !source.id || !sink.type || !sink.id) return null;
+      return {
+        sourceTypeId: source.type,
+        sourceDataSourceId: source.id,
+        sourceDataBase: source.db,
+        sourceTable: source.table,
+        sinkTypeId: sink.type,
+        sinkDataSourceId: sink.id,
+        sinkDataBase: sink.db,
+        sinkTable: sink.table,
+        engine: this.jobData.engineType,
+      };
+    },
+    updateSourceInfo(dataSource) {
+      /*getFields(source.type, source.id, source.db, source.table).then((res) => {
+       this.fieldsSource = res.columns;
+       })*/
+      const data = this.getFieldsParams(dataSource);
+      if (data) {
+        getFields(data).then((res) => {
+          this.fieldsSource = res.sourceFields;
+          this.fieldsSink = res.sinkFields;
+          this.deductions = res.deductions;
+          this.addEnabled = res.addEnabled;
+        });
+      }
     },
     updateSinkInfo(dataSource) {
-      const { dataSourceIds, params } = dataSource;
-      this.curTask.dataSourceIds = dataSourceIds;
-      this.curTask.params = params;
-      const sink = this.curTask.dataSourceIds.sink;
-      getFields(sink.type, sink.id, sink.db, sink.table).then((res) => {
+      /*getFields(sink.type, sink.id, sink.db, sink.table).then((res) => {
         this.fieldsSink = res.columns;
-      });
+      })*/
+      const data = this.getFieldsParams(dataSource);
+      if (data) {
+        getFields(data).then((res) => {
+          this.fieldsSource = res.sourceFields;
+          this.fieldsSink = res.sinkFields;
+          this.deductions = res.deductions;
+          this.addEnabled = res.addEnabled;
+        });
+      }
     },
     updateSourceParams(dataSource) {
       const { params } = dataSource;
@@ -488,9 +520,48 @@ export default {
       const { params } = dataSource;
       this.curTask.params = params;
     },
+    // 提交前 对 必填数据进行校验
+    checkPostData(data) {
+      const res = [];
+      const { proxyUser, content } = data;
+      const jobs = content.subJobs.slice();
+      if (!proxyUser) {
+        res.push("配置任务中执行用户不可为空");
+      }
+      jobs.forEach((job) => {
+        const { params, settings } = job;
+        for (let key in params) {
+          params[key].forEach((i) => {
+            if (!i.value) {
+              res.push(`${i.label}不可为空`);
+            }
+          });
+        }
+
+        settings.forEach((i) => {
+          if (!i.value) {
+            res.push(`${i.label}不可为空`);
+          }
+        });
+      });
+
+      return res;
+    },
     saveAll() {
       let saveContent = [],
         data = toRaw(this.jobData);
+      const tips = this.checkPostData(data);
+      if (tips.length > 0) {
+        return notification["warning"]({
+          message: "任务信息未完整填写",
+          description: h(
+            "ul",
+            {},
+            tips.map((tip) => h("li", {}, tip))
+          ),
+          duration: null,
+        });
+      }
       if (!data.content || !data.content.subJobs) {
         return message.error("缺失保存对象");
       }
@@ -613,7 +684,6 @@ export default {
         });
     },
     onPageChange(page) {
-      debugger;
       const { current } = page;
       this.getTableFormCurrent(current, "onChange");
     },

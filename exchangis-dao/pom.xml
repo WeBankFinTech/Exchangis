@@ -27,6 +27,11 @@
             <artifactId>linkis-module</artifactId>
             <version>${linkis.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.linkis</groupId>
+            <artifactId>linkis-common</artifactId>
+            <version>${linkis.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
