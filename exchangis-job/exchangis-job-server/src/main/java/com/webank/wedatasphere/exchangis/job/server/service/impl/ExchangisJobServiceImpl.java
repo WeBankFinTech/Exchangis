@@ -124,6 +124,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     @Override
     public void deleteJob(Long id) {
         exchangisJobService.removeById(id);
+        this.exchangisJobDsBindService.updateJobDsBind(id, new ArrayList<>());
     }
 
     public ExchangisJob getJob(Long id) throws ExchangisJobErrorException {
