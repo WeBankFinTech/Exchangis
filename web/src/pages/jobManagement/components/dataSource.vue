@@ -108,11 +108,16 @@
 
 <script>
 import { RightCircleOutlined } from "@ant-design/icons-vue";
-import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
-import SelectDataSource from "./selectDataSource";
-import DyncRender from "./dyncRender.vue";
+import {
+  defineComponent,
+  ref,
+  reactive,
+  toRaw,
+  watch,
+  computed,
+  defineAsyncComponent,
+} from "vue";
 import { getSourceParams, getSettingsParams } from "@/common/service";
-import { connect } from "echarts";
 
 export default defineComponent({
   props: {
@@ -126,8 +131,10 @@ export default defineComponent({
     "updateSinkParams",
   ],
   components: {
-    SelectDataSource,
-    DyncRender,
+    SelectDataSource: defineAsyncComponent(() =>
+      import("./selectDataSource.vue")
+    ),
+    DyncRender: defineAsyncComponent(() => import("./dyncRender.vue")),
     RightCircleOutlined,
   },
   setup(props, context) {
