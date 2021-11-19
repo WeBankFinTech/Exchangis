@@ -2,6 +2,10 @@ package com.webank.wedatasphere.exchangis.project.server.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Strings;
+import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
+import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
+import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
 import com.webank.wedatasphere.exchangis.project.server.dao.ExchangisProjectMapper;
 import com.webank.wedatasphere.exchangis.project.server.dto.ExchangisProjectDTO;
 import com.webank.wedatasphere.exchangis.project.server.dto.ExchangisProjectGetDTO;
@@ -22,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExchangisProjectServiceImpl implements ExchangisProjectService {
@@ -30,6 +35,12 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
 
     @Autowired
     private ExchangisProjectMapper exchangisProjectMapper;
+
+    @Autowired
+    private ExchangisJobInfoMapper exchangisJobInfoMapper;
+
+    @Autowired
+    private ExchangisJobDsBindMapper exchangisJobDsBindMapper;
 
     @Transactional
     @Override
@@ -68,7 +79,7 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     @Override
     public ExchangisProject updateProject(String username, UpdateProjectRequest updateProjectRequest) throws ExchangisProjectErrorException {
         ExchangisProject exchangisProject = this.exchangisProjectMapper.selectById(updateProjectRequest.getId());
-        if(!Strings.isNullOrEmpty(updateProjectRequest.getDescription())) {
+        if (!Strings.isNullOrEmpty(updateProjectRequest.getDescription())) {
             exchangisProject.setDescription(updateProjectRequest.getDescription());
         }
         if (!Strings.isNullOrEmpty(updateProjectRequest.getProjectName())) {
@@ -112,7 +123,7 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
         ExchangisProjectDTO item;
         for (ExchangisProject exchangisProject : exchangisProjects) {
             item = new ExchangisProjectDTO();
-            item.setId(exchangisProject.getId()+"");
+            item.setId(exchangisProject.getId() + "");
             item.setName(exchangisProject.getName());
             item.setTags(exchangisProject.getTags());
             item.setDescription(exchangisProject.getDescription());
@@ -126,6 +137,22 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     @Override
     public void deleteProject(HttpServletRequest request, String id) {
         this.exchangisProjectMapper.deleteById(id);
+
+        QueryWrapper<ExchangisJobInfo> jobquery = new QueryWrapper<>();
+        jobquery.eq("projectId", id);
+
+        List<ExchangisJobInfo> jobs = this.exchangisJobInfoMapper.selectList(jobquery);
+        if (null == jobs || jobs.size() == 0) {
+            return;
+        }
+
+        QueryWrapper<ExchangisJobDsBind> dsBindQuery = new QueryWrapper<ExchangisJobDsBind>().in("jobId",
+                jobs.stream().map(ExchangisJobInfo::getId).toArray()
+        );
+
+        this.exchangisJobDsBindMapper.delete(dsBindQuery);
+
+        this.exchangisJobInfoMapper.delete(jobquery);
     }
 
     @Override
@@ -133,7 +160,7 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
         ExchangisProject project = this.exchangisProjectMapper.selectById(projectId);
 
         ExchangisProjectGetDTO dto = new ExchangisProjectGetDTO();
-        dto.setId(project.getId()+"");
+        dto.setId(project.getId() + "");
         dto.setEditUsers(project.getEditUsers());
         dto.setViewUsers(project.getViewUsers());
         dto.setExecUsers(project.getExecUsers());
