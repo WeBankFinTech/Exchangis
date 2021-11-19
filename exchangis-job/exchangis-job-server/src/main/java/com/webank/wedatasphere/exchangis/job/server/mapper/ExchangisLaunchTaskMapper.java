@@ -2,14 +2,13 @@ package com.webank.wedatasphere.exchangis.job.server.mapper;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskStatusMetricsDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask;
 
 /**
  * The interface Exchangis launch task mapper.

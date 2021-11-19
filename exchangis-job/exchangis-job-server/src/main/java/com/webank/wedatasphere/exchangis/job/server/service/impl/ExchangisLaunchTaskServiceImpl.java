@@ -6,13 +6,12 @@ import java.util.stream.Collectors;
 
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
-import com.webank.wedatasphere.linkis.common.exception.ErrorException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisLaunchTaskMapper;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisLaunchTaskService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskInfoVO;
