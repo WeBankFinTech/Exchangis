@@ -64,11 +64,13 @@
         </div>
 
         <!-- mid -->
+
         <div class="data-source-warp-mid">
           <RightCircleOutlined style="font-size: 50px; color: #66f" />
         </div>
 
         <!-- right -->
+
         <div class="data-source-warp-r">
           <div class="data-source-warp-r-content">
             <a-form ref="formRef" :label-col="labelCol">
@@ -345,7 +347,7 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .data-source-warp {
-  width: 1215px;
+  // width: 1215px;
   display: flex;
   margin-top: 15px;
 }

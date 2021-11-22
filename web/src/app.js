@@ -30,6 +30,7 @@ export function rootContainer(Container) {
   );
 }
 
+// 自定义 axios
 export const request = {
   baseURL: BASE_URL,
   responseDataAdaptor: (data) => {
@@ -43,6 +44,7 @@ export const request = {
   },
 };
 
+// 这里 自定义注册header
 export const layout = {
   customHeader: <UserCenter />,
 };
