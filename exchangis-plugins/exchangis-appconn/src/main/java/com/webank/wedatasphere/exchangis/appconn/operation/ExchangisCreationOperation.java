@@ -63,7 +63,7 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
             HttpResult httpResult = (HttpResult) this.ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, exchangisPostAction);
             responseRef = new ExchangisCommonResponseRef(httpResult.getResponseBody());
         } catch (Exception e){
-            throw new ExternalOperationFailedException(31020, "Create Dashboard Exception", e);
+            throw new ExternalOperationFailedException(31020, "Create sqoop job Exception", e);
         }
 
         return responseRef;
@@ -83,8 +83,20 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_TYPE,ExchangisConfig.JOB_TYPE_OFFLINE);
         exchangisPostAction.addRequestPayload(ExchangisConfig.ENGINE_TYPE,ExchangisConfig.ENGINE_TYPE_DATAX_NAME);
 
+        SSOUrlBuilderOperation ssoUrlBuilderOperation = requestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
+        ssoUrlBuilderOperation.setAppName(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        ssoUrlBuilderOperation.setReqUrl(url);
+        ssoUrlBuilderOperation.setWorkspace(requestRef.getWorkspace().getWorkspaceName());
+        ExchangisCommonResponseRef responseRef;
+        try{
+            exchangisPostAction.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
+            HttpResult httpResult = (HttpResult) this.ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, exchangisPostAction);
+            responseRef = new ExchangisCommonResponseRef(httpResult.getResponseBody());
+        } catch (Exception e){
+            throw new ExternalOperationFailedException(31020, "Create datax job Exception", e);
+        }
 
-        return null;
+        return responseRef;
     }
     private String getBaseUrl(){
         return developmentService.getAppInstance().getBaseUrl() + ExchangisConfig.BASEURL;
