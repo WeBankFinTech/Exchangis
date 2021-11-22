@@ -69,8 +69,8 @@ public class ExchangisJobController {
     }
 
     @POST
-    public Message createJob(@RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
-        ExchangisJobBasicInfoVO job = exchangisJobService.createJob(exchangisJobBasicInfoDTO);
+    public Message createJob(@Context HttpServletRequest request, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
+        ExchangisJobBasicInfoVO job = exchangisJobService.createJob(request, exchangisJobBasicInfoDTO);
         return Message.ok().data("result", job);
     }
 
@@ -170,20 +170,20 @@ public class ExchangisJobController {
         return Message.ok();
     }
 
-    @GET
-    @Path("{id}/speedlimit/{task_name}/params/ui")
-    public Response getSpeedLimitSettings(@PathParam("id") Long id, @PathParam("task_name") String taskName) {
-        List<ElementUI> speedLimitSettings = this.exchangisJobService.getSpeedLimitSettings(id, taskName);
-        Message message = Message.ok().data("ui", speedLimitSettings);
-        return Message.messageToResponse(message);
-    }
+//    @GET
+//    @Path("{id}/speedlimit/{task_name}/params/ui")
+//    public Response getSpeedLimitSettings(@PathParam("id") Long id, @PathParam("task_name") String taskName) {
+//        List<ElementUI> speedLimitSettings = this.exchangisJobService.getSpeedLimitSettings(id, taskName);
+//        Message message = Message.ok().data("ui", speedLimitSettings);
+//        return Message.messageToResponse(message);
+//    }
 
-    @PUT
-    @Path("{id}/speedlimit/{task_name}")
-    public Response setSpeedLimitSettings(@PathParam("id") Long id, @PathParam("task_name") String taskName, @RequestBody ExchangisTaskSpeedLimitVO settings) {
-        this.exchangisJobService.setSpeedLimitSettings(id, taskName, settings);
-        return Message.messageToResponse(Message.ok());
-    }
+//    @PUT
+//    @Path("{id}/speedlimit/{task_name}")
+//    public Response setSpeedLimitSettings(@PathParam("id") Long id, @PathParam("task_name") String taskName, @RequestBody ExchangisTaskSpeedLimitVO settings) {
+//        this.exchangisJobService.setSpeedLimitSettings(id, taskName, settings);
+//        return Message.messageToResponse(Message.ok());
+//    }
 
 
 
