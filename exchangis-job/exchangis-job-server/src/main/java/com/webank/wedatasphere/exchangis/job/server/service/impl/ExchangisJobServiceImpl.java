@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
+import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.InputElementUI;
@@ -52,6 +54,9 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Autowired
     private ExchangisJobService exchangisJobService;
+
+    @Autowired
+    private ExchangisJobDsBindServiceImpl exchangisJobDsBindService;
 
     @Autowired
     private ExchangisDataSourceService exchangisDataSourceService;
@@ -119,6 +124,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     @Override
     public void deleteJob(Long id) {
         exchangisJobService.removeById(id);
+        this.exchangisJobDsBindService.updateJobDsBind(id, new ArrayList<>());
     }
 
     public ExchangisJob getJob(Long id) throws ExchangisJobErrorException {
@@ -154,6 +160,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         exchangisJob.setSyncType(exchangisJobContentDTO.getSyncType());
         exchangisJob.setJobParams(exchangisJobContentDTO.getJobParams());
         exchangisJobService.updateById(exchangisJob);
+
         return this.getJob(id);
     }
 
@@ -163,31 +170,35 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         ExchangisJob exchangisJob = exchangisJobService.getById(id);
         final String engine = exchangisJob.getEngineType();
 
-        String content = exchangisJobContentDTO.getContent();
-        Set<String> taskNames = new HashSet<>();
-        JsonArray tasks = new JsonParser().parse(content).getAsJsonArray();
-        for (int i = 0; i < tasks.size(); i++) {
-            JsonObject task = tasks.get(i).getAsJsonObject();
-            String taskName = task.get("subJobName").getAsString().trim();
-            if (!taskNames.add(taskName)) {
-                throw new ExchangisJobErrorException(31101, "存在重复子任务名");
-            }
-            String sourceType = task.get("dataSources").getAsJsonObject().get("source_id").getAsString().split("\\.")[0];
-            String sinkType = task.get("dataSources").getAsJsonObject().get("sink_id").getAsString().split("\\.")[0];
-            this.exchangisDataSourceService.checkDSSupportDegree(engine, sourceType, sinkType);
+        // 校验是否有重复子任务名
+        List<ExchangisJobInfoContent> content = Jackson.fromJson(exchangisJobContentDTO.getContent(), List.class, ExchangisJobInfoContent.class);
+        long count = content.stream().map(ExchangisJobInfoContent::getSubJobName).distinct().count();
+        if (count < content.size()) {
+            throw new ExchangisJobErrorException(31101, "存在重复子任务名");
         }
+
+        List<ExchangisJobDsBind> dsBinds = new ArrayList<>(content.size());
+
+        // 校验引擎是否支持该数据通道
+
+        for (int i = 0; i < content.size(); i++) {
+            ExchangisJobInfoContent task = content.get(i);
+            String sourceType = task.getDataSources().getSourceId().split("\\.")[0];
+            String sinkType = task.getDataSources().getSinkId().split("\\.")[0];
+            this.exchangisDataSourceService.checkDSSupportDegree(engine, sourceType, sinkType);
+            ExchangisJobDsBind dsBind = new ExchangisJobDsBind();
+            dsBind.setJobId(id);
+            dsBind.setTaskIndex(i);
+            dsBind.setSourceDsId(Long.parseLong(task.getDataSources().getSourceId().split("\\.")[1]));
+            dsBind.setSinkDsId(Long.parseLong(task.getDataSources().getSinkId().split("\\.")[1]));
+            dsBinds.add(dsBind);
+        }
+
+        this.exchangisJobDsBindService.updateJobDsBind(id, dsBinds);
+
         exchangisJob.setContent(exchangisJobContentDTO.getContent());
         exchangisJobService.updateById(exchangisJob);
         return this.getJob(id);
-    }
-
-    public static void main(String[] args) {
-        String json = "[{\"subJobName\":\"job0001\",\"dataSources\":{\"source_id\":\"MYSQL.1.test_db.test_table\",\"sink_id\":\"MYSQL.1.mask_db.mask_table\"},\"params\":{\"sources\":[{\"config_key\":\"exchangis.job.ds.params.mysql.transform_type\",\"config_name\":\"传输方式\",\"config_value\":\"二进制\",\"sort\":1},{\"config_key\":\"exchangis.job.ds.params.mysql.partitioned_by\",\"config_name\":\"分区信息\",\"config_value\":\"2021-07-30\",\"sort\":2}],\"sinks\":[{\"config_key\":\"exchangis.job.ds.params.mysql.write_type\",\"config_name\":\"写入方式\",\"config_value\":\"insert\",\"sort\":1},{\"config_key\":\"exchangis.job.ds.params.mysql.batch_size\",\"config_name\":\"批量大小\",\"config_value\":1000,\"sort\":2}]},\"transforms\":{\"type\":\"MAPPING\",\"mapping\":[{\"source_field_name\":\"name\",\"source_field_type\":\"VARCHAR\",\"sink_field_name\":\"c_name\",\"sink_field_type\":\"VARCHAR\"},{\"source_field_name\":\"year\",\"source_field_type\":\"VARCHAR\",\"sink_field_name\":\"d_year\",\"sink_field_type\":\"VARCHAR\"}]},\"settings\":[{\"config_key\":\"exchangis.datax.setting.speed.byte\",\"config_name\":\"传输速率\",\"config_value\":102400,\"sort\":1},{\"config_key\":\"exchangis.datax.setting.errorlimit.record\",\"config_name\":\"脏数据最大记录数\",\"config_value\":10000,\"sort\":2},{\"config_key\":\"exchangis.datax.setting.errorlimit.percentage\",\"config_name\":\"脏数据占比阈值\",\"config_value\":100,\"sort\":3}]}]";
-        List<ExchangisJobInfoContent> o = Jackson.fromJson(json, List.class, ExchangisJobInfoContent.class);
-        o.forEach(c -> {
-            System.out.println(c.getSubJobName());
-        });
-
     }
 
 //    @Override

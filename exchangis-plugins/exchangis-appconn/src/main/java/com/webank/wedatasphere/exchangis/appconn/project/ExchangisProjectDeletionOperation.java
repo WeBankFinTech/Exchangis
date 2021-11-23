@@ -87,6 +87,7 @@ public class ExchangisProjectDeletionOperation implements ProjectDeletionOperati
     public void init() {
 
     }
+
     private String getBaseUrl(){
         return structureService.getAppInstance().getBaseUrl() + ExchangisConfig.BASEURL;
     }
