@@ -19,6 +19,7 @@ public class ExchangisProjectService extends ProjectService {
 
     @Override
     protected ProjectCreationOperation createProjectCreationOperation() {
+
         SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation = getSSORequestService().createSSORequestOperation(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
         ExchangisProjectCreationOperation exchangisProjectCreationOperation = new ExchangisProjectCreationOperation(ssoRequestOperation,this);
         exchangisProjectCreationOperation.setStructureService(this);
@@ -27,6 +28,7 @@ public class ExchangisProjectService extends ProjectService {
 
     @Override
     protected ProjectUpdateOperation createProjectUpdateOperation() {
+
         SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation = getSSORequestService().createSSORequestOperation(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
         ExchangisProjectUpdateOperation exchangisProjectUpdateOperation = new ExchangisProjectUpdateOperation(ssoRequestOperation,this);
         exchangisProjectUpdateOperation.setStructureService(this);
@@ -35,6 +37,7 @@ public class ExchangisProjectService extends ProjectService {
 
     @Override
     protected ProjectDeletionOperation createProjectDeletionOperation() {
+
         SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation = getSSORequestService().createSSORequestOperation(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
         ExchangisProjectDeletionOperation exchangisProjectDeletionOperation = new ExchangisProjectDeletionOperation(ssoRequestOperation,this);
         exchangisProjectDeletionOperation.setStructureService(this);
