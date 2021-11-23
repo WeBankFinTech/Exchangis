@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.appconn.project.ExchangisProjectService
 public class ExchangisStructureIntegrationStandard extends AbstractStructureIntegrationStandard {
     @Override
     protected ProjectService createProjectService() {
+
         return new ExchangisProjectService();
     }
 }

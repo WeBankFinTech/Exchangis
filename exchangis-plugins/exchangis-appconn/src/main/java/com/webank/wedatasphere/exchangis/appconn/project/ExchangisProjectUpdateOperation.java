@@ -94,6 +94,7 @@ public class ExchangisProjectUpdateOperation implements ProjectUpdateOperation {
     public void init() {
 
     }
+
     private String getBaseUrl(){
         return structureService.getAppInstance().getBaseUrl() + ExchangisConfig.BASEURL;
     }
