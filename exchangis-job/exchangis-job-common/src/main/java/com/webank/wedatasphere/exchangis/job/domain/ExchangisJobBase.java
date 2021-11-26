@@ -18,6 +18,8 @@ public class ExchangisJobBase {
      */
     protected String jobName;
 
+    protected String taskName;
+
     /**
      * Description
      */
@@ -32,6 +34,8 @@ public class ExchangisJobBase {
      * Modify time
      */
     protected Date modifyTime;
+
+    protected String createUser;
 
     public Long getId() {
         return id;
@@ -48,6 +52,10 @@ public class ExchangisJobBase {
     public void setJobName(String jobName) {
         this.jobName = jobName;
     }
+
+    public String getTaskName() { return taskName; }
+
+    public void setTaskName(String taskName) { this.taskName = taskName; }
 
     public String getJobDesc() {
         return jobDesc;
@@ -73,4 +81,7 @@ public class ExchangisJobBase {
         this.modifyTime = modifyTime;
     }
 
+    public String getCreateUser() { return createUser; }
+
+    public void setCreateUser(String createUser) { this.createUser = createUser; }
 }

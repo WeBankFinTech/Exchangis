@@ -51,7 +51,7 @@ public class ExchangisTransformJob extends ExchangisJobBase {
         public SubExchangisJobAdapter(ExchangisJobInfoContent jobInfoContent){
             if(Objects.nonNull(jobInfoContent)) {
                 this.engine = jobInfoContent.getEngine();
-                this.jobName = jobInfoContent.getSubJobName();
+                this.taskName = jobInfoContent.getSubJobName();
                 convertContentToParams(jobInfoContent);
             }
         }
@@ -125,6 +125,7 @@ public class ExchangisTransformJob extends ExchangisJobBase {
             String[] idSerial = result.get();
             if(idSerial.length > 0){
                 if(idSerial.length >= 4){
+                    paramSet.add(JobParams.newOne("datasource", idSerial[1], true));
                     paramSet.add(JobParams.newOne("database", idSerial[2], true));
                     paramSet.add(JobParams.newOne("table", idSerial[3], true));
                 }
