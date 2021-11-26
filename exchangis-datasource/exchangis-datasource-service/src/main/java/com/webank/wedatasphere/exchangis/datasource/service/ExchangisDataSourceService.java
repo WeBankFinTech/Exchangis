@@ -359,6 +359,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         LinkisDataSourceRemoteClient dataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         //        DeleteDataSourceResult result;
+
         String responseBody;
         try {
             String user = SecurityFilter.getLoginUsername(request);
