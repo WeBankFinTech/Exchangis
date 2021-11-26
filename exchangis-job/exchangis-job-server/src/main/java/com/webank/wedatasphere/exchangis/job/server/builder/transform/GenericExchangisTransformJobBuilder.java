@@ -70,6 +70,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                 "engine: [" + inputJob.getEngineType() + "], content: [" + inputJob.getContent() + "]");
         //First to convert content to "ExchangisJobInfoContent"
         ExchangisTransformJob outputJob = new ExchangisTransformJob();
+        outputJob.setCreateUser(Optional.ofNullable(ctx.getEnv("USER_NAME")).orElse("").toString());
         try {
             if (StringUtils.isNotBlank(inputJob.getContent())) {
                 //First to convert content to "ExchangisJobInfoContent"
@@ -78,9 +79,19 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                     LOG.info("To parse content ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() +
                             "], expect subJobs: [" + contents.size() + "]");
                     //Second to new SubExchangisJob instances
-                    List<SubExchangisJob> subExchangisJobs = contents.stream().map(ExchangisTransformJob.SubExchangisJobAdapter::new)
+                    List<SubExchangisJob> subExchangisJobs = contents.stream().map(job -> {
+                                ExchangisTransformJob.SubExchangisJobAdapter jobAdapter = new ExchangisTransformJob.SubExchangisJobAdapter(job);
+                                jobAdapter.setId(inputJob.getId());
+                                jobAdapter.setJobName(inputJob.getJobName());
+                                jobAdapter.setJobDesc(inputJob.getJobDesc());
+                                jobAdapter.setCreateUser(outputJob.getCreateUser());
+                                return jobAdapter;
+                            })
                             .collect(Collectors.toList());
                     outputJob.setSubJobSet(subExchangisJobs);
+                    outputJob.setId(inputJob.getId());
+                    outputJob.setJobName(inputJob.getJobName());
+                    outputJob.setJobDesc(inputJob.getJobDesc());
                     LOG.info("Invoke job handlers to handle the subJobs, ExchangisJob: id: [" + inputJob.getId() + "], name: [" + inputJob.getJobName() + "]");
                     //Do handle of the sub jobs
                     for (SubExchangisJob subExchangisJob : subExchangisJobs){
