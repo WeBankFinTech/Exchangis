@@ -8,6 +8,11 @@ import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExcept
  * Exchangis Job Exception
  */
 public class ExchangisJobException extends ErrorException {
+
+    public ExchangisJobException(int errCode, String desc) {
+        super(errCode, desc);
+    }
+
     public ExchangisJobException(String desc, Throwable t){
         this(JOB_EXCEPTION_CODE.getCode(), desc, t);
     }
