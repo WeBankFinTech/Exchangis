@@ -40,6 +40,8 @@ public class ExchangisLaunchTask {
 
     private String paramsJson;
 
+    private String launchId;
+
     private String status;
 
     private Date completeTime;
@@ -133,6 +135,10 @@ public class ExchangisLaunchTask {
     public void setParamsJson(String paramsJson) {
         this.paramsJson = paramsJson;
     }
+
+    public String getLaunchId() { return launchId; }
+
+    public void setLaunchId(String launchId) { this.launchId = launchId; }
 
     public String getStatus() {
         return status;

@@ -26,7 +26,7 @@ public class HiveSqoopParamsMapping extends AbstractExchangisJobParamsMapping {
         return new JobParamDefine[]{
                 //Unit test
                 JobParams.define("version", "source.version"),
-                JobParams.define("version", () -> "1.4.6"),
+                JobParams.define("version", () -> "1.4.7"),
                 JobParams.define("tab", (BiFunction<String, JobParamSet, String>)(key, paramSet)->{
                     JobParams.define("version").newParam(paramSet).getValue();
                     return null;
