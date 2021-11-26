@@ -17,7 +17,9 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
     public ExchangisLauncherJob buildJob(ExchangisEngineJob inputJob, ExchangisLauncherJob expectJob, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         ExchangisLauncherJob launcherJob = new ExchangisLauncherJob();
         ExchangisJob exchangisJob = ctx.getOriginalJob();
-        launcherJob.setCreateUser(exchangisJob.getCreateUser());
+        launcherJob.setId(inputJob.getId());
+        launcherJob.setTaskName(inputJob.getTaskName());
+        launcherJob.setCreateUser(inputJob.getCreateUser());
         launcherJob.setExecuteNode(exchangisJob.getExecuteNode());
         launcherJob.setProxyUser(exchangisJob.getProxyUser());
         launcherJob.setJobContent(inputJob.getJobContent());
