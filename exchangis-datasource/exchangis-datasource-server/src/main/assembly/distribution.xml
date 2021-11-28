@@ -19,37 +19,47 @@
         xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/2.3"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/2.3 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-    <id>exchangis-server</id>
+    <id>exchangis-datasource-server</id>
     <formats>
-        <format>tar.gz</format>
-<!--        <format>dir</format>-->
+        <format>dir</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
-    <dependencySets>
-        <dependencySet>
-            <!-- Enable access to all projects in the current multimodule build! <useAllReactorProjects>true</useAllReactorProjects> -->
-            <!-- Now, select which projects to include in this module-set. -->
-            <outputDirectory>lib/${project.artifactId}</outputDirectory>
-            <useProjectArtifact>true</useProjectArtifact>
-            <useTransitiveDependencies>true</useTransitiveDependencies>
-            <unpack>false</unpack>
-            <useStrictFiltering>false</useStrictFiltering>
-            <useTransitiveFiltering>true</useTransitiveFiltering>
-        </dependencySet>
-    </dependencySets>
-
     <fileSets>
         <fileSet>
             <directory>${basedir}/src/main/bin</directory>
+            <includes>
+                <include>*</include>
+            </includes>
             <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
             <outputDirectory>bin</outputDirectory>
             <lineEnding>unix</lineEnding>
         </fileSet>
         <fileSet>
-            <directory>${basedir}/../exchangis-datasource/exchangis-datasource-server/target/exchangis-datasource-server</directory>
+            <directory>${basedir}/../extension-datasources/exchangis-datasource-ext-hive/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>*-javadoc.jar</exclude>
+            </excludes>
             <fileMode>0755</fileMode>
-            <outputDirectory></outputDirectory>
             <lineEnding>unix</lineEnding>
+            <outputDirectory>exchangis-extds</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../extension-datasources/exchangis-datasource-ext-mysql/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>*-javadoc.jar</exclude>
+            </excludes>
+            <fileMode>0755</fileMode>
+            <lineEnding>unix</lineEnding>
+            <directoryMode>0755</directoryMode>
+            <outputDirectory>exchangis-extds</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>
+

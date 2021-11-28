@@ -66,7 +66,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.1.0</version>
                 <inherited>false</inherited>
                 <executions>
                     <execution>
@@ -90,6 +90,8 @@
                     <descriptors>
                         <descriptor>src/main/assembly/distribution.xml</descriptor>
                     </descriptors>
+                    <finalName>${project.artifactId}_${project.version}</finalName>
+                    <outputDirectory>${basedir}/target/packages</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
@@ -106,14 +108,6 @@
                 <directory>src/main/java</directory>
                 <includes>
                     <include>**/*.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                    <include>**/*.properties</include>
-                    <include>**/*.yml</include>
                 </includes>
             </resource>
         </resources>
