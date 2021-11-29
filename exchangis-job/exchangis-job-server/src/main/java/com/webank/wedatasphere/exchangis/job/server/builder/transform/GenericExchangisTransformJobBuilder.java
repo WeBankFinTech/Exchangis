@@ -39,7 +39,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
         Set<Class<? extends SubExchangisJobHandler>> jobHandlerSet = ClassUtils.reflections().getSubTypesOf(SubExchangisJobHandler.class);
         List<SubExchangisJobHandler> reflectedHandlers = jobHandlerSet.stream().map(handlerClass -> {
             if (!Modifier.isAbstract(handlerClass.getModifiers()) &&
-                    !Modifier.isInterface(handlerClass.getModifiers())) {
+                    !Modifier.isInterface(handlerClass.getModifiers()) && !handlerClass.equals(SubExchangisJobHandler.class)) {
                 try {
                     return handlerClass.newInstance();
                 } catch (InstantiationException | IllegalAccessException e) {
@@ -146,6 +146,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
 
         private LinkedList<SubExchangisJobHandler> handlers = new LinkedList<>();
 
+        public SubExchangisJobHandlerChain(){}
         public SubExchangisJobHandlerChain(String dataSourceType){
             this.dataSourceType = dataSourceType;
         }
