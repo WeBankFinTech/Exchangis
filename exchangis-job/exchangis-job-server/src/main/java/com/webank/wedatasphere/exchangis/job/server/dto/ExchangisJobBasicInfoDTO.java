@@ -9,6 +9,12 @@ public class ExchangisJobBasicInfoDTO {
 
     private Long projectId;
 
+    private Long dssProjectId;
+
+    private Long nodeId;
+
+    private String nodeName;
+
     private String jobName;
 
     private JobTypeEnum jobType;
