@@ -4,6 +4,8 @@ public class UpdateProjectRequest {
 
     private Long id;
 
+    private Long dssProjectId;
+
     private String projectName;
 
     private String description;
@@ -23,6 +25,10 @@ public class UpdateProjectRequest {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public Long getDssProjectId() { return dssProjectId; }
+
+    public void setDssProjectId(Long dssProjectId) { this.dssProjectId = dssProjectId; }
 
     public String getProjectName() {
         return projectName;

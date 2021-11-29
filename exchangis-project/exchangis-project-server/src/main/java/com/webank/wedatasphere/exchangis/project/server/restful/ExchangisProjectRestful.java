@@ -69,6 +69,14 @@ public class ExchangisProjectRestful {
         }
     }
 
+    @GET
+    @Path("projects/dss/{dssProjectId}")
+    public Response queryProjectsByDss(@Context HttpServletRequest request, @PathParam("dssProjectId") String dssProjectId) {
+        String username = SecurityFilter.getLoginUsername(request);
+        // TODO
+        return null;
+    }
+
     @POST
     @Path("createProject")
     public Response createProject(@Context HttpServletRequest request, @Valid CreateProjectRequest createProjectRequest){
@@ -100,6 +108,19 @@ public class ExchangisProjectRestful {
     @DELETE
     @Path("/projects/{id}")
     public Response deleteProject(@Context HttpServletRequest request, @PathParam("id") String id){
+        String username = SecurityFilter.getLoginUsername(request);
+        try {
+            projectService.deleteProject(request, id);
+            return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
+        } catch(final Throwable t){
+            LOGGER.error("failed to update project for user {}", username, t);
+            return ExchangisProjectRestfulUtils.dealError("删除工程失败,原因是:" + t.getMessage());
+        }
+    }
+
+    @DELETE
+    @Path("/projects/dss/{dssProjectId}")
+    public Response deleteProjectByDss(@Context HttpServletRequest request, @PathParam("dssProjectId") String id){
         String username = SecurityFilter.getLoginUsername(request);
         try {
             projectService.deleteProject(request, id);
