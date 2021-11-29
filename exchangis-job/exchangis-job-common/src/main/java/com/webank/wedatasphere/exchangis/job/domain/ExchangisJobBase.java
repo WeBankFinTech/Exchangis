@@ -18,7 +18,7 @@ public class ExchangisJobBase {
      */
     protected String jobName;
 
-//    protected String taskName;
+    protected String taskName;
 
     /**
      * Description
@@ -53,9 +53,9 @@ public class ExchangisJobBase {
         this.jobName = jobName;
     }
 
-//    public String getTaskName() { return taskName; }
+    public String getTaskName() { return taskName; }
 
-//    public void setTaskName(String taskName) { this.taskName = taskName; }
+    public void setTaskName(String taskName) { this.taskName = taskName; }
 
     public String getJobDesc() {
         return jobDesc;
