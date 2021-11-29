@@ -44,7 +44,7 @@
                 <exclude>*-javadoc.jar</exclude>
             </excludes>
             <fileMode>0755</fileMode>
-            <lineEnding>unix</lineEnding>
+            <directoryMode>0755</directoryMode>
             <outputDirectory>exchangis-extds</outputDirectory>
         </fileSet>
         <fileSet>
@@ -56,7 +56,6 @@
                 <exclude>*-javadoc.jar</exclude>
             </excludes>
             <fileMode>0755</fileMode>
-            <lineEnding>unix</lineEnding>
             <directoryMode>0755</directoryMode>
             <outputDirectory>exchangis-extds</outputDirectory>
         </fileSet>
