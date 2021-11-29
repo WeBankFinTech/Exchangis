@@ -16,12 +16,12 @@
     <modules>
         <module>exchangis-datasource-core</module>
         <module>exchangis-datasource-loader</module>
-        <module>exchangis-datasource-server</module>
         <module>exchangis-datasource-streamis</module>
+        <module>exchangis-datasource-linkis</module>
+        <module>exchangis-datasource-service</module>
+        <module>exchangis-datasource-server</module>
         <module>extension-datasources/exchangis-datasource-ext-mysql</module>
         <module>extension-datasources/exchangis-datasource-ext-hive</module>
-        <module>exchangis-datasource-service</module>
-        <module>exchangis-datasource-linkis</module>
     </modules>
 
     <properties>
