@@ -85,3 +85,14 @@ CREATE TABLE `exchangis_launch_task`  (
     primary key (id)
 ) ENGINE = InnoDB CHARACTER SET = utf8;
 
+DROP TABLE IF EXISTS `exchangis_metric`;
+CREATE TABLE `exchangis_metric`  (
+    id bigint auto_increment,
+    title varchar(128) comment '指标名称',
+    norm varchar(128) unique comment '指标key',
+    value text comment '指标值',
+    ts datetime comment '采集时间',
+    version bigint(20) not null default 1,
+    primary key (id)
+) ENGINE = InnoDB CHARACTER SET = utf8;
+

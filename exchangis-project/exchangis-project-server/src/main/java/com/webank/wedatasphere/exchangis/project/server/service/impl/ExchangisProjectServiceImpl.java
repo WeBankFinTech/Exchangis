@@ -15,7 +15,7 @@ import com.webank.wedatasphere.exchangis.project.server.request.CreateProjectReq
 import com.webank.wedatasphere.exchangis.project.server.request.ProjectQueryRequest;
 import com.webank.wedatasphere.exchangis.project.server.request.UpdateProjectRequest;
 import com.webank.wedatasphere.exchangis.project.server.service.ExchangisProjectService;
-import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,7 +60,11 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
         ExchangisProject entity = new ExchangisProject();
         entity.setCreateBy(username);
         entity.setCreateTime(now);
-        entity.setDssProjectId(1L);
+        Optional.ofNullable(createProjectRequest.getDssProjectId()).ifPresent(dssProjectId -> {
+            if (StringUtils.isNotBlank(dssProjectId)) {
+                entity.setDssProjectId(Long.parseLong(dssProjectId));
+            }
+        });
         entity.setName(projectName);
         entity.setTags(tags);
         entity.setEditUsers(editUsers);
@@ -78,7 +83,19 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     @Transactional
     @Override
     public ExchangisProject updateProject(String username, UpdateProjectRequest updateProjectRequest) throws ExchangisProjectErrorException {
-        ExchangisProject exchangisProject = this.exchangisProjectMapper.selectById(updateProjectRequest.getId());
+        ExchangisProject exchangisProject = null;
+        if (null != updateProjectRequest.getId()) {
+            exchangisProject = this.exchangisProjectMapper.selectById(updateProjectRequest.getId());
+        } else if (null != updateProjectRequest.getDssProjectId()) {
+            QueryWrapper<ExchangisProject> wrapper = new QueryWrapper<>();
+            wrapper.eq("dssProjectId", updateProjectRequest.getDssProjectId());
+            exchangisProject = this.exchangisProjectMapper.selectOne(wrapper);
+        }
+
+        if (null == exchangisProject) {
+            throw new ExchangisProjectErrorException(30041, "exchangis.project.update.error");
+        }
+
         if (!Strings.isNullOrEmpty(updateProjectRequest.getDescription())) {
             exchangisProject.setDescription(updateProjectRequest.getDescription());
         }
@@ -119,55 +136,52 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
         }
 
         List<ExchangisProject> exchangisProjects = this.exchangisProjectMapper.selectList(queryWrapper);
-        List<ExchangisProjectDTO> result = new ArrayList<>();
-        ExchangisProjectDTO item;
-        for (ExchangisProject exchangisProject : exchangisProjects) {
-            item = new ExchangisProjectDTO();
-            item.setId(exchangisProject.getId() + "");
-            item.setName(exchangisProject.getName());
-            item.setTags(exchangisProject.getTags());
-            item.setDescription(exchangisProject.getDescription());
-            result.add(item);
-        }
 
-        return result;
+        return exchangisProjects.stream().map(ExchangisProjectDTO::new).collect(Collectors.toList());
+
     }
 
     @Transactional
     @Override
     public void deleteProject(HttpServletRequest request, String id) {
-        this.exchangisProjectMapper.deleteById(id);
 
         QueryWrapper<ExchangisJobInfo> jobquery = new QueryWrapper<>();
-        jobquery.eq("projectId", id);
+        jobquery.eq("project_id", id);
 
         List<ExchangisJobInfo> jobs = this.exchangisJobInfoMapper.selectList(jobquery);
-        if (null == jobs || jobs.size() == 0) {
-            return;
+
+        if (null != jobs && jobs.size() > 0) {
+            this.exchangisJobInfoMapper.delete(jobquery);
+
+            QueryWrapper<ExchangisJobDsBind> dsBindQuery = new QueryWrapper<ExchangisJobDsBind>().in("job_id",
+                    jobs.stream().map(ExchangisJobInfo::getId).toArray()
+            );
+            this.exchangisJobDsBindMapper.delete(dsBindQuery);
         }
 
-        QueryWrapper<ExchangisJobDsBind> dsBindQuery = new QueryWrapper<ExchangisJobDsBind>().in("jobId",
-                jobs.stream().map(ExchangisJobInfo::getId).toArray()
-        );
+        this.exchangisProjectMapper.deleteById(Long.parseLong(id));
+    }
 
-        this.exchangisJobDsBindMapper.delete(dsBindQuery);
-
-        this.exchangisJobInfoMapper.delete(jobquery);
+    @Transactional
+    @Override
+    public void deleteProjectByDss(HttpServletRequest request, String dssProjectId) {
+        ExchangisProjectGetDTO dto = this.getProjectByDssId(dssProjectId);
+        if (null != dto && null != dto.getId() && StringUtils.isNotBlank(dto.getId())) {
+            this.deleteProject(request, dto.getId());
+        }
     }
 
     @Override
     public ExchangisProjectGetDTO getProjectById(String projectId) {
         ExchangisProject project = this.exchangisProjectMapper.selectById(projectId);
+        return new ExchangisProjectGetDTO(project);
+    }
 
-        ExchangisProjectGetDTO dto = new ExchangisProjectGetDTO();
-        dto.setId(project.getId() + "");
-        dto.setEditUsers(project.getEditUsers());
-        dto.setViewUsers(project.getViewUsers());
-        dto.setExecUsers(project.getExecUsers());
-        dto.setName(project.getName());
-        dto.setDescription(project.getDescription());
-        dto.setTags(project.getTags());
-        return dto;
+    @Override
+    public ExchangisProjectGetDTO getProjectByDssId(String dssProjectId) {
+        QueryWrapper<ExchangisProject> wrapper = new QueryWrapper<>();
+        wrapper.eq("dssProjectId", Long.parseLong(dssProjectId));
+        return new ExchangisProjectGetDTO(this.exchangisProjectMapper.selectOne(wrapper));
     }
 
 //    @Override

@@ -18,6 +18,7 @@
         <module>exchangis-job-server</module>
         <module>exchangis-job-builder</module>
         <module>exchangis-job-launcher</module>
+        <module>exchangis-job-metrics</module>
     </modules>
 
     <properties>
