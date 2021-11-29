@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class ExchangisProject {
     private Long id;
+    private Long dssProjectId;
     private String name;
     private String description;
     private String createBy;
@@ -15,7 +16,6 @@ public class ExchangisProject {
     private String viewUsers;
     private String execUsers;
     private String workspaceName;
-    private Long dssProjectId;
 
 //    public ExchangisProject(String name, String description, String workspaceName){
 //        this.name = name;
