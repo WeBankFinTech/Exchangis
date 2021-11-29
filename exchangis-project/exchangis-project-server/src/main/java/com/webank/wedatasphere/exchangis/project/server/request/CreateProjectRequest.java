@@ -2,6 +2,8 @@ package com.webank.wedatasphere.exchangis.project.server.request;
 
 public class CreateProjectRequest {
 
+    private String dssProjectId;
+
     private String workspaceName;
 
     private String projectName;
@@ -15,6 +17,14 @@ public class CreateProjectRequest {
     private String viewUsers;
 
     private String execUsers;
+
+    public String getDssProjectId() {
+        return dssProjectId;
+    }
+
+    public void setDssProjectId(String dssProjectId) {
+        this.dssProjectId = dssProjectId;
+    }
 
     public String getProjectName() {
         return projectName;
