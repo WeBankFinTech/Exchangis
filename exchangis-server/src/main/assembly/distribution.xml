@@ -49,7 +49,6 @@
             <directory>${basedir}/../exchangis-datasource/exchangis-datasource-server/target/exchangis-datasource-server</directory>
             <fileMode>0755</fileMode>
             <outputDirectory></outputDirectory>
-            <lineEnding>unix</lineEnding>
         </fileSet>
     </fileSets>
 </assembly>
