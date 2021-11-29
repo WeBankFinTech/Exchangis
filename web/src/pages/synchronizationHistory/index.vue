@@ -109,8 +109,14 @@
 </template>
 
 <script>
-import { defineComponent, reactive, toRaw, ref, onMounted } from "vue";
-import dyncRender from "../jobManagement/components/dyncRender.vue";
+import {
+  defineComponent,
+  reactive,
+  toRaw,
+  ref,
+  onMounted,
+  defineAsyncComponent,
+} from "vue";
 import { SearchOutlined } from "@ant-design/icons-vue";
 import { cloneDeep } from "lodash-es";
 import {
@@ -174,7 +180,9 @@ const columns = [
 export default {
   components: {
     SearchOutlined,
-    dyncRender,
+    dyncRender: defineAsyncComponent(() =>
+      import("../jobManagement/components/dyncRender.vue")
+    ),
   },
   setup() {
     const state = reactive({
