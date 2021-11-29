@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.dao.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -10,6 +11,7 @@ public class ExchangisJobDsBind {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    @TableField("job_id")
     private Long jobId;
 
     private Integer taskIndex;

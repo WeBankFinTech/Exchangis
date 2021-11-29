@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.job.builder.api.GenericExchangisJobBuil
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobBase;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +35,7 @@ public class DefaultExchangisJobBuilderManager implements ExchangisJobBuilderMan
     public <T extends ExchangisJobBase, E extends ExchangisJobBase> E doBuild(T originJob, Class<T> inputJobClass, Class<E> expectJobClass, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         BuilderDirection direction = new BuilderDirection(inputJobClass, expectJobClass);
         ExchangisJobBuilderChain<T, E> chain = (ExchangisJobBuilderChain<T, E>) jobBuilderChains.get(direction);
-        if(Objects.nonNull(chain)){
+        if(Objects.nonNull(chain)) {
             return chain.build(originJob, ctx);
         }
         return null;
@@ -44,6 +45,7 @@ public class DefaultExchangisJobBuilderManager implements ExchangisJobBuilderMan
     @SuppressWarnings("unchecked")
     public <T extends ExchangisJobBase, E extends ExchangisJobBase> void addJobBuilder(ExchangisJobBuilder<T, E> jobBuilder) {
         BuilderDirection direction = new BuilderDirection(jobBuilder.inputJob(), jobBuilder.outputJob());
+
         jobBuilderChains.compute(direction, (key, value) -> {
             if(Objects.isNull(value)){
                 value = new GenericExchangisJobBuilderChain<>();

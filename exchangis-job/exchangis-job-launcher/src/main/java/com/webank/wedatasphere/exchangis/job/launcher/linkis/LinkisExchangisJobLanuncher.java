@@ -1,12 +1,50 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobConfiguration;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLauncher;
+import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
+import com.webank.wedatasphere.linkis.common.conf.Configuration;
+import com.webank.wedatasphere.linkis.computation.client.LinkisJobBuilder;
+import com.webank.wedatasphere.linkis.computation.client.LinkisJobClient;
+import com.webank.wedatasphere.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
+import com.webank.wedatasphere.linkis.computation.client.utils.LabelKeyUtils;
 
-public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<ExchangisLaunchTask> {
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
+
+public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<ExchangisLauncherJob> {
 
     @Override
-    public void launch(ExchangisLaunchTask launchTask) {
+    public String name() {
+        return "Linkis";
+    }
+
+    @Override
+    public void init(ExchangisJobLaunchManager<? extends ExchangisLauncherJob> jobLaunchManager) {
+        LinkisJobClient.config().setDefaultServerUrl(ExchangisJobConfiguration.LINKIS_SERVER_URL.getValue());
+    }
+
+    @Override
+    public SubmittableSimpleOnceJob launch(ExchangisLauncherJob launcherJob) throws ExchangisJobException {
+
+        Date createTime = Calendar.getInstance().getTime();
+
+        SubmittableSimpleOnceJob onceJob = null;
+
+        if (launcherJob.getEngine().equalsIgnoreCase("SQOOP")) {
+            onceJob = this.submitSqoopJob(launcherJob);
+        } else if (launcherJob.getEngine().equalsIgnoreCase("DATAX")) {
+            onceJob = this.submitDataxJob(launcherJob);
+        } else {
+            throw new ExchangisJobException(ExchangisJobExceptionCode.UNSUPPORTED_JOB_EXECUTION_ENGINE.getCode(), "Unsupported job execution engine: '" + launcherJob.getEngine() + "'.");
+        }
+
+        return onceJob;
+
 //        LinkisJobClient.config().setDefaultServerUrl(ExchangisJobConfiguration.LINKIS_SERVER_URL.getValue());
 //        SubmittableInteractiveJob job =
 //            LinkisJobClient.interactive().builder().setEngineType(launchTask.getEngineType())
@@ -22,5 +60,32 @@ public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<Exchang
 //        while (iterator.hasNext()) {
 //            System.out.println(iterator.next());
 //        }
+    }
+
+    private SubmittableSimpleOnceJob submitSqoopJob(ExchangisLauncherJob launcherJob) {
+
+        LinkisJobBuilder<SubmittableSimpleOnceJob> jobBuilder = LinkisJobClient.once().simple().builder()
+                .setCreateService("Sqoop")
+                .setMaxSubmitTime(300000)
+                .addLabel(LabelKeyUtils.ENGINE_TYPE_LABEL_KEY(), "sqoop-1.4.7")
+                .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), launcherJob.getProxyUser() + "-sqoop")
+                .addLabel(LabelKeyUtils.ENGINE_CONN_MODE_LABEL_KEY(), "once")
+                .addStartupParam(Configuration.IS_TEST_MODE().key(), false)
+                .addExecuteUser(launcherJob.getProxyUser())
+                .addJobContent("runType", "sqoop")
+                .addJobContent("sqoop-params", launcherJob.getJobContent().get("sqoop-params"))
+                .addSource("jobName", launcherJob.getJobName() + "." + launcherJob.getTaskName());
+
+        Optional.ofNullable(launcherJob.getRuntimeMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
+
+        SubmittableSimpleOnceJob onceJob = jobBuilder.build();
+
+        onceJob.submit();
+
+        return onceJob;
+    }
+
+    private SubmittableSimpleOnceJob submitDataxJob(ExchangisLauncherJob launcherJob) {
+        return null;
     }
 }
