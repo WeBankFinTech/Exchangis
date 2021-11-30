@@ -195,11 +195,11 @@ import {
   getSyncHistory,
 } from "@/common/service";
 import { message, notification } from "ant-design-vue";
+import { randomString } from "../../../common/utils";
 
 /**
  * 用于判断一个对象是否有空 value,如果有返回 true
  */
-
 const objectValueEmpty = (obj) => {
   let isEmpty = false;
   Object.keys(obj).forEach((o) => {
@@ -420,8 +420,9 @@ export default {
       console.log("this.curTask", this.curTask);
     },
     addNewTask() {
+      let subJobName = randomString(12);
       let task = {
-        subJobName: "new",
+        subJobName,
         engineType: this.jobData.engineType,
         dataSourceIds: {
           source: {
@@ -559,7 +560,7 @@ export default {
             {},
             tips.map((tip) => h("li", {}, tip))
           ),
-          duration: null,
+          duration: 5,
         });
       }
       if (!data.content || !data.content.subJobs) {
@@ -724,7 +725,7 @@ export default {
     overflow-x: auto;
     width: 100%;
     .jd_left {
-      // flex: 2;
+      flex: 1;
       padding: 0 25px;
       .sub-title {
         font-size: 16px;
@@ -801,6 +802,11 @@ export default {
           left: 0;
         }
       }
+    }
+    .jd_right {
+      flex: 5;
+      padding-right: 25px;
+      padding-bottom: 25px;
     }
   }
 

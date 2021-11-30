@@ -534,7 +534,6 @@ export default {
   .hp-content {
     &-card {
       margin-top: 30px;
-      max-width: 1160px;
       min-height: 160px;
       background: inherit;
       background-color: rgba(255, 255, 255, 1);
@@ -543,7 +542,7 @@ export default {
       border-style: solid;
       border-color: rgba(228, 228, 228, 1);
       border-radius: 5px;
-      box-shadow: 5px 5px 5px rgb(0 0 0 / 35%);
+      box-shadow: 5px 5px 6px rgb(0 0 0 / 20%);
       padding-left: 18px;
       padding-right: 18px;
       &-title {
