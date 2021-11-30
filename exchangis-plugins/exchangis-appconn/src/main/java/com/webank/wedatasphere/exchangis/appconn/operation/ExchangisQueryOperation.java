@@ -9,10 +9,14 @@ import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalO
 import com.webank.wedatasphere.exchangis.appconn.config.ExchangisConfig;
 import com.webank.wedatasphere.exchangis.appconn.ref.ExchangisOpenRequestRef;
 import com.webank.wedatasphere.linkis.server.BDPJettyServerHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ExchangisQueryOperation implements RefQueryOperation<OpenRequestRef> {
+    private final static Logger logger = LoggerFactory.getLogger(ExchangisQueryOperation.class);
 
     DevelopmentService developmentService;
 
@@ -24,36 +28,26 @@ public class ExchangisQueryOperation implements RefQueryOperation<OpenRequestRef
             Long projectId = (Long) exchangisOpenRequestRef.getParameter("projectId");
             String baseUrl = exchangisOpenRequestRef.getParameter("redirectUrl").toString();
             String jumpUrl = baseUrl;
+
             if(ExchangisConfig.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisOpenRequestRef.getType())){
-
+                jumpUrl="";
             }else if(ExchangisConfig.NODE_TYPE_DATAX.equalsIgnoreCase(exchangisOpenRequestRef.getType())){
-
+                jumpUrl="";
             }
-//            if("linkis.appconn.visualis.widget".equalsIgnoreCase(exchangisOpenRequestRef.getType())){
-//                VisualisCommonResponseRef widgetCreateResponseRef = new VisualisCommonResponseRef(externalContent);
-//
-//            } else if("linkis.appconn.visualis.display".equalsIgnoreCase(visualisOpenRequestRef.getType())){
-//                VisualisCommonResponseRef displayCreateResponseRef = new VisualisCommonResponseRef(externalContent);
-//                jumpUrl = URLUtils.getUrl(baseUrl, URLUtils.DISPLAY_JUMP_URL_FORMAT, projectId.toString(), displayCreateResponseRef.getDisplayId());
-//            }else if("linkis.appconn.visualis.dashboard".equalsIgnoreCase(visualisOpenRequestRef.getType())){
-//                VisualisCommonResponseRef dashboardCreateResponseRef = new VisualisCommonResponseRef(externalContent);
-//                jumpUrl = URLUtils.getUrl(baseUrl, URLUtils.DASHBOARD_JUMP_URL_FORMAT, projectId.toString(), dashboardCreateResponseRef.getDashboardId(), visualisOpenRequestRef.getName());
-//            } else {
-//                throw new ExternalOperationFailedException(90177, "Unknown task type " + visualisOpenRequestRef.getType(), null);
-//            }
-//            String retJumpUrl = getEnvUrl(jumpUrl, visualisOpenRequestRef);
-//            Map<String,String> retMap = new HashMap<>();
-//            retMap.put("jumpUrl",retJumpUrl);
+
+            String retJumpUrl = getEnvUrl(jumpUrl, exchangisOpenRequestRef);
+            Map<String,String> retMap = new HashMap<>();
+            retMap.put("jumpUrl",retJumpUrl);
             return null;
         } catch (Exception e) {
-            throw new ExternalOperationFailedException(90177, "Failed to parse jobContent ", e);
+            throw new ExternalOperationFailedException(31022, "Failed to parse jobContent ", e);
         }
     }
-//
-//    public String getEnvUrl(String url, VisualisOpenRequestRef visualisOpenRequestRef ){
-//        String env = ((Map<String, Object>) visualisOpenRequestRef.getParameter("params")).get(DSSCommonUtils.DSS_LABELS_KEY).toString();
-//        return url + "?env=" + env.toLowerCase();
-//    }
+
+    public String getEnvUrl(String url, ExchangisOpenRequestRef exchangisOpenRequestRef ){
+        String env = ((Map<String, Object>) exchangisOpenRequestRef.getParameter("params")).get(DSSCommonUtils.DSS_LABELS_KEY).toString();
+        return url + "?env=" + env.toLowerCase();
+    }
 
     @Override
     public void setDevelopmentService(DevelopmentService developmentService) {
