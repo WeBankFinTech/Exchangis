@@ -41,8 +41,23 @@ export function getQueryVariable(variable) {
   return false;
 }
 
-export const genFileURL = (fileId, fileHash) => `${BASE_URL}/record/download/file/${fileId}/${fileHash}`;
+export const genFileURL = (fileId, fileHash) =>
+  `${BASE_URL}/record/download/file/${fileId}/${fileHash}`;
 
 export const dateFormat = (timestamp) => {
   return moment(timestamp).format("YYYY-MM-DD HH:mm");
+};
+
+/*
+ * 随机字符串生成
+ */
+export const randomString = (len) => {
+  len = len || 12;
+  let $chars = "ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz";
+  let maxPos = $chars.length;
+  let pwd = "";
+  for (let i = 0; i < len; i++) {
+    pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+  }
+  return pwd;
 };

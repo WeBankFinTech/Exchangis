@@ -448,7 +448,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .field-map-wrap {
   margin-top: 30px;
-  width: 1215px;
+  // width: 1215px;
   display: flex;
 }
 .fm-l {
