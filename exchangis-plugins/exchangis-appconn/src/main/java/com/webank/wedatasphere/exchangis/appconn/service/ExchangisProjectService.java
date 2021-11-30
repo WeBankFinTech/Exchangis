@@ -1,8 +1,11 @@
-package com.webank.wedatasphere.exchangis.appconn.project;
+package com.webank.wedatasphere.exchangis.appconn.service;
 
 import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.app.structure.project.*;
 import com.webank.wedatasphere.exchangis.appconn.config.ExchangisConfig;
+import com.webank.wedatasphere.exchangis.appconn.project.ExchangisProjectCreationOperation;
+import com.webank.wedatasphere.exchangis.appconn.project.ExchangisProjectDeletionOperation;
+import com.webank.wedatasphere.exchangis.appconn.project.ExchangisProjectUpdateOperation;
 import com.webank.wedatasphere.linkis.httpclient.request.HttpAction;
 import com.webank.wedatasphere.linkis.httpclient.response.HttpResult;
 
