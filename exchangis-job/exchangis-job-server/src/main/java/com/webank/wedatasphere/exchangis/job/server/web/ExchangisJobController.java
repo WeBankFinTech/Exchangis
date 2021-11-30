@@ -71,9 +71,16 @@ public class ExchangisJobController {
     private final ObjectWriter writer = new ObjectMapper().writer();
 
     @GET
-    public Message getJobList(@QueryParam(value = "projectId") long projectId,
+    public Message getJobList(@QueryParam(value = "projectId") Long projectId,
                               @QueryParam(value = "jobType") String jobType, @QueryParam(value = "name") String name) {
         List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobList(projectId, jobType, name);
+        return Message.ok().data("result", joblist);
+    }
+
+    @GET
+    @Path("/dss")
+    public Message getJobListByDss(@QueryParam(value = "dssProjectId") Long dssProjectId, @QueryParam(value = "jobType") String jobType,  @QueryParam(value = "name") String name) {
+        List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobListByDssProject(dssProjectId, jobType, name);
         return Message.ok().data("result", joblist);
     }
 
@@ -104,6 +111,13 @@ public class ExchangisJobController {
         return Message.ok().data("result", job);
     }
 
+    @PUT
+    @Path("/dss/{nodeId}")
+    public Message updateJobByDss(@PathParam("nodeId") Long nodeId, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
+        ExchangisJobBasicInfoVO job = exchangisJobService.updateJobByDss(exchangisJobBasicInfoDTO, nodeId);
+        return Message.ok().data("result", job);
+    }
+
     @POST
     @Path("/import")
     public Message importSingleJob(@RequestPart("multipartFile") MultipartFile multipartFile) {
@@ -118,12 +132,28 @@ public class ExchangisJobController {
         return Message.ok("job deleted");
     }
 
+    @DELETE
+    @Path("/dss/{nodeId}")
+    public Message deleteJobByDss(@PathParam("nodeId") Long nodeId) {
+
+        return Message.ok("job deleted");
+    }
+
     @GET
     @Path("/{id}")
     public Message getJob(@Context HttpServletRequest request, @PathParam("id") Long id) throws ExchangisJobErrorException {
         ExchangisJob job = exchangisJobService.getJob(request, id);
         return Message.ok().data("result", job);
     }
+
+    @GET
+    @Path("/dss/{nodeId}")
+    public Message getJobByDssProject(@Context HttpServletRequest request, @PathParam("nodeId") Long nodeId) throws ExchangisJobErrorException {
+        ExchangisJob job = exchangisJobService.getJobByDss(request, nodeId);
+        return Message.ok().data("result", job);
+    }
+
+
 
     @PUT
     @Path("/{id}/config")

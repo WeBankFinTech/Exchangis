@@ -45,9 +45,7 @@ public class ExchangisJobBase {
         this.id = id;
     }
 
-    public String getJobName() {
-        return jobName;
-    }
+    public String getJobName() { return jobName; }
 
     public void setJobName(String jobName) {
         this.jobName = jobName;
