@@ -141,7 +141,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .process-control-warp {
   margin-top: 30px;
-  width: 1215px;
+  // width: 1215px;
   display: flex;
 }
 .ps-l {

@@ -16,6 +16,7 @@ import com.webank.wedatasphere.linkis.httpclient.response.HttpResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class ExchangisCreationOperation implements RefCreationOperation<CreateRequestRef> {
     private final static Logger logger = LoggerFactory.getLogger(ExchangisCreationOperation.class);
 
@@ -40,13 +41,19 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
     }
 
     private ResponseRef sendSqoopRequest(NodeRequestRef requestRef)  throws ExternalOperationFailedException {
-        String url=getBaseUrl()+"/job";
+        String url = getBaseUrl()+"/job";
 
         logger.info("create sqoop job=>jobContent:{}",requestRef.getJobContent());
-
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
+        try {
+            String nodeId = AppconnUtils.getId(requestRef);
+            exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_ID,Long.parseLong(nodeId));
+        }catch (Exception e){
+            throw new ExternalOperationFailedException(31023, "Get node Id failed!", e);
+        }
+
         exchangisPostAction.setUser(requestRef.getUserName());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.PROJECT_ID,requestRef.getProjectId());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_ID,requestRef.getProjectId());
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_DESC,"");
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_LABELS, AppconnUtils.changeDssLabelName(requestRef.getDSSLabels()));
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_NAME,requestRef.getName());
@@ -63,7 +70,7 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
             HttpResult httpResult = (HttpResult) this.ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, exchangisPostAction);
             responseRef = new ExchangisCommonResponseRef(httpResult.getResponseBody());
         } catch (Exception e){
-            throw new ExternalOperationFailedException(31020, "Create Dashboard Exception", e);
+            throw new ExternalOperationFailedException(31020, "Create sqoop job Exception", e);
         }
 
         return responseRef;
@@ -72,8 +79,14 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
     private ResponseRef sendDataXRequest(NodeRequestRef requestRef)  throws ExternalOperationFailedException {
         String url=getBaseUrl()+"/job";
         logger.info("create dataX job=>jobContent:{}",requestRef.getJobContent());
-
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
+        try {
+            String nodeId = AppconnUtils.getId(requestRef);
+            exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_ID,Long.parseLong(nodeId));
+        }catch (Exception e){
+            throw new ExternalOperationFailedException(31023, "Get node Id failed!", e);
+        }
+
         exchangisPostAction.setUser(requestRef.getUserName());
         exchangisPostAction.setUrl(url);
         exchangisPostAction.addRequestPayload(ExchangisConfig.PROJECT_ID,requestRef.getProjectId());
@@ -83,9 +96,23 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_TYPE,ExchangisConfig.JOB_TYPE_OFFLINE);
         exchangisPostAction.addRequestPayload(ExchangisConfig.ENGINE_TYPE,ExchangisConfig.ENGINE_TYPE_DATAX_NAME);
 
+        SSOUrlBuilderOperation ssoUrlBuilderOperation = requestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
+        ssoUrlBuilderOperation.setAppName(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        ssoUrlBuilderOperation.setReqUrl(url);
+        ssoUrlBuilderOperation.setWorkspace(requestRef.getWorkspace().getWorkspaceName());
+        ExchangisCommonResponseRef responseRef;
+        try{
+            exchangisPostAction.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
+            HttpResult httpResult = (HttpResult) this.ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, exchangisPostAction);
+            responseRef = new ExchangisCommonResponseRef(httpResult.getResponseBody());
+        } catch (Exception e){
+            throw new ExternalOperationFailedException(31020, "Create datax job Exception", e);
+        }
 
-        return null;
+        return responseRef;
     }
+
+
     private String getBaseUrl(){
         return developmentService.getAppInstance().getBaseUrl() + ExchangisConfig.BASEURL;
     }
