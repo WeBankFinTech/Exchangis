@@ -14,13 +14,19 @@ import com.baomidou.mybatisplus.annotation.TableName;
  * @since 2021-08-10
  */
 @TableName("exchangis_job_info")
-public class ExchangisJob extends ExchangisJobBase{
+public class ExchangisJob extends ExchangisJobBase {
 
 
     @TableId(type = IdType.AUTO)
     private Long id;
 
     private Long projectId;
+
+    private Long dssProjectId;
+
+    private Long nodeId;
+
+    private String nodeName;
 
     private String jobType;
 
@@ -46,6 +52,12 @@ public class ExchangisJob extends ExchangisJobBase{
 
     private String modifyUser;
 
+    @Override
+    public Long getId() { return id; }
+
+    @Override
+    public void setId(Long id) { this.id = id; }
+
     public Long getProjectId() {
         return projectId;
     }
@@ -53,6 +65,18 @@ public class ExchangisJob extends ExchangisJobBase{
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
+
+    public Long getDssProjectId() { return dssProjectId; }
+
+    public void setDssProjectId(Long dssProjectId) { this.dssProjectId = dssProjectId; }
+
+    public Long getNodeId() { return nodeId; }
+
+    public void setNodeId(Long nodeId) { this.nodeId = nodeId; }
+
+    public String getNodeName() { return nodeName; }
+
+    public void setNodeName(String nodeName) { this.nodeName = nodeName; }
 
     public String getJobType() {
         return jobType;
@@ -77,7 +101,6 @@ public class ExchangisJob extends ExchangisJobBase{
     public void setJobLabels(String jobLabels) {
         this.jobLabels = jobLabels;
     }
-
 
     public String getContent() {
         return content;
@@ -154,11 +177,11 @@ public class ExchangisJob extends ExchangisJobBase{
     @Override
     public String toString() {
         return "ExchangisJob{" + "id=" + id + ", projectId=" + projectId + ", jobName=" + jobName + ", jobType="
-            + jobType
-            + ", engineType=" + engineType + ", jobLabels=" + jobLabels + ", jobDesc=" + jobDesc + ", content="
-            + content + ", alarmUser=" + alarmUser + ", alarmLevel=" + alarmLevel + ", proxyUser=" + proxyUser
-            + ", executeNode=" + executeNode + ", syncType=" + syncType + ", jobParams=" + jobParams + ", createTime="
-            + createTime + ", createUser=" + createUser + ", modifyTime=" + modifyTime + ", modifyUser=" + modifyUser
-            + "}";
+                + jobType
+                + ", engineType=" + engineType + ", jobLabels=" + jobLabels + ", jobDesc=" + jobDesc + ", content="
+                + content + ", alarmUser=" + alarmUser + ", alarmLevel=" + alarmLevel + ", proxyUser=" + proxyUser
+                + ", executeNode=" + executeNode + ", syncType=" + syncType + ", jobParams=" + jobParams + ", createTime="
+                + createTime + ", createUser=" + createUser + ", modifyTime=" + modifyTime + ", modifyUser=" + modifyUser
+                + "}";
     }
 }
