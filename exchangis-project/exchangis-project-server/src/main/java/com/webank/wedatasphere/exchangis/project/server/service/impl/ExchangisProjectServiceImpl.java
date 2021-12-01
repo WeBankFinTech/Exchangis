@@ -180,7 +180,7 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     @Override
     public ExchangisProjectGetDTO getProjectByDssId(String dssProjectId) {
         QueryWrapper<ExchangisProject> wrapper = new QueryWrapper<>();
-        wrapper.eq("dssProjectId", Long.parseLong(dssProjectId));
+        wrapper.eq("dss_project_id", Long.parseLong(dssProjectId));
         return new ExchangisProjectGetDTO(this.exchangisProjectMapper.selectOne(wrapper));
     }
 
