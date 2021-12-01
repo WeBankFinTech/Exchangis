@@ -193,6 +193,7 @@ import {
   executeTask,
   updateTaskConfiguration,
   getSyncHistory,
+  executeJob
 } from "@/common/service";
 import { message, notification } from "ant-design-vue";
 import { randomString } from "../../../common/utils";
@@ -630,14 +631,14 @@ export default {
     },
     // 执行任务
     executeTask() {
-      // const { id } = this.curTab;
-      // executeTask(id)
-      //   .then((res) => {
-      //     message.info("执行成功");
-      //   })
-      //   .catch((err) => {
-      //     console.log("executeTask error", err);
-      //   });
+       const { id } = this.curTab;
+       executeJob(id)
+         .then((res) => {
+           message.info("执行成功");
+         })
+         .catch((err) => {
+           console.log("executeTask error", err);
+         });
     },
     executeHistory() {
       this.visibleDrawer = true;
