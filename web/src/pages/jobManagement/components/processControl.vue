@@ -40,7 +40,7 @@
             :model="formState"
             :help="helpMsg[item.key]"
             :validate-status="helpStatus[item.key]"
-            required
+            :required="item.required"
             class="process-control-label"
           >
             <dync-render
@@ -92,12 +92,12 @@ export default defineComponent({
       settingData.psData = typeof val === "string" ? JSON.parse(val) : val;
     });
     const updateSettingParams = (info) => {
-      formState[info.key] = info.value;
-      const num_reg = /^\d+$/;
-      if (!info.value) {
-        helpMsg[info.key] = `请正确输入${info.label}`;
+      formState[info.key] = info.value
+      if (info.required && !info.value) {
+        helpMsg[info.key] = `请输入${info.label}`;
         helpStatus[info.key] = "error";
-      } else {
+      } else if (info.validateType === 'REGEX') {
+        const num_reg = new RegExp(`${info.validateRange}`)
         if (!num_reg.test(info.value)) {
           helpMsg[info.key] = `请正确输入${info.label}`;
           helpStatus[info.key] = "error";
@@ -105,6 +105,9 @@ export default defineComponent({
           helpMsg[info.key] = "";
           helpStatus[info.key] = "success";
         }
+      } else {
+        helpMsg[info.key] = "";
+        helpStatus[info.key] = "success";
       }
       const _settingParams = toRaw(settingData.psData).slice(0);
       _settingParams.forEach((item) => {

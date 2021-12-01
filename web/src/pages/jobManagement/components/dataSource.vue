@@ -52,7 +52,7 @@
                 :name="item.label"
                 :help="sourcesHelpMsg[item.key.split('.').pop()]"
                 :validate-status="sourcesHelpStatus[item.key.split('.').pop()]"
-                required
+                :required="item.required"
               >
                 <dync-render
                   v-bind:param="item"
@@ -93,7 +93,7 @@
                 :name="item.label"
                 :help="sinksHelpMsg[item.key.split('.').pop()]"
                 :validate-status="sinksHelpStatus[item.key.split('.').pop()]"
-                required
+                :required="item.required"
               >
                 <dync-render
                   v-bind:param="item"
@@ -234,16 +234,25 @@ export default defineComponent({
     const updateSourceParams = (info) => {
       const _sourceParams = dataSource.params.sources.slice(0);
       let _key = info.key.split(".").pop();
-      if (!info.value) {
-        sourcesHelpMsg[_key] = `请正确输入${info.label}`;
+      if (info.required && !info.value) {
+        sourcesHelpMsg[_key] = `请输入${info.label}`;
         sourcesHelpStatus[_key] = "error";
+      } else if (info.validateType === 'REGEX') {
+        const num_reg = new RegExp(`${info.validateRange}`)
+        if (!num_reg.test(info.value)) {
+          sourcesHelpMsg[info.key] = `请正确输入${info.label}`;
+          sourcesHelpStatus[info.key] = "error";
+        } else {
+          sourcesHelpMsg[info.key] = "";
+          sourcesHelpStatus[info.key] = "success";
+        }
       } else {
         sourcesHelpMsg[_key] = "";
         sourcesHelpStatus[_key] = "success";
       }
-      switch (_key) {
+      /*switch (_key) {
         case "batch_size":
-          if (!/^[0-9]*$/.test(info.value)) {
+          if (!/^[1-9]*$/.test(info.value)) {
             sourcesHelpMsg[_key] = "请正确输入批量大小";
             sourcesHelpStatus[_key] = "error";
           } else {
@@ -262,7 +271,7 @@ export default defineComponent({
             }
           }
           break;
-      }
+      }*/
 
       _sourceParams.forEach((item) => {
         if (item.field === info.field) {
@@ -276,7 +285,23 @@ export default defineComponent({
     const updateSinkParams = (info) => {
       const _sinkParams = dataSource.params.sinks.slice(0);
       let _key = info.key.split(".").pop();
-      if (!info.value) {
+      if (info.required && !info.value) {
+        sinksHelpMsg[_key] = `请输入${info.label}`;
+        sinksHelpStatus[_key] = "error";
+      } else if (info.validateType === 'REGEX') {
+        const num_reg = new RegExp(`${info.validateRange}`)
+        if (!num_reg.test(info.value)) {
+          sinksHelpMsg[info.key] = `请正确输入${info.label}`;
+          sinksHelpStatus[info.key] = "error";
+        } else {
+          sinksHelpMsg[info.key] = "";
+          sinksHelpStatus[info.key] = "success";
+        }
+      } else {
+        sinksHelpMsg[_key] = "";
+        sinksHelpStatus[_key] = "success";
+      }
+      /*if (!info.value) {
         sinksHelpMsg[_key] = `请正确输入${info.label}`;
         sinksHelpStatus[_key] = "error";
       } else {
@@ -304,7 +329,7 @@ export default defineComponent({
             }
           }
           break;
-      }
+      }*/
       _sinkParams.forEach((item) => {
         if (item.field === info.field) {
           return (item.value = info.value);
