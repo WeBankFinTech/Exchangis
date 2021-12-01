@@ -210,6 +210,13 @@ export const getSettingsParams = (engineType) => {
   );
 };
 
+// job执行
+export const executeJob = (id) => {
+  return request(`/job/${id}/action/execute`, {}, {
+    method: "POST",
+  });
+};
+
 // 同步历史
 export const getSyncHistory = (body) => {
   return request("/tasks", body, {
@@ -238,6 +245,7 @@ export const saveSpeedLimit = (params, body) => {
     method: "PUT",
   });
 };
+
 
 // 首页相关
 
