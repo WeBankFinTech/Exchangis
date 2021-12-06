@@ -534,14 +534,14 @@ export default {
         const { params, settings } = job;
         for (let key in params) {
           params[key].forEach((i) => {
-            if (!i.value) {
+            if (!i.value && i.required) {
               res.push(`${i.label}不可为空`);
             }
           });
         }
 
         settings.forEach((i) => {
-          if (!i.value) {
+          if (!i.value && i.required) {
             res.push(`${i.label}不可为空`);
           }
         });
