@@ -29,7 +29,7 @@ usage(){
   echo "Usage is [-m module will be started]"
 }
 
-if [[ "x"${EXCHANGIS_LIB_PATH} == "x" ]]; then
+if [[ "x"${EXCHANGIS_LIB_PATH} != "x" ]]; then
   MODULE_LIB=${EXCHANGIS_LIB_PATH}
 else
   MODULE_LIB=${BIN}/../lib
