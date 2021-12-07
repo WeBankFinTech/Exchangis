@@ -2,10 +2,7 @@ package com.webank.wedatasphere.exchangis.appconn;
 
 import com.webank.wedatasphere.dss.standard.app.development.service.*;
 import com.webank.wedatasphere.dss.standard.app.development.standard.AbstractDevelopmentIntegrationStandard;
-import com.webank.wedatasphere.exchangis.appconn.service.ExchangisCRUDService;
-import com.webank.wedatasphere.exchangis.appconn.service.ExchangisQueryService;
-import com.webank.wedatasphere.exchangis.appconn.service.ExchangisRefExportService;
-import com.webank.wedatasphere.exchangis.appconn.service.ExchangisRefImportService;
+import com.webank.wedatasphere.exchangis.appconn.service.*;
 
 public class ExchangisDevelopmentIntegrationStandard  extends AbstractDevelopmentIntegrationStandard {
     @Override
@@ -15,7 +12,7 @@ public class ExchangisDevelopmentIntegrationStandard  extends AbstractDevelopmen
 
     @Override
     protected RefExecutionService createRefExecutionService() {
-        return null;
+        return new ExchangisExecutionService();
     }
 
     @Override
