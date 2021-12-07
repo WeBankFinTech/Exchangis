@@ -6,10 +6,12 @@ public class InputElementUI implements ElementUI {
     private String label;
     private Integer sort;
     private String value;
+    private String defaultValue;
     private String unit;
     private Boolean required;
     private String validateType;
     private String validateRange;
+    private String validateMsg;
 
     public String getKey() {
         return key;
@@ -60,6 +62,11 @@ public class InputElementUI implements ElementUI {
         this.value = value;
     }
 
+    @Override
+    public String getDefaultValue() { return defaultValue; }
+
+    public void setDefaultValue(String defaultValue) { this.defaultValue = defaultValue; }
+
     public String getUnit() {
         return unit;
     }
@@ -91,4 +98,8 @@ public class InputElementUI implements ElementUI {
     public void setValidateRange(String validateRange) {
         this.validateRange = validateRange;
     }
+
+    public String getValidateMsg() { return validateMsg; }
+
+    public void setValidateMsg(String validateMsg) { this.validateMsg = validateMsg; }
 }
