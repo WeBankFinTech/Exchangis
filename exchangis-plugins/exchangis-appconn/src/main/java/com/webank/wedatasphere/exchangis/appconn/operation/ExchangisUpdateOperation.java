@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 public class ExchangisUpdateOperation implements RefUpdateOperation<UpdateRequestRef> {
-    private final static Logger logger = LoggerFactory.getLogger(ExchangisCreationOperation.class);
+    private final static Logger logger = LoggerFactory.getLogger(ExchangisUpdateOperation.class);
 
     DevelopmentService developmentService;
     private SSORequestOperation ssoRequestOperation;
@@ -45,7 +45,6 @@ public class ExchangisUpdateOperation implements RefUpdateOperation<UpdateReques
     }
 
     private ResponseRef updateSqoop(NodeRequestRef exchangisupdateRequestRef) throws ExternalOperationFailedException{
-
         logger.info("update sqoop job=>jobContent:{}",exchangisupdateRequestRef.getJobContent());
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
         String url="";
@@ -53,11 +52,14 @@ public class ExchangisUpdateOperation implements RefUpdateOperation<UpdateReques
             String nodeId = AppconnUtils.getId(exchangisupdateRequestRef);
             long nodeIdl = Long.parseLong(nodeId);
             exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_ID,nodeIdl);
-            url=getBaseUrl()+"/job/"+nodeIdl;
+            url=getBaseUrl()+"/dss/"+nodeIdl;
         }catch (Exception e){
             throw new ExternalOperationFailedException(31023, "Get node Id failed!", e);
         }
         exchangisPostAction.setUser(exchangisupdateRequestRef.getUserName());
+
+        exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_NAME,exchangisupdateRequestRef.getName());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_ID,exchangisupdateRequestRef.getProjectId());
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_DESC,"");
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_LABELS, AppconnUtils.changeDssLabelName(exchangisupdateRequestRef.getDSSLabels()));
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_NAME,exchangisupdateRequestRef.getName());
@@ -87,11 +89,13 @@ public class ExchangisUpdateOperation implements RefUpdateOperation<UpdateReques
             String nodeId = AppconnUtils.getId(exchangisupdateRequestRef);
             long nodeIdl = Long.parseLong(nodeId);
             exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_ID,nodeIdl);
-            url=getBaseUrl()+"/job/"+nodeIdl;
+            url=getBaseUrl()+"/dss/"+nodeIdl;
         }catch (Exception e){
             throw new ExternalOperationFailedException(31023, "Get node Id failed!", e);
         }
         exchangisPostAction.setUser(exchangisupdateRequestRef.getUserName());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_NAME,exchangisupdateRequestRef.getName());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_ID,exchangisupdateRequestRef.getProjectId());
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_DESC,"");
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_LABELS, AppconnUtils.changeDssLabelName(exchangisupdateRequestRef.getDSSLabels()));
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_NAME,exchangisupdateRequestRef.getName());
