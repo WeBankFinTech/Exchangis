@@ -1,0 +1,58 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "79143292",
+      "name": "REFRESH",
+      "font_class": "refresh",
+      "unicode": "e65f",
+      "unicode_decimal": 58975
+    },
+    {
+      "icon_id": "79143308",
+      "name": "FORCED_SUCCES",
+      "font_class": "forced-success",
+      "unicode": "e669",
+      "unicode_decimal": 58985
+    },
+    {
+      "icon_id": "79143309",
+      "name": "SUCCESS",
+      "font_class": "success",
+      "unicode": "e66a",
+      "unicode_decimal": 58986
+    },
+    {
+      "icon_id": "79143311",
+      "name": "SUBMITTED_SUCCES",
+      "font_class": "submitted-success",
+      "unicode": "e66c",
+      "unicode_decimal": 58988
+    },
+    {
+      "icon_id": "79143313",
+      "name": "FAILURE",
+      "font_class": "failure",
+      "unicode": "e66e",
+      "unicode_decimal": 58990
+    },
+    {
+      "icon_id": "79143314",
+      "name": "RUNNING_EXECUTIO",
+      "font_class": "running-execution",
+      "unicode": "e66f",
+      "unicode_decimal": 58991
+    },
+    {
+      "icon_id": "79143315",
+      "name": "WAITTING_THREAD",
+      "font_class": "waitting-thread",
+      "unicode": "e670",
+      "unicode_decimal": 58992
+    }
+  ]
+}
