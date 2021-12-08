@@ -6,6 +6,9 @@ import com.webank.wedatasphere.linkis.server.conf.ServerConfiguration;
 public class ExchangisConfig {
 
      public final static String BASEURL = "/api/rest_s/" + ServerConfiguration.BDP_SERVER_VERSION() + "/exchangis";
+     public final static String SQOOP_JUMP_URL_FORMAT="/dss/exchangis/#/childJobManagement";
+     public final static String DATAX_JUMP_URL_FORMAT="/dss/exchangis/#/childJobManagement";
+
 
      public final static String EXCHANGIS_APPCONN_NAME = CommonVars.apply("wds.dss.appconn.exchangis.name", "Exchangis").getValue();
      public final static String NODE_TYPE_SQOOP = CommonVars.apply("wds.dss.appconn.exchangis.sqoop", "wds.dss.appconn.exchangis.sqoop").getValue();
@@ -26,6 +29,7 @@ public class ExchangisConfig {
      public final static String EXEC_USERS = "execUsers";
 
      public final static String NODE_ID="nodeId";
+     public final static String NODE_NAME="nodeName";
      public final static String PROJECT_ID = "projectId";
      public final static String ENGINE_TYPE = "engineType";
      public final static String JOB_DESC = "jobDesc";
@@ -33,5 +37,13 @@ public class ExchangisConfig {
      public final static String JOB_NAME = "jobName";
      public final static String JOB_TYPE="jobType";
 
+
+     public static String getUrl(String baseUrl, String format, String entityId){
+          return baseUrl + String.format(format, entityId);
+     }
+
+     public static String getUrl(String baseUrl, String format, String... ids){
+          return baseUrl + String.format(format, ids);
+     }
 }
 

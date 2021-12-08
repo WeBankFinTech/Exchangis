@@ -249,6 +249,7 @@ export default {
         id: "",
         type: item.id,
         visible: true,
+        createSystem: item.name
       };
     },
     // 处理删除
@@ -258,12 +259,13 @@ export default {
       this.getDataSourceList();
     },
     // 处理编辑
-    handleEdit(id, typeid) {
+    handleEdit(id, typeid, createSystem) {
       this.modalCfg = {
         mode: "edit",
         id: id,
         type: typeid,
         visible: true,
+        createSystem: createSystem
       };
     },
     // 打开创建弹窗

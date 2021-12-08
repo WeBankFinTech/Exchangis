@@ -24,7 +24,12 @@ public class AppconnUtils {
         return NumberUtils.parseDoubleString(getNodeId(externalContent));
     }
 
-    public static String getNodeId(String responseBody) throws ExternalOperationFailedException {
+    public static String getJobContent(Map<String, Object> jobContent) throws Exception {
+        String externalContent = BDPJettyServerHelper.jacksonJson().writeValueAsString(jobContent);
+        return NumberUtils.parseDoubleString(getNodeId(externalContent));
+    }
+
+    private static String getNodeId(String responseBody) throws ExternalOperationFailedException {
         String nodeId="";
         try {
             Map responseMap = BDPJettyServerHelper.jacksonJson().readValue(responseBody, Map.class);
