@@ -418,7 +418,6 @@ export default {
     changeCurTask(index) {
       this.activeIndex = index;
       this.curTask = this.list[this.activeIndex];
-      console.log("this.curTask", this.curTask);
     },
     addNewTask() {
       let subJobName = randomString(12);
@@ -452,6 +451,11 @@ export default {
         settings: [],
       };
       getSettingsParams(this.jobData.engineType).then((res) => {
+        res.ui.forEach(ui => {
+          if (!ui.value && ui.defaultValue) {
+            ui.value = ui.defaultValue
+          }
+        })
         task.settings = res.ui || [];
         this.jobData.content.subJobs.push(task);
         this.$nextTick(() => {
