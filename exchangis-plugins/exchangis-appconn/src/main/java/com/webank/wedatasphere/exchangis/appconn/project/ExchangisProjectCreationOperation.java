@@ -49,6 +49,7 @@ public class ExchangisProjectCreationOperation implements ProjectCreationOperati
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
         exchangisPostAction.setUser(projectRequestRef.getCreateBy());
         exchangisPostAction.addRequestPayload(ExchangisConfig.WORKSPACE_NAME,projectRequestRef.getWorkspaceName());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_ID,projectRequestRef.getWorkspaceName());
         exchangisPostAction.addRequestPayload(ExchangisConfig.PROJECT_NAME,projectRequestRef.getName());
         exchangisPostAction.addRequestPayload(ExchangisConfig.DESCRIPTION,projectRequestRef.getDescription());
         exchangisPostAction.addRequestPayload(ExchangisConfig.EDIT_USERS,projectRequestRef.getCreateBy());

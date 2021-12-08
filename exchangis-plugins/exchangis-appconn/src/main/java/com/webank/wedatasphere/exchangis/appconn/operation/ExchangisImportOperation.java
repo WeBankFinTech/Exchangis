@@ -29,6 +29,10 @@ public class ExchangisImportOperation implements RefImportOperation<ImportReques
     @Override
     public ResponseRef importRef(ImportRequestRef importRequestRef) throws ExternalOperationFailedException {
         String url = getBaseUrl() + "/import";
+        importRequestRef.getParameters().forEach((k,v)->{
+            logger.info("importRef job=>k:{},v:{}",k,v.toString());
+        });
+
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
         exchangisPostAction.setUser(importRequestRef.getParameter("user").toString());
         exchangisPostAction.addRequestPayload("projectId", importRequestRef.getParameter("projectId"));

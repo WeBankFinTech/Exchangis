@@ -185,9 +185,11 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
                 if (inputJob.getSourceType().equalsIgnoreCase("MYSQL")) {
                     rdbmsSettings = sourceSettings;
                     if (null != sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition"))
-                        if (StringUtils.isNotBlank(sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition").toString())) {
-                            sqoopParams.put("sqoop.args.where", sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition").toString());
-                        }
+                        if (null != sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition"))
+                            if (null != sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition").getValue())
+                                if (StringUtils.isNotBlank(sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition").getValue().toString())) {
+                                    sqoopParams.put("sqoop.args.where", sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition").getValue().toString());
+                                }
                 } else {
                     rdbmsSettings = sinkSettings;
                 }
@@ -206,23 +208,25 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             }
 
             if (mode.equals("import")) {
-                sqoopParams.put("sqoop.args.target.dir", TARGET_DIR.newParam(sinkSettings.get("table")).getValue());
+                sqoopParams.put("sqoop.args.target.dir", TARGET_DIR.newParam(sinkSettings.get("table").getValue()).getValue());
                 sqoopParams.put("sqoop.args.delete.target.dir", "");
             }
 
             sqoopParams.putAll(HIVE_TABLE.newParam(inputJob).getValue());
 
-            sqoopParams.putAll(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
+            // sqoopParams.putAll(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
             // sqoopParams.putAll(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_CONTENT_SINK, false));
             // sqoopParams.putAll(inputJob.getParamsToMap(REALM_JOB_CONTENT_SOURCE, false));
             resolveTransformMappings(inputJob, inputJob.getRealmParams(SubExchangisJob.REALM_JOB_COLUMN_MAPPING), sqoopParams);
 
             engineJob.getJobContent().put("sqoop-params", sqoopParams);
 
+            engineJob.setRuntimeParams(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
+
             engineJob.setTaskName(inputJob.getTaskName());
             if (Objects.nonNull(expectJob)) {
                 engineJob.setJobName(expectJob.getJobName());
-                engineJob.setRuntimeParams(expectJob.getRuntimeParams());
+                // engineJob.setRuntimeParams(expectJob.getRuntimeParams());
                 engineJob.setEngine(expectJob.getEngine());
             }
             engineJob.setCreateUser(inputJob.getCreateUser());

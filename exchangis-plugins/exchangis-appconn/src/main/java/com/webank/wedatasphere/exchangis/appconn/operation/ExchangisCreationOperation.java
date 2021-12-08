@@ -30,7 +30,6 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
     @Override
     public ResponseRef createRef(CreateRequestRef createRequestRef) throws ExternalOperationFailedException {
         NodeRequestRef exchangisCreateRequestRef = (NodeRequestRef) createRequestRef;
-
         logger.info("create job=>projectId:{},jobName:{},nodeType:{}",exchangisCreateRequestRef.getProjectId(),exchangisCreateRequestRef.getName(),exchangisCreateRequestRef.getNodeType());
         if(ExchangisConfig.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisCreateRequestRef.getNodeType())){
             sendSqoopRequest(exchangisCreateRequestRef);
@@ -42,7 +41,6 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
 
     private ResponseRef sendSqoopRequest(NodeRequestRef requestRef)  throws ExternalOperationFailedException {
         String url = getBaseUrl()+"/job";
-
         logger.info("create sqoop job=>jobContent:{}",requestRef.getJobContent());
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
         try {
@@ -53,6 +51,7 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
         }
 
         exchangisPostAction.setUser(requestRef.getUserName());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_NAME,requestRef.getName());
         exchangisPostAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_ID,requestRef.getProjectId());
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_DESC,"");
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_LABELS, AppconnUtils.changeDssLabelName(requestRef.getDSSLabels()));
@@ -89,7 +88,8 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
 
         exchangisPostAction.setUser(requestRef.getUserName());
         exchangisPostAction.setUrl(url);
-        exchangisPostAction.addRequestPayload(ExchangisConfig.PROJECT_ID,requestRef.getProjectId());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_NAME,requestRef.getName());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_ID,requestRef.getProjectId());
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_DESC,"");
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_LABELS, AppconnUtils.changeDssLabelName(requestRef.getDSSLabels()));
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_NAME,requestRef.getName());

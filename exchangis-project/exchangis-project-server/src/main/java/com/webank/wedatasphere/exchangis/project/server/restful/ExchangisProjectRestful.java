@@ -74,6 +74,7 @@ public class ExchangisProjectRestful {
     public Response queryProjectsByDss(@Context HttpServletRequest request, @PathParam("dssProjectId") String dssProjectId) {
         String username = SecurityFilter.getLoginUsername(request);
         try {
+            LOGGER.info("queryProjectsByDss dssProjectId {}", dssProjectId);
             ExchangisProjectGetDTO dto = projectService.getProjectByDssId(dssProjectId);
             return Message.messageToResponse(Message.ok().data("item", dto));
         } catch (final Throwable t) {
@@ -87,6 +88,7 @@ public class ExchangisProjectRestful {
     public Response createProject(@Context HttpServletRequest request, @Valid CreateProjectRequest createProjectRequest) {
         String username = SecurityFilter.getLoginUsername(request);
         try {
+            LOGGER.info("createProject createProjectRequest {}", createProjectRequest.toString());
             ExchangisProject exchangisProject = projectService.createProject(username, createProjectRequest);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
                     new Pair<>("projectName", exchangisProject.getName()), new Pair<>("projectId", exchangisProject.getId()));
@@ -101,6 +103,7 @@ public class ExchangisProjectRestful {
     public Response updateProject(@Context HttpServletRequest request, @Valid UpdateProjectRequest updateProjectRequest) {
         String username = SecurityFilter.getLoginUsername(request);
         try {
+            LOGGER.info("updateProject updateProjectRequest {}", updateProjectRequest.toString());
             ExchangisProject exchangisProject = projectService.updateProject(username, updateProjectRequest);
             return ExchangisProjectRestfulUtils.dealOk("更新工程成功",
                     new Pair<>("projectName", exchangisProject.getName()), new Pair<>("projectId", exchangisProject.getId()));
@@ -128,6 +131,7 @@ public class ExchangisProjectRestful {
     public Response deleteProjectByDss(@Context HttpServletRequest request, @PathParam("dssProjectId") String id) {
         String username = SecurityFilter.getLoginUsername(request);
         try {
+            LOGGER.info("deleteProjectByDss dssProjectId {}", id);
             projectService.deleteProject(request, id);
             return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
         } catch (final Throwable t) {
