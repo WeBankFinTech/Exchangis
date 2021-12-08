@@ -54,6 +54,9 @@ public class ExchangisJobParamConfig {
     @TableField(value = "validate_range")
     private String validateRange;
 
+    @TableField(value = "validate_msg")
+    private String validateMsg;
+
     @TableField(value = "is_hidden")
     private Boolean hidden;
 
@@ -166,6 +169,10 @@ public class ExchangisJobParamConfig {
         this.validateRange = validateRange;
     }
 
+    public String getValidateMsg() { return validateMsg; }
+
+    public void setValidateMsg(String validateMsg) { this.validateMsg = validateMsg; }
+
     public Boolean getHidden() {
         return hidden;
     }
@@ -221,7 +228,6 @@ public class ExchangisJobParamConfig {
     public void setStatus(Integer status) {
         this.status = status;
     }
-
 
     public String getConfigDirection() {
         return configDirection;
