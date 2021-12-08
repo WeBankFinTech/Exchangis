@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.datasource.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobInfo;
@@ -50,9 +51,11 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisDataSourceService.class);
 
+
     @Autowired
     public ExchangisDataSourceService(ExchangisDataSourceContext context, ExchangisJobInfoMapper exchangisJobInfoMapper, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper) {
         super(context, exchangisJobParamConfigMapper, exchangisJobInfoMapper);
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
     @Autowired
