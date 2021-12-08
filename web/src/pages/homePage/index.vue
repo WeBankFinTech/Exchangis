@@ -4,189 +4,252 @@
 
     <!-- content -->
     <div class="hp-content">
-      <div class="hp-content-card">
-        <!-- title -->
-        <div class="hp-content-card-title"><span>重点指标</span></div>
-        <!-- main -->
-        <div style="padding-bottom: 12px">
-          <a-row :gutter="16">
-            <a-col :span="4">
-              <a-card>
-                <div class="home-page-card-item">
-                  <div class="home-page-card-img">
-                    <img src="../../images/homePage/u3989.png" alt="" />
+      <a-row :gutter="[24, 24]">
+        <a-col :span="24">
+          <div class="hp-content-card">
+            <div style="padding-bottom: 12px">
+              <a-row :gutter="16">
+                <a-col :span="4">
+                  <div class="hp-top-card">
+                    <a-card :bordered="false" style="flex: 1">
+                      <div class="home-page-card-item">
+                        <div class="home-page-card-img">
+                          <svg
+                            class="home-page-card-item-svg"
+                            style="fill: currentColor; color: red"
+                          >
+                            <use xlink:href="#icon-failure"></use>
+                          </svg>
+                        </div>
+                        <div class="home-page-card-item-txt-t">
+                          <span>{{ taskState.FAILED }}</span>
+                        </div>
+                        <div class="home-page-card-item-txt-b">
+                          <span>失败任务</span>
+                        </div>
+                      </div>
+                    </a-card>
+                    <div class="hp-top-card-line"></div>
                   </div>
-                  <div class="home-page-card-item-txt-t">
-                    <span>{{ taskState.FAILED }}</span>
+                </a-col>
+                <a-col :span="4">
+                  <div class="hp-top-card">
+                    <a-card :bordered="false" style="flex: 1">
+                      <div class="home-page-card-item">
+                        <div class="home-page-card-img">
+                          <svg
+                            class="home-page-card-item-svg"
+                            style="fill: currentColor; color: #89c2d9"
+                          >
+                            <use xlink:href="#icon-running-execution"></use>
+                          </svg>
+                        </div>
+                        <div class="home-page-card-item-txt-t">
+                          <span>{{ taskState.RUNNING }}</span>
+                        </div>
+                        <div class="home-page-card-item-txt-b">
+                          <span>运行中</span>
+                        </div>
+                      </div>
+                    </a-card>
+                    <div class="hp-top-card-line"></div>
                   </div>
-                  <div class="home-page-card-item-txt-b">
-                    <span>失败任务</span>
+                </a-col>
+                <a-col :span="4">
+                  <div class="hp-top-card">
+                    <a-card :bordered="false" style="flex: 1">
+                      <div class="home-page-card-item">
+                        <div class="home-page-card-img">
+                          <svg
+                            class="home-page-card-item-svg"
+                            style="fill: currentColor; color: #f7c739"
+                          >
+                            <use xlink:href="#icon-submitted-success"></use>
+                          </svg>
+                        </div>
+                        <div class="home-page-card-item-txt-t">
+                          <span>{{ taskState.BUSY }}</span>
+                        </div>
+                        <div class="home-page-card-item-txt-b">
+                          <span>慢任务</span>
+                        </div>
+                      </div>
+                    </a-card>
+                    <div class="hp-top-card-line"></div>
                   </div>
-                </div>
-              </a-card>
-            </a-col>
-            <a-col :span="4">
-              <a-card>
-                <div class="home-page-card-item">
-                  <div class="home-page-card-img">
-                    <img src="../../images/homePage/u6032.png" alt="" />
+                </a-col>
+                <a-col :span="4">
+                  <div class="hp-top-card">
+                    <a-card :bordered="false" style="flex: 1">
+                      <div class="home-page-card-item">
+                        <div class="home-page-card-img">
+                          <svg
+                            class="home-page-card-item-svg"
+                            style="fill: currentColor; color: #c9d3e0"
+                          >
+                            <use xlink:href="#icon-waitting-thread"></use>
+                          </svg>
+                        </div>
+                        <div class="home-page-card-item-txt-t">
+                          <span>{{ taskState.IDLE }}</span>
+                        </div>
+                        <div class="home-page-card-item-txt-b">
+                          <span>等待中</span>
+                        </div>
+                      </div>
+                    </a-card>
+                    <div class="hp-top-card-line"></div>
                   </div>
-                  <div class="home-page-card-item-txt-t">
-                    <span>{{ taskState.RUNNING }}</span>
+                </a-col>
+                <a-col :span="4">
+                  <div class="hp-top-card">
+                    <a-card :bordered="false" style="flex: 1">
+                      <div class="home-page-card-item">
+                        <div class="home-page-card-img">
+                          <svg
+                            class="home-page-card-item-svg"
+                            style="fill: currentColor; color: #eb7e65"
+                          >
+                            <use xlink:href="#icon-refresh"></use>
+                          </svg>
+                        </div>
+                        <div class="home-page-card-item-txt-t">
+                          <span>{{ taskState.UNLOCK }}</span>
+                        </div>
+                        <div class="home-page-card-item-txt-b">
+                          <span>等待重试</span>
+                        </div>
+                      </div>
+                    </a-card>
+                    <div class="hp-top-card-line"></div>
                   </div>
-                  <div class="home-page-card-item-txt-b">
-                    <span>运行中</span>
-                  </div>
-                </div>
-              </a-card>
-            </a-col>
-            <a-col :span="4">
-              <a-card>
-                <div class="home-page-card-item">
-                  <div class="home-page-card-img">
-                    <img src="../../images/homePage/u3998.png" alt="" />
-                  </div>
-                  <div class="home-page-card-item-txt-t">
-                    <span>{{ taskState.BUSY }}</span>
-                  </div>
-                  <div class="home-page-card-item-txt-b">
-                    <span>慢任务</span>
-                  </div>
-                </div>
-              </a-card>
-            </a-col>
-            <a-col :span="4">
-              <a-card>
-                <div class="home-page-card-item">
-                  <div class="home-page-card-img">
-                    <img src="../../images/homePage/u6036.png" alt="" />
-                  </div>
-                  <div class="home-page-card-item-txt-t">
-                    <span>{{ taskState.IDLE }}</span>
-                  </div>
-                  <div class="home-page-card-item-txt-b">
-                    <span>等待中</span>
-                  </div>
-                </div>
-              </a-card>
-            </a-col>
-            <a-col :span="4">
-              <a-card>
-                <div class="home-page-card-item">
-                  <div class="home-page-card-img">
-                    <img src="../../images/homePage/u4010.png" alt="" />
-                  </div>
-                  <div class="home-page-card-item-txt-t">
-                    <span>{{ taskState.UNLOCK }}</span>
-                  </div>
-                  <div class="home-page-card-item-txt-b">
-                    <span>等待重试</span>
-                  </div>
-                </div>
-              </a-card>
-            </a-col>
-            <a-col :span="4">
-              <a-card>
-                <div class="home-page-card-item">
-                  <div class="home-page-card-img">
-                    <img src="../../images/homePage/u4009.png" alt="" />
-                  </div>
-                  <div class="home-page-card-item-txt-t">
-                    <span>{{ taskState.SUCCESS }}</span>
-                  </div>
-                  <div class="home-page-card-item-txt-b">
-                    <span>已完成</span>
-                  </div>
-                </div>
-              </a-card>
-            </a-col>
-          </a-row>
-        </div>
-      </div>
-
-      <div class="hp-content-card">
-        <!-- title -->
-        <div class="hp-content-card-title"><span>同步进度</span></div>
-        <!-- main -->
-        <div>
-          <a-row type="flex">
-            <a-col flex="100px"><span>总进度</span></a-col>
-            <a-col flex="auto">
-              <a-tooltip :title="totalTitle">
-                <a-progress
-                  :percent="taskProcess.total.percentOfComplete"
-                  :success-percent="taskProcess.total.initialized"
-                  :strokeWidth="18"
-                /> </a-tooltip
-            ></a-col>
-          </a-row>
-          <a-row type="flex">
-            <a-col flex="100px"><span>同步到BDP</span></a-col>
-            <a-col flex="auto">
-              <a-tooltip :title="bdpTitle">
-                <a-progress
-                  :percent="taskProcess.bdp.percentOfComplete"
-                  :success-percent="taskProcess.bdp.initialized"
-                  :strokeWidth="18"
-                /> </a-tooltip
-            ></a-col>
-          </a-row>
-          <a-row type="flex">
-            <a-col flex="100px"><span>同步到ES</span></a-col>
-            <a-col flex="auto">
-              <a-tooltip :title="esTitle">
-                <a-progress
-                  :percent="taskProcess.es.percentOfComplete"
-                  :success-percent="taskProcess.es.initialized"
-                  :strokeWidth="18"
-                /> </a-tooltip
-            ></a-col>
-          </a-row>
-          <a-row type="flex">
-            <a-col flex="100px"><span>同步到FPS</span></a-col>
-            <a-col flex="auto">
-              <a-tooltip :title="fpsTitle">
-                <a-progress
-                  :percent="taskProcess.fps.percentOfComplete"
-                  :success-percent="taskProcess.fps.initialized"
-                  :strokeWidth="18"
-                /> </a-tooltip
-            ></a-col>
-          </a-row>
-        </div>
-      </div>
-
-      <div class="hp-content-card">
-        <!-- title -->
-        <div class="hp-content-card-title"><span>流量监控</span></div>
-        <!-- main -->
-        <div>
-          <div
-            ref="myChart_1"
-            style="width: 100%; height: 520px"
-            id="myChart_1"
-          ></div>
-        </div>
-      </div>
-
-      <div class="hp-content-card">
-        <!-- title -->
-        <div class="hp-content-card-title"><span>资源使用监控</span></div>
-        <!-- main -->
-        <div>
-          <div
-            ref="myChart_2"
-            style="width: 100%; height: 520px"
-            id="myChart_2"
-            class="my-chart"
-          ></div>
-          <div
-            ref="myChart_3"
-            style="width: 100%; height: 520px"
-            id="myChart_3"
-          ></div>
-        </div>
-      </div>
+                </a-col>
+                <a-col :span="4">
+                  <a-card :bordered="false">
+                    <div class="home-page-card-item">
+                      <div class="home-page-card-img">
+                        <svg
+                          class="home-page-card-item-svg"
+                          style="fill: currentColor; color: #9edaac"
+                        >
+                          <use xlink:href="#icon-success"></use>
+                        </svg>
+                      </div>
+                      <div class="home-page-card-item-txt-t">
+                        <span>{{ taskState.SUCCESS }}</span>
+                      </div>
+                      <div class="home-page-card-item-txt-b">
+                        <span>已完成</span>
+                      </div>
+                    </div>
+                  </a-card>
+                </a-col>
+              </a-row>
+            </div>
+          </div>
+        </a-col>
+        <a-col :span="24">
+          <div class="hp-content-card">
+            <!-- title -->
+            <div class="hp-content-card-title"><span>同步进度</span></div>
+            <!-- main -->
+            <div class="hp-content-card-main">
+              <a-row type="flex">
+                <a-col flex="100px"
+                  ><span class="hp-content-card-main-span">总进度</span></a-col
+                >
+                <a-col flex="auto" style="margin-bottom: 16px">
+                  <a-tooltip :title="totalTitle">
+                    <a-progress
+                      :percent="taskProcess.total.percentOfComplete"
+                      :success-percent="taskProcess.total.initialized"
+                      :strokeWidth="18"
+                    /> </a-tooltip
+                ></a-col>
+              </a-row>
+              <a-row type="flex">
+                <a-col flex="100px"
+                  ><span class="hp-content-card-main-span"
+                    >同步到BDP</span
+                  ></a-col
+                >
+                <a-col flex="auto" style="margin-bottom: 16px">
+                  <a-tooltip :title="bdpTitle">
+                    <a-progress
+                      :percent="taskProcess.bdp.percentOfComplete"
+                      :success-percent="taskProcess.bdp.initialized"
+                      :strokeWidth="18"
+                    /> </a-tooltip
+                ></a-col>
+              </a-row>
+              <a-row type="flex">
+                <a-col flex="100px"
+                  ><span class="hp-content-card-main-span"
+                    >同步到ES</span
+                  ></a-col
+                >
+                <a-col flex="auto" style="margin-bottom: 16px">
+                  <a-tooltip :title="esTitle">
+                    <a-progress
+                      :percent="taskProcess.es.percentOfComplete"
+                      :success-percent="taskProcess.es.initialized"
+                      :strokeWidth="18"
+                    /> </a-tooltip
+                ></a-col>
+              </a-row>
+              <a-row type="flex">
+                <a-col flex="100px"
+                  ><span class="hp-content-card-main-span"
+                    >同步到FPS</span
+                  ></a-col
+                >
+                <a-col flex="auto">
+                  <a-tooltip :title="fpsTitle">
+                    <a-progress
+                      :percent="taskProcess.fps.percentOfComplete"
+                      :success-percent="taskProcess.fps.initialized"
+                      :strokeWidth="18"
+                    /> </a-tooltip
+                ></a-col>
+              </a-row>
+            </div>
+          </div>
+        </a-col>
+        <a-col :span="24">
+          <div class="hp-content-card">
+            <!-- title -->
+            <div class="hp-content-card-title"><span>流量监控</span></div>
+            <!-- main -->
+            <div class="hp-content-card-main">
+              <div
+                ref="myChart_1"
+                style="width: 100%; height: 520px"
+                id="myChart_1"
+              ></div>
+            </div>
+          </div>
+        </a-col>
+        <a-col :span="24">
+          <div class="hp-content-card">
+            <!-- title -->
+            <div class="hp-content-card-title"><span>资源使用监控</span></div>
+            <!-- main -->
+            <div class="hp-content-card-main">
+              <div
+                ref="myChart_2"
+                style="width: 100%; height: 520px"
+                id="myChart_2"
+                class="my-chart"
+              ></div>
+              <div
+                ref="myChart_3"
+                style="width: 100%; height: 520px"
+                id="myChart_3"
+              ></div>
+            </div>
+          </div>
+        </a-col>
+      </a-row>
     </div>
   </div>
 </template>
@@ -204,6 +267,9 @@ import {
   getEngineriesSourceMem,
 } from "@/common/service";
 import * as echarts from "echarts";
+import SvgIcon from "@/components/svgIcon/index.vue";
+import "../../assets/iconfont.js";
+import "../../assets/iconfont.css";
 
 let chartList = [];
 
@@ -245,27 +311,22 @@ export default {
         fps: {},
       },
     });
-
     const totalTitle = computed(
       () =>
         `${state.taskProcess.total.running}/${state.taskProcess.total.initialized}/${state.taskProcess.total.total}`
     );
-
     const bdpTitle = computed(
       () =>
         `${state.taskProcess.bdp.running}/${state.taskProcess.bdp.initialized}/${state.taskProcess.bdp.total}`
     );
-
     const esTitle = computed(
       () =>
         `${state.taskProcess.es.running}/${state.taskProcess.es.initialized}/${state.taskProcess.es.total}`
     );
-
     const fpsTitle = computed(
       () =>
         `${state.taskProcess.fps.running}/${state.taskProcess.fps.initialized}/${state.taskProcess.fps.total}`
     );
-
     const init = async () => {
       let _taskState, _taskProcess;
       try {
@@ -274,14 +335,12 @@ export default {
       } catch (err) {
         console.log("homePage error", err);
       }
-
       // 重点指标
       _taskState.metrices.forEach((item) => {
         if (item.status) {
           state.taskState[item.status]++;
         }
       });
-
       // 同步进度
       _taskProcess.list.forEach((item) => {
         if (item.key) {
@@ -293,9 +352,7 @@ export default {
         }
       });
     };
-
     onMounted(init());
-
     return {
       ...toRefs(state),
       totalTitle,
@@ -333,7 +390,6 @@ export default {
     } catch (err) {
       console.log("init chart error", err);
     }
-
     // that.$nextTick(function () {
     //   // 通过 轮询 去获取 实时数据流
     //   that.myInterval = setInterval(() => {
@@ -396,7 +452,6 @@ export default {
           },
           series: chartData.series,
         };
-
         option && myChart_1.setOption(option);
         chartList.push(myChart_1);
       }
@@ -427,7 +482,10 @@ export default {
           title: {
             text: "CPU资源使用情况",
             textStyle: {
-              fontSize: 15,
+              fontSize: 14,
+              fontFamily: "PingFangSC-Medium",
+              color: "rgba(0,0,0,0.65)",
+              fontWeight: 500,
             },
           },
           tooltip: {
@@ -457,7 +515,6 @@ export default {
           },
           series: chartData.series,
         };
-
         option && myChart_2.setOption(option);
         chartList.push(myChart_2);
       }
@@ -488,7 +545,10 @@ export default {
           title: {
             text: "MEM资源使用情况",
             textStyle: {
-              fontSize: 15,
+              fontSize: 14,
+              fontFamily: "PingFangSC-Medium",
+              color: "rgba(0,0,0,0.65)",
+              fontWeight: 500,
             },
           },
           tooltip: {
@@ -518,12 +578,12 @@ export default {
           },
           series: chartData.series,
         };
-
         option && myChart_3.setOption(option);
         chartList.push(myChart_3);
       }
     },
   },
+  components: { SvgIcon },
 };
 </script>
 
@@ -533,8 +593,7 @@ export default {
 
   .hp-content {
     &-card {
-      margin-top: 30px;
-      min-height: 160px;
+      min-height: 150px;
       background: inherit;
       background-color: rgba(255, 255, 255, 1);
       box-sizing: border-box;
@@ -543,19 +602,25 @@ export default {
       border-color: rgba(228, 228, 228, 1);
       border-radius: 5px;
       box-shadow: 5px 5px 6px rgb(0 0 0 / 20%);
-      padding-left: 18px;
-      padding-right: 18px;
       &-title {
-        margin-top: 12px;
-        margin-bottom: 12px;
-        border-left: 5px solid rgba(45, 140, 240, 1);
-        padding-left: 15px;
-        height: 22px;
-        font-family: "Arial Negreta", "Arial Normal", "Arial";
-        font-weight: 700;
-        font-style: normal;
+        padding-left: 32px;
+        height: 54px;
+        line-height: 54px;
+        font-family: PingFangSC-Regular;
         font-size: 16px;
-        color: #797979;
+        color: #606266;
+        font-weight: 800;
+        border-bottom: 1px solid;
+        border-color: #dee4ec;
+      }
+      &-main {
+        padding: 24px 32px;
+        &-span {
+          font-family: PingFangSC-Regular;
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.45);
+          font-weight: 400;
+        }
       }
     }
   }
@@ -570,19 +635,37 @@ export default {
       height: 25px;
     }
 
+    &-svg {
+      height: 32px;
+      width: 32px;
+    }
+
     &-txt-t {
-      font-family: "Arial Negreta", "Arial Normal", "Arial";
-      font-weight: 700;
-      font-style: normal;
-      font-size: 20px;
+      font-family: HelveticaNeue;
+      font-size: 24px;
+      color: rgba(0, 0, 0, 0.65);
+      text-align: center;
+      font-weight: 400;
     }
 
     &-txt-b {
-      font-family: "Arial Normal", "Arial";
-      font-weight: 400;
-      font-style: normal;
+      font-family: PingFangSC-Regular;
       font-size: 14px;
-      color: #515151;
+      color: rgba(0, 0, 0, 0.45);
+      text-align: center;
+      line-height: 22px;
+      font-weight: 400;
+    }
+  }
+
+  .hp-top-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    &-line {
+      height: 60px;
+      width: 1px;
+      background: #eaf2fc;
     }
   }
 
