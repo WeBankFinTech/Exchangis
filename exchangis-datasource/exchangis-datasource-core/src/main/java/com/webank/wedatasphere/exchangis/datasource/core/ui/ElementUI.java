@@ -16,4 +16,6 @@ public interface ElementUI {
 
     String getValue();
 
+    String getDefaultValue();
+
 }
