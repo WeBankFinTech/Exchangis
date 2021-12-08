@@ -29,6 +29,8 @@ import com.webank.wedatasphere.linkis.computation.client.LinkisJobMetrics;
 import com.webank.wedatasphere.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
 import com.webank.wedatasphere.linkis.server.Message;
 import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,7 +54,7 @@ import java.util.*;
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("exchangis/job")
 public class ExchangisJobController {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisJobController.class);
     @Autowired
     private ExchangisJobService exchangisJobService;
 
@@ -114,6 +116,7 @@ public class ExchangisJobController {
     @PUT
     @Path("/dss/{nodeId}")
     public Message updateJobByDss(@PathParam("nodeId") Long nodeId, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
+        LOGGER.info("updateJobByDss nodeId {},ExchangisJobBasicInfoDTO {}", nodeId,exchangisJobBasicInfoDTO.toString());
         ExchangisJobBasicInfoVO job = exchangisJobService.updateJobByDss(exchangisJobBasicInfoDTO, nodeId);
         return Message.ok().data("result", job);
     }
@@ -135,7 +138,7 @@ public class ExchangisJobController {
     @DELETE
     @Path("/dss/{nodeId}")
     public Message deleteJobByDss(@PathParam("nodeId") Long nodeId) {
-
+        LOGGER.info("deleteJobByDss nodeId {}", nodeId);
         return Message.ok("job deleted");
     }
 
@@ -149,6 +152,7 @@ public class ExchangisJobController {
     @GET
     @Path("/dss/{nodeId}")
     public Message getJobByDssProject(@Context HttpServletRequest request, @PathParam("nodeId") Long nodeId) throws ExchangisJobErrorException {
+        LOGGER.info("getJobByDssProject nodeId {}", nodeId);
         ExchangisJob job = exchangisJobService.getJobByDss(request, nodeId);
         return Message.ok().data("result", job);
     }

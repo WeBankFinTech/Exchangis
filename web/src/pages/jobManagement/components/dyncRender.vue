@@ -5,14 +5,14 @@
       v-model:value="value"
       ref="select"
       :options="checkOptions"
-      @change="emitData"
+      @change="emitData(value)"
       style="width: 200px"
     >
     </a-select>
     <template v-else>
       <a-input
         v-model:value="value"
-        @change="emitData"
+        @change="emitData(value)"
         style="width: 200px"
       />
       <span>{{unit}}</span>
@@ -44,9 +44,9 @@ export default defineComponent({
         })
       })
     }
-    const emitData = (e) => {
+    const emitData = (value) => {
       let res = toRaw(props.param)
-      res.value = e.target.value
+      res.value = value
       context.emit("updateInfo", res);
     };
 

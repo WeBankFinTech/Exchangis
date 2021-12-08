@@ -7,6 +7,6 @@ import com.webank.wedatasphere.exchangis.appconn.operation.ExchangisQueryOperati
 public class ExchangisQueryService extends AbstractRefQueryService {
     @Override
     protected RefQueryOperation createRefQueryOperation() {
-        return new ExchangisQueryOperation();
+        return new ExchangisQueryOperation(this);
     }
 }
