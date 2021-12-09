@@ -161,9 +161,9 @@ export default {
             createSystem: this.modalCfg.createSystem,
             createIdentify: "",
             dataSourceName: formState.dataSourceName,
-            dataSourceDesc: formState.dataSourceDesc,
-            labels: formState.labels,
-            comment: formState.comment,
+            dataSourceDesc: formState.dataSourceDesc || "",
+            labels: formState.labels || "",
+            comment: formState.comment || "",
             connectParams: {
               ...formState
             }
@@ -176,9 +176,9 @@ export default {
             createSystem: this.modalCfg.createSystem,
             createIdentify: "",
             dataSourceName: formState.dataSourceName,
-            dataSourceDesc: formState.dataSourceDesc,
-            labels: formState.labels,
-            comment: formState.comment,
+            dataSourceDesc: formState.dataSourceDesc || "",
+            labels: formState.labels || "",
+            comment: formState.comment || "",
             connectParams: {
               ...formState
             }
