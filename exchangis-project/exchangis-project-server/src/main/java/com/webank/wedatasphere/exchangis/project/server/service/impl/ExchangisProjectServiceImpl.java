@@ -47,7 +47,6 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     @Override
     public ExchangisProject createProject(String username, CreateProjectRequest createProjectRequest) throws ExchangisProjectErrorException {
         LOGGER.info("user {} starts to create project {}", username, createProjectRequest.getProjectName());
-
         String workspaceName = createProjectRequest.getWorkspaceName();
         String projectName = createProjectRequest.getProjectName();
         String description = createProjectRequest.getDescription();
@@ -55,6 +54,13 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
         String editUsers = createProjectRequest.getEditUsers();
         String viewUsers = createProjectRequest.getViewUsers();
         String execUsers = createProjectRequest.getExecUsers();
+
+        QueryWrapper<ExchangisProject> query = new QueryWrapper<>();
+        query.eq("name", projectName);
+        Integer count = this.exchangisProjectMapper.selectCount(query);
+        if (count > 0) {
+            throw new ExchangisProjectErrorException(30041, "exchangis.project.create.error.name.exists");
+        }
 
         Date now = new Date();
         ExchangisProject entity = new ExchangisProject();
@@ -65,13 +71,14 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
                 entity.setDssProjectId(Long.parseLong(dssProjectId));
             }
         });
-        entity.setName(projectName);
+        entity.setName(StringUtils.isNotBlank(workspaceName) ? workspaceName : projectName);
         entity.setTags(tags);
         entity.setEditUsers(editUsers);
         entity.setViewUsers(viewUsers);
         entity.setExecUsers(execUsers);
         entity.setWorkspaceName(workspaceName);
         entity.setDescription(description);
+        entity.setDomain(StringUtils.isNotBlank(workspaceName) ? ExchangisProject.Domain.WORKSPACE.name() : ExchangisProject.Domain.STANDALONE.name());
 
         int insert = this.exchangisProjectMapper.insert(entity);
         if (insert <= 0) {
@@ -96,11 +103,25 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
             throw new ExchangisProjectErrorException(30041, "exchangis.project.update.error");
         }
 
+        QueryWrapper<ExchangisProject> query = new QueryWrapper<>();
+        query.eq("name", updateProjectRequest.getProjectName());
+        query.ne("id", exchangisProject.getId());
+        Integer count = this.exchangisProjectMapper.selectCount(query);
+        if (count > 0) {
+            throw new ExchangisProjectErrorException(30041, "exchangis.project.update.error.name.exists");
+        }
+
         if (!Strings.isNullOrEmpty(updateProjectRequest.getDescription())) {
             exchangisProject.setDescription(updateProjectRequest.getDescription());
         }
+
         if (!Strings.isNullOrEmpty(updateProjectRequest.getProjectName())) {
             exchangisProject.setName(updateProjectRequest.getProjectName());
+        }
+
+        if (!Strings.isNullOrEmpty(updateProjectRequest.getWorkspaceName())) {
+            exchangisProject.setWorkspaceName(updateProjectRequest.getWorkspaceName());
+            exchangisProject.setName(updateProjectRequest.getWorkspaceName());
         }
 
         if (!Strings.isNullOrEmpty(updateProjectRequest.getTags())) {
@@ -164,8 +185,8 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
 
     @Transactional
     @Override
-    public void deleteProjectByDss(HttpServletRequest request, String dssProjectId) {
-        ExchangisProjectGetDTO dto = this.getProjectByDssId(dssProjectId);
+    public void deleteProjectByDss(HttpServletRequest request, String workspaceName) {
+        ExchangisProjectGetDTO dto = this.getProjectByDssName(workspaceName);
         if (null != dto && null != dto.getId() && StringUtils.isNotBlank(dto.getId())) {
             this.deleteProject(request, dto.getId());
         }
@@ -178,9 +199,9 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     }
 
     @Override
-    public ExchangisProjectGetDTO getProjectByDssId(String dssProjectId) {
+    public ExchangisProjectGetDTO getProjectByDssName(String workspaceName) {
         QueryWrapper<ExchangisProject> wrapper = new QueryWrapper<>();
-        wrapper.eq("dss_project_id", Long.parseLong(dssProjectId));
+        wrapper.eq("workspace_name", workspaceName);
         return new ExchangisProjectGetDTO(this.exchangisProjectMapper.selectOne(wrapper));
     }
 
