@@ -1,8 +1,11 @@
 package com.webank.wedatasphere.exchangis.datasource.vo;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.util.Date;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DataSourceCreateVO {
     private String dataSourceName;
 
