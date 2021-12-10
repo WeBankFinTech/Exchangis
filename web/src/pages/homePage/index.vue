@@ -16,7 +16,7 @@
                         <div class="home-page-card-img">
                           <svg
                             class="home-page-card-item-svg"
-                            style="fill: currentColor; color: red"
+                            style="fill: currentColor; color: #eb7e65"
                           >
                             <use xlink:href="#icon-failure"></use>
                           </svg>
@@ -163,7 +163,9 @@
                     <a-progress
                       :percent="taskProcess.total.percentOfComplete"
                       :success-percent="taskProcess.total.initialized"
-                      :strokeWidth="18"
+                      :strokeWidth="16"
+                      :success="successItem"
+                      strokeColor="#89C2D9"
                     /> </a-tooltip
                 ></a-col>
               </a-row>
@@ -178,7 +180,8 @@
                     <a-progress
                       :percent="taskProcess.bdp.percentOfComplete"
                       :success-percent="taskProcess.bdp.initialized"
-                      :strokeWidth="18"
+                      :strokeWidth="16"
+                      strokeColor="#89C2D9"
                     /> </a-tooltip
                 ></a-col>
               </a-row>
@@ -193,7 +196,8 @@
                     <a-progress
                       :percent="taskProcess.es.percentOfComplete"
                       :success-percent="taskProcess.es.initialized"
-                      :strokeWidth="18"
+                      :strokeWidth="16"
+                      strokeColor="#89C2D9"
                     /> </a-tooltip
                 ></a-col>
               </a-row>
@@ -208,7 +212,8 @@
                     <a-progress
                       :percent="taskProcess.fps.percentOfComplete"
                       :success-percent="taskProcess.fps.initialized"
-                      :strokeWidth="18"
+                      :strokeWidth="16"
+                      strokeColor="#89C2D9"
                     /> </a-tooltip
                 ></a-col>
               </a-row>
@@ -293,6 +298,13 @@ const initOptions = (ori, tar) => {
   });
   return _tar;
 };
+
+// echarts 线条颜色
+const lineColorLists = [
+  { color: "#73A0FA" },
+  { color: "#9EDAAC" },
+  { color: "#F7C739" },
+];
 export default {
   setup() {
     const state = reactive({
@@ -379,6 +391,9 @@ export default {
         series: [],
       },
       myInterval: "",
+      successItem: {
+        strokeColor: "#9EDAAC",
+      },
     };
   },
   async mounted() {
@@ -422,6 +437,9 @@ export default {
         console.log("initEngineriesChartData error", err);
       }
       const chartData = toRaw(that.engineriesChartData);
+      chartData.series.forEach((i, idx) => {
+        i["lineStyle"] = lineColorLists[idx];
+      });
       if (chartDom) {
         const myChart_1 = echarts.init(chartDom);
         const option = {
@@ -476,6 +494,9 @@ export default {
         console.log("initCpuChartData error", err);
       }
       const chartData = cloneDeep(that.cpuChartData);
+      chartData.series.forEach((i, idx) => {
+        i["lineStyle"] = lineColorLists[idx];
+      });
       if (chartDom) {
         const myChart_2 = echarts.init(chartDom);
         const option = {
@@ -539,6 +560,9 @@ export default {
         console.log("initMemChartData error", err);
       }
       const chartData = cloneDeep(that.memChartData);
+      chartData.series.forEach((i, idx) => {
+        i["lineStyle"] = lineColorLists[idx];
+      });
       if (chartDom) {
         const myChart_3 = echarts.init(chartDom);
         const option = {

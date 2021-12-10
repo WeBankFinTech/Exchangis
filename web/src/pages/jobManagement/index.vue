@@ -109,6 +109,8 @@ export default {
 <style scoped lang="less">
 .content {
   box-sizing: border-box;
+  background-color: #fff;
+  height: calc(100vh - 48px);
 }
 .projectNav {
   display: flex;

@@ -123,7 +123,7 @@ export default {
       stream: "流式任务",
     },
     action: {
-      createJob: "新增任务",
+      createJob: "创建任务",
       copyJob: "复制任务",
       import: "导入",
       export: "导出",
