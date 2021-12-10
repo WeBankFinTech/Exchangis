@@ -354,7 +354,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     public Message deleteDataSource(HttpServletRequest request, /*String type,*/ Long id) throws Exception {
 
         QueryWrapper<ExchangisJobDsBind> condition = new QueryWrapper<>();
-        condition.eq("sourceDsId", id).or().eq("sinkDsId", id);
+        condition.eq("source_ds_id", id).or().eq("sink_ds_id", id);
         Integer inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
         if (inUseCount > 0) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "目前存在引用依赖");
@@ -583,7 +583,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String username = SecurityFilter.getLoginUsername(request);
         LOGGER.info("queryDataSources userName:" + username);
         Integer page = Objects.isNull(vo.getPage()) ? 1 : vo.getPage();
-        Integer pageSize = Objects.isNull(vo.getPageSize()) ? 20 : vo.getPageSize();
+        Integer pageSize = Objects.isNull(vo.getPageSize()) ? 100 : vo.getPageSize();
 
         String dataSourceName = Objects.isNull(vo.getName()) ? "" : vo.getName();
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
