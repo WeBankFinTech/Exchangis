@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.datasource.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobInfo;
@@ -50,9 +51,11 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisDataSourceService.class);
 
+
     @Autowired
     public ExchangisDataSourceService(ExchangisDataSourceContext context, ExchangisJobInfoMapper exchangisJobInfoMapper, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper) {
         super(context, exchangisJobParamConfigMapper, exchangisJobInfoMapper);
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
     @Autowired
@@ -351,7 +354,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     public Message deleteDataSource(HttpServletRequest request, /*String type,*/ Long id) throws Exception {
 
         QueryWrapper<ExchangisJobDsBind> condition = new QueryWrapper<>();
-        condition.eq("sourceDsId", id).or().eq("sinkDsId", id);
+        condition.eq("source_ds_id", id).or().eq("sink_ds_id", id);
         Integer inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
         if (inUseCount > 0) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "目前存在引用依赖");
@@ -580,7 +583,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String username = SecurityFilter.getLoginUsername(request);
         LOGGER.info("queryDataSources userName:" + username);
         Integer page = Objects.isNull(vo.getPage()) ? 1 : vo.getPage();
-        Integer pageSize = Objects.isNull(vo.getPageSize()) ? 20 : vo.getPageSize();
+        Integer pageSize = Objects.isNull(vo.getPageSize()) ? 100 : vo.getPageSize();
 
         String dataSourceName = Objects.isNull(vo.getName()) ? "" : vo.getName();
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
