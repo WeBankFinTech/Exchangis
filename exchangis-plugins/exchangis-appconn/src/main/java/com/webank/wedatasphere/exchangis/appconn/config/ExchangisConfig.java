@@ -5,9 +5,9 @@ import com.webank.wedatasphere.linkis.server.conf.ServerConfiguration;
 
 public class ExchangisConfig {
 
-     public final static String BASEURL = "/api/rest_s/" + ServerConfiguration.BDP_SERVER_VERSION() + "/exchangis";
-     public final static String SQOOP_JUMP_URL_FORMAT="/dss/exchangis/#/childJobManagement";
-     public final static String DATAX_JUMP_URL_FORMAT="/dss/exchangis/#/childJobManagement";
+     public final static String BASEURL = "/api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/exchangis";
+     public final static String SQOOP_JUMP_URL_FORMAT="dss/exchangis/#/childJobManagement";
+     public final static String DATAX_JUMP_URL_FORMAT="dss/exchangis/#/childJobManagement";
 
 
      public final static String EXCHANGIS_APPCONN_NAME = CommonVars.apply("wds.dss.appconn.exchangis.name", "Exchangis").getValue();
@@ -22,6 +22,7 @@ public class ExchangisConfig {
      public final static String WORKSPACE_NAME = "workspaceName";
      public final static String PROJECT_NAME = "projectName";
      public final static String DSS_PROJECT_ID="dssProjectId";
+     public final static String DSS_PROJECT_NAME="dssProjectName";
      public final static String DESCRIPTION = "description";
      public final static String TAGS = "tags";
      public final static String EDIT_USERS = "editUsers";

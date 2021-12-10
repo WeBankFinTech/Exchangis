@@ -11,7 +11,9 @@ public class ExchangisJobBasicInfoDTO {
 
     private Long dssProjectId;
 
-    private Long nodeId;
+    private String dssProjectName;
+
+    private String nodeId;
 
     private String nodeName;
 
@@ -37,9 +39,13 @@ public class ExchangisJobBasicInfoDTO {
 
     public void setDssProjectId(Long dssProjectId) { this.dssProjectId = dssProjectId; }
 
-    public Long getNodeId() { return nodeId; }
+    public String getNodeId() {
+        return nodeId;
+    }
 
-    public void setNodeId(Long nodeId) { this.nodeId = nodeId; }
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
+    }
 
     public String getNodeName() { return nodeName; }
 
@@ -85,4 +91,11 @@ public class ExchangisJobBasicInfoDTO {
         this.jobDesc = jobDesc;
     }
 
+    public String getDssProjectName() {
+        return dssProjectName;
+    }
+
+    public void setDssProjectName(String dssProjectName) {
+        this.dssProjectName = dssProjectName;
+    }
 }
