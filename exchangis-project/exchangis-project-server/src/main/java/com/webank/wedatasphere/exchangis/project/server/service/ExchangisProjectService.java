@@ -22,11 +22,11 @@ public interface ExchangisProjectService {
 
      void deleteProject(HttpServletRequest request, String id);
 
-     void deleteProjectByDss(HttpServletRequest request, String dssProjectId);
+     void deleteProjectByDss(HttpServletRequest request, String workspaceName);
 
      ExchangisProjectGetDTO getProjectById(String projectId);
 
-     ExchangisProjectGetDTO getProjectByDssId(String dssProjectId);
+     ExchangisProjectGetDTO getProjectByDssName(String workspaceName);
 
 //     ExchangisProject createProject(CreateStreamProjectRequest createStreamProjectRequest) throws ExchangisProjectErrorException;
 //
