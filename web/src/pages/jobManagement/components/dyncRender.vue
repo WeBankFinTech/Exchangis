@@ -15,7 +15,7 @@
         @change="emitData(value)"
         style="width: 200px"
       />
-      <span>{{unit}}</span>
+      <span style="margin-left: 5px">{{unit}}</span>
     </template>
 
   </div>
