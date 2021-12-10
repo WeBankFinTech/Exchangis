@@ -59,6 +59,7 @@
                   $t("dataSource.table.list.columns.actions.editButton")
                 }}</a-button
               >
+              <span style="color: #DEE4EC">|</span>
               <a-button
                 size="small"
                 v-show="!row.text.expire"
@@ -68,9 +69,11 @@
                   $t("dataSource.table.list.columns.actions.expireButton")
                 }}</a-button
               >
+              <span v-show="!row.text.expire" style="color: #DEE4EC">|</span>
               <a-button size="small" @click="handleTestConnect(row)" type="link">{{
                 $t("dataSource.table.list.columns.actions.testConnectButton")
               }}</a-button>
+              <span style="color: #DEE4EC">|</span>
               <a-button size="small" @click="handleDelete(row)" type="link">{{
                 $t("dataSource.table.list.columns.actions.deleteButton")
               }}</a-button>
@@ -169,11 +172,12 @@ export default {
         title: t("dataSource.table.list.columns.title.version"),
         align: "center",
         slots: { customRender: "version" },
+        width: 80
       },
       {
         title: t("dataSource.table.list.columns.title.describe"),
         align: "center",
-        dataIndex: "desc",
+        dataIndex: "desc"
       },
       {
         title: t("dataSource.table.list.columns.title.updatetim"),
@@ -328,6 +332,7 @@ export default {
   background-color: #dee4ec;
   margin-left: -24px;
 }
-
-
+:deep(.ant-table-pagination.ant-pagination) {
+  float: left;
+}
 </style>
