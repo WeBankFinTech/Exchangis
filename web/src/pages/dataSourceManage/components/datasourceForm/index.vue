@@ -1,5 +1,5 @@
 <template>
-  <div class="table-warp" style="padding-bottom: 32px">
+  <div class="table-warp" style="padding-bottom: 32px;">
     <form-create :rule="rule" v-model:api="fApi" :option="options" v-model="formData"/>
     <a-button type="primary" @click="submit" style="float: right;margin: 0 0 0 10px;">确定</a-button>
     <a-button @click="$emit('cancel')" style="float: right">取消</a-button>
@@ -118,8 +118,7 @@ export default {
             required: true,
             message: `${this.$t('message.linkis.datasource.pleaseInput')}${this.$t('message.linkis.datasource.sourceName')}`,
             trigger: 'blur'
-          },
-          ],
+          }],
         },
         {
           type: "input",
@@ -324,5 +323,9 @@ export default {
         }
       }
     }
+  }
+  :deep(.ant-form-item-label){
+    flex: 0 0 20%;
+    max-width: 20%;
   }
 </style>
