@@ -7,15 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
-import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
-import com.webank.wedatasphere.exchangis.datasource.core.ui.InputElementUI;
-import com.webank.wedatasphere.exchangis.datasource.core.ui.OptionElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
@@ -135,7 +129,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     }
 
     @Override
-    public ExchangisJobBasicInfoVO updateJobByDss(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO, Long nodeId) {
+    public ExchangisJobBasicInfoVO updateJobByDss(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO, String nodeId) {
         Optional<ExchangisJob> optional = this.getByNodeId(nodeId);
         if (optional.isPresent()) {
             ExchangisJob job = optional.get();
@@ -148,7 +142,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         return null;
     }
 
-    private Optional<ExchangisJob> getByNodeId(Long nodeId) {
+    private Optional<ExchangisJob> getByNodeId(String nodeId) {
         ExchangisJob job = null;
         LambdaQueryChainWrapper<ExchangisJob> query =
                 exchangisJobService.lambdaQuery().eq(ExchangisJob::getNodeId, nodeId);
@@ -172,7 +166,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     }
 
     @Override
-    public void deleteJobByDss(Long nodeId) {
+    public void deleteJobByDss(String nodeId) {
         this.getByNodeId(nodeId).ifPresent(job -> {
             exchangisJobService.removeById(job.getId());
             exchangisJobDsBindService.updateJobDsBind(job.getId(), new ArrayList<>());
@@ -204,7 +198,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     }
 
     @Override
-    public ExchangisJob getJobByDss(HttpServletRequest request, Long nodeId) throws ExchangisJobErrorException {
+    public ExchangisJob getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobErrorException {
 
         Optional<ExchangisJob> optional = this.getByNodeId(nodeId);
         if (optional.isPresent()) {
