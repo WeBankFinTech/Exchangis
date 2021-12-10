@@ -10,7 +10,7 @@
         />
       </a-col>
       <a-col :span="24"><div class="line"></div></a-col>
-      <a-col :span="24">
+      <a-col :span="24" style="overflow-x: auto">
         <a-table
           :columns="columns"
           :data-source="dataSourceList"
@@ -141,24 +141,28 @@ export default {
         title: t("dataSource.table.list.columns.title.name"),
         dataIndex: "name",
         align: "center",
+        width: 200
       },
       {
         title: t("dataSource.table.list.columns.title.type"),
         dataIndex: "dataSourceTypeId",
         align: "center",
         slots: { customRender: "dataSourceTypeId" },
+        width: 100
       },
       {
         title: t("dataSource.table.list.columns.title.status"),
         dataIndex: "expire",
         align: "center",
         slots: { customRender: "status" },
+        width: 80
       },
       {
         title: t("dataSource.table.list.columns.title.tags"),
         align: "center",
         dataIndex: "labels",
         slots: { customRender: "tags" },
+        width: 150
       },
       {
         title: t("dataSource.table.list.columns.title.version"),
@@ -175,16 +179,19 @@ export default {
         align: "center",
         dataIndex: "modifyTime",
         slots: { customRender: "modifyTime" },
+        width: 200
       },
       {
         title: t("dataSource.table.list.columns.title.creator"),
         align: "center",
         dataIndex: "createUser",
+        width: 80
       },
       {
         title: t("dataSource.table.list.columns.title.updater"),
         align: "center",
         dataIndex: "modifyUser",
+        width: 80
       },
       {
         title: t("dataSource.table.list.columns.title.action"),
@@ -301,6 +308,7 @@ export default {
 };
 </script>
 <style scoped lang="less">
+@import '../../common/content.less';
 .content {
   padding: 16px 24px;
   box-sizing: border-box;
@@ -319,4 +327,6 @@ export default {
   background-color: #dee4ec;
   margin-left: -24px;
 }
+
+
 </style>
