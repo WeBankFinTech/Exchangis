@@ -53,7 +53,7 @@
             <a-space>
               <a-button
                 size="small"
-                @click="handleEdit(row.text.id, row.text.dataSourceTypeId)"
+                @click="handleEdit(row.text.id, row.text.dataSourceTypeId, row.text.createSystem)"
                 type="link"
                 >{{
                   $t("dataSource.table.list.columns.actions.editButton")
@@ -104,6 +104,7 @@
       :id="modalCfg.id"
       :type="modalCfg.type"
       :mode="modalCfg.mode"
+      :modalCfg="modalCfg"
       @finish="handleModalFinish"
     />
   </div>

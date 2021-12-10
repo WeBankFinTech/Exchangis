@@ -1,5 +1,5 @@
 <template>
-  <a-modal :title="$t(`dataSource.editModal.title.${mode}`)" :footer="null" :visible="visible" :confirm-loading="confirmLoading">
+  <a-modal :title="$t(`dataSource.editModal.title.${mode}`)" :footer="null" :visible="visible" :confirm-loading="confirmLoading" :width="600">
     <a-spin :spinning="confirmLoading">
       <DatasourceForm :data="modalCfg" ref="datasourceForm" @submit="handleOk" @cancel="$emit('update:visible', false)"/>
       <!--<a-form ref="formRef" :model="formState" :label-col="{ span: 6 }">-->
