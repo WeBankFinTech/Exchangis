@@ -61,6 +61,7 @@ public class ExchangisProjectDeletionOperation implements ProjectDeletionOperati
             logger.error("delete Exchangis Project Exception", e);
             throw new ExternalOperationFailedException(31020,e.getMessage());
         }
+
         Map<String, Object> header = (Map<String, Object>) resMap.get("header");
         int code = (int) header.get("code");
         String errorMsg = "";

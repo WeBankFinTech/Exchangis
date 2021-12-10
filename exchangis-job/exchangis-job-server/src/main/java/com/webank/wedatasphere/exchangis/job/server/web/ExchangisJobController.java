@@ -115,7 +115,7 @@ public class ExchangisJobController {
 
     @PUT
     @Path("/dss/{nodeId}")
-    public Message updateJobByDss(@PathParam("nodeId") Long nodeId, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
+    public Message updateJobByDss(@PathParam("nodeId") String nodeId, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
         LOGGER.info("updateJobByDss nodeId {},ExchangisJobBasicInfoDTO {}", nodeId,exchangisJobBasicInfoDTO.toString());
         ExchangisJobBasicInfoVO job = exchangisJobService.updateJobByDss(exchangisJobBasicInfoDTO, nodeId);
         return Message.ok().data("result", job);
@@ -137,7 +137,7 @@ public class ExchangisJobController {
 
     @DELETE
     @Path("/dss/{nodeId}")
-    public Message deleteJobByDss(@PathParam("nodeId") Long nodeId) {
+    public Message deleteJobByDss(@PathParam("nodeId") String nodeId) {
         LOGGER.info("deleteJobByDss nodeId {}", nodeId);
         return Message.ok("job deleted");
     }
@@ -151,7 +151,7 @@ public class ExchangisJobController {
 
     @GET
     @Path("/dss/{nodeId}")
-    public Message getJobByDssProject(@Context HttpServletRequest request, @PathParam("nodeId") Long nodeId) throws ExchangisJobErrorException {
+    public Message getJobByDssProject(@Context HttpServletRequest request, @PathParam("nodeId") String nodeId) throws ExchangisJobErrorException {
         LOGGER.info("getJobByDssProject nodeId {}", nodeId);
         ExchangisJob job = exchangisJobService.getJobByDss(request, nodeId);
         return Message.ok().data("result", job);

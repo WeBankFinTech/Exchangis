@@ -38,15 +38,25 @@ public class ExchangisQueryOperation implements RefQueryOperation<OpenRequestRef
     public ResponseRef query(OpenRequestRef openRequestRef) throws ExternalOperationFailedException {
         ExchangisOpenRequestRef exchangisOpenRequestRef = (ExchangisOpenRequestRef) openRequestRef;
 
-        logger.info("query job=> name {},nodeType {},jobContent {}",exchangisOpenRequestRef.getName(),exchangisOpenRequestRef.getType(),exchangisOpenRequestRef.getJobContent());
-
+        logger.info("query job=>jobContent:{} ||,projectId:{}  ||,projectName:{}  ||,parameters:{} ||,type:{}",exchangisOpenRequestRef.getJobContent(),exchangisOpenRequestRef.getProjectId(),exchangisOpenRequestRef.getProjectName(),exchangisOpenRequestRef.getParameters().toString(),exchangisOpenRequestRef.getType());
         try {
             ExchangisGetAction exchangisGetAction = new ExchangisGetAction();
 
+            String name = exchangisOpenRequestRef.getName();
+            String type = openRequestRef.getType();
+            String jobType = ExchangisConfig.JOB_TYPE_OFFLINE.toString();
+            Map<String, Object> contextVal = null;
+            try {
+//                String contextID = exchangisOpenRequestRef.getJobContent().get("contextID").toString();
+//                Map contextIDMap =  BDPJettyServerHelper.jacksonJson().readValue(contextID, Map.class);
+//                contextVal = (Map<String, Object>) contextIDMap.get("value");
+//                logger.info("contextVal {}",contextVal.toString());
+            }catch (Exception e){
+                throw new ExternalOperationFailedException(31023, "Get node Id failed!", e);
+            }
 
-            String nodeId = AppconnUtils.getJobContent((Map<String, Object>)exchangisOpenRequestRef.getJobContent());
-
-            String jobUrl=getBaseUrl()+"/dss/"+nodeId;
+           // logger.info("exchangisCommonResponseRef nodeId {}",nodeId);
+            String jobUrl=getBaseUrl()+"/dss/";
 
             SSOUrlBuilderOperation ssoUrlBuilderOperation = exchangisOpenRequestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
             ssoUrlBuilderOperation.setAppName(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
@@ -62,17 +72,19 @@ public class ExchangisQueryOperation implements RefQueryOperation<OpenRequestRef
 
 
             String jobId = exchangisCommonResponseRef.toMap().get("id").toString();
-            logger.info("exchangisCommonResponseRef jobId {}",jobId);
+
 
             String baseUrl = exchangisOpenRequestRef.getParameter("redirectUrl").toString();
             String jumpUrl = baseUrl;
+            logger.info("exchangisCommonResponseRef jobId {},baseUrl {}",jobId,baseUrl);
             if(ExchangisConfig.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisOpenRequestRef.getType())){
-                jumpUrl = ExchangisConfig.getUrl(ExchangisConfig.BASEURL,ExchangisConfig.SQOOP_JUMP_URL_FORMAT);
+                jumpUrl +=ExchangisConfig.SQOOP_JUMP_URL_FORMAT;
             }else if(ExchangisConfig.NODE_TYPE_DATAX.equalsIgnoreCase(exchangisOpenRequestRef.getType())){
-                jumpUrl = ExchangisConfig.getUrl(ExchangisConfig.BASEURL,ExchangisConfig.DATAX_JUMP_URL_FORMAT);
+                jumpUrl += ExchangisConfig.DATAX_JUMP_URL_FORMAT;
             }
             jumpUrl +="?id="+jobId;
             Map<String,String> retMap = new HashMap<>();
+            logger.info("exchangisCommonResponseRef jumpUrl {}",jumpUrl);
             retMap.put("jumpUrl",jumpUrl);
             return new ExchangisOpenResponseRef(DSSCommonUtils.COMMON_GSON.toJson(retMap),0);
         } catch (Exception e) {
