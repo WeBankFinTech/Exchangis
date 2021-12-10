@@ -79,57 +79,6 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         return params;
     });
 
-    private static final JobParamDefine<Map<String, Object>> HIVE_TABLE = JobParams.define("hive.table", (BiFunction<String, SubExchangisJob, Map<String, Object>>) (k, job) -> {
-        Map<String, Object> params = new HashMap<>();
-
-        JobParamSet settings = job.getRealmParams(job.getSourceType().equalsIgnoreCase("HIVE") ? REALM_JOB_CONTENT_SOURCE : REALM_JOB_CONTENT_SINK);
-
-        if (job.getSourceType().equalsIgnoreCase("HIVE")) {
-            if (null != settings.get("exchangis.job.ds.params.sqoop.hive.r.trans_proto")) {
-                if (null != settings.get("exchangis.job.ds.params.sqoop.hive.r.trans_proto").getValue()) {
-                    if (!settings.get("exchangis.job.ds.params.sqoop.hive.r.trans_proto").getValue().toString().equals("记录")) {
-                        return params;
-                    }
-                }
-            }
-        }
-
-        if (job.getSinkType().equalsIgnoreCase("HIVE")) {
-            if (null != settings.get("exchangis.job.ds.params.sqoop.hive.w.trans_proto")) {
-                if (null != settings.get("exchangis.job.ds.params.sqoop.hive.w.trans_proto").getValue()) {
-                    if (!settings.get("exchangis.job.ds.params.sqoop.hive.w.trans_proto").getValue().toString().equals("记录")) {
-                        return params;
-                    }
-                }
-            }
-        }
-
-        params.put("sqoop.args.fields.terminated.by", settings.get(job.getSourceType().equalsIgnoreCase("HIVE") ? "exchangis.job.ds.params.sqoop.hive.r.row_format" : "exchangis.job.ds.params.sqoop.hive.w.row_format").getValue().toString());
-        params.put("sqoop.args.hive.database", settings.get("database").getValue().toString());
-        params.put("sqoop.args.hive.table", settings.get("table").getValue().toString());
-        if (job.getSinkType().equalsIgnoreCase("HIVE")) {
-            params.put("sqoop.args.hive.import", "");
-            params.put("sqoop.args.hive.overwrite", "");
-        }
-
-        JobParam<?> partitionSetting = settings.get(job.getSourceType().equalsIgnoreCase("HIVE") ? "exchangis.job.ds.params.sqoop.hive.r.partition" : "exchangis.job.ds.params.sqoop.hive.w.partition");
-        if (null != partitionSetting) {
-            Object partitionValue = partitionSetting.getValue();
-            if (null != partitionValue) {
-                String partition = partitionValue.toString();
-                if (StringUtils.isNotBlank(partition)) {
-                    String[] _partition = partition.split("=");
-                    if (_partition.length >= 2) {
-                        params.put("sqoop.args.hive.partition.key", _partition[0]);
-                        params.put("sqoop.args.hive.partition.value", _partition[1]);
-                    }
-                }
-            }
-        }
-
-        return params;
-    });
-
     private static final JobParamDefine<String> NUM_MAPPERS = JobParams.define("sqoop.args.num.mappers", (BiFunction<String, JobParamSet, String>) (k, settings) -> {
         String numMappers = "1";
         if (null != settings.get("exchangis.sqoop.setting.max.parallelism")) {
@@ -166,8 +115,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         try {
             SqoopExchangisEngineJob engineJob = new SqoopExchangisEngineJob();
             engineJob.setId(inputJob.getId());
-            // engineJob.getJobContent().put("", "");
-            // pass-through the params
+
             Map<String, Object> sqoopParams = new HashMap<>();
 
             JobParamSet jobSettings = inputJob.getRealmParams(REALM_JOB_SETTINGS);
@@ -179,54 +127,23 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             sqoopParams.put("sqoop.args.verbose", "");
             sqoopParams.put("sqoop.args.num.mappers", NUM_MAPPERS.newParam(jobSettings).getValue());
 
-            if (RDBMS.newParam(inputJob).getValue().equalsIgnoreCase("MYSQL")) {
-
-                JobParamSet rdbmsSettings = null;
-                if (inputJob.getSourceType().equalsIgnoreCase("MYSQL")) {
-                    rdbmsSettings = sourceSettings;
-                    if (null != sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition"))
-                        if (null != sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition"))
-                            if (null != sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition").getValue())
-                                if (StringUtils.isNotBlank(sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition").getValue().toString())) {
-                                    sqoopParams.put("sqoop.args.where", sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition").getValue().toString());
-                                }
-                } else {
-                    rdbmsSettings = sinkSettings;
-                }
-                String connectProtocol = "jdbc:mysql://";
-                Object host = ctx.getDatasourceParam(rdbmsSettings.get("datasource").getValue().toString()).get("host");
-                Object port = ctx.getDatasourceParam(rdbmsSettings.get("datasource").getValue().toString()).get("port");
-                Object database = rdbmsSettings.get("database").getValue();
-                sqoopParams.put("sqoop.args.connect", String.format("%s%s:%s/%s", connectProtocol, host, port, database));
-                sqoopParams.put("sqoop.args.username", ctx.getDatasourceParam(rdbmsSettings.get("datasource").getValue().toString()).get("username"));
-                sqoopParams.put("sqoop.args.password", ctx.getDatasourceParam(rdbmsSettings.get("datasource").getValue().toString()).get("password"));
-                sqoopParams.put("sqoop.args.table", rdbmsSettings.get("table").getValue().toString());
+            if (mode.equals("import")) {
+                Map<String, Object> importParams = this.buildImportParam(inputJob, expectJob, ctx, jobSettings, sourceSettings, sinkSettings);
+                sqoopParams.putAll(importParams);
             }
 
             if (mode.equals("export")) {
-                sqoopParams.putAll(HIVE_HCATALOG_EXPORT.newParam(inputJob).getValue());
+                Map<String, Object> exportParams = this.buildExportParam(inputJob, expectJob, ctx, jobSettings, sourceSettings, sinkSettings);
+                sqoopParams.putAll(exportParams);
             }
 
-            if (mode.equals("import")) {
-                sqoopParams.put("sqoop.args.target.dir", TARGET_DIR.newParam(sinkSettings.get("table").getValue()).getValue());
-                sqoopParams.put("sqoop.args.delete.target.dir", "");
-            }
-
-            sqoopParams.putAll(HIVE_TABLE.newParam(inputJob).getValue());
-
-            // sqoopParams.putAll(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
-            // sqoopParams.putAll(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_CONTENT_SINK, false));
-            // sqoopParams.putAll(inputJob.getParamsToMap(REALM_JOB_CONTENT_SOURCE, false));
             resolveTransformMappings(inputJob, inputJob.getRealmParams(SubExchangisJob.REALM_JOB_COLUMN_MAPPING), sqoopParams);
 
             engineJob.getJobContent().put("sqoop-params", sqoopParams);
-
             engineJob.setRuntimeParams(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
-
             engineJob.setTaskName(inputJob.getTaskName());
             if (Objects.nonNull(expectJob)) {
                 engineJob.setJobName(expectJob.getJobName());
-                // engineJob.setRuntimeParams(expectJob.getRuntimeParams());
                 engineJob.setEngine(expectJob.getEngine());
             }
             engineJob.setCreateUser(inputJob.getCreateUser());
@@ -257,6 +174,100 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             String column = COLUMN_SERIAL.newParam(dataSourceJobParamSet).getValue();
             sqoopParams.put(COLUMN_SERIAL.getKey(), column);
         }
+    }
+
+    private Map<String, Object> buildImportParam(SubExchangisJob inputJob, ExchangisEngineJob expectJob, ExchangisJobBuilderContext ctx, JobParamSet jobSettings, JobParamSet sourceSettings, JobParamSet sinkSettings) {
+        Map<String, Object> params = new HashMap<>();
+
+        if (RDBMS.newParam(inputJob).getValue().equalsIgnoreCase("MYSQL")) {
+            params.put("sqoop.args.driver", "com.mysql.jdbc.Driver");
+            String connectProtocol = "jdbc:mysql://";
+            Object host = ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("host");
+            Object port = ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("port");
+            Object database = sourceSettings.get("database").getValue();
+            params.put("sqoop.args.connect", String.format("%s%s:%s/%s", connectProtocol, host, port, database));
+        }
+
+        params.put("sqoop.args.username", ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("username"));
+        params.put("sqoop.args.password", ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("password"));
+        params.put("sqoop.args.table", sourceSettings.get("table").getValue().toString());
+
+        if (null != sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition")
+              && null != sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition").getValue()
+              && StringUtils.isNotBlank(sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition").getValue().toString())) {
+            params.put("sqoop.args.where", sourceSettings.get("exchangis.job.ds.params.sqoop.mysql.r.where_condition").getValue().toString());
+        }
+
+        params.put("sqoop.args.hive.import", "");
+        params.put("sqoop.args.hive.overwrite", "");
+
+        params.put("sqoop.args.null.string", "");
+        params.put("sqoop.args.null.non.string", "");
+
+        params.put("sqoop.args.hive.database", sinkSettings.get("database").getValue().toString());
+        params.put("sqoop.args.hive.table", sinkSettings.get("table").getValue().toString());
+        params.put("sqoop.args.fields.terminated.by", sinkSettings.get("exchangis.job.ds.params.sqoop.hive.w.row_format").getValue().toString());
+
+        JobParam<?> partitionSetting = sinkSettings.get("exchangis.job.ds.params.sqoop.hive.w.partition");
+        if (null != partitionSetting) {
+            Object partitionValue = partitionSetting.getValue();
+            if (null != partitionValue) {
+                String partition = partitionValue.toString();
+                if (StringUtils.isNotBlank(partition)) {
+                    String[] _partition = partition.split("=");
+                    if (_partition.length >= 2) {
+                        params.put("sqoop.args.hive.partition.key", _partition[0]);
+                        params.put("sqoop.args.hive.partition.value", _partition[1]);
+                    }
+                }
+            }
+        }
+
+        params.put("sqoop.args.target.dir", TARGET_DIR.newParam(sinkSettings.get("table").getValue()).getValue());
+        params.put("sqoop.args.delete.target.dir", "");
+
+        return params;
+    }
+
+    private Map<String, Object> buildExportParam(SubExchangisJob inputJob, ExchangisEngineJob expectJob, ExchangisJobBuilderContext ctx, JobParamSet jobSettings, JobParamSet sourceSettings, JobParamSet sinkSettings) {
+        Map<String, Object> params = new HashMap<>();
+
+        if (RDBMS.newParam(inputJob).getValue().equalsIgnoreCase("MYSQL")) {
+            params.put("sqoop.args.driver", "com.mysql.jdbc.Driver");
+            String connectProtocol = "jdbc:mysql://";
+            Object host = ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("host");
+            Object port = ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("port");
+            Object database = sinkSettings.get("database").getValue();
+            params.put("sqoop.args.connect", String.format("%s%s:%s/%s", connectProtocol, host, port, database));
+        }
+
+        params.put("sqoop.args.username", ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("username"));
+        params.put("sqoop.args.password", ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("password"));
+        params.put("sqoop.args.table", sinkSettings.get("table").getValue().toString());
+
+        // TODO sqoop.args.update.key
+        params.put("sqoop.args.update.mode", sinkSettings.get("exchangis.job.ds.params.sqoop.mysql.w.write_type").getValue().toString().toLowerCase(Locale.ROOT));
+
+        JobParam<?> partitionSetting = sourceSettings.get("exchangis.job.ds.params.sqoop.hive.r.partition");
+        if (null != partitionSetting) {
+            Object partitionValue = partitionSetting.getValue();
+            if (null != partitionValue) {
+                String partition = partitionValue.toString();
+                if (StringUtils.isNotBlank(partition)) {
+                    String[] _partition = partition.split("=");
+                    if (_partition.length >= 2) {
+                        params.put("sqoop.args.hive.partition.key", _partition[0]);
+                        params.put("sqoop.args.hive.partition.value", _partition[1]);
+                    }
+                }
+            }
+        }
+
+        params.put("sqoop.args.fields.terminated.by", sinkSettings.get("exchangis.job.ds.params.sqoop.hive.r.row_format").getValue().toString());
+
+        // TODO sqoop.args.export.dir
+
+        return params;
     }
 
     private static class DataSourceJobParamSet {
