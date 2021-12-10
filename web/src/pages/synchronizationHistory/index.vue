@@ -7,7 +7,7 @@
         <a-row :gutter="24">
           <a-col :span="8">
             <a-form-item label="作业ID">
-              <a-input v-model:value="formState.jobId" placeholder="请输入" />
+              <a-input v-model:value="formState.jobId" placeholder="请输入"/>
             </a-form-item>
           </a-col>
 
@@ -87,10 +87,9 @@
             >
           </template>
         </a-table>
+        <!-- 分页 -->
+        <!--<div class="sh-b-pagination"></div>-->
       </div>
-
-      <!-- 分页 -->
-      <div class="sh-b-pagination"></div>
     </div>
 
     <!-- 动态限速 弹窗 -->
@@ -370,6 +369,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import '../../common/content.less';
 .sh-top {
   height: 136px;
   width: 100%;
@@ -390,6 +390,15 @@ export default {
 .sh-bottom {
   padding: 24px;
   background-color: #fff;
-  height: calc(100vh - 184px);
+  min-height: calc(100vh - 184px);
+  :deep(.ant-form-item-label > label) {
+    width: 80px;
+    text-align: right;
+    display: inline-block;
+    line-height: 30px;
+  }
 }
+
+</style>
+<style lang="less">
 </style>
