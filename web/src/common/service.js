@@ -31,9 +31,19 @@ export const getDataSourceList = (params) => {
   return request("/datasources/query", { ...params }, { method: "POST" });
 };
 
+// 数据源管理 获取数据源
 export const getDataSourceTypes = () => {
   return request(
     `/datasources/type?t=_${new Date().getTime()}`,
+    {},
+    { method: "GET" }
+  );
+};
+
+// 数据源管理 获取动态参数
+export const getKeyDefine = (dataSourceTypeId) => {
+  return request(
+    `/datasources/types/${dataSourceTypeId}/keydefines?t=_${new Date().getTime()}`,
     {},
     { method: "GET" }
   );
