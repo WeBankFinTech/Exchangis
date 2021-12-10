@@ -94,12 +94,12 @@ export default defineComponent({
     const updateSettingParams = (info) => {
       formState[info.key] = info.value
       if (info.required && !info.value) {
-        helpMsg[info.key] = `请输入${info.label}`;
+        helpMsg[info.key] = `请输入${info.label}`
         helpStatus[info.key] = "error";
       } else if (info.validateType === 'REGEX') {
         const num_reg = new RegExp(`${info.validateRange}`)
         if (!num_reg.test(info.value)) {
-          helpMsg[info.key] = `请正确输入${info.label}`;
+          helpMsg[info.key] = info.validateMsg
           helpStatus[info.key] = "error";
         } else {
           helpMsg[info.key] = "";

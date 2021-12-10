@@ -221,6 +221,11 @@ export default defineComponent({
         dataSource.dataSourceIds.source.type,
         "source"
       ).then((res) => {
+        res.uis.forEach(ui => {
+          if (!ui.value && ui.defaultValue) {
+            ui.value = ui.defaultValue
+          }
+        })
         dataSource.params.sources = res.uis || [];
         context.emit("updateSourceInfo", dataSource);
       });
@@ -248,6 +253,11 @@ export default defineComponent({
         dataSource.dataSourceIds.sink.type,
         "sink"
       ).then((res) => {
+        res.uis.forEach(ui => {
+          if (!ui.value && ui.defaultValue) {
+            ui.value = ui.defaultValue
+          }
+        })
         dataSource.params.sinks = res.uis || [];
         context.emit("updateSinkInfo", dataSource);
       });
@@ -261,7 +271,7 @@ export default defineComponent({
       } else if (info.validateType === 'REGEX') {
         const num_reg = new RegExp(`${info.validateRange}`)
         if (!num_reg.test(info.value)) {
-          sourcesHelpMsg[info.key] = `请正确输入${info.label}`;
+          sourcesHelpMsg[info.key] = info.validateMsg
           sourcesHelpStatus[info.key] = "error";
         } else {
           sourcesHelpMsg[info.key] = "";

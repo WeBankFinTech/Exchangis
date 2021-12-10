@@ -54,6 +54,7 @@
     "@fesjs/plugin-locale": "^2.0.3",
     "@fesjs/plugin-model": "^2.0.0",
     "@fesjs/plugin-request": "^2.0.2",
+    "@form-create/ant-design-vue": "^3.0.0-alpha.2",
     "@vue/compiler-sfc": "3.2.20",
     "ant-design-vue": "^2.2.7",
     "echarts": "^5.2.1",
