@@ -19,7 +19,7 @@
           </template>
           <template #action="row">
             <a-space>
-              <a-button size="small" @click="handleEdit(row.text.id, row.text.dataSourceTypeId)">{{ $t("dataSource.table.list.columns.actions.editButton") }}</a-button>
+              <a-button size="small" @click="handleEdit(row.text.id, row.text.dataSourceTypeId, row.text.createSystem)">{{ $t("dataSource.table.list.columns.actions.editButton") }}</a-button>
               <a-button size="small" v-show="!row.text.expire" @click="handleExpire(row.text.id)">{{ $t("dataSource.table.list.columns.actions.expireButton") }}</a-button>
               <a-button size="small" @click="handleTestConnect(row)">{{ $t("dataSource.table.list.columns.actions.testConnectButton") }}</a-button>
               <a-button size="small" @click="handleDelete(row)">{{ $t("dataSource.table.list.columns.actions.deleteButton") }}</a-button>
@@ -36,7 +36,7 @@
     </a-row>
     <select-type-modal @select="handleSelectType" v-model:visible="selectTypeModalVisible" :sourceTypeList="sourceTypeList" />
     <version-modal v-model:visible="versionModalCfg.visible" :id="versionModalCfg.id" />
-    <edit-modal v-model:visible="modalCfg.visible" :id="modalCfg.id" :type="modalCfg.type" :mode="modalCfg.mode" @finish="handleModalFinish" />
+    <edit-modal v-model:visible="modalCfg.visible" :id="modalCfg.id" :type="modalCfg.type" :mode="modalCfg.mode" :modalCfg="modalCfg" @finish="handleModalFinish" />
   </div>
 </template>
 
@@ -174,6 +174,7 @@ export default {
         id: "",
         type: item.id,
         visible: true,
+        createSystem: item.name
       };
     },
     // 处理删除
@@ -183,12 +184,13 @@ export default {
       this.getDataSourceList();
     },
     // 处理编辑
-    handleEdit(id, typeid) {
+    handleEdit(id, typeid, createSystem) {
       this.modalCfg = {
         mode: "edit",
         id: id,
         type: typeid,
         visible: true,
+        createSystem: createSystem
       };
     },
     // 打开创建弹窗
