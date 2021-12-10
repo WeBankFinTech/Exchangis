@@ -72,7 +72,7 @@ export default {
     ],
   ],
   layout: {
-    title: "",
+    title: "数据交换",
     footer: "",
     logo: null,
     multiTabs: false,
