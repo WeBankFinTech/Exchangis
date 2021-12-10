@@ -13,6 +13,13 @@
       "unicode_decimal": 58975
     },
     {
+      "icon_id": "79143303",
+      "name": "NEED_FAULT_TOLERANCE",
+      "font_class": "need-fault-tolerance",
+      "unicode": "e664",
+      "unicode_decimal": 58980
+    },
+    {
       "icon_id": "79143308",
       "name": "FORCED_SUCCES",
       "font_class": "forced-success",
@@ -53,6 +60,20 @@
       "font_class": "waitting-thread",
       "unicode": "e670",
       "unicode_decimal": 58992
+    },
+    {
+      "icon_id": "80045270",
+      "name": "delete",
+      "font_class": "delete",
+      "unicode": "e68c",
+      "unicode_decimal": 59020
+    },
+    {
+      "icon_id": "83363507",
+      "name": "工作流",
+      "font_class": "gongzuoliu",
+      "unicode": "e6f0",
+      "unicode_decimal": 59120
     }
   ]
 }
