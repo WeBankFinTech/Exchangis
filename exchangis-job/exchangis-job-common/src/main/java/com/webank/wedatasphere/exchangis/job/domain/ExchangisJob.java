@@ -24,7 +24,9 @@ public class ExchangisJob extends ExchangisJobBase {
 
     private Long dssProjectId;
 
-    private Long nodeId;
+    private String dssProjectName;
+
+    private String nodeId;
 
     private String nodeName;
 
@@ -70,9 +72,6 @@ public class ExchangisJob extends ExchangisJobBase {
 
     public void setDssProjectId(Long dssProjectId) { this.dssProjectId = dssProjectId; }
 
-    public Long getNodeId() { return nodeId; }
-
-    public void setNodeId(Long nodeId) { this.nodeId = nodeId; }
 
     public String getNodeName() { return nodeName; }
 
@@ -172,6 +171,22 @@ public class ExchangisJob extends ExchangisJobBase {
 
     public void setModifyUser(String modifyUser) {
         this.modifyUser = modifyUser;
+    }
+
+    public String getDssProjectName() {
+        return dssProjectName;
+    }
+
+    public void setDssProjectName(String dssProjectName) {
+        this.dssProjectName = dssProjectName;
+    }
+
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    public String getNodeId() {
+        return nodeId;
     }
 
     @Override

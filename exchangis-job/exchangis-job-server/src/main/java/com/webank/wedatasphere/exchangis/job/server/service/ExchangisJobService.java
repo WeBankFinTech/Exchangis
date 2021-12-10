@@ -53,13 +53,13 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      */
     public ExchangisJobBasicInfoVO updateJob(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO, Long id);
 
-    public ExchangisJobBasicInfoVO updateJobByDss(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO, Long nodeId);
+    public ExchangisJobBasicInfoVO updateJobByDss(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO, String nodeId);
 
     public ExchangisJobBasicInfoVO importSingleJob(MultipartFile multipartFile);
 
     public void deleteJob(Long id);
 
-    public void deleteJobByDss(Long nodeId);
+    public void deleteJobByDss(String nodeId);
 
     public ExchangisJob getJob(Long id) throws ExchangisJobErrorException;
     /**
@@ -71,7 +71,7 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      */
     public ExchangisJob getJob(HttpServletRequest request, Long id) throws ExchangisJobErrorException;
 
-    public ExchangisJob getJobByDss(HttpServletRequest request, Long nodeId) throws ExchangisJobErrorException;
+    public ExchangisJob getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobErrorException;
 
     /**
      * Update exchangis job config.
