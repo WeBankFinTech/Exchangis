@@ -614,6 +614,9 @@ export default {
 <style lang="less" scoped>
 .home-page-wrap {
   padding: 22px 20px;
+  :deep(.ant-progress-success-bg) {
+    background-color: #9EDAAC;
+  }
 
   .hp-content {
     &-card {
