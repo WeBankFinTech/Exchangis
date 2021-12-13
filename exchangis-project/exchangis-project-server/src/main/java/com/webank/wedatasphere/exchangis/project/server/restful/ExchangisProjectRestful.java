@@ -70,12 +70,12 @@ public class ExchangisProjectRestful {
     }
 
     @GET
-    @Path("projects/dss/{workspaceName}")
-    public Response queryProjectsByDss(@Context HttpServletRequest request, @PathParam("workspaceName") String workspaceName) {
+    @Path("projects/dss/{dssName}")
+    public Response queryProjectsByDss(@Context HttpServletRequest request, @PathParam("dssName") String dssName) {
         String username = SecurityFilter.getLoginUsername(request);
         try {
-            LOGGER.info("queryProjectsByDss workspaceName {}", workspaceName);
-            ExchangisProjectGetDTO dto = projectService.getProjectByDssName(workspaceName);
+            LOGGER.info("queryProjectsByDss workspaceName {}", dssName);
+            ExchangisProjectGetDTO dto = projectService.getProjectByDssName(dssName);
             return Message.messageToResponse(Message.ok().data("item", dto));
         } catch (final Throwable t) {
             LOGGER.error("failed to create project for user {}", username, t);
@@ -127,12 +127,12 @@ public class ExchangisProjectRestful {
     }
 
     @DELETE
-    @Path("/projects/dss/{workspaceName}")
-    public Response deleteProjectByDss(@Context HttpServletRequest request, @PathParam("workspaceName") String id) {
+    @Path("/projects/dss/{dssName}")
+    public Response deleteProjectByDss(@Context HttpServletRequest request, @PathParam("dssName") String dssName) {
         String username = SecurityFilter.getLoginUsername(request);
         try {
-            LOGGER.info("deleteProjectByDss dssProjectId {}", id);
-            projectService.deleteProject(request, id);
+            LOGGER.info("deleteProjectByDss dssName {}", dssName);
+            projectService.deleteProjectByDss(request, dssName);
             return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
         } catch (final Throwable t) {
             LOGGER.error("failed to update project for user {}", username, t);

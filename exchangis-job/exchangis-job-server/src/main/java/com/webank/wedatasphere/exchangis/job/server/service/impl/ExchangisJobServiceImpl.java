@@ -7,9 +7,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
+import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
+import com.webank.wedatasphere.exchangis.datasource.core.ui.InputElementUI;
+import com.webank.wedatasphere.exchangis.datasource.core.ui.OptionElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
@@ -272,61 +278,61 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         return this.getJob(id);
     }
 
-//    @Override
-//    public List<ElementUI> getSpeedLimitSettings(Long id, String taskName) {
-//        ExchangisJob exchangisJob = exchangisJobService.getById(id);
-//        Map<String, String> values = new HashMap<>();
-//        if (null != exchangisJob && null != exchangisJob.getContent() && !"".equals(exchangisJob.getContent())) {
-//            List<ExchangisJobInfoContent> o = Jackson.fromJson(exchangisJob.getContent(), List.class, ExchangisJobInfoContent.class);
-//            o.forEach(task -> {
-//                if (task.getSubJobName().equals(taskName)) {
-//                    Optional.ofNullable(task.getSettings()).orElse(new ArrayList<>()).forEach(setting -> {
-//                        values.put(setting.getConfigKey(), setting.getConfigValue());
-//                    });
-//                }
-//            });
-//        }
-//
-//        List<ElementUI> jobEngineSettingsUI = this.exchangisDataSourceService.getJobEngineSettingsUI(exchangisJob.getEngineType());
-//        jobEngineSettingsUI.forEach(s -> {
-//            if (values.containsKey(s.getField())) {
-//                if (s instanceof InputElementUI) {
-//                    InputElementUI e = (InputElementUI) s;
-//                    e.setValue(values.get(s.getField()));
-//                }
-//                if (s instanceof OptionElementUI) {
-//                    OptionElementUI e = (OptionElementUI) s;
-//                    e.setValue(values.get(s.getField()));
-//                }
-//            }
-//        });
-//
-//        return jobEngineSettingsUI;
-//
-//    }
+    @Override
+    public List<ElementUI> getSpeedLimitSettings(Long id, String taskName) {
+        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+        Map<String, String> values = new HashMap<>();
+        if (null != exchangisJob && null != exchangisJob.getContent() && !"".equals(exchangisJob.getContent())) {
+            List<ExchangisJobInfoContent> o = Jackson.fromJson(exchangisJob.getContent(), List.class, ExchangisJobInfoContent.class);
+            o.forEach(task -> {
+                if (task.getSubJobName().equals(taskName)) {
+                    Optional.ofNullable(task.getSettings()).orElse(new ArrayList<>()).forEach(setting -> {
+                        values.put(setting.getConfigKey(), setting.getConfigValue());
+                    });
+                }
+            });
+        }
 
-//    @Override
-//    public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings) {
-//        ExchangisJob exchangisJob = exchangisJobService.getById(id);
-//        JsonArray content = new JsonParser().parse(exchangisJob.getContent()).getAsJsonArray();
-//        JsonArray newSet = new JsonArray();
-//        settings.getSettings().forEach(s -> {
-//            JsonObject json = new JsonObject();
-//            json.addProperty("config_key", s.getConfig_key());
-//            json.addProperty("config_name", s.getConfig_name());
-//            json.addProperty("config_value", s.getConfig_value());
-//            json.addProperty("sort", s.getSort());
-//            newSet.add(json);
-//        });
-//        content.forEach(c -> {
-//            JsonObject task = c.getAsJsonObject();
-//            if (task.get("subJobName").getAsString().equals(taskName)) {
-//                task.remove("settings");
-//                task.add("settings", newSet);
-//            }
-//        });
-//        exchangisJob.setContent(content.toString());
-//        exchangisJobService.updateById(exchangisJob);
-//    }
+        List<ElementUI> jobEngineSettingsUI = this.exchangisDataSourceService.getJobEngineSettingsUI(exchangisJob.getEngineType());
+        jobEngineSettingsUI.forEach(s -> {
+            if (values.containsKey(s.getField())) {
+                if (s instanceof InputElementUI) {
+                    InputElementUI e = (InputElementUI) s;
+                    e.setValue(values.get(s.getField()));
+                }
+                if (s instanceof OptionElementUI) {
+                    OptionElementUI e = (OptionElementUI) s;
+                    e.setValue(values.get(s.getField()));
+                }
+            }
+        });
+
+        return jobEngineSettingsUI;
+
+    }
+
+    @Override
+    public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings) {
+        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+        JsonArray content = new JsonParser().parse(exchangisJob.getContent()).getAsJsonArray();
+        JsonArray newSet = new JsonArray();
+        settings.getSettings().forEach(s -> {
+            JsonObject json = new JsonObject();
+            json.addProperty("config_key", s.getConfig_key());
+            json.addProperty("config_name", s.getConfig_name());
+            json.addProperty("config_value", s.getConfig_value());
+            json.addProperty("sort", s.getSort());
+            newSet.add(json);
+        });
+        content.forEach(c -> {
+            JsonObject task = c.getAsJsonObject();
+            if (task.get("subJobName").getAsString().equals(taskName)) {
+                task.remove("settings");
+                task.add("settings", newSet);
+            }
+        });
+        exchangisJob.setContent(content.toString());
+        exchangisJobService.updateById(exchangisJob);
+    }
 
 }

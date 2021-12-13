@@ -93,7 +93,7 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
     public ExchangisJob updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
             throws ExchangisJobErrorException, ExchangisDataSourceException;
 
-    // public  List<ElementUI> getSpeedLimitSettings(Long id, String taskName);
+     public  List<ElementUI> getSpeedLimitSettings(Long id, String taskName);
 
-    // public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings);
+     public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings);
 }

@@ -11,6 +11,7 @@ public class ExchangisProject {
     private Long id;
     private Long dssProjectId;
     private String name;
+    private String dssName;
     private String description;
     private String createBy;
     private Date createTime;
@@ -44,6 +45,10 @@ public class ExchangisProject {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getDssName() { return dssName; }
+
+    public void setDssName(String dssName) { this.dssName = dssName; }
 
     public String getDescription() {
         return description;
