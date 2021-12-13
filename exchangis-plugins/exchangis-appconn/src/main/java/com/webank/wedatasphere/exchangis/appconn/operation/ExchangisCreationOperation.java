@@ -57,8 +57,12 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
             Map contextIDMap =  BDPJettyServerHelper.jacksonJson().readValue(contextID, Map.class);
             logger.info("contextIDMap {}",contextIDMap.toString());
 
-            projectName = contextIDMap.get("project").toString();
-            logger.info("project {}",projectName);
+            String valueJson = contextIDMap.get("value").toString();
+            logger.info("valueJson {}",valueJson);
+
+            Map map = BDPJettyServerHelper.jacksonJson().readValue(valueJson, Map.class);
+            logger.info("map {}",map.toString());
+            projectName = map.get("project").toString();
         }catch (Exception e){
             throw new ExternalOperationFailedException(31023, "Get node Id failed!", e);
         }
