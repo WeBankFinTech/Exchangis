@@ -10,6 +10,8 @@ public class ProjectQueryRequest implements Serializable {
 
     private String name;
 
+    private String domain;
+
     public String getUsername() {
         return username;
     }
@@ -25,4 +27,8 @@ public class ProjectQueryRequest implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getDomain() { return domain; }
+
+    public void setDomain(String domain) { this.domain = domain; }
 }

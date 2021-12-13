@@ -161,6 +161,10 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
             queryWrapper.like("name", projectQueryRequest.getName());
         }
 
+        if (!StringUtils.isBlank(projectQueryRequest.getDomain())) {
+            queryWrapper.eq("domain", projectQueryRequest.getDomain());
+        }
+
         List<ExchangisProject> exchangisProjects = this.exchangisProjectMapper.selectList(queryWrapper);
 
         return exchangisProjects.stream().map(ExchangisProjectDTO::new).collect(Collectors.toList());
