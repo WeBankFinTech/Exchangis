@@ -29,7 +29,7 @@
         </template>
         <div style="padding: 0 24px">
           <a-spin :spinning="loading">
-            <a-row :gutter="[16, 24]">
+            <a-row :gutter="[24, 24]">
               <a-col :span="24">
                 <div class="title-line">
                   <!-- <span class="title">
@@ -81,7 +81,7 @@
               <project-create-card @action="handleCreateCardAction" />
             </a-col> -->
               <!-- 视图卡片 -->
-              <a-col :span="6" v-for="item in projectListData" :key="item.id">
+              <a-col v-for="item in projectListData" :key="item.id">
                 <project-view-card
                   @delete="handleOnDelteProject"
                   @edit="handleOnEditProject"
