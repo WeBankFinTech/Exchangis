@@ -33,64 +33,50 @@
   </a-card> -->
 
   <div class="card">
-    <a-row>
-      <a-col :span="22">
-        <div class="card-main">
-          <div class="card-main-title">
-            <router-link :to="`/jobManagement?id=${id}&name=${name}`">
-              <div class="title">
-                {{ name }}
-              </div>
-            </router-link>
+    <div class="card-main">
+      <div class="card-main-title">
+        <router-link :to="`/jobManagement?id=${id}&name=${name}`">
+          <div class="title">
+            {{ name }}
           </div>
-          <div class="card-main-description">
-            <p>{{ describe }}</p>
-            <div>
-              <div v-if="tags && tags.length > 0">
-                <a-tag v-for="(tag, index) in tags" :key="index">
-                  {{ tag }}
-                </a-tag>
-              </div>
-              <div v-else></div>
-            </div>
+        </router-link>
+      </div>
+      <div class="card-main-description">
+        <p :class="[ card_tages && card_tages.length > 0 ? 'card-main-desc-oneline' : 'card-main-desc-2line' ]">{{ describe }}</p>
+        <div>
+          <div v-if="card_tages && card_tages.length > 0">
+            <a-tag v-for="(tag, index) in card_tages" :key="index">
+              {{ tag ? tag : null }}
+            </a-tag>
           </div>
+          <div v-else></div>
         </div>
-      </a-col>
-      <a-col :span="2">
-        <div class="card-buttton-group">
-          <div @click="$emit('edit', id)">
-            <svg
-              style="
-                width: 24px;
-                height: 24px;
-                fill: currentColor;
-                color: #dee4ec;
-              "
-            >
-              <use xlink:href="#icon-need-fault-tolerance"></use>
-            </svg>
-          </div>
-          <div @click="$emit('delete', id)">
-            <svg
-              style="
-                width: 24px;
-                height: 24px;
-                fill: currentColor;
-                color: #dee4ec;
-              "
-            >
-              <use xlink:href="#icon-delete"></use>
-            </svg>
-          </div>
-        </div>
-      </a-col>
-    </a-row>
+      </div>
+    </div>
+    <div class="card-buttton-group">
+      <div @click="$emit('edit', id)">
+        <svg
+          style="width: 16px; height: 16px; fill: currentColor; color: #dee4ec"
+        >
+          <use xlink:href="#icon-need-fault-tolerance"></use>
+        </svg>
+      </div>
+      <a-divider type="horizontal" style="width: 16px" />
+      <div @click="$emit('delete', id)">
+        <svg
+          style="width: 16px; height: 16px; fill: currentColor; color: #dee4ec"
+        >
+          <use xlink:href="#icon-delete"></use>
+        </svg>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { ApartmentOutlined } from "@ant-design/icons-vue";
 import { useRouter } from "@fesjs/fes";
+import { toRefs } from "vue";
 const router = useRouter();
 export default {
   name: "ProjectViewCard",
@@ -118,6 +104,13 @@ export default {
       type: Array,
       default: [],
     },
+  },
+  setup(props) {
+    const { tags } = toRefs(props);
+    const card_tages = tags.value.filter((i) => !!i);
+    return {
+      card_tages,
+    };
   },
   emits: ["delete", "edit"],
 };
@@ -150,12 +143,15 @@ export default {
   min-height: 115px;
   border: 1px solid #dee4ec;
   background-color: #fff;
+  display: flex;
+  width: 381px;
   &-main {
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding-left: 24px;
     height: 115px;
+    flex: 1;
     &-title {
       font-family: PingFangSC-Medium;
       font-size: 16px;
@@ -169,14 +165,31 @@ export default {
       font-size: 14px;
       color: rgba(0, 0, 0, 0.45);
       text-align: left;
-      line-height: 22px;
       font-weight: 400;
+      height: 40px;
+      width: 100%;
+      margin-top: 5px;
+    }
+    &-desc-2line {
+      width: 296px;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+    &-desc-oneline {
+      width: 296px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 
   &-buttton-group {
     background: #f7f9fa;
     height: 115px;
+    width: 37px;
+    padding: 22px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
