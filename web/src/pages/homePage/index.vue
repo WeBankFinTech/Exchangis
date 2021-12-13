@@ -6,7 +6,7 @@
     <div class="hp-content">
       <a-row :gutter="[24, 24]">
         <a-col :span="24">
-          <div class="hp-content-card">
+          <div class="hp-content-card" style="border-radius: 6px">
             <div style="padding-bottom: 12px">
               <a-row :gutter="16">
                 <a-col :span="4">
@@ -445,9 +445,27 @@ export default {
         const option = {
           tooltip: {
             trigger: "axis",
+            backgroundColor: "rgba(0,0,0,0.75)",
+            extraCssText: "box-shadow: 0 2px 8px 0; border-radius: 2px;",
+            textStyle: {
+              fontFamily: "PingFangSC-Regular",
+              fontSize: "14px",
+              color: "#FFFFFF",
+              lineHeight: "22px",
+              fontWeight: "400",
+            },
           },
           legend: {
             data: chartData.legend,
+            icon: "circle",
+            textStyle: {
+              fontFamily: "PingFangSC - Regular",
+              fontSize: "12px",
+              color: "rgba(0, 0, 0, 0.45)",
+              fontWeight: 400,
+            },
+            itemHeight: 6,
+            itemWidth: 6,
           },
           grid: {
             left: "3%",
@@ -464,9 +482,23 @@ export default {
             type: "category",
             boundaryGap: false,
             data: chartData.xAxis,
+            nameTextStyle: {
+              fontFamily: "PingFangSC-Regular",
+              fontSize: "12px",
+              color: "#000000",
+              textAlign: "center",
+              fontWeight: "400",
+            },
           },
           yAxis: {
             type: "value",
+            nameTextStyle: {
+              fontFamily: "Helvetica",
+              fontSize: "12px",
+              color: "#000000",
+              textAlign: "right",
+              fontWeight: "400",
+            },
           },
           series: chartData.series,
         };
@@ -511,9 +543,27 @@ export default {
           },
           tooltip: {
             trigger: "axis",
+            backgroundColor: "rgba(0,0,0,0.75)",
+            extraCssText: "box-shadow: 0 2px 8px 0; border-radius: 2px;",
+            textStyle: {
+              fontFamily: "PingFangSC-Regular",
+              fontSize: "14px",
+              color: "#FFFFFF",
+              lineHeight: "22px",
+              fontWeight: "400",
+            },
           },
           legend: {
             data: chartData.legend,
+            icon: "circle",
+            textStyle: {
+              fontFamily: "PingFangSC - Regular",
+              fontSize: "12px",
+              color: "rgba(0, 0, 0, 0.45)",
+              fontWeight: 400,
+            },
+            itemHeight: 6,
+            itemWidth: 6,
           },
           grid: {
             left: "3%",
@@ -530,9 +580,23 @@ export default {
             type: "category",
             boundaryGap: false,
             data: chartData.xAxis,
+            nameTextStyle: {
+              fontFamily: "PingFangSC-Regular",
+              fontSize: "12px",
+              color: "#000000",
+              textAlign: "center",
+              fontWeight: "400",
+            },
           },
           yAxis: {
             type: "value",
+            nameTextStyle: {
+              fontFamily: "Helvetica",
+              fontSize: "12px",
+              color: "#000000",
+              textAlign: "right",
+              fontWeight: "400",
+            },
           },
           series: chartData.series,
         };
@@ -577,9 +641,27 @@ export default {
           },
           tooltip: {
             trigger: "axis",
+            backgroundColor: "rgba(0,0,0,0.75)",
+            extraCssText: "box-shadow: 0 2px 8px 0; border-radius: 2px;",
+            textStyle: {
+              fontFamily: "PingFangSC-Regular",
+              fontSize: "14px",
+              color: "#FFFFFF",
+              lineHeight: "22px",
+              fontWeight: "400",
+            },
           },
           legend: {
             data: chartData.legend,
+            icon: "circle",
+            textStyle: {
+              fontFamily: "PingFangSC - Regular",
+              fontSize: "12px",
+              color: "rgba(0, 0, 0, 0.45)",
+              fontWeight: 400,
+            },
+            itemHeight: 6,
+            itemWidth: 6,
           },
           grid: {
             left: "3%",
@@ -596,9 +678,23 @@ export default {
             type: "category",
             boundaryGap: false,
             data: chartData.xAxis,
+            nameTextStyle: {
+              fontFamily: "PingFangSC-Regular",
+              fontSize: "12px",
+              color: "#000000",
+              textAlign: "center",
+              fontWeight: "400",
+            },
           },
           yAxis: {
             type: "value",
+            nameTextStyle: {
+              fontFamily: "Helvetica",
+              fontSize: "12px",
+              color: "#000000",
+              textAlign: "right",
+              fontWeight: "400",
+            },
           },
           series: chartData.series,
         };
@@ -621,11 +717,7 @@ export default {
       background: inherit;
       background-color: rgba(255, 255, 255, 1);
       box-sizing: border-box;
-      border-width: 1px;
-      border-style: solid;
-      border-color: rgba(228, 228, 228, 1);
-      border-radius: 5px;
-      box-shadow: 5px 5px 6px rgb(0 0 0 / 20%);
+      border-radius: 2px;
       &-title {
         padding-left: 32px;
         height: 54px;
