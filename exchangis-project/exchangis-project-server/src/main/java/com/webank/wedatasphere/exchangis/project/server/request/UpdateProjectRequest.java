@@ -10,6 +10,8 @@ public class UpdateProjectRequest {
 
     private String projectName;
 
+    private String dssProjectName;
+
     private String description;
 
     private String tags;
@@ -43,6 +45,10 @@ public class UpdateProjectRequest {
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
+
+    public String getDssProjectName() { return dssProjectName; }
+
+    public void setDssProjectName(String dssProjectName) { this.dssProjectName = dssProjectName; }
 
     public String getDescription() {
         return description;
