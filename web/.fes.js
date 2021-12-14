@@ -72,6 +72,8 @@ export default {
     ],
   ],
   layout: {
+    navigation: 'side',
+    theme: 'light',
     title: "数据交换",
     footer: "",
     logo: null,
