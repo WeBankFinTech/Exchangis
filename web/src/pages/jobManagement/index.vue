@@ -14,9 +14,9 @@
     <!-- top nav -->
     <div class="job-management-tabs">
       <div class="job-management-tab">
-        <div @click="() => changeTab({})" class="job-management-tab-item">
+        <div @click="() => changeTab({})" class="job-management-tab-item" :class="{active: active === -1}">
           <span class="iconfont icon-gongzuoliu job-management-icon"></span>
-          <span class="job-management-tab-name">{{ t("job.list") }}</span>
+          <span class="job-management-tab-name" :class="{active: active === -1}">{{ t("job.list") }}</span>
         </div>
         <div
           v-for="(item, idx) in tabs"
@@ -24,8 +24,6 @@
           class="job-management-tab-item"
           :class="{active: idx === active}"
           @click="choose(idx)"
-          @mouseenter.self="item.isHover = true"
-          @mouseleave.self="item.isHover = false"
         >
           <div>
             <span class="iconfont icon-hive job-management-icon"></span>
@@ -33,11 +31,12 @@
           <div
             :title="item.title"
             class="job-management-tab-name"
+            :class="{active: idx === active}"
             @click="() => changeTab(item)"
           >
             {{ item.jobName }}
           </div>
-          <div class="closeIcon">
+          <div class="close-icon">
             <a-popconfirm
               title="确定未保存就离开？"
               @confirm="() => deleteTab(item)"
@@ -45,13 +44,13 @@
               <template #icon
                 ><QuestionCircleOutlined style="color: red"
               /></template>
-              <CloseOutlined />
+              <CloseOutlined  style="font-size: 12px"/>
             </a-popconfirm>
           </div>
         </div>
       </div>
     </div>
-    <div class="navWrap">
+    <!-- <div class="navWrap">
       <div @click="() => changeTab({})" class="listTitle">
         <UnorderedListOutlined />{{ t("job.list") }}
       </div>
@@ -78,7 +77,7 @@
           </a-popconfirm>
         </div>
       </div>
-    </div>
+    </div> -->
     <job-list v-show="!activeTabId" @showJobDetail="showJobDetail" />
     <template v-for="job in tabs">
       <job-detail v-show="activeTabId == job.id" :curTab="job"></job-detail>
@@ -112,7 +111,7 @@ export default {
       activeTabId: "",
       curTab: "",
       tabs: [],
-      active: 0,
+      active: -1,
     };
   },
   methods: {
@@ -126,11 +125,15 @@ export default {
         tabs.push(data);
       }
       this.tabs = tabs;
+      this.active = this.tabs.length - 1
       this.activeTabId = data.id;
       this.curTab = data;
     },
     changeTab(data) {
       data = toRaw(data);
+      if( !Object.keys(data).length ) {
+        this.active = -1;
+      }
       console.log(data, data.id);
       this.curTab = data;
       this.activeTabId = data.id;
@@ -143,6 +146,7 @@ export default {
         tabs.splice(index, 1);
       }
       this.tabs = tabs;
+      this.active = -1;
       this.activeTabId = undefined;
     },
     choose(idx) {
@@ -159,7 +163,9 @@ export default {
   fill: currentColor;
   color: #2e92f7;
 }
-.job-management-tabs {
+
+.close-icon {
+  visibility: hidden;
 }
 
 .job-management-tab {
@@ -179,21 +185,24 @@ export default {
     display: flex;
     background-color: #fff;
     border-right: 1px solid #e8eaec;
-    &:active {
+    &.active {
       margin-top: -1px;
       &:before {
         content: "";
         position: absolute;
-        top: -1px;
+        top: 1px;
         left: 0;
         right: 0;
         height: 2px;
         background-color: #2e92f7;
       }
-      height: 34px;
-      line-height: 33px;
+      height: 36px;
+      line-height: 36px;
       background-color: #ebf5ff;
       color: #2e92f7;
+    }
+    &:hover .close-icon{
+      visibility: visible;
     }
   }
 
@@ -202,8 +211,8 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    padding-right: 5px;
-    padding-left: 5px;
+    padding-right: 8px;
+    padding-left: 8px;
     font-size: 14px;
     font-family: PingFangSC-Medium;
     font-weight: 500;
@@ -213,6 +222,7 @@ export default {
     }
   }
 }
+
 .content {
   box-sizing: border-box;
   background-color: #fff;
@@ -292,6 +302,7 @@ export default {
       overflow: hidden;
     }
     .closeIcon {
+      display: none;
       position: absolute;
       top: 2px;
       right: 2px;
