@@ -12,9 +12,9 @@
     <div class="jd-content" v-if="list.length !== 0" >
       <div class="jd_left">
         <div class="sub-title">
-          <DatabaseFilled class="database-icon" />
+          <!--<DatabaseFilled class="database-icon" />-->
           <span>子任务列表</span>
-          <a-popconfirm
+          <!--<a-popconfirm
             title="是否新增子任务?"
             ok-text="确定"
             cancel-text="取消"
@@ -22,27 +22,24 @@
             @cancel="cancel"
           >
             <PlusSquareOutlined class="ps-icon" />
-          </a-popconfirm>
+          </a-popconfirm>-->
         </div>
         <div v-for="(item, idx) in list" :key="idx" :class="getClass(idx)">
           <div class="task-title">
-            <span
+            <div
               class="subjobName"
               @click="changeCurTask(idx)"
               v-if="
                 activeIndex !== idx || (activeIndex === idx && !nameEditable)
               "
-              >{{ item.subJobName }}</span
+              :title="item.subJobName"
+              >{{ item.subJobName }}</div
             >
             <a-input
               @pressEnter="nameEditable = false"
               v-model:value="item.subJobName"
               v-if="activeIndex === idx && nameEditable"
             ></a-input>
-            <EditOutlined
-              @click="nameEditable = true"
-              v-if="activeIndex === idx && !nameEditable"
-            />
             <a-popconfirm
               title="是否删除子任务?"
               ok-text="确定"
@@ -61,6 +58,11 @@
             >
               <CopyOutlined class="copy-icon" />
             </a-popconfirm>
+            <EditOutlined
+              @click="nameEditable = true"
+              v-if="activeIndex === idx && !nameEditable"
+              class="rename-icon"
+            />
           </div>
           <template
             v-if="
@@ -96,6 +98,21 @@
             </div>
           </template>
         </div>
+        <a-button
+          size="large"
+          style="
+                  width: 218px;
+                  font-family: PingFangSC-Regular;
+                  font-size: 14px;
+                  line-height: 22px;
+                  font-weight: 400;
+                  border: 1px dashed #DEE4EC;
+                "
+          @click="addNewTask"
+        >
+          <template #icon> <PlusOutlined /></template
+          >添加子任务
+        </a-button>
       </div>
       <div class="jd_right">
         <div>
@@ -147,12 +164,10 @@
             <div class="void-page-main-button">
               <a-button
                 type="primary"
+                size="large"
                 style="
-                  width: 106px;
-                  margin-left: 8px;
                   font-family: PingFangSC-Regular;
                   font-size: 14px;
-                  color: #ffffff;
                   line-height: 22px;
                   font-weight: 400;
                 "
@@ -749,6 +764,7 @@ export default {
 };
 </script>
 <style scoped lang="less">
+@import '../../../common/content.less';
 .container {
   .tools-bar {
     width: 100%;
@@ -757,6 +773,7 @@ export default {
     background:  #F8F9FC;
     padding: 10px 30px;
     font-size: 16px;
+    color: rgba(0,0,0,0.65);
     > span {
       cursor: pointer;
     }
@@ -775,16 +792,21 @@ export default {
     }
   }
   .jd-content {
-    display: flex;
     overflow-x: auto;
+    overflow-y: hidden;
     width: 100%;
     .jd_left {
-      flex: 1;
-      padding: 0 25px;
+      float: left;
+      width: 250px;
+      padding: 0 15px;
+      background-color: #F8F9FC;
+      border-right: 1px solid #DEE4EC;
+      padding-bottom: 2000px;
+      margin-bottom: -2000px;
       .sub-title {
-        font-size: 16px;
-        font-weight: bolder;
-        margin-top: 15px;
+        font-size: 14px;
+        margin-top: 16px;
+        font-weight: 500;
         .database-icon {
           color: rgb(102, 102, 255);
           margin-right: 5px;
@@ -796,45 +818,58 @@ export default {
         }
       }
       .sub-content {
-        width: 200px;
+        width: 218px;
         margin: 10px 0;
-        border: 1px solid rgba(155, 155, 155, 0.5);
-        padding: 10px 15px;
+        border: 1px solid #DEE4EC;
+        padding: 10px 15px 5px;
         border-radius: 5px;
         position: relative;
         &.active {
-          border: 1px solid rgb(102, 102, 255);
+          border: 1px solid #2E92F7;
           .task-title {
-            font-weight: bolder;
             .subjobName {
-              color: rgb(102, 102, 255);
+              color: rgba(0,0,0,0.85);
             }
           }
           .sub-table {
-            color: rgb(22, 155, 213);
+            color: #677C99;
           }
         }
         .task-title {
           font-size: 15px;
           .subjobName {
-            color: rgba(155, 155, 155, 0.5);
+            color: rgba(0,0,0,0.85);
             cursor: pointer;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 115px;
+            display: inline-block;
           }
-          .delete-icon {
+          .rename-icon{
             float: right;
             cursor: pointer;
             margin-right: 10px;
             line-height: 28px;
+            color: rgba(0,0,0,0.5);
           }
           .copy-icon {
             float: right;
             cursor: pointer;
-            margin-right: 5px;
+            margin-right: 10px;
             line-height: 28px;
+            color: rgba(0,0,0,0.5);
+          }
+          .delete-icon {
+            float: right;
+            cursor: pointer;
+            margin-right: 0;
+            line-height: 28px;
+            color: rgba(0,0,0,0.5);
           }
         }
         .sub-table {
-          color: rgba(155, 155, 155, 0.5);
+          color: #677C99;
           text-align: center;
           margin: 5px 0;
           width: 100%;
@@ -846,6 +881,7 @@ export default {
           text-align: center;
           font-weight: bolder;
           font-size: 16px;
+          color: #677C99;
         }
         .mask {
           width: 100%;
@@ -858,7 +894,8 @@ export default {
       }
     }
     .jd_right {
-      flex: 5;
+      float: left;
+      width: calc(100% - 250px);
       padding-right: 25px;
       padding-bottom: 25px;
     }
