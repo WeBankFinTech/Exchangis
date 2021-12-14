@@ -165,8 +165,7 @@ export default {
 }
 
 .close-icon {
-  // display: none;
-  color: transparent;
+  visibility: hidden;
 }
 
 .job-management-tab {
@@ -197,13 +196,13 @@ export default {
         height: 2px;
         background-color: #2e92f7;
       }
-      height: 34px;
-      line-height: 33px;
+      height: 36px;
+      line-height: 36px;
       background-color: #ebf5ff;
       color: #2e92f7;
     }
     &:hover .close-icon{
-      color: #2e92f7;
+      visibility: visible;
     }
   }
 
