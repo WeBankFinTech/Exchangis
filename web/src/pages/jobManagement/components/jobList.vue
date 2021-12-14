@@ -80,7 +80,7 @@
                     <div class="void-page-main-title">
                       <span>暂时没有离线任务，请先创建一个离线任务</span>
                     </div>
-                    <div class="void-page-main-button">
+                    <!--<div class="void-page-main-button">
                       <a-button
                         type="primary"
                         style="
@@ -117,7 +117,7 @@
                           >{{ t("job.action.import") }}
                         </a-button>
                       </a-upload>
-                    </div>
+                    </div>-->
                   </div>
                 </div>
               </div>
@@ -152,7 +152,7 @@
                     <div class="void-page-main-title">
                       <span>暂时没有流式任务，请先创建一个流式任务</span>
                     </div>
-                    <div class="void-page-main-button">
+                    <!--<div class="void-page-main-button">
                       <a-button
                         type="primary"
                         style="
@@ -189,7 +189,7 @@
                           >{{ t("job.action.import") }}
                         </a-button>
                       </a-upload>
-                    </div>
+                    </div>-->
                   </div>
                 </div>
               </div>
@@ -376,6 +376,9 @@ export default {
   height: 100%;
   background-color: #fff;
   .void-page-main {
+    &-img {
+      text-align: center;
+    }
     &-title {
       font-family: PingFangSC-Regular;
       font-size: 14px;
