@@ -74,6 +74,20 @@
       "font_class": "gongzuoliu",
       "unicode": "e6f0",
       "unicode_decimal": 59120
+    },
+    {
+      "icon_id": "91337320",
+      "name": "copy",
+      "font_class": "copy",
+      "unicode": "e720",
+      "unicode_decimal": 59168
+    },
+    {
+      "icon_id": "91379893",
+      "name": "hive",
+      "font_class": "hive",
+      "unicode": "e722",
+      "unicode_decimal": 59170
     }
   ]
 }
