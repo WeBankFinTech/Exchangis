@@ -147,7 +147,6 @@ export default {
     },
     choose(idx) {
       this.active  = idx
-      debugger
     },
   },
 };
