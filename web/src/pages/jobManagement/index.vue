@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div class="projectNav">
+    <!-- <div class="projectNav">
       <img class="img" src="../../images/u32.svg" />
       <router-link to="/projectManage"
         ><div class="link">
@@ -9,6 +9,47 @@
       >
       <div class="divider">/</div>
       <div class="name">{{ name }}</div>
+    </div> -->
+
+    <!-- top nav -->
+    <div class="job-management-tabs">
+      <div class="job-management-tab">
+        <div @click="() => changeTab({})" class="job-management-tab-item">
+          <span class="iconfont icon-gongzuoliu job-management-icon"></span>
+          <span class="job-management-tab-name">{{ t("job.list") }}</span>
+        </div>
+        <div
+          v-for="(item, idx) in tabs"
+          :key="idx"
+          class="job-management-tab-item"
+          :class="{active: idx === active}"
+          @click="choose(idx)"
+          @mouseenter.self="item.isHover = true"
+          @mouseleave.self="item.isHover = false"
+        >
+          <div>
+            <span class="iconfont icon-hive job-management-icon"></span>
+          </div>
+          <div
+            :title="item.title"
+            class="job-management-tab-name"
+            @click="() => changeTab(item)"
+          >
+            {{ item.jobName }}
+          </div>
+          <div class="closeIcon">
+            <a-popconfirm
+              title="确定未保存就离开？"
+              @confirm="() => deleteTab(item)"
+            >
+              <template #icon
+                ><QuestionCircleOutlined style="color: red"
+              /></template>
+              <CloseOutlined />
+            </a-popconfirm>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="navWrap">
       <div @click="() => changeTab({})" class="listTitle">
@@ -71,6 +112,7 @@ export default {
       activeTabId: "",
       curTab: "",
       tabs: [],
+      active: 0,
     };
   },
   methods: {
@@ -103,11 +145,79 @@ export default {
       this.tabs = tabs;
       this.activeTabId = undefined;
     },
+    choose(idx) {
+      this.active  = idx
+      debugger
+    },
   },
 };
 </script>
 <style scoped lang="less">
+<<<<<<< Updated upstream
 @import '../../common/content.less';
+=======
+.job-management-icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  color: #2e92f7;
+}
+.job-management-tabs {
+}
+
+.job-management-tab {
+  height: 34px;
+  display: flex;
+  border-bottom: 1px solid #dee4ec;
+  &-item {
+    position: relative;
+    height: 33px;
+    line-height: 33px;
+    padding: 0 8px;
+    cursor: pointer;
+    overflow: hidden;
+    text-align: center;
+    min-width: 100px;
+    max-width: 200px;
+    display: flex;
+    background-color: #fff;
+    border-right: 1px solid #e8eaec;
+    &:active {
+      margin-top: -1px;
+      &:before {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #2e92f7;
+      }
+      height: 34px;
+      line-height: 33px;
+      background-color: #ebf5ff;
+      color: #2e92f7;
+    }
+  }
+
+  &-name {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-right: 5px;
+    padding-left: 5px;
+    font-size: 14px;
+    font-family: PingFangSC-Medium;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.65);
+    &.active {
+      color: #2e92f7;
+    }
+  }
+}
+
+>>>>>>> Stashed changes
 .content {
   box-sizing: border-box;
   background-color: #fff;

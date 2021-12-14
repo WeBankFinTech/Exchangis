@@ -42,7 +42,15 @@
         </router-link>
       </div>
       <div class="card-main-description">
-        <p :class="[ card_tages && card_tages.length > 0 ? 'card-main-desc-oneline' : 'card-main-desc-2line' ]">{{ describe }}</p>
+        <p
+          :class="[
+            card_tages && card_tages.length > 0
+              ? 'card-main-desc-oneline'
+              : 'card-main-desc-2line',
+          ]"
+        >
+          {{ describe }}
+        </p>
         <div>
           <div v-if="card_tages && card_tages.length > 0">
             <a-tag v-for="(tag, index) in card_tages" :key="index">
@@ -55,19 +63,11 @@
     </div>
     <div class="card-buttton-group">
       <div @click="$emit('edit', id)">
-        <svg
-          style="width: 16px; height: 16px; fill: currentColor; color: #dee4ec"
-        >
-          <use xlink:href="#icon-need-fault-tolerance"></use>
-        </svg>
+        <span class="iconfont icon-need-fault-tolerance project_view_card_icon"></span>
       </div>
       <a-divider type="horizontal" style="width: 16px" />
       <div @click="$emit('delete', id)">
-        <svg
-          style="width: 16px; height: 16px; fill: currentColor; color: #dee4ec"
-        >
-          <use xlink:href="#icon-delete"></use>
-        </svg>
+        <span class="iconfont icon-delete project_view_card_icon"></span>
       </div>
     </div>
   </div>
@@ -117,6 +117,20 @@ export default {
 </script>
 
 <style scoped lang="less">
+.project_view_card_icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+.icon-delete:hover {
+  color: rgba(0, 0, 0, 0.65);
+}
+.icon-need-fault-tolerance:hover {
+  color: rgba(0, 0, 0, 0.65);
+}
+
 .title {
   cursor: pointer;
   &:hover {
