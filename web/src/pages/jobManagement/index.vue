@@ -107,6 +107,7 @@ export default {
 };
 </script>
 <style scoped lang="less">
+@import '../../common/content.less';
 .content {
   box-sizing: border-box;
   background-color: #fff;
