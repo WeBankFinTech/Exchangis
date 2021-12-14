@@ -153,9 +153,7 @@ export default {
 };
 </script>
 <style scoped lang="less">
-<<<<<<< Updated upstream
 @import '../../common/content.less';
-=======
 .job-management-icon {
   width: 16px;
   height: 16px;
@@ -216,8 +214,6 @@ export default {
     }
   }
 }
-
->>>>>>> Stashed changes
 .content {
   box-sizing: border-box;
   background-color: #fff;

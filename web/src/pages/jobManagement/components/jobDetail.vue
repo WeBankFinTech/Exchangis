@@ -9,7 +9,7 @@
       <div class="divider"></div>
       <span @click="executeHistory"><HistoryOutlined />执行历史</span>
     </div>
-    <div class="jd-content">
+    <div class="jd-content" v-if="list.length !== 0" >
       <div class="jd_left">
         <div class="sub-title">
           <DatabaseFilled class="database-icon" />
@@ -131,6 +131,50 @@
         </div>
       </div>
     </div>
+    <div class="cardWrap" v-if="list.length === 0">
+      <div class="emptyTab">
+        <div class="void-page-wrap">
+          <div class="void-page-main">
+            <div class="void-page-main-img">
+              <img
+                src="../../../assets/img/void_page.png"
+                alt="空页面"
+              />
+            </div>
+            <div class="void-page-main-title">
+              <span>该任务下没有子任务，请先创建一个子任务</span>
+            </div>
+            <div class="void-page-main-button">
+              <a-button
+                type="primary"
+                style="
+                  width: 106px;
+                  margin-left: 8px;
+                  font-family: PingFangSC-Regular;
+                  font-size: 14px;
+                  color: #ffffff;
+                  line-height: 22px;
+                  font-weight: 400;
+                "
+                @click="addNewTask"
+              >
+                <template #icon> <PlusOutlined /></template
+                >{{ t("job.action.createJob") }}
+              </a-button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-for="item in streamList" :key="item.id" class="card">
+        <job-card
+          :jobData="item"
+          type="STREAM"
+          @showJobDetail="showJobDetail"
+          @handleJobCopy="handleJobCopy"
+          @refreshList="getJobs"
+        />
+      </div>
+    </div>
     <!-- 执行历史  jd-bottom -->
     <div class="jd-bottom" v-show="visibleDrawer">
       <div class="jd-bottom-top" @click="onCloseDrawer">
@@ -184,6 +228,7 @@ import {
   CheckCircleOutlined,
   EditOutlined,
   MinusOutlined,
+  PlusOutlined
 } from "@ant-design/icons-vue";
 import {
   getJobInfo,
@@ -197,6 +242,7 @@ import {
 } from "@/common/service";
 import { message, notification } from "ant-design-vue";
 import { randomString } from "../../../common/utils";
+import { useI18n } from "@fesjs/fes";
 
 /**
  * 用于判断一个对象是否有空 value,如果有返回 true
@@ -275,6 +321,7 @@ export default {
     ArrowDownOutlined,
     CheckCircleOutlined,
     EditOutlined,
+    PlusOutlined,
     "config-modal": defineAsyncComponent(() => import("./configModal.vue")),
     "copy-modal": defineAsyncComponent(() => import("./copyModal.vue")),
     DataSource: defineAsyncComponent(() => import("./dataSource.vue")),
@@ -283,6 +330,7 @@ export default {
     MinusOutlined,
   },
   data() {
+    const { t } = useI18n({ useScope: "global" });
     return {
       name: "",
       modalCfg: {
@@ -315,6 +363,7 @@ export default {
         total: 0,
         pageSize: 10,
       },
+      t
     };
   },
   props: {
@@ -703,9 +752,9 @@ export default {
 .container {
   .tools-bar {
     width: 100%;
-    border-top: 1px solid rgb(228, 228, 228);
-    border-bottom: 1px solid rgb(228, 228, 228);
-    background: rgb(242, 242, 242);
+    border-top: 1px solid  #DEE4EC;
+    border-bottom: 1px solid  #DEE4EC;
+    background:  #F8F9FC;
     padding: 10px 30px;
     font-size: 16px;
     > span {
@@ -717,7 +766,7 @@ export default {
     .divider {
       width: 1px;
       height: 20px;
-      background: rgba(0, 0, 0, 0.3);
+      background: #DEE4EC;
       margin-left: 20px;
       margin-right: 20px;
       display: inline-block;
@@ -830,5 +879,57 @@ export default {
       background-color: rgba(67, 67, 67, 1);
     }
   }
+}
+
+.cardWrap {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 30px;
+.emptyTab {
+  font-size: 16px;
+  height: 60vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.card {
+  margin: 10px 20px 10px 0px;
+}
+}
+
+.void-page-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+.void-page-main {
+&-img {
+   text-align: center;
+ }
+&-title {
+   font-family: PingFangSC-Regular;
+   font-size: 14px;
+   color: rgba(0, 0, 0, 0.45);
+   letter-spacing: 0;
+   text-align: center;
+   line-height: 28px;
+   font-weight: 400;
+   margin-top: 24px;
+   margin-bottom: 16px;
+ }
+&-button {
+   min-width: 106px;
+   height: 32px;
+   line-height: 32px;
+   text-align: center;
+&-item {
+   background: #2e92f7;
+   color: #fff;
+ }
+}
+}
 }
 </style>

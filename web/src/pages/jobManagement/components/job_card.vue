@@ -235,14 +235,15 @@ export default {
   }
   &-sidebar {
     background: #f7f9fa;
-    height: 130px;
+    height: 129px;
     width: 37px;
     padding: 22px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    border-left: 1px solid #dee4ec;
+    border: 1px solid #dee4ec;
+    border-top: none;
   }
 }
 .img {
