@@ -33,18 +33,13 @@ public class ExchangisDeletionOperation implements RefDeletionOperation<DeleteRe
         NodeRequestRef exchangisdeleteRequestRef = (NodeRequestRef) deleteRequestRef;
         logger.info("delete job=>projectId:{},jobName:{},nodeType:{}",exchangisdeleteRequestRef.getProjectId(),exchangisdeleteRequestRef.getName(),exchangisdeleteRequestRef.getNodeType());
         deleteJob(exchangisdeleteRequestRef);
-//        if(ExchangisConfig.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisdeleteRequestRef.getNodeType())){
-//            deleteSqoop(exchangisdeleteRequestRef);
-//        }else if(ExchangisConfig.NODE_TYPE_DATAX.equalsIgnoreCase(exchangisdeleteRequestRef.getNodeType())){
-//            deleteDataX(exchangisdeleteRequestRef);
-//        }
     }
 
     private void deleteJob(NodeRequestRef deleteRequestRef) throws ExternalOperationFailedException{
         String url=getBaseUrl()+"/dss";
         logger.info("delete job=>projectId:{},jobName:{},nodeType:{}",deleteRequestRef.getProjectId(),deleteRequestRef.getName(),deleteRequestRef.getNodeType());
         try {
-            String nodeId = AppconnUtils.getId(deleteRequestRef);
+            String nodeId = deleteRequestRef.getJobContent().get("nodeId").toString();
             url +="/"+nodeId;
         }catch (Exception e){
             throw new ExternalOperationFailedException(31023, "Get node Id failed!", e);
@@ -75,40 +70,6 @@ public class ExchangisDeletionOperation implements RefDeletionOperation<DeleteRe
         }
 
     }
-//    private void deleteDataX(NodeRequestRef deleteRequestRef) throws ExternalOperationFailedException{
-//        String url=getBaseUrl()+"/dss";
-//        logger.info("delete job=>projectId:{},jobName:{},nodeType:{}",deleteRequestRef.getProjectId(),deleteRequestRef.getName(),deleteRequestRef.getNodeType());
-//        try {
-//            String nodeId = AppconnUtils.getId(deleteRequestRef);
-//            url +="/"+nodeId;
-//        }catch (Exception e){
-//            throw new ExternalOperationFailedException(31023, "Get node Id failed!", e);
-//        }
-//
-//        ExchangisDeleteAction exchangisDeleteAction = new ExchangisDeleteAction();
-//        exchangisDeleteAction.setUser(deleteRequestRef.getUserName());
-//        SSOUrlBuilderOperation ssoUrlBuilderOperation = deleteRequestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
-//        ssoUrlBuilderOperation.setAppName(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
-//        ssoUrlBuilderOperation.setReqUrl(url);
-//        ssoUrlBuilderOperation.setWorkspace(deleteRequestRef.getWorkspace().getWorkspaceName());
-//        String response = "";
-//        Map<String, Object> resMap = Maps.newHashMap();
-//        HttpResult httpResult = null;
-//        try {
-//            exchangisDeleteAction.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
-//            httpResult = (HttpResult) this.ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, exchangisDeleteAction);
-//            response = httpResult.getResponseBody();
-//            resMap = BDPJettyServerHelper.jacksonJson().readValue(response, Map.class);
-//        } catch (Exception e) {
-//            throw new ExternalOperationFailedException(90177, "Delete Widget Exception", e);
-//        }
-//        Map<String, Object> header = (Map<String, Object>) resMap.get("header");
-//        int code = (int) header.get("code");
-//        if (code != 200) {
-//            String errorMsg = header.toString();
-//            throw new ExternalOperationFailedException(90177, errorMsg, null);
-//        }
-//    }
 
     @Override
     public void setDevelopmentService(DevelopmentService developmentService) {
