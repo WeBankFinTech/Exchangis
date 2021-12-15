@@ -795,6 +795,7 @@ export default {
     overflow-x: auto;
     overflow-y: hidden;
     width: 100%;
+    height: calc(100vh - 130px);
     .jd_left {
       float: left;
       width: 250px;
@@ -896,8 +897,6 @@ export default {
     .jd_right {
       float: left;
       width: calc(100% - 250px);
-      padding-right: 25px;
-      padding-bottom: 25px;
     }
   }
 
@@ -924,7 +923,7 @@ export default {
   padding-bottom: 30px;
 .emptyTab {
   font-size: 16px;
-  height: 60vh;
+  height: calc(100vh - 130px);
   width: 100%;
   display: flex;
   justify-content: center;
