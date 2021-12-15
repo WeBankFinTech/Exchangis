@@ -187,7 +187,7 @@ export default defineComponent({
     font-weight: 500;
   }
   .main-content {
-    min-width: 942px;
+    max-width: 990px;
     border: 1px solid #dee4ec;
     margin-top: 18px;
     &-t {
