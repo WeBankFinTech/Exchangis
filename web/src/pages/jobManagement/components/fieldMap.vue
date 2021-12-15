@@ -1,7 +1,7 @@
 <template>
   <div class="field-map-wrap">
     <!-- left -->
-    <div class="fm-l">
+    <!-- <div class="fm-l">
       <div class="main-header">
         <img src="../../../images/jobDetail/u2664.png" />
         <img
@@ -16,16 +16,24 @@
         />
         <span class="main-header-label" @click="showInfo">字段映射</span>
       </div>
-    </div>
+    </div> -->
     <!-- right -->
     <div class="fm-r">
-      <div class="main-header">
+      <!-- <div class="main-header">
         <div>
           <span class="main-header-label">来源字段</span>
         </div>
         <div>
           <span class="main-header-label">目的字段</span>
         </div>
+      </div> -->
+
+      <div class="main-header" @click="showInfo">
+        <span style="margin-right: 8px; color: rgba(0, 0, 0, 0.45)">
+          <RightOutlined v-if="!isFold"/>
+          <DownOutlined v-else/>
+        </span>
+        <span>字段映射</span>
       </div>
 
       <div
@@ -150,7 +158,7 @@ import {
   defineAsyncComponent,
 } from "vue";
 import { cloneDeep } from "lodash-es";
-import { DeleteOutlined } from "@ant-design/icons-vue";
+import { DeleteOutlined, RightOutlined,DownOutlined } from "@ant-design/icons-vue";
 
 export default defineComponent({
   props: {
@@ -165,6 +173,8 @@ export default defineComponent({
   components: {
     Transformer: defineAsyncComponent(() => import("./transformer.vue")),
     DeleteOutlined,
+    RightOutlined,
+    DownOutlined
   },
   setup(props, context) {
     const { type } = props.fmData;
@@ -447,34 +457,21 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .field-map-wrap {
-  margin-top: 30px;
-  // width: 1215px;
   display: flex;
+  border-bottom: 1px solid #dee4ec;
+  border-top: 1px solid #dee4ec;
+  min-height: 68px;
+  padding: 24px;
+  box-sizing: border-box;
 }
 .fm-l {
   width: 122px;
   .main-header {
-    height: 33px;
-    background: inherit;
-    border: none;
-    display: flex;
-    border-top-left-radius: 100%;
-    border-bottom-left-radius: 100%;
-    position: relative;
-    background-color: #6b6b6b;
-    :nth-of-type(1) {
-      text-align: center;
-      line-height: 33px;
-      font-size: 16px;
-    }
-    .main-header-label {
-      font-family: "Arial Negreta", "Arial Normal", "Arial";
-      font-weight: 700;
-      font-style: normal;
-      color: #ffffff;
-      position: absolute;
-      left: 46px;
-    }
+    height: 20px;
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
   }
 }
 .fm-r {
@@ -486,31 +483,11 @@ export default defineComponent({
   border-top: none;
   flex-direction: column;
   .main-header {
-    height: 33px;
-    background: inherit;
-    background-color: rgba(107, 107, 107, 1);
-    border: none;
-    display: flex;
-    > div {
-      flex: 1;
-      text-align: center;
-      line-height: 33px;
-    }
-    /*&::before {
-      content: "";
-      position: absolute;
-      width: 16px;
-      height: 33px;
-      background-color: #66f;
-      border-top-right-radius: 16px;
-      border-bottom-right-radius: 16px;
-    }*/
-    .main-header-label {
-      font-family: "Arial Negreta", "Arial Normal", "Arial";
-      font-weight: 700;
-      font-style: normal;
-      color: #ffffff;
-    }
+    height: 20px;
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
   }
   .main-content {
     border: 1px solid rgba(102, 102, 255, 1);
