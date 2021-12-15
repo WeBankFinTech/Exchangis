@@ -31,19 +31,6 @@ public class ExchangisImportOperation implements RefImportOperation<ImportReques
         String url = getBaseUrl() + "/relation";
         logger.info("importRef job=>parameter:{} ||name:{}",importRequestRef.getParameters().toString(),importRequestRef.getName());
 
-        /**
-         *   private String id;
-         *     @NotNull
-         *     @NotEmpty
-         *     private String projectId;
-         *     @NotNull
-         *     @NotEmpty
-         *     private String nodeId;
-         *     private String projectVersion;
-         *     private String flowVersion;
-         *     private String resourceId;
-         *     private String version;
-         */
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
         exchangisPostAction.setUser(importRequestRef.getParameter("user").toString());
 

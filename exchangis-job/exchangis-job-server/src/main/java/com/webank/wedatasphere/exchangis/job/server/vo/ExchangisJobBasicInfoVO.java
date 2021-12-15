@@ -6,6 +6,14 @@ public class ExchangisJobBasicInfoVO {
 
     private Long projectId;
 
+    private Long dssProjectId;
+
+    private String dssProjectName;
+
+    private String nodeId;
+
+    private String nodeName;
+
     private String jobName;
 
     private String jobType;
@@ -70,5 +78,37 @@ public class ExchangisJobBasicInfoVO {
 
     public void setJobDesc(String jobDesc) {
         this.jobDesc = jobDesc;
+    }
+
+    public Long getDssProjectId() {
+        return dssProjectId;
+    }
+
+    public void setDssProjectId(Long dssProjectId) {
+        this.dssProjectId = dssProjectId;
+    }
+
+    public String getDssProjectName() {
+        return dssProjectName;
+    }
+
+    public void setDssProjectName(String dssProjectName) {
+        this.dssProjectName = dssProjectName;
+    }
+
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    public String getNodeName() {
+        return nodeName;
+    }
+
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
     }
 }
