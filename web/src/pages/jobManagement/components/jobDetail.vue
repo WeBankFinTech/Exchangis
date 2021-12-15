@@ -794,7 +794,7 @@ export default {
   }
   .jd-content {
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: auto;
     width: 100%;
     height: calc(100vh - 130px);
     .jd_left {
