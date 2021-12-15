@@ -32,9 +32,8 @@ public class ExchangisQueryOperation implements RefQueryOperation<OpenRequestRef
         logger.info("query job=>jobContent:{} ||,projectId:{}  ||,projectName:{}  ||,parameters:{} ||,type:{}",exchangisOpenRequestRef.getJobContent(),exchangisOpenRequestRef.getProjectId(),exchangisOpenRequestRef.getProjectName(),exchangisOpenRequestRef.getParameters().toString(),exchangisOpenRequestRef.getType());
         try {
             String jobId = ((Map<String,Object>)((Map<String,Object>)exchangisOpenRequestRef.getJobContent().get("data")).get("result")).get("id").toString();
-            String baseUrl = exchangisOpenRequestRef.getParameter("redirectUrl").toString();
+            String baseUrl = exchangisOpenRequestRef.getParameter("redirectUrl").toString() + "/";
             String jumpUrl = baseUrl;
-            logger.info("exchangisCommonResponseRef jobId {},baseUrl {}",jobId,baseUrl);
             if(ExchangisConfig.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisOpenRequestRef.getType())){
                 jumpUrl +=ExchangisConfig.SQOOP_JUMP_URL_FORMAT;
             }else if(ExchangisConfig.NODE_TYPE_DATAX.equalsIgnoreCase(exchangisOpenRequestRef.getType())){
