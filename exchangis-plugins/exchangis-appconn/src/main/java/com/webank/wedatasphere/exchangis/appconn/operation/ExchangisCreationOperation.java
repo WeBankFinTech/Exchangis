@@ -52,14 +52,8 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
         String projectName = null;
         try {
             String contextID = requestRef.getJobContent().get("contextID").toString();
-            logger.info("contextID {}",contextID);
-
             Map contextIDMap =  BDPJettyServerHelper.jacksonJson().readValue(contextID, Map.class);
-            logger.info("contextIDMap {}",contextIDMap.toString());
-
             String valueJson = contextIDMap.get("value").toString();
-            logger.info("valueJson {}",valueJson);
-
             Map map = BDPJettyServerHelper.jacksonJson().readValue(valueJson, Map.class);
             logger.info("map {}",map.toString());
             projectName = map.get("project").toString();
