@@ -9,7 +9,7 @@
       <div class="divider"></div>
       <span @click="executeHistory"><HistoryOutlined />执行历史</span>
     </div>
-    <div class="jd-content" v-if="list.length !== 0" >
+    <div class="jd-content" v-if="list.length !== 0">
       <div class="jd_left">
         <div class="sub-title">
           <!--<DatabaseFilled class="database-icon" />-->
@@ -33,8 +33,9 @@
                 activeIndex !== idx || (activeIndex === idx && !nameEditable)
               "
               :title="item.subJobName"
-              >{{ item.subJobName }}</div
             >
+              {{ item.subJobName }}
+            </div>
             <a-input
               @pressEnter="nameEditable = false"
               v-model:value="item.subJobName"
@@ -101,17 +102,16 @@
         <a-button
           size="large"
           style="
-                  width: 218px;
-                  font-family: PingFangSC-Regular;
-                  font-size: 14px;
-                  line-height: 22px;
-                  font-weight: 400;
-                  border: 1px dashed #DEE4EC;
-                "
+            width: 218px;
+            font-family: PingFangSC-Regular;
+            font-size: 14px;
+            line-height: 22px;
+            font-weight: 400;
+            border: 1px dashed #dee4ec;
+          "
           @click="addNewTask"
         >
-          <template #icon> <PlusOutlined /></template
-          >添加子任务
+          <template #icon> <PlusOutlined /></template>添加子任务
         </a-button>
       </div>
       <div class="jd_right">
@@ -153,10 +153,7 @@
         <div class="void-page-wrap">
           <div class="void-page-main">
             <div class="void-page-main-img">
-              <img
-                src="../../../assets/img/void_page.png"
-                alt="空页面"
-              />
+              <img src="../../../assets/img/void_page.png" alt="空页面" />
             </div>
             <div class="void-page-main-title">
               <span>该任务下没有子任务，请先创建一个子任务</span>
@@ -192,19 +189,21 @@
     </div>
     <!-- 执行历史  jd-bottom -->
     <div class="jd-bottom" v-show="visibleDrawer">
-      <div class="jd-bottom-top" @click="onCloseDrawer">
-        <MinusOutlined
+      <div class="jd-bottom-top" >
+        <span>执行历史</span>
+        <CloseOutlined
           style="
-            color: #fff;
+            color: rgba(0, 0, 0, 0.45);
+            font-size: 12px;
             position: absolute;
             right: 24px;
-            top: 7px;
+            top: 18px;
             cursor: pointer;
           "
-          height="1"
+          @click="onCloseDrawer"
         />
       </div>
-      <div class="sh-b-table">
+      <div class="jd-bottom-content">
         <a-table
           :columns="ehColumns"
           :data-source="ehTableData"
@@ -243,7 +242,8 @@ import {
   CheckCircleOutlined,
   EditOutlined,
   MinusOutlined,
-  PlusOutlined
+  PlusOutlined,
+  CloseOutlined,
 } from "@ant-design/icons-vue";
 import {
   getJobInfo,
@@ -253,7 +253,7 @@ import {
   executeTask,
   updateTaskConfiguration,
   getSyncHistory,
-  executeJob
+  executeJob,
 } from "@/common/service";
 import { message, notification } from "ant-design-vue";
 import { randomString } from "../../../common/utils";
@@ -314,13 +314,13 @@ const ehColumns = [
     title: "完成时间",
     dataIndex: "completeTime",
   },
-  {
-    title: "操作",
-    dataIndex: "options",
-    slots: {
-      customRender: "operation",
-    },
-  },
+  // {
+  //   title: "操作",
+  //   dataIndex: "options",
+  //   slots: {
+  //     customRender: "operation",
+  //   },
+  // },
 ];
 
 export default {
@@ -343,6 +343,7 @@ export default {
     FieldMap: defineAsyncComponent(() => import("./fieldMap.vue")),
     ProcessControl: defineAsyncComponent(() => import("./processControl.vue")),
     MinusOutlined,
+    CloseOutlined,
   },
   data() {
     const { t } = useI18n({ useScope: "global" });
@@ -378,7 +379,7 @@ export default {
         total: 0,
         pageSize: 10,
       },
-      t
+      t,
     };
   },
   props: {
@@ -515,11 +516,11 @@ export default {
         settings: [],
       };
       getSettingsParams(this.jobData.engineType).then((res) => {
-        res.ui.forEach(ui => {
+        res.ui.forEach((ui) => {
           if (!ui.value && ui.defaultValue) {
-            ui.value = ui.defaultValue
+            ui.value = ui.defaultValue;
           }
-        })
+        });
         task.settings = res.ui || [];
         this.jobData.content.subJobs.push(task);
         this.$nextTick(() => {
@@ -699,14 +700,14 @@ export default {
     },
     // 执行任务
     executeTask() {
-       const { id } = this.curTab;
-       executeJob(id)
-         .then((res) => {
-           message.info("执行成功");
-         })
-         .catch((err) => {
-           console.log("executeTask error", err);
-         });
+      const { id } = this.curTab;
+      executeJob(id)
+        .then((res) => {
+          message.info("执行成功");
+        })
+        .catch((err) => {
+          console.log("executeTask error", err);
+        });
     },
     executeHistory() {
       this.visibleDrawer = true;
@@ -764,16 +765,16 @@ export default {
 };
 </script>
 <style scoped lang="less">
-@import '../../../common/content.less';
+@import "../../../common/content.less";
 .container {
   .tools-bar {
     width: 100%;
-    border-top: 1px solid  #DEE4EC;
-    border-bottom: 1px solid  #DEE4EC;
-    background:  #F8F9FC;
+    border-top: 1px solid #dee4ec;
+    border-bottom: 1px solid #dee4ec;
+    background: #f8f9fc;
     padding: 10px 30px;
     font-size: 16px;
-    color: rgba(0,0,0,0.65);
+    color: rgba(0, 0, 0, 0.65);
     > span {
       cursor: pointer;
     }
@@ -783,7 +784,7 @@ export default {
     .divider {
       width: 1px;
       height: 20px;
-      background: #DEE4EC;
+      background: #dee4ec;
       margin-left: 20px;
       margin-right: 20px;
       display: inline-block;
@@ -800,8 +801,8 @@ export default {
       float: left;
       width: 250px;
       padding: 0 15px;
-      background-color: #F8F9FC;
-      border-right: 1px solid #DEE4EC;
+      background-color: #f8f9fc;
+      border-right: 1px solid #dee4ec;
       padding-bottom: 2000px;
       margin-bottom: -2000px;
       .sub-title {
@@ -821,25 +822,25 @@ export default {
       .sub-content {
         width: 218px;
         margin: 10px 0;
-        border: 1px solid #DEE4EC;
+        border: 1px solid #dee4ec;
         padding: 10px 15px 5px;
         border-radius: 5px;
         position: relative;
         &.active {
-          border: 1px solid #2E92F7;
+          border: 1px solid #2e92f7;
           .task-title {
             .subjobName {
-              color: rgba(0,0,0,0.85);
+              color: rgba(0, 0, 0, 0.85);
             }
           }
           .sub-table {
-            color: #677C99;
+            color: #677c99;
           }
         }
         .task-title {
           font-size: 15px;
           .subjobName {
-            color: rgba(0,0,0,0.85);
+            color: rgba(0, 0, 0, 0.85);
             cursor: pointer;
             overflow: hidden;
             white-space: nowrap;
@@ -847,30 +848,30 @@ export default {
             max-width: 115px;
             display: inline-block;
           }
-          .rename-icon{
+          .rename-icon {
             float: right;
             cursor: pointer;
             margin-right: 10px;
             line-height: 28px;
-            color: rgba(0,0,0,0.5);
+            color: rgba(0, 0, 0, 0.5);
           }
           .copy-icon {
             float: right;
             cursor: pointer;
             margin-right: 10px;
             line-height: 28px;
-            color: rgba(0,0,0,0.5);
+            color: rgba(0, 0, 0, 0.5);
           }
           .delete-icon {
             float: right;
             cursor: pointer;
             margin-right: 0;
             line-height: 28px;
-            color: rgba(0,0,0,0.5);
+            color: rgba(0, 0, 0, 0.5);
           }
         }
         .sub-table {
-          color: #677C99;
+          color: #677c99;
           text-align: center;
           margin: 5px 0;
           width: 100%;
@@ -882,7 +883,7 @@ export default {
           text-align: center;
           font-weight: bolder;
           font-size: 16px;
-          color: #677C99;
+          color: #677c99;
         }
         .mask {
           width: 100%;
@@ -909,10 +910,19 @@ export default {
     background-color: white;
     .jd-bottom-top {
       width: calc(100% - 200px);
-      height: 30px;
+      height: 48px;
       position: fixed;
       bottom: 30%;
-      background-color: rgba(67, 67, 67, 1);
+      background-color: #f8f9fc;
+      padding: 12px 24px;
+      font-family: PingFangSC-Medium;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.85);
+      font-weight: 500;
+    }
+
+    &-content {
+      padding: 18px 24px;
     }
   }
 }
@@ -921,17 +931,17 @@ export default {
   display: flex;
   flex-wrap: wrap;
   padding-bottom: 30px;
-.emptyTab {
-  font-size: 16px;
-  height: calc(100vh - 130px);
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.card {
-  margin: 10px 20px 10px 0px;
-}
+  .emptyTab {
+    font-size: 16px;
+    height: calc(100vh - 130px);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .card {
+    margin: 10px 20px 10px 0px;
+  }
 }
 
 .void-page-wrap {
@@ -941,31 +951,31 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #fff;
-.void-page-main {
-&-img {
-   text-align: center;
- }
-&-title {
-   font-family: PingFangSC-Regular;
-   font-size: 14px;
-   color: rgba(0, 0, 0, 0.45);
-   letter-spacing: 0;
-   text-align: center;
-   line-height: 28px;
-   font-weight: 400;
-   margin-top: 24px;
-   margin-bottom: 16px;
- }
-&-button {
-   min-width: 106px;
-   height: 32px;
-   line-height: 32px;
-   text-align: center;
-&-item {
-   background: #2e92f7;
-   color: #fff;
- }
-}
-}
+  .void-page-main {
+    &-img {
+      text-align: center;
+    }
+    &-title {
+      font-family: PingFangSC-Regular;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.45);
+      letter-spacing: 0;
+      text-align: center;
+      line-height: 28px;
+      font-weight: 400;
+      margin-top: 24px;
+      margin-bottom: 16px;
+    }
+    &-button {
+      min-width: 106px;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      &-item {
+        background: #2e92f7;
+        color: #fff;
+      }
+    }
+  }
 }
 </style>
