@@ -1,6 +1,27 @@
 <template>
   <div class="sds-wrap">
-    <a-button type="primary" @click="showModal">{{ defaultSelect }}</a-button>
+    <!-- <a-button type="dashed" @click="showModal">{{ defaultSelect }}</a-button> -->
+    <div
+      class="sds-button"
+      @click="showModal"
+      v-if="defaultSelect === '请点击后选择'"
+    >
+      <PlusOutlined
+        style="color: rgba(0, 0, 0, 0.65); font-size: 12px; margin-right: 8px"
+      />
+      <span>{{ defaultSelect }}</span>
+    </div>
+    <div v-else class="sds-title-tags">
+      <div class="sds-title-tag"></div>
+      <MinusOutlined
+        style="margin: 0 8px; font-size: 9px; color: rgba(0, 0, 0, 0.65)"
+      />
+      <div class="sds-title-tag"></div>
+      <MinusOutlined
+        style="margin: 0 8px; font-size: 9px; color: rgba(0, 0, 0, 0.65)"
+      />
+      <div class="sds-title-tag"></div>
+    </div>
     <a-modal
       v-model:visible="visible"
       title="选择数据源"
@@ -46,6 +67,7 @@
 </template>
 
 <script>
+import { PlusOutlined, MinusOutlined } from "@ant-design/icons-vue";
 import {
   getDataSourceTypes,
   getDBs,
@@ -67,6 +89,10 @@ import { message } from "ant-design-vue";
 export default defineComponent({
   props: {
     title: String,
+  },
+  components: {
+    PlusOutlined,
+    MinusOutlined,
   },
   emits: ["updateDsInfo"],
   setup(props, context) {
@@ -241,5 +267,40 @@ export default defineComponent({
 <style lang="less" scoped>
 .sds-wrap {
   display: inline-block;
+  .sds-button {
+    width: 435px;
+    height: 46px;
+    background: #f8fafd;
+    border: 1px dashed #dee4ec;
+    border-radius: 2px;
+    line-height: 46px;
+    text-align: center;
+
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.65);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .sds-title-tags {
+    width: 435px;
+    height: 46px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .sds-title-tag {
+      line-height: 32px;
+      background: #e6f0ff;
+      border: 1px solid #dee4ec;
+      border-radius: 4px;
+      font-family: PingFangSC-Medium;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      font-weight: 500;
+      height: 32px;
+      min-width: 120px;
+    }
+  }
 }
 </style>
