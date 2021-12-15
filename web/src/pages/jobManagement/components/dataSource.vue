@@ -39,10 +39,7 @@
           <div class="data-source-warp-l-content">
             <a-form ref="formRef" :label-col="labelCol">
               <a-form-item
-                label="数据源信息"
                 name="dsInfo"
-                width="300"
-                class="source-title"
               >
                 <SelectDataSource
                   @updateDsInfo="updateSourceInfo"
@@ -80,10 +77,7 @@
           <div class="data-source-warp-r-content">
             <a-form ref="formRef" :label-col="labelCol">
               <a-form-item
-                ref="dsInfo2"
-                label="数据源信息"
                 name="dsInfo2"
-                class="source-title"
               >
                 <SelectDataSource
                   @updateDsInfo="updateSinkInfo"
@@ -436,10 +430,10 @@ export default defineComponent({
     font-weight: 500;
   }
   .main-content {
-    // border: 1px solid rgba(102, 102, 255, 1);
-    border-top: none;
-    padding: 25px 30px;
     display: flex;
+    padding: 24px;
+    padding-bottom: 0px;
+    max-width: 990px;
   }
 }
 .data-source-warp-l {
@@ -454,10 +448,10 @@ export default defineComponent({
   flex: 1;
 }
 .data-source-warp-mid {
-  width: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 74px;
+  height: 46px;
+  line-height: 46px;
+  text-align: center;
 }
 .data-source-label {
   font-size: 14px;
