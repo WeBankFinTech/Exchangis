@@ -26,9 +26,6 @@ public class ExchangisExecutionOperation implements RefExecutionOperation {
     }
     @Override
     public ResponseRef execute(ExecutionRequestRef executionRequestRef) throws ExternalOperationFailedException {
-        AsyncExecutionRequestRef asyncExecutionRequestRef = (AsyncExecutionRequestRef) executionRequestRef;
-        String nodeType = asyncExecutionRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("nodeType").toString();
-
         return new ExchangisCompletedExecutionResponseRef(200);
     }
 
