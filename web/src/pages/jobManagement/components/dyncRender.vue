@@ -6,14 +6,14 @@
       ref="select"
       :options="checkOptions"
       @change="emitData(value)"
-      style="width: 200px"
+      :style="style"
     >
     </a-select>
     <template v-else>
       <a-input
         v-model:value="value"
         @change="emitData(value)"
-        style="width: 200px"
+        :style="style"
       />
       <span style="margin-left: 5px">{{unit}}</span>
     </template>
@@ -26,6 +26,12 @@ import { defineComponent, h, toRaw, watch, computed, reactive, ref } from "vue";
 export default defineComponent({
   props: {
     param: Object,
+    style: {
+      type: Object,
+      default: () => {
+        return { width: '200px',  }
+      }
+    }
   },
   emits: ["updateInfo"],
   setup(props, context) {
