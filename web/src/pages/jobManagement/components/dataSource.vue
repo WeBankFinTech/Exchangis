@@ -24,7 +24,7 @@
           <RightOutlined v-if="!isFold" />
           <DownOutlined v-else />
         </span>
-        <span>字段映射</span>
+        <span>数据源</span>
         <!-- <div>
           <span class="main-header-label">数据来源</span>
         </div>
@@ -37,10 +37,12 @@
         <!-- left -->
         <div class="data-source-warp-l">
           <div class="data-source-warp-l-content">
-            <a-form ref="formRef" :label-col="labelCol">
-              <a-form-item
-                name="dsInfo"
-              >
+            <a-form
+              ref="formRef"
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol"
+            >
+              <a-form-item name="dsInfo">
                 <SelectDataSource
                   @updateDsInfo="updateSourceInfo"
                   :title="sourceTitle"
@@ -59,6 +61,7 @@
                 <dync-render
                   v-bind:param="item"
                   @updateInfo="updateSourceParams"
+                  :style="styleObject"
                 />
               </a-form-item>
             </a-form>
@@ -68,20 +71,26 @@
         <!-- mid -->
 
         <div class="data-source-warp-mid">
-          <RightCircleOutlined style="font-size: 50px; color: #66f" />
+          <span
+            class="iconfont icon-jiantou"
+            style="color: #99b0d0; font-size: 24px"
+          ></span>
         </div>
 
         <!-- right -->
 
         <div class="data-source-warp-r">
           <div class="data-source-warp-r-content">
-            <a-form ref="formRef" :label-col="labelCol">
-              <a-form-item
-                name="dsInfo2"
-              >
+            <a-form
+              ref="formRef"
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol"
+            >
+              <a-form-item name="dsInfo2">
                 <SelectDataSource
                   @updateDsInfo="updateSinkInfo"
                   :title="sinkTitle"
+                  :style="styleObject"
                 />
               </a-form-item>
               <!-- 动态组件 -->
@@ -97,6 +106,7 @@
                 <dync-render
                   v-bind:param="item"
                   @updateInfo="updateSinkParams"
+                  :style="styleObject"
                 />
               </a-form-item>
             </a-form>
@@ -108,7 +118,12 @@
 </template>
 
 <script>
-import { RightCircleOutlined, DownOutlined, RightOutlined } from "@ant-design/icons-vue";
+import {
+  RightCircleOutlined,
+  DownOutlined,
+  RightOutlined,
+  ArrowRightOutlined,
+} from "@ant-design/icons-vue";
 import {
   defineComponent,
   ref,
@@ -139,7 +154,8 @@ export default defineComponent({
     DyncRender: defineAsyncComponent(() => import("./dyncRender.vue")),
     RightCircleOutlined,
     RightOutlined,
-    DownOutlined
+    DownOutlined,
+    ArrowRightOutlined,
   },
   setup(props, context) {
     // 对象转标题
@@ -147,7 +163,7 @@ export default defineComponent({
       if (typeof obj !== "object") return "";
       const { type, db, table, ds } = obj;
       if (!type && !db && !table && !ds) return "请点击后选择";
-      return `${type}-${ds}-${db}-${table}`;
+      return [type, ds, db, table];
     };
 
     let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source));
@@ -392,9 +408,19 @@ export default defineComponent({
 
       labelCol: {
         style: {
-          width: "120px",
-          "text-align": "start",
+          style: {
+            width: "417px",
+            "text-align": "left",
+          },
         },
+      },
+      wrapperCol: {
+        style: {
+          "text-align": "left",
+        },
+      },
+      styleObject: {
+        width: "400px",
       },
     };
   },
