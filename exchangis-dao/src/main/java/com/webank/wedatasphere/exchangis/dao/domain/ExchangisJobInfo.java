@@ -20,7 +20,7 @@ public class ExchangisJobInfo {
     private Long dssProjectId;
 
     @TableField("node_id")
-    private Long nodeId;
+    private String nodeId;
 
     @TableField("node_name")
     private String nodeName;
@@ -77,9 +77,9 @@ public class ExchangisJobInfo {
 
     public void setDssProjectId(Long dssProjectId) { this.dssProjectId = dssProjectId; }
 
-    public Long getNodeId() { return nodeId; }
+    public String getNodeId() { return nodeId; }
 
-    public void setNodeId(Long nodeId) { this.nodeId = nodeId; }
+    public void setNodeId(String nodeId) { this.nodeId = nodeId; }
 
     public String getNodeName() { return nodeName; }
 
