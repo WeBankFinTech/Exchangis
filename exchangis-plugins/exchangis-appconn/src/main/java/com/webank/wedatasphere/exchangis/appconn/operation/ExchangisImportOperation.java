@@ -28,13 +28,12 @@ public class ExchangisImportOperation implements RefImportOperation<ImportReques
 
     @Override
     public ResponseRef importRef(ImportRequestRef importRequestRef) throws ExternalOperationFailedException {
-        String url = getBaseUrl() + "/import";
-        importRequestRef.getParameters().forEach((k,v)->{
-            logger.info("importRef job=>k:{},v:{}",k,v.toString());
-        });
+        String url = getBaseUrl() + "/relation";
+        logger.info("importRef job=>parameter:{} ||name:{}",importRequestRef.getParameters().toString(),importRequestRef.getName());
 
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
         exchangisPostAction.setUser(importRequestRef.getParameter("user").toString());
+
         exchangisPostAction.addRequestPayload("projectId", importRequestRef.getParameter("projectId"));
         exchangisPostAction.addRequestPayload("projectVersion", "v1");
         exchangisPostAction.addRequestPayload("flowVersion", importRequestRef.getParameter("orcVersion"));
@@ -49,9 +48,9 @@ public class ExchangisImportOperation implements RefImportOperation<ImportReques
             exchangisPostAction.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
             HttpResult httpResult = (HttpResult) this.ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, exchangisPostAction);
             responseRef = new ExchangisCommonResponseRef(httpResult.getResponseBody());
-
+            logger.info("import job body:{}",responseRef.getResponseBody());
         } catch (Exception e){
-            throw new ExternalOperationFailedException(31022, "Export Visualis Exception", e);
+            throw new ExternalOperationFailedException(31025, "import exchangis exception", e);
         }
         return responseRef;
     }
