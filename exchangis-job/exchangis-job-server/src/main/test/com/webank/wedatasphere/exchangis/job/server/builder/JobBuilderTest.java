@@ -1,8 +1,6 @@
-package com.webank.wedatasphere.exchangis.job.server.builder.engine;
+package com.webank.wedatasphere.exchangis.job.server.builder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
@@ -10,13 +8,11 @@ import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
-import com.webank.wedatasphere.exchangis.job.server.builder.SpringExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
-import com.webank.wedatasphere.linkis.datasourcemanager.common.util.json.Json;
 
 import java.util.*;
 
-public class Test {
+public class JobBuilderTest {
 
     private static SpringExchangisJobBuilderManager jobBuilderManager = new SpringExchangisJobBuilderManager();
 
@@ -25,7 +21,59 @@ public class Test {
     }
 
     public static void main(String[] args) throws ExchangisJobException, JsonProcessingException {
-        ExchangisJob job = getJob();
+
+        String code = "{\n" +
+                "    \"job\": {\n" +
+                "        \"content\":[\n" +
+                "            {\n" +
+                "                \"reader\": {\n" +
+                "                    \"name\": \"txtfilereader\", \n" +
+                "                    \"parameter\": {\n" +
+                "                        \"path\":[\"/opt/install/datax/data/test1.csv\"],\n" +
+                "                        \"encoding\":\"gbk\",\n" +
+                "                        \"column\": [\n" +
+                "                            {\n" +
+                "                                \"index\":0,\n" +
+                "                                \"type\":\"string\"\n" +
+                "                            },\n" +
+                "                            {\n" +
+                "                                \"index\":1,\n" +
+                "                                \"type\":\"string\"\n" +
+                "                            }\n" +
+                "                        ], \n" +
+                "                        \"fileldDelimiter\":\",\"\n" +
+                "                    }\n" +
+                "                }, \n" +
+                "                \"writer\": {\n" +
+                "                    \"name\": \"mysqlwriter\", \n" +
+                "                    \"parameter\": {\n" +
+                "                        \"username\": \"root\",\n" +
+                "                        \"password\": \"MTIzNDU2\", \n" +
+                "                        \"column\": [\n" +
+                "                            \"i\",\n" +
+                "                            \"j\"\n" +
+                "                        ],\n" +
+                "                        \"preSql\": [], \n" +
+                "                        \"connection\": [\n" +
+                "                            {\n" +
+                "                                \"jdbcUrl\":\"jdbc:mysql://127.0.0.1:3306/test\", \n" +
+                "                                \"table\": [\"testtab\"]\n" +
+                "                            }\n" +
+                "                        ]\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            }\n" +
+                "        ], \n" +
+                "        \"setting\": {\n" +
+                "            \"speed\": {\n" +
+                "                \"channel\": \"4\"\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+//        System.out.println(code);
+
+        ExchangisJob job = getSqoopJob();
         System.out.println(job.getJobName());
         ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
         ctx.putEnv("USER_NAME", "xxxxyyyyzzzz");
@@ -69,13 +117,13 @@ public class Test {
 
     }
 
-    public static ExchangisJob getJob() {
+    public static ExchangisJob getSqoopJob() {
         ExchangisJob job = new ExchangisJob();
         job.setId(22L);
         job.setProjectId(1456173825011081218L);
         job.setJobName("T_SQOOP");
         job.setJobType("OFFLINE");
-        job.setEngineType("SQOOP");
+        job.setEngineType("DATAX");
         job.setJobLabels("");
         job.setJobDesc("");
         job.setContent("[{\n" +
