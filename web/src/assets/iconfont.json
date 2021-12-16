@@ -88,6 +88,13 @@
       "font_class": "hive",
       "unicode": "e722",
       "unicode_decimal": 59170
+    },
+    {
+      "icon_id": "91563082",
+      "name": "箭头",
+      "font_class": "jiantou",
+      "unicode": "e727",
+      "unicode_decimal": 59175
     }
   ]
 }
