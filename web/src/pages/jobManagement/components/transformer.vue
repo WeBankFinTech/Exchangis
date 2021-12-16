@@ -367,6 +367,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+@import "../../../common/content.less";
 .tf-mid {
   text-align: center;
   position: relative;
