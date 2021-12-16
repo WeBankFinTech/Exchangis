@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import scala.tools.cmd.gen.AnyValReps;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -706,7 +707,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         return Message.ok().data("info", result.getData().getInfo());
     }
 
-    public GetDataSourceInfoResultDTO  getDataSource(String userName, Long id) throws ErrorException{
+    public GetDataSourceInfoResultDTO getDataSource(String userName, Long id) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         try {
 
@@ -741,6 +742,130 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                 throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_QUERY_DATASOURCE_ERROR.getCode(), e.getMessage());
             }
         }
+    }
+
+    public Map<String, Object> getMetadata(String username, Long id, String type, String database, String table) throws ErrorException {
+        Map<String, Object> metas = new HashMap<>();
+        GetDataSourceInfoResultDTO datasource = this.getDataSource(username, id);
+        Optional.ofNullable(datasource).ifPresent(ds -> {
+            Optional.ofNullable(ds.getData()).ifPresent(data -> {
+                Optional.ofNullable(data.getInfo()).ifPresent(info -> {
+                    Optional.of(info.getConnectParams()).ifPresent(metas::putAll);
+                });
+            });
+        });
+
+        MetadataGetColumnsResultDTO columns = this.getDatasourceColumns(username, id, database, table);
+
+        StringBuilder primaryKeys = new StringBuilder();
+        Optional.ofNullable(columns).ifPresent(c -> {
+            Optional.ofNullable(c.getData()).ifPresent(data -> {
+                Optional.ofNullable(data.getColumns()).ifPresent(_cs -> {
+                    _cs.stream().filter(MetadataGetColumnsResultDTO.Column::isPrimaryKey).forEach(_c -> {
+                        primaryKeys.append(_c.getName()).append(",");
+                    });
+                });
+            });
+        });
+        if (primaryKeys.length() > 0) {
+            metas.put("primary-keys", primaryKeys.toString().substring(0, primaryKeys.length() - 1));
+        }
+
+        MetadataGetTablePropsResultDTO metadata = this.getDatasourceMetadata(username, id, database, table);
+        Optional.ofNullable(metadata).ifPresent(meta -> {
+            Optional.ofNullable(meta.getData()).ifPresent(data -> {
+                Optional.ofNullable(data.getProps()).ifPresent(props -> {
+                    props.forEach((k, v) -> {
+                        switch (k) {
+                            case "columns.types":
+                                metas.put("columns-types", v);
+                                break;
+                            case "transient_lastDdlTime":
+                                metas.put("transient-last-ddl-time", v);
+                                break;
+                            case "partition_columns.types":
+                                metas.put("partition-columns-types", v);
+                                break;
+                            case "columns.comments":
+                                metas.put("columns-comments", v);
+                                break;
+                            case "bucket_count":
+                                metas.put("bucket-count", v);
+                                break;
+                            case "serialization.ddl":
+                                metas.put("serialization-ddl", v);
+                                break;
+                            case "file.outputformat":
+                                metas.put("file-outputformat", v);
+                                break;
+                            case "partition_columns":
+                                metas.put("partition-columns", v);
+                                break;
+                            case "serialization.lib":
+                                metas.put("serialization-lib", v);
+                                break;
+                            case "file.inputformat":
+                                metas.put("file-inputformat", v);
+                                break;
+                            case "serialization.format":
+                                metas.put("serialization-format", v);
+                                break;
+                            case "column.name.delimiter":
+                                metas.put("column-name-delimiter", v);
+                                break;
+                            default:
+                                metas.put(k, v);
+                        }
+                    });
+                });
+            });
+        });
+
+        return metas;
+    }
+
+    private MetadataGetColumnsResultDTO getDatasourceColumns(String username, Long id, String database, String table) throws ExchangisDataSourceException {
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        Result execute = linkisDataSourceRemoteClient.execute(
+                MetadataGetColumnsAction.builder()
+                        .setSystem("system")
+                        .setUser(username)
+                        .setDataSourceId(id)
+                        .setDatabase(database)
+                        .setTable(table)
+                        .build()
+        );
+        String responseBody = execute.getResponseBody();
+
+        MetadataGetColumnsResultDTO result = Json.fromJson(responseBody, MetadataGetColumnsResultDTO.class);
+
+        if (result.getStatus() != 0) {
+            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
+        }
+        return result;
+    }
+
+    private MetadataGetTablePropsResultDTO getDatasourceMetadata(String username, Long id, String database, String table) throws ExchangisDataSourceException {
+
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        Result execute = linkisDataSourceRemoteClient.execute(
+                MetadataGetTablePropsAction.builder()
+                        .setSystem("system")
+                        .setUser(username)
+                        .setDataSourceId(id)
+                        .setDatabase(database)
+                        .setTable(table)
+                        .build()
+        );
+        String responseBody = execute.getResponseBody();
+
+        MetadataGetTablePropsResultDTO result = Json.fromJson(responseBody, MetadataGetTablePropsResultDTO.class);
+
+        if (result.getStatus() != 0) {
+            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
+        }
+        return result;
+
     }
 
     public Message getDataSourceVersionsById(HttpServletRequest request, Long id) throws ErrorException {
