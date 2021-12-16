@@ -13,18 +13,11 @@ import java.util.Map;
 public class TestAppConn {
     private final static Gson gson = new Gson();
     public static void main(String[] args) throws JsonProcessingException {
-        String str="{\"type\":\"HAWorkFlowContextID\",\"value\":\"{\\\"instance\\\":null,\\\"backupInstance\\\":null,\\\"user\\\":\\\"hdfs\\\",\\\"workspace\\\":\\\"bdapWorkspace\\\",\\\"project\\\":\\\"DWExchangis06\\\",\\\"flow\\\":\\\"DWWorkFlow01\\\",\\\"contextId\\\":\\\"8-8--cs_1_devcs_1_dev22\\\",\\\"version\\\":\\\"v000001\\\",\\\"env\\\":\\\"BDAP_DEV\\\"}\"}";
+        String str="{\"method\":null,\"status\":0,\"message\":\"OK\",\"data\":{\"item\":{\"id\":\"1469200683600183298\",\"dssProjectId\":null,\"name\":\"DWExchangis06\",\"workspaceName\":\"DWExchangis06\",\"description\":\"测试不要删除\",\"tags\":\"\",\"editUsers\":\"\",\"viewUsers\":\"\",\"execUsers\":\"\",\"domain\":\"STANDALONE\"}}}";
 
        Map responseMap = BDPJettyServerHelper.jacksonJson().readValue(str, Map.class);
-        //System.out.println(responseMap);
-        Map<String,Object> map = new HashMap<>();
-        map.put("contextID","{\"type\":\"HAWorkFlowContextID\",\"value\":{\"instance\":null}}");
-        //contextID
-
-        String contextID = map.get("contextID").toString();
-        //System.out.println(responseMap);
-       // Map responseMap2 = BDPJettyServerHelper.jacksonJson().readValue(responseMap1.get("contextID").toString(), Map.class);
-       // JsonObject jsonObject = gson.fromJson(responseMap1.get("contextID").toString(), JsonObject.class);
-
+        System.out.println(responseMap);
+        Map<String, Object> item = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("item");
+        System.out.println(item.get("id"));
     }
 }

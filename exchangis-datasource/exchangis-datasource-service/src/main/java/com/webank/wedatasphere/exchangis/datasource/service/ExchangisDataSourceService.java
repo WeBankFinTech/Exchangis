@@ -168,6 +168,17 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }
 
+        String comment = vo.getComment();
+        String createSystem = vo.getCreateSystem();
+        if (Objects.isNull(comment)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter comment should not be null");
+        }
+
+        if (Strings.isNullOrEmpty(createSystem)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter createSystem should not be empty");
+        }
+
+
         String user = SecurityFilter.getLoginUsername(request);
         LOGGER.info("createDatasource userName:" + user);
 
@@ -177,17 +188,17 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         }
 
         LinkisDataSourceRemoteClient client = exchangisDataSource.getDataSourceRemoteClient();
-        Map<String, Object> connectParams = vo.getConnectParams();
-        if (!Objects.isNull(connectParams)) {
-            // 如果是 hive 类型，需要处理成连接字符串 TODO
-            Object host = connectParams.get("host");
-            Object port = connectParams.get("port");
-            if (!Objects.isNull(host) && !Objects.isNull(port)) {
-                String uris = "thrift://" + connectParams.get("host") + ":" + connectParams.get("port");
-                connectParams.put("uris", uris);
-            }
-            json.put("parameter", mapper.writeValueAsString(connectParams));
-        }
+//        Map<String, Object> connectParams = vo.getConnectParams();
+//        if (!Objects.isNull(connectParams)) {
+//            // 如果是 hive 类型，需要处理成连接字符串 TODO
+//            Object host = connectParams.get("host");
+//            Object port = connectParams.get("port");
+//            if (!Objects.isNull(host) && !Objects.isNull(port)) {
+//                String uris = "thrift://" + connectParams.get("host") + ":" + connectParams.get("port");
+//                connectParams.put("uris", uris);
+//            }
+//            json.put("parameter", mapper.writeValueAsString(connectParams));
+//        }
         LOGGER.info("create datasource json as follows");
         Set<Map.Entry<String, Object>> entries = json.entrySet();
         for (Map.Entry<String, Object> entry : entries) {
@@ -264,6 +275,16 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             vo = mapper.readValue(mapper.writeValueAsString(json), DataSourceUpdateVO.class);
         } catch (JsonProcessingException e) {
             throw new ExchangisDataSourceException(30401, e.getMessage());
+        }
+
+        String comment = vo.getComment();
+        String createSystem = vo.getCreateSystem();
+        if (Objects.isNull(comment)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter comment should not be null");
+        }
+
+        if (Strings.isNullOrEmpty(createSystem)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter createSystem should not be empty");
         }
         String user = SecurityFilter.getLoginUsername(request);
         LOGGER.info("updateDataSource userName:" + user);
