@@ -1,5 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
+import com.google.gson.*;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobConfiguration;
@@ -9,12 +11,11 @@ import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJ
 import com.webank.wedatasphere.linkis.common.conf.Configuration;
 import com.webank.wedatasphere.linkis.computation.client.LinkisJobBuilder;
 import com.webank.wedatasphere.linkis.computation.client.LinkisJobClient;
+import com.webank.wedatasphere.linkis.computation.client.once.simple.SimpleOnceJobBuilder;
 import com.webank.wedatasphere.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
 import com.webank.wedatasphere.linkis.computation.client.utils.LabelKeyUtils;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<ExchangisLauncherJob> {
 
@@ -86,6 +87,40 @@ public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<Exchang
     }
 
     private SubmittableSimpleOnceJob submitDataxJob(ExchangisLauncherJob launcherJob) {
-        return null;
+
+        Map<String, Object> jobContent = launcherJob.getJobContent();
+
+        JsonElement code = new JsonParser().parse(jobContent.get("code").toString());
+
+        JsonObject job = new JsonObject();
+        job.add("job", code);
+
+        JsonElement content0 = code.getAsJsonObject().get("content").getAsJsonArray().get(0);
+        String reader = content0.getAsJsonObject().get("reader").getAsJsonObject().get("name").getAsString();
+        String writer = content0.getAsJsonObject().get("writer").getAsJsonObject().get("name").getAsString();
+        Map<String, String> rwMaps = new HashMap<>();
+        rwMaps.put("reader", reader);
+        rwMaps.put("writer", writer);
+
+        LinkisJobClient.once().simple().builder();
+
+        LinkisJobBuilder<SubmittableSimpleOnceJob> jobBuilder = LinkisJobClient.once().simple().builder().setDescription(new Gson().toJson(rwMaps)).setCreateService("DataX")
+                .setMaxSubmitTime(300000)
+                .addLabel(LabelKeyUtils.ENGINE_TYPE_LABEL_KEY(), "datax-3.0.0")
+                .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), launcherJob.getProxyUser() + "-datax")
+                .addLabel(LabelKeyUtils.ENGINE_CONN_MODE_LABEL_KEY(), "once")
+                .addStartupParam(Configuration.IS_TEST_MODE().key(), false)
+                .addExecuteUser(launcherJob.getProxyUser())
+                .addJobContent("runType", "appconn")
+                .addJobContent("code", job.toString())
+                .addSource("jobName", launcherJob.getJobName() + "." + launcherJob.getTaskName());
+
+        Optional.ofNullable(launcherJob.getRuntimeMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
+
+        SubmittableSimpleOnceJob onceJob = jobBuilder.build();
+
+        onceJob.submit();
+
+        return onceJob;
     }
 }
