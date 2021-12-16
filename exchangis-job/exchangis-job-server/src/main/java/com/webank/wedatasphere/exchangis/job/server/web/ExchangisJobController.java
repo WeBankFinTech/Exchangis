@@ -46,6 +46,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
+import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.REALM_JOB_CONTENT_SINK;
+import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.REALM_JOB_CONTENT_SOURCE;
+
 /**
  * The type Exchangis job controller.
  *
@@ -207,11 +210,17 @@ public class ExchangisJobController {
             String sourceDsId = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE).get("datasource").getValue().toString();
             String sinkDsId = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK).get("datasource").getValue().toString();
             if (!ctx.containsDatasourceParam(sourceDsId)) {
-                Map<String, Object> sourceDsParam = this.exchangisDataSourceService.getDataSource(userName, Long.parseLong(sourceDsId)).getData().getInfo().getConnectParams();
+                String type = subExchangisJob.getSourceType();
+                String database = subExchangisJob.getRealmParams(REALM_JOB_CONTENT_SOURCE).get("database").getValue().toString();
+                String table = subExchangisJob.getRealmParams(REALM_JOB_CONTENT_SOURCE).get("table").getValue().toString();
+                Map<String, Object> sourceDsParam = this.exchangisDataSourceService.getMetadata(userName, Long.parseLong(sourceDsId), type, database, table);
                 ctx.putDatasourceParam(sourceDsId, sourceDsParam);
             }
             if (!ctx.containsDatasourceParam(sinkDsId)) {
-                Map<String, Object> sinkDsParam = this.exchangisDataSourceService.getDataSource(userName, Long.parseLong(sinkDsId)).getData().getInfo().getConnectParams();
+                String type = subExchangisJob.getSourceType();
+                String database = subExchangisJob.getRealmParams(REALM_JOB_CONTENT_SINK).get("database").getValue().toString();
+                String table = subExchangisJob.getRealmParams(REALM_JOB_CONTENT_SINK).get("table").getValue().toString();
+                Map<String, Object> sinkDsParam = this.exchangisDataSourceService.getMetadata(userName, Long.parseLong(sinkDsId), type, database, table);
                 ctx.putDatasourceParam(sinkDsId, sinkDsParam);
             }
             // connectParams
