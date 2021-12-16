@@ -12,15 +12,9 @@
       <span>{{ defaultSelect }}</span>
     </div>
     <div v-else class="sds-title-tags">
-      <div class="sds-title-tag"></div>
-      <MinusOutlined
-        style="margin: 0 8px; font-size: 9px; color: rgba(0, 0, 0, 0.65)"
-      />
-      <div class="sds-title-tag"></div>
-      <MinusOutlined
-        style="margin: 0 8px; font-size: 9px; color: rgba(0, 0, 0, 0.65)"
-      />
-      <div class="sds-title-tag"></div>
+      <div class="sds-title-tag" v-for="(item, idx) in defaultSelect" :key="idx">
+        <span>{{ item }}</span>
+      </div>
     </div>
     <a-modal
       v-model:visible="visible"
@@ -85,6 +79,7 @@ import {
   onMounted,
 } from "vue";
 import { message } from "ant-design-vue";
+import { isArray } from "@/.fes/plugin-request/helpers";
 
 export default defineComponent({
   props: {
