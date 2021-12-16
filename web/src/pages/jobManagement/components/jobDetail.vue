@@ -11,109 +11,109 @@
     </div>
     <div class="jd-content" v-if="list.length !== 0">
       <div class="jd_left">
-        <div class="sub-title">
-          <!--<DatabaseFilled class="database-icon" />-->
-          <span>子任务列表</span>
-          <!--<a-popconfirm
-            title="是否新增子任务?"
-            ok-text="确定"
-            cancel-text="取消"
-            @confirm="addNewTask"
-            @cancel="cancel"
-          >
-            <PlusSquareOutlined class="ps-icon" />
-          </a-popconfirm>-->
-        </div>
-        <div v-for="(item, idx) in list" :key="idx" :class="getClass(idx)">
-          <div class="task-title">
-            <div
-              class="subjobName"
-              @click="changeCurTask(idx)"
-              v-if="
-                activeIndex !== idx || (activeIndex === idx && !nameEditable)
-              "
-              :title="item.subJobName"
-            >
-              {{ item.subJobName }}
-            </div>
-            <a-input
-              @pressEnter="nameEditable = false"
-              v-model:value="item.subJobName"
-              v-if="activeIndex === idx && nameEditable"
-            ></a-input>
-            <a-popconfirm
-              title="是否删除子任务?"
+          <div class="sub-title">
+            <!--<DatabaseFilled class="database-icon" />-->
+            <span>子任务列表</span>
+            <!--<a-popconfirm
+              title="是否新增子任务?"
               ok-text="确定"
               cancel-text="取消"
-              @confirm="deleteSub(idx)"
+              @confirm="addNewTask"
               @cancel="cancel"
             >
-              <DeleteOutlined class="delete-icon" />
-            </a-popconfirm>
-            <a-popconfirm
-              title="是否复制子任务?"
-              ok-text="确定"
-              cancel-text="取消"
-              @confirm="copySub(item)"
-              @cancel="cancel"
-            >
-              <CopyOutlined class="copy-icon" />
-            </a-popconfirm>
-            <EditOutlined
-              @click="nameEditable = true"
-              v-if="activeIndex === idx && !nameEditable"
-              class="rename-icon"
-            />
+              <PlusSquareOutlined class="ps-icon" />
+            </a-popconfirm>-->
           </div>
-          <template
-            v-if="
-              item.dataSourceIds &&
-              item.dataSourceIds.source &&
-              item.dataSourceIds.source.db
+          <div v-for="(item, idx) in list" :key="idx" :class="getClass(idx)">
+            <div class="task-title">
+              <div
+                class="subjobName"
+                @click="changeCurTask(idx)"
+                v-if="
+                  activeIndex !== idx || (activeIndex === idx && !nameEditable)
+                "
+                :title="item.subJobName"
+              >
+                {{ item.subJobName }}
+              </div>
+              <a-input
+                @pressEnter="nameEditable = false"
+                v-model:value="item.subJobName"
+                v-if="activeIndex === idx && nameEditable"
+              ></a-input>
+              <a-popconfirm
+                title="是否删除子任务?"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="deleteSub(idx)"
+                @cancel="cancel"
+              >
+                <DeleteOutlined class="delete-icon" />
+              </a-popconfirm>
+              <a-popconfirm
+                title="是否复制子任务?"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="copySub(item)"
+                @cancel="cancel"
+              >
+                <CopyOutlined class="copy-icon" />
+              </a-popconfirm>
+              <EditOutlined
+                @click="nameEditable = true"
+                v-if="activeIndex === idx && !nameEditable"
+                class="rename-icon"
+              />
+            </div>
+            <template
+              v-if="
+                item.dataSourceIds &&
+                item.dataSourceIds.source &&
+                item.dataSourceIds.source.db
+              "
+            >
+              <div
+                class="sub-table"
+                :title="
+                  item.dataSourceIds.source.db +
+                  '.' +
+                  item.dataSourceIds.source.table
+                "
+              >
+                {{
+                  item.dataSourceIds.source.db +
+                  "." +
+                  item.dataSourceIds.source.table
+                }}
+              </div>
+              <div class="arrow-down-icon"><ArrowDownOutlined /></div>
+              <div
+                class="sub-table"
+                :title="
+                  item.dataSourceIds.sink.db + '.' + item.dataSourceIds.sink.table
+                "
+              >
+                {{
+                  item.dataSourceIds.sink.db + "." + item.dataSourceIds.sink.table
+                }}
+              </div>
+            </template>
+          </div>
+          <a-button
+            size="large"
+            style="
+              width: 218px;
+              font-family: PingFangSC-Regular;
+              font-size: 14px;
+              line-height: 22px;
+              font-weight: 400;
+              border: 1px dashed #dee4ec;
             "
+            @click="addNewTask"
           >
-            <div
-              class="sub-table"
-              :title="
-                item.dataSourceIds.source.db +
-                '.' +
-                item.dataSourceIds.source.table
-              "
-            >
-              {{
-                item.dataSourceIds.source.db +
-                "." +
-                item.dataSourceIds.source.table
-              }}
-            </div>
-            <div class="arrow-down-icon"><ArrowDownOutlined /></div>
-            <div
-              class="sub-table"
-              :title="
-                item.dataSourceIds.sink.db + '.' + item.dataSourceIds.sink.table
-              "
-            >
-              {{
-                item.dataSourceIds.sink.db + "." + item.dataSourceIds.sink.table
-              }}
-            </div>
-          </template>
+            <template #icon> <PlusOutlined /></template>添加子任务
+          </a-button>
         </div>
-        <a-button
-          size="large"
-          style="
-            width: 218px;
-            font-family: PingFangSC-Regular;
-            font-size: 14px;
-            line-height: 22px;
-            font-weight: 400;
-            border: 1px dashed #dee4ec;
-          "
-          @click="addNewTask"
-        >
-          <template #icon> <PlusOutlined /></template>添加子任务
-        </a-button>
-      </div>
       <div class="jd_right">
         <div>
           <DataSource
@@ -793,10 +793,9 @@ export default {
     }
   }
   .jd-content {
-    overflow-x: auto;
-    overflow-y: auto;
+    overflow: hidden;
     width: 100%;
-    height: calc(100vh - 130px);
+    /*height: calc(100vh - 130px);*/
     .jd_left {
       float: left;
       width: 250px;
@@ -896,7 +895,8 @@ export default {
       }
     }
     .jd_right {
-      float: left;
+      overflow-x: auto;
+      float: right;
       width: calc(100% - 250px);
     }
   }
