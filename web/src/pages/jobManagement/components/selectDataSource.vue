@@ -12,7 +12,7 @@
       <span>{{ defaultSelect }}</span>
     </div>
     <div v-else class="sds-title-tags">
-      <div class="sds-title-tag" v-for="(item, idx) in defaultSelect" :key="idx">
+      <div class="sds-title-tag" v-for="(item, idx) in defaultSelect" :key="idx"  @click="showModal">
         <span>{{ item }}</span>
       </div>
     </div>
@@ -79,7 +79,6 @@ import {
   onMounted,
 } from "vue";
 import { message } from "ant-design-vue";
-import { isArray } from "@/.fes/plugin-request/helpers";
 
 export default defineComponent({
   props: {
@@ -295,6 +294,10 @@ export default defineComponent({
       font-weight: 500;
       height: 32px;
       min-width: 120px;
+      cursor: pointer;
+      &:hover {
+        color: #2E92F7;
+      }
     }
   }
 }
