@@ -40,7 +40,7 @@ public class ExchangisProjectDeletionOperation implements ProjectDeletionOperati
         Long projectId = projectRequestRef.getId();
         logger.info("delete project=>projectId:{},name:{},createName:{}",projectRequestRef.getId(),projectRequestRef.getName(),projectRequestRef.getCreateBy());
 
-        String url = getBaseUrl() +"/projects/dss/"+projectId;
+        String url = getBaseUrl() +"/projects/dss/"+projectRequestRef.getName();
         ExchangisDeleteAction exchangisPostAction = new ExchangisDeleteAction();
         exchangisPostAction.setUser(projectRequestRef.getCreateBy());
 

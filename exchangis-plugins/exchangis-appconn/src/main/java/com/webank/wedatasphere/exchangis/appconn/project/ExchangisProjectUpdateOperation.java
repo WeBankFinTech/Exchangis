@@ -47,6 +47,7 @@ public class ExchangisProjectUpdateOperation implements ProjectUpdateOperation {
         exchangisPutAction.setUser(projectRequestRef.getCreateBy());
         exchangisPutAction.addRequestPayload(ExchangisConfig.WORKSPACE_NAME,projectRequestRef.getWorkspaceName());
         exchangisPutAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_ID,projectRequestRef.getId().toString());
+        exchangisPutAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_NAME,projectRequestRef.getName());
         exchangisPutAction.addRequestPayload(ExchangisConfig.PROJECT_NAME,projectRequestRef.getName());
         exchangisPutAction.addRequestPayload(ExchangisConfig.DESCRIPTION,projectRequestRef.getDescription());
         exchangisPutAction.addRequestPayload(ExchangisConfig.EDIT_USERS,projectRequestRef.getUpdateBy());
