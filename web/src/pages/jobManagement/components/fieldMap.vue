@@ -53,10 +53,11 @@
             <div class="filed-map-wrap-l-content">
               <a-table
                 :dataSource="fieldMap.sourceDS"
-                :columns="columns"
+                :columns="columns1"
                 size="large"
                 :pagination="false"
                 v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
+                bordered
               >
                 <template #fieldName="{ record }">
                   <a-select
@@ -115,10 +116,11 @@
             <div class="field-map-wrap-r-content">
               <a-table
                 :dataSource="fieldMap.sinkDS"
-                :columns="columns"
+                :columns="columns2"
                 size="large"
                 :pagination="false"
                 v-if="type === 'MAPPING' && fieldMap.sinkDS.length > 0"
+                bordered
               >
                 <template #fieldName="{ record }">
                   <a-select
@@ -425,24 +427,48 @@ export default defineComponent({
     return {
       type,
       fieldMap,
-      columns: [
-        {
-          title: "字段名",
-          dataIndex: "fieldName",
-          key: "fieldName",
-          slots: {
-            customRender: "fieldName",
+      columns1: [{
+        title: "来源字段",
+        children: [
+          {
+            title: "字段名",
+            dataIndex: "fieldName",
+            key: "fieldName",
+            slots: {
+              customRender: "fieldName",
+            },
           },
-        },
-        {
-          title: "类型",
-          dataIndex: "fieldType",
-          key: "fieldType",
-          slots: {
-            customRender: "fieldType",
+          {
+            title: "类型",
+            dataIndex: "fieldType",
+            key: "fieldType",
+            slots: {
+              customRender: "fieldType",
+            },
           },
-        },
-      ],
+        ]
+      }],
+      columns2: [{
+        title: "目的字段",
+        children: [
+          {
+            title: "字段名",
+            dataIndex: "fieldName",
+            key: "fieldName",
+            slots: {
+              customRender: "fieldName",
+            },
+          },
+          {
+            title: "类型",
+            dataIndex: "fieldType",
+            key: "fieldType",
+            slots: {
+              customRender: "fieldType",
+            },
+          },
+        ]
+      }],
       updateTransformer,
       updateSourceFieldName,
       updateSinkFieldName,
@@ -456,6 +482,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+@import "../../../common/content.less";
 .field-map-wrap {
   display: flex;
   border-bottom: 1px solid #dee4ec;
@@ -490,11 +517,24 @@ export default defineComponent({
     font-weight: 500;
   }
   .main-content {
-    border: 1px solid rgba(102, 102, 255, 1);
-    border-top: none;
     padding: 15px 30px;
     display: flex;
     flex-direction: column;
+    :deep(.ant-table-thead) {
+      tr {
+        th {
+          text-align: center;
+          background-color: #F8FAFD;
+        }
+      }
+    }
+    :deep(.ant-table-tbody) {
+      tr {
+        td {
+          padding: 16px 10px;
+        }
+      }
+    }
   }
   .text-danger {
     padding: 0px;
@@ -519,9 +559,9 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   position: relative;
-  margin-top: 54px;
+  margin-top: 86px;
 }
-.feld-map-label {
+.field-map-label {
   font-size: 14px;
   text-align: left;
 }
