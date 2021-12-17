@@ -72,7 +72,9 @@ export default {
     ],
   ],
   layout: {
-    title: "",
+    navigation: 'side',
+    theme: 'light',
+    title: "数据交换",
     footer: "",
     logo: null,
     multiTabs: false,
@@ -99,7 +101,7 @@ export default {
     "/api": {
       //target: "http://192.168.0.157:9321/",
       //target: "http://127.0.0.1:9321/",
-      target: "http://121.36.12.247:8088",
+      target: "http://124.70.31.149:20088",
       changeOrigin: true,
       pathRewrite: { "^/api": "/api" },
     },
