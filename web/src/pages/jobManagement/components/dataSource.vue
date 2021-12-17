@@ -430,7 +430,6 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .data-source-warp {
-  // width: 1215px;
   display: flex;
   padding: 24px;
 }
@@ -459,7 +458,8 @@ export default defineComponent({
     display: flex;
     padding: 24px;
     padding-bottom: 0px;
-    max-width: 990px;
+    min-width: 960px;
+    max-width: 960px;
   }
 }
 .data-source-warp-l {

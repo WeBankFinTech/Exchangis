@@ -273,8 +273,7 @@ import {
 } from "@/common/service";
 import * as echarts from "echarts";
 import SvgIcon from "@/components/svgIcon/index.vue";
-import "../../assets/iconfont.js";
-import "../../assets/iconfont.css";
+import '../../assets/iconfont.js'
 
 let chartList = [];
 
@@ -707,6 +706,9 @@ export default {
 };
 </script>
 
+<style lang="less">
+@import "../../common/common.less";
+</style>
 <style lang="less" scoped>
 .home-page-wrap {
   padding: 22px 20px;
