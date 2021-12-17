@@ -32,7 +32,7 @@
         :class="{ 'text-danger': !settingData.psData.length }"
       >
         <div class="main-content-t">
-          <span>速度控制</span>
+          <span>参数配置</span>
         </div>
         <div class="main-content-b">
           <a-form ref="formRef" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -187,9 +187,10 @@ export default defineComponent({
     font-weight: 500;
   }
   .main-content {
-    max-width: 990px;
+    min-width: 905px;
+    max-width: 905px;
     border: 1px solid #dee4ec;
-    margin-top: 18px;
+    margin: 24px;
     &-t {
       box-sizing: content-box;
       height: 39px;
@@ -200,6 +201,7 @@ export default defineComponent({
       color: rgba(0, 0, 0, 0.65);
       font-weight: 500;
       background-color: #f8fafd;
+      border-bottom: 1px solid #dee4ec;
     }
     &-b {
       padding: 0 16px;

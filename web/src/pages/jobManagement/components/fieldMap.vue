@@ -93,7 +93,7 @@
                     position: relative;
                     height: 66px;
                     float: left;
-                    margin-left: 30px;
+                    width: 200px;
                   "
                 >
                   <Transformer
@@ -104,7 +104,7 @@
                   <DeleteOutlined
                     v-if="item.deleteEnable"
                     @click="deleteField(index)"
-                    style="position: absolute; right: -10px; top: 33px"
+                    style="position: absolute; right: 0; top: 23px; color:#1890ff;"
                   />
                 </div>
               </template>
@@ -517,7 +517,9 @@ export default defineComponent({
     font-weight: 500;
   }
   .main-content {
-    padding: 15px 30px;
+    padding: 24px;
+    min-width: 950px;
+    max-width: 950px;
     display: flex;
     flex-direction: column;
     :deep(.ant-table-thead) {
@@ -551,7 +553,6 @@ export default defineComponent({
   }
 }
 .field-map-wrap-r {
-  min-width: 332px;
   flex: 1;
 }
 .field-map-wrap-mid {
