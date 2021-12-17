@@ -315,9 +315,7 @@ export default {
         total: 0,
         pageSize: 10,
       },
-      curTab: {
-        id: ''
-      }
+      curTab: {}
     };
   },
   // props: {
@@ -340,7 +338,7 @@ export default {
   },
   methods: {
     init() {
-      // this.name = this.curTab.jobName;
+      this.name = this.curTab.jobName;
       this.getInfo();
     },
     async getInfo() {
@@ -433,7 +431,6 @@ export default {
     changeCurTask(index) {
       this.activeIndex = index;
       this.curTask = this.list[this.activeIndex];
-      console.log("this.curTask", this.curTask);
     },
     addNewTask() {
       let subJobName = randomString(12);
@@ -467,6 +464,11 @@ export default {
         settings: [],
       };
       getSettingsParams(this.jobData.engineType).then((res) => {
+        res.ui.forEach(ui => {
+          if (!ui.value && ui.defaultValue) {
+            ui.value = ui.defaultValue
+          }
+        })
         task.settings = res.ui || [];
         this.jobData.content.subJobs.push(task);
         this.$nextTick(() => {
@@ -549,14 +551,14 @@ export default {
         const { params, settings } = job;
         for (let key in params) {
           params[key].forEach((i) => {
-            if (!i.value) {
+            if (!i.value && i.required) {
               res.push(`${i.label}不可为空`);
             }
           });
         }
 
         settings.forEach((i) => {
-          if (!i.value) {
+          if (!i.value && i.required) {
             res.push(`${i.label}不可为空`);
           }
         });
@@ -710,14 +712,6 @@ export default {
   },
 };
 </script>
-<!-- <style lang="less">
-#app .layout-sider-fixed-stuff {
-  width: 0 !important;
-}
-.layout-sider.layout-sider-fixed {
-  display: none;
-}
-</style> -->
 <style scoped lang="less">
 .container {
   .tools-bar {
@@ -836,13 +830,13 @@ export default {
 
   .jd-bottom {
     overflow: auto;
-    width: calc(100%);
+    width: calc(100% - 200px);
     position: fixed;
     height: 30%;
     bottom: 0;
     background-color: white;
     .jd-bottom-top {
-      width: calc(100%);
+      width: calc(100% - 200px);
       height: 30px;
       position: fixed;
       bottom: 30%;
