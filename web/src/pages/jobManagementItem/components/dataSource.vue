@@ -120,6 +120,7 @@ import {
   defineAsyncComponent,
 } from "vue";
 import { getSourceParams, getSettingsParams } from "@/common/service";
+import { message, notification } from "ant-design-vue";
 
 export default defineComponent({
   props: {
@@ -199,6 +200,16 @@ export default defineComponent({
     const formRef = ref();
     const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
+      if (dataSource.dataSourceIds.sink.type === info[0]) {
+        sourceTitle.value = objToTitle({
+          type: info[0],
+          id: "",
+          db: "",
+          table: "",
+          ds: "",
+        })
+        return message.error('SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择')
+      }
       dataSource.dataSourceIds.source.type = info[0];
       dataSource.dataSourceIds.source.ds = info[1];
       dataSource.dataSourceIds.source.db = info[2];
@@ -210,12 +221,27 @@ export default defineComponent({
         dataSource.dataSourceIds.source.type,
         "source"
       ).then((res) => {
+        res.uis.forEach(ui => {
+          if (!ui.value && ui.defaultValue) {
+            ui.value = ui.defaultValue
+          }
+        })
         dataSource.params.sources = res.uis || [];
         context.emit("updateSourceInfo", dataSource);
       });
     };
     const updateSinkInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
+      if (dataSource.dataSourceIds.source.type === info[0]) {
+        sinkTitle.value = objToTitle({
+          type: info[0],
+          id: "",
+          db: "",
+          table: "",
+          ds: ""
+        })
+        return message.error('SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择')
+      }
       dataSource.dataSourceIds.sink.type = info[0];
       dataSource.dataSourceIds.sink.ds = info[1];
       dataSource.dataSourceIds.sink.db = info[2];
@@ -227,6 +253,11 @@ export default defineComponent({
         dataSource.dataSourceIds.sink.type,
         "sink"
       ).then((res) => {
+        res.uis.forEach(ui => {
+          if (!ui.value && ui.defaultValue) {
+            ui.value = ui.defaultValue
+          }
+        })
         dataSource.params.sinks = res.uis || [];
         context.emit("updateSinkInfo", dataSource);
       });
@@ -240,7 +271,7 @@ export default defineComponent({
       } else if (info.validateType === 'REGEX') {
         const num_reg = new RegExp(`${info.validateRange}`)
         if (!num_reg.test(info.value)) {
-          sourcesHelpMsg[info.key] = `请正确输入${info.label}`;
+          sourcesHelpMsg[info.key] = info.validateMsg
           sourcesHelpStatus[info.key] = "error";
         } else {
           sourcesHelpMsg[info.key] = "";
