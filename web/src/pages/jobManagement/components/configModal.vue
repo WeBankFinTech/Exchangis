@@ -11,13 +11,16 @@
       :rules="rules"
       :model="formState"
       :label-col="{ span: 4 }"
+      class="config-modal-form"
     >
-      <h2>任务配置</h2>
+      <div class="cm-title">
+        <span>任务配置</span>
+      </div>
       <a-form-item label="执行用户" name="proxyUser">
-        <a-input v-model:value="formState.proxyUser" />
+        <a-input v-model:value="formState.proxyUser" :style="{ width: '366px'}"/>
       </a-form-item>
-      <a-form-item label="执行节点" name="executeNode">
-        <a-input v-model:value="formState.executeNode" />
+      <a-form-item label="执行节点" name="executeNode" >
+        <a-input v-model:value="formState.executeNode" :style="{ width: '366px'}" />
       </a-form-item>
       <a-form-item label="同步方式" name="syncType">
         <a-radio-group v-model:value="formState.syncType" name="syncType">
@@ -25,18 +28,25 @@
           <a-radio :value="'INCREMENTAL'"> 增量 </a-radio>
         </a-radio-group>
       </a-form-item>
-      <h2>任务变量 <PlusOutlined class="fr" @click="createTask" /></h2>
+      <div class="cm-title">
+        <span>任务变量</span>
+      </div>
+      <div class="cm-button" @click="createTask">
+        <PlusOutlined style="margin-right: 8px;font-size: 12px;cursor: pointer;"/>
+        <span>添加变量</span>
+      </div>
+      
       <div
         v-for="(item, index) in formState.jobParams"
-        style="overflow: hidden"
+        style="overflow: hidden;"
         :key="index"
       >
-        <a-form-item class="w40 fl" :label="index + 1" name="jobParamsKey">
-          <a-input v-model:value="item.key" />
+        <a-form-item class="w50 fl" :label="index + 1" name="jobParamsKey" labelAlign='left' :label-col='{ span: 3 }'>
+          <a-input v-model:value="item.key" :style="{ width: '194px'}"/>
         </a-form-item>
         <span class="fl separator">=</span>
         <a-form-item class="w40 fl" name="jobParamsValue">
-          <a-input v-model:value="item.value" />
+          <a-input v-model:value="item.value" :style="{ width: '194px'}"/>
         </a-form-item>
       </div>
     </a-form>
@@ -176,7 +186,40 @@ export default {
 .w40 {
   width: 40%;
 }
+.w50 {
+  width: 50%;
+}
 .separator {
   margin: 5px;
+}
+
+.config-modal-form {
+  margin-left: 10px;
+}
+
+.cm-title {
+  font-family: PingFangSC-Medium;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+  line-height: 22px;
+  font-weight: 500;
+  height: 22px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.cm-button {
+  height: 32px;
+  width: 444px;
+  line-height: 32px;
+  background: #f8f9fc;
+  border: 1px dashed #dee4ec;
+  border-radius: 4px;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  text-align: center;
+  font-weight: 400;
+  margin-bottom: 16px;
 }
 </style>
