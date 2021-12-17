@@ -28,54 +28,6 @@
           </a-tag>
         </div>
       </div>
-
-      <!-- <div class="imageText" v-if="!imageSrc">{{ imageText }}</div>
-      <div class="infoWrap">
-        <div class="jobNameWrap">
-          <a-tooltip :title="jobData.jobName">
-            <div class="jobName" @click="gotoDetail">
-              {{ jobData.jobName }}
-            </div>
-          </a-tooltip>
-          <div
-            :class="{
-              available: true,
-              disable: jobData.jobStatus === 'valid',
-            }"
-          >
-            {{ jobData.jobStatus !== "valid" ? "Available" : "Disable" }}
-          </div>
-        </div>
-        <div class="jobDesc">{{ jobData.jobDesc }}</div>
-        <div class="jobLabels">
-          <a-tag
-            v-for="(tag, index) in jobData.jobLabels.split(',')"
-            :key="index"
-            >{{ tag }}</a-tag
-          >
-        </div>
-        <div class="btnWrap">
-          <a-button
-            v-if="!managementVisible"
-            type="primary"
-            @click="changeManagement"
-          >
-            {{ $t("job.action.manage") }}
-          </a-button>
-          <div v-if="managementVisible">
-            <CopyOutlined class="icon" @click="handleJobCopy" />
-            <a-popconfirm
-              :title="$t('job.action.confirmDelete')"
-              :ok-text="$t('job.action.yes')"
-              :cancel-text="$t('job.action.no')"
-              @confirm="confirmDelete"
-            >
-              <DeleteOutlined class="icon" />
-            </a-popconfirm>
-            <ExportOutlined class="icon" @click="changeManagement" />
-          </div>
-        </div>
-      </div> -->
     </div>
     <div class="content-sidebar">
       <div @click="handleJobCopy">

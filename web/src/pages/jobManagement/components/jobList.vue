@@ -344,7 +344,7 @@ export default {
 .formWrap {
   display: flex;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 24px 24px 0 15px;
   padding-top: 24px;
 }
 .tabWrap {
