@@ -145,12 +145,17 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                 if (item.name().equalsIgnoreCase(type.getName())) {
                     ExchangisDataSourceDTO dto = new ExchangisDataSourceDTO(
                             type.getId(),
-                            item.classifier(),
+                            type.getClassifier(),
+//                            item.classifier(),
                             item.name()
                     );
-                    dto.setDescription(item.description());
-                    dto.setIcon(item.icon());
-                    dto.setOption(item.option());
+//                    dto.setDescription(item.description());
+//                    dto.setIcon(item.icon());
+//                    dto.setOption(item.option());
+                    // use linkis datasource table field to fill the dto bean
+                    dto.setIcon(type.getIcon());
+                    dto.setDescription(type.getDescription());
+                    dto.setOption(type.getOption());
                     dtos.add(dto);
                 }
             }
@@ -294,17 +299,17 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(30401, "exchangis.datasource.null");
         }
 
-        Map<String, Object> connectParams = vo.getConnectParams();
-        if (!Objects.isNull(connectParams)) {
-            // 如果是 hive 类型，需要处理成连接字符串 TODO
-            Object host = connectParams.get("host");
-            Object port = connectParams.get("port");
-            if (!Objects.isNull(host) && !Objects.isNull(port)) {
-                String uris = "thrift://" + connectParams.get("host") + ":" + connectParams.get("port");
-                connectParams.put("uris", uris);
-            }
-            json.put("parameter", mapper.writeValueAsString(connectParams));
-        }
+//        Map<String, Object> connectParams = vo.getConnectParams();
+//        if (!Objects.isNull(connectParams)) {
+//            // 如果是 hive 类型，需要处理成连接字符串 TODO
+//            Object host = connectParams.get("host");
+//            Object port = connectParams.get("port");
+//            if (!Objects.isNull(host) && !Objects.isNull(port)) {
+//                String uris = "thrift://" + connectParams.get("host") + ":" + connectParams.get("port");
+//                connectParams.put("uris", uris);
+//            }
+//            json.put("parameter", mapper.writeValueAsString(connectParams));
+//        }
 
         LinkisDataSourceRemoteClient client = exchangisDataSource.getDataSourceRemoteClient();
 //        UpdateDataSourceResult updateDataSourceResult;
