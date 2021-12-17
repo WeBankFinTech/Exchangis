@@ -11,6 +11,7 @@
       :rules="rules"
       :model="formState"
       :label-col="{ span: 4 }"
+      class="config-modal-form"
     >
       <div class="cm-title">
         <span>任务配置</span>
@@ -31,7 +32,7 @@
         <span>任务变量</span>
       </div>
       <div class="cm-button" @click="createTask">
-        <PlusOutlined style="margin-right: 8px;font-size: 12px"/>
+        <PlusOutlined style="margin-right: 8px;font-size: 12px;cursor: pointer;"/>
         <span>添加变量</span>
       </div>
       
@@ -186,10 +187,14 @@ export default {
   width: 40%;
 }
 .w50 {
-  width: 48%;
+  width: 50%;
 }
 .separator {
   margin: 5px;
+}
+
+.config-modal-form {
+  margin-left: 10px;
 }
 
 .cm-title {
@@ -205,7 +210,7 @@ export default {
 
 .cm-button {
   height: 32px;
-  width: 440px;
+  width: 444px;
   line-height: 32px;
   background: #f8f9fc;
   border: 1px dashed #dee4ec;

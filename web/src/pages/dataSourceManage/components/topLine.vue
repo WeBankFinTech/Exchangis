@@ -1,10 +1,16 @@
 <template>
   <div class="top-line">
     <span>
-      <a-select v-model:value="seartParams.typeId" style="width: 140px;margin-right: 2px" :allowClear="true" :placeholder="$t('dataSource.topLine.searchBar.dataTypePlaceholder')">
+      <a-select v-model:value="seartParams.typeId"
+                style="width: 140px;"
+                class="top-line-select"
+                :allowClear="true"
+                :placeholder="$t('dataSource.topLine.searchBar.dataTypePlaceholder')">
         <a-select-option v-for="item of sourceTypeList" :value="Number(item.id)" :key="item.id">{{ item.name }}</a-select-option>
       </a-select>
-      <a-input v-model:value="seartParams.name" style="width: 220px;margin-right: 20px" :placeholder="$t('dataSource.topLine.searchBar.namePlaceholder')" />
+      <a-input v-model:value="seartParams.name"
+               class="top-line-input"
+               style="width: 220px;margin-right: 20px" :placeholder="$t('dataSource.topLine.searchBar.namePlaceholder')" />
       <a-button :loading="loading" type="primary" @click="$emit('search', seartParams)">
         <template v-slot:icon> <icon-searchOutlined /></template>
         {{ $t("dataSource.topLine.searchBar.searchButtonText") }}
@@ -44,4 +50,16 @@ export default {
 };
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+  .top-line-select {
+    :deep(.ant-select-selector) {
+      border-radius: 4px 0 0 4px !important;
+      border-right:none !important;
+    }
+  }
+
+  :deep(.top-line-input.ant-input) {
+    border-radius: 0 4px 4px 0;
+  }
+
+</style>
