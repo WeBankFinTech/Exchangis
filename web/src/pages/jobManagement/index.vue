@@ -8,12 +8,26 @@
         </div></router-link
       >
       <div class="divider">/</div>
-      <div class="name">{{ name }}</div>
+
     </div> -->
 
     <!-- top nav -->
     <div class="job-management-tabs">
+      <div class="name" style="
+        position: absolute;
+        right: 15px;
+        line-height: 33px;">{{ name }}</div>
       <div class="job-management-tab">
+        <router-link to="/projectManage">
+          <div class="iconfont icon-putaway" style="
+          width: 33px;
+          text-align: center;
+          line-height: 33px;
+          font-size: 20px;
+          border-right: 1px solid #dee4ec;
+          color: #677c99;
+          cursor: pointer;"></div>
+        </router-link>
         <div @click="() => changeTab({})" class="job-management-tab-item" :class="{active: active === -1}">
           <span class="iconfont icon-gongzuoliu job-management-icon"></span>
           <span class="job-management-tab-name" :class="{active: active === -1}">{{ t("job.list") }}</span>
