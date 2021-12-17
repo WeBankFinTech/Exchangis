@@ -1,7 +1,7 @@
 <template>
   <a-modal footer="" :visible="visible" :title="$t(`dataSource.sourceTypeModal.title`)" @cancel="$emit('update:visible', false)">
     <div style="display: flex; justify-content: flex-end; margin-bottom: 16px">
-      <a-input size="small" style="width: 200px" :placeholder="$t(`dataSource.sourceTypeModal.searchInputPlaceholder`)" v-model:value="searchVal" />
+      <a-input style="width: 200px" :placeholder="$t(`dataSource.sourceTypeModal.searchInputPlaceholder`)" v-model:value="searchVal" />
     </div>
     <div>
       <div style="height: 400px; overflow: hidden auto">
@@ -51,6 +51,7 @@ export default {
 </script>
 
 <style scoped lang="less">
+@import "../../../common/content.less";
 .group_name {
   border-left: 3px solid #1890ff;
   padding-left: 6px;

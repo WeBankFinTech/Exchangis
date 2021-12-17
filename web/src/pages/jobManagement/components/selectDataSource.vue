@@ -12,8 +12,14 @@
       <span>{{ defaultSelect }}</span>
     </div>
     <div v-else class="sds-title-tags">
-      <div class="sds-title-tag" v-for="(item, idx) in defaultSelect" :key="idx"  @click="showModal">
-        <span>{{ item }}</span>
+      <div class="sds-title-tag"
+           v-for="(item, idx) in defaultSelect"
+           :key="idx"
+           @click="showModal"
+           :title="item"
+      >
+        <span v-if="idx===0"><span class="logo" :style="getBg()"> </span> {{ item }}</span>
+        <span v-else>{{ item }}</span>
       </div>
     </div>
     <a-modal
@@ -243,6 +249,11 @@ export default defineComponent({
         }
       });
     };
+    const getBg = () => {
+      let name = state.dataSource || state.defaultSelect[0]
+      console.log(name, state.defaultSelect[0])
+      return `background-image: url(${require('@/images/dataSourceTypeIcon/' + name + '.png')})`
+    }
     return {
       ...toRefs(state),
       selectItem,
@@ -253,6 +264,7 @@ export default defineComponent({
       handleChangeSql,
       handleExpandSql,
       handleChangeDS,
+      getBg
     };
   },
 });
@@ -261,8 +273,14 @@ export default defineComponent({
 <style lang="less" scoped>
 .sds-wrap {
   display: inline-block;
+  .logo {
+    width: 20px;
+    height: 20px;
+    float: left;
+    background-size: cover;
+  }
   .sds-button {
-    width: 435px;
+    width: 420px;
     height: 46px;
     background: #f8fafd;
     border: 1px dashed #dee4ec;
@@ -278,27 +296,47 @@ export default defineComponent({
   }
 
   .sds-title-tags {
-    width: 435px;
+    width: 420px;
     height: 46px;
     display: flex;
-    justify-content: center;
+    /*justify-content: center;*/
     align-items: center;
     .sds-title-tag {
-      line-height: 32px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      padding: 5px 15px;
       background: #e6f0ff;
-      border: 1px solid #dee4ec;
-      border-radius: 4px;
       font-family: PingFangSC-Medium;
       font-size: 14px;
       color: rgba(0, 0, 0, 0.65);
       font-weight: 500;
       height: 32px;
-      min-width: 120px;
+      min-width: 100px;
+      max-width: 100px;
       cursor: pointer;
-      &:hover {
+      text-align: center;
+      border-top: 1px solid #dee4ec;
+      border-bottom: 1px solid #dee4ec;
+      border-right: 1px solid #dee4ec;
+      &:first-child {
+        border-left: 1px solid #dee4ec;
+        border-radius: 4px 0 0 4px;
+      }
+      &:last-child {
+        border-radius: 0 4px 4px 0;
+      }
+    }
+    &:hover {
+      .sds-title-tag {
         color: #2E92F7;
       }
     }
   }
 }
+.sds-wrap-b {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
 </style>
