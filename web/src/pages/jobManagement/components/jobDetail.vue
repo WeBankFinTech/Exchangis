@@ -769,7 +769,6 @@ export default {
 .container {
   .tools-bar {
     width: 100%;
-    border-top: 1px solid #dee4ec;
     border-bottom: 1px solid #dee4ec;
     background: #f8f9fc;
     padding: 10px 30px;
