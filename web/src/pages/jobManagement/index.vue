@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div class="projectNav">
+    <!-- <div class="projectNav">
       <img class="img" src="../../images/u32.svg" />
       <router-link to="/projectManage"
         ><div class="link">
@@ -8,9 +8,63 @@
         </div></router-link
       >
       <div class="divider">/</div>
-      <div class="name">{{ name }}</div>
+
+    </div> -->
+
+    <!-- top nav -->
+    <div class="job-management-tabs">
+      <div class="name" style="
+        position: absolute;
+        right: 15px;
+        line-height: 33px;">{{ name }}</div>
+      <div class="job-management-tab">
+        <router-link to="/projectManage">
+          <div class="iconfont icon-putaway" style="
+          width: 33px;
+          text-align: center;
+          line-height: 33px;
+          font-size: 20px;
+          border-right: 1px solid #dee4ec;
+          color: #677c99;
+          cursor: pointer;"></div>
+        </router-link>
+        <div @click="() => changeTab({})" class="job-management-tab-item" :class="{active: active === -1}">
+          <span class="iconfont icon-gongzuoliu job-management-icon"></span>
+          <span class="job-management-tab-name" :class="{active: active === -1}">{{ t("job.list") }}</span>
+        </div>
+        <div
+          v-for="(item, idx) in tabs"
+          :key="idx"
+          class="job-management-tab-item"
+          :class="{active: idx === active}"
+          @click="choose(idx)"
+        >
+          <div>
+            <span class="iconfont icon-hive job-management-icon"></span>
+          </div>
+          <div
+            :title="item.title"
+            class="job-management-tab-name"
+            :class="{active: idx === active}"
+            @click="() => changeTab(item)"
+          >
+            {{ item.jobName }}
+          </div>
+          <div class="close-icon">
+            <a-popconfirm
+              title="确定未保存就离开？"
+              @confirm="() => deleteTab(item)"
+            >
+              <template #icon
+                ><QuestionCircleOutlined style="color: red"
+              /></template>
+              <CloseOutlined  style="font-size: 12px"/>
+            </a-popconfirm>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="navWrap">
+    <!-- <div class="navWrap">
       <div @click="() => changeTab({})" class="listTitle">
         <UnorderedListOutlined />{{ t("job.list") }}
       </div>
@@ -37,7 +91,7 @@
           </a-popconfirm>
         </div>
       </div>
-    </div>
+    </div> -->
     <job-list v-show="!activeTabId" @showJobDetail="showJobDetail" />
     <template v-for="job in tabs">
       <job-detail v-show="activeTabId == job.id" :curTab="job"></job-detail>
@@ -71,6 +125,7 @@ export default {
       activeTabId: "",
       curTab: "",
       tabs: [],
+      active: -1,
     };
   },
   methods: {
@@ -84,11 +139,15 @@ export default {
         tabs.push(data);
       }
       this.tabs = tabs;
+      this.active = this.tabs.length - 1
       this.activeTabId = data.id;
       this.curTab = data;
     },
     changeTab(data) {
       data = toRaw(data);
+      if( !Object.keys(data).length ) {
+        this.active = -1;
+      }
       console.log(data, data.id);
       this.curTab = data;
       this.activeTabId = data.id;
@@ -101,14 +160,87 @@ export default {
         tabs.splice(index, 1);
       }
       this.tabs = tabs;
+      this.active = -1;
       this.activeTabId = undefined;
+    },
+    choose(idx) {
+      this.active  = idx
     },
   },
 };
 </script>
 <style scoped lang="less">
+@import '../../common/content.less';
+.job-management-icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  color: #2e92f7;
+}
+
+.close-icon {
+  visibility: hidden;
+}
+
+.job-management-tab {
+  height: 34px;
+  display: flex;
+  border-bottom: 1px solid #dee4ec;
+  &-item {
+    position: relative;
+    height: 33px;
+    line-height: 33px;
+    padding: 0 8px;
+    cursor: pointer;
+    overflow: hidden;
+    text-align: center;
+    min-width: 100px;
+    max-width: 200px;
+    display: flex;
+    background-color: #fff;
+    border-right: 1px solid #e8eaec;
+    &.active {
+      margin-top: -1px;
+      &:before {
+        content: "";
+        position: absolute;
+        top: 1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #2e92f7;
+      }
+      height: 36px;
+      line-height: 36px;
+      background-color: #ebf5ff;
+      color: #2e92f7;
+    }
+    &:hover .close-icon{
+      visibility: visible;
+    }
+  }
+
+  &-name {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 14px;
+    font-family: PingFangSC-Medium;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.65);
+    &.active {
+      color: #2e92f7;
+    }
+  }
+}
+
 .content {
   box-sizing: border-box;
+  background-color: #fff;
+  height: calc(100vh - 48px);
 }
 .projectNav {
   display: flex;
@@ -184,6 +316,7 @@ export default {
       overflow: hidden;
     }
     .closeIcon {
+      display: none;
       position: absolute;
       top: 2px;
       right: 2px;

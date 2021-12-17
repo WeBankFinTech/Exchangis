@@ -1,12 +1,36 @@
 <template>
   <div class="content">
     <a-row :gutter="[16, 16]">
-      <a-col :span="24"> <TopLine @create="handleCreate" :loading="loading" :sourceTypeList="sourceTypeList" @search="handleSearch" /> </a-col>
       <a-col :span="24">
-        <a-table :columns="columns" :data-source="dataSourceList" :loading="loading" rowKey="id">
+        <TopLine
+          @create="handleCreate"
+          :loading="loading"
+          :sourceTypeList="sourceTypeList"
+          @search="handleSearch"
+        />
+      </a-col>
+      <a-col :span="24"><div class="line"></div></a-col>
+      <a-col :span="24" style="overflow-x: auto">
+        <a-table
+          :columns="columns"
+          :data-source="dataSourceList"
+          :loading="loading"
+          rowKey="id"
+        >
           <template #tags="{ text: tags }">
             <span>
-              <a-tag v-if="tags" v-for="tag in tags.split(',')" :key="tag" :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'">
+              <a-tag
+                v-if="tags"
+                v-for="tag in tags.split(',')"
+                :key="tag"
+                :color="
+                  tag === 'loser'
+                    ? 'volcano'
+                    : tag.length > 5
+                    ? 'geekblue'
+                    : 'green'
+                "
+              >
                 {{ tag.toUpperCase() }}
               </a-tag>
             </span>
@@ -15,18 +39,53 @@
             <span> {{ expire ? "已过期" : "可用" }} </span>
           </template>
           <template #dataSourceTypeId="{ text: dataSourceTypeId }">
-            <span> {{ (sourceTypeList.find((item) => item.id == dataSourceTypeId) || { option: "无" }).name }} </span>
+            <span>
+              {{
+                (
+                  sourceTypeList.find(
+                    (item) => item.id == dataSourceTypeId
+                  ) || { option: "无" }
+                ).name
+              }}
+            </span>
           </template>
           <template #action="row">
             <a-space>
-              <a-button size="small" @click="handleEdit(row.text.id, row.text.dataSourceTypeId, row.text.createSystem)">{{ $t("dataSource.table.list.columns.actions.editButton") }}</a-button>
-              <a-button size="small" v-show="!row.text.expire" @click="handleExpire(row.text.id)">{{ $t("dataSource.table.list.columns.actions.expireButton") }}</a-button>
-              <a-button size="small" @click="handleTestConnect(row)">{{ $t("dataSource.table.list.columns.actions.testConnectButton") }}</a-button>
-              <a-button size="small" @click="handleDelete(row)">{{ $t("dataSource.table.list.columns.actions.deleteButton") }}</a-button>
+              <a-button
+                size="small"
+                @click="handleEdit(row.text.id, row.text.dataSourceTypeId, row.text.createSystem)"
+                type="link"
+                >{{
+                  $t("dataSource.table.list.columns.actions.editButton")
+                }}</a-button
+              >
+              <span style="color: #DEE4EC">|</span>
+              <a-button
+                size="small"
+                v-show="!row.text.expire"
+                type="link"
+                @click="handleExpire(row.text.id)"
+                >{{
+                  $t("dataSource.table.list.columns.actions.expireButton")
+                }}</a-button
+              >
+              <span v-show="!row.text.expire" style="color: #DEE4EC">|</span>
+              <a-button size="small" @click="handleTestConnect(row)" type="link">{{
+                $t("dataSource.table.list.columns.actions.testConnectButton")
+              }}</a-button>
+              <span style="color: #DEE4EC">|</span>
+              <a-button size="small" @click="handleDelete(row)" type="link">{{
+                $t("dataSource.table.list.columns.actions.deleteButton")
+              }}</a-button>
             </a-space>
           </template>
           <template #version="{ text }">
-            <a-button size="small" @click="handleOpenVersionModal(text.id)" type="link">查看</a-button>
+            <a-button
+              size="small"
+              @click="handleOpenVersionModal(text.id)"
+              type="link"
+              >{{ text.versionId }}</a-button
+            >
           </template>
           <template #modifyTime="{ text }">
             {{ text && dateFormat(text) }}
@@ -34,9 +93,23 @@
         </a-table>
       </a-col>
     </a-row>
-    <select-type-modal @select="handleSelectType" v-model:visible="selectTypeModalVisible" :sourceTypeList="sourceTypeList" />
-    <version-modal v-model:visible="versionModalCfg.visible" :id="versionModalCfg.id" />
-    <edit-modal v-model:visible="modalCfg.visible" :id="modalCfg.id" :type="modalCfg.type" :mode="modalCfg.mode" :modalCfg="modalCfg" @finish="handleModalFinish" />
+    <select-type-modal
+      @select="handleSelectType"
+      v-model:visible="selectTypeModalVisible"
+      :sourceTypeList="sourceTypeList"
+    />
+    <version-modal
+      v-model:visible="versionModalCfg.visible"
+      :id="versionModalCfg.id"
+    />
+    <edit-modal
+      v-model:visible="modalCfg.visible"
+      :id="modalCfg.id"
+      :type="modalCfg.type"
+      :mode="modalCfg.mode"
+      :modalCfg="modalCfg"
+      @finish="handleModalFinish"
+    />
   </div>
 </template>
 
@@ -47,7 +120,13 @@ import EditModal from "./components/editModal.vue";
 import VersionModal from "./components/versionModal.vue";
 import { useI18n } from "@fesjs/fes";
 import { computed } from "vue";
-import { getDataSourceList, deleteDataSource, expireDataSource, getDataSourceTypes, testDataSourceConnect } from "@/common/service";
+import {
+  getDataSourceList,
+  deleteDataSource,
+  expireDataSource,
+  getDataSourceTypes,
+  testDataSourceConnect,
+} from "@/common/service";
 import { message } from "ant-design-vue";
 import { dateFormat } from "@/common/utils";
 
@@ -66,50 +145,58 @@ export default {
         title: t("dataSource.table.list.columns.title.name"),
         dataIndex: "name",
         align: "center",
+        width: 200
       },
       {
         title: t("dataSource.table.list.columns.title.type"),
         dataIndex: "dataSourceTypeId",
         align: "center",
         slots: { customRender: "dataSourceTypeId" },
+        width: 100
       },
       {
         title: t("dataSource.table.list.columns.title.status"),
         dataIndex: "expire",
         align: "center",
         slots: { customRender: "status" },
+        width: 80
       },
       {
         title: t("dataSource.table.list.columns.title.tags"),
         align: "center",
         dataIndex: "labels",
         slots: { customRender: "tags" },
+        width: 150
       },
       {
         title: t("dataSource.table.list.columns.title.version"),
         align: "center",
         slots: { customRender: "version" },
+        width: 80
       },
       {
         title: t("dataSource.table.list.columns.title.describe"),
         align: "center",
-        dataIndex: "desc",
+        dataIndex: "desc"
       },
       {
         title: t("dataSource.table.list.columns.title.updatetim"),
         align: "center",
         dataIndex: "modifyTime",
         slots: { customRender: "modifyTime" },
+        width: 200
       },
       {
         title: t("dataSource.table.list.columns.title.creator"),
         align: "center",
         dataIndex: "createUser",
+        width: 80
       },
       {
         title: t("dataSource.table.list.columns.title.updater"),
         align: "center",
         dataIndex: "modifyUser",
+        width: 80
       },
       {
         title: t("dataSource.table.list.columns.title.action"),
@@ -226,13 +313,26 @@ export default {
 };
 </script>
 <style scoped lang="less">
+@import '../../common/content.less';
 .content {
-  padding: 16px;
+  padding: 16px 24px;
   box-sizing: border-box;
+  background: #fff;
+  min-height: calc(100vh - 48px);
 }
 .top-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.line {
+  height: 1px;
+  width: calc(100% + 48px);
+  background-color: #dee4ec;
+  margin-left: -24px;
+}
+:deep(.ant-table-pagination.ant-pagination) {
+  float: left;
 }
 </style>
