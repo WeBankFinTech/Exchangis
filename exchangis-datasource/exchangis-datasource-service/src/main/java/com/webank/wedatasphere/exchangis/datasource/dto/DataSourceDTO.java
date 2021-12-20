@@ -9,6 +9,7 @@ public class DataSourceDTO {
     private String type;
     private Long dataSourceTypeId;
     private String createIdentify;
+    private String createSystem;
     private String desc;
     private String createUser;
     private String labels;
@@ -111,5 +112,13 @@ public class DataSourceDTO {
 
     public void setModifyTime(Date modifyTime) {
         this.modifyTime = modifyTime;
+    }
+
+    public String getCreateSystem() {
+        return createSystem;
+    }
+
+    public void setCreateSystem(String createSystem) {
+        this.createSystem = createSystem;
     }
 }
