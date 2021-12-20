@@ -32,7 +32,7 @@ public class ExchangisDeletionOperation implements RefDeletionOperation {
     @Override
     public void deleteRef(RequestRef deleteRequestRef) throws ExternalOperationFailedException {
         NodeRequestRef nodeRequestRef = (NodeRequestRef) deleteRequestRef;
-        logger.info("delete job=>name:{} || parameters:{},nodeType:{}", nodeRequestRef.getName(),nodeRequestRef.getParameters().toString(),nodeRequestRef.getJobContent().toString());
+        logger.info("delete job=>name:{} || parameters:{}", nodeRequestRef.getName(),nodeRequestRef.getParameters().toString());
         deleteJob(nodeRequestRef);
     }
 
