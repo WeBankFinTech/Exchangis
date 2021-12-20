@@ -9,10 +9,9 @@ public class ExchangisConfig {
      public final static String SQOOP_JUMP_URL_FORMAT="dss/exchangis/#/childJobManagement";
      public final static String DATAX_JUMP_URL_FORMAT="dss/exchangis/#/childJobManagement";
 
-
      public final static String EXCHANGIS_APPCONN_NAME = CommonVars.apply("wds.dss.appconn.exchangis.name", "Exchangis").getValue();
-     public final static String NODE_TYPE_SQOOP = CommonVars.apply("wds.dss.appconn.exchangis.sqoop", "wds.dss.appconn.exchangis.sqoop").getValue();
-     public final static String NODE_TYPE_DATAX = CommonVars.apply("wds.dss.appconn.exchangis.datax", "wds.dss.appconn.exchangis.datax").getValue();
+     public final static String NODE_TYPE_SQOOP = CommonVars.apply("linkis.appconn.exchangis.sqoop", "linkis.appconn.exchangis.sqoop").getValue();
+     public final static String NODE_TYPE_DATAX = CommonVars.apply("linkis.appconn.exchangis.datax", "linkis.appconn.exchangis.datax").getValue();
      public final static String ENGINE_TYPE_DATAX_NAME = CommonVars.apply("wds.dss.appconn.exchangis.datax.name", "DATAX").getValue();
      public final static String ENGINE_TYPE_SQOOP_NAME = CommonVars.apply("wds.dss.appconn.exchangis.datax.name", "SQOOP").getValue();
      public final static String JOB_TYPE_OFFLINE = CommonVars.apply("wds.dss.appconn.exchangis.job.type.offline", "OFFLINE").getValue();
