@@ -85,6 +85,7 @@
               ref="formRef"
               :label-col="labelCol"
               :wrapper-col="wrapperCol"
+              v-if="sourceTitle !== '请点击后选择'"
             >
               <a-form-item name="dsInfo2">
                 <SelectDataSource
@@ -217,7 +218,7 @@ export default defineComponent({
     const formRef = ref();
     const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
-      if (dataSource.dataSourceIds.sink.type === info[0]) {
+      if (dataSource.dataSourceIds.sink.type === info[0] && props.engineType === 'SQOOP') {
         sourceTitle.value = objToTitle({
           type: info[0],
           id: "",
@@ -249,7 +250,7 @@ export default defineComponent({
     };
     const updateSinkInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
-      if (dataSource.dataSourceIds.source.type === info[0]) {
+      if (dataSource.dataSourceIds.source.type === info[0] && props.engineType === 'SQOOP') {
         sinkTitle.value = objToTitle({
           type: info[0],
           id: "",
