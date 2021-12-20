@@ -526,6 +526,7 @@ export default {
         this.$nextTick(() => {
           this.activeIndex = this.jobData.content.subJobs.length - 1;
           this.curTask = this.list[this.activeIndex];
+          this.deductions = []
         });
       });
     },
