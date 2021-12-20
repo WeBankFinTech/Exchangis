@@ -2,55 +2,63 @@
   <div class="sync-history-wrap">
     <div class="sh-top">
       <!-- 表单搜索 -->
-      <div class="sh-top-left">
-        <a-form layout="inline" :model="formState">
-          <a-form-item
-            label="作业ID"
-            style="width: 235px; padding-bottom: 10px"
-          >
-            <a-input v-model:value="formState.jobId" placeholder="请输入" />
-          </a-form-item>
 
-          <a-form-item
-            label="任务名称"
-            style="width: 235px; padding-bottom: 10px"
-          >
-            <a-input v-model:value="formState.taskName" placeholder="请输入" />
-          </a-form-item>
+      <a-form :model="formState">
+        <a-row :gutter="24">
+          <a-col :span="8">
+            <a-form-item label="作业ID">
+              <a-input v-model:value="formState.jobId" placeholder="请输入"/>
+            </a-form-item>
+          </a-col>
 
-          <a-form-item
-            label="任务状态"
-            style="width: 235px; padding-bottom: 10px"
-          >
-            <a-select
-              v-model:value="formState.status"
-              placeholder="请选择任务状态"
-            >
-              <a-select-option value="SUCCESS">执行成功</a-select-option>
-              <a-select-option value="FAILED">执行失败</a-select-option>
-              <a-select-option value="RUNNING">运行中</a-select-option>
-            </a-select>
-          </a-form-item>
+          <a-col :span="8">
+            <a-form-item label="任务名称">
+              <a-input
+                v-model:value="formState.taskName"
+                placeholder="请输入"
+              />
+            </a-form-item>
+          </a-col>
 
-          <a-form-item label="触发时间" style="width: 488px">
-            <a-range-picker
-              v-model:value="formState.time"
-              show-time
-              type="date"
-              style="width: 100%"
-            />
-          </a-form-item>
-        </a-form>
-      </div>
+          <a-col :span="8">
+            <a-form-item label="任务状态">
+              <a-select
+                v-model:value="formState.status"
+                placeholder="请选择任务状态"
+              >
+                <a-select-option value="SUCCESS">执行成功</a-select-option>
+                <a-select-option value="FAILED">执行失败</a-select-option>
+                <a-select-option value="RUNNING">运行中</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
 
-      <div class="sh-top-right">
-        <div class="sh-top-search">
-          <a-button type="primary" @click="search">
-            <template #icon><SearchOutlined /></template>
-            查询
-          </a-button>
-        </div>
-      </div>
+        <a-row :gutter="24">
+          <a-col :span="8">
+            <a-form-item label="触发时间">
+              <a-range-picker
+                v-model:value="formState.time"
+                show-time
+                type="date"
+                style="width: 100%"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="8">
+            <a-form-item>
+              <a-button @click="clearData"
+                ><span class="sh-top-txt">重置</span></a-button
+              >
+              <a-button type="primary" @click="search" style="margin-left: 8px"
+                ><span class="sh-top-txt" style="color: #fff"
+                  >查询</span
+                ></a-button
+              >
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
     </div>
 
     <div class="sh-bottom">
@@ -79,10 +87,9 @@
             >
           </template>
         </a-table>
+        <!-- 分页 -->
+        <!--<div class="sh-b-pagination"></div>-->
       </div>
-
-      <!-- 分页 -->
-      <div class="sh-b-pagination"></div>
     </div>
 
     <!-- 动态限速 弹窗 -->
@@ -204,6 +211,9 @@ export default {
     let pagination = ref({
       total: 0,
       pageSize: pageSize,
+      showQuickJumper: true,
+      showSizeChanger: true,
+      showTotal: total => `总计 ${total} 条`
     });
 
     // 根据 current 获取当前页的数据
@@ -257,6 +267,13 @@ export default {
 
     const search = () => {
       getTableFormCurrent(1, "search");
+    };
+
+    const clearData = () => {
+      state.formState["jobId"] = "";
+      state.formState["taskName"] = "";
+      state.formState["status"] = "";
+      state.formState["time"] = [];
     };
 
     const onChange = (page) => {
@@ -329,6 +346,7 @@ export default {
     return {
       ...state,
       search,
+      clearData,
       columns,
       tableData,
       pagination,
@@ -351,20 +369,36 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import '../../common/content.less';
 .sh-top {
-  display: flex;
-  .sh-top-left {
-    flex: 3;
-    padding: 15px 45px;
-  }
-  .sh-top-right {
-    flex: 1;
-    position: relative;
-    .sh-top-search {
-      position: absolute;
-      right: 30px;
-      bottom: 12px;
-    }
+  height: 136px;
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  border-bottom: 1px solid;
+  border-color: #dee4ec;
+  background-color: #fff;
+  .sh-top-txt {
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.65);
+    text-align: left;
+    line-height: 22px;
+    font-weight: 400;
   }
 }
+.sh-bottom {
+  padding: 24px;
+  background-color: #fff;
+  min-height: calc(100vh - 184px);
+  :deep(.ant-form-item-label > label) {
+    width: 80px;
+    text-align: right;
+    display: inline-block;
+    line-height: 30px;
+  }
+}
+
+</style>
+<style lang="less">
 </style>

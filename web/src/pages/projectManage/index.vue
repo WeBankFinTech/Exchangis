@@ -1,38 +1,119 @@
 <template>
   <div class="content">
-    <a-spin :spinning="loading">
-      <a-row :gutter="[16, 16]">
-        <a-col :span="24">
-          <div class="title-line">
-            <span class="title">
-              <a-typography-title :level="5" style="margin-bottom: 0">{{ $t("projectManage.topLine.title") }}</a-typography-title>
-            </span>
-            <a-input-search :loading="loading" :placeholder="$t('projectManage.topLine.searchBar.searchInputPlaceholder')" :allowClear="true" style="width: 300px" @search="handleOnSearch">
-              <template #enterButton>
-                <a-button type="primary">
-                  <template #icon> <icon-searchOutlined /></template>
-                  {{ $t("projectManage.topLine.searchBar.searchButtonText") }}
-                </a-button>
-              </template>
-            </a-input-search>
+    <a-tabs v-model:activeKey="activeKey">
+      <a-tab-pane key="1">
+        <template #tab>
+          <div>
+            <svg
+              style="
+                width: 16px;
+                height: 16px;
+                margin-right: 8px;
+                fill: currentColor;
+                color: #2e92f7;
+              "
+            >
+              <use xlink:href="#icon-gongzuoliu"></use>
+            </svg>
+            <span
+              style="
+                font-family: PingFangSC-Medium;
+                font-size: 14px;
+                color: #2e92f7;
+                text-align: left;
+                font-weight: 500;
+              "
+              >项目列表</span
+            >
           </div>
-        </a-col>
-        <!-- 创建卡片 -->
-        <a-col :span="6"> <project-create-card @action="handleCreateCardAction" /> </a-col>
-        <!-- 视图卡片 -->
-        <a-col :span="6" v-for="item in projectListData" :key="item.id">
-          <project-view-card @delete="handleOnDelteProject" @edit="handleOnEditProject" :name="item.name" :describe="item.describe" :id="item.id" :tags="item.tags" />
-        </a-col>
-        <!-- 分页行 -->
-        <a-col :span="24">
-          <div class="pagination-line">
-            <a-pagination v-model:current="pageCfg.current" v-model:pageSize="pageCfg.pageSize" :total="projectList.lenght" show-less-items />
-          </div>
-        </a-col>
-      </a-row>
-    </a-spin>
-    <!-- 创建表单 -->
-    <edit-modal v-model:visible="modalCfg.visible" :mode="modalCfg.mode" :id="modalCfg.id" @finish="handleModalFinish" />
+        </template>
+        <div style="padding: 0 24px">
+          <a-spin :spinning="loading">
+            <a-row :gutter="[24, 24]">
+              <a-col :span="24">
+                <div class="title-line">
+                  <!-- <span class="title">
+                  <a-typography-title :level="5" style="margin-bottom: 0">{{
+                    $t("projectManage.topLine.title")
+                  }}</a-typography-title>
+                </span> -->
+
+                  <a-input
+                    :loading="loading"
+                    :placeholder="$t('projectManage.topLine.searchBar.searchInputPlaceholder')"
+                    :allowClear="true"
+                    @pressEnter="handleOnSearch"
+                    style="width: 336px"
+                  >
+                    <template #prefix>
+                      <icon-searchOutlined  style="color: #DEE4EC"/>
+                    </template>
+                  </a-input>
+
+                  <!-- <a-input-search
+                    :loading="loading"
+                    :placeholder="
+                      $t(
+                        'projectManage.topLine.searchBar.searchInputPlaceholder'
+                      )
+                    "
+                    :allowClear="true"
+                    style="width: 300px"
+                    @search="handleOnSearch"
+                  >
+                    <template #enterButton>
+                      <a-button type="primary">
+                        <template #icon> <icon-searchOutlined /></template>
+                        {{
+                          $t("projectManage.topLine.searchBar.searchButtonText")
+                        }}
+                      </a-button>
+                    </template>
+                  </a-input-search> -->
+
+                  <a-button type="primary" @click="handleCreateCardAction"
+                    ><PlusOutlined /><span>创建项目</span></a-button
+                  >
+                </div>
+              </a-col>
+              <!-- 创建卡片 -->
+              <!-- <a-col :span="6">
+              <project-create-card @action="handleCreateCardAction" />
+            </a-col> -->
+              <!-- 视图卡片 -->
+              <a-col v-for="item in projectListData" :key="item.id">
+                <project-view-card
+                  @delete="handleOnDelteProject"
+                  @edit="handleOnEditProject"
+                  :name="item.name"
+                  :describe="item.describe"
+                  :id="item.id"
+                  :tags="item.tags"
+                />
+              </a-col>
+              <!-- 分页行 -->
+              <a-col :span="24">
+                <div class="pagination-line">
+                  <a-pagination
+                    v-model:current="pageCfg.current"
+                    v-model:pageSize="pageCfg.pageSize"
+                    :total="projectList.lenght"
+                    show-less-items
+                  />
+                </div>
+              </a-col>
+            </a-row>
+          </a-spin>
+        </div>
+      </a-tab-pane>
+      <!-- 创建表单 -->
+    </a-tabs>
+    <edit-modal
+      v-model:visible="modalCfg.visible"
+      :mode="modalCfg.mode"
+      :id="modalCfg.id"
+      @finish="handleModalFinish"
+    />
   </div>
 </template>
 
@@ -44,12 +125,20 @@ import ProjectViewCard from "./components/projectViewCard.vue";
 import EditModal from "./components/editModal.vue";
 import { getProjectList, deleteProject } from "@/common/service";
 import { message } from "ant-design-vue";
+import { defineComponent, ref } from "vue";
+
 export default {
   components: {
     ProjectViewCard,
     ProjectCreateCard,
     EditModal,
     iconSearchOutlined: SearchOutlined,
+    PlusOutlined,
+  },
+  setup() {
+    return {
+      activeKey: ref("1"),
+    };
   },
   data() {
     return {
@@ -72,7 +161,8 @@ export default {
   },
   computed: {
     projectListData() {
-      let strIndex = Math.max(this.pageCfg.current - 1, 0) * this.pageCfg.pageSize;
+      let strIndex =
+        Math.max(this.pageCfg.current - 1, 0) * this.pageCfg.pageSize;
       return this.projectList.slice(strIndex, strIndex + this.pageCfg.pageSize);
     },
   },
@@ -128,8 +218,13 @@ export default {
 </script>
 <style scoped lang="less">
 .content {
-  padding: 16px;
   box-sizing: border-box;
+  background: #fff;
+  min-height: 100%;
+  &-header {
+    height: 35px;
+    background-color: #fff;
+  }
 }
 .title-line {
   display: flex;
@@ -143,5 +238,8 @@ export default {
 .pagination-line {
   display: flex;
   justify-content: flex-end;
+}
+.ant-tabs-tab-active .ant-tabs-tab /deep/ {
+  background-color: #ebf5ff;
 }
 </style>
