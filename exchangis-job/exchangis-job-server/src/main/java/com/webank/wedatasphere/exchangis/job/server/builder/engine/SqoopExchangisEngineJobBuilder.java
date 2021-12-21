@@ -201,8 +201,8 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         params.put("sqoop.args.hive.import", "");
         params.put("sqoop.args.hive.overwrite", "");
 
-        params.put("sqoop.args.null.string", "");
-        params.put("sqoop.args.null.non.string", "");
+//        params.put("sqoop.args.null.string", "");
+//        params.put("sqoop.args.null.non.string", "");
 
         params.put("sqoop.args.hive.database", sinkSettings.get("database").getValue().toString());
         params.put("sqoop.args.hive.table", sinkSettings.get("table").getValue().toString());
