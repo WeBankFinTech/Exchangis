@@ -3,7 +3,8 @@
     <div class="tools-bar">
       <span @click="modalCfg.visible = true"><SettingOutlined />配置</span>
       <div class="divider"></div>
-      <span @click="executeTask"><CaretRightOutlined />执行</span>
+      <span @click="executeTask"><CaretRightOutlined v-if="!spinning" />
+        <a-spin :spinning="spinning"></a-spin> 执行</span>
       <div class="divider"></div>
       <span @click="saveAll()"><SaveOutlined />保存</span>
       <div class="divider"></div>
@@ -380,6 +381,7 @@ export default {
         pageSize: 10,
       },
       t,
+      spinning: false
     };
   },
   props: {
@@ -702,11 +704,14 @@ export default {
     // 执行任务
     executeTask() {
       const { id } = this.curTab;
+      this.spinning = true
       executeJob(id)
         .then((res) => {
+          this.spinning = false
           message.info("执行成功");
         })
         .catch((err) => {
+          this.spinning = false
           console.log("executeTask error", err);
         });
     },
