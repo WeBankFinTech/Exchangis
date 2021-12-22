@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -198,7 +199,8 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
 
         JobParamSet sourceSettings = inputJob.getRealmParams(REALM_JOB_CONTENT_SOURCE);
         parameter.put("username", ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("username"));
-        parameter.put("password", ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("password"));
+        String password = ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("password").toString();
+        parameter.put("password", Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8)));
 
         parameter.put("column", SOURCE_COLUMN.newParam(inputJob.getRealmParams(SubExchangisJob.REALM_JOB_COLUMN_MAPPING)).getValue().stream().map(map -> {
             return map.get("name");
@@ -225,6 +227,12 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         return reader;
     }
 
+    public static void main(String[] args) {
+        String s = "123";
+        String s1 = Base64.getEncoder().encodeToString(s.getBytes(StandardCharsets.UTF_8));
+        System.out.println(s1);
+    }
+
     private Map<String, Object> buildMySQLWriter(SubExchangisJob inputJob, ExchangisJobBuilderContext ctx) {
         Map<String, Object> writer = new HashMap<>();
         writer.put("name", "mysqlwriter");
@@ -232,7 +240,8 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
 
         JobParamSet sinkSettings = inputJob.getRealmParams(REALM_JOB_CONTENT_SINK);
         parameter.put("username", ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("username"));
-        parameter.put("password", ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("password"));
+        String password = ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("password").toString();
+        parameter.put("password", Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8)));
 
         parameter.put("column", SINK_COLUMN.newParam(inputJob.getRealmParams(SubExchangisJob.REALM_JOB_COLUMN_MAPPING)).getValue().stream().map(map -> {
             return map.get("name");
