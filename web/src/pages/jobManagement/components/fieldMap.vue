@@ -255,7 +255,7 @@ export default defineComponent({
         return;
       }
 
-      if (!map.length) {
+      /*if (!map.length) {
         toRaw(props.deductions).forEach((item, idx) => {
           let sourceItem = {};
           let sinkItem = {};
@@ -280,40 +280,59 @@ export default defineComponent({
           fieldMap.sourceDS.push(sourceItem);
           fieldMap.sinkDS.push(sinkItem);
         });
-        // const transforms = createTransforms(
-        //   fieldMap.sourceDS,
-        //   fieldMap.sinkDS,
-        //   fieldMap.transformerList
-        // );
-        // context.emit("updateFieldMap", transforms);
-      } else {
+      } else { */
         map.forEach((item, idx) => {
           let sourceItem = {};
           let sinkItem = {};
           let transformerItem = {};
 
-          sourceItem.key = idx + "";
-          sourceItem.fieldName =
-            item.source_field_name && item.source_field_name;
-          sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
-          sourceItem.fieldType =
-            item.source_field_type && item.source_field_type;
+          if (item.source_field_name && item.source_field_type) {
+            sourceItem.key = idx + "";
+            sourceItem.fieldName =
+              item.source_field_name && item.source_field_name;
+            sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
+            sourceItem.fieldType =
+              item.source_field_type && item.source_field_type;
 
-          sinkItem.key = idx + "";
-          sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
-          sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
-          sinkItem.fieldType = item.sink_field_type && item.sink_field_type;
+            sinkItem.key = idx + "";
+            sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
+            sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
+            sinkItem.fieldType = item.sink_field_type && item.sink_field_type;
 
-          transformerItem.key = idx + "";
-          transformerItem.validator = item.validator && item.validator;
-          transformerItem.transformer = item.transformer && item.transformer;
-          transformerItem.deleteEnable = item.deleteEnable;
+            transformerItem.key = idx + "";
+            transformerItem.validator = item.validator && item.validator;
+            transformerItem.transformer = item.transformer && item.transformer;
+            transformerItem.deleteEnable = item.deleteEnable;
 
-          fieldMap.transformerList.push(transformerItem);
-          fieldMap.sourceDS.push(sourceItem);
-          fieldMap.sinkDS.push(sinkItem);
-        });
-      }
+            fieldMap.transformerList.push(transformerItem);
+            fieldMap.sourceDS.push(sourceItem);
+            fieldMap.sinkDS.push(sinkItem);
+          } else if (item.source.name && item.source.type) {
+            let sourceItem = {};
+            let sinkItem = {};
+            let transformerItem = {};
+
+            sourceItem.key = idx + "";
+            sourceItem.fieldName = item.source.name;
+            sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
+            sourceItem.fieldType = item.source.type;
+
+            sinkItem.key = idx + "";
+            sinkItem.fieldName = item.sink.name;
+            sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
+            sinkItem.fieldType = item.sink.type;
+
+            transformerItem.key = idx + "";
+            transformerItem.validator = [];
+            transformerItem.transformer = {};
+            transformerItem.deleteEnable = item.deleteEnable;
+
+            fieldMap.transformerList.push(transformerItem);
+            fieldMap.sourceDS.push(sourceItem);
+            fieldMap.sinkDS.push(sinkItem);
+          }
+        })
+      //}
     };
     createDataSource(toRaw(props.fmData).mapping || []);
 
