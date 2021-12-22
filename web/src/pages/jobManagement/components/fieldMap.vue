@@ -307,7 +307,7 @@ export default defineComponent({
             fieldMap.transformerList.push(transformerItem);
             fieldMap.sourceDS.push(sourceItem);
             fieldMap.sinkDS.push(sinkItem);
-          } else if (item.source.name && item.source.type) {
+          } else if (item.source && item.source.name && item.source.type) {
             let sourceItem = {};
             let sinkItem = {};
             let transformerItem = {};
