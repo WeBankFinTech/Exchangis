@@ -43,6 +43,7 @@
                     :placeholder="$t('projectManage.topLine.searchBar.searchInputPlaceholder')"
                     :allowClear="true"
                     @pressEnter="handleOnSearch"
+                    v-model:value="projectName"
                     style="width: 336px"
                   >
                     <template #prefix>
@@ -152,6 +153,7 @@ export default {
       projectList: [],
       // 是否加载中
       loading: false,
+      projectName: '',
       // 分页配置
       pageCfg: {
         current: 1,
@@ -192,9 +194,9 @@ export default {
       };
     },
     // 处理搜索
-    handleOnSearch(value) {
+    handleOnSearch() {
       this.pageCfg.current = 1;
-      this.getDataList(value);
+      this.getDataList(this.projectName);
     },
     // 删除项目
     async handleOnDelteProject(id) {
