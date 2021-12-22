@@ -569,6 +569,8 @@ export default {
           this.fieldsSink = res.sinkFields;
           this.deductions = res.deductions;
           this.addEnabled = res.addEnabled;
+          // 不在使用deductions 直接将deductions作为值使用
+          this.curTask.transforms.mapping = res.deductions
         });
       }
     },
@@ -583,6 +585,8 @@ export default {
           this.fieldsSink = res.sinkFields;
           this.deductions = res.deductions;
           this.addEnabled = res.addEnabled;
+          // 不在使用deductions 直接将deductions作为值使用
+          this.curTask.transforms.mapping = res.deductions
         });
       }
     },
