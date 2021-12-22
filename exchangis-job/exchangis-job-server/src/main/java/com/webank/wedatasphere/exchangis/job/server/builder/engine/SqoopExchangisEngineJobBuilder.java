@@ -206,7 +206,13 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
 
         params.put("sqoop.args.hive.database", sinkSettings.get("database").getValue().toString());
         params.put("sqoop.args.hive.table", sinkSettings.get("table").getValue().toString());
-        params.put("sqoop.args.fields.terminated.by", sinkSettings.get("exchangis.job.ds.params.sqoop.hive.w.row_format").getValue().toString());
+
+
+        if (null != sinkSettings.get("exchangis.job.ds.params.sqoop.hive.w.row_format")
+                && null != sinkSettings.get("exchangis.job.ds.params.sqoop.hive.w.row_format").getValue()
+                && !StringUtils.isBlank(sinkSettings.get("exchangis.job.ds.params.sqoop.hive.w.row_format").getValue().toString())) {
+            params.put("sqoop.args.fields.terminated.by", sinkSettings.get("exchangis.job.ds.params.sqoop.hive.w.row_format").getValue().toString());
+        }
 
         JobParam<?> partitionSetting = sinkSettings.get("exchangis.job.ds.params.sqoop.hive.w.partition");
         if (null != partitionSetting) {
@@ -263,7 +269,8 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         }
 
         if (null != sinkSettings.get("exchangis.job.ds.params.sqoop.hive.r.row_format")
-            && null != sinkSettings.get("exchangis.job.ds.params.sqoop.hive.r.row_format").getValue()) {
+            && null != sinkSettings.get("exchangis.job.ds.params.sqoop.hive.r.row_format").getValue()
+            && !StringUtils.isBlank(sinkSettings.get("exchangis.job.ds.params.sqoop.hive.r.row_format").getValue().toString())) {
             params.put("sqoop.args.fields.terminated.by", sinkSettings.get("exchangis.job.ds.params.sqoop.hive.r.row_format").getValue().toString());
         }
         params.put("sqoop.args.export.dir", ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("location"));
