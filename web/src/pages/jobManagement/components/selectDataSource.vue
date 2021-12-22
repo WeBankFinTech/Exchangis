@@ -58,6 +58,8 @@
       <div class="sds-wrap-b">
         <a-directory-tree
           :tree-data="treeData"
+          :autoExpandParent="false"
+          v-model:expandedKeys="expandedKeys"
           @select="selectItem"
           @expand="handleExpandSql"
         ></a-directory-tree>
@@ -98,6 +100,7 @@ export default defineComponent({
   setup(props, context) {
     let SQLlist, treeData;
     const sqlList = [];
+    const expandedKeys = ref([]);
     const state = reactive({
       sqlSource: sqlList.length ? sqlList[0].value : "",
       sqlList,
@@ -220,6 +223,7 @@ export default defineComponent({
       state.dataSource = "";
       state.selectTable = "";
       state.treeData = [];
+      expandedKeys.value = [];
     };
     /**
      * 获取数据库下 所有表
@@ -245,6 +249,9 @@ export default defineComponent({
         if (td.title === dbName) {
           if (td.children.length > 0 && td.children[0].title) return;
           let tables = await asyncGetTables(state.curSql, state.dsId, dbName);
+          tables.forEach(tb => {
+            tb.isLeaf = true;
+          })
           return (td.children = tables.slice());
         }
       });
@@ -263,7 +270,8 @@ export default defineComponent({
       handleChangeSql,
       handleExpandSql,
       handleChangeDS,
-      getBg
+      getBg,
+      expandedKeys
     };
   },
 });
