@@ -1079,12 +1079,12 @@
   resolved "https://registry.yarnpkg.com/@fesjs/plugin-enums/-/plugin-enums-2.0.1.tgz#8ba3092a19135c2fec96db517795b3005d0b6031"
   integrity sha512-YlvDig/b4ahdDA5kVWRK2uEJhTFSPF8tYpH1ikaj3jEdNFJ4GkgPBYvXnBiEvzYoM+78l4Ss4Vy39XI7r2WjmQ==
 
-"@fesjs/plugin-layout@^2.0.0":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@fesjs/plugin-layout/-/plugin-layout-2.0.4.tgz#d98d80a20ac8dd204c5a4ed5d93ba037f16e0b2c"
-  integrity sha512-7OMs7nl33CA96r4ydpqsFF/Td2PwTx4Y6X0Ja3UXS5YALgsDlO7gBcNcgmCstMayIoMgbAU5SUS3M5K1EleW4w==
+"@fesjs/plugin-layout@^2.0.8":
+  version "2.0.9"
+  resolved "https://registry.npmmirror.com/@fesjs/plugin-layout/download/@fesjs/plugin-layout-2.0.9.tgz#6bb5fd902810f7ec73b5b206987e6cc040bf4148"
+  integrity sha512-jC7ZKEnN9TRF66K7+EhPbQPiwNvngHjHBU8RVoZUeNfm6AnKN5KSHjXZor3rPFXd7qirC4Z1VAnrNn6Tb4wt0g==
   dependencies:
-    "@fesjs/utils" "^2.0.2"
+    "@fesjs/utils" "^2.0.3"
 
 "@fesjs/plugin-locale@^2.0.3":
   version "2.0.3"
@@ -1171,6 +1171,29 @@
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@fesjs/utils/-/utils-2.0.2.tgz#0f6826cf707ed476888c0dcf790876e75c0b0c27"
   integrity sha512-71Kr1geCfGRc6XrIq9MdptU5qLI51xhf8tfdslE1WvDH2rgEUwX5u4rV6oLVyHwk0bLzrbV0hn9YqQ5d3C/cZg==
+  dependencies:
+    "@babel/parser" "^7.15.0"
+    "@babel/traverse" "^7.15.0"
+    chalk "^4.1.2"
+    chokidar "^3.5.2"
+    crequire "^1.8.1"
+    debug "^4.3.2"
+    deepmerge "^4.2.2"
+    glob "^7.1.7"
+    lodash "^4.17.21"
+    mkdirp "^1.0.4"
+    mustache "^4.2.0"
+    pkg-up "^3.1.0"
+    portfinder "^1.0.28"
+    resolve "^1.20.0"
+    rimraf "^3.0.2"
+    semver "^7.3.5"
+    yargs-parser "^20.2.9"
+
+"@fesjs/utils@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmmirror.com/@fesjs/utils/download/@fesjs/utils-2.0.3.tgz#60249a3061a7e8e08bd7d13238096fb669fa1ac5"
+  integrity sha1-YCSaMGGn6OCL19EyOAlvtmn6GsU=
   dependencies:
     "@babel/parser" "^7.15.0"
     "@babel/traverse" "^7.15.0"

@@ -250,8 +250,8 @@ export default defineComponent({
       });
     };
     const getBg = () => {
-      let name = state.dataSource || state.defaultSelect[0]
-      console.log(name, state.defaultSelect[0])
+      let name = state.curSql || state.defaultSelect[0]
+      console.log(name, state.defaultSelect[0], state)
       return `background-image: url(${require('@/images/dataSourceTypeIcon/' + name + '.png')})`
     }
     return {
