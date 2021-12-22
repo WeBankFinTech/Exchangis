@@ -48,6 +48,7 @@
         <a-form-item class="w40 fl" name="jobParamsValue">
           <a-input v-model:value="item.value" :style="{ width: '194px'}"/>
         </a-form-item>
+        <DeleteOutlined class="delete-icon" @click="deleteTask(index)"/>
       </div>
     </a-form>
   </a-modal>
@@ -56,7 +57,7 @@
 <script>
 import { toRaw, ref, watch, reactive, watchEffect } from "vue";
 import { message } from "ant-design-vue";
-import { PlusOutlined } from "@ant-design/icons-vue";
+import { PlusOutlined , DeleteOutlined} from "@ant-design/icons-vue";
 import { createProject, getProjectById, updateProject } from "@/common/service";
 import { cloneDeep } from "lodash-es";
 
@@ -86,6 +87,7 @@ export default {
   name: "JobManagementConfigModal",
   components: {
     PlusOutlined,
+    DeleteOutlined
   },
   props: {
     // 是否可见
@@ -144,6 +146,10 @@ export default {
       formState.jobParams.push({ key: "", value: "" });
     };
 
+    const deleteTask = (index) => {
+      formState.jobParams.splice(index, 1)
+    }
+
     const handleOk = async () => {
       await formRef.value.validate();
       const formatData = cloneDeep(formState);
@@ -171,6 +177,7 @@ export default {
       formState,
       createTask,
       handleOk,
+      deleteTask
     };
   },
 };
@@ -221,5 +228,10 @@ export default {
   text-align: center;
   font-weight: 400;
   margin-bottom: 16px;
+}
+.delete-icon {
+  cursor: pointer;
+  right: 22px;
+  position: absolute;
 }
 </style>
