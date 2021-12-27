@@ -22,8 +22,7 @@ import java.util.Map;
 
 
 public class ExchangisProjectDeletionOperation implements ProjectDeletionOperation {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisProjectDeletionOperation.class);
-    private static Logger logger = LoggerFactory.getLogger(ExchangisProjectCreationOperation.class);
+    private static Logger logger = LoggerFactory.getLogger(ExchangisProjectDeletionOperation.class);
 
     private SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation;
     private StructureService structureService;
@@ -40,10 +39,8 @@ public class ExchangisProjectDeletionOperation implements ProjectDeletionOperati
     public ProjectResponseRef deleteProject(ProjectRequestRef projectRequestRef) throws ExternalOperationFailedException {
         Long projectId = projectRequestRef.getId();
         logger.info("delete project=>projectId:{},name:{},createName:{}",projectRequestRef.getId(),projectRequestRef.getName(),projectRequestRef.getCreateBy());
-//
-//        String url = getBaseUrl() +"/projects/"+id;
-        //TODO 后续修改
-        String url ="";
+
+        String url = getBaseUrl() +"/projects/dss/"+projectRequestRef.getName();
         ExchangisDeleteAction exchangisPostAction = new ExchangisDeleteAction();
         exchangisPostAction.setUser(projectRequestRef.getCreateBy());
 
@@ -61,9 +58,10 @@ public class ExchangisProjectDeletionOperation implements ProjectDeletionOperati
             response = httpResult.getResponseBody();
             resMap = BDPJettyServerHelper.jacksonJson().readValue(response, new TypeReference<Map<String, Object>>() {});
         }catch (Exception e){
-            logger.error("Create Exchangis Project Exception", e);
+            logger.error("delete Exchangis Project Exception", e);
             throw new ExternalOperationFailedException(31020,e.getMessage());
         }
+
         Map<String, Object> header = (Map<String, Object>) resMap.get("header");
         int code = (int) header.get("code");
         String errorMsg = "";

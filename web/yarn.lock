@@ -1079,12 +1079,12 @@
   resolved "https://registry.yarnpkg.com/@fesjs/plugin-enums/-/plugin-enums-2.0.1.tgz#8ba3092a19135c2fec96db517795b3005d0b6031"
   integrity sha512-YlvDig/b4ahdDA5kVWRK2uEJhTFSPF8tYpH1ikaj3jEdNFJ4GkgPBYvXnBiEvzYoM+78l4Ss4Vy39XI7r2WjmQ==
 
-"@fesjs/plugin-layout@^2.0.0":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@fesjs/plugin-layout/-/plugin-layout-2.0.4.tgz#d98d80a20ac8dd204c5a4ed5d93ba037f16e0b2c"
-  integrity sha512-7OMs7nl33CA96r4ydpqsFF/Td2PwTx4Y6X0Ja3UXS5YALgsDlO7gBcNcgmCstMayIoMgbAU5SUS3M5K1EleW4w==
+"@fesjs/plugin-layout@^2.0.8":
+  version "2.0.9"
+  resolved "https://registry.npmmirror.com/@fesjs/plugin-layout/download/@fesjs/plugin-layout-2.0.9.tgz#6bb5fd902810f7ec73b5b206987e6cc040bf4148"
+  integrity sha512-jC7ZKEnN9TRF66K7+EhPbQPiwNvngHjHBU8RVoZUeNfm6AnKN5KSHjXZor3rPFXd7qirC4Z1VAnrNn6Tb4wt0g==
   dependencies:
-    "@fesjs/utils" "^2.0.2"
+    "@fesjs/utils" "^2.0.3"
 
 "@fesjs/plugin-locale@^2.0.3":
   version "2.0.3"
@@ -1189,6 +1189,79 @@
     rimraf "^3.0.2"
     semver "^7.3.5"
     yargs-parser "^20.2.9"
+
+"@fesjs/utils@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmmirror.com/@fesjs/utils/download/@fesjs/utils-2.0.3.tgz#60249a3061a7e8e08bd7d13238096fb669fa1ac5"
+  integrity sha1-YCSaMGGn6OCL19EyOAlvtmn6GsU=
+  dependencies:
+    "@babel/parser" "^7.15.0"
+    "@babel/traverse" "^7.15.0"
+    chalk "^4.1.2"
+    chokidar "^3.5.2"
+    crequire "^1.8.1"
+    debug "^4.3.2"
+    deepmerge "^4.2.2"
+    glob "^7.1.7"
+    lodash "^4.17.21"
+    mkdirp "^1.0.4"
+    mustache "^4.2.0"
+    pkg-up "^3.1.0"
+    portfinder "^1.0.28"
+    resolve "^1.20.0"
+    rimraf "^3.0.2"
+    semver "^7.3.5"
+    yargs-parser "^20.2.9"
+
+"@form-create/ant-design-vue@^3.0.0-alpha.2":
+  version "3.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@form-create/ant-design-vue/-/ant-design-vue-3.0.0-alpha.2.tgz#3e45f32e7a7e231aeb7443f7f346d6dd9ba0f7fe"
+  integrity sha512-PmtjReh+sE4JkKI91ex8hiOGwTdfFTWFCqzPaKnoa82s2/JVYIma7tXOFo3HzWl/iKkyuH62IzvKTpG6w+VpUQ==
+  dependencies:
+    "@form-create/component-antdv-frame" "^3.0.0-alpha.2"
+    "@form-create/component-antdv-group" "^3.0.0-alpha.2"
+    "@form-create/component-antdv-upload" "^3.0.0-alpha.1"
+    "@form-create/component-subform" "^3.0.0-alpha.2"
+    "@form-create/core" "^3.0.0-alpha.2"
+    "@form-create/utils" "^3.0.0-alpha.1"
+
+"@form-create/component-antdv-frame@^3.0.0-alpha.2":
+  version "3.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@form-create/component-antdv-frame/-/component-antdv-frame-3.0.0-alpha.2.tgz#c3cb5e8aa766cc410412eaae64ad9cf437ce7e9b"
+  integrity sha512-xWl45AWkoK9Chz1uWIv9rPpahCS69fqUMrEl0YbJMoEVZmmOAVSMVRXHClTgUdE/TVQwjAF99gixwZvezIE/2w==
+  dependencies:
+    "@form-create/utils" "^3.0.0-alpha.1"
+
+"@form-create/component-antdv-group@^3.0.0-alpha.2":
+  version "3.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@form-create/component-antdv-group/-/component-antdv-group-3.0.0-alpha.2.tgz#e5340a991ad487acc843afeb8fc0d58d8071f438"
+  integrity sha512-PsQ5ocD1YkY0IRUmi80SlzHb0AFKnKBjQVAEVDsHgb3HnO63pDWEuGUBfI2ZDvpEsCSL22zYSUhuqku2CAznsw==
+  dependencies:
+    "@form-create/utils" "^3.0.0-alpha.1"
+
+"@form-create/component-antdv-upload@^3.0.0-alpha.1":
+  version "3.0.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@form-create/component-antdv-upload/-/component-antdv-upload-3.0.0-alpha.1.tgz#aa5f1fb600b9d11d9e990afbdead15e8ca38a5fb"
+  integrity sha512-OdLH8FRwHrX1bSRJxvMMXiALKV59aj1xSyZ/ip5ihYTlwl4A9pSBrPgvprj1UW7lplLr4Gp/teH7c8Jn+Gy99g==
+  dependencies:
+    "@form-create/utils" "^3.0.0-alpha.1"
+
+"@form-create/component-subform@^3.0.0-alpha.2":
+  version "3.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@form-create/component-subform/-/component-subform-3.0.0-alpha.2.tgz#87ab386030171099e0bf8d9284c7a40004c8f9ad"
+  integrity sha512-AdqeWdyL+YtnbUpYz10fX9zTMrz3jz6U5hi+5kCbVrFBoug7ZjXP2qBiNZ0BRyHqXUqIpPv6iOt4Wwk/Jw4q8Q==
+
+"@form-create/core@^3.0.0-alpha.2":
+  version "3.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@form-create/core/-/core-3.0.0-alpha.2.tgz#d970960e39050d5f1721847274e0060c1d22d6a1"
+  integrity sha512-s8lnWJ4CQotczKba8+RdL+VmvyBxurp3YTEaeYyEHNLA67u8gQ6P03Wr4+qJq2nysLE9jmb5tD8fZREdoelFTg==
+  dependencies:
+    "@form-create/utils" "^3.0.0-alpha.1"
+
+"@form-create/utils@^3.0.0-alpha.1":
+  version "3.0.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@form-create/utils/-/utils-3.0.0-alpha.1.tgz#dd457f47979139d6c16e8f3088aac56c25a85445"
+  integrity sha512-UE4kkPdykZBveYVhPQrNJ5p3xHyYg2oyVDJwxctHw7WILeNZRDbsPlrjEx/KEcERU1avH3KMOt4toL24FmJ0tQ==
 
 "@hapi/hoek@^9.0.0":
   version "9.2.1"

@@ -32,6 +32,7 @@ import {
   Progress,
   Drawer,
 } from "ant-design-vue";
+import formCreate from '@form-create/ant-design-vue'
 
 /**
  * @description 手动注册 antd-vue 组件,达到按需加载目的
@@ -71,4 +72,6 @@ export default function loadComponent(app) {
   app.use(Tooltip);
   app.use(Progress);
   app.use(Drawer);
+
+  app.use(formCreate)
 }

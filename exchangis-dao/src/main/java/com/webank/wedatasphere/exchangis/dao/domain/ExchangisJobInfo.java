@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.dao.domain;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -12,7 +13,17 @@ public class ExchangisJobInfo {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    @TableField("project_id")
     private Long projectId;
+
+    @TableField("dss_project_id")
+    private Long dssProjectId;
+
+    @TableField("node_id")
+    private String nodeId;
+
+    @TableField("node_name")
+    private String nodeName;
 
     private String jobName;
 
@@ -61,6 +72,18 @@ public class ExchangisJobInfo {
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
+
+    public Long getDssProjectId() { return dssProjectId; }
+
+    public void setDssProjectId(Long dssProjectId) { this.dssProjectId = dssProjectId; }
+
+    public String getNodeId() { return nodeId; }
+
+    public void setNodeId(String nodeId) { this.nodeId = nodeId; }
+
+    public String getNodeName() { return nodeName; }
+
+    public void setNodeName(String nodeName) { this.nodeName = nodeName; }
 
     public String getJobName() {
         return jobName;

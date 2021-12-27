@@ -1,6 +1,27 @@
 <template>
   <div class="sds-wrap">
-    <a-button type="primary" @click="showModal">{{ defaultSelect }}</a-button>
+    <!-- <a-button type="dashed" @click="showModal">{{ defaultSelect }}</a-button> -->
+    <div
+      class="sds-button"
+      @click="showModal"
+      v-if="defaultSelect === '请点击后选择'"
+    >
+      <PlusOutlined
+        style="color: rgba(0, 0, 0, 0.65); font-size: 12px; margin-right: 8px"
+      />
+      <span>{{ defaultSelect }}</span>
+    </div>
+    <div v-else class="sds-title-tags">
+      <div class="sds-title-tag"
+           v-for="(item, idx) in defaultSelect"
+           :key="idx"
+           @click="showModal"
+           :title="item"
+      >
+        <span v-if="idx===0"><span class="logo" :style="getBg()"> </span> {{ item }}</span>
+        <span v-else>{{ item }}</span>
+      </div>
+    </div>
     <a-modal
       v-model:visible="visible"
       title="选择数据源"
@@ -37,6 +58,8 @@
       <div class="sds-wrap-b">
         <a-directory-tree
           :tree-data="treeData"
+          :autoExpandParent="false"
+          v-model:expandedKeys="expandedKeys"
           @select="selectItem"
           @expand="handleExpandSql"
         ></a-directory-tree>
@@ -46,6 +69,7 @@
 </template>
 
 <script>
+import { PlusOutlined, MinusOutlined } from "@ant-design/icons-vue";
 import {
   getDataSourceTypes,
   getDBs,
@@ -68,10 +92,15 @@ export default defineComponent({
   props: {
     title: String,
   },
+  components: {
+    PlusOutlined,
+    MinusOutlined,
+  },
   emits: ["updateDsInfo"],
   setup(props, context) {
     let SQLlist, treeData;
     const sqlList = [];
+    const expandedKeys = ref([]);
     const state = reactive({
       sqlSource: sqlList.length ? sqlList[0].value : "",
       sqlList,
@@ -194,6 +223,7 @@ export default defineComponent({
       state.dataSource = "";
       state.selectTable = "";
       state.treeData = [];
+      expandedKeys.value = [];
     };
     /**
      * 获取数据库下 所有表
@@ -219,10 +249,17 @@ export default defineComponent({
         if (td.title === dbName) {
           if (td.children.length > 0 && td.children[0].title) return;
           let tables = await asyncGetTables(state.curSql, state.dsId, dbName);
+          tables.forEach(tb => {
+            tb.isLeaf = true;
+          })
           return (td.children = tables.slice());
         }
       });
     };
+    const getBg = () => {
+      let name = state.curSql || (typeof state.defaultSelect === 'string' ? state.defaultSelect.split('-')[0] : state.defaultSelect[0])
+      return `background-image: url(${require('@/images/dataSourceTypeIcon/' + name + '.png')})`
+    }
     return {
       ...toRefs(state),
       selectItem,
@@ -233,6 +270,8 @@ export default defineComponent({
       handleChangeSql,
       handleExpandSql,
       handleChangeDS,
+      getBg,
+      expandedKeys
     };
   },
 });
@@ -241,5 +280,70 @@ export default defineComponent({
 <style lang="less" scoped>
 .sds-wrap {
   display: inline-block;
+  .logo {
+    width: 20px;
+    height: 20px;
+    float: left;
+    background-size: cover;
+  }
+  .sds-button {
+    width: 420px;
+    height: 46px;
+    background: #f8fafd;
+    border: 1px dashed #dee4ec;
+    border-radius: 2px;
+    line-height: 46px;
+    text-align: center;
+
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.65);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .sds-title-tags {
+    width: 420px;
+    height: 46px;
+    display: flex;
+    /*justify-content: center;*/
+    align-items: center;
+    .sds-title-tag {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      padding: 5px 15px;
+      background: #e6f0ff;
+      font-family: PingFangSC-Medium;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      font-weight: 500;
+      height: 32px;
+      min-width: 100px;
+      max-width: 100px;
+      cursor: pointer;
+      text-align: center;
+      border-top: 1px solid #dee4ec;
+      border-bottom: 1px solid #dee4ec;
+      border-right: 1px solid #dee4ec;
+      &:first-child {
+        border-left: 1px solid #dee4ec;
+        border-radius: 4px 0 0 4px;
+      }
+      &:last-child {
+        border-radius: 0 4px 4px 0;
+      }
+    }
+    &:hover {
+      .sds-title-tag {
+        color: #2E92F7;
+      }
+    }
+  }
 }
+.sds-wrap-b {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
 </style>
