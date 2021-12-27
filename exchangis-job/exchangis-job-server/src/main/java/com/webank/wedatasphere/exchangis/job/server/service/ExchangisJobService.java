@@ -40,6 +40,8 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      */
     public List<ExchangisJobBasicInfoVO> getJobList(long projectId, String type, String name);
 
+    public List<ExchangisJobBasicInfoVO> getJobListByDssProject(long dssProjectId, String type, String name);
+
     public ExchangisJobBasicInfoVO copyJob(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO, Long sourceJobId);
 
     /**
@@ -51,9 +53,13 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      */
     public ExchangisJobBasicInfoVO updateJob(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO, Long id);
 
+    public ExchangisJobBasicInfoVO updateJobByDss(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO, String nodeId);
+
     public ExchangisJobBasicInfoVO importSingleJob(MultipartFile multipartFile);
 
     public void deleteJob(Long id);
+
+    public void deleteJobByDss(String nodeId);
 
     public ExchangisJob getJob(Long id) throws ExchangisJobErrorException;
     /**
@@ -64,6 +70,8 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      * @throws ExchangisJobErrorException the exchangis job error exception
      */
     public ExchangisJob getJob(HttpServletRequest request, Long id) throws ExchangisJobErrorException;
+
+    public ExchangisJob getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobErrorException;
 
     /**
      * Update exchangis job config.
@@ -85,7 +93,7 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
     public ExchangisJob updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
             throws ExchangisJobErrorException, ExchangisDataSourceException;
 
-    // public  List<ElementUI> getSpeedLimitSettings(Long id, String taskName);
+     public  List<ElementUI> getSpeedLimitSettings(Long id, String taskName);
 
-    // public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings);
+     public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings);
 }

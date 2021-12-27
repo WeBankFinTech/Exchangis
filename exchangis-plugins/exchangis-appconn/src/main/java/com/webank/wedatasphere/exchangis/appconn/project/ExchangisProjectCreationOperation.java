@@ -44,12 +44,14 @@ public class ExchangisProjectCreationOperation implements ProjectCreationOperati
     @Override
     public ProjectResponseRef createProject(ProjectRequestRef projectRequestRef) throws ExternalOperationFailedException {
         String url = getBaseUrl() +"/createProject";
-        logger.info("create project=>projectId:{},name:{},createName:{}",projectRequestRef.getId(),projectRequestRef.getName(),projectRequestRef.getCreateBy());
+
+        logger.info("create project=>projectId:{},name:{},createName:{},parameters:{},workspaceName:{}",projectRequestRef.getId(),projectRequestRef.getName(),projectRequestRef.getCreateBy(),projectRequestRef.getParameters().toString(),projectRequestRef.getWorkspace().getWorkspaceName());
 
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
         exchangisPostAction.setUser(projectRequestRef.getCreateBy());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.WORKSPACE_NAME,projectRequestRef.getWorkspaceName());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.WORKSPACE_NAME,projectRequestRef.getWorkspace().getWorkspaceName());
         exchangisPostAction.addRequestPayload(ExchangisConfig.PROJECT_NAME,projectRequestRef.getName());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_NAME,projectRequestRef.getName());
         exchangisPostAction.addRequestPayload(ExchangisConfig.DESCRIPTION,projectRequestRef.getDescription());
         exchangisPostAction.addRequestPayload(ExchangisConfig.EDIT_USERS,projectRequestRef.getCreateBy());
         exchangisPostAction.addRequestPayload(ExchangisConfig.EXEC_USERS,projectRequestRef.getCreateBy());
@@ -73,6 +75,8 @@ public class ExchangisProjectCreationOperation implements ProjectCreationOperati
             logger.error("Create Exchangis Project Exception", e);
             throw new ExternalOperationFailedException(31020,e.getMessage());
         }
+
+        logger.info("create project=> status {},response {},resMap {}",httpResult.getStatusCode(),response,resMap.toString());
         Map<String, Object> header = (Map<String, Object>) resMap.get("header");
         int code = (int) header.get("code");
         String errorMsg = "";

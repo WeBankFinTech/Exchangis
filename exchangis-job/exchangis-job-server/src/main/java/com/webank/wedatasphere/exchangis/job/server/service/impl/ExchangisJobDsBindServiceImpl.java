@@ -20,7 +20,7 @@ public class ExchangisJobDsBindServiceImpl implements ExchangisJobDsBindService 
     public void updateJobDsBind(Long jobId, List<ExchangisJobDsBind> dsBinds) {
 
         QueryWrapper<ExchangisJobDsBind> deleteCondition = new QueryWrapper<>();
-        deleteCondition.eq("jobId", jobId);
+        deleteCondition.eq("job_id", jobId);
         this.dsBindMapper.delete(deleteCondition);
 
         for (ExchangisJobDsBind dsBind : dsBinds) {
@@ -32,7 +32,7 @@ public class ExchangisJobDsBindServiceImpl implements ExchangisJobDsBindService 
     @Override
     public boolean inUse(Long datasourceId) {
         QueryWrapper<ExchangisJobDsBind> condition = new QueryWrapper<>();
-        condition.eq("sourceDsId", datasourceId).or().eq("sinkDsId", datasourceId);
+        condition.eq("source_ds_id", datasourceId).or().eq("sink_ds_id", datasourceId);
         Integer count = Optional.ofNullable(this.dsBindMapper.selectCount(condition)).orElse(0);
         return count > 0;
     }
