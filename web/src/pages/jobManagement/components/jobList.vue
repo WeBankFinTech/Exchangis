@@ -4,7 +4,7 @@
       <a-input
         :placeholder="t('job.action.jobSearch')"
         v-model:value="search"
-        @pressEnter="handleOnSearch"
+        @pressEnter="handleSearch"
         style="width: 336px"
       >
         <template #prefix>
