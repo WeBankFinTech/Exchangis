@@ -13,11 +13,14 @@
       @click="showModal"
       :class="{ 'tf-mid-sync': !dynamicValidateForm.domains.length }"
     >
-      <img src="../../../images/jobDetail/u6239.png" />
-      <img
-        src="../../../images/jobDetail/u6240.png"
-        style="position: absolute; left: 72px; top: 6px; cursor: pointer"
-      />
+      <svg class="icon icon-symbol" aria-hidden="true">
+        <use xlink:href="#icon-lansejiantoudaikuang"></use>
+      </svg>
+      <!--<img src="../../../images/jobDetail/u6239.png" />-->
+      <!--<img-->
+        <!--src="../../../images/jobDetail/u6240.png"-->
+        <!--style="position: absolute; left: 72px; top: 6px; cursor: pointer"-->
+      <!--/>-->
     </div>
     <!-- bottom -->
     <div class="tf-bottom">
@@ -367,13 +370,15 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+@import "../../../common/content.less";
 .tf-mid {
   text-align: center;
   position: relative;
+  height: 16px;
 }
 
 .tf-mid-sync {
-  margin-top: 30px;
+  /*margin-top: 10px;*/
 }
 .tf-modal-content {
   display: flex;
@@ -397,12 +402,14 @@ export default defineComponent({
 }
 .tf-bottom {
   text-align: center;
+  height: 22px;
   > span {
     font-size: 12px;
   }
 }
 .tf-top {
   text-align: center;
+  height: 22px;
   > span {
     font-size: 12px;
   }
@@ -412,5 +419,12 @@ export default defineComponent({
   :nth-of-type(1) {
     max-width: 0;
   }
+}
+.icon-symbol {
+  font-size: 50px;
+  position: absolute;
+  left: 72px;
+  cursor: pointer;
+  top: -16px;
 }
 </style>

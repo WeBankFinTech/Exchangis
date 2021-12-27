@@ -31,9 +31,19 @@ export const getDataSourceList = (params) => {
   return request("/datasources/query", { ...params }, { method: "POST" });
 };
 
+// 数据源管理 获取数据源
 export const getDataSourceTypes = () => {
   return request(
     `/datasources/type?t=_${new Date().getTime()}`,
+    {},
+    { method: "GET" }
+  );
+};
+
+// 数据源管理 获取动态参数
+export const getKeyDefine = (dataSourceTypeId) => {
+  return request(
+    `/datasources/types/${dataSourceTypeId}/keydefines?t=_${new Date().getTime()}`,
     {},
     { method: "GET" }
   );
@@ -210,6 +220,13 @@ export const getSettingsParams = (engineType) => {
   );
 };
 
+// job执行
+export const executeJob = (id) => {
+  return request(`/job/${id}/action/execute`, {}, {
+    method: "POST",
+  });
+};
+
 // 同步历史
 export const getSyncHistory = (body) => {
   return request("/tasks", body, {
@@ -238,6 +255,7 @@ export const saveSpeedLimit = (params, body) => {
     method: "PUT",
   });
 };
+
 
 // 首页相关
 

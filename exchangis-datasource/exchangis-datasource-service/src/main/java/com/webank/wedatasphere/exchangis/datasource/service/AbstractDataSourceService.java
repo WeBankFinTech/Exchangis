@@ -285,6 +285,7 @@ public class AbstractDataSourceService {
         ui.setLabel(config.getUiLabel());
         ui.setValues(values);
         ui.setValue(value);
+        ui.setDefaultValue(config.getDefaultValue());
         ui.setSort(config.getSort());
         ui.setRequired(config.getRequired());
         ui.setUnit(config.getUnit());
@@ -297,11 +298,13 @@ public class AbstractDataSourceService {
         ui.setField(config.getUiField());
         ui.setLabel(config.getUiLabel());
         ui.setValue(value);
+        ui.setDefaultValue(config.getDefaultValue());
         ui.setSort(config.getSort());
         ui.setRequired(config.getRequired());
         ui.setUnit(config.getUnit());
         ui.setValidateType(config.getValidateType());
         ui.setValidateRange(config.getValidateRange());
+        ui.setValidateMsg(config.getValidateMsg());
         return ui;
     }
 }
