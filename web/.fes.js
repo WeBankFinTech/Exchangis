@@ -52,6 +52,14 @@ export default {
           title: "globalMenu.homePage",
         },
       },
+      {
+        path: "/childJobManagement",
+        component: "@/pages/jobManagementItem",
+        meta: {
+          name: "synchronizationHistory",
+          title: "globalMenu.synchronizationHistory",
+        }
+      }
     ],
   },
   request: {
@@ -64,7 +72,9 @@ export default {
     ],
   ],
   layout: {
-    title: "",
+    navigation: 'side',
+    theme: 'light',
+    title: "数据交换",
     footer: "",
     logo: null,
     multiTabs: false,
@@ -85,13 +95,13 @@ export default {
   },
   devServer: {
     host: "0.0.0.0",
-    port: 8000,
+    port: 8000
   },
   proxy: {
     "/api": {
       //target: "http://192.168.0.157:9321/",
       //target: "http://172.24.8.51:9321/",
-      target: "http://121.36.12.247:8088",
+      target: "http://124.70.31.149:20088",
       changeOrigin: true,
       pathRewrite: { "^/api": "/api" },
     },

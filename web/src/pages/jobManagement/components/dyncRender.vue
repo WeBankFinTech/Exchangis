@@ -1,19 +1,70 @@
+<template>
+  <div>
+    <a-select
+      v-if="type === 'OPTION'"
+      v-model:value="value"
+      ref="select"
+      :options="checkOptions"
+      @change="emitData(value)"
+      :style="style"
+    >
+    </a-select>
+    <template v-else>
+      <a-input
+        v-model:value="value"
+        @change="emitData(value)"
+        :style="style"
+      />
+      <span style="margin-left: 5px">{{unit}}</span>
+    </template>
+
+  </div>
+</template>
 <script>
-import { defineComponent, h, toRaw, watch, computed } from "vue";
+import { defineComponent, h, toRaw, watch, computed, reactive, ref } from "vue";
 
 export default defineComponent({
   props: {
     param: Object,
+    style: {
+      type: Object,
+      default: () => {
+        return { width: '200px',  }
+      }
+    }
   },
   emits: ["updateInfo"],
   setup(props, context) {
-    let { type, field, value } = props.param;
+    let { type, field, value, unit} = props.param;
     let tmlName = field.split(".").pop();
     const newProps = computed(() => JSON.parse(JSON.stringify(props.param)));
     watch(newProps, (val, oldVal) => {
       value = val.value;
     });
-    if (type === "OPTION") {
+    let checkOptions = []
+    if (type === 'OPTION'){
+      props.param.values.map((item) => {
+        checkOptions.push({
+          value: item,
+          label: item
+        })
+      })
+    }
+    const emitData = (value) => {
+      let res = toRaw(props.param)
+      res.value = value
+      context.emit("updateInfo", res);
+    };
+
+    return {
+      checkOptions: ref(checkOptions),
+      type,
+      value: ref(value),
+      emitData,
+      unit
+    }
+
+    /*if (type === "OPTION") {
       // 下拉框
       return () =>
         h(
@@ -62,8 +113,8 @@ export default defineComponent({
             props.param.unit ? props.param.unit : ""
           ),
         ]);
-    }
-  },
+    }*/
+  }
 });
 </script>
 
