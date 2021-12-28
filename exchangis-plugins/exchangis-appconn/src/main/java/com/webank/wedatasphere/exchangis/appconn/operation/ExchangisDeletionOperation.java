@@ -32,14 +32,14 @@ public class ExchangisDeletionOperation implements RefDeletionOperation {
     @Override
     public void deleteRef(RequestRef deleteRequestRef) throws ExternalOperationFailedException {
         NodeRequestRef nodeRequestRef = (NodeRequestRef) deleteRequestRef;
-        logger.info("delete job=>name:{} || parameters:{}", nodeRequestRef.getName(),nodeRequestRef.getParameters().toString());
+        logger.info("delete job=>name:{} || jobContext:{}", nodeRequestRef.getName(),nodeRequestRef.getJobContent().toString());
         deleteJob(nodeRequestRef);
     }
 
     private void deleteJob(NodeRequestRef deleteRequestRef) throws ExternalOperationFailedException{
         String url="";
         try {
-            String jobId = ((Map<String,Object>)((Map<String,Object>) deleteRequestRef.getParameters().get("data")).get("result")).get("id").toString();
+            String jobId = ((Map<String,Object>)((Map<String,Object>) deleteRequestRef.getJobContent().get("data")).get("result")).get("id").toString();
             url +="/"+jobId;
         }catch (Exception e){
             throw new ExternalOperationFailedException(31023, "Get job Id failed!", e);
