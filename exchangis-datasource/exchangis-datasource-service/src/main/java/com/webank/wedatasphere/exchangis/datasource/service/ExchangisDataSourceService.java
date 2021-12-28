@@ -1175,7 +1175,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         boolean containHive = "HIVE".equals(vo.getSourceTypeId()) || "HIVE".equals(vo.getSinkTypeId());
 
         Message message = Message.ok();
-        message.data("addEnabled", !containHive);
+        message.data("addEnable", !containHive);
 
         Message sourceMessage = this.queryDataSourceDBTableFields(request, vo.getSourceTypeId(), vo.getSourceDataSourceId(), vo.getSourceDataBase(), vo.getSourceTable());
         List<DataSourceDbTableColumnDTO> sourceFields = (List<DataSourceDbTableColumnDTO>) sourceMessage.getData().get("columns");
