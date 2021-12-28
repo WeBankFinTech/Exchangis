@@ -71,7 +71,7 @@
           @change="onChange"
         >
           <template #operation="{ record }">
-            <a @click="showInfoLog(record.key)">详细日志</a>
+            <a @click="showInfoLog({id: record.id})">详细日志</a>
             <a-divider type="vertical" />
             <a-popconfirm
               title="确定要删除这条历史吗？"
@@ -112,6 +112,28 @@
         </a-form-item>
       </a-form>
     </a-modal>
+
+    <!-- 详细日志 弹窗 -->
+    <a-modal
+      v-model:visible="showLogs"
+      title="详细日志"
+      @ok="putSpeedLimit"
+      :footer="null"
+      :width="800"
+    >
+      <a-textarea :auto-size="{ minRows: 10 }" v-bind:value="logs.logs[3]" style="margin-bottom: 60px"></a-textarea>
+      <div class="log-btns">
+        <a-button key="prev" @click="showInfoLog({prev: true})">
+          上一页
+        </a-button>
+        <a-button key="next" @click="showInfoLog({next: true})">
+          下一页
+        </a-button>
+        <a-button key="refresh" type="primary" :loading="loading" @click="showInfoLog({refresh: true})">
+          查看最新日志
+        </a-button>
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -131,6 +153,7 @@ import {
   delSyncHistory,
   getSpeedLimit,
   saveSpeedLimit,
+  getLogs
 } from "@/common/service";
 import { message } from "ant-design-vue";
 import { dateFormat } from "@/common/utils";
@@ -201,6 +224,10 @@ export default {
       },
     });
     const visibleSpeedLimit = ref(false);
+    const showLogs = ref(false)
+    const logs = reactive({
+      logs: ['','','','']
+    })
     const speedLimit = reactive({
       speedLimitData: [],
       selectItem: {},
@@ -281,7 +308,36 @@ export default {
       getTableFormCurrent(current, "onChange");
     };
 
-    const showInfoLog = (key) => {};
+    const showInfoLog = (params) => {
+      let fromLine = 1
+      if (params.prev) {
+        if (!logs.endLine || logs.endLine < 11) {
+          return message.warning("已经在第一页")
+        }
+        fromLine = logs.endLine - 10
+      }
+      if (params.next) {
+        if (logs.isEnd) {
+          return message.warning("已经在最后一页")
+        }
+        fromLine = logs.endLine
+      }
+      getLogs({
+        taskID: params.id || logs.id,
+        fromLine: fromLine
+      })
+        .then((res) => {
+          logs.logs = res.logs
+          logs.endLine = res.endLine
+          logs.isEnd = res.isEnd
+          logs.id = res.execID
+          showLogs.value = true
+          message.success("更新日志成功");
+        })
+        .catch((err) => {
+          message.error("更新日志失败");
+        });
+    };
 
     const onConfirmDel = (id) => {
       let tmp, idx;
@@ -356,6 +412,8 @@ export default {
       onConfirmDel,
       speedLimit,
       visibleSpeedLimit,
+      showLogs,
+      logs,
       updateSpeedLimitData,
       putSpeedLimit,
       labelCol: {
@@ -399,6 +457,13 @@ export default {
   }
 }
 
+.log-btns {
+  margin: -40px 0 20px;
+  float: right;
+  >button {
+    margin-left: 10px;
+  }
+}
 </style>
 <style lang="less">
 </style>
