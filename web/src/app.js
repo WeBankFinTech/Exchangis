@@ -1,4 +1,4 @@
-import { pum as pumApi, request as ajax, access, getRouter } from "@fesjs/fes";
+import { pum as pumApi, request as ajax, access as accessInstance, getRouter } from "@fesjs/fes";
 import { message, Modal, ConfigProvider } from "ant-design-vue";
 import zhCN from "ant-design-vue/es/locale/zh_CN";
 import PageLoading from "@/components/PageLoading";
@@ -9,7 +9,7 @@ import { loadAllRegister } from "./register";
 export const beforeRender = {
   loading: <PageLoading />,
   action() {
-    const { setRole } = access;
+    const { setRole } = accessInstance;
     return new Promise((resolve) => {
       setTimeout(() => {
         setRole("admin");
@@ -30,6 +30,7 @@ export function rootContainer(Container) {
   );
 }
 
+// 自定义 axios
 export const request = {
   baseURL: BASE_URL,
   responseDataAdaptor: (data) => {
@@ -43,6 +44,7 @@ export const request = {
   },
 };
 
+// 这里 自定义注册header
 export const layout = {
   customHeader: <UserCenter />,
 };

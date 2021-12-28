@@ -1,87 +1,54 @@
 package com.webank.wedatasphere.exchangis.appconn.service;
 
-import com.webank.wedatasphere.dss.standard.app.structure.StructureIntegrationStandard;
+import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.app.structure.project.*;
-import com.webank.wedatasphere.dss.standard.common.app.AppIntegrationService;
-import com.webank.wedatasphere.dss.standard.common.desc.AppDesc;
-import com.webank.wedatasphere.dss.standard.common.desc.AppInstance;
-import com.webank.wedatasphere.dss.standard.common.service.Operation;
-import com.webank.wedatasphere.exchangis.appconn.operation.ExchangisProjectCreationOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.webank.wedatasphere.exchangis.appconn.config.ExchangisConfig;
+import com.webank.wedatasphere.exchangis.appconn.project.ExchangisProjectCreationOperation;
+import com.webank.wedatasphere.exchangis.appconn.project.ExchangisProjectDeletionOperation;
+import com.webank.wedatasphere.exchangis.appconn.project.ExchangisProjectUpdateOperation;
+import com.webank.wedatasphere.linkis.httpclient.request.HttpAction;
+import com.webank.wedatasphere.linkis.httpclient.response.HttpResult;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-public class ExchangisProjectService implements ProjectService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisProjectService.class);
-
-    private AppInstance appInstance;
-
-    private StructureIntegrationStandard structureIntegrationStandard;
-
-    private AppDesc appDesc;
-
-    private Map<Class<? extends Operation>, Operation<?, ?>> operationMap = new ConcurrentHashMap<>();
-
-    public void setAppDesc(AppDesc appDesc) {
-        this.appDesc = appDesc;
+public class ExchangisProjectService extends ProjectService {
+    @Override
+    public boolean isCooperationSupported() {
+        return true;
     }
 
-    public AppDesc getAppDesc() {
-        return this.appDesc;
-    }
-
-    public Operation createOperation(Class<? extends Operation> clazz) {
-        return null;
-    }
-
-    public boolean isOperationExists(Class<? extends Operation> clazz) {
+    @Override
+    public boolean isProjectNameUnique() {
         return false;
     }
 
-    public boolean isOperationNecessary(Class<? extends Operation> clazz) {
-        return false;
+    @Override
+    protected ProjectCreationOperation createProjectCreationOperation() {
+
+        SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation = getSSORequestService().createSSORequestOperation(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        ExchangisProjectCreationOperation exchangisProjectCreationOperation = new ExchangisProjectCreationOperation(ssoRequestOperation,this);
+        exchangisProjectCreationOperation.setStructureService(this);
+        return exchangisProjectCreationOperation;
     }
 
-    public void setSSOService(AppIntegrationService ssoService) {}
+    @Override
+    protected ProjectUpdateOperation createProjectUpdateOperation() {
 
-    public AppIntegrationService getSSOService() {
-        return null;
+        SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation = getSSORequestService().createSSORequestOperation(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        ExchangisProjectUpdateOperation exchangisProjectUpdateOperation = new ExchangisProjectUpdateOperation(ssoRequestOperation,this);
+        exchangisProjectUpdateOperation.setStructureService(this);
+        return exchangisProjectUpdateOperation;
     }
 
-    public void setAppStandard(StructureIntegrationStandard appStandard) {
-        this.structureIntegrationStandard = appStandard;
+    @Override
+    protected ProjectDeletionOperation createProjectDeletionOperation() {
+
+        SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation = getSSORequestService().createSSORequestOperation(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        ExchangisProjectDeletionOperation exchangisProjectDeletionOperation = new ExchangisProjectDeletionOperation(ssoRequestOperation,this);
+        exchangisProjectDeletionOperation.setStructureService(this);
+        return exchangisProjectDeletionOperation;
     }
 
-    public StructureIntegrationStandard getAppStandard() {
-        return this.structureIntegrationStandard;
-    }
-
-    public AppInstance getAppInstance() {
-        return this.appInstance;
-    }
-
-    public void setAppInstance(AppInstance appInstance) {
-        this.appInstance = appInstance;
-    }
-
-    public ProjectCreationOperation createProjectCreationOperation() {
-        if (this.operationMap.containsKey(ExchangisProjectCreationOperation.class))
-            return (ProjectCreationOperation)this.operationMap.get(ExchangisProjectCreationOperation.class);
-        this.operationMap.put(ExchangisProjectCreationOperation.class, new ExchangisProjectCreationOperation(this));
-        return (ProjectCreationOperation)this.operationMap.get(ExchangisProjectCreationOperation.class);
-    }
-
-    public ProjectUpdateOperation createProjectUpdateOperation() {
-        return null;
-    }
-
-    public ProjectDeletionOperation createProjectDeletionOperation() {
-        return null;
-    }
-
-    public ProjectUrlOperation createProjectUrlOperation() {
+    @Override
+    protected ProjectUrlOperation createProjectUrlOperation() {
         return null;
     }
 }

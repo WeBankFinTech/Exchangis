@@ -18,11 +18,16 @@ import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobDataSour
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
+import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
+import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
+import com.webank.wedatasphere.linkis.datasource.client.request.GetInfoByDataSourceIdAction;
+import com.webank.wedatasphere.linkis.httpclient.response.Result;
+import com.webank.wedatasphere.linkis.metadatamanager.common.Json;
+import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AbstractDataSourceService {
     protected final ObjectMapper mapper = new ObjectMapper();
@@ -42,7 +47,8 @@ public class AbstractDataSourceService {
             jobInfoContents = new ArrayList<>();
         } else {
             try {
-                jobInfoContents = this.mapper.readValue(content, new TypeReference<List<ExchangisJobInfoContent>>() {});
+                jobInfoContents = this.mapper.readValue(content, new TypeReference<List<ExchangisJobInfoContent>>() {
+                });
             } catch (JsonProcessingException e) {
                 jobInfoContents = new ArrayList<>();
             }
@@ -51,6 +57,11 @@ public class AbstractDataSourceService {
     }
 
     private ExchangisDataSourceIdsUI buildDataSourceIdsUI(ExchangisJobInfoContent content) {
+        return this.buildDataSourceIdsUI(null, content);
+    }
+
+    private ExchangisDataSourceIdsUI buildDataSourceIdsUI(HttpServletRequest request, ExchangisJobInfoContent content) {
+        String loginUser = Optional.ofNullable(request).isPresent() ? SecurityFilter.getLoginUsername(request) : null;
         ExchangisJobDataSourcesContent dataSources = content.getDataSources();
         if (Objects.isNull(dataSources)) {
             return null;
@@ -69,6 +80,21 @@ public class AbstractDataSourceService {
             ExchangisDataSourceIdUI source = new ExchangisDataSourceIdUI();
             source.setType(split[0]);
             source.setId(split[1]);
+            Optional.ofNullable(loginUser).ifPresent(u -> {
+                Optional.ofNullable(this.context.getExchangisDataSource(split[0])).ifPresent(o -> {
+                    LinkisDataSourceRemoteClient dsClient = o.getDataSourceRemoteClient();
+                    GetInfoByDataSourceIdAction action = GetInfoByDataSourceIdAction.builder()
+                            .setDataSourceId(Long.parseLong(split[1]))
+                            .setUser(u)
+                            .setSystem(split[0])
+                            .build();
+
+                    Result execute = dsClient.execute(action);
+                    String responseBody = execute.getResponseBody();
+                    GetDataSourceInfoResultDTO dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+                    source.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                });
+            });
             source.setDb(split[2]);
             source.setTable(split[3]);
 
@@ -80,6 +106,21 @@ public class AbstractDataSourceService {
             ExchangisDataSourceIdUI sink = new ExchangisDataSourceIdUI();
             sink.setType(split[0]);
             sink.setId(split[1]);
+            Optional.ofNullable(loginUser).ifPresent(u -> {
+                Optional.ofNullable(this.context.getExchangisDataSource(split[0])).ifPresent(o -> {
+                    LinkisDataSourceRemoteClient dsClient = o.getDataSourceRemoteClient();
+                    GetInfoByDataSourceIdAction action = GetInfoByDataSourceIdAction.builder()
+                            .setDataSourceId(Long.parseLong(split[1]))
+                            .setUser(u)
+                            .setSystem(split[0])
+                            .build();
+                    Result execute = dsClient.execute(action);
+                    String responseBody = execute.getResponseBody();
+                    GetDataSourceInfoResultDTO dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+                    sink.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                });
+            });
+
             sink.setDb(split[2]);
             sink.setTable(split[3]);
 
@@ -100,7 +141,7 @@ public class AbstractDataSourceService {
                 String type = source.getType();
                 ExchangisDataSource exchangisSourceDataSource = this.context.getExchangisDataSource(type);
                 if (null != exchangisSourceDataSource) {
-                    sourceParamConfigs = exchangisSourceDataSource.getDataSourceParamConfigs();
+                    sourceParamConfigs = exchangisSourceDataSource.getDataSourceParamConfigs().stream().filter(i -> i.getConfigDirection().equals(content.getEngine() + "-SOURCE")).collect(Collectors.toList());
                 }
             }
 
@@ -109,7 +150,7 @@ public class AbstractDataSourceService {
                 String type = sink.getType();
                 ExchangisDataSource exchangisSinkDataSource = this.context.getExchangisDataSource(type);
                 if (null != exchangisSinkDataSource) {
-                    sinkParamConfigs = exchangisSinkDataSource.getDataSourceParamConfigs();
+                    sinkParamConfigs = exchangisSinkDataSource.getDataSourceParamConfigs().stream().filter(i -> i.getConfigDirection().equals(content.getEngine() + "-SINK")).collect(Collectors.toList());
                 }
             }
         }
@@ -131,15 +172,17 @@ public class AbstractDataSourceService {
         return paramsUI;
     }
 
-    protected ExchangisDataSourceUIViewer buildAllUI(ExchangisJobInfo job, ExchangisJobInfoContent content) {
+    protected ExchangisDataSourceUIViewer buildAllUI(HttpServletRequest request, ExchangisJobInfo job, ExchangisJobInfoContent content) {
         // ----------- 构建 dataSourceIdsUI
-        ExchangisDataSourceIdsUI dataSourceIdsUI = buildDataSourceIdsUI(content);
+        ExchangisDataSourceIdsUI dataSourceIdsUI = buildDataSourceIdsUI(request, content);
 
         // ----------- 构建 dataSourceParamsUI
         ExchangisDataSourceParamsUI paramsUI = buildDataSourceParamsUI(content);
 
         // ----------- 构建 dataSourceTransformsUI
         ExchangisJobTransformsContent transforms = content.getTransforms();
+        transforms.setAddEnable(!("HIVE".equals(dataSourceIdsUI.getSource().getType()) || "HIVE".equals(dataSourceIdsUI.getSink().getType())));
+
 //        ExchangisDataSourceTransformsUI dataSourceTransFormsUI = ExchangisDataSourceUIViewBuilder.getDataSourceTransFormsUI(transforms);
 
         List<ElementUI> jobDataSourceSettingsUI = this.buildJobSettingsUI(job.getEngineType(), content);
@@ -242,6 +285,7 @@ public class AbstractDataSourceService {
         ui.setLabel(config.getUiLabel());
         ui.setValues(values);
         ui.setValue(value);
+        ui.setDefaultValue(config.getDefaultValue());
         ui.setSort(config.getSort());
         ui.setRequired(config.getRequired());
         ui.setUnit(config.getUnit());
@@ -254,9 +298,13 @@ public class AbstractDataSourceService {
         ui.setField(config.getUiField());
         ui.setLabel(config.getUiLabel());
         ui.setValue(value);
+        ui.setDefaultValue(config.getDefaultValue());
         ui.setSort(config.getSort());
         ui.setRequired(config.getRequired());
         ui.setUnit(config.getUnit());
+        ui.setValidateType(config.getValidateType());
+        ui.setValidateRange(config.getValidateRange());
+        ui.setValidateMsg(config.getValidateMsg());
         return ui;
     }
 }

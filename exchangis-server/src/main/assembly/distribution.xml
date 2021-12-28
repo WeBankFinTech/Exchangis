@@ -22,15 +22,14 @@
     <id>exchangis-server</id>
     <formats>
         <format>tar.gz</format>
+<!--        <format>dir</format>-->
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
-    <baseDirectory>exchangis-server</baseDirectory>
-
     <dependencySets>
         <dependencySet>
             <!-- Enable access to all projects in the current multimodule build! <useAllReactorProjects>true</useAllReactorProjects> -->
             <!-- Now, select which projects to include in this module-set. -->
-            <outputDirectory>lib</outputDirectory>
+            <outputDirectory>lib/${project.artifactId}</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveDependencies>true</useTransitiveDependencies>
             <unpack>false</unpack>
@@ -41,15 +40,15 @@
 
     <fileSets>
         <fileSet>
-            <directory>${basedir}/src/main/resources</directory>
-            <includes>
-                <include>*</include>
-            </includes>
-            <fileMode>0777</fileMode>
-            <outputDirectory>config</outputDirectory>
+            <directory>${basedir}/src/main/bin</directory>
+            <fileMode>0755</fileMode>
+            <outputDirectory>bin</outputDirectory>
             <lineEnding>unix</lineEnding>
         </fileSet>
+        <fileSet>
+            <directory>${basedir}/../exchangis-datasource/exchangis-datasource-server/target/exchangis-datasource-server</directory>
+            <fileMode>0755</fileMode>
+            <outputDirectory></outputDirectory>
+        </fileSet>
     </fileSets>
-
 </assembly>
-

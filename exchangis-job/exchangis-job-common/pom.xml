@@ -13,9 +13,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.webank.wedatasphere.linkis</groupId>
-            <artifactId>linkis-mybatis</artifactId>
-            <version>${linkis.version}</version>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-dao</artifactId>
+            <version>1.0.0-RC1</version>
         </dependency>
     </dependencies>
 

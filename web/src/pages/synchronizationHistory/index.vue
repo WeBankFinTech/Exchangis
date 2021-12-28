@@ -2,66 +2,63 @@
   <div class="sync-history-wrap">
     <div class="sh-top">
       <!-- 表单搜索 -->
-      <div class="sh-top-left">
-        <a-form layout="inline" :model="formState">
-          <a-form-item
-            label="作业ID"
-            style="width: 235px; padding-bottom: 10px"
-          >
-            <a-input v-model:value="formState.jobId" placeholder="请输入" />
-          </a-form-item>
 
-          <a-form-item
-            label="任务名称"
-            style="width: 235px; padding-bottom: 10px"
-          >
-            <a-input v-model:value="formState.taskName" placeholder="请输入" />
-          </a-form-item>
+      <a-form :model="formState">
+        <a-row :gutter="24">
+          <a-col :span="8">
+            <a-form-item label="作业ID">
+              <a-input v-model:value="formState.jobId" placeholder="请输入"/>
+            </a-form-item>
+          </a-col>
 
-          <a-form-item
-            label="任务状态"
-            style="width: 235px; padding-bottom: 10px"
-          >
-            <a-select
-              v-model:value="formState.status"
-              placeholder="请选择任务状态"
-            >
-              <a-select-option value="SUCCESS">执行成功</a-select-option>
-              <a-select-option value="FAILED">执行失败</a-select-option>
-              <a-select-option value="RUNNING">运行中</a-select-option>
-            </a-select>
-          </a-form-item>
+          <a-col :span="8">
+            <a-form-item label="任务名称">
+              <a-input
+                v-model:value="formState.taskName"
+                placeholder="请输入"
+              />
+            </a-form-item>
+          </a-col>
 
-          <a-form-item label="触发时间" style="width: 488px">
-            <a-range-picker
-              v-model:value="formState.time"
-              show-time
-              type="date"
-              placeholder="请选择日期"
-              style="width: 100%"
-            />
-          </a-form-item>
+          <a-col :span="8">
+            <a-form-item label="任务状态">
+              <a-select
+                v-model:value="formState.status"
+                placeholder="请选择任务状态"
+              >
+                <a-select-option value="SUCCESS">执行成功</a-select-option>
+                <a-select-option value="FAILED">执行失败</a-select-option>
+                <a-select-option value="RUNNING">运行中</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
 
-          <!-- <a-form-item label="结束时间">
-            <a-date-picker
-              v-model:value="formState.completeTime"
-              show-time
-              type="date"
-              placeholder="请选择日期"
-              style="width: 100%"
-            />
-          </a-form-item> -->
-        </a-form>
-      </div>
-
-      <div class="sh-top-right">
-        <div class="sh-top-search">
-          <a-button type="primary" @click="search">
-            <template #icon><SearchOutlined /></template>
-            查询
-          </a-button>
-        </div>
-      </div>
+        <a-row :gutter="24">
+          <a-col :span="8">
+            <a-form-item label="触发时间">
+              <a-range-picker
+                v-model:value="formState.time"
+                show-time
+                type="date"
+                style="width: 100%"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="8">
+            <a-form-item>
+              <a-button @click="clearData"
+                ><span class="sh-top-txt">重置</span></a-button
+              >
+              <a-button type="primary" @click="search" style="margin-left: 8px"
+                ><span class="sh-top-txt" style="color: #fff"
+                  >查询</span
+                ></a-button
+              >
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
     </div>
 
     <div class="sh-bottom">
@@ -76,23 +73,67 @@
           <template #operation="{ record }">
             <a @click="showInfoLog(record.key)">详细日志</a>
             <a-divider type="vertical" />
-            <a @click="onDelete(record.key)">删除</a>
+            <a-popconfirm
+              title="确定要删除这条历史吗？"
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm="onConfirmDel(record.id)"
+            >
+              <a href="#">删除</a>
+            </a-popconfirm>
             <a-divider type="vertical" />
-            <a @click="dyncSpeedlimit(record.key)">动态限速</a>
+            <a @click="dyncSpeedlimit(record.taskName, record.jobId)"
+              >动态限速</a
+            >
           </template>
         </a-table>
+        <!-- 分页 -->
+        <!--<div class="sh-b-pagination"></div>-->
       </div>
-
-      <!-- 分页 -->
-      <div class="sh-b-pagination"></div>
     </div>
+
+    <!-- 动态限速 弹窗 -->
+    <a-modal
+      v-model:visible="visibleSpeedLimit"
+      title="动态限速"
+      @ok="putSpeedLimit"
+      okText="保存"
+    >
+      <a-form :label-col="labelCol">
+        <!-- 动态组件 -->
+        <a-form-item
+          v-for="item in speedLimit.speedLimitData"
+          :key="item.field"
+          :label="item.label"
+          :name="item.label"
+          class="speed-limit-label"
+        >
+          <dync-render v-bind:param="item" @updateInfo="updateSpeedLimitData" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script>
-import { defineComponent, reactive, toRaw, ref, onMounted } from "vue";
+import {
+  defineComponent,
+  reactive,
+  toRaw,
+  ref,
+  onMounted,
+  defineAsyncComponent,
+} from "vue";
 import { SearchOutlined } from "@ant-design/icons-vue";
-import { getSyncHistory } from "@/common/service";
+import { cloneDeep } from "lodash-es";
+import {
+  getSyncHistory,
+  delSyncHistory,
+  getSpeedLimit,
+  saveSpeedLimit,
+} from "@/common/service";
+import { message } from "ant-design-vue";
+import { dateFormat } from "@/common/utils";
 const columns = [
   {
     title: "ID",
@@ -146,6 +187,9 @@ const columns = [
 export default {
   components: {
     SearchOutlined,
+    dyncRender: defineAsyncComponent(() =>
+      import("../jobManagement/components/dyncRender.vue")
+    ),
   },
   setup() {
     const state = reactive({
@@ -156,22 +200,24 @@ export default {
         time: [],
       },
     });
-
+    const visibleSpeedLimit = ref(false);
+    const speedLimit = reactive({
+      speedLimitData: [],
+      selectItem: {},
+    });
     let pageSize = 10;
     let currentPage = 1;
     let tableData = ref([]);
     let pagination = ref({
       total: 0,
       pageSize: pageSize,
+      showQuickJumper: true,
+      showSizeChanger: true,
+      showTotal: total => `总计 ${total} 条`
     });
-    let pageList = [];
 
     // 根据 current 获取当前页的数据
     const getTableFormCurrent = (current, type) => {
-      if (pageList.indexOf(current) > -1) {
-        return;
-      }
-      pageList.push(current);
       if (
         tableData.value.length == pagination.value.total &&
         pagination.value.total > 0 &&
@@ -180,9 +226,7 @@ export default {
         return;
       if (currentPage == current && type !== "search") return;
 
-      const formData = Object.assign(
-        JSON.parse(JSON.stringify(toRaw(state.formState)))
-      );
+      const formData = cloneDeep(state.formState);
       formData["launchStartTime"] = Date.parse(formData.time[0]) || "";
       formData["launchEndTime"] = Date.parse(formData.time[1]) || "";
       currentPage = current;
@@ -192,11 +236,11 @@ export default {
 
       getSyncHistory(formData)
         .then((res) => {
-          if (res.result.length > 0) {
-            const result = res.result || [];
+          const { result } = res;
+          if (result.length > 0) {
             result.forEach((item) => {
-              item["launchTime"] = formatDate(item["launchTime"]);
-              item["completeTime"] = formatDate(item["completeTime"]);
+              item["launchTime"] = dateFormat(item["launchTime"]);
+              item["completeTime"] = dateFormat(item["completeTime"]);
               switch (item["status"]) {
                 case "SUCCESS":
                   item["status"] = "执行成功";
@@ -225,23 +269,12 @@ export default {
       getTableFormCurrent(1, "search");
     };
 
-    function formatDate(d) {
-      let date = new Date(d);
-      let YY = date.getFullYear() + "-";
-      let MM =
-        (date.getMonth() + 1 < 10
-          ? "0" + (date.getMonth() + 1)
-          : date.getMonth() + 1) + "-";
-      let DD = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-      let hh =
-        (date.getHours() < 10 ? "0" + date.getHours() : date.getHours()) + ":";
-      let mm =
-        (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()) +
-        ":";
-      let ss =
-        date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
-      return YY + MM + DD + " " + hh + mm + ss;
-    }
+    const clearData = () => {
+      state.formState["jobId"] = "";
+      state.formState["taskName"] = "";
+      state.formState["status"] = "";
+      state.formState["time"] = [];
+    };
 
     const onChange = (page) => {
       const { current } = page;
@@ -250,9 +283,61 @@ export default {
 
     const showInfoLog = (key) => {};
 
-    const onDelete = (key) => {};
+    const onConfirmDel = (id) => {
+      let tmp, idx;
+      tableData.value.forEach((item, index) => {
+        if (item.id == id) {
+          tmp = item;
+          idx = index;
+        }
+      });
+      if (tmp) {
+        delSyncHistory(tmp.id)
+          .then((res) => {
+            tableData.value.splice(idx, 1);
+            message.success("删除成功");
+          })
+          .catch((err) => {
+            console.log("delSyncHistory error", err);
+          });
+      }
+    };
 
-    const dyncSpeedlimit = (key) => {};
+    const dyncSpeedlimit = (taskName, jobId) => {
+      visibleSpeedLimit.value = true;
+      speedLimit.selectItem = { taskName, jobId };
+      getSpeedLimit({ taskName, jobId })
+        .then((res) => {
+          res.ui && (speedLimit.speedLimitData = res.ui);
+        })
+        .catch((err) => {
+          console.log("dyncSpeedlimit error", err);
+        });
+    };
+
+    const updateSpeedLimitData = (e) => {
+      const _data = cloneDeep(speedLimit.speedLimitData);
+      _data.forEach((item) => {
+        if (item.key == e.key) {
+          item = e;
+        }
+      });
+      speedLimit.speedLimitData = _data;
+    };
+
+    const putSpeedLimit = () => {
+      const params = toRaw(speedLimit.selectItem);
+      const body = toRaw(speedLimit.speedLimitData);
+      saveSpeedLimit(params, body)
+        .then((res) => {
+          speedLimit.selectItem = {};
+          speedLimit.speedLimitData = [];
+          message.success("保存成功");
+        })
+        .catch((err) => {
+          console.log("saveSpeedLimit error", err);
+        });
+    };
 
     onMounted(() => {
       search();
@@ -261,33 +346,59 @@ export default {
     return {
       ...state,
       search,
+      clearData,
       columns,
       tableData,
       pagination,
       showInfoLog,
-      onDelete,
       dyncSpeedlimit,
       onChange,
+      onConfirmDel,
+      speedLimit,
+      visibleSpeedLimit,
+      updateSpeedLimitData,
+      putSpeedLimit,
+      labelCol: {
+        style: {
+          width: "150px",
+        },
+      },
     };
   },
 };
 </script>
 
 <style lang="less" scoped>
+@import '../../common/content.less';
 .sh-top {
-  display: flex;
-  .sh-top-left {
-    flex: 3;
-    padding: 15px 45px;
-  }
-  .sh-top-right {
-    flex: 1;
-    position: relative;
-    .sh-top-search {
-      position: absolute;
-      right: 30px;
-      bottom: 12px;
-    }
+  height: 136px;
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  border-bottom: 1px solid;
+  border-color: #dee4ec;
+  background-color: #fff;
+  .sh-top-txt {
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.65);
+    text-align: left;
+    line-height: 22px;
+    font-weight: 400;
   }
 }
+.sh-bottom {
+  padding: 24px;
+  background-color: #fff;
+  min-height: calc(100vh - 184px);
+  :deep(.ant-form-item-label > label) {
+    width: 80px;
+    text-align: right;
+    display: inline-block;
+    line-height: 30px;
+  }
+}
+
+</style>
+<style lang="less">
 </style>
