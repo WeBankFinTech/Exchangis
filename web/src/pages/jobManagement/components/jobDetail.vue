@@ -134,7 +134,7 @@
             v-bind:fieldsSink="fieldsSink"
             v-bind:fieldsSource="fieldsSource"
             v-bind:deductions="deductions"
-            v-bind:addEnabled="addEnabled"
+            v-bind:addEnabled="addEnable"
             v-bind:engineType="curTask.engineType"
             @updateFieldMap="updateFieldMap"
           />
@@ -367,7 +367,7 @@ export default {
       fieldsSource: [],
       fieldsSink: [],
       deductions: [],
-      addEnabled: true,
+      addEnable: false,
 
       configModalData: {},
 
@@ -423,6 +423,7 @@ export default {
         if (this.list.length) {
           this.activeIndex = 0;
           this.curTask = this.list[this.activeIndex];
+          this.addEnable = this.curTask.transforms.addEnable
           this.updateSourceInfo(this.curTask);
           // this.updateSinkInfo(this.curTask); 当sink和source都有值的时候,请求的结果是一致的,所以省去一次多余重复请求
         }
@@ -469,9 +470,11 @@ export default {
       if (this.activeIndex === index && this.list.length) {
         this.activeIndex = 0;
         this.curTask = this.list[this.activeIndex];
+        this.addEnable = this.curTask.transforms.addEnable
       } else {
         this.activeIndex = -1;
         this.curTask = null;
+        this.addEnable = false
       }
     },
     cancel() {},
@@ -485,6 +488,7 @@ export default {
     changeCurTask(index) {
       this.activeIndex = index;
       this.curTask = this.list[this.activeIndex];
+      this.addEnable = this.curTask.transforms.addEnable
     },
     addNewTask() {
       let subJobName = randomString(12);
@@ -528,6 +532,7 @@ export default {
         this.$nextTick(() => {
           this.activeIndex = this.jobData.content.subJobs.length - 1;
           this.curTask = this.list[this.activeIndex];
+          this.addEnable = false
           this.deductions = []
         });
       });
@@ -558,6 +563,25 @@ export default {
         engine: this.jobData.engineType,
       };
     },
+    convertDeductions(deductions) {
+      let mapping = [];
+      deductions.forEach((deduction) => {
+        let o = {},
+          source = deduction.source,
+          sink = deduction.sink;
+        o.sink_field_name = sink.name;
+        o.sink_field_type = sink.type;
+        o.sink_field_index = sink.fieldIndex
+        o.sink_field_editable = sink.fieldEditable
+        o.deleteEnable = deduction.deleteEnable
+        o.source_field_name = source.name;
+        o.source_field_type = source.type;
+        o.source_field_index = source.fieldIndex
+        o.source_field_editable = source.fieldEditable
+        mapping.push(o);
+      });
+      return mapping
+    },
     updateSourceInfo(dataSource) {
       /*getFields(source.type, source.id, source.db, source.table).then((res) => {
        this.fieldsSource = res.columns;
@@ -568,9 +592,11 @@ export default {
           this.fieldsSource = res.sourceFields;
           this.fieldsSink = res.sinkFields;
           this.deductions = res.deductions;
-          this.addEnabled = res.addEnabled;
+          this.addEnable = res.addEnable;
           // 不在使用deductions 直接将deductions作为值使用
-          this.curTask.transforms.mapping = res.deductions
+          if (!this.curTask.transforms.mapping || !this.curTask.transforms.mapping.length) {
+            this.curTask.transforms.mapping = this.convertDeductions(res.deductions)
+          }
         });
       }
     },
@@ -584,9 +610,11 @@ export default {
           this.fieldsSource = res.sourceFields;
           this.fieldsSink = res.sinkFields;
           this.deductions = res.deductions;
-          this.addEnabled = res.addEnabled;
+          this.addEnable = res.addEnable;
           // 不在使用deductions 直接将deductions作为值使用
-          this.curTask.transforms.mapping = res.deductions
+          if (!this.curTask.transforms.mapping || !this.curTask.transforms.mapping.length) {
+            this.curTask.transforms.mapping = this.convertDeductions(res.deductions)
+          }
         });
       }
     },
@@ -686,6 +714,7 @@ export default {
           });
         });
         cur.transforms = jobData.transforms;
+        cur.transforms.addEnable = this.addEnable
         cur.settings = [];
         if (jobData.settings && jobData.settings.length) {
           jobData.settings.forEach((setting) => {

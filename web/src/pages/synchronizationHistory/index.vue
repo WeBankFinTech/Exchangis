@@ -239,8 +239,8 @@ export default {
           const { result } = res;
           if (result.length > 0) {
             result.forEach((item) => {
-              item["launchTime"] = dateFormat(item["launchTime"]);
-              item["completeTime"] = dateFormat(item["completeTime"]);
+              item["launchTime"] = item["launchTime"] ? dateFormat(item["launchTime"]) : '';
+              item["completeTime"] = item["completeTime"] ? dateFormat(item["completeTime"]): '';
               switch (item["status"]) {
                 case "SUCCESS":
                   item["status"] = "执行成功";
