@@ -124,6 +124,7 @@
               >
                 <template #fieldName="{ record }">
                   <a-select
+                    :disabled="!record.fieldEditable"
                     ref="select"
                     :value="record.fieldName"
                     style="width: 150px"
@@ -225,17 +226,21 @@ export default defineComponent({
           if (sink.key == key) {
             o.sink_field_name = sink.fieldName;
             o.sink_field_type = sink.fieldType;
+            o.sink_field_index = sink.fieldIndex
+            o.sink_field_editable = sink.fieldEditable
           }
         });
         transformerList.forEach((tf) => {
           if (tf.key == key) {
             o.validator = tf.validator;
             o.transformer = tf.transformer;
-            o.deleteEnable = tf.deleteEnable;
+            o.deleteEnable = tf.deleteEnable
           }
         });
         o.source_field_name = source.fieldName;
         o.source_field_type = source.fieldType;
+        o.source_field_index = source.fieldIndex
+        o.source_field_editable = source.fieldEditable
         mapping.push(o);
       });
       const { type, sql } = props.fmData;
@@ -293,11 +298,15 @@ export default defineComponent({
             sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
             sourceItem.fieldType =
               item.source_field_type && item.source_field_type;
+            sourceItem.fieldIndex = item.source_field_index
+            sourceItem.fieldEditable = item.source_field_editable
 
             sinkItem.key = idx + "";
             sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
             sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
             sinkItem.fieldType = item.sink_field_type && item.sink_field_type;
+            sinkItem.fieldIndex = item.sink_field_index
+            sinkItem.fieldEditable = item.sink_field_editable
 
             transformerItem.key = idx + "";
             transformerItem.validator = item.validator && item.validator;
@@ -316,11 +325,15 @@ export default defineComponent({
             sourceItem.fieldName = item.source.name;
             sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
             sourceItem.fieldType = item.source.type;
+            sourceItem.fieldIndex = item.source.fieldIndex
+            sourceItem.fieldEditable = item.source.fieldEditable
 
             sinkItem.key = idx + "";
             sinkItem.fieldName = item.sink.name;
             sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
             sinkItem.fieldType = item.sink.type;
+            sinkItem.fieldIndex = item.sink.fieldIndex
+            sinkItem.fieldEditable = item.sink.fieldEditable
 
             transformerItem.key = idx + "";
             transformerItem.validator = [];
@@ -411,11 +424,13 @@ export default defineComponent({
       sourceItem.fieldName = "";
       sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
       sourceItem.fieldType = "";
+      sourceItem.fieldEditable = true
 
       sinkItem.key = sinkLen + "";
       sinkItem.fieldName = "";
       sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
       sinkItem.fieldType = "";
+      sinkItem.fieldEditable = true
 
       transformerItem.key = tfLen + "";
       transformerItem.validator = [];

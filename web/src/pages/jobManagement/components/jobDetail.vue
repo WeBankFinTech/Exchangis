@@ -134,7 +134,7 @@
             v-bind:fieldsSink="fieldsSink"
             v-bind:fieldsSource="fieldsSource"
             v-bind:deductions="deductions"
-            v-bind:addEnabled="addEnabled"
+            v-bind:addEnabled="addEnable"
             v-bind:engineType="curTask.engineType"
             @updateFieldMap="updateFieldMap"
           />
@@ -215,6 +215,27 @@
       </div>
     </div>
 
+    <!-- 执行日志  jd-bottom -->
+    <div class="jd-bottom" v-show="visibleLog">
+      <div class="jd-bottom-top" >
+        <span>执行日志</span>
+        <CloseOutlined
+          style="
+            color: rgba(0, 0, 0, 0.45);
+            font-size: 12px;
+            position: absolute;
+            right: 24px;
+            top: 18px;
+            cursor: pointer;
+          "
+          @click="onCloseLog"
+        />
+      </div>
+      <div class="jd-bottom-content log-bottom-content">
+        <a-textarea :auto-size="{ minRows: 10, maxRows: 10 }" v-bind:value="logs.logs[3]"></a-textarea>
+      </div>
+    </div>
+
     <config-modal
       v-model:visible="modalCfg.visible"
       :id="modalCfg.id"
@@ -255,6 +276,7 @@ import {
   updateTaskConfiguration,
   getSyncHistory,
   executeJob,
+  getLogs
 } from "@/common/service";
 import { message, notification } from "ant-design-vue";
 import { randomString } from "../../../common/utils";
@@ -367,11 +389,12 @@ export default {
       fieldsSource: [],
       fieldsSink: [],
       deductions: [],
-      addEnabled: true,
+      addEnable: false,
 
       configModalData: {},
 
       visibleDrawer: false,
+      visibleLog: false,
       pageSize: 10,
       currentPage: 1,
       ehColumns: ehColumns,
@@ -381,7 +404,12 @@ export default {
         pageSize: 10,
       },
       t,
-      spinning: false
+      spinning: false,
+      logs: {
+        logs: ['', '', '', '']
+      },
+      executeId: '',
+      showLogTimer: null
     };
   },
   props: {
@@ -423,6 +451,7 @@ export default {
         if (this.list.length) {
           this.activeIndex = 0;
           this.curTask = this.list[this.activeIndex];
+          this.addEnable = this.curTask.transforms.addEnable
           this.updateSourceInfo(this.curTask);
           // this.updateSinkInfo(this.curTask); 当sink和source都有值的时候,请求的结果是一致的,所以省去一次多余重复请求
         }
@@ -469,9 +498,11 @@ export default {
       if (this.activeIndex === index && this.list.length) {
         this.activeIndex = 0;
         this.curTask = this.list[this.activeIndex];
+        this.addEnable = this.curTask.transforms.addEnable
       } else {
         this.activeIndex = -1;
         this.curTask = null;
+        this.addEnable = false
       }
     },
     cancel() {},
@@ -485,6 +516,7 @@ export default {
     changeCurTask(index) {
       this.activeIndex = index;
       this.curTask = this.list[this.activeIndex];
+      this.addEnable = this.curTask.transforms.addEnable
     },
     addNewTask() {
       let subJobName = randomString(12);
@@ -528,6 +560,7 @@ export default {
         this.$nextTick(() => {
           this.activeIndex = this.jobData.content.subJobs.length - 1;
           this.curTask = this.list[this.activeIndex];
+          this.addEnable = false
           this.deductions = []
         });
       });
@@ -558,6 +591,25 @@ export default {
         engine: this.jobData.engineType,
       };
     },
+    convertDeductions(deductions) {
+      let mapping = [];
+      deductions.forEach((deduction) => {
+        let o = {},
+          source = deduction.source,
+          sink = deduction.sink;
+        o.sink_field_name = sink.name;
+        o.sink_field_type = sink.type;
+        o.sink_field_index = sink.fieldIndex
+        o.sink_field_editable = sink.fieldEditable
+        o.deleteEnable = deduction.deleteEnable
+        o.source_field_name = source.name;
+        o.source_field_type = source.type;
+        o.source_field_index = source.fieldIndex
+        o.source_field_editable = source.fieldEditable
+        mapping.push(o);
+      });
+      return mapping
+    },
     updateSourceInfo(dataSource) {
       /*getFields(source.type, source.id, source.db, source.table).then((res) => {
        this.fieldsSource = res.columns;
@@ -568,9 +620,11 @@ export default {
           this.fieldsSource = res.sourceFields;
           this.fieldsSink = res.sinkFields;
           this.deductions = res.deductions;
-          this.addEnabled = res.addEnabled;
+          this.addEnable = res.addEnable;
           // 不在使用deductions 直接将deductions作为值使用
-          this.curTask.transforms.mapping = res.deductions
+          if (!this.curTask.transforms.mapping || !this.curTask.transforms.mapping.length) {
+            this.curTask.transforms.mapping = this.convertDeductions(res.deductions)
+          }
         });
       }
     },
@@ -584,9 +638,11 @@ export default {
           this.fieldsSource = res.sourceFields;
           this.fieldsSink = res.sinkFields;
           this.deductions = res.deductions;
-          this.addEnabled = res.addEnabled;
+          this.addEnable = res.addEnable;
           // 不在使用deductions 直接将deductions作为值使用
-          this.curTask.transforms.mapping = res.deductions
+          if (!this.curTask.transforms.mapping || !this.curTask.transforms.mapping.length) {
+            this.curTask.transforms.mapping = this.convertDeductions(res.deductions)
+          }
         });
       }
     },
@@ -686,6 +742,7 @@ export default {
           });
         });
         cur.transforms = jobData.transforms;
+        cur.transforms.addEnable = this.addEnable
         cur.settings = [];
         if (jobData.settings && jobData.settings.length) {
           jobData.settings.forEach((setting) => {
@@ -705,18 +762,51 @@ export default {
         message.success("保存成功");
       });
     },
+    showInfoLog() {
+      const pageSize = this.logs.endLine ?  this.logs.endLine + 10 : 10
+      if (this.logs.isEnd) {
+        clearInterval(this.showLogTimer)
+        return message.warning("已经在最后一页")
+      }
+      getLogs({
+        taskID: this.executeId || this.logs.id,
+        fromLine: 1,
+        pageSize: pageSize
+      })
+        .then((res) => {
+          this.logs.logs = res.logs
+          this.logs.endLine = res.endLine
+          this.logs.isEnd = res.isEnd
+          this.logs.id = res.execID
+          message.success("更新日志成功");
+          this.$nextTick(() => {
+            const textarea = document.querySelector('.log-bottom-content textarea');
+            textarea.scrollTop = textarea.scrollHeight;
+          })
+        })
+        .catch((err) => {
+          message.error("更新日志失败");
+        });
+    },
     // 执行任务
     executeTask() {
       const { id } = this.curTab;
       this.spinning = true
       executeJob(id)
         .then((res) => {
+          if (res.tasks && res.tasks.length > this.activeIndex) {
+            this.executeId = res.tasks[this.activeIndex].id
+          }
           this.spinning = false
-          message.info("执行成功");
+          message.success("开始执行");
+          this.visibleLog = true
+          this.showLogTimer = setInterval(() => {
+            this.showInfoLog()
+          }, 1000*10)
         })
         .catch((err) => {
           this.spinning = false
-          console.log("executeTask error", err);
+          message.error("执行失败");
         });
     },
     executeHistory() {
@@ -771,6 +861,9 @@ export default {
     onCloseDrawer() {
       this.visibleDrawer = false;
     },
+    onCloseLog() {
+      this.visibleLog = false;
+    }
   },
 };
 </script>
