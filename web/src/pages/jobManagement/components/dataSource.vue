@@ -1,7 +1,7 @@
 <template>
   <div class="data-source-warp">
     <!-- left -->
-    <div class="ds-l">
+    <!-- <div class="ds-l">
       <div class="main-header">
         <img src="../../../images/jobDetail/u2664.png" />
         <img
@@ -16,32 +16,36 @@
         />
         <span class="main-header-label" @click="showInfo">数据源</span>
       </div>
-    </div>
+    </div> -->
     <!-- right -->
     <div class="ds-r">
-      <div class="main-header">
-        <div>
+      <div class="main-header" @click="showInfo">
+        <span style="margin-right: 8px; color: rgba(0, 0, 0, 0.45)">
+          <RightOutlined v-if="!isFold" />
+          <DownOutlined v-else />
+        </span>
+        <span>数据源</span>
+        <!-- <div>
           <span class="main-header-label">数据来源</span>
         </div>
         <div>
           <span class="main-header-label">数据目的</span>
-        </div>
+        </div> -->
       </div>
 
-      <div class="main-content" v-show="isFlod">
+      <div class="main-content" v-show="isFold">
         <!-- left -->
         <div class="data-source-warp-l">
           <div class="data-source-warp-l-content">
-            <a-form ref="formRef">
-              <a-form-item
-                label="数据源信息"
-                name="dsInfo"
-                width="300"
-                class="source-title"
-              >
+            <a-form
+              ref="formRef"
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol"
+            >
+              <a-form-item name="dsInfo">
                 <SelectDataSource
                   @updateDsInfo="updateSourceInfo"
-                  v-bind:title="sourceTitle"
+                  :title="sourceTitle"
                 />
               </a-form-item>
               <!-- 动态组件 -->
@@ -50,13 +54,14 @@
                 :key="item.field"
                 :label="item.label"
                 :name="item.label"
-                :rules="{
-                  trigger: 'change',
-                }"
+                :help="sourcesHelpMsg[item.key.split('.').pop()]"
+                :validate-status="sourcesHelpStatus[item.key.split('.').pop()]"
+                :required="item.required"
               >
                 <dync-render
                   v-bind:param="item"
                   @updateInfo="updateSourceParams"
+                  :style="styleObject"
                 />
               </a-form-item>
             </a-form>
@@ -64,23 +69,29 @@
         </div>
 
         <!-- mid -->
+
         <div class="data-source-warp-mid">
-          <RightCircleOutlined style="font-size: 50px; color: #66f" />
+          <span
+            class="iconfont icon-jiantou"
+            style="color: #99b0d0; font-size: 24px"
+          ></span>
         </div>
 
         <!-- right -->
+
         <div class="data-source-warp-r">
           <div class="data-source-warp-r-content">
-            <a-form ref="formRef">
-              <a-form-item
-                ref="dsInfo2"
-                label="数据源信息"
-                name="dsInfo2"
-                class="source-title"
-              >
+            <a-form
+              ref="formRef"
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol"
+              v-if="sourceTitle !== '请点击后选择'"
+            >
+              <a-form-item name="dsInfo2">
                 <SelectDataSource
                   @updateDsInfo="updateSinkInfo"
                   :title="sinkTitle"
+                  :style="styleObject"
                 />
               </a-form-item>
               <!-- 动态组件 -->
@@ -89,10 +100,14 @@
                 :key="item.field"
                 :label="item.label"
                 :name="item.label"
+                :help="sinksHelpMsg[item.key.split('.').pop()]"
+                :validate-status="sinksHelpStatus[item.key.split('.').pop()]"
+                :required="item.required"
               >
                 <dync-render
                   v-bind:param="item"
                   @updateInfo="updateSinkParams"
+                  :style="styleObject"
                 />
               </a-form-item>
             </a-form>
@@ -104,15 +119,28 @@
 </template>
 
 <script>
-import { RightCircleOutlined } from "@ant-design/icons-vue";
-import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
-import SelectDataSource from "./selectDataSource";
-import DyncRender from "./dyncRender.vue";
+import {
+  RightCircleOutlined,
+  DownOutlined,
+  RightOutlined,
+  ArrowRightOutlined,
+} from "@ant-design/icons-vue";
+import {
+  defineComponent,
+  ref,
+  reactive,
+  toRaw,
+  watch,
+  computed,
+  defineAsyncComponent,
+} from "vue";
 import { getSourceParams, getSettingsParams } from "@/common/service";
+import { message, notification } from "ant-design-vue";
 
 export default defineComponent({
   props: {
     dsData: Object,
+    engineType: String,
   },
   emits: [
     "updateSourceInfo",
@@ -121,21 +149,28 @@ export default defineComponent({
     "updateSinkParams",
   ],
   components: {
-    SelectDataSource,
-    DyncRender,
+    SelectDataSource: defineAsyncComponent(() =>
+      import("./selectDataSource.vue")
+    ),
+    DyncRender: defineAsyncComponent(() => import("./dyncRender.vue")),
     RightCircleOutlined,
+    RightOutlined,
+    DownOutlined,
+    ArrowRightOutlined,
   },
   setup(props, context) {
     // 对象转标题
     const objToTitle = function (obj) {
       if (typeof obj !== "object") return "";
-      const { type, db, table } = obj;
-      return `${type}-数据源-${db}.${table}`;
+      const { type, db, table, ds } = obj;
+      if (!type && !db && !table && !ds) return "请点击后选择";
+      return [type, ds, db, table];
     };
 
     let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source));
     let sinkTitle = ref(objToTitle(props.dsData.dataSourceIds.sink));
-    let isFlod = ref(true);
+    let isFold = ref(true);
+
     const dataSource = reactive({
       dataSourceIds: {
         source: props.dsData.dataSourceIds.source || {},
@@ -145,6 +180,24 @@ export default defineComponent({
         sources: props.dsData.params.sources || [],
         sinks: props.dsData.params.sinks || [],
       },
+    });
+
+    const sourcesHelpMsg = reactive({});
+    const sourcesHelpStatus = reactive({});
+
+    const sinksHelpMsg = reactive({});
+    const sinksHelpStatus = reactive({});
+
+    dataSource["params"]["sources"].forEach((item) => {
+      let key = item.key.split(".").pop();
+      sourcesHelpMsg[key] = "";
+      sourcesHelpStatus[key] = "success";
+    });
+
+    dataSource["params"]["sinks"].forEach((item) => {
+      let key = item.key.split(".").pop();
+      sinksHelpMsg[key] = "";
+      sinksHelpStatus[key] = "success";
     });
 
     const newProps = computed(() => JSON.parse(JSON.stringify(props.dsData)));
@@ -165,40 +218,167 @@ export default defineComponent({
     const formRef = ref();
     const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
+      if (dataSource.dataSourceIds.sink.type === info[0] && props.engineType === 'SQOOP') {
+        sourceTitle.value = objToTitle({
+          type: info[0],
+          id: "",
+          db: "",
+          table: "",
+          ds: "",
+        });
+        return message.error("SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择");
+      }
       dataSource.dataSourceIds.source.type = info[0];
-      dataSource.dataSourceIds.source.db = info[1];
-      dataSource.dataSourceIds.source.table = info[2];
+      dataSource.dataSourceIds.source.ds = info[1];
+      dataSource.dataSourceIds.source.db = info[2];
+      dataSource.dataSourceIds.source.table = info[3];
       dataSource.dataSourceIds.source.id = id;
 
-      getSourceParams(dataSource.dataSourceIds.source.type).then((res) => {
+      getSourceParams(
+        props.engineType,
+        dataSource.dataSourceIds.source.type,
+        "source"
+      ).then((res) => {
+        res.uis.forEach((ui) => {
+          if (!ui.value && ui.defaultValue) {
+            ui.value = ui.defaultValue;
+          }
+        });
         dataSource.params.sources = res.uis || [];
         context.emit("updateSourceInfo", dataSource);
       });
     };
     const updateSinkInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
+      if (dataSource.dataSourceIds.source.type === info[0] && props.engineType === 'SQOOP') {
+        sinkTitle.value = objToTitle({
+          type: info[0],
+          id: "",
+          db: "",
+          table: "",
+          ds: "",
+        });
+        return message.error("SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择");
+      }
       dataSource.dataSourceIds.sink.type = info[0];
-      dataSource.dataSourceIds.sink.db = info[1];
-      dataSource.dataSourceIds.sink.table = info[2];
+      dataSource.dataSourceIds.sink.ds = info[1];
+      dataSource.dataSourceIds.sink.db = info[2];
+      dataSource.dataSourceIds.sink.table = info[3];
       dataSource.dataSourceIds.sink.id = id;
 
-      getSourceParams(dataSource.dataSourceIds.sink.type).then((res) => {
+      getSourceParams(
+        props.engineType,
+        dataSource.dataSourceIds.sink.type,
+        "sink"
+      ).then((res) => {
+        res.uis.forEach((ui) => {
+          if (!ui.value && ui.defaultValue) {
+            ui.value = ui.defaultValue;
+          }
+        });
         dataSource.params.sinks = res.uis || [];
         context.emit("updateSinkInfo", dataSource);
       });
     };
     const updateSourceParams = (info) => {
       const _sourceParams = dataSource.params.sources.slice(0);
+      let _key = info.key.split(".").pop();
+      if (info.required && !info.value) {
+        sourcesHelpMsg[_key] = `请输入${info.label}`;
+        sourcesHelpStatus[_key] = "error";
+      } else if (info.validateType === "REGEX") {
+        const num_reg = new RegExp(`${info.validateRange}`);
+        if (!num_reg.test(info.value)) {
+          sourcesHelpMsg[info.key] = info.validateMsg;
+          sourcesHelpStatus[info.key] = "error";
+        } else {
+          sourcesHelpMsg[info.key] = "";
+          sourcesHelpStatus[info.key] = "success";
+        }
+      } else {
+        sourcesHelpMsg[_key] = "";
+        sourcesHelpStatus[_key] = "success";
+      }
+      /*switch (_key) {
+        case "batch_size":
+          if (!/^[1-9]*$/.test(info.value)) {
+            sourcesHelpMsg[_key] = "请正确输入批量大小";
+            sourcesHelpStatus[_key] = "error";
+          } else {
+            sourcesHelpMsg[_key] = "";
+            sourcesHelpStatus[_key] = "success";
+          }
+          break;
+        case "percentage":
+          if (_key == "percentage") {
+            if (!/^[0-9]*$/.test(info.value)) {
+              sourcesHelpMsg[_key] = "请正确输入脏数据占比阈值";
+              sourcesHelpStatus[_key] = "error";
+            } else {
+              sourcesHelpMsg[_key] = "";
+              sourcesHelpStatus[_key] = "success";
+            }
+          }
+          break;
+      }*/
+
       _sourceParams.forEach((item) => {
         if (item.field === info.field) {
           return (item.value = info.value);
         }
       });
+
       dataSource.params.sources = _sourceParams;
       context.emit("updateSourceParams", dataSource);
     };
     const updateSinkParams = (info) => {
       const _sinkParams = dataSource.params.sinks.slice(0);
+      let _key = info.key.split(".").pop();
+      if (info.required && !info.value) {
+        sinksHelpMsg[_key] = `请输入${info.label}`;
+        sinksHelpStatus[_key] = "error";
+      } else if (info.validateType === "REGEX") {
+        const num_reg = new RegExp(`${info.validateRange}`);
+        if (!num_reg.test(info.value)) {
+          sinksHelpMsg[info.key] = `请正确输入${info.label}`;
+          sinksHelpStatus[info.key] = "error";
+        } else {
+          sinksHelpMsg[info.key] = "";
+          sinksHelpStatus[info.key] = "success";
+        }
+      } else {
+        sinksHelpMsg[_key] = "";
+        sinksHelpStatus[_key] = "success";
+      }
+      /*if (!info.value) {
+        sinksHelpMsg[_key] = `请正确输入${info.label}`;
+        sinksHelpStatus[_key] = "error";
+      } else {
+        sinksHelpMsg[_key] = "";
+        sinksHelpStatus[_key] = "success";
+      }
+      switch (_key) {
+        case "batch_size":
+          if (!/^[0-9]*$/.test(info.value)) {
+            sinksHelpMsg[_key] = "请正确输入批量大小";
+            sinksHelpStatus[_key] = "error";
+          } else {
+            sinksHelpMsg[_key] = "";
+            sinksHelpStatus[_key] = "success";
+          }
+          break;
+        case "percentage":
+          if (_key == "percentage") {
+            if (!/^[0-9]*$/.test(info.value)) {
+              sinksHelpMsg[_key] = "请正确输入脏数据占比阈值";
+              sinksHelpStatus[_key] = "error";
+            } else {
+              sinksHelpMsg[_key] = "";
+              sinksHelpStatus[_key] = "success";
+            }
+          }
+          break;
+      }*/
       _sinkParams.forEach((item) => {
         if (item.field === info.field) {
           return (item.value = info.value);
@@ -208,7 +388,7 @@ export default defineComponent({
       context.emit("updateSinkParams", dataSource);
     };
     const showInfo = () => {
-      isFlod.value = !isFlod.value;
+      isFold.value = !isFold.value;
     };
     return {
       formRef,
@@ -220,7 +400,29 @@ export default defineComponent({
       updateSourceParams,
       updateSinkParams,
       showInfo,
-      isFlod,
+      isFold,
+
+      sourcesHelpMsg,
+      sourcesHelpStatus,
+      sinksHelpMsg,
+      sinksHelpStatus,
+
+      labelCol: {
+        style: {
+          style: {
+            width: "417px",
+            "text-align": "left",
+          },
+        },
+      },
+      wrapperCol: {
+        style: {
+          "text-align": "left",
+        },
+      },
+      styleObject: {
+        width: "400px",
+      },
     };
   },
   watch: {},
@@ -229,44 +431,13 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .data-source-warp {
-  width: 1100px;
   display: flex;
-  margin-top: 15px;
+  padding: 24px;
 }
 .ds-l {
   width: 122px;
   .main-header {
-    height: 33px;
-    background: inherit;
-    border: none;
-    display: flex;
-    border-top-left-radius: 100%;
-    border-bottom-left-radius: 100%;
-    background-color: #6b6b6b;
-    position: relative;
-    /*&::before {
-      content: "";
-      position: absolute;
-      width: 16px;
-      height: 33px;
-      background-color: #66f;
-      border-top-right-radius: 16px;
-      border-bottom-right-radius: 16px;
-      right: 962px;
-    }*/
-    :nth-of-type(1) {
-      text-align: center;
-      line-height: 33px;
-      font-size: 16px;
-    }
-    .main-header-label {
-      font-family: "Arial Negreta", "Arial Normal", "Arial";
-      font-weight: 700;
-      font-style: normal;
-      color: #ffffff;
-      position: absolute;
-      left: 46px;
-    }
+    height: 20px;
   }
 }
 .ds-r {
@@ -278,28 +449,18 @@ export default defineComponent({
   border-top: none;
   flex-direction: column;
   .main-header {
-    height: 33px;
-    background: inherit;
-    background-color: rgba(107, 107, 107, 1);
-    border: none;
-    display: flex;
-    > div {
-      flex: 1;
-      text-align: center;
-      line-height: 33px;
-    }
-    .main-header-label {
-      font-family: "Arial Negreta", "Arial Normal", "Arial";
-      font-weight: 700;
-      font-style: normal;
-      color: #ffffff;
-    }
+    height: 20px;
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
   }
   .main-content {
-    border: 1px solid rgba(102, 102, 255, 1);
-    border-top: none;
-    padding: 25px 30px;
     display: flex;
+    padding: 24px;
+    padding-bottom: 0px;
+    min-width: 960px;
+    max-width: 960px;
   }
 }
 .data-source-warp-l {
@@ -314,10 +475,10 @@ export default defineComponent({
   flex: 1;
 }
 .data-source-warp-mid {
-  width: 172px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 74px;
+  height: 46px;
+  line-height: 46px;
+  text-align: center;
 }
 .data-source-label {
   font-size: 14px;

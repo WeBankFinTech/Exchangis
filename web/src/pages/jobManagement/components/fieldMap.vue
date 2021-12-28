@@ -1,7 +1,7 @@
 <template>
   <div class="field-map-wrap">
     <!-- left -->
-    <div class="fm-l">
+    <!-- <div class="fm-l">
       <div class="main-header">
         <img src="../../../images/jobDetail/u2664.png" />
         <img
@@ -16,22 +16,34 @@
         />
         <span class="main-header-label" @click="showInfo">字段映射</span>
       </div>
-    </div>
+    </div> -->
     <!-- right -->
     <div class="fm-r">
-      <div class="main-header">
+      <!-- <div class="main-header">
         <div>
           <span class="main-header-label">来源字段</span>
         </div>
         <div>
           <span class="main-header-label">目的字段</span>
         </div>
+      </div> -->
+
+      <div class="main-header" @click="showInfo">
+        <span style="margin-right: 8px; color: rgba(0, 0, 0, 0.45)">
+          <RightOutlined v-if="!isFold"/>
+          <DownOutlined v-else/>
+        </span>
+        <span>字段映射</span>
       </div>
 
-      <div class="main-content" v-show="isFold">
+      <div
+        class="main-content"
+        v-show="isFold"
+        :class="{ 'text-danger': !fieldsSource.length && !fieldsSink.length }"
+      >
         <div
           style="margin-bottom: 15px"
-          v-if="fieldsSource.length && fieldsSink.length"
+          v-if="fieldsSource.length && fieldsSink.length && addEnabled"
         >
           <a-button type="dashed" @click="addTableRow">新增</a-button>
         </div>
@@ -41,10 +53,11 @@
             <div class="filed-map-wrap-l-content">
               <a-table
                 :dataSource="fieldMap.sourceDS"
-                :columns="columns"
-                size="small"
+                :columns="columns1"
+                size="large"
                 :pagination="false"
                 v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
+                bordered
               >
                 <template #fieldName="{ record }">
                   <a-select
@@ -70,12 +83,32 @@
 
           <!-- mid -->
           <div class="field-map-wrap-mid">
-            <template v-for="item in fieldMap.transformerList" :key="item.key">
-              <Transformer
-                v-bind:tfData="item"
-                @updateTransformer="updateTransformer"
-              />
-            </template>
+            <div>
+              <template
+                v-for="(item, index) in fieldMap.transformerList"
+                :key="item.key"
+              >
+                <div
+                  style="
+                    position: relative;
+                    height: 66px;
+                    float: left;
+                    width: 200px;
+                  "
+                >
+                  <Transformer
+                    v-if="engineType === 'DATAX'"
+                    v-bind:tfData="item"
+                    @updateTransformer="updateTransformer"
+                  />
+                  <DeleteOutlined
+                    v-if="item.deleteEnable"
+                    @click="deleteField(index)"
+                    style="position: absolute; right: 0; top: 23px; color:#1890ff;"
+                  />
+                </div>
+              </template>
+            </div>
           </div>
 
           <!-- right -->
@@ -83,10 +116,11 @@
             <div class="field-map-wrap-r-content">
               <a-table
                 :dataSource="fieldMap.sinkDS"
-                :columns="columns"
-                size="small"
+                :columns="columns2"
+                size="large"
                 :pagination="false"
                 v-if="type === 'MAPPING' && fieldMap.sinkDS.length > 0"
+                bordered
               >
                 <template #fieldName="{ record }">
                   <a-select
@@ -116,19 +150,33 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
+import {
+  defineComponent,
+  ref,
+  reactive,
+  toRaw,
+  watch,
+  computed,
+  defineAsyncComponent,
+} from "vue";
 import { cloneDeep } from "lodash-es";
-import Transformer from "./transformer.vue";
-import { fieldInfo } from "../mock";
+import { DeleteOutlined, RightOutlined,DownOutlined } from "@ant-design/icons-vue";
+
 export default defineComponent({
   props: {
     fmData: Object,
     fieldsSource: Array,
     fieldsSink: Array,
+    deductions: Array,
+    addEnabled: Boolean,
+    engineType: String,
   },
   emits: ["updateFieldMap"],
   components: {
-    Transformer,
+    Transformer: defineAsyncComponent(() => import("./transformer.vue")),
+    DeleteOutlined,
+    RightOutlined,
+    DownOutlined
   },
   setup(props, context) {
     const { type } = props.fmData;
@@ -141,9 +189,16 @@ export default defineComponent({
 
     const newProps = computed(() => JSON.parse(JSON.stringify(props.fmData)));
     watch(newProps, (val, oldVal) => {
-      console.log("watch newProps in fieldMap", val, oldVal);
       const newVal = typeof val === "string" ? JSON.parse(val) : val;
       createDataSource(toRaw(newVal).mapping || []);
+    });
+
+    const deductionsArray = computed(() =>
+      JSON.parse(JSON.stringify(props.deductions))
+    );
+    watch(deductionsArray, (val, oldVal) => {
+      if (val && val.length)
+        createDataSource(toRaw(props.fmData.mapping) || []);
     });
 
     const createFieldOptions = (fieldInfo) => {
@@ -151,7 +206,7 @@ export default defineComponent({
       if (fieldInfo) {
         const fieldList = toRaw(fieldInfo);
         fieldList.forEach((info) => {
-          const o = Object.create(null);
+          const o = {};
           o.value = info.name;
           o.label = info.name;
           o.type = info.type;
@@ -161,47 +216,10 @@ export default defineComponent({
       return fieldOptions;
     };
 
-    // crate dataSource
-    const createDataSource = (map) => {
-      fieldMap.sourceDS = [];
-      fieldMap.sinkDS = [];
-      fieldMap.transformerList = [];
-      if (typeof map !== "object") {
-        return;
-      }
-
-      map.forEach((item, idx) => {
-        let sourceItem = Object.create(null);
-        let sinkItem = Object.create(null);
-        let transformerItem = Object.create(null);
-
-        sourceItem.key = idx + "";
-        sourceItem.fieldName = item.source_field_name && item.source_field_name;
-        sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
-        sourceItem.fieldType = item.source_field_type && item.source_field_type;
-
-        sinkItem.key = idx + "";
-        sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
-        sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
-        sinkItem.fieldType = item.sink_field_type && item.sink_field_type;
-
-        transformerItem.key = idx + "";
-        transformerItem.validator = item.validator && item.validator;
-        transformerItem.transformer = item.transformer && item.transformer;
-
-        fieldMap.transformerList.push(transformerItem);
-        fieldMap.sourceDS.push(sourceItem);
-        fieldMap.sinkDS.push(sinkItem);
-      });
-    };
-    createDataSource(toRaw(props.fmData).mapping || []);
-
-    console.log("sourceDS", fieldMap);
-
     const createTransforms = (sourceDS, sinkDS, transformerList) => {
       const mapping = [];
       sourceDS.forEach((source) => {
-        let o = Object.create(null);
+        let o = {};
         const { key } = source;
         sinkDS.forEach((sink) => {
           if (sink.key == key) {
@@ -213,6 +231,7 @@ export default defineComponent({
           if (tf.key == key) {
             o.validator = tf.validator;
             o.transformer = tf.transformer;
+            o.deleteEnable = tf.deleteEnable;
           }
         });
         o.source_field_name = source.fieldName;
@@ -226,6 +245,98 @@ export default defineComponent({
         sql,
       };
     };
+
+    // crate dataSource
+    const createDataSource = (map) => {
+      fieldMap.sourceDS = [];
+      fieldMap.sinkDS = [];
+      fieldMap.transformerList = [];
+      if (typeof map !== "object") {
+        return;
+      }
+
+      /*if (!map.length) {
+        toRaw(props.deductions).forEach((item, idx) => {
+          let sourceItem = {};
+          let sinkItem = {};
+          let transformerItem = {};
+
+          sourceItem.key = idx + "";
+          sourceItem.fieldName = item.source.name;
+          sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
+          sourceItem.fieldType = item.source.type;
+
+          sinkItem.key = idx + "";
+          sinkItem.fieldName = item.sink.name;
+          sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
+          sinkItem.fieldType = item.sink.type;
+
+          transformerItem.key = idx + "";
+          transformerItem.validator = [];
+          transformerItem.transformer = {};
+          transformerItem.deleteEnable = item.deleteEnable;
+
+          fieldMap.transformerList.push(transformerItem);
+          fieldMap.sourceDS.push(sourceItem);
+          fieldMap.sinkDS.push(sinkItem);
+        });
+      } else { */
+        map.forEach((item, idx) => {
+          let sourceItem = {};
+          let sinkItem = {};
+          let transformerItem = {};
+
+          if (item.source_field_name && item.source_field_type) {
+            sourceItem.key = idx + "";
+            sourceItem.fieldName =
+              item.source_field_name && item.source_field_name;
+            sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
+            sourceItem.fieldType =
+              item.source_field_type && item.source_field_type;
+
+            sinkItem.key = idx + "";
+            sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
+            sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
+            sinkItem.fieldType = item.sink_field_type && item.sink_field_type;
+
+            transformerItem.key = idx + "";
+            transformerItem.validator = item.validator && item.validator;
+            transformerItem.transformer = item.transformer && item.transformer;
+            transformerItem.deleteEnable = item.deleteEnable;
+
+            fieldMap.transformerList.push(transformerItem);
+            fieldMap.sourceDS.push(sourceItem);
+            fieldMap.sinkDS.push(sinkItem);
+          } else if (item.source && item.source.name && item.source.type) {
+            let sourceItem = {};
+            let sinkItem = {};
+            let transformerItem = {};
+
+            sourceItem.key = idx + "";
+            sourceItem.fieldName = item.source.name;
+            sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
+            sourceItem.fieldType = item.source.type;
+
+            sinkItem.key = idx + "";
+            sinkItem.fieldName = item.sink.name;
+            sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
+            sinkItem.fieldType = item.sink.type;
+
+            transformerItem.key = idx + "";
+            transformerItem.validator = [];
+            transformerItem.transformer = {};
+            transformerItem.deleteEnable = item.deleteEnable;
+
+            fieldMap.transformerList.push(transformerItem);
+            fieldMap.sourceDS.push(sourceItem);
+            fieldMap.sinkDS.push(sinkItem);
+          }
+        })
+      //}
+    };
+    createDataSource(toRaw(props.fmData).mapping || []);
+
+    console.log("sourceDS", fieldMap);
 
     const updateTransformer = (res) => {
       console.log("field map update", res);
@@ -292,9 +403,9 @@ export default defineComponent({
       let sinkLen = fieldMap.sinkDS.length;
       let tfLen = fieldMap.transformerList.length;
 
-      let sourceItem = Object.create(null);
-      let sinkItem = Object.create(null);
-      let transformerItem = Object.create(null);
+      let sourceItem = {};
+      let sinkItem = {};
+      let transformerItem = {};
 
       sourceItem.key = sourceLen + "";
       sourceItem.fieldName = "";
@@ -309,10 +420,23 @@ export default defineComponent({
       transformerItem.key = tfLen + "";
       transformerItem.validator = [];
       transformerItem.transformer = {};
+      transformerItem.deleteEnable = true;
 
       fieldMap.transformerList.push(transformerItem);
       fieldMap.sourceDS.push(sourceItem);
       fieldMap.sinkDS.push(sinkItem);
+    };
+    const deleteField = (index) => {
+      fieldMap.transformerList.splice(index, 1);
+      fieldMap.sourceDS.splice(index, 1);
+      fieldMap.sinkDS.splice(index, 1);
+
+      const transforms = createTransforms(
+        fieldMap.sourceDS,
+        fieldMap.sinkDS,
+        fieldMap.transformerList
+      );
+      context.emit("updateFieldMap", transforms);
     };
     let isFold = ref(true);
     const showInfo = () => {
@@ -322,65 +446,78 @@ export default defineComponent({
     return {
       type,
       fieldMap,
-      columns: [
-        {
-          title: "字段名",
-          dataIndex: "fieldName",
-          key: "fieldName",
-          slots: {
-            customRender: "fieldName",
+      columns1: [{
+        title: "来源字段",
+        children: [
+          {
+            title: "字段名",
+            dataIndex: "fieldName",
+            key: "fieldName",
+            slots: {
+              customRender: "fieldName",
+            },
           },
-        },
-        {
-          title: "类型",
-          dataIndex: "fieldType",
-          key: "fieldType",
-          slots: {
-            customRender: "fieldType",
+          {
+            title: "类型",
+            dataIndex: "fieldType",
+            key: "fieldType",
+            slots: {
+              customRender: "fieldType",
+            },
           },
-        },
-      ],
+        ]
+      }],
+      columns2: [{
+        title: "目的字段",
+        children: [
+          {
+            title: "字段名",
+            dataIndex: "fieldName",
+            key: "fieldName",
+            slots: {
+              customRender: "fieldName",
+            },
+          },
+          {
+            title: "类型",
+            dataIndex: "fieldType",
+            key: "fieldType",
+            slots: {
+              customRender: "fieldType",
+            },
+          },
+        ]
+      }],
       updateTransformer,
       updateSourceFieldName,
       updateSinkFieldName,
       addTableRow,
       isFold,
       showInfo,
+      deleteField,
     };
   },
 });
 </script>
 
 <style lang="less" scoped>
+@import "../../../common/content.less";
 .field-map-wrap {
-  margin-top: 30px;
-  width: 1100px;
   display: flex;
+  border-bottom: 1px solid #dee4ec;
+  border-top: 1px solid #dee4ec;
+  min-height: 68px;
+  padding: 24px;
+  box-sizing: border-box;
 }
 .fm-l {
   width: 122px;
   .main-header {
-    height: 33px;
-    background: inherit;
-    border: none;
-    display: flex;
-    border-top-left-radius: 100%;
-    border-bottom-left-radius: 100%;
-    position: relative;
-    background-color: #6b6b6b;
-    :nth-of-type(1) {
-      text-align: center;
-      line-height: 33px;
-      font-size: 16px;
-    }
-    .main-header-label {
-      font-family: "Arial Negreta", "Arial Normal", "Arial";
-      font-weight: 700;
-      font-style: normal;
-      color: #ffffff;
-      position: absolute;
-      left: 46px;
-    }
+    height: 20px;
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
   }
 }
 .fm-r {
@@ -392,38 +529,37 @@ export default defineComponent({
   border-top: none;
   flex-direction: column;
   .main-header {
-    height: 33px;
-    background: inherit;
-    background-color: rgba(107, 107, 107, 1);
-    border: none;
-    display: flex;
-    > div {
-      flex: 1;
-      text-align: center;
-      line-height: 33px;
-    }
-    /*&::before {
-      content: "";
-      position: absolute;
-      width: 16px;
-      height: 33px;
-      background-color: #66f;
-      border-top-right-radius: 16px;
-      border-bottom-right-radius: 16px;
-    }*/
-    .main-header-label {
-      font-family: "Arial Negreta", "Arial Normal", "Arial";
-      font-weight: 700;
-      font-style: normal;
-      color: #ffffff;
-    }
+    height: 20px;
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
   }
   .main-content {
-    border: 1px solid rgba(102, 102, 255, 1);
-    border-top: none;
-    padding: 15px 30px;
+    padding: 24px;
+    min-width: 950px;
+    max-width: 950px;
     display: flex;
     flex-direction: column;
+    :deep(.ant-table-thead) {
+      tr {
+        th {
+          text-align: center;
+          background-color: #F8FAFD;
+        }
+      }
+    }
+    :deep(.ant-table-tbody) {
+      tr {
+        td {
+          padding: 16px 10px;
+        }
+      }
+    }
+  }
+  .text-danger {
+    padding: 0px;
+    border: none;
   }
 }
 .field-map-wrap-l {
@@ -436,17 +572,16 @@ export default defineComponent({
   }
 }
 .field-map-wrap-r {
-  min-width: 332px;
   flex: 1;
 }
 .field-map-wrap-mid {
   width: 248px;
   display: flex;
   justify-content: center;
-  flex-direction: column;
-  align-items: center;
+  position: relative;
+  margin-top: 86px;
 }
-.feld-map-label {
+.field-map-label {
   font-size: 14px;
   text-align: left;
 }

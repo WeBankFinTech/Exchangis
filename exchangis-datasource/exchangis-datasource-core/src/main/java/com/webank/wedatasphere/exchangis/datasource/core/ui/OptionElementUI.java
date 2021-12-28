@@ -8,6 +8,7 @@ public class OptionElementUI implements ElementUI {
     private String label;
     private Collection<String> values;
     private String value;
+    private String defaultValue;
     private Integer sort;
     private String unit;
     private Boolean required;
@@ -57,6 +58,11 @@ public class OptionElementUI implements ElementUI {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public String getDefaultValue() { return defaultValue; }
+
+    public void setDefaultValue(String defaultValue) { this.defaultValue = defaultValue; }
 
     @Override
     public Integer getSort() {

@@ -26,17 +26,32 @@ export const updateProject = (body) => {
     method: "PUT",
   });
 };
-////////////////////////////////////////////////////////////////////
+
 export const getDataSourceList = (params) => {
   return request("/datasources/query", { ...params }, { method: "POST" });
 };
 
+// 数据源管理 获取数据源
 export const getDataSourceTypes = () => {
   return request(
     `/datasources/type?t=_${new Date().getTime()}`,
     {},
     { method: "GET" }
   );
+};
+
+// 数据源管理 获取动态参数
+export const getKeyDefine = (dataSourceTypeId) => {
+  return request(
+    `/datasources/types/${dataSourceTypeId}/keydefines?t=_${new Date().getTime()}`,
+    {},
+    { method: "GET" }
+  );
+};
+
+// 查询数据源
+export const getDataSource = (body) => {
+  return request("/datasources/query", body, { method: "POST" });
 };
 
 export const getDBs = (type, id) => {
@@ -51,11 +66,19 @@ export const getTables = (type, id, dbName) => {
   );
 };
 
-export const getFields = (type, id, dbName, tableName) => {
+/*export const getFields = (type, id, dbName, tableName) => {
   return request(
     `/datasources/${type}/${id}/dbs/${dbName}/tables/${tableName}/fields`,
     {},
     { method: "GET" }
+  );
+};*/
+
+export const getFields = (params) => {
+  return request(
+    `/datasources/fieldsmapping`,
+    { ...params },
+    { method: "POST" }
   );
 };
 
@@ -181,8 +204,12 @@ export const publishDataSource = (id, versionId) => {
   );
 };
 
-export const getSourceParams = (type) => {
-  return request(`/datasources/${type}/params/ui`, {}, { method: "GET" });
+export const getSourceParams = (engineType, type, ds) => {
+  return request(
+    `/datasources/${engineType}/${type}/params/ui?dir=${ds}`,
+    {},
+    { method: "GET" }
+  );
 };
 
 export const getSettingsParams = (engineType) => {
@@ -193,9 +220,69 @@ export const getSettingsParams = (engineType) => {
   );
 };
 
+// job执行
+export const executeJob = (id) => {
+  return request(`/job/${id}/action/execute`, {}, {
+    method: "POST",
+  });
+};
+
 // 同步历史
 export const getSyncHistory = (body) => {
   return request("/tasks", body, {
     method: "GET",
   });
+};
+// 删除同步历史
+export const delSyncHistory = (taskId) => {
+  return request(`/tasks/${taskId}`, null, {
+    method: "DELETE",
+  });
+};
+// 读取Task限速配置
+export const getSpeedLimit = (params) => {
+  return request(
+    `/job/${params.jobId}/speedlimit/${params.taskName}/params/ui`,
+    {},
+    {
+      method: "GET",
+    }
+  );
+};
+// 保存Task限速配置
+export const saveSpeedLimit = (params, body) => {
+  return request(`/job/${params.jobId}/speedlimit/${params.taskName}`, body, {
+    method: "PUT",
+  });
+};
+
+
+// 首页相关
+
+// 任务状态
+export const getTaskState = () => {
+  return request("/metrics/taskstate", {}, { method: "GET" });
+};
+
+// 任务进度
+export const getTaskProcess = () => {
+  return request("/metrics/taskprocess", {}, { method: "GET" });
+};
+
+// 流量监控
+export const getDataSourceFlow = () => {
+  return request("/metrics/datasourceflow", {}, { method: "GET" });
+};
+
+// 资源使用
+export const getEngineriesSource = () => {
+  return request("/metrics/engineresource", {}, { method: "GET" });
+};
+
+export const getEngineriesSourceCpu = () => {
+  return request("/metrics/engineresourcecpu", {}, { method: "GET" });
+};
+
+export const getEngineriesSourceMem = () => {
+  return request("/metrics/engineresourcemem", {}, { method: "GET" });
 };

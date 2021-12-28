@@ -1,43 +1,126 @@
 <template>
-  <div class="content">
+  <div class="jl-content">
     <div class="formWrap">
-      <a-input-search
+      <a-input
+        :placeholder="t('job.action.jobSearch')"
+        v-model:value="search"
+        @pressEnter="handleSearch"
+        style="width: 336px"
+      >
+        <template #prefix>
+          <icon-searchOutlined style="color: #dee4ec" />
+        </template>
+      </a-input>
+
+      <!-- <a-input-search
         v-model:value="search"
         :placeholder="t('job.action.jobSearch')"
         style="width: 300px"
         @search="handleSearch"
-      />
-      <a-button
-        type="primary"
-        style="width: 160px; margin-left: 30px"
-        @click="addJob"
-      >
-        <template #icon> <PlusOutlined /></template
-        >{{ t('job.action.createJob') }}
-      </a-button>
-      <a-upload
-        action="/api/rest_j/v1/exchangis/job/import"
-        @change="handleImport"
-        :showUploadList="false"
-      >
-        <a-button type="primary" style="width: 160px; margin-left: 30px">
-          <template #icon> <DownloadOutlined /></template
-          >{{ t('job.action.import') }}
+      /> -->
+      <div>
+        <a-button
+          type="primary"
+          style="
+            width: 106px;
+            margin-left: 8px;
+            font-family: PingFangSC-Regular;
+            font-size: 14px;
+            color: #ffffff;
+            line-height: 22px;
+            font-weight: 400;
+          "
+          @click="addJob"
+        >
+          <template #icon> <PlusOutlined /></template
+          >{{ t("job.action.createJob") }}
         </a-button>
-      </a-upload>
+        <a-upload
+          action="/api/rest_j/v1/exchangis/job/import"
+          @change="handleImport"
+          :showUploadList="false"
+        >
+          <a-button
+            style="
+              width: 78px;
+              margin-left: 8px;
+              font-family: PingFangSC-Regular;
+              font-size: 14px;
+              color: rgba(0, 0, 0, 0.65);
+              line-height: 22px;
+              font-weight: 400;
+            "
+          >
+            <template #icon> <DownloadOutlined /></template
+            >{{ t("job.action.import") }}
+          </a-button>
+        </a-upload>
+      </div>
     </div>
     <a-spin :spinning="spinning">
       <div class="tabWrap">
-        <a-tabs v-model:activeKey="activeKey">
+        <a-tabs type="card" v-model:activeKey="activeKey">
           <a-tab-pane key="1">
             <template #tab>
               <span>
                 <ApiOutlined />
-                {{ t('job.type.offline') }}
+                {{ t("job.type.offline") }}
               </span>
             </template>
             <div class="cardWrap">
-              <div v-if='offlineList.length === 0' class="emptyTab">暂无任务</div>
+              <div v-if="offlineList.length === 0" class="emptyTab">
+                <div class="void-page-wrap">
+                  <div class="void-page-main">
+                    <div class="void-page-main-img">
+                      <img
+                        src="../../../assets/img/void_page.png"
+                        alt="空页面"
+                      />
+                    </div>
+                    <div class="void-page-main-title">
+                      <span>暂时没有离线任务，请先创建一个离线任务</span>
+                    </div>
+                    <!--<div class="void-page-main-button">
+                      <a-button
+                        type="primary"
+                        style="
+                          width: 106px;
+                          margin-left: 8px;
+                          font-family: PingFangSC-Regular;
+                          font-size: 14px;
+                          color: #ffffff;
+                          line-height: 22px;
+                          font-weight: 400;
+                        "
+                        @click="addJob"
+                      >
+                        <template #icon> <PlusOutlined /></template
+                        >{{ t("job.action.createJob") }}
+                      </a-button>
+                      <a-upload
+                        action="/api/rest_j/v1/exchangis/job/import"
+                        @change="handleImport"
+                        :showUploadList="false"
+                      >
+                        <a-button
+                          style="
+                            width: 78px;
+                            margin-left: 8px;
+                            font-family: PingFangSC-Regular;
+                            font-size: 14px;
+                            color: rgba(0, 0, 0, 0.65);
+                            line-height: 22px;
+                            font-weight: 400;
+                          "
+                        >
+                          <template #icon> <DownloadOutlined /></template
+                          >{{ t("job.action.import") }}
+                        </a-button>
+                      </a-upload>
+                    </div>-->
+                  </div>
+                </div>
+              </div>
               <div v-for="item in offlineList" :key="item.id" class="card">
                 <job-card
                   :jobData="item"
@@ -53,11 +136,63 @@
             <template #tab>
               <span>
                 <NodeIndexOutlined />
-                {{ t('job.type.stream') }}
+                {{ t("job.type.stream") }}
               </span>
             </template>
             <div class="cardWrap">
-              <div v-if='streamList.length === 0' class="emptyTab">暂无任务</div>
+              <div v-if="streamList.length === 0" class="emptyTab">
+                <div class="void-page-wrap">
+                  <div class="void-page-main">
+                    <div class="void-page-main-img">
+                      <img
+                        src="../../../assets/img/void_page.png"
+                        alt="空页面"
+                      />
+                    </div>
+                    <div class="void-page-main-title">
+                      <span>暂时没有流式任务，请先创建一个流式任务</span>
+                    </div>
+                    <!--<div class="void-page-main-button">
+                      <a-button
+                        type="primary"
+                        style="
+                          width: 106px;
+                          margin-left: 8px;
+                          font-family: PingFangSC-Regular;
+                          font-size: 14px;
+                          color: #ffffff;
+                          line-height: 22px;
+                          font-weight: 400;
+                        "
+                        @click="addJob"
+                      >
+                        <template #icon> <PlusOutlined /></template
+                        >{{ t("job.action.createJob") }}
+                      </a-button>
+                      <a-upload
+                        action="/api/rest_j/v1/exchangis/job/import"
+                        @change="handleImport"
+                        :showUploadList="false"
+                      >
+                        <a-button
+                          style="
+                            width: 78px;
+                            margin-left: 8px;
+                            font-family: PingFangSC-Regular;
+                            font-size: 14px;
+                            color: rgba(0, 0, 0, 0.65);
+                            line-height: 22px;
+                            font-weight: 400;
+                          "
+                        >
+                          <template #icon> <DownloadOutlined /></template
+                          >{{ t("job.action.import") }}
+                        </a-button>
+                      </a-upload>
+                    </div>-->
+                  </div>
+                </div>
+              </div>
               <div v-for="item in streamList" :key="item.id" class="card">
                 <job-card
                   :jobData="item"
@@ -75,7 +210,7 @@
     <CreateJob
       :visible="visible"
       :editData="editJobData"
-      :projectId='projectId'
+      :projectId="projectId"
       @handleJobAction="handleJobAction"
     />
   </div>
@@ -86,12 +221,12 @@ import {
   NodeIndexOutlined,
   ApiOutlined,
   PlusOutlined,
-} from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
-import { useI18n } from '@fesjs/fes';
-import CreateJob from './createJob';
-import JobCard from './job_card';
-import { getJobs } from '@/common/service';
+  SearchOutlined,
+} from "@ant-design/icons-vue";
+import { defineAsyncComponent } from "vue";
+import { message } from "ant-design-vue";
+import { useI18n } from "@fesjs/fes";
+import { getJobs } from "@/common/service";
 
 export default {
   components: {
@@ -99,16 +234,17 @@ export default {
     NodeIndexOutlined,
     ApiOutlined,
     PlusOutlined,
-    CreateJob,
-    JobCard,
+    CreateJob: defineAsyncComponent(() => import("./createJob.vue")),
+    JobCard: defineAsyncComponent(() => import("./job_card.vue")),
+    iconSearchOutlined: SearchOutlined,
   },
   data() {
-    const { t } = useI18n({ useScope: 'global' });
+    const { t } = useI18n({ useScope: "global" });
     return {
       t,
-      search: '',
-      userName: 'safdsaf',
-      activeKey: '1',
+      search: "",
+      userName: "safdsaf",
+      activeKey: "1",
       visible: false,
       loading: false,
       editJobData: {},
@@ -121,8 +257,8 @@ export default {
     };
   },
   mounted() {
-    this.getJobs('OFFLINE');
-    this.getJobs('STREAM');
+    this.getJobs("OFFLINE");
+    this.getJobs("STREAM");
   },
   methods: {
     async getJobs(type) {
@@ -130,14 +266,14 @@ export default {
       const list = await getJobs(this.projectId, type);
       this.spinning = false;
       const result = (list && list.result) || [];
-      if (type === 'OFFLINE') {
+      if (type === "OFFLINE") {
         this.offlineList = result;
         this.offlineListOrigin = result;
       } else {
         this.streamList = result;
         this.streamListOrigin = result;
       }
-      this.search = '';
+      this.search = "";
       this.handleSearch();
     },
     handleSearch() {
@@ -163,14 +299,14 @@ export default {
       this.visible = false;
       this.editJobData = {};
       if (newJobData) {
-        const newKey = newJobData.jobType === 'OFFLINE' ? '1' : '2';
+        const newKey = newJobData.jobType === "OFFLINE" ? "1" : "2";
         if (newKey !== this.activeKey) {
           this.activeKey = newKey;
         }
         this.getJobs(newJobData.jobType);
       }
       console.log(status);
-      this.$emit('changeType')
+      this.$emit("changeType");
     },
     handleJobCopy(data) {
       this.visible = true;
@@ -179,18 +315,18 @@ export default {
     },
     showJobDetail(data) {
       console.log(data);
-      this.$emit('showJobDetail', data);
+      this.$emit("showJobDetail", data);
     },
     handleImport(info) {
-      if (info.file.status !== 'uploading') {
+      if (info.file.status !== "uploading") {
         console.log(info.file);
       }
-      if (info.file.status === 'done') {
-        message.success(this.t('job.action.fileUpSuccess'));
-        this.getJobs('OFFLINE');
-        this.getJobs('STREAM');
-      } else if (info.file.status === 'error') {
-        message.error(this.t('job.action.fileUpFailed'));
+      if (info.file.status === "done") {
+        message.success(this.t("job.action.fileUpSuccess"));
+        this.getJobs("OFFLINE");
+        this.getJobs("STREAM");
+      } else if (info.file.status === "error") {
+        message.error(this.t("job.action.fileUpFailed"));
       }
     },
   },
@@ -206,8 +342,10 @@ export default {
 </script>
 <style scoped lang="less">
 .formWrap {
-  margin-top: 20px;
-  padding: 0px 15px;
+  display: flex;
+  justify-content: space-between;
+  padding: 24px 24px 0 15px;
+  padding-top: 24px;
 }
 .tabWrap {
   margin-top: 10px;
@@ -217,9 +355,9 @@ export default {
   display: flex;
   flex-wrap: wrap;
   padding-bottom: 30px;
-  .emptyTab{
+  .emptyTab {
     font-size: 16px;
-    height: 100px;
+    height: 60vh;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -227,6 +365,41 @@ export default {
   }
   .card {
     margin: 10px 20px 10px 0px;
+  }
+}
+
+.void-page-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  .void-page-main {
+    &-img {
+      text-align: center;
+    }
+    &-title {
+      font-family: PingFangSC-Regular;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.45);
+      letter-spacing: 0;
+      text-align: center;
+      line-height: 28px;
+      font-weight: 400;
+      margin-top: 24px;
+      margin-bottom: 16px;
+    }
+    &-button {
+      min-width: 106px;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      &-item {
+        background: #2e92f7;
+        color: #fff;
+      }
+    }
   }
 }
 </style>
