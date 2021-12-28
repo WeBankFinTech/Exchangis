@@ -34,11 +34,11 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
         int endLine = from;
 //        int actualSize = 0;
         for (int i = from, j = 0; (i <= mockLogsSize && j < size); i++,j++) {
-            allLogs.add(mockLogs.get(i));
-            if (i == warningLineIdx) {
-                warningLogs.add(mockLogs.get(i));
+            allLogs.add(mockLogs.get(i - 1));
+            if ((i - 1) == warningLineIdx) {
+                warningLogs.add(mockLogs.get(i - 1));
             } else {
-                infoLogs.add(mockLogs.get(i));
+                infoLogs.add(mockLogs.get(i - 1));
             }
             endLine = i;
 //            actualSize++;
