@@ -36,19 +36,28 @@
         </fileSet>
         <fileSet>
             <directory>${basedir}/bin</directory>
-            <include>
+            <includes>
                 <include>*</include>
-            </include>
+            </includes>
             <fileMode>0777</fileMode>
             <outputDirectory>bin</outputDirectory>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/config</directory>
+            <includes>
+                <include>*</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <outputDirectory>config</outputDirectory>
             <lineEnding>unix</lineEnding>
         </fileSet>
         <!-- sql file -->
         <fileSet>
             <directory>${basedir}/../db</directory>
-            <include>
+            <includes>
                 <include>*</include>
-            </include>
+            </includes>
             <fileMode>0777</fileMode>
             <outputDirectory>db</outputDirectory>
             <lineEnding>unix</lineEnding>
@@ -56,13 +65,12 @@
         <!-- build package directory -->
         <fileSet>
             <directory>${basedir}/../exchangis-server/target/packages</directory>
-            <include>
+            <includes>
                 <include>*.tar.gz</include>
                 <include>*.zip</include>
-            </include>
+            </includes>
             <fileMode>0755</fileMode>
-            <outputDirectory>packages/exchangis-server</outputDirectory>
-            <lineEnding>unix</lineEnding>
+            <outputDirectory>packages</outputDirectory>
         </fileSet>
     </fileSets>
 

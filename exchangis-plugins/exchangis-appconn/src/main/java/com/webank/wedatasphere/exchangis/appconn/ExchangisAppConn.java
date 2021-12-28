@@ -1,36 +1,29 @@
 package com.webank.wedatasphere.exchangis.appconn;
 
-import com.webank.wedatasphere.dss.appconn.core.ext.AlmightyAppConn;
-import com.webank.wedatasphere.dss.standard.common.core.AppStandard;
-import com.webank.wedatasphere.dss.standard.common.desc.AppDesc;
-import com.webank.wedatasphere.exchangis.appconn.standard.ExchangisDevelopmentIntergrationStandard;
-import com.webank.wedatasphere.exchangis.appconn.standard.ExchangisStructureIntegrationStandard;
+import com.webank.wedatasphere.dss.appconn.core.ext.ThirdlyAppConn;
+import com.webank.wedatasphere.dss.appconn.core.impl.AbstractOnlySSOAppConn;
+import com.webank.wedatasphere.dss.standard.app.development.standard.DevelopmentIntegrationStandard;
+import com.webank.wedatasphere.dss.standard.app.structure.StructureIntegrationStandard;
+import com.webank.wedatasphere.linkis.common.conf.CommonVars;
 
-import java.util.ArrayList;
-import java.util.List;
+public class ExchangisAppConn extends AbstractOnlySSOAppConn implements ThirdlyAppConn {
 
-public class ExchangisAppConn implements AlmightyAppConn {
-    private final List<AppStandard> standards = new ArrayList<>();
-    private AppDesc appDesc;
 
-    public ExchangisAppConn() {
-        init();
+    private ExchangisStructureIntegrationStandard exchangisStructureIntegrationStandard;
+    private ExchangisDevelopmentIntegrationStandard exchangisDevelopmentIntegrationStandard;
+    @Override
+    public DevelopmentIntegrationStandard getOrCreateDevelopmentStandard() {
+        return exchangisDevelopmentIntegrationStandard;
     }
 
-    private void init() {
-        this.standards.add(new ExchangisDevelopmentIntergrationStandard(this));
-        this.standards.add(ExchangisStructureIntegrationStandard.getInstance(this));
+    @Override
+    public StructureIntegrationStandard getOrCreateStructureStandard() {
+        return exchangisStructureIntegrationStandard;
     }
 
-    public List<AppStandard> getAppStandards() {
-        return this.standards;
-    }
-
-    public AppDesc getAppDesc() {
-        return this.appDesc;
-    }
-
-    public void setAppDesc(AppDesc appDesc) {
-        this.appDesc = appDesc;
+    @Override
+    protected void initialize() {
+        exchangisStructureIntegrationStandard = new ExchangisStructureIntegrationStandard();
+        exchangisDevelopmentIntegrationStandard = new ExchangisDevelopmentIntegrationStandard();
     }
 }

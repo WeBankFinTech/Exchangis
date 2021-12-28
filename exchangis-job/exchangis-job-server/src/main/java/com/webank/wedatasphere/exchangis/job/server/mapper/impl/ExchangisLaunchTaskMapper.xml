@@ -3,7 +3,7 @@
 <mapper namespace="com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisLaunchTaskMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.domain.ExchangisLaunchTask">
+    <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask">
         <id column="id" property="id"/>
         <result column="task_name" property="taskName"/>
         <result column="job_id" property="jobId"/>
@@ -51,6 +51,7 @@
                 and launch_time &lt;= #{launchEndTime}
             </if>
         </where>
+        order by create_time desc
         limit ${start}, ${size}
     </select>
 
@@ -76,6 +77,14 @@
                 and launch_time &lt;= #{launchEndTime}
             </if>
         </where>
+    </select>
+
+
+    <select id="getTaskMetricsByStatus" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskStatusMetricsDTO">
+        select job_name as jobName, task_name as taskName, create_user as createUser, proxy_user as proxyUser, status, sum(1) as num
+        from
+        <include refid="TableName" />
+        where status = #{status}
     </select>
 
 </mapper>

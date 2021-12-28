@@ -30,7 +30,16 @@
             </exclusions>
             <optional>true</optional>
         </dependency>
-
+        <dependency>
+            <groupId>com.webank.wedatasphere.dss</groupId>
+            <artifactId>dss-project-plugin</artifactId>
+            <version>${dss.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.dss</groupId>
+            <artifactId>dss-appconn-core</artifactId>
+            <version>${dss.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.dss</groupId>
             <artifactId>dss-origin-sso-integration-standard</artifactId>
@@ -46,24 +55,20 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-            <scope>provided</scope>
+            <groupId>com.webank.wedatasphere.dss</groupId>
+            <artifactId>dss-development-process-standard</artifactId>
+            <version>${dss.version}</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.dss</groupId>
-            <artifactId>dss-contextservice</artifactId>
+            <artifactId>dss-structure-integration-standard</artifactId>
             <version>${dss.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.dss</groupId>
-            <artifactId>dss-common</artifactId>
+            <artifactId>dss-development-process-standard-execution</artifactId>
             <version>${dss.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -103,7 +108,7 @@
                 </executions>
                 <configuration>
                     <skipAssembly>false</skipAssembly>
-                    <finalName>out</finalName>
+                    <finalName>exchangis-appconn</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <attach>false</attach>
                     <descriptors>

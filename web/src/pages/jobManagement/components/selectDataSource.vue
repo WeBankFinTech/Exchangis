@@ -1,6 +1,27 @@
 <template>
   <div class="sds-wrap">
-    <a-button type="primary" @click="showModal">{{ defaultSelect }}</a-button>
+    <!-- <a-button type="dashed" @click="showModal">{{ defaultSelect }}</a-button> -->
+    <div
+      class="sds-button"
+      @click="showModal"
+      v-if="defaultSelect === '请点击后选择'"
+    >
+      <PlusOutlined
+        style="color: rgba(0, 0, 0, 0.65); font-size: 12px; margin-right: 8px"
+      />
+      <span>{{ defaultSelect }}</span>
+    </div>
+    <div v-else class="sds-title-tags">
+      <div class="sds-title-tag"
+           v-for="(item, idx) in defaultSelect"
+           :key="idx"
+           @click="showModal"
+           :title="item"
+      >
+        <span v-if="idx===0"><span class="logo" :style="getBg()"> </span> {{ item }}</span>
+        <span v-else>{{ item }}</span>
+      </div>
+    </div>
     <a-modal
       v-model:visible="visible"
       title="选择数据源"
@@ -9,34 +30,36 @@
     >
       <!-- top -->
       <div class="sds-wrap-t">
-        <a-space>
-          <!-- <a-select
-            v-model:value="dataBase"
-            style="width: 120px"
-            :options="dataBaseTypes.map((db) => ({ value: db }))"
-          >
-          </a-select>
+        <a-space size="middle">
+          <span>数据类型</span>
           <a-select
-            v-model:value="colony"
-            style="width: 120px"
-            :options="colonys.map((colony) => ({ value: colony }))"
-          >
-          </a-select> -->
-          <a-select
-            v-model:value="sqlSource"
-            style="width: 120px"
+            v-model:value="curSql"
+            style="width: 150px"
+            placeholder="请先选择数据库"
             :options="
               sqlList.map((sql) => ({ value: sql.value, label: sql.name }))
             "
             @change="handleChangeSql"
           >
           </a-select>
+          <span>数据源</span>
+          <a-select
+            placeholder="请先选择数据源"
+            style="width: 150px"
+            v-model:value="dataSource"
+            @change="handleChangeDS"
+            :options="
+              dataSourceList.map((ds) => ({ value: ds.value, label: ds.name }))
+            "
+          ></a-select>
         </a-space>
       </div>
       <!-- bottom 类似tree组件 -->
       <div class="sds-wrap-b">
         <a-directory-tree
           :tree-data="treeData"
+          :autoExpandParent="false"
+          v-model:expandedKeys="expandedKeys"
           @select="selectItem"
           @expand="handleExpandSql"
         ></a-directory-tree>
@@ -46,8 +69,13 @@
 </template>
 
 <script>
-//import { SQLlist, dbs, tables } from "../mock";
-import { getDataSourceTypes, getDBs, getTables } from "@/common/service";
+import { PlusOutlined, MinusOutlined } from "@ant-design/icons-vue";
+import {
+  getDataSourceTypes,
+  getDBs,
+  getTables,
+  getDataSource,
+} from "@/common/service";
 import {
   defineComponent,
   reactive,
@@ -58,22 +86,32 @@ import {
   toRaw,
   onMounted,
 } from "vue";
+import { message } from "ant-design-vue";
 
 export default defineComponent({
   props: {
     title: String,
   },
+  components: {
+    PlusOutlined,
+    MinusOutlined,
+  },
   emits: ["updateDsInfo"],
   setup(props, context) {
     let SQLlist, treeData;
     const sqlList = [];
+    const expandedKeys = ref([]);
     const state = reactive({
       sqlSource: sqlList.length ? sqlList[0].value : "",
       sqlList,
       defaultSelect: props.title,
       treeData,
-      id: "",
+      sqlId: "",
+      dsId: "",
       curSql: "",
+      dataSource: "",
+      dataSourceList: [],
+      selectTable: "",
     });
     const newProps = computed(() => JSON.parse(JSON.stringify(props.title)));
     watch(newProps, (val, oldVal) => {
@@ -84,7 +122,7 @@ export default defineComponent({
       // 数据源
       SQLlist.forEach((sql) => {
         sqlList.push({
-          name: sql.option,
+          name: sql.name,
           value: sql.name,
           id: sql.id,
         });
@@ -92,58 +130,58 @@ export default defineComponent({
       if (state.sqlSource) await createTree(state.sqlSource);
     }
     onMounted(init());
+    // 根据数据类型ID的不同返回不同的数据源列表
+    const queryDataSource = async (typeId) => {
+      // 这里前端目前不做分页 固定了 page 和 pageSize
+      let body = {
+        name: "",
+        typeId,
+        page: 1,
+        pageSize: 1000,
+      };
+      let res = [];
+      try {
+        let _res = await getDataSource(body);
+        const { list } = _res;
+        list.forEach((item) => {
+          let o = Object.create(null);
+          o.name = item.name;
+          o.value = item.id;
+          res.push(o);
+        });
+      } catch (err) {
+        console.log("err");
+      }
+      return res;
+    };
+    // 选择数据库触发
     const handleChangeSql = async (sql) => {
       state.curSql = sql;
-      createTree(sql, () => {
-        state.treeData = treeData;
-        const cur = sqlList.filter((item) => {
-          return item.value === sql;
+      const cur = state.sqlList.filter((i) => i.value === sql)[0];
+      state.sqlId = cur.id;
+      let dsOptions = await queryDataSource(cur.id);
+      state.dataSourceList = dsOptions.length > 0 ? dsOptions : [];
+    };
+    // 选择数据源触发
+    const handleChangeDS = async (ds) => {
+      createTree(ds, () => {
+        const cur = state.dataSourceList.filter((item) => {
+          return item.value === ds;
         })[0];
-        state.id = cur.id;
+        state.dataSource = cur.name;
+        state.dsId = cur.value;
       });
     };
     // 创建 db & tables tree
-    const createTree = async (sql, cb) => {
-      if (!sql) return;
+    const createTree = async (ds, cb) => {
+      if (!ds) return;
       const tree = [];
       // 这里 根据数据源请求 dbs
-      const cur = sqlList.filter((item) => {
-        return item.value === sql;
+      const cur = state.dataSourceList.filter((item) => {
+        return item.value === ds;
       })[0];
-      let dbs = (await getDBs(cur.value, cur.id)).dbs;
-      // let promises = [];
-      // dbs.forEach((db, index) => {
-      //   const o = Object.create(null);
-      //   o.selectable = false;
-      //   o.title = db;
-      //   o.key = db;
-      //   o.children = [];
-      //   promises.push(
-      //     new Promise((resolve, reject) => {
-      //       getTables(cur.value, cur.id, db).then((res) => {
-      //         let tables = res.tbs || [];
-      //         tables.forEach((table) => {
-      //           const oo = Object.create(null);
-      //           oo.title = table;
-      //           oo.key = `${db}-${table}`;
-      //           o.children.push(oo);
-      //         });
-      //         tree.push(o);
-      //         resolve();
-      //       });
-      //     })
-      //   );
-      // });
-      // Promise.all(promises)
-      //   .then((result) => {
-      //     treeData = tree;
-      //     cb && cb();
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //     treeData = [];
-      //     cb && cb();
-      //   });
+      let dbs = (await getDBs(state.curSql, cur.value)).dbs;
+      if (!dbs) return;
       dbs.forEach((db, index) => {
         const o = Object.create(null);
         o.selectable = false;
@@ -154,8 +192,7 @@ export default defineComponent({
         (oo.key = ""), (oo.title = ""), o.children.push(oo);
         tree.push(o);
       });
-
-      treeData = tree;
+      state.treeData = tree;
       cb();
     };
     const visible = ref(false);
@@ -163,24 +200,40 @@ export default defineComponent({
       visible.value = true;
     };
     const selectItem = (e) => {
-      state.defaultSelect = `${state.sqlSource}-${e.join("")}`;
+      state.selectTable = e.join("");
+      // state.defaultSelect = `${state.sqlSource}-${state.dataSource}-${e.join(
+      //   ""
+      // )}`;
     };
     const handleOk = () => {
+      if (!state.curSql) {
+        return message.error("未正确选择数据类型");
+      }
+      if (!state.dataSource) {
+        return message.error("未正确选择数据源");
+      }
+      if (!state.selectTable) {
+        return message.error("未正确选择库表");
+      }
+      state.defaultSelect = `${state.curSql}-${state.dataSource}-${state.selectTable}`;
       visible.value = false;
-      context.emit("updateDsInfo", state.defaultSelect, state.id);
+      context.emit("updateDsInfo", state.defaultSelect, state.dsId);
+      // 选择完 初始化数据
+      state.curSql = "";
+      state.dataSource = "";
+      state.selectTable = "";
+      state.treeData = [];
+      expandedKeys.value = [];
     };
     /**
      * 获取数据库下 所有表
-     * @param (sql, dbName)
+     * @param (sql, dsId, dbName)
      * @returns tbales
      */
-    const asyncGetTables = async (sql, dbName) => {
+    const asyncGetTables = async (sql, dsId, dbName) => {
       let tables;
       const res = [];
-      const cur = sqlList.filter((item) => {
-        return item.value === sql;
-      })[0];
-      tables = (await getTables(cur.value, cur.id, dbName)).tbs || [];
+      tables = (await getTables(sql, dsId, dbName)).tbs || [];
       tables.forEach((table) => {
         const o = Object.create(null);
         o.title = table;
@@ -189,16 +242,24 @@ export default defineComponent({
       });
       return res;
     };
+    // 展开数据库树获取表叶子
     const handleExpandSql = (expandedKeys, { expanded, node }) => {
       const dbName = node.title;
       state.treeData.forEach(async (td) => {
         if (td.title === dbName) {
           if (td.children.length > 0 && td.children[0].title) return;
-          let tables = await asyncGetTables(state.curSql, dbName);
+          let tables = await asyncGetTables(state.curSql, state.dsId, dbName);
+          tables.forEach(tb => {
+            tb.isLeaf = true;
+          })
           return (td.children = tables.slice());
         }
       });
     };
+    const getBg = () => {
+      let name = state.curSql || (typeof state.defaultSelect === 'string' ? state.defaultSelect.split('-')[0] : state.defaultSelect[0])
+      return `background-image: url(${require('@/images/dataSourceTypeIcon/' + name + '.png')})`
+    }
     return {
       ...toRefs(state),
       selectItem,
@@ -208,6 +269,9 @@ export default defineComponent({
       sqlList,
       handleChangeSql,
       handleExpandSql,
+      handleChangeDS,
+      getBg,
+      expandedKeys
     };
   },
 });
@@ -216,5 +280,70 @@ export default defineComponent({
 <style lang="less" scoped>
 .sds-wrap {
   display: inline-block;
+  .logo {
+    width: 20px;
+    height: 20px;
+    float: left;
+    background-size: cover;
+  }
+  .sds-button {
+    width: 420px;
+    height: 46px;
+    background: #f8fafd;
+    border: 1px dashed #dee4ec;
+    border-radius: 2px;
+    line-height: 46px;
+    text-align: center;
+
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.65);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .sds-title-tags {
+    width: 420px;
+    height: 46px;
+    display: flex;
+    /*justify-content: center;*/
+    align-items: center;
+    .sds-title-tag {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      padding: 5px 15px;
+      background: #e6f0ff;
+      font-family: PingFangSC-Medium;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      font-weight: 500;
+      height: 32px;
+      min-width: 100px;
+      max-width: 100px;
+      cursor: pointer;
+      text-align: center;
+      border-top: 1px solid #dee4ec;
+      border-bottom: 1px solid #dee4ec;
+      border-right: 1px solid #dee4ec;
+      &:first-child {
+        border-left: 1px solid #dee4ec;
+        border-radius: 4px 0 0 4px;
+      }
+      &:last-child {
+        border-radius: 0 4px 4px 0;
+      }
+    }
+    &:hover {
+      .sds-title-tag {
+        color: #2E92F7;
+      }
+    }
+  }
 }
+.sds-wrap-b {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
 </style>
