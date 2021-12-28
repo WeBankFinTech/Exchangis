@@ -20,10 +20,6 @@ configure_main(){
 
 }
 
-configure_embeded_eureka(){
-
-}
-
-configure_embeded_gateway(){
+configure_server(){
 
 }

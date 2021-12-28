@@ -37,7 +37,8 @@
 	</licenses>
 
 	<properties>
-		<dss.version>1.0.0-RC1</dss.version>
+		<exchangis.version>1.0.0-RC1</exchangis.version>
+		<dss.version>1.0.0</dss.version>
 		<linkis.version>1.0.2</linkis.version>
 		<streamis.version>0.1.0-SNAPSHOT</streamis.version>
 		<scala.version>2.11.8</scala.version>
@@ -67,13 +68,13 @@
 
 
 	<modules>
+		<module>exchangis-dao</module>
 		<module>exchangis-project</module>
-		<!--<module>exchangis-plugins</module>-->
 		<module>exchangis-datasource</module>
-        <module>exchangis-dao</module>
-        <module>exchangis-server</module>
 		<module>exchangis-job</module>
-        <module>assembly-package</module>
+		<module>exchangis-plugins</module>
+		<module>exchangis-server</module>
+		<module>assembly-package</module>
     </modules>
 	<dependencyManagement>
 		<dependencies>

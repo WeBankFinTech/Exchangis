@@ -44,6 +44,22 @@ export default {
           title: "globalMenu.synchronizationHistory",
         },
       },
+      {
+        path: "/homePage",
+        component: "@/pages/homePage",
+        meta: {
+          name: "homePage",
+          title: "globalMenu.homePage",
+        },
+      },
+      {
+        path: "/childJobManagement",
+        component: "@/pages/jobManagementItem",
+        meta: {
+          name: "synchronizationHistory",
+          title: "globalMenu.synchronizationHistory",
+        }
+      }
     ],
   },
   request: {
@@ -56,19 +72,21 @@ export default {
     ],
   ],
   layout: {
-    title: "",
+    navigation: 'side',
+    theme: 'light',
+    title: "数据交换",
     footer: "",
     logo: null,
     multiTabs: false,
     menus: [
       {
+        name: "homePage",
+      },
+      {
         name: "projectManage",
       },
       {
         name: "dataSourceManage",
-      },
-      {
-        name: "jobManagement",
       },
       {
         name: "synchronizationHistory",
@@ -77,14 +95,14 @@ export default {
   },
   devServer: {
     host: "0.0.0.0",
-    port: 8000,
+    port: 8000
   },
   proxy: {
     "/api": {
       //target: "http://192.168.0.157:9321/",
       //target: "http://127.0.0.1:9321/",
-      target: "http://124.70.31.149:29001",
-	    changeOrigin: true,
+      target: "http://124.70.31.149:20088",
+      changeOrigin: true,
       pathRewrite: { "^/api": "/api" },
     },
   },
