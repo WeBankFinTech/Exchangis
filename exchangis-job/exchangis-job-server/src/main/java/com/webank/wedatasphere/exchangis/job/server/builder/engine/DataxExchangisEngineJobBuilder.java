@@ -104,20 +104,22 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
                 Object transfomer = mapping.get("transformer");
                 if (null != transfomer) {
                     Map<String, Object> define = (Map<String, Object>) transfomer;
-                    Transformer transformer = new Transformer();
-                    transformer.setName(define.get("name").toString());
-                    TransformerParameter parameter = new TransformerParameter();
-                    parameter.setColumnIndex(fieldIndex);
-                    parameter.setParas(new String[0]);
-                    Object params = define.get("params");
-                    if (null != params) {
-                        List<String> paramsDefine = (List<String>) params;
-                        if (null != paramsDefine && paramsDefine.size() > 0) {
-                            parameter.setParas(paramsDefine.toArray(new String[0]));
+                    if (null != define.get("name") && !StringUtils.isBlank(define.get("name").toString())) {
+                        Transformer transformer = new Transformer();
+                        transformer.setName(define.get("name").toString());
+                        TransformerParameter parameter = new TransformerParameter();
+                        parameter.setColumnIndex(fieldIndex);
+                        parameter.setParas(new String[0]);
+                        Object params = define.get("params");
+                        if (null != params) {
+                            List<String> paramsDefine = (List<String>) params;
+                            if (null != paramsDefine && paramsDefine.size() > 0) {
+                                parameter.setParas(paramsDefine.toArray(new String[0]));
+                            }
                         }
+                        transformer.setParameter(parameter);
+                        transformers.add(transformer);
                     }
-                    transformer.setParameter(parameter);
-                    transformers.add(transformer);
                 }
             });
         }
