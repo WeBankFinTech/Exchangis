@@ -252,7 +252,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         params.put("sqoop.args.table", sinkSettings.get("table").getValue().toString());
 
         params.put("sqoop.args.update.mode", sinkSettings.get("exchangis.job.ds.params.sqoop.mysql.w.write_type").getValue().toString().toLowerCase(Locale.ROOT));
-        params.put("sqoop.args.update.key", ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("primary-keys"));
+        // params.put("sqoop.args.update.key", ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("primary-keys"));
         JobParam<?> partitionSetting = sourceSettings.get("exchangis.job.ds.params.sqoop.hive.r.partition");
         if (null != partitionSetting) {
             Object partitionValue = partitionSetting.getValue();
@@ -273,7 +273,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             && !StringUtils.isBlank(sinkSettings.get("exchangis.job.ds.params.sqoop.hive.r.row_format").getValue().toString())) {
             params.put("sqoop.args.fields.terminated.by", sinkSettings.get("exchangis.job.ds.params.sqoop.hive.r.row_format").getValue().toString());
         }
-        params.put("sqoop.args.export.dir", ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("location"));
+        // params.put("sqoop.args.export.dir", ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("location"));
 
         return params;
     }
