@@ -12,13 +12,13 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
+import com.webank.wedatasphere.linkis.manager.label.utils.LabelUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -48,15 +48,17 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     private static final JobParamDefine<Integer> SINK_FIELD_INDEX = JobParams.define("index", "sink_field_index", Integer.class);
 
     private static final JobParamDefine<List<Map<String, Object>>> SOURCE_COLUMN = JobParams.define("column", (BiFunction<String, JobParamSet, List<Map<String, Object>>>) (key, paramSet) -> {
+
         List<Map<String, Object>> columns = new ArrayList<>();
         List<Map<String, Object>> mappings = TRANSFORM_MAPPING.newParam(paramSet).getValue();
         if (Objects.nonNull(mappings)) {
             mappings.forEach(mapping -> {
+                Map<String, Object> _mapping = new HashMap<>(mapping);
                 Map<String, Object> column = new HashMap<>();
                 columns.add(column);
-                column.put(SOURCE_FIELD_NAME.getKey(), SOURCE_FIELD_NAME.newParam(mapping).getValue());
-                column.put(SOURCE_FIELD_TYPE.getKey(), SOURCE_FIELD_TYPE.newParam(mapping).getValue());
-                column.put(SOURCE_FIELD_INDEX.getKey(), SOURCE_FIELD_INDEX.newParam(mapping).getValue());
+                column.put(SOURCE_FIELD_NAME.getKey(), SOURCE_FIELD_NAME.newParam(_mapping).getValue());
+                column.put(SOURCE_FIELD_TYPE.getKey(), SOURCE_FIELD_TYPE.newParam(_mapping).getValue());
+                column.put(SOURCE_FIELD_INDEX.getKey(), SOURCE_FIELD_INDEX.newParam(_mapping).getValue());
             });
         }
         return columns;
@@ -67,14 +69,61 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         List<Map<String, Object>> mappings = TRANSFORM_MAPPING.newParam(paramSet).getValue();
         if (Objects.nonNull(mappings)) {
             mappings.forEach(mapping -> {
+                Map<String, Object> _mapping = new HashMap<>(mapping);
                 Map<String, Object> column = new HashMap<>();
                 columns.add(column);
-                column.put(SINK_FIELD_NAME.getKey(), SINK_FIELD_NAME.newParam(mapping).getValue());
-                column.put(SINK_FIELD_TYPE.getKey(), SINK_FIELD_TYPE.newParam(mapping).getValue());
-                column.put(SINK_FIELD_INDEX.getKey(), SINK_FIELD_INDEX.newParam(mapping).getValue());
+                column.put(SINK_FIELD_NAME.getKey(), SINK_FIELD_NAME.newParam(_mapping).getValue());
+                column.put(SINK_FIELD_TYPE.getKey(), SINK_FIELD_TYPE.newParam(_mapping).getValue());
+                column.put(SINK_FIELD_INDEX.getKey(), SINK_FIELD_INDEX.newParam(_mapping).getValue());
             });
         }
         return columns;
+    });
+
+    private static final JobParamDefine<List<Transformer>> TRANSFORMER = JobParams.define("column", (BiFunction<String, JobParamSet, List<Transformer>>) (key, paramSet) -> {
+        List<Transformer> transformers = new ArrayList<>();
+        List<Map<String, Object>> mappings = TRANSFORM_MAPPING.newParam(paramSet).getValue();
+        if (Objects.nonNull(mappings)) {
+            mappings.forEach(mapping -> {
+                Map<String, Object> _mapping = new HashMap<>(mapping);
+                int fieldIndex = SOURCE_FIELD_INDEX.newParam(_mapping).getValue();
+                Object validator = mapping.get("validator");
+                if (null != validator) {
+                    List<String> params = (List<String>) validator;
+                    if (params.size() > 0) {
+                        Transformer transformer = new Transformer();
+                        transformer.setName("dx_filter");
+                        TransformerParameter parameter = new TransformerParameter();
+                        parameter.setColumnIndex(fieldIndex);
+                        parameter.setParas(params.toArray(new String[0]));
+                        transformer.setParameter(parameter);
+                        transformers.add(transformer);
+                    }
+                }
+
+                Object transfomer = mapping.get("transformer");
+                if (null != transfomer) {
+                    Map<String, Object> define = (Map<String, Object>) transfomer;
+                    if (null != define.get("name") && !StringUtils.isBlank(define.get("name").toString())) {
+                        Transformer transformer = new Transformer();
+                        transformer.setName(define.get("name").toString());
+                        TransformerParameter parameter = new TransformerParameter();
+                        parameter.setColumnIndex(fieldIndex);
+                        parameter.setParas(new String[0]);
+                        Object params = define.get("params");
+                        if (null != params) {
+                            List<String> paramsDefine = (List<String>) params;
+                            if (null != paramsDefine && paramsDefine.size() > 0) {
+                                parameter.setParas(paramsDefine.toArray(new String[0]));
+                            }
+                        }
+                        transformer.setParameter(parameter);
+                        transformers.add(transformer);
+                    }
+                }
+            });
+        }
+        return transformers;
     });
 
     @Override
@@ -129,6 +178,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      * @return code
      */
     private DataxCode buildDataxCode(SubExchangisJob inputJob, ExchangisJobBuilderContext ctx) {
+
         DataxCode code = new DataxCode();
         String sourceType = inputJob.getSourceType();
         String sinkType = inputJob.getSinkType();
@@ -145,6 +195,8 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         if (sinkType.equalsIgnoreCase("hive")) {
             content.getWriter().putAll(this.buildHiveWriter(inputJob, ctx));
         }
+
+        content.getTransformer().addAll(this.buildTransformer(inputJob, ctx));
 
         code.getContent().add(content);
         code.getSetting().putAll(this.buildSettings(inputJob, ctx));
@@ -195,57 +247,89 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     private Map<String, Object> buildMySQLReader(SubExchangisJob inputJob, ExchangisJobBuilderContext ctx) {
         Map<String, Object> reader = new HashMap<>();
         reader.put("name", "mysqlreader");
-        Map<String, Object> parameter = new HashMap<>();
 
         JobParamSet sourceSettings = inputJob.getRealmParams(REALM_JOB_CONTENT_SOURCE);
+
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("connParams", new HashMap<String, Object>());
+        parameter.put("haveKerberos", false);
+        parameter.put("datasource", Integer.parseInt(sourceSettings.get("datasource").getValue().toString()));
+
         parameter.put("username", ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("username"));
         String password = ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("password").toString();
-        parameter.put("password", Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8)));
-
-        parameter.put("column", SOURCE_COLUMN.newParam(inputJob.getRealmParams(SubExchangisJob.REALM_JOB_COLUMN_MAPPING)).getValue().stream().map(map -> {
-            return map.get("name");
-        }).toArray());
+        parameter.put("password", password);
+        List<Map<String, Object>> columns = SOURCE_COLUMN.newParam(inputJob.getRealmParams(REALM_JOB_COLUMN_MAPPING)).getValue();
+        parameter.put("column_i", columns);
+        parameter.put("alias", "[\"A\"]");
 
         List<Map<String, Object>> connections = new ArrayList<>(1);
         Map<String, Object> connection = new HashMap<>();
-        String connectProtocol = "jdbc:mysql://";
         Object host = ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("host");
         Object port = ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("port");
         Object database = sourceSettings.get("database").getValue();
-        connection.put("jdbcUrl", String.format("%s%s:%s/%s", connectProtocol, host, port, database));
-        connection.put("table", sourceSettings.get("table").getValue().toString());
-        connections.add(connection);
-        parameter.put("connection", connections);
+        List<Map<String, Object>> jdbcUrls = new ArrayList<>();
+        Map<String, Object> jdbcUrl = new HashMap<>();
+        jdbcUrl.put("host", host);
+        jdbcUrl.put("port", port);
+        jdbcUrl.put("database", database);
+        jdbcUrls.add(jdbcUrl);
+        connection.put("jdbcUrl", jdbcUrls);
+
+        parameter.put("authType", "DEFAULT");
+
+        List<String> tables = new ArrayList<>();
+        tables.add(sourceSettings.get("table").getValue().toString());
+        // connection.put("table", tables);
+        parameter.put("table", LabelUtils.Jackson.toJson(tables, String.class));
+
+        StringBuilder sql = new StringBuilder("SELECT ");
+        for (Iterator<Map<String, Object>> iterator = columns.iterator(); iterator.hasNext(); ) {
+            Map<String, Object> field = iterator.next();
+            sql.append("A.").append(field.get("name"));
+            if (iterator.hasNext()) {
+                sql.append(", ");
+            } else {
+                sql.append(" ");
+            }
+        }
+
+        sql.append("FROM ").append(sourceSettings.get("table").getValue().toString()).append(" A");
 
         if (null != sourceSettings.get("exchangis.job.ds.params.datax.mysql.r.where_condition")
                 && null != sourceSettings.get("exchangis.job.ds.params.datax.mysql.r.where_condition").getValue()
                 && StringUtils.isNotBlank(sourceSettings.get("exchangis.job.ds.params.datax.mysql.r.where_condition").getValue().toString())) {
-            parameter.put("where", sourceSettings.get("exchangis.job.ds.params.datax.mysql.r.where_condition").getValue().toString());
+            sql.append(" WHERE ").append(sourceSettings.get("exchangis.job.ds.params.datax.mysql.r.where_condition").getValue().toString());
         }
+
+        List<String> querySql = new ArrayList<>();
+        querySql.add(sql.toString());
+        connection.put("querySql", querySql);
+
+        connections.add(connection);
+        parameter.put("connection", connections);
 
         reader.put("parameter", parameter);
         return reader;
-    }
-
-    public static void main(String[] args) {
-        String s = "123";
-        String s1 = Base64.getEncoder().encodeToString(s.getBytes(StandardCharsets.UTF_8));
-        System.out.println(s1);
     }
 
     private Map<String, Object> buildMySQLWriter(SubExchangisJob inputJob, ExchangisJobBuilderContext ctx) {
         Map<String, Object> writer = new HashMap<>();
         writer.put("name", "mysqlwriter");
         Map<String, Object> parameter = new HashMap<>();
+        parameter.put("haveKerberos", false);
+        parameter.put("connParams", new HashMap<String, Object>());
 
         JobParamSet sinkSettings = inputJob.getRealmParams(REALM_JOB_CONTENT_SINK);
+        parameter.put("datasource", Integer.parseInt(sinkSettings.get("datasource").getValue().toString()));
+        parameter.put("authType", "DEFAULT");
         parameter.put("username", ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("username"));
         String password = ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("password").toString();
-        parameter.put("password", Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8)));
+        // parameter.put("password", Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8)));
+        parameter.put("password", password);
 
-        parameter.put("column", SINK_COLUMN.newParam(inputJob.getRealmParams(SubExchangisJob.REALM_JOB_COLUMN_MAPPING)).getValue().stream().map(map -> {
-            return map.get("name");
-        }).toArray());
+        List<Map<String, Object>> columns = SINK_COLUMN.newParam(inputJob.getRealmParams(REALM_JOB_COLUMN_MAPPING)).getValue();
+        parameter.put("column_i", columns);
+        parameter.put("column", columns.stream().map(map -> map.get("name")).toArray());
 
         List<Map<String, Object>> connections = new ArrayList<>(1);
         Map<String, Object> connection = new HashMap<>();
@@ -253,8 +337,14 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         Object host = ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("host");
         Object port = ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("port");
         Object database = sinkSettings.get("database").getValue();
-        connection.put("jdbcUrl", String.format("%s%s:%s/%s", connectProtocol, host, port, database));
-        connection.put("table", sinkSettings.get("table").getValue().toString());
+        Map<String, Object> jdbcUrl = new HashMap<>();
+        jdbcUrl.put("host", host);
+        jdbcUrl.put("port", port);
+        jdbcUrl.put("database", database);
+        connection.put("jdbcUrl", jdbcUrl);
+        List<String> tables = new ArrayList<>();
+        tables.add(sinkSettings.get("table").getValue().toString());
+        connection.put("table", tables);
         connections.add(connection);
         parameter.put("connection", connections);
 
@@ -269,8 +359,16 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         reader.put("name", "hdfsreader");
 
         Map<String, Object> parameter = new HashMap<>();
+        parameter.put("nullFormat", "\\\\N");
+        parameter.put("haveKerberos", false);
+        parameter.put("hadoopConfig", new HashMap<String, Object>());
+        parameter.put("authType", "NONE");
 
         JobParamSet sourceSettings = inputJob.getRealmParams(REALM_JOB_CONTENT_SOURCE);
+        parameter.put("hiveTable", sourceSettings.get("table").getValue().toString());
+        parameter.put("hiveDatabase", sourceSettings.get("database").getValue());
+        parameter.put("encoding", "UTF-8");
+        parameter.put("datasource", Integer.parseInt(sourceSettings.get("datasource").getValue().toString()));
         try {
             String location = ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("location").toString();
             URI uri = new URI(location);
@@ -285,34 +383,37 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             e.printStackTrace();
         }
 
+        List<Map<String, Object>> columns = SOURCE_COLUMN.newParam(inputJob.getRealmParams(REALM_JOB_COLUMN_MAPPING)).getValue();
+
         // column
-        List<Map<String, Object>> columns = new ArrayList<>();
-        String[] columnsType = ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("columns-types").toString().split(":");
-        for (int i = 0; i < columnsType.length; i++) {
-            Map<String, Object> column = new HashMap<>();
-            column.put("index", i);
-            column.put("type", columnsType[i]);
-            columns.add(column);
-        }
+//        List<Map<String, Object>> columns = new ArrayList<>();
+//        String[] columnsType = ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("columns-types").toString().split(":");
+//        for (int i = 0; i < columnsType.length; i++) {
+//            Map<String, Object> column = new HashMap<>();
+//            column.put("index", i);
+//            column.put("type", columnsType[i]);
+//            columns.add(column);
+//        }
         parameter.put("column", columns);
+
 
         String inputFormat = ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("file-inputformat").toString().toLowerCase(Locale.ROOT);
         // org.apache.hadoop.mapred.TextInputFormat
         if (inputFormat.contains("text")) {
-            parameter.put("fileType", "text");
+            parameter.put("fileType", "TEXT");
             parameter.put("fieldDelimiter", ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("column-name-delimiter").toString());
         }
         if (inputFormat.contains("orc")) {
-            parameter.put("fileType", "orc");
+            parameter.put("fileType", "ORC");
         }
         if (inputFormat.contains("parquet")) {
-            parameter.put("fileType", "parquet");
+            parameter.put("fileType", "PARQUET");
         }
         if (inputFormat.contains("rcfile")) {
-            parameter.put("fileType", "rcfile");
+            parameter.put("fileType", "RCFILE");
         }
         if (inputFormat.contains("sequencefile")) {
-            parameter.put("fileType", "seq");
+            parameter.put("fileType", "SEQ");
             parameter.put("fieldDelimiter", ctx.getDatasourceParam(sourceSettings.get("datasource").getValue().toString()).get("column-name-delimiter").toString());
         }
 
@@ -328,6 +429,15 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         Map<String, Object> parameter = new HashMap<>();
 
         JobParamSet sinkSettings = inputJob.getRealmParams(REALM_JOB_CONTENT_SINK);
+        parameter.put("nullFormat", "\\\\N");
+        parameter.put("encoding", "UTF-8");
+        parameter.put("hiveTable", sinkSettings.get("table").getValue().toString());
+        parameter.put("hiveDatabase", sinkSettings.get("database").getValue().toString());
+        parameter.put("authType", "NONE");
+        parameter.put("hadoopConfig", new HashMap<String, Object>());
+        parameter.put("haveKerberos", false);
+        parameter.put("fileName", "exchangis_hive_w");
+        parameter.put("datasource", Integer.parseInt(sinkSettings.get("datasource").getValue().toString()));
         try {
             String location = ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("location").toString();
             URI uri = new URI(location);
@@ -337,20 +447,23 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
                 parameter.put("defaultFS", String.format("%s://%s", uri.getScheme(), uri.getHost()));
             }
             parameter.put("path", uri.getPath());
-
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
 
+        parameter.put("compress", "GZIP");
+
+        List<Map<String, Object>> columns = SINK_COLUMN.newParam(inputJob.getRealmParams(REALM_JOB_COLUMN_MAPPING)).getValue();
+
         // column
-        List<Map<String, Object>> columns = new ArrayList<>();
-        String[] columnsType = ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("columns-types").toString().split(":");
-        for (int i = 0; i < columnsType.length; i++) {
-            Map<String, Object> column = new HashMap<>();
-            column.put("index", i);
-            column.put("type", columnsType[i]);
-            columns.add(column);
-        }
+//        List<Map<String, Object>> columns = new ArrayList<>();
+//        String[] columnsType = ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("columns-types").toString().split(":");
+//        for (int i = 0; i < columnsType.length; i++) {
+//            Map<String, Object> column = new HashMap<>();
+//            column.put("index", i);
+//            column.put("type", columnsType[i]);
+//            columns.add(column);
+//        }
         parameter.put("column", columns);
 
         String inputFormat = ctx.getDatasourceParam(sinkSettings.get("datasource").getValue().toString()).get("file-inputformat").toString().toLowerCase(Locale.ROOT);
@@ -388,6 +501,11 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         return writer;
     }
 
+    private List<Transformer> buildTransformer(SubExchangisJob inputJob, ExchangisJobBuilderContext ctx) {
+        List<Transformer> transformers = TRANSFORMER.newParam(inputJob.getRealmParams(REALM_JOB_COLUMN_MAPPING)).getValue();
+        return transformers;
+    }
+
     private Map<String, Object> buildSettings(SubExchangisJob inputJob, ExchangisJobBuilderContext ctx) {
         Map<String, Object> settings = new HashMap<>();
         settings.put("useProcessor", "false");
@@ -409,9 +527,9 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             if (null != sinkSettings.get("exchangis.job.ds.params.datax.hive.r.trans_proto")
                     && null != sinkSettings.get("exchangis.job.ds.params.datax.hive.r.trans_proto").getValue()
                     && "二进制".equals(sinkSettings.get("exchangis.job.ds.params.datax.hive.r.trans_proto").getValue().toString())) {
-                transport.put("type", "record");
-            } else {
                 transport.put("type", "stream");
+            } else {
+                transport.put("type", "record");
             }
             settings.put("transport", transport);
         }
@@ -525,6 +643,8 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
          */
         private Map<String, Object> writer = new HashMap<>();
 
+        private List<Transformer> transformer = new ArrayList<>();
+
         public Map<String, Object> getReader() {
             return reader;
         }
@@ -541,6 +661,59 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             this.writer = writer;
         }
 
+
+        public List<Transformer> getTransformer() {
+            return transformer;
+        }
+
+        public void setTransformer(List<Transformer> transformer) {
+            this.transformer = transformer;
+        }
+    }
+
+    public static class Transformer {
+
+        private TransformerParameter parameter;
+        private String name;
+
+        public TransformerParameter getParameter() {
+            return parameter;
+        }
+
+        public void setParameter(TransformerParameter parameter) {
+            this.parameter = parameter;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+    }
+
+    public static class TransformerParameter {
+
+        private int columnIndex;
+        private String[] paras;
+
+        public int getColumnIndex() {
+            return columnIndex;
+        }
+
+        public void setColumnIndex(int columnIndex) {
+            this.columnIndex = columnIndex;
+        }
+
+        public String[] getParas() {
+            return paras;
+        }
+
+        public void setParas(String[] paras) {
+            this.paras = paras;
+        }
     }
 
 }
