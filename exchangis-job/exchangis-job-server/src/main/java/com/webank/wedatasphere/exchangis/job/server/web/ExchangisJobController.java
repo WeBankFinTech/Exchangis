@@ -227,7 +227,7 @@ public class ExchangisJobController {
             Optional.ofNullable(jobBuilderManager.doBuild(subExchangisJob,
                     SubExchangisJob.class, ExchangisEngineJob.class, ctx)).ifPresent(engineJobs::add);
         }
-        //  List<ExchangisEngineJob> -> List<ExchangisLauncherJob>
+        // List<ExchangisEngineJob> -> List<ExchangisLauncherJob>
         List<ExchangisLauncherJob> launcherJobs = new ArrayList<>();
         for (ExchangisEngineJob engineJob : engineJobs) {
             Optional.ofNullable(jobBuilderManager.doBuild(engineJob,
@@ -237,6 +237,9 @@ public class ExchangisJobController {
             throw new ExchangisJobException(ExchangisJobExceptionCode.JOB_BUILDER_ERROR.getCode(),
                     "The result set of launcher job is empty, please examine your job entity, [ 生成LauncherJob为空 ]", null);
         }
+
+        List<ExchangisLaunchTask> tasks = new ArrayList<>();
+
 
         for (ExchangisLauncherJob launcherJob : launcherJobs) {
             String launchName = launcherJob.getLaunchName();
@@ -280,15 +283,17 @@ public class ExchangisJobController {
 
             this.launchTaskMapper.insert(task);
 
-            launch.waitForCompleted();
+//            launch.waitForCompleted();
+//
+//            task.setStatus(launch.getStatus());
+//            task.setCompleteTime(new Date());
+//
+//            this.launchTaskMapper.updateById(task);
 
-            task.setStatus(launch.getStatus());
-            task.setCompleteTime(new Date());
-
-            this.launchTaskMapper.updateById(task);
+            tasks.add(task);
 
         }
-        return Message.ok();
+        return Message.ok().data("tasks", tasks);
     }
 
     @GET
