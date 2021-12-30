@@ -47,7 +47,7 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
 
     private ResponseRef sendOffLineRequest(NodeRequestRef requestRef,String engineType)  throws ExternalOperationFailedException {
         String url = getBaseUrl()+"/job";
-        logger.info("create sqoop job=>jobContent:{} ||,projectId:{} ||,projectName:{} ||,parameters:{} ||,type:{}",requestRef.getJobContent(),requestRef.getProjectId(),requestRef.getProjectName(),requestRef.getParameters().toString(),requestRef.getType());
+        logger.info("create sqoop job=>jobContent:{} || projectId:{} || projectName:{} || parameters:{} || type:{}",requestRef.getJobContent(),requestRef.getProjectId(),requestRef.getProjectName(),requestRef.getParameters().toString(),requestRef.getType());
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
         String projectName = null;
         try {
@@ -105,7 +105,7 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
         try{
             exchangisGetAction.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
             HttpResult httpResult = (HttpResult) this.ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, exchangisGetAction);
-            logger.info("queryProject => body:{}  || statusCode:{}",httpResult.getResponseBody(),httpResult.getStatusCode());
+            logger.info("queryProject => body:{} || statusCode:{}",httpResult.getResponseBody(),httpResult.getStatusCode());
             if(httpResult.getStatusCode() == 200){
                 Map responseMap = BDPJettyServerHelper.jacksonJson().readValue(httpResult.getResponseBody(), Map.class);
                 Map<String, Object> item = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("item");
