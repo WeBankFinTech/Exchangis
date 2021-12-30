@@ -158,6 +158,7 @@
 
 <script>
 import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
+import { message } from "ant-design-vue";
 import {
   SyncOutlined,
   MinusCircleOutlined,
@@ -195,22 +196,31 @@ export default defineComponent({
     };
 
     const handleOk = () => {
-      visible.value = false;
       const { domains, transf } = dynamicValidateForm;
-      const transformer = Object.create(null);
+      const transformer = {};
       const validator = [];
       domains.forEach((item) => {
         let str = item.optionVal + " " + item.value;
         validator.push(str);
       });
-      const params = [];
-      params.push(transf.param1);
-      params.push(transf.param2);
-      if (transf.param3)
-        params.push(transf.param3);
-      transformer.name = transf.value;
-      transformer.params = params;
 
+      if (dynamicValidateForm.transf.value) {
+        if (!transf.param1 || !transf.param2) {
+          return message.error('参数为必填')
+        }
+        const params = [];
+        params.push(transf.param1);
+        params.push(transf.param2);
+        if (dynamicValidateForm.transf.value !== 'ex_substr') {
+          if (!transf.param3) {
+            return message.error('参数为必填')
+          }
+          params.push(transf.param3);
+        }
+        transformer.name = transf.value;
+        transformer.params = params;
+      }
+      visible.value = false;
       context.emit("updateTransformer", {
         key: props.tfData.key,
         validator,
@@ -280,6 +290,10 @@ export default defineComponent({
     ]);
 
     const transformFuncOptions = ref([
+      {
+        value: "",
+        label: "--"
+      },
       {
         value: "ex_substr",
         label: "ex_substr",
