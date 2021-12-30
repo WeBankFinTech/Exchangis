@@ -352,7 +352,6 @@ export default defineComponent({
     console.log("sourceDS", fieldMap);
 
     const updateTransformer = (res) => {
-      console.log("field map update", res);
       const _transformerList = fieldMap.transformerList.filter(
         (item) => item.key != res.key
       );
