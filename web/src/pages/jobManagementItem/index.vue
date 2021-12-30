@@ -1019,13 +1019,13 @@ export default {
 
   .jd-bottom {
     overflow: auto;
-    width: calc(100% - 200px);
+    width: calc(100%);
     position: fixed;
     height: 30%;
     bottom: 0;
     background-color: white;
     .jd-bottom-top {
-      width: calc(100% - 200px);
+      width: calc(100%);
       height: 48px;
       position: fixed;
       bottom: 30%;
