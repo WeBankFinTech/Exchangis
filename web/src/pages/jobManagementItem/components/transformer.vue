@@ -13,11 +13,14 @@
       @click="showModal"
       :class="{ 'tf-mid-sync': !dynamicValidateForm.domains.length }"
     >
-      <img src="../../../images/jobDetail/u6239.png" />
-      <img
-        src="../../../images/jobDetail/u6240.png"
-        style="position: absolute; left: 72px; top: 6px; cursor: pointer"
-      />
+      <svg class="icon icon-symbol" aria-hidden="true">
+        <use xlink:href="#icon-lansejiantoudaikuang"></use>
+      </svg>
+      <!--<img src="../../../images/jobDetail/u6239.png" />-->
+      <!--<img-->
+        <!--src="../../../images/jobDetail/u6240.png"-->
+        <!--style="position: absolute; left: 72px; top: 6px; cursor: pointer"-->
+      <!--/>-->
     </div>
     <!-- bottom -->
     <div class="tf-bottom">
@@ -138,7 +141,7 @@
                 size="small"
               />
               <a-input
-                v-if="dynamicValidateForm.transf.value && dynamicValidateForm.transf.value !== 'ex_substr'"
+                v-if="dynamicValidateForm.transf.value && dynamicValidateForm.transf.value !== 'dx_substr'"
                 v-model:value="dynamicValidateForm.transf.param3"
                 :placeholder="placeholder3"
                 style="width: 130px"
@@ -155,6 +158,7 @@
 
 <script>
 import { defineComponent, ref, reactive, toRaw, watch, computed } from "vue";
+import { message } from "ant-design-vue";
 import {
   SyncOutlined,
   MinusCircleOutlined,
@@ -192,22 +196,31 @@ export default defineComponent({
     };
 
     const handleOk = () => {
-      visible.value = false;
       const { domains, transf } = dynamicValidateForm;
-      const transformer = Object.create(null);
+      const transformer = {};
       const validator = [];
       domains.forEach((item) => {
         let str = item.optionVal + " " + item.value;
         validator.push(str);
       });
-      const params = [];
-      params.push(transf.param1);
-      params.push(transf.param2);
-      if (transf.param3)
-        params.push(transf.param3);
-      transformer.name = transf.value;
-      transformer.params = params;
 
+      if (dynamicValidateForm.transf.value) {
+        if (!transf.param1 || !transf.param2) {
+          return message.error('参数为必填')
+        }
+        const params = [];
+        params.push(transf.param1);
+        params.push(transf.param2);
+        if (dynamicValidateForm.transf.value !== 'dx_substr') {
+          if (!transf.param3) {
+            return message.error('参数为必填')
+          }
+          params.push(transf.param3);
+        }
+        transformer.name = transf.value;
+        transformer.params = params;
+      }
+      visible.value = false;
       context.emit("updateTransformer", {
         key: props.tfData.key,
         validator,
@@ -278,16 +291,20 @@ export default defineComponent({
 
     const transformFuncOptions = ref([
       {
-        value: "ex_substr",
-        label: "ex_substr",
+        value: "",
+        label: "--"
       },
       {
-        value: "ex_pad",
-        label: "ex_pad",
+        value: "dx_substr",
+        label: "dx_substr",
       },
       {
-        value: "ex_replace",
-        label: "ex_replace",
+        value: "dx_pad",
+        label: "dx_pad",
+      },
+      {
+        value: "dx_replace",
+        label: "dx_replace",
       },
     ]);
 
@@ -324,17 +341,17 @@ export default defineComponent({
       dynamicValidateForm.transf.param2 = ''
       dynamicValidateForm.transf.param3 = ''
       switch (dynamicValidateForm.transf.value) {
-        case 'ex_substr':
+        case 'dx_substr':
           placeholder1.value = 'startIndex'
           placeholder2.value = 'length'
           placeholder3.value = ''
           break;
-        case 'ex_pad':
+        case 'dx_pad':
           placeholder1.value = 'padType(r or l)'
           placeholder2.value = 'length'
           placeholder3.value = 'padString'
           break;
-        case 'ex_replace':
+        case 'dx_replace':
           placeholder1.value = 'startIndex'
           placeholder2.value = 'length'
           placeholder3.value = 'replaceString'
@@ -367,13 +384,15 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+@import "../../../common/content.less";
 .tf-mid {
   text-align: center;
   position: relative;
+  height: 16px;
 }
 
 .tf-mid-sync {
-  margin-top: 30px;
+  /*margin-top: 10px;*/
 }
 .tf-modal-content {
   display: flex;
@@ -397,12 +416,14 @@ export default defineComponent({
 }
 .tf-bottom {
   text-align: center;
+  height: 22px;
   > span {
     font-size: 12px;
   }
 }
 .tf-top {
   text-align: center;
+  height: 22px;
   > span {
     font-size: 12px;
   }
@@ -412,5 +433,12 @@ export default defineComponent({
   :nth-of-type(1) {
     max-width: 0;
   }
+}
+.icon-symbol {
+  font-size: 50px;
+  position: absolute;
+  left: 72px;
+  cursor: pointer;
+  top: -16px;
 }
 </style>
