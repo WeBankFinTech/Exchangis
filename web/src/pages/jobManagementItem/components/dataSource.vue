@@ -1,7 +1,7 @@
 <template>
   <div class="data-source-warp">
     <!-- left -->
-    <div class="ds-l">
+    <!-- <div class="ds-l">
       <div class="main-header">
         <img src="../../../images/jobDetail/u2664.png" />
         <img
@@ -16,29 +16,33 @@
         />
         <span class="main-header-label" @click="showInfo">数据源</span>
       </div>
-    </div>
+    </div> -->
     <!-- right -->
     <div class="ds-r">
-      <div class="main-header">
-        <div>
+      <div class="main-header" @click="showInfo">
+        <span style="margin-right: 8px; color: rgba(0, 0, 0, 0.45)">
+          <RightOutlined v-if="!isFold" />
+          <DownOutlined v-else />
+        </span>
+        <span>数据源</span>
+        <!-- <div>
           <span class="main-header-label">数据来源</span>
         </div>
         <div>
           <span class="main-header-label">数据目的</span>
-        </div>
+        </div> -->
       </div>
 
-      <div class="main-content" v-show="isFlod">
+      <div class="main-content" v-show="isFold">
         <!-- left -->
         <div class="data-source-warp-l">
           <div class="data-source-warp-l-content">
-            <a-form ref="formRef" :label-col="labelCol">
-              <a-form-item
-                label="数据源信息"
-                name="dsInfo"
-                width="300"
-                class="source-title"
-              >
+            <a-form
+              ref="formRef"
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol"
+            >
+              <a-form-item name="dsInfo">
                 <SelectDataSource
                   @updateDsInfo="updateSourceInfo"
                   :title="sourceTitle"
@@ -57,6 +61,7 @@
                 <dync-render
                   v-bind:param="item"
                   @updateInfo="updateSourceParams"
+                  :style="styleObject"
                 />
               </a-form-item>
             </a-form>
@@ -66,23 +71,27 @@
         <!-- mid -->
 
         <div class="data-source-warp-mid">
-          <RightCircleOutlined style="font-size: 50px; color: #66f" />
+          <span
+            class="iconfont icon-jiantou"
+            style="color: #99b0d0; font-size: 24px"
+          ></span>
         </div>
 
         <!-- right -->
 
         <div class="data-source-warp-r">
           <div class="data-source-warp-r-content">
-            <a-form ref="formRef" :label-col="labelCol">
-              <a-form-item
-                ref="dsInfo2"
-                label="数据源信息"
-                name="dsInfo2"
-                class="source-title"
-              >
+            <a-form
+              ref="formRef"
+              :label-col="labelCol"
+              :wrapper-col="wrapperCol"
+              v-if="sourceTitle !== '请点击后选择'"
+            >
+              <a-form-item name="dsInfo2">
                 <SelectDataSource
                   @updateDsInfo="updateSinkInfo"
                   :title="sinkTitle"
+                  :style="styleObject"
                 />
               </a-form-item>
               <!-- 动态组件 -->
@@ -98,6 +107,7 @@
                 <dync-render
                   v-bind:param="item"
                   @updateInfo="updateSinkParams"
+                  :style="styleObject"
                 />
               </a-form-item>
             </a-form>
@@ -109,7 +119,12 @@
 </template>
 
 <script>
-import { RightCircleOutlined } from "@ant-design/icons-vue";
+import {
+  RightCircleOutlined,
+  DownOutlined,
+  RightOutlined,
+  ArrowRightOutlined,
+} from "@ant-design/icons-vue";
 import {
   defineComponent,
   ref,
@@ -139,6 +154,9 @@ export default defineComponent({
     ),
     DyncRender: defineAsyncComponent(() => import("./dyncRender.vue")),
     RightCircleOutlined,
+    RightOutlined,
+    DownOutlined,
+    ArrowRightOutlined,
   },
   setup(props, context) {
     // 对象转标题
@@ -146,12 +164,12 @@ export default defineComponent({
       if (typeof obj !== "object") return "";
       const { type, db, table, ds } = obj;
       if (!type && !db && !table && !ds) return "请点击后选择";
-      return `${type}-${ds}-${db}-${table}`;
+      return [type, ds, db, table];
     };
 
     let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source));
     let sinkTitle = ref(objToTitle(props.dsData.dataSourceIds.sink));
-    let isFlod = ref(true);
+    let isFold = ref(true);
 
     const dataSource = reactive({
       dataSourceIds: {
@@ -200,15 +218,15 @@ export default defineComponent({
     const formRef = ref();
     const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
-      if (dataSource.dataSourceIds.sink.type === info[0]) {
+      if (dataSource.dataSourceIds.sink.type === info[0] && props.engineType === 'SQOOP') {
         sourceTitle.value = objToTitle({
           type: info[0],
           id: "",
           db: "",
           table: "",
           ds: "",
-        })
-        return message.error('SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择')
+        });
+        return message.error("SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择");
       }
       dataSource.dataSourceIds.source.type = info[0];
       dataSource.dataSourceIds.source.ds = info[1];
@@ -221,26 +239,26 @@ export default defineComponent({
         dataSource.dataSourceIds.source.type,
         "source"
       ).then((res) => {
-        res.uis.forEach(ui => {
+        res.uis.forEach((ui) => {
           if (!ui.value && ui.defaultValue) {
-            ui.value = ui.defaultValue
+            ui.value = ui.defaultValue;
           }
-        })
+        });
         dataSource.params.sources = res.uis || [];
         context.emit("updateSourceInfo", dataSource);
       });
     };
     const updateSinkInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
-      if (dataSource.dataSourceIds.source.type === info[0]) {
+      if (dataSource.dataSourceIds.source.type === info[0] && props.engineType === 'SQOOP') {
         sinkTitle.value = objToTitle({
           type: info[0],
           id: "",
           db: "",
           table: "",
-          ds: ""
-        })
-        return message.error('SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择')
+          ds: "",
+        });
+        return message.error("SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择");
       }
       dataSource.dataSourceIds.sink.type = info[0];
       dataSource.dataSourceIds.sink.ds = info[1];
@@ -253,11 +271,11 @@ export default defineComponent({
         dataSource.dataSourceIds.sink.type,
         "sink"
       ).then((res) => {
-        res.uis.forEach(ui => {
+        res.uis.forEach((ui) => {
           if (!ui.value && ui.defaultValue) {
-            ui.value = ui.defaultValue
+            ui.value = ui.defaultValue;
           }
-        })
+        });
         dataSource.params.sinks = res.uis || [];
         context.emit("updateSinkInfo", dataSource);
       });
@@ -268,10 +286,10 @@ export default defineComponent({
       if (info.required && !info.value) {
         sourcesHelpMsg[_key] = `请输入${info.label}`;
         sourcesHelpStatus[_key] = "error";
-      } else if (info.validateType === 'REGEX') {
-        const num_reg = new RegExp(`${info.validateRange}`)
+      } else if (info.validateType === "REGEX") {
+        const num_reg = new RegExp(`${info.validateRange}`);
         if (!num_reg.test(info.value)) {
-          sourcesHelpMsg[info.key] = info.validateMsg
+          sourcesHelpMsg[info.key] = info.validateMsg;
           sourcesHelpStatus[info.key] = "error";
         } else {
           sourcesHelpMsg[info.key] = "";
@@ -319,8 +337,8 @@ export default defineComponent({
       if (info.required && !info.value) {
         sinksHelpMsg[_key] = `请输入${info.label}`;
         sinksHelpStatus[_key] = "error";
-      } else if (info.validateType === 'REGEX') {
-        const num_reg = new RegExp(`${info.validateRange}`)
+      } else if (info.validateType === "REGEX") {
+        const num_reg = new RegExp(`${info.validateRange}`);
         if (!num_reg.test(info.value)) {
           sinksHelpMsg[info.key] = `请正确输入${info.label}`;
           sinksHelpStatus[info.key] = "error";
@@ -370,7 +388,7 @@ export default defineComponent({
       context.emit("updateSinkParams", dataSource);
     };
     const showInfo = () => {
-      isFlod.value = !isFlod.value;
+      isFold.value = !isFold.value;
     };
     return {
       formRef,
@@ -382,7 +400,7 @@ export default defineComponent({
       updateSourceParams,
       updateSinkParams,
       showInfo,
-      isFlod,
+      isFold,
 
       sourcesHelpMsg,
       sourcesHelpStatus,
@@ -391,9 +409,19 @@ export default defineComponent({
 
       labelCol: {
         style: {
-          width: "120px",
-          "text-align": "start",
+          style: {
+            width: "417px",
+            "text-align": "left",
+          },
         },
+      },
+      wrapperCol: {
+        style: {
+          "text-align": "left",
+        },
+      },
+      styleObject: {
+        width: "400px",
       },
     };
   },
@@ -403,44 +431,13 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .data-source-warp {
-  // width: 1215px;
   display: flex;
-  margin-top: 15px;
+  padding: 24px;
 }
 .ds-l {
   width: 122px;
   .main-header {
-    height: 33px;
-    background: inherit;
-    border: none;
-    display: flex;
-    border-top-left-radius: 100%;
-    border-bottom-left-radius: 100%;
-    background-color: #6b6b6b;
-    position: relative;
-    /*&::before {
-      content: "";
-      position: absolute;
-      width: 16px;
-      height: 33px;
-      background-color: #66f;
-      border-top-right-radius: 16px;
-      border-bottom-right-radius: 16px;
-      right: 962px;
-    }*/
-    :nth-of-type(1) {
-      text-align: center;
-      line-height: 33px;
-      font-size: 16px;
-    }
-    .main-header-label {
-      font-family: "Arial Negreta", "Arial Normal", "Arial";
-      font-weight: 700;
-      font-style: normal;
-      color: #ffffff;
-      position: absolute;
-      left: 46px;
-    }
+    height: 20px;
   }
 }
 .ds-r {
@@ -452,28 +449,18 @@ export default defineComponent({
   border-top: none;
   flex-direction: column;
   .main-header {
-    height: 33px;
-    background: inherit;
-    background-color: rgba(107, 107, 107, 1);
-    border: none;
-    display: flex;
-    > div {
-      flex: 1;
-      text-align: center;
-      line-height: 33px;
-    }
-    .main-header-label {
-      font-family: "Arial Negreta", "Arial Normal", "Arial";
-      font-weight: 700;
-      font-style: normal;
-      color: #ffffff;
-    }
+    height: 20px;
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
   }
   .main-content {
-    border: 1px solid rgba(102, 102, 255, 1);
-    border-top: none;
-    padding: 25px 30px;
     display: flex;
+    padding: 24px;
+    padding-bottom: 0px;
+    min-width: 960px;
+    max-width: 960px;
   }
 }
 .data-source-warp-l {
@@ -488,10 +475,10 @@ export default defineComponent({
   flex: 1;
 }
 .data-source-warp-mid {
-  width: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 74px;
+  height: 46px;
+  line-height: 46px;
+  text-align: center;
 }
 .data-source-label {
   font-size: 14px;
