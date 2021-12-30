@@ -168,7 +168,7 @@ export const importJob = (id, params) => {
 
 //执行任务
 export const executeTask = (id) => {
-  return request(`/job/${id}`, null, {
+  return request(`/job/${id}/action/execute`, null, {
     method: "POST",
   });
 };
@@ -255,6 +255,20 @@ export const saveSpeedLimit = (params, body) => {
     method: "PUT",
   });
 };
+
+// 获取运行日志
+export const getLogs = (params) => {
+  return request(
+    `/execution/tasks/${params.taskID}/logs`,
+    {
+      fromLine: params.fromLine || 1,
+      pageSize: params.pageSize || 10
+    },
+    {
+      method: "GET",
+    }
+  );
+}
 
 
 // 首页相关
