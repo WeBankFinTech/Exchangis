@@ -1,7 +1,7 @@
 <template>
   <div class="field-map-wrap">
     <!-- left -->
-    <div class="fm-l">
+    <!-- <div class="fm-l">
       <div class="main-header">
         <img src="../../../images/jobDetail/u2664.png" />
         <img
@@ -16,16 +16,24 @@
         />
         <span class="main-header-label" @click="showInfo">字段映射</span>
       </div>
-    </div>
+    </div> -->
     <!-- right -->
     <div class="fm-r">
-      <div class="main-header">
+      <!-- <div class="main-header">
         <div>
           <span class="main-header-label">来源字段</span>
         </div>
         <div>
           <span class="main-header-label">目的字段</span>
         </div>
+      </div> -->
+
+      <div class="main-header" @click="showInfo">
+        <span style="margin-right: 8px; color: rgba(0, 0, 0, 0.45)">
+          <RightOutlined v-if="!isFold"/>
+          <DownOutlined v-else/>
+        </span>
+        <span>字段映射</span>
       </div>
 
       <div
@@ -45,10 +53,11 @@
             <div class="filed-map-wrap-l-content">
               <a-table
                 :dataSource="fieldMap.sourceDS"
-                :columns="columns"
+                :columns="columns1"
                 size="large"
                 :pagination="false"
                 v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
+                bordered
               >
                 <template #fieldName="{ record }">
                   <a-select
@@ -84,7 +93,7 @@
                     position: relative;
                     height: 66px;
                     float: left;
-                    margin-left: 30px;
+                    width: 200px;
                   "
                 >
                   <Transformer
@@ -95,7 +104,7 @@
                   <DeleteOutlined
                     v-if="item.deleteEnable"
                     @click="deleteField(index)"
-                    style="position: absolute; right: -10px; top: 33px"
+                    style="position: absolute; right: 0; top: 23px; color:#1890ff;"
                   />
                 </div>
               </template>
@@ -107,13 +116,15 @@
             <div class="field-map-wrap-r-content">
               <a-table
                 :dataSource="fieldMap.sinkDS"
-                :columns="columns"
+                :columns="columns2"
                 size="large"
                 :pagination="false"
                 v-if="type === 'MAPPING' && fieldMap.sinkDS.length > 0"
+                bordered
               >
                 <template #fieldName="{ record }">
                   <a-select
+                    :disabled="!record.fieldEditable"
                     ref="select"
                     :value="record.fieldName"
                     style="width: 150px"
@@ -150,7 +161,7 @@ import {
   defineAsyncComponent,
 } from "vue";
 import { cloneDeep } from "lodash-es";
-import { DeleteOutlined } from "@ant-design/icons-vue";
+import { DeleteOutlined, RightOutlined,DownOutlined } from "@ant-design/icons-vue";
 
 export default defineComponent({
   props: {
@@ -165,6 +176,8 @@ export default defineComponent({
   components: {
     Transformer: defineAsyncComponent(() => import("./transformer.vue")),
     DeleteOutlined,
+    RightOutlined,
+    DownOutlined
   },
   setup(props, context) {
     const { type } = props.fmData;
@@ -213,17 +226,21 @@ export default defineComponent({
           if (sink.key == key) {
             o.sink_field_name = sink.fieldName;
             o.sink_field_type = sink.fieldType;
+            o.sink_field_index = sink.fieldIndex
+            o.sink_field_editable = sink.fieldEditable
           }
         });
         transformerList.forEach((tf) => {
           if (tf.key == key) {
             o.validator = tf.validator;
             o.transformer = tf.transformer;
-            o.deleteEnable = tf.deleteEnable;
+            o.deleteEnable = tf.deleteEnable
           }
         });
         o.source_field_name = source.fieldName;
         o.source_field_type = source.fieldType;
+        o.source_field_index = source.fieldIndex
+        o.source_field_editable = source.fieldEditable
         mapping.push(o);
       });
       const { type, sql } = props.fmData;
@@ -243,7 +260,7 @@ export default defineComponent({
         return;
       }
 
-      if (!map.length) {
+      /*if (!map.length) {
         toRaw(props.deductions).forEach((item, idx) => {
           let sourceItem = {};
           let sinkItem = {};
@@ -268,47 +285,73 @@ export default defineComponent({
           fieldMap.sourceDS.push(sourceItem);
           fieldMap.sinkDS.push(sinkItem);
         });
-        // const transforms = createTransforms(
-        //   fieldMap.sourceDS,
-        //   fieldMap.sinkDS,
-        //   fieldMap.transformerList
-        // );
-        // context.emit("updateFieldMap", transforms);
-      } else {
+      } else { */
         map.forEach((item, idx) => {
           let sourceItem = {};
           let sinkItem = {};
           let transformerItem = {};
 
-          sourceItem.key = idx + "";
-          sourceItem.fieldName =
-            item.source_field_name && item.source_field_name;
-          sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
-          sourceItem.fieldType =
-            item.source_field_type && item.source_field_type;
+          if (item.source_field_name && item.source_field_type) {
+            sourceItem.key = idx + "";
+            sourceItem.fieldName =
+              item.source_field_name && item.source_field_name;
+            sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
+            sourceItem.fieldType =
+              item.source_field_type && item.source_field_type;
+            sourceItem.fieldIndex = item.source_field_index
+            sourceItem.fieldEditable = item.source_field_editable
 
-          sinkItem.key = idx + "";
-          sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
-          sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
-          sinkItem.fieldType = item.sink_field_type && item.sink_field_type;
+            sinkItem.key = idx + "";
+            sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
+            sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
+            sinkItem.fieldType = item.sink_field_type && item.sink_field_type;
+            sinkItem.fieldIndex = item.sink_field_index
+            sinkItem.fieldEditable = item.sink_field_editable
 
-          transformerItem.key = idx + "";
-          transformerItem.validator = item.validator && item.validator;
-          transformerItem.transformer = item.transformer && item.transformer;
-          transformerItem.deleteEnable = item.deleteEnable;
+            transformerItem.key = idx + "";
+            transformerItem.validator = item.validator && item.validator;
+            transformerItem.transformer = item.transformer && item.transformer;
+            transformerItem.deleteEnable = item.deleteEnable;
 
-          fieldMap.transformerList.push(transformerItem);
-          fieldMap.sourceDS.push(sourceItem);
-          fieldMap.sinkDS.push(sinkItem);
-        });
-      }
+            fieldMap.transformerList.push(transformerItem);
+            fieldMap.sourceDS.push(sourceItem);
+            fieldMap.sinkDS.push(sinkItem);
+          } else if (item.source && item.source.name && item.source.type) {
+            let sourceItem = {};
+            let sinkItem = {};
+            let transformerItem = {};
+
+            sourceItem.key = idx + "";
+            sourceItem.fieldName = item.source.name;
+            sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
+            sourceItem.fieldType = item.source.type;
+            sourceItem.fieldIndex = item.source.fieldIndex
+            sourceItem.fieldEditable = item.source.fieldEditable
+
+            sinkItem.key = idx + "";
+            sinkItem.fieldName = item.sink.name;
+            sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
+            sinkItem.fieldType = item.sink.type;
+            sinkItem.fieldIndex = item.sink.fieldIndex
+            sinkItem.fieldEditable = item.sink.fieldEditable
+
+            transformerItem.key = idx + "";
+            transformerItem.validator = [];
+            transformerItem.transformer = {};
+            transformerItem.deleteEnable = item.deleteEnable;
+
+            fieldMap.transformerList.push(transformerItem);
+            fieldMap.sourceDS.push(sourceItem);
+            fieldMap.sinkDS.push(sinkItem);
+          }
+        })
+      //}
     };
     createDataSource(toRaw(props.fmData).mapping || []);
 
     console.log("sourceDS", fieldMap);
 
     const updateTransformer = (res) => {
-      console.log("field map update", res);
       const _transformerList = fieldMap.transformerList.filter(
         (item) => item.key != res.key
       );
@@ -380,11 +423,13 @@ export default defineComponent({
       sourceItem.fieldName = "";
       sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
       sourceItem.fieldType = "";
+      sourceItem.fieldEditable = true
 
       sinkItem.key = sinkLen + "";
       sinkItem.fieldName = "";
       sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
       sinkItem.fieldType = "";
+      sinkItem.fieldEditable = true
 
       transformerItem.key = tfLen + "";
       transformerItem.validator = [];
@@ -415,24 +460,48 @@ export default defineComponent({
     return {
       type,
       fieldMap,
-      columns: [
-        {
-          title: "字段名",
-          dataIndex: "fieldName",
-          key: "fieldName",
-          slots: {
-            customRender: "fieldName",
+      columns1: [{
+        title: "来源字段",
+        children: [
+          {
+            title: "字段名",
+            dataIndex: "fieldName",
+            key: "fieldName",
+            slots: {
+              customRender: "fieldName",
+            },
           },
-        },
-        {
-          title: "类型",
-          dataIndex: "fieldType",
-          key: "fieldType",
-          slots: {
-            customRender: "fieldType",
+          {
+            title: "类型",
+            dataIndex: "fieldType",
+            key: "fieldType",
+            slots: {
+              customRender: "fieldType",
+            },
           },
-        },
-      ],
+        ]
+      }],
+      columns2: [{
+        title: "目的字段",
+        children: [
+          {
+            title: "字段名",
+            dataIndex: "fieldName",
+            key: "fieldName",
+            slots: {
+              customRender: "fieldName",
+            },
+          },
+          {
+            title: "类型",
+            dataIndex: "fieldType",
+            key: "fieldType",
+            slots: {
+              customRender: "fieldType",
+            },
+          },
+        ]
+      }],
       updateTransformer,
       updateSourceFieldName,
       updateSinkFieldName,
@@ -446,35 +515,23 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+@import "../../../common/content.less";
 .field-map-wrap {
-  margin-top: 30px;
-  // width: 1215px;
   display: flex;
+  border-bottom: 1px solid #dee4ec;
+  border-top: 1px solid #dee4ec;
+  min-height: 68px;
+  padding: 24px;
+  box-sizing: border-box;
 }
 .fm-l {
   width: 122px;
   .main-header {
-    height: 33px;
-    background: inherit;
-    border: none;
-    display: flex;
-    border-top-left-radius: 100%;
-    border-bottom-left-radius: 100%;
-    position: relative;
-    background-color: #6b6b6b;
-    :nth-of-type(1) {
-      text-align: center;
-      line-height: 33px;
-      font-size: 16px;
-    }
-    .main-header-label {
-      font-family: "Arial Negreta", "Arial Normal", "Arial";
-      font-weight: 700;
-      font-style: normal;
-      color: #ffffff;
-      position: absolute;
-      left: 46px;
-    }
+    height: 20px;
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
   }
 }
 .fm-r {
@@ -486,38 +543,33 @@ export default defineComponent({
   border-top: none;
   flex-direction: column;
   .main-header {
-    height: 33px;
-    background: inherit;
-    background-color: rgba(107, 107, 107, 1);
-    border: none;
-    display: flex;
-    > div {
-      flex: 1;
-      text-align: center;
-      line-height: 33px;
-    }
-    /*&::before {
-      content: "";
-      position: absolute;
-      width: 16px;
-      height: 33px;
-      background-color: #66f;
-      border-top-right-radius: 16px;
-      border-bottom-right-radius: 16px;
-    }*/
-    .main-header-label {
-      font-family: "Arial Negreta", "Arial Normal", "Arial";
-      font-weight: 700;
-      font-style: normal;
-      color: #ffffff;
-    }
+    height: 20px;
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
   }
   .main-content {
-    border: 1px solid rgba(102, 102, 255, 1);
-    border-top: none;
-    padding: 15px 30px;
+    padding: 24px;
+    min-width: 950px;
+    max-width: 950px;
     display: flex;
     flex-direction: column;
+    :deep(.ant-table-thead) {
+      tr {
+        th {
+          text-align: center;
+          background-color: #F8FAFD;
+        }
+      }
+    }
+    :deep(.ant-table-tbody) {
+      tr {
+        td {
+          padding: 16px 10px;
+        }
+      }
+    }
   }
   .text-danger {
     padding: 0px;
@@ -534,7 +586,6 @@ export default defineComponent({
   }
 }
 .field-map-wrap-r {
-  min-width: 332px;
   flex: 1;
 }
 .field-map-wrap-mid {
@@ -542,9 +593,9 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   position: relative;
-  margin-top: 54px;
+  margin-top: 86px;
 }
-.feld-map-label {
+.field-map-label {
   font-size: 14px;
   text-align: left;
 }
