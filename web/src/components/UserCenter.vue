@@ -1,5 +1,5 @@
 <template>
-  <div class="right">{{ initialState.userName }}</div>
+  <!--<div class="right">{{ initialState.userName }}</div>-->
 </template>
 <script>
 import { useModel } from "@fesjs/fes";
