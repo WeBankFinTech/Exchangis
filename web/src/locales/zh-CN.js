@@ -112,7 +112,7 @@ export default {
       },
     },
     sourceTypeModal: {
-      title: "DataSourceType",
+      title: "数据源",
       searchInputPlaceholder: "输入关键字搜索数据源",
     },
   },
