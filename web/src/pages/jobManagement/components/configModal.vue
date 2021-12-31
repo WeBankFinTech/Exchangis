@@ -31,14 +31,14 @@
       <div class="cm-title">
         <span>任务变量</span>
       </div>
-      <div class="cm-button" @click="createTask">
-        <PlusOutlined style="margin-right: 8px;font-size: 12px;cursor: pointer;"/>
+      <div class="cm-button" @click="createTask" style="cursor: pointer;">
+        <PlusOutlined style="margin-right: 8px;font-size: 12px;"/>
         <span>添加变量</span>
       </div>
       
       <div
         v-for="(item, index) in formState.jobParams"
-        style="overflow: hidden;"
+        style="overflow: hidden;position: relative"
         :key="index"
       >
         <a-form-item class="w50 fl" :label="index + 1" name="jobParamsKey" labelAlign='left' :label-col='{ span: 3 }'>
@@ -153,6 +153,13 @@ export default {
     const handleOk = async () => {
       await formRef.value.validate();
       const formatData = cloneDeep(formState);
+      if (formatData.jobParams) {
+        for (let i = 0; i < formatData.jobParams.length; i++) {
+          if (!formatData.jobParams[i].key || !formatData.jobParams[i].value) {
+            return message.error("任务变量不能为空，请填写或删除");
+          }
+        }
+      }
       // try {
       //   if (this.mode === "create") {
       //     confirmLoading.value = true;
@@ -231,7 +238,8 @@ export default {
 }
 .delete-icon {
   cursor: pointer;
-  right: 22px;
+  right: 0;
+  top: 8px;
   position: absolute;
 }
 </style>
