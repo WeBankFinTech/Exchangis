@@ -137,9 +137,15 @@ export default {
       const tabs = [...this.tabs];
       if (!tabs.find((item) => item.id === data.id)) {
         tabs.push(data);
+        this.tabs = tabs;
+        this.active = this.tabs.length - 1
+      } else {
+        tabs.forEach((item, index) => {
+          if (item.id === data.id) {
+            this.active = index
+          }
+        })
       }
-      this.tabs = tabs;
-      this.active = this.tabs.length - 1
       this.activeTabId = data.id;
       this.curTab = data;
     },
