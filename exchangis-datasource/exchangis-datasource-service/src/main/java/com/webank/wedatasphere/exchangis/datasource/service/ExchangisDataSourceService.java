@@ -721,6 +721,15 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                 item.setName(ds.getDataSourceName());
                 item.setType(ds.getDataSourceType().getName());
                 item.setDataSourceTypeId(ds.getDataSourceTypeId());
+                item.setModifyTime(ds.getModifyTime());
+                item.setModifyUser(ds.getModifyUser());
+                item.setCreateSystem(ds.getCreateSystem());
+                item.setCreateIdentify(ds.getCreateIdentify());
+                item.setCreateUser(ds.getCreateUser());
+                item.setExpire(ds.isExpire());
+                item.setLabels(ds.getLabels());
+                item.setDesc(ds.getDataSourceDesc());
+                item.setVersionId(ds.getVersionId());
                 dataSources.add(item);
             });
         }
@@ -983,6 +992,19 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                 }
             }
         }
+
+        versions.sort((o1, o2) -> {
+            Object vid1 = o1.get("versionId");
+            Object vid2 = o2.get("versionId");
+            int a1 = 0, a2 = 0;
+            if (Objects.nonNull(vid1)) {
+                a1 = Integer.parseInt(vid1.toString());
+            }
+            if (Objects.nonNull(vid2)) {
+                a2 = Integer.parseInt(vid2.toString());
+            }
+            return a2 - a1;
+        });
         return Message.ok().data("versions", versions);
     }
 
