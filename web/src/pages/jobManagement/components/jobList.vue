@@ -305,12 +305,10 @@ export default {
         }
         this.getJobs(newJobData.jobType);
       }
-      console.log(status);
       this.$emit("changeType");
     },
     handleJobCopy(data) {
       this.visible = true;
-      console.log(data);
       this.editJobData = data;
     },
     showJobDetail(data) {
