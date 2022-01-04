@@ -65,6 +65,11 @@
       </div>
       <!-- bottom 类似tree组件 -->
       <div class="sds-wrap-b">
+        <a-spin :spinning="spinning" style="
+          text-align: center;
+          width: 100%;
+          height: 300px;
+          padding-top: 150px;"/>
         <a-directory-tree
           :tree-data="treeData"
           :autoExpandParent="false"
@@ -123,6 +128,7 @@ export default defineComponent({
       selectTable: "",
       searchWord: ''
     });
+    let spinning = ref(false)
     const newProps = computed(() => JSON.parse(JSON.stringify(props.title)));
     watch(newProps, (val, oldVal) => {
       state.defaultSelect = val;
@@ -192,6 +198,7 @@ export default defineComponent({
     // 创建 db & tables tree
     const createTree = async (ds, cb) => {
       if (!ds) return;
+      spinning = true
       const tree = [];
       // 这里 根据数据源请求 dbs
       const cur = state.dataSourceList.filter((item) => {
@@ -215,6 +222,7 @@ export default defineComponent({
         tree.push(o);
       });
       state.treeData = tree;
+      spinning = false
       cb();
     };
     const visible = ref(false);
@@ -294,7 +302,8 @@ export default defineComponent({
       handleChangeDS,
       getBg,
       expandedKeys,
-      createTree
+      createTree,
+      spinning
     };
   },
 });
@@ -365,6 +374,7 @@ export default defineComponent({
   }
 }
 .sds-wrap-b {
+  min-height: 300px;
   max-height: 500px;
   overflow-y: auto;
 }
