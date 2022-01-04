@@ -35,27 +35,28 @@
         <PlusOutlined style="margin-right: 8px;font-size: 12px;"/>
         <span>添加变量</span>
       </div>
-      
-      <div
-        v-for="(item, index) in formState.jobParams"
-        style="overflow: hidden;position: relative"
-        :key="index"
-      >
-        <a-form-item class="w50 fl" :label="index + 1" name="jobParamsKey" labelAlign='left' :label-col='{ span: 3 }'>
-          <a-input v-model:value="item.key" :style="{ width: '194px'}"/>
-        </a-form-item>
-        <span class="fl separator">=</span>
-        <a-form-item class="w40 fl" name="jobParamsValue">
-          <a-input v-model:value="item.value" :style="{ width: '194px'}"/>
-        </a-form-item>
-        <DeleteOutlined class="delete-icon" @click="deleteTask(index)"/>
+      <div style="overflow-y: auto;max-height: 150px" id="variable-modification">
+        <div
+          v-for="(item, index) in formState.jobParams"
+          style="overflow: hidden;position: relative"
+          :key="index"
+        >
+          <a-form-item class="w50 fl" :label="index + 1" name="jobParamsKey" labelAlign='left' :label-col='{ span: 3 }'>
+            <a-input v-model:value="item.key" :style="{ width: '194px'}"/>
+          </a-form-item>
+          <span class="fl separator">=</span>
+          <a-form-item class="w40 fl" name="jobParamsValue">
+            <a-input v-model:value="item.value" :style="{ width: '194px'}"/>
+          </a-form-item>
+          <DeleteOutlined class="delete-icon" @click="deleteTask(index)"/>
+        </div>
       </div>
     </a-form>
   </a-modal>
 </template>
 
 <script>
-import { toRaw, ref, watch, reactive, watchEffect } from "vue";
+import { toRaw, ref, watch, reactive, watchEffect, nextTick } from "vue";
 import { message } from "ant-design-vue";
 import { PlusOutlined , DeleteOutlined} from "@ant-design/icons-vue";
 import { createProject, getProjectById, updateProject } from "@/common/service";
@@ -142,9 +143,18 @@ export default {
       }
     );
 
-    const createTask = () => {
+    async function createTask() {
+      if (formState.jobParams.length) {
+        let cur = formState.jobParams[formState.jobParams.length - 1]
+        if (!cur.key || !cur.value) {
+          return message.error('请先填写变量')
+        }
+      }
       formState.jobParams.push({ key: "", value: "" });
-    };
+      await nextTick()
+      const varMo = document.querySelector('#variable-modification');
+      varMo.scrollTop = varMo.scrollHeight;
+    }
 
     const deleteTask = (index) => {
       formState.jobParams.splice(index, 1)
