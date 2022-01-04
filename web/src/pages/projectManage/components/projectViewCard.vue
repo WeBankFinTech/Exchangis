@@ -66,9 +66,17 @@
         <span class="iconfont icon-need-fault-tolerance project_view_card_icon"></span>
       </div>
       <a-divider type="horizontal" style="width: 16px" />
-      <div @click="$emit('delete', id)">
-        <span class="iconfont icon-delete project_view_card_icon"></span>
-      </div>
+      <a-popconfirm
+        title="是否删除项目?"
+        ok-text="确定"
+        cancel-text="取消"
+        @confirm="$emit('delete', id)"
+      >
+        <DeleteOutlined class="delete-icon" />
+      </a-popconfirm>
+      <!--<div @click="$emit('delete', id)">-->
+        <!--<span class="iconfont icon-delete project_view_card_icon"></span>-->
+      <!--</div>-->
     </div>
   </div>
 </template>
