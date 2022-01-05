@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import com.google.common.base.Joiner;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
-import com.webank.wedatasphere.linkis.server.Message;
+import org.apache.linkis.server.Message;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;

@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,7 +10,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
-import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.InputElementUI;
@@ -29,8 +27,8 @@ import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
 import com.webank.wedatasphere.linkis.common.utils.JsonUtils;
 import com.webank.wedatasphere.linkis.manager.label.utils.LabelUtils.Jackson;
-import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.server.security.SecurityFilter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
