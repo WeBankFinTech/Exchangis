@@ -28,7 +28,7 @@ object TestExchangisLinkisRemoteClient {
   //    .build()
 
   val clientConfig: DWSClientConfig = DWSClientConfigBuilder.newBuilder()
-    .addServerUrl("http://121.36.12.247:8088")
+    .addServerUrl("http://dss.shineweng.com:20088")
     .connectionTimeout(30000L)
     .discoveryEnabled(true)
     .discoveryFrequency(1L, TimeUnit.MINUTES)
