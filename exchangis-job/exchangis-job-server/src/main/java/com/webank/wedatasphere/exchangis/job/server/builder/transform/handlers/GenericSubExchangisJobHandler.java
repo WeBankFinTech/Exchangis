@@ -59,7 +59,7 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
      * @param userName username
      * @throws ErrorException
      */
-    private void appendDataSourceParams(JobParam<String> idParam, JobParamSet paramSet, String userName) throws ErrorException{
+    private void appendDataSourceParams(JobParam<String> idParam, JobParamSet paramSet, String userName) throws ErrorException, org.apache.linkis.common.exception.ErrorException {
         ExchangisDataSourceService dataSourceService = DataSourceService.instance;
         String sourceId = idParam.getValue();
         if(Objects.nonNull(sourceId)){

@@ -2,12 +2,11 @@ package com.webank.wedatasphere.exchangis.datasource.core;
 
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.hook.MapperHook;
-import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
-import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
-import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
-import com.webank.wedatasphere.linkis.datasource.client.request.GetAllDataSourceTypesAction;
-import com.webank.wedatasphere.linkis.datasource.client.response.GetAllDataSourceTypesResult;
-import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.DataSourceType;
+import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
+import org.apache.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
+import org.apache.linkis.datasource.client.request.GetAllDataSourceTypesAction;
+import org.apache.linkis.datasource.client.response.GetAllDataSourceTypesResult;
+import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
 
 import java.util.Collections;
 import java.util.List;
