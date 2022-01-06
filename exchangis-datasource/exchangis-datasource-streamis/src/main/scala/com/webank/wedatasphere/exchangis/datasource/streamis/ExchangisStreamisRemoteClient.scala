@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 
 import org.apache.linkis.datasource.client.impl.{LinkisDataSourceRemoteClient, LinkisMetaDataRemoteClient}
 import org.apache.linkis.datasource.client.request.{GetAllDataSourceTypesAction, GetConnectParamsByDataSourceIdAction, MetadataGetColumnsAction, MetadataGetDatabasesAction, MetadataGetTablesAction, QueryDataSourceAction}
-import org.apache.linkis.datasource.client.response.{GetConnectParamsByDataSourceIdResult, MetadataGetDatabasesResult, MetadataGetTablesResult, QueryDataSourceResult}
+import org.apache.linkis.datasource.client.response.{GetConnectParamsByDataSourceIdResult, MetadataGetColumnsResult, MetadataGetDatabasesResult, MetadataGetTablesResult, QueryDataSourceResult}
 import org.apache.linkis.datasourcemanager.common.domain.{DataSource, DataSourceType}
 import org.apache.linkis.httpclient.dws.authentication.StaticAuthenticationStrategy
 import org.apache.linkis.httpclient.dws.config.{DWSClientConfig, DWSClientConfigBuilder}

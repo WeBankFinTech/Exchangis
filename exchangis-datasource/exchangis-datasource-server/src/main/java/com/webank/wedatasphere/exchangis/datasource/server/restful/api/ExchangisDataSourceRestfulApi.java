@@ -30,7 +30,7 @@ public class ExchangisDataSourceRestfulApi {
     }
 
     // query paged datasource
-    @RequestMapping( value = "datasources/query", method = RequestMethod.GET)
+    @RequestMapping( value = "datasources/query", method = {RequestMethod.GET,RequestMethod.POST})
     public Message create(HttpServletRequest request, @RequestBody DataSourceQueryVO vo) throws Exception {
         return this.exchangisDataSourceService.queryDataSources(request, vo);
     }
@@ -40,10 +40,10 @@ public class ExchangisDataSourceRestfulApi {
     @Deprecated
     public Message listAllDataSources(
             HttpServletRequest request,
-            @RequestParam("typeId") Long typeId,
-            @RequestParam("typeName") String typeName,
-            @RequestParam("page") Integer page,
-            @RequestParam("size") Integer size
+            @RequestParam(value = "typeId", required = false) Long typeId,
+            @RequestParam(value = "typeName", required = false) String typeName,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size
     ) throws Exception {
         return this.exchangisDataSourceService.listAllDataSources(request, typeName, typeId, page, size);
     }
@@ -141,7 +141,7 @@ public class ExchangisDataSourceRestfulApi {
             HttpServletRequest request,
             @PathVariable("engine") String engine,
             @PathVariable("type") String type,
-            @RequestParam(value = "dir") String dir
+            @RequestParam(value = "dir", required = false) String dir
     ) {
         List<ElementUI> uis = this.exchangisDataSourceService.getDataSourceParamsUI(type, String.format("%s-%s", engine, dir));
         return Message.ok().data("uis", uis);

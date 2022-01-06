@@ -1,7 +1,8 @@
 package com.webank.wedatasphere.exchangis.appconn.config;
 
-import com.webank.wedatasphere.linkis.common.conf.CommonVars;
-import com.webank.wedatasphere.linkis.server.conf.ServerConfiguration;
+
+import org.apache.linkis.common.conf.CommonVars;
+import org.apache.linkis.server.conf.ServerConfiguration;
 
 public class ExchangisConfig {
 

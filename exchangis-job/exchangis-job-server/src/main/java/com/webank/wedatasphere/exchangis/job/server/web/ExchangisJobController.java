@@ -72,14 +72,16 @@ public class ExchangisJobController {
 
     @RequestMapping( value = "", method = RequestMethod.GET)
     public Message getJobList(@RequestParam(value = "projectId") Long projectId,
-                              @RequestParam(value = "jobType") String jobType, @RequestParam(value = "name") String name) {
+                              @RequestParam(value = "jobType", required = false) String jobType,
+                              @RequestParam(value = "name", required = false) String name) {
         List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobList(projectId, jobType, name);
         return Message.ok().data("result", joblist);
     }
 
     @RequestMapping( value = "/dss", method = RequestMethod.GET)
     public Message getJobListByDss(@RequestParam(value = "dssProjectId") Long dssProjectId,
-                                   @RequestParam(value = "jobType") String jobType,  @RequestParam(value = "name") String name) {
+                                   @RequestParam(value = "jobType", required = false) String jobType,
+                                   @RequestParam(value = "name", required = false) String name) {
         List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobListByDssProject(dssProjectId, jobType, name);
         return Message.ok().data("result", joblist);
     }
