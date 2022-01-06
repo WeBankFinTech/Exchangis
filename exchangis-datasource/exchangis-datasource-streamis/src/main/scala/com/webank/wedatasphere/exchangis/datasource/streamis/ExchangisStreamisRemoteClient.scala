@@ -1,15 +1,15 @@
 package com.webank.wedatasphere.exchangis.datasource.streamis
 
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceConfiguration
-import com.webank.wedatasphere.linkis.datasource.client.impl.{LinkisDataSourceRemoteClient, LinkisMetaDataRemoteClient}
-import com.webank.wedatasphere.linkis.datasource.client.request._
-import com.webank.wedatasphere.linkis.datasource.client.response._
-import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.{DataSource, DataSourceType}
-import com.webank.wedatasphere.linkis.httpclient.dws.authentication.StaticAuthenticationStrategy
-import com.webank.wedatasphere.linkis.httpclient.dws.config.{DWSClientConfig, DWSClientConfigBuilder}
-
 import java.lang
 import java.util.concurrent.TimeUnit
+
+import org.apache.linkis.datasource.client.impl.{LinkisDataSourceRemoteClient, LinkisMetaDataRemoteClient}
+import org.apache.linkis.datasource.client.request.{GetAllDataSourceTypesAction, GetConnectParamsByDataSourceIdAction, MetadataGetColumnsAction, MetadataGetDatabasesAction, MetadataGetTablesAction, QueryDataSourceAction}
+import org.apache.linkis.datasource.client.response.{GetConnectParamsByDataSourceIdResult, MetadataGetColumnsResult, MetadataGetDatabasesResult, MetadataGetTablesResult, QueryDataSourceResult}
+import org.apache.linkis.datasourcemanager.common.domain.{DataSource, DataSourceType}
+import org.apache.linkis.httpclient.dws.authentication.StaticAuthenticationStrategy
+import org.apache.linkis.httpclient.dws.config.{DWSClientConfig, DWSClientConfigBuilder}
 
 object ExchangisStreamisRemoteClient {
   //Linkis Datasource Client Config

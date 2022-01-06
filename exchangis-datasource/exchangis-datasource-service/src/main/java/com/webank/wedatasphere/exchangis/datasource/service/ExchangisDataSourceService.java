@@ -25,27 +25,30 @@ import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceUpdateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
-import com.webank.wedatasphere.linkis.common.exception.ErrorException;
-import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
-import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
-import com.webank.wedatasphere.linkis.datasource.client.request.*;
-import com.webank.wedatasphere.linkis.datasource.client.response.*;
-import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.DataSource;
-import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.DataSourceType;
-import com.webank.wedatasphere.linkis.httpclient.response.Result;
-import com.webank.wedatasphere.linkis.metadatamanager.common.Json;
-import com.webank.wedatasphere.linkis.metadatamanager.common.domain.MetaColumnInfo;
-import com.webank.wedatasphere.linkis.server.Message;
-import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
+import org.apache.linkis.common.exception.ErrorException;
+import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
+import org.apache.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
+import org.apache.linkis.datasource.client.request.*;
+import org.apache.linkis.datasource.client.response.*;
+import org.apache.linkis.datasourcemanager.common.domain.DataSource;
+import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
+import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
+import org.apache.linkis.datasourcemanager.common.util.json.Json;
+import org.apache.linkis.httpclient.response.Result;
+import org.apache.linkis.metadatamanager.common.domain.MetaColumnInfo;
+import org.apache.linkis.server.Message;
+import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import scala.tools.cmd.gen.AnyValReps;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+
+import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_COLUMNS_ERROR;
+import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_TABLES_ERROR;
 
 @Service
 public class ExchangisDataSourceService extends AbstractDataSourceService implements DataSourceUIGetter, DataSourceServiceDispatcher, MetadataServiceDispatcher {
@@ -125,12 +128,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                     .build()
             );
         } catch (Exception e) {
-            if (e instanceof ErrorException) {
-                ErrorException ee = (ErrorException) e;
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_TYPES_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-            } else {
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_TYPES_ERROR.getCode(), e.getMessage());
-            }
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_TYPES_ERROR.getCode(), e.getMessage());
         }
 
         if (Objects.isNull(result)) {
@@ -225,12 +223,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             );
             responseBody = execute.getResponseBody();
         } catch (Exception e) {
-            if (e instanceof ErrorException) {
-                ErrorException ee = (ErrorException) e;
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_CREATE_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-            } else {
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_CREATE_ERROR.getCode(), e.getMessage());
-            }
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_CREATE_ERROR.getCode(), e.getMessage());
         }
 
 //        if (Objects.isNull(result)) {
@@ -255,12 +248,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                             .build()
             );
         } catch (Exception e) {
-            if (e instanceof ErrorException) {
-                ErrorException ee = (ErrorException) e;
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-            } else {
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), e.getMessage());
-            }
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), e.getMessage());
         }
 
         if (Objects.isNull(updateDataSourceParameterResult)) {
@@ -329,12 +317,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             );
             responseBody = execute.getResponseBody();
         } catch (Exception e) {
-            if (e instanceof ErrorException) {
-                ErrorException ee = (ErrorException) e;
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-            } else {
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), e.getMessage());
-            }
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), e.getMessage());
         }
 
 //        if (Objects.isNull(updateDataSourceResult)) {
@@ -358,12 +341,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                             .build()
             );
         } catch (Exception e) {
-            if (e instanceof ErrorException) {
-                ErrorException ee = (ErrorException) e;
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-            } else {
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), e.getMessage());
-            }
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), e.getMessage());
         }
 
         if (Objects.isNull(updateDataSourceParameterResult)) {
@@ -404,12 +382,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             responseBody = execute.getResponseBody();
 
         } catch (Exception e) {
-            if (e instanceof ErrorException) {
-                ErrorException ee = (ErrorException) e;
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-            } else {
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), e.getMessage());
-            }
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), e.getMessage());
         }
 
 //        if (Objects.isNull(result)) {
@@ -441,12 +414,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                     .setUser(userName)
                     .build());
         } catch (Exception e) {
-            if (e instanceof ErrorException) {
-                ErrorException ee = (ErrorException) e;
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_DATABASES_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-            } else {
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_DATABASES_ERROR.getCode(), e.getMessage());
-            }
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_DATABASES_ERROR.getCode(), e.getMessage());
         }
 
         if (Objects.isNull(databases)) {
@@ -474,12 +442,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                     .build()
             );
         } catch (Exception e) {
-            if (e instanceof ErrorException) {
-                ErrorException ee = (ErrorException) e;
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_TABLES_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-            } else {
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_TABLES_ERROR.getCode(), e.getMessage());
-            }
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_TABLES_ERROR.getCode(), e.getMessage());
         }
 
         if (Objects.isNull(tables)) {
@@ -580,16 +543,11 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
             allColumns = columns.getAllColumns();
         } catch (Exception e) {
-            if (e instanceof ErrorException) {
-                ErrorException ee = (ErrorException) e;
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-            } else {
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(), e.getMessage());
-            }
+            throw new ExchangisDataSourceException(CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(), e.getMessage());
         }
 
         if (Objects.isNull(allColumns)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(), "metadata get columns null or empty");
+            throw new ExchangisDataSourceException(CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(), "metadata get columns null or empty");
         }
 
         List<DataSourceDbTableColumnDTO> list = new ArrayList<>();
@@ -705,12 +663,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             QueryDataSourceResult result = linkisDataSourceRemoteClient.queryDataSource(builder.build());
             allDataSource = result.getAllDataSource();
         } catch (Exception e) {
-            if (e instanceof ErrorException) {
-                ErrorException ee = (ErrorException) e;
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_QUERY_DATASOURCE_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-            } else {
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_QUERY_DATASOURCE_ERROR.getCode(), e.getMessage());
-            }
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_QUERY_DATASOURCE_ERROR.getCode(), e.getMessage());
         }
         List<DataSourceDTO> dataSources = new ArrayList<>();
         if (!Objects.isNull(allDataSource)) {
@@ -873,11 +826,17 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         );
         String responseBody = execute.getResponseBody();
 
-        MetadataGetColumnsResultDTO result = Json.fromJson(responseBody, MetadataGetColumnsResultDTO.class);
-
-        if (result.getStatus() != 0) {
-            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
+        MetadataGetColumnsResultDTO result = null;
+        try {
+            result = Json.fromJson(responseBody, MetadataGetColumnsResultDTO.class);
+            if (result.getStatus() != 0) {
+                throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
+            }
+        } catch (JsonErrorException e) {
+           throw new ExchangisDataSourceException(CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(),
+                   "Fail to deserialize the columns resultSet", e);
         }
+
         return result;
     }
 
@@ -895,10 +854,15 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         );
         String responseBody = execute.getResponseBody();
 
-        MetadataGetTablePropsResultDTO result = Json.fromJson(responseBody, MetadataGetTablePropsResultDTO.class);
-
-        if (result.getStatus() != 0) {
-            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
+        MetadataGetTablePropsResultDTO result = null;
+        try {
+            result = Json.fromJson(responseBody, MetadataGetTablePropsResultDTO.class);
+            if (result.getStatus() != 0) {
+                throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
+            }
+        } catch (JsonErrorException e) {
+            throw new ExchangisDataSourceException(CLIENT_METADATA_GET_TABLES_ERROR.getCode(),
+                    "Fail to deserialize the properties resultSet of table: [" + table + "], database: [" + database +"]", e);
         }
         return result;
 

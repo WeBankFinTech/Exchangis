@@ -2,7 +2,6 @@ package com.webank.wedatasphere.exchangis.appconn.project;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Maps;
-import com.webank.wedatasphere.dss.common.label.DSSLabel;
 import com.webank.wedatasphere.dss.standard.app.sso.builder.SSOUrlBuilderOperation;
 import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.app.structure.StructureService;
@@ -14,16 +13,13 @@ import com.webank.wedatasphere.exchangis.appconn.config.ExchangisConfig;
 import com.webank.wedatasphere.exchangis.appconn.model.ExchangisPutAction;
 import com.webank.wedatasphere.exchangis.appconn.ref.ExchangisProjectResponseRef;
 import com.webank.wedatasphere.exchangis.appconn.utils.AppconnUtils;
-import com.webank.wedatasphere.linkis.httpclient.request.HttpAction;
-import com.webank.wedatasphere.linkis.httpclient.response.HttpResult;
-import com.webank.wedatasphere.linkis.manager.label.entity.SerializableLabel;
-import com.webank.wedatasphere.linkis.server.BDPJettyServerHelper;
+import org.apache.linkis.httpclient.request.HttpAction;
+import org.apache.linkis.httpclient.response.HttpResult;
+import org.apache.linkis.server.BDPJettyServerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ExchangisProjectUpdateOperation implements ProjectUpdateOperation {
     private static final Logger logger = LoggerFactory.getLogger(ExchangisProjectUpdateOperation.class);
