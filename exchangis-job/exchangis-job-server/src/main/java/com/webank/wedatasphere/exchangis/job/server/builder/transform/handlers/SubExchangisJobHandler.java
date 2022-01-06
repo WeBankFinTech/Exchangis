@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers;
 
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
-import com.webank.wedatasphere.linkis.common.exception.ErrorException;
+import org.apache.linkis.common.exception.ErrorException;
 
 /**
  * JobHandler

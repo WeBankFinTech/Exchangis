@@ -25,9 +25,9 @@ import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobMapper;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
-import com.webank.wedatasphere.linkis.common.utils.JsonUtils;
-import com.webank.wedatasphere.linkis.manager.label.utils.LabelUtils.Jackson;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.common.utils.JsonUtils;
+import org.apache.linkis.manager.label.utils.LabelUtils;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -246,7 +246,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         final String engine = exchangisJob.getEngineType();
 
         // 校验是否有重复子任务名
-        List<ExchangisJobInfoContent> content = Jackson.fromJson(exchangisJobContentDTO.getContent(), List.class, ExchangisJobInfoContent.class);
+        List<ExchangisJobInfoContent> content = LabelUtils.Jackson.fromJson(exchangisJobContentDTO.getContent(), List.class, ExchangisJobInfoContent.class);
         long count = content.stream().map(ExchangisJobInfoContent::getSubJobName).distinct().count();
         if (count < content.size()) {
             throw new ExchangisJobErrorException(31101, "存在重复子任务名");
@@ -281,7 +281,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         ExchangisJob exchangisJob = exchangisJobService.getById(id);
         Map<String, String> values = new HashMap<>();
         if (null != exchangisJob && null != exchangisJob.getContent() && !"".equals(exchangisJob.getContent())) {
-            List<ExchangisJobInfoContent> o = Jackson.fromJson(exchangisJob.getContent(), List.class, ExchangisJobInfoContent.class);
+            List<ExchangisJobInfoContent> o = LabelUtils.Jackson.fromJson(exchangisJob.getContent(), List.class, ExchangisJobInfoContent.class);
             o.forEach(task -> {
                 if (task.getSubJobName().equals(taskName)) {
                     Optional.ofNullable(task.getSettings()).orElse(new ArrayList<>()).forEach(setting -> {

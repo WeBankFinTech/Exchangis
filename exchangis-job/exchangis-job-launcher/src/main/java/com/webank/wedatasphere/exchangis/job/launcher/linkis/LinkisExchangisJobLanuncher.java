@@ -1,19 +1,17 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
 import com.google.gson.*;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobConfiguration;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
-import com.webank.wedatasphere.linkis.common.conf.Configuration;
-import com.webank.wedatasphere.linkis.computation.client.LinkisJobBuilder;
-import com.webank.wedatasphere.linkis.computation.client.LinkisJobClient;
-import com.webank.wedatasphere.linkis.computation.client.once.simple.SimpleOnceJobBuilder;
-import com.webank.wedatasphere.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
-import com.webank.wedatasphere.linkis.computation.client.utils.LabelKeyUtils;
+import org.apache.linkis.common.conf.Configuration;
+import org.apache.linkis.computation.client.LinkisJobBuilder;
+import org.apache.linkis.computation.client.LinkisJobClient;
+import org.apache.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
+import org.apache.linkis.computation.client.utils.LabelKeyUtils;
 
 import java.util.*;
 
