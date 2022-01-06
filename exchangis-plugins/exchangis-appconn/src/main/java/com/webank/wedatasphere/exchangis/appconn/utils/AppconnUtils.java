@@ -3,8 +3,8 @@ package com.webank.wedatasphere.exchangis.appconn.utils;
 import com.webank.wedatasphere.dss.common.label.DSSLabel;
 import com.webank.wedatasphere.dss.standard.app.development.ref.NodeRequestRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
-import com.webank.wedatasphere.linkis.manager.label.entity.SerializableLabel;
-import com.webank.wedatasphere.linkis.server.BDPJettyServerHelper;
+import org.apache.linkis.manager.label.entity.SerializableLabel;
+import org.apache.linkis.server.BDPJettyServerHelper;
 
 import java.util.List;
 import java.util.Map;
