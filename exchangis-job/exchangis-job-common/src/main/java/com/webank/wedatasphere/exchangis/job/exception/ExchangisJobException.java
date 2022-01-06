@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.exception;
 
-import com.webank.wedatasphere.linkis.common.exception.ErrorException;
+
+import org.apache.linkis.common.exception.ErrorException;
 
 import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.JOB_EXCEPTION_CODE;
 

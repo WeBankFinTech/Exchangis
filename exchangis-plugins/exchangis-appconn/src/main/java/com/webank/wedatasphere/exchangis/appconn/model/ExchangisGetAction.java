@@ -1,7 +1,8 @@
 package com.webank.wedatasphere.exchangis.appconn.model;
 
-import com.webank.wedatasphere.linkis.httpclient.request.GetAction;
-import com.webank.wedatasphere.linkis.httpclient.request.UserAction;
+
+import org.apache.linkis.httpclient.request.GetAction;
+import org.apache.linkis.httpclient.request.UserAction;
 
 public class ExchangisGetAction extends GetAction implements UserAction {
     String url;

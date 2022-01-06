@@ -1,10 +1,7 @@
 package com.webank.wedatasphere.exchangis.appconn.operation;
 
-import com.google.common.collect.Maps;
 import com.webank.wedatasphere.dss.standard.app.development.operation.RefUpdateOperation;
-import com.webank.wedatasphere.dss.standard.app.development.ref.CommonResponseRef;
 import com.webank.wedatasphere.dss.standard.app.development.ref.NodeRequestRef;
-import com.webank.wedatasphere.dss.standard.app.development.ref.UpdateCSRequestRef;
 import com.webank.wedatasphere.dss.standard.app.development.ref.UpdateRequestRef;
 import com.webank.wedatasphere.dss.standard.app.development.service.DevelopmentService;
 import com.webank.wedatasphere.dss.standard.app.sso.builder.SSOUrlBuilderOperation;
@@ -12,16 +9,12 @@ import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.ResponseRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
 import com.webank.wedatasphere.exchangis.appconn.config.ExchangisConfig;
-import com.webank.wedatasphere.exchangis.appconn.model.ExchangisPostAction;
 import com.webank.wedatasphere.exchangis.appconn.model.ExchangisPutAction;
 import com.webank.wedatasphere.exchangis.appconn.ref.ExchangisCommonResponseRef;
 import com.webank.wedatasphere.exchangis.appconn.utils.AppconnUtils;
-import com.webank.wedatasphere.linkis.httpclient.response.HttpResult;
-import com.webank.wedatasphere.linkis.server.BDPJettyServerHelper;
+import org.apache.linkis.httpclient.response.HttpResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 public class ExchangisUpdateOperation implements RefUpdateOperation<UpdateRequestRef> {
     private final static Logger logger = LoggerFactory.getLogger(ExchangisUpdateOperation.class);

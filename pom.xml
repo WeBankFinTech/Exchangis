@@ -38,8 +38,8 @@
 
 	<properties>
 		<exchangis.version>1.0.0-RC1</exchangis.version>
-		<dss.version>1.0.0</dss.version>
-		<linkis.version>1.0.2</linkis.version>
+		<dss.version>1.0.1</dss.version>
+		<linkis.version>1.0.3</linkis.version>
 		<streamis.version>0.1.0-SNAPSHOT</streamis.version>
 		<scala.version>2.11.8</scala.version>
 		<jdk.compile.version>1.8</jdk.compile.version>
@@ -104,12 +104,12 @@
 				<version>${commons.lang.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.webank.wedatasphere.linkis</groupId>
+				<groupId>org.apache.linkis</groupId>
 				<artifactId>linkis-mybatis</artifactId>
 				<version>${linkis.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.webank.wedatasphere.linkis</groupId>
+				<groupId>org.apache.linkis</groupId>
 				<artifactId>linkis-module</artifactId>
 				<exclusions>
 					<exclusion>
@@ -124,13 +124,13 @@
 				<version>${linkis.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.webank.wedatasphere.linkis</groupId>
+				<groupId>org.apache.linkis</groupId>
 				<artifactId>linkis-common</artifactId>
 				<version>${linkis.version}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>com.webank.wedatasphere.linkis</groupId>
+				<groupId>org.apache.linkis</groupId>
 				<artifactId>linkis-protocol</artifactId>
 				<version>${linkis.version}</version>
 			</dependency>
@@ -162,7 +162,7 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.webank.wedatasphere.linkis</groupId>
+				<groupId>org.apache.linkis</groupId>
 				<artifactId>linkis-datasource-client</artifactId>
 				<version>${linkis.version}</version>
 			</dependency>

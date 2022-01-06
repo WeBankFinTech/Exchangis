@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.core.exception;
 
-import com.webank.wedatasphere.linkis.common.exception.ErrorException;
+
+import org.apache.linkis.common.exception.ErrorException;
 
 public class ExchangisDataSourceException extends ErrorException {
 
@@ -8,6 +9,10 @@ public class ExchangisDataSourceException extends ErrorException {
         super(errCode, desc);
     }
 
+    public ExchangisDataSourceException(int errCode, String desc, Throwable t) {
+        super(errCode, desc);
+        super.initCause(t);
+    }
     public ExchangisDataSourceException(int errCode, String desc, String ip, int port, String serviceKind) {
         super(errCode, desc, ip, port, serviceKind);
     }

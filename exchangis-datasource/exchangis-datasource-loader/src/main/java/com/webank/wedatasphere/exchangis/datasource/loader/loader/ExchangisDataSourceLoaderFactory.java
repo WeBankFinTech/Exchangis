@@ -1,9 +1,9 @@
 package com.webank.wedatasphere.exchangis.datasource.loader.loader;
 
 import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceLoader;
-import com.webank.wedatasphere.linkis.common.conf.CommonVars;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.common.conf.CommonVars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

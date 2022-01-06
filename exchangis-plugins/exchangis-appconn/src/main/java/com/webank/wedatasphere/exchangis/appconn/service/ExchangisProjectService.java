@@ -6,8 +6,8 @@ import com.webank.wedatasphere.exchangis.appconn.config.ExchangisConfig;
 import com.webank.wedatasphere.exchangis.appconn.project.ExchangisProjectCreationOperation;
 import com.webank.wedatasphere.exchangis.appconn.project.ExchangisProjectDeletionOperation;
 import com.webank.wedatasphere.exchangis.appconn.project.ExchangisProjectUpdateOperation;
-import com.webank.wedatasphere.linkis.httpclient.request.HttpAction;
-import com.webank.wedatasphere.linkis.httpclient.response.HttpResult;
+import org.apache.linkis.httpclient.request.HttpAction;
+import org.apache.linkis.httpclient.response.HttpResult;
 
 public class ExchangisProjectService extends ProjectService {
     @Override
