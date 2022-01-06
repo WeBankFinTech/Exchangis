@@ -3,22 +3,15 @@ package com.webank.wedatasphere.exchangis.metrics.web;
 import com.webank.wedatasphere.exchangis.metrics.api.Counter;
 import com.webank.wedatasphere.exchangis.metrics.api.MetricManager;
 import com.webank.wedatasphere.exchangis.metrics.impl.MetricNames;
-import com.webank.wedatasphere.linkis.server.Message;
-import org.springframework.stereotype.Component;
+import org.apache.linkis.server.Message;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-@Component
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Path("exchangis")
+@RestController
+@RequestMapping(value = "exchangis", produces = {"application/json;charset=utf-8"})
 public class ExchangisMetricController {
     private static final Counter metricTaskRunningCounter = MetricManager.getJdbcCounter(MetricNames.TASK_RUNNING_COUNT_METRIC_NAME);
 
@@ -39,15 +32,12 @@ public class ExchangisMetricController {
 //        return Message.messageToResponse(message);
 //    }
 
-    @GET
-    @Path("metric/test")
+    @RequestMapping( value = "metric/test", method = RequestMethod.GET)
     @Deprecated
-    public Response test(
-            @Context HttpServletRequest request
+    public Message test(HttpServletRequest request
     ) {
         metricTaskRunningCounter.inc();
-        Message message = Message.ok().data("count", metricTaskRunningCounter.getCount());
-        return Message.messageToResponse(message);
+        return Message.ok().data("count", metricTaskRunningCounter.getCount());
     }
 
     // get task state metrics

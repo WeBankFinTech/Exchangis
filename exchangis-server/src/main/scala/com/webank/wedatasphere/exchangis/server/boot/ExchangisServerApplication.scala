@@ -1,10 +1,10 @@
 package com.webank.wedatasphere.exchangis.server.boot
 
 
-import com.webank.wedatasphere.linkis.DataWorkCloudApplication
 import com.webank.wedatasphere.linkis.common.utils.Utils
-import com.webank.wedatasphere.linkis.server.utils.LinkisMainHelper
 import org.apache.commons.lang.{ArrayUtils, StringUtils}
+import org.apache.linkis.DataWorkCloudApplication
+import org.apache.linkis.server.utils.LinkisMainHelper
 import org.slf4j.{Logger, LoggerFactory}
 class ExchangisServerApplication{
 

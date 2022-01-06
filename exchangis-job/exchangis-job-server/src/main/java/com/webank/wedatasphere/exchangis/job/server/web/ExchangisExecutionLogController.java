@@ -16,8 +16,8 @@ public class ExchangisExecutionLogController {
 
     @RequestMapping(value = "/tasks/{taskId}/logs", method = RequestMethod.GET)
     public Message getTaskExecutionLogs(@PathVariable(value = "taskId") String taskId,
-                                        @RequestParam(value = "fromLine") Integer fromLine,
-                                        @RequestParam(value = "pageSize") Integer pageSize) {
+                                        @RequestParam(value = "fromLine", required = false) Integer fromLine,
+                                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
 
         return this.exchangisExecutionService.getTaskLogInfo(taskId, fromLine, pageSize);
     }

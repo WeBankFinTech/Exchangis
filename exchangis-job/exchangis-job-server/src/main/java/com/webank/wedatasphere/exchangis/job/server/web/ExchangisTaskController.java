@@ -22,11 +22,13 @@ public class ExchangisTaskController {
     private ExchangisLaunchTaskService exchangisLaunchTaskService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public Message listTasks(@RequestParam(value = "taskId") Long taskId,
-                             @RequestParam(value = "taskName") String taskName, @RequestParam(value = "status") String status,
-                             @RequestParam(value = "launchStartTime") Long launchStartTime,
-                             @RequestParam(value = "launchEndTime") Long launchEndTime, @RequestParam(value = "current") int current,
-                             @RequestParam(value = "size") int size) {
+    public Message listTasks(@RequestParam(value = "taskId", required = false) Long taskId,
+                             @RequestParam(value = "taskName", required = false) String taskName,
+                             @RequestParam(value = "status", required = false) String status,
+                             @RequestParam(value = "launchStartTime", required = false) Long launchStartTime,
+                             @RequestParam(value = "launchEndTime", required = false) Long launchEndTime,
+                             @RequestParam(value = "current", required = false) int current,
+                             @RequestParam(value = "size", required = false) int size) {
         List<ExchangisTaskInfoVO> taskList = exchangisLaunchTaskService.listTasks(taskId, taskName, status,
                 launchStartTime, launchEndTime, current, size);
         int total = exchangisLaunchTaskService.count(taskId, taskName, status, launchStartTime, launchEndTime);
