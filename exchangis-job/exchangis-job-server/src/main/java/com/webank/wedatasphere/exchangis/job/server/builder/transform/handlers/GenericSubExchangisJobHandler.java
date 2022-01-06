@@ -10,7 +10,7 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.utils.SpringContextHolder;
-import com.webank.wedatasphere.linkis.common.exception.ErrorException;
+import org.apache.linkis.common.exception.ErrorException;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
         JobParamSet idParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_DATA_SOURCE);
         JobParamSet sourceParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sourceParamSet)){
-//            appendDataSourceParams(idParamSet.load(SOURCE_ID),  sourceParamSet, originJob.getCreateUser());
+            appendDataSourceParams(idParamSet.load(SOURCE_ID),  sourceParamSet, originJob.getCreateUser());
         }
 
     }
@@ -48,7 +48,7 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
         JobParamSet idParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_DATA_SOURCE);
         JobParamSet sinkParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK);
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sinkParamSet)){
-//            appendDataSourceParams(idParamSet.load(SINK_ID),  sinkParamSet, originJob.getCreateUser());
+            appendDataSourceParams(idParamSet.load(SINK_ID),  sinkParamSet, originJob.getCreateUser());
         }
     }
 
@@ -59,7 +59,7 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
      * @param userName username
      * @throws ErrorException
      */
-    private void appendDataSourceParams(JobParam<String> idParam, JobParamSet paramSet, String userName) throws ErrorException, org.apache.linkis.common.exception.ErrorException {
+    private void appendDataSourceParams(JobParam<String> idParam, JobParamSet paramSet, String userName) throws ErrorException {
         ExchangisDataSourceService dataSourceService = DataSourceService.instance;
         String sourceId = idParam.getValue();
         if(Objects.nonNull(sourceId)){
