@@ -1,11 +1,11 @@
 package com.webank.wedatasphere.exchangis.datasource.linkis
 
-import com.webank.wedatasphere.linkis.datasource.client.impl.{LinkisDataSourceRemoteClient, LinkisMetaDataRemoteClient}
-import com.webank.wedatasphere.linkis.datasource.client.request._
-import com.webank.wedatasphere.linkis.datasource.client.response._
-import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.{DataSource, DataSourceType}
-import com.webank.wedatasphere.linkis.httpclient.dws.authentication.{StaticAuthenticationStrategy, TokenAuthenticationStrategy}
-import com.webank.wedatasphere.linkis.httpclient.dws.config.{DWSClientConfig, DWSClientConfigBuilder}
+import org.apache.linkis.datasource.client.impl.{LinkisDataSourceRemoteClient, LinkisMetaDataRemoteClient}
+import org.apache.linkis.datasource.client.request._
+import org.apache.linkis.datasource.client.response._
+import org.apache.linkis.datasourcemanager.common.domain.{DataSource, DataSourceType}
+import org.apache.linkis.httpclient.dws.authentication.{StaticAuthenticationStrategy, TokenAuthenticationStrategy}
+import org.apache.linkis.httpclient.dws.config.{DWSClientConfig, DWSClientConfigBuilder}
 
 import java.lang
 import java.util.concurrent.TimeUnit

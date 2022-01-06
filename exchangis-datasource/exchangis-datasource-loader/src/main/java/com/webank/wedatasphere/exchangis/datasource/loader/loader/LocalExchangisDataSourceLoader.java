@@ -7,8 +7,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSou
 import com.webank.wedatasphere.exchangis.datasource.loader.clazzloader.ExchangisDataSourceClassLoader;
 import com.webank.wedatasphere.exchangis.datasource.loader.utils.ExceptionHelper;
 import com.webank.wedatasphere.exchangis.datasource.loader.utils.ExtDsUtils;
-import com.webank.wedatasphere.linkis.common.conf.CommonVars;
-import com.webank.wedatasphere.linkis.common.exception.ErrorException;
+import org.apache.linkis.common.exception.ErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

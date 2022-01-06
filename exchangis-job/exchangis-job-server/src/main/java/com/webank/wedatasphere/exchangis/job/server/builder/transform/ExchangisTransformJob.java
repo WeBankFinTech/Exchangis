@@ -106,7 +106,7 @@ public class ExchangisTransformJob extends ExchangisJobBase {
             dataSourceMap.ifPresent( map -> {
                 JobParamSet paramSet = map.entrySet().stream().map(entry -> JobParams.newOne(entry.getKey(), entry.getValue()))
                         .reduce(new JobParamSet(), JobParamSet::add, JobParamSet::combine);
-                LOG.trace("Set params into sub exchangis job, realm: [" + realm + "], paramSet: [" + paramSet.toString() + "]");
+                LOG.trace("Set params into sub exchangis job, realm: [{}], paramSet: [{}]", realm, paramSet.toString());
                 super.addRealmParams(realm, paramSet);
             });
             return getRealmParams(realm);

@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.loader.exception;
 
-import com.webank.wedatasphere.linkis.common.exception.ErrorException;
+
+import org.apache.linkis.common.exception.ErrorException;
 
 public class NoSuchExchangisExtDataSourceException extends ErrorException {
     public NoSuchExchangisExtDataSourceException(String errDecs) {
