@@ -133,7 +133,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
 
     @Override
     public boolean canBuild(SubExchangisJob inputJob) {
-        return "datax".equalsIgnoreCase(inputJob.getEngine());
+        return "datax".equalsIgnoreCase(inputJob.getEngineType());
     }
 
     @Override
@@ -152,15 +152,15 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
                 //Ignore
             }
             if (Objects.nonNull(expectJob)) {
-                engineJob.setJobName(expectJob.getJobName());
-                engineJob.setEngine(expectJob.getEngine());
+                engineJob.setName(expectJob.getName());
+                engineJob.setEngineType(expectJob.getEngineType());
             }
 
             engineJob.setRuntimeParams(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
-            engineJob.setTaskName(inputJob.getTaskName());
+            engineJob.setName(inputJob.getName());
             if (Objects.nonNull(expectJob)) {
-                engineJob.setJobName(expectJob.getJobName());
-                engineJob.setEngine(expectJob.getEngine());
+                engineJob.setName(expectJob.getName());
+                engineJob.setEngineType(expectJob.getEngineType());
             }
             engineJob.setCreateUser(inputJob.getCreateUser());
             return engineJob;

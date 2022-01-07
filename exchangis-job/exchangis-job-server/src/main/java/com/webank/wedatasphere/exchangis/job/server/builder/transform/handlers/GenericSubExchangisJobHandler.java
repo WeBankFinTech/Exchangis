@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers;
 import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
@@ -33,7 +33,7 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
 
     @Override
     public void handleSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
-        ExchangisJob originJob = ctx.getOriginalJob();
+        ExchangisJobVO originJob = ctx.getOriginalJob();
         JobParamSet idParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_DATA_SOURCE);
         JobParamSet sourceParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sourceParamSet)){
@@ -44,7 +44,7 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
 
     @Override
     public void handleSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException{
-        ExchangisJob originJob = ctx.getOriginalJob();
+        ExchangisJobVO originJob = ctx.getOriginalJob();
         JobParamSet idParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_DATA_SOURCE);
         JobParamSet sinkParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK);
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sinkParamSet)){

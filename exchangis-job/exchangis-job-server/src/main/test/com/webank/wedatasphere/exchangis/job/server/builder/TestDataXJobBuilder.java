@@ -2,11 +2,11 @@ package com.webank.wedatasphere.exchangis.job.server.builder;
 
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
-import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherJob;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
 
 import java.util.ArrayList;
@@ -22,8 +22,8 @@ public class TestDataXJobBuilder {
     }
 
     public static void main(String[] args) throws ExchangisJobException {
-        ExchangisJob job = getDataxJob();
-        System.out.println(job.getJobName());
+        ExchangisJobVO job = getDataxJob();
+        System.out.println(job.getName());
         ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
         ctx.putEnv("USER_NAME", "xxxxyyyyzzzz");
         ctx.setOriginalJob(job);
@@ -60,16 +60,16 @@ public class TestDataXJobBuilder {
 
         for (ExchangisLauncherJob launcherJob : launcherJobs) {
             String launchName = launcherJob.getLaunchName();
-            System.out.println(launcherJob.getJobName());
+            System.out.println(launcherJob.getName());
             System.out.println(launchName);
         }
     }
 
-    public static ExchangisJob getDataxJob() {
-        ExchangisJob job = new ExchangisJob();
+    public static ExchangisJobVO getDataxJob() {
+        ExchangisJobVO job = new ExchangisJobVO();
         job.setId(22L);
         job.setProjectId(1456173825011081218L);
-        job.setJobName("T_DATAX");
+        job.setName("T_DATAX");
         job.setJobType("OFFLINE");
         job.setEngineType("DATAX");
         job.setJobLabels("");
