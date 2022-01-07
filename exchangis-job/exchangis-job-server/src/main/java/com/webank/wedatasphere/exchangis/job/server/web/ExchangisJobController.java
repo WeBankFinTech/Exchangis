@@ -9,7 +9,8 @@ import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceS
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
@@ -17,7 +18,7 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask;
-import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherJob;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
@@ -137,14 +138,14 @@ public class ExchangisJobController {
 
     @RequestMapping( value = "/{id}", method = RequestMethod.GET)
     public Message getJob(HttpServletRequest request, @PathVariable("id") Long id) throws ExchangisJobErrorException {
-        ExchangisJob job = exchangisJobService.getJob(request, id);
+        ExchangisJobVO job = exchangisJobService.getJob(request, id);
         return Message.ok().data("result", job);
     }
 
     @RequestMapping( value = "/dss/{nodeId}", method = RequestMethod.GET)
     public Message getJobByDssProject(HttpServletRequest request, @PathVariable("nodeId") String nodeId) throws ExchangisJobErrorException {
         LOGGER.info("getJobByDssProject nodeId {}", nodeId);
-        ExchangisJob job = exchangisJobService.getJobByDss(request, nodeId);
+        ExchangisJobVO job = exchangisJobService.getJobByDss(request, nodeId);
         return Message.ok().data("result", job);
     }
 
@@ -153,14 +154,14 @@ public class ExchangisJobController {
     @RequestMapping( value = "/{id}/config", method = RequestMethod.PUT)
     public Message saveJobConfig(@PathVariable("id") Long id,
                                  @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException {
-        ExchangisJob exchangisJob = exchangisJobService.updateJobConfig(exchangisJobContentDTO, id);
+        ExchangisJobVO exchangisJob = exchangisJobService.updateJobConfig(exchangisJobContentDTO, id);
         return Message.ok().data("result", exchangisJob);
     }
 
     @RequestMapping( value = "/{id}/content", method = RequestMethod.PUT)
     public Message saveSubjobs(@PathVariable("id") Long id,
                                @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException, ExchangisDataSourceException {
-        ExchangisJob exchangisJob = exchangisJobService.updateJobContent(exchangisJobContentDTO, id);
+        ExchangisJobVO exchangisJob = exchangisJobService.updateJobContent(exchangisJobContentDTO, id);
         return Message.ok().data("result", exchangisJob);
     }
 
@@ -179,7 +180,7 @@ public class ExchangisJobController {
     @RequestMapping( value = "/{id}/action/execute", method = RequestMethod.POST)
     public Message executeJob(HttpServletRequest request, @PathVariable("id") Long id) throws Exception {
         String userName = SecurityFilter.getLoginUsername(request);
-        ExchangisJob job = exchangisJobService.getById(id);
+        ExchangisJobInfo job = new ExchangisJobInfo(exchangisJobService.getById(id));
         ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
         ctx.putEnv("USER_NAME", userName);
 
@@ -234,9 +235,10 @@ public class ExchangisJobController {
             LinkisJobMetrics jobMetrics = launch.getJobMetrics();
 
             ExchangisLaunchTask task = new ExchangisLaunchTask();
-            task.setTaskName(launcherJob.getTaskName());
+            // TODO set task name
+//            task.setTaskName(launcherJob.getTaskName());
             task.setJobId(launcherJob.getId());
-            task.setJobName(launcherJob.getJobName());
+            task.setJobName(launcherJob.getName());
 
             try {
                 String content = writer.writeValueAsString(launcherJob.getJobContent());
@@ -261,7 +263,7 @@ public class ExchangisJobController {
 
             task.setLaunchId(launchId);
             task.setStatus(status);
-            task.setEngineType(launcherJob.getEngine());
+            task.setEngineType(launcherJob.getEngineType());
 
             this.launchTaskMapper.insert(task);
 
