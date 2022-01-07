@@ -1,37 +1,44 @@
-package com.webank.wedatasphere.exchangis.dao.domain;
+package com.webank.wedatasphere.exchangis.job.vo;
 
-import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import java.util.Date;
+
+/**
+ * <p>
+ * 任务表.
+ * </p>
+ *
+ * @author yuxin.yuan
+ * @since 2021-08-10
+ */
 @TableName("exchangis_job_info")
-public class ExchangisJobInfo {
+public class ExchangisJobVO {
+
 
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    @TableField("project_id")
     private Long projectId;
 
-    @TableField("dss_project_id")
     private Long dssProjectId;
 
-    @TableField("node_id")
+    private String dssProjectName;
+
     private String nodeId;
 
-    @TableField("node_name")
     private String nodeName;
-
-    private String jobName;
 
     private String jobType;
 
     private String engineType;
 
     private String jobLabels;
+
+    private String jobName;
 
     private String jobDesc;
 
@@ -57,12 +64,40 @@ public class ExchangisJobInfo {
 
     private String modifyUser;
 
-    public Long getId() {
-        return id;
+    public Long getId() { return id; }
+
+    public void setId(Long id) { this.id = id; }
+
+    public String getJobName() {
+        return jobName;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    public String getJobDesc() {
+        return jobDesc;
+    }
+
+    public void setJobDesc(String jobDesc) {
+        this.jobDesc = jobDesc;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     public Long getProjectId() {
@@ -77,21 +112,10 @@ public class ExchangisJobInfo {
 
     public void setDssProjectId(Long dssProjectId) { this.dssProjectId = dssProjectId; }
 
-    public String getNodeId() { return nodeId; }
-
-    public void setNodeId(String nodeId) { this.nodeId = nodeId; }
 
     public String getNodeName() { return nodeName; }
 
     public void setNodeName(String nodeName) { this.nodeName = nodeName; }
-
-    public String getJobName() {
-        return jobName;
-    }
-
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
-    }
 
     public String getJobType() {
         return jobType;
@@ -115,14 +139,6 @@ public class ExchangisJobInfo {
 
     public void setJobLabels(String jobLabels) {
         this.jobLabels = jobLabels;
-    }
-
-    public String getJobDesc() {
-        return jobDesc;
-    }
-
-    public void setJobDesc(String jobDesc) {
-        this.jobDesc = jobDesc;
     }
 
     public String getContent() {
@@ -181,28 +197,12 @@ public class ExchangisJobInfo {
         this.jobParams = jobParams;
     }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
     public String getCreateUser() {
         return createUser;
     }
 
     public void setCreateUser(String createUser) {
         this.createUser = createUser;
-    }
-
-    public Date getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(Date modifyTime) {
-        this.modifyTime = modifyTime;
     }
 
     public String getModifyUser() {
@@ -213,14 +213,30 @@ public class ExchangisJobInfo {
         this.modifyUser = modifyUser;
     }
 
+    public String getDssProjectName() {
+        return dssProjectName;
+    }
+
+    public void setDssProjectName(String dssProjectName) {
+        this.dssProjectName = dssProjectName;
+    }
+
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    public String getNodeId() {
+        return nodeId;
+    }
+
     @Override
     public String toString() {
         return "ExchangisJob{" + "id=" + id + ", projectId=" + projectId + ", jobName=" + jobName + ", jobType="
-            + jobType + ", engineType=" + engineType + ", jobLabels=" + jobLabels + ", jobDesc=" + jobDesc
-            + ", content=" + content + ", alarmUser=" + alarmUser + ", alarmLevel=" + alarmLevel + ", proxyUser="
-            + proxyUser + ", executeNode=" + executeNode + ", syncType=" + syncType + ", jobParams=" + jobParams
-            + ", createTime=" + createTime + ", createUser=" + createUser + ", modifyTime=" + modifyTime
-            + ", modifyUser=" + modifyUser + "}";
+                + jobType
+                + ", engineType=" + engineType + ", jobLabels=" + jobLabels + ", jobDesc=" + jobDesc + ", content="
+                + content + ", alarmUser=" + alarmUser + ", alarmLevel=" + alarmLevel + ", proxyUser=" + proxyUser
+                + ", executeNode=" + executeNode + ", syncType=" + syncType + ", jobParams=" + jobParams + ", createTime="
+                + createTime + ", createUser=" + createUser + ", modifyTime=" + modifyTime + ", modifyUser=" + modifyUser
+                + "}";
     }
-
 }

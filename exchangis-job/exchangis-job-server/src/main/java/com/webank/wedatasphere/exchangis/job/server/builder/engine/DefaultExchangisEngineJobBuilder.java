@@ -29,8 +29,8 @@ public class DefaultExchangisEngineJobBuilder extends AbstractExchangisJobBuilde
             Map<String, Object> runtimeParams = Json.fromJson(paramsString, Map.class);
             exchangisEngineJob.setRuntimeParams(runtimeParams);
         }
-        exchangisEngineJob.setEngine(ctx.getOriginalJob().getEngineType());
-        exchangisEngineJob.setJobName(inputJob.getJobName());
+        exchangisEngineJob.setEngineType(ctx.getOriginalJob().getEngineType());
+        exchangisEngineJob.setName(inputJob.getName());
         return exchangisEngineJob;
     }
 }
