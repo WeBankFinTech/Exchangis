@@ -1,10 +1,10 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobDataSourcesContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobBase;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.GenericExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
@@ -15,14 +15,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * Transform job
  */
-public class ExchangisTransformJob extends ExchangisJobBase {
+public class ExchangisTransformJob extends GenericExchangisJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisTransformJob.class);
     /**
@@ -50,8 +49,8 @@ public class ExchangisTransformJob extends ExchangisJobBase {
 
         public SubExchangisJobAdapter(ExchangisJobInfoContent jobInfoContent){
             if(Objects.nonNull(jobInfoContent)) {
-                this.engine = jobInfoContent.getEngine();
-                this.taskName = jobInfoContent.getSubJobName();
+                this.engineType = jobInfoContent.getEngine();
+                this.name = jobInfoContent.getSubJobName();
                 convertContentToParams(jobInfoContent);
             }
         }

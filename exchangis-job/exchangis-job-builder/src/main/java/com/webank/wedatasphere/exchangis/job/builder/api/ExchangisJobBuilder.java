@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.builder.api;
 
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobBase;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 
 /**
@@ -9,7 +9,7 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
  * @param <T> input job
  * @param <E> output job
  */
-public interface ExchangisJobBuilder<T extends ExchangisJobBase, E extends ExchangisJobBase> {
+public interface ExchangisJobBuilder<T extends ExchangisJob, E extends ExchangisJob> {
 
     /**
      * Input job class

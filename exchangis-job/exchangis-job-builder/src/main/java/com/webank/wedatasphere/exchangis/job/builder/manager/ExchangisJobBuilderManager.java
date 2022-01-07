@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.builder.manager;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.ExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.builder.api.ExchangisJobBuilderChain;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobBase;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 
 /**
@@ -19,16 +19,16 @@ public interface ExchangisJobBuilderManager {
      * @param <E> output class
      * @return output
      */
-     <T extends ExchangisJobBase, E extends ExchangisJobBase>E doBuild(T originJob, Class<E> expectJobClass,
-                                                                       ExchangisJobBuilderContext ctx) throws ExchangisJobException;
+     <T extends ExchangisJob, E extends ExchangisJob>E doBuild(T originJob, Class<E> expectJobClass,
+                                                               ExchangisJobBuilderContext ctx) throws ExchangisJobException;
 
-    <T extends ExchangisJobBase, E extends ExchangisJobBase>E doBuild(T originJob, Class<T> inputJobClass, Class<E> expectJobClass,
-                                                                      ExchangisJobBuilderContext ctx) throws ExchangisJobException;
+    <T extends ExchangisJob, E extends ExchangisJob>E doBuild(T originJob, Class<T> inputJobClass, Class<E> expectJobClass,
+                                                              ExchangisJobBuilderContext ctx) throws ExchangisJobException;
     /**
      *
      * @param jobBuilder job builder
      */
-    <T extends ExchangisJobBase, E extends ExchangisJobBase>void addJobBuilder(ExchangisJobBuilder<T, E> jobBuilder);
+    <T extends ExchangisJob, E extends ExchangisJob>void addJobBuilder(ExchangisJobBuilder<T, E> jobBuilder);
 
     /**
      *
@@ -38,7 +38,7 @@ public interface ExchangisJobBuilderManager {
      * @param <E>
      * @return
      */
-    <T extends ExchangisJobBase, E extends ExchangisJobBase>ExchangisJobBuilderChain<T, E> getJobBuilderChain(Class<T> inputJob, Class<E>  outputJob);
+    <T extends ExchangisJob, E extends ExchangisJob>ExchangisJobBuilderChain<T, E> getJobBuilderChain(Class<T> inputJob, Class<E>  outputJob);
 
     /**
      * Reset builder chain
@@ -47,7 +47,7 @@ public interface ExchangisJobBuilderManager {
      * @param <T>
      * @param <E>
      */
-    <T extends ExchangisJobBase, E extends ExchangisJobBase> void resetJobBuilder(Class<T> inputJob, Class<E> outputJob);
+    <T extends ExchangisJob, E extends ExchangisJob> void resetJobBuilder(Class<T> inputJob, Class<E> outputJob);
 
     /**
      * Invoke the 'initialize' method of chains
