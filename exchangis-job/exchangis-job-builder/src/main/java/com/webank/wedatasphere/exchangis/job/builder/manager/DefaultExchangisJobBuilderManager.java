@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.ExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.builder.api.ExchangisJobBuilderChain;
 import com.webank.wedatasphere.exchangis.job.builder.api.GenericExchangisJobBuilderChain;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisBase;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 
@@ -24,14 +25,14 @@ public class DefaultExchangisJobBuilderManager implements ExchangisJobBuilderMan
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends ExchangisJob, E extends ExchangisJob> E doBuild(T originJob, Class<E> expectJobClass,
-                                                                      ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+    public <T extends ExchangisJob, E extends ExchangisBase> E doBuild(T originJob, Class<E> expectJobClass,
+                                                                       ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         return doBuild(originJob, (Class<T>)originJob.getClass(), expectJobClass, ctx);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends ExchangisJob, E extends ExchangisJob> E doBuild(T originJob, Class<T> inputJobClass, Class<E> expectJobClass, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+    public <T extends ExchangisJob, E extends ExchangisBase> E doBuild(T originJob, Class<T> inputJobClass, Class<E> expectJobClass, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         BuilderDirection direction = new BuilderDirection(inputJobClass, expectJobClass);
         ExchangisJobBuilderChain<T, E> chain = (ExchangisJobBuilderChain<T, E>) jobBuilderChains.get(direction);
         if(Objects.nonNull(chain)) {
@@ -42,7 +43,7 @@ public class DefaultExchangisJobBuilderManager implements ExchangisJobBuilderMan
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends ExchangisJob, E extends ExchangisJob> void addJobBuilder(ExchangisJobBuilder<T, E> jobBuilder) {
+    public <T extends ExchangisJob, E extends ExchangisBase> void addJobBuilder(ExchangisJobBuilder<T, E> jobBuilder) {
         BuilderDirection direction = new BuilderDirection(jobBuilder.inputJob(), jobBuilder.outputJob());
 
         jobBuilderChains.compute(direction, (key, value) -> {
@@ -56,13 +57,13 @@ public class DefaultExchangisJobBuilderManager implements ExchangisJobBuilderMan
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends ExchangisJob, E extends ExchangisJob> ExchangisJobBuilderChain<T, E> getJobBuilderChain(Class<T> inputJob, Class<E> outputJob) {
+    public <T extends ExchangisJob, E extends ExchangisBase> ExchangisJobBuilderChain<T, E> getJobBuilderChain(Class<T> inputJob, Class<E> outputJob) {
         BuilderDirection direction = new BuilderDirection(inputJob, outputJob);
         return jobBuilderChains.get(direction);
     }
 
     @Override
-    public <T extends ExchangisJob, E extends ExchangisJob> void resetJobBuilder(Class<T> inputJob, Class<E> outputJob) {
+    public <T extends ExchangisJob, E extends ExchangisBase> void resetJobBuilder(Class<T> inputJob, Class<E> outputJob) {
         BuilderDirection direction = new BuilderDirection(inputJob, outputJob);
         jobBuilderChains.compute(direction, (key, value) ->{
             if(Objects.nonNull(value)){

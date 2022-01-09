@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.scheduler;
+package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
@@ -73,11 +73,11 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
         @Override
         public ExecuteResponse execute(ExecuteRequest executeRequest) {
-            if (executeRequest instanceof ExchangisSchedulerJob.DirectExecuteRequest){
+            if (executeRequest instanceof ExchangisSchedulerTask.DirectExecuteRequest){
                 try {
-                    ((ExchangisSchedulerJob.DirectExecuteRequest)executeRequest).directExecute();
+                    ((ExchangisSchedulerTask.DirectExecuteRequest)executeRequest).directExecute();
                 } catch (ExchangisSchedulerException | ExchangisSchedulerRetryException e) {
-                    e.printStackTrace();
+                    // TODO convert to ExecuteResponse
                 }
             }
             return null;
