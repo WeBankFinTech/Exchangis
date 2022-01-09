@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.scheduler;
+package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
@@ -8,9 +8,9 @@ import org.apache.linkis.scheduler.queue.Job;
 import java.io.IOException;
 
 /**
- * Inheritable scheduler job for exchangis
+ * Inheritable scheduler task for exchangis
  */
-public abstract class ExchangisSchedulerJob extends Job {
+public abstract class ExchangisSchedulerTask extends Job {
 
     public static final int MAX_RETRY_NUM = 3;
 

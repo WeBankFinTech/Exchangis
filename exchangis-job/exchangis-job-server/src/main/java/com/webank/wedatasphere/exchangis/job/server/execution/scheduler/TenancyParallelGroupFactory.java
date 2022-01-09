@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.scheduler;
+package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 
 import org.apache.linkis.scheduler.queue.AbstractGroup;
 import org.apache.linkis.scheduler.queue.SchedulerEvent;
