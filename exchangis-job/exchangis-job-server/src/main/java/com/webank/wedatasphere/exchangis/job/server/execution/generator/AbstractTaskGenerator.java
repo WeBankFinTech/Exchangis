@@ -33,15 +33,15 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
     }
 
     @Override
-    public LaunchableExchangisJob generate(LaunchableExchangisJob exchangisJob) throws ExchangisTaskGenerateException {
+    public LaunchableExchangisJob generate(LaunchableExchangisJob launchableExchangisJob) throws ExchangisTaskGenerateException {
         if (Objects.isNull(generatorFunction)){
             this.generatorFunction = generatorFunction();
         }
         if (Objects.isNull(this.generatorFunction)){
             throw new ExchangisTaskGenerateException("Generator function is emtpy, please define it before generating!", null);
         }
-        // TODO persist the launchable exchangis before
-        return execute(this.generatorFunction, getTaskGeneratorContext());
+        execute(this.generatorFunction, launchableExchangisJob, getTaskGeneratorContext());
+        return launchableExchangisJob;
     }
 
 
@@ -63,6 +63,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
     protected GeneratorFunction generatorFunction(){
         return launchableExchangisJob -> {
             ExchangisJobInfo jobInfo = launchableExchangisJob.getExchangisJobInfo();
+            List<LaunchableExchangisTask> launchableExchangisTasks = new ArrayList<>();
             if (Objects.isNull(jobInfo)){
                 throw new ExchangisTaskGenerateException("Job information is empty in launchable exchangis job", null);
             }
@@ -78,7 +79,6 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
                             SubExchangisJob.class, ExchangisEngineJob.class, ctx)).ifPresent(engineJobs::add);
                 }
                 // List<ExchangisEngineJob> -> List<LaunchableExchangisTask>
-                List<LaunchableExchangisTask> launchableExchangisTasks = new ArrayList<>();
                 for (ExchangisEngineJob engineJob : engineJobs){
                     Optional.ofNullable(jobBuilderManager.doBuild(engineJob,
                             ExchangisEngineJob.class, LaunchableExchangisTask.class, ctx)).ifPresent(launchableExchangisTasks :: add);
@@ -95,7 +95,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
                 }
                 throw new ExchangisTaskGenerateException("Error in building launchable tasks", e);
             }
-            return launchableExchangisJob;
+            return launchableExchangisTasks;
         };
     }
     /**
@@ -103,7 +103,9 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
      * @param generatorFunction generator function
      * @param ctx context
      */
-    protected abstract LaunchableExchangisJob execute(GeneratorFunction generatorFunction, TaskGeneratorContext ctx) throws ExchangisTaskGenerateException;
+    protected abstract void execute(GeneratorFunction generatorFunction,
+                                    LaunchableExchangisJob launchableExchangisJob,
+                                    TaskGeneratorContext ctx) throws ExchangisTaskGenerateException;
 
     @FunctionalInterface
     interface GeneratorFunction{
@@ -111,6 +113,6 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
          * Apply function
          * @param launchableExchangisJob origin job
          */
-        LaunchableExchangisJob apply(LaunchableExchangisJob launchableExchangisJob) throws ExchangisTaskGenerateException;
+        List<LaunchableExchangisTask> apply(LaunchableExchangisJob launchableExchangisJob) throws ExchangisTaskGenerateException;
     }
 }
