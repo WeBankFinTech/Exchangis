@@ -34,7 +34,12 @@
             <artifactId>exchangis-job-launcher</artifactId>
             <version>1.0.0-RC1</version>
         </dependency>
-
+        <!-- scheduler module -->
+        <dependency>
+            <groupId>org.apache.linkis</groupId>
+            <artifactId>linkis-scheduler</artifactId>
+            <version>${linkis.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

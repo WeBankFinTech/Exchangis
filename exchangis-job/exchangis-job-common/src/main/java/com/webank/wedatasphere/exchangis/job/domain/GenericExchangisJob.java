@@ -1,8 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.domain;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.linkis.manager.label.entity.Label;
-import org.apache.linkis.manager.label.utils.LabelUtils;
+import com.webank.wedatasphere.exchangis.job.utils.LabelConvertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,15 +84,7 @@ public class GenericExchangisJob implements ExchangisJob {
 
     @Override
     public void setJobLabels(String labels) {
-        if (StringUtils.isNotBlank(labels)){
-            try{
-                Map<String, Object> labelsMap = LabelUtils.Jackson.fromJson(labels, Map.class);
-                labelHolder.putAll(labelsMap);
-            } catch (Exception e){
-                //Don't throws exception
-                LOG.warn("The input labels json \"{}\" is illegal", labels, e);
-            }
-        }
+        this.labelHolder = LabelConvertUtils.stringToLabelMap(labels);
     }
 
     @Override

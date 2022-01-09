@@ -22,6 +22,11 @@
             <artifactId>linkis-label-common</artifactId>
             <version>${linkis.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.linkis</groupId>
+            <artifactId>linkis-protocol</artifactId>
+            <version>${linkis.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

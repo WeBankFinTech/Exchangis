@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 /**
  * TransformJob builder
  */
-public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBuilder<ExchangisJobInfo, ExchangisTransformJob> {
+public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBuilder<ExchangisJobInfo, TransformExchangisJob> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenericExchangisTransformJobBuilder.class);
 
@@ -63,11 +63,11 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
         }}));
     }
     @Override
-    public ExchangisTransformJob buildJob(ExchangisJobInfo inputJob, ExchangisTransformJob expectJob, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+    public TransformExchangisJob buildJob(ExchangisJobInfo inputJob, TransformExchangisJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         LOG.trace("Start to build exchangis transform job, name: [{}], id: [{}], engine: [{}], content: [{}]",
                 inputJob.getName(), inputJob.getId(), inputJob.getEngineType(), inputJob.getJobContent());
         //First to convert content to "ExchangisJobInfoContent"
-        ExchangisTransformJob outputJob = new ExchangisTransformJob();
+        TransformExchangisJob outputJob = new TransformExchangisJob();
         outputJob.setCreateUser(Optional.ofNullable(ctx.getEnv("USER_NAME")).orElse("").toString());
         try {
             if (StringUtils.isNotBlank(inputJob.getJobContent())) {
@@ -78,7 +78,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                             inputJob.getId(), inputJob.getName(), contents.size());
                     //Second to new SubExchangisJob instances
                     List<SubExchangisJob> subExchangisJobs = contents.stream().map(job -> {
-                                ExchangisTransformJob.SubExchangisJobAdapter jobAdapter = new ExchangisTransformJob.SubExchangisJobAdapter(job);
+                                TransformExchangisJob.SubExchangisJobAdapter jobAdapter = new TransformExchangisJob.SubExchangisJobAdapter(job);
                                 jobAdapter.setId(inputJob.getId());
                                 jobAdapter.setName(inputJob.getName());
                                 jobAdapter.setCreateUser(outputJob.getCreateUser());

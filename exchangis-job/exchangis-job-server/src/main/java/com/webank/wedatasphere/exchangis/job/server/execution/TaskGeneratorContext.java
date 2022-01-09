@@ -1,5 +1,4 @@
 package com.webank.wedatasphere.exchangis.job.server.execution;
 
-
-public class DefaultAsyncTaskGenerator {
+public interface TaskGeneratorContext {
 }
