@@ -17,9 +17,9 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLauncher;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherJob;
-import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
@@ -186,7 +186,7 @@ public class ExchangisJobController {
 
         ctx.setOriginalJob(job);
         // ExchangisJob -> ExchangisTransformJob(SubExchangisJob)
-        ExchangisTransformJob transformJob = jobBuilderManager.doBuild(job, ExchangisTransformJob.class, ctx);
+        TransformExchangisJob transformJob = jobBuilderManager.doBuild(job, TransformExchangisJob.class, ctx);
         List<ExchangisEngineJob> engineJobs = new ArrayList<>();
         // ExchangisTransformJob(SubExchangisJob) -> List<ExchangisEngineJob>
         for (SubExchangisJob subExchangisJob : transformJob.getSubJobSet()) {

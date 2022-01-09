@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.service;
 import java.util.List;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLaunchTask;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskInfoVO;
 
 public interface ExchangisLaunchTaskService extends IService<ExchangisLaunchTask> {

@@ -22,7 +22,7 @@ public class DefaultExchangisEngineJobBuilder extends AbstractExchangisJobBuilde
     }
 
     @Override
-    public ExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectJob, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+    public ExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         String paramsString = ctx.getOriginalJob().getJobParams();
         ExchangisEngineJob exchangisEngineJob = new ExchangisEngineJob();
         if (StringUtils.isNotBlank(paramsString)){
