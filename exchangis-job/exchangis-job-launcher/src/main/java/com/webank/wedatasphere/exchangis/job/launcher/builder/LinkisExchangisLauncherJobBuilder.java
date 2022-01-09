@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.launcher.builder;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 
@@ -15,7 +15,7 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
 
     private static final String LAUNCHER_NAME = "Linkis";
     @Override
-    public ExchangisLauncherJob buildJob(ExchangisEngineJob inputJob, ExchangisLauncherJob expectJob, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+    public ExchangisLauncherJob buildJob(ExchangisEngineJob inputJob, ExchangisLauncherJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         ExchangisLauncherJob launcherJob = new ExchangisLauncherJob();
         ExchangisJobVO exchangisJob = ctx.getOriginalJob();
         launcherJob.setId(inputJob.getId());

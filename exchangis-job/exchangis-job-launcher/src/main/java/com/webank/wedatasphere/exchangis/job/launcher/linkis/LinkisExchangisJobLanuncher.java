@@ -6,7 +6,7 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobConfiguration;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLauncher;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
 import org.apache.linkis.common.conf.Configuration;
 import org.apache.linkis.computation.client.LinkisJobBuilder;
 import org.apache.linkis.computation.client.LinkisJobClient;

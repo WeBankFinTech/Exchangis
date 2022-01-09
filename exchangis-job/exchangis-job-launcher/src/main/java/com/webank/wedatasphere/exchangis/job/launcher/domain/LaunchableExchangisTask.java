@@ -1,14 +1,16 @@
-package com.webank.wedatasphere.exchangis.job.server.execution;
+package com.webank.wedatasphere.exchangis.job.launcher.domain;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.job.constraints.LabelSerializeConstraints;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
+import com.webank.wedatasphere.exchangis.job.utils.LabelConvertUtils;
 
 import java.util.*;
 
 /**
  * Task could be executed
  */
-public class ExchangisLaunchableTask implements ExchangisTask {
+public class LaunchableExchangisTask implements ExchangisTask {
 
     private Long id;
 
@@ -132,14 +134,23 @@ public class ExchangisLaunchableTask implements ExchangisTask {
     }
 
     public Map<String, Object> getLinkisParamsMap() {
+        if(Objects.isNull(this.linkisParamsMap) && Objects.nonNull(this.linkisParams)){
+            this.linkisParamsMap = Json.fromJson(this.linkisParams, Map.class);
+        }
         return linkisParamsMap;
     }
 
     public Map<String, Object> getLinkisSourceMap() {
+        if(Objects.isNull(this.linkisSourceMap) && Objects.nonNull(this.linkisSource)){
+            this.linkisSourceMap = Json.fromJson(this.linkisParams, Map.class);
+        }
         return linkisSourceMap;
     }
 
     public Map<String, Object> getLabelsMap() {
+        if(Objects.isNull(this.labelsMap) && Objects.nonNull(this.labels)){
+            this.labelsMap = LabelConvertUtils.stringToLabelMap(this.labels);
+        }
         return labelsMap;
     }
 
@@ -189,6 +200,9 @@ public class ExchangisLaunchableTask implements ExchangisTask {
     }
 
     public String getLabels() {
+        if (Objects.isNull(this.linkisParams) && Objects.nonNull(this.linkisParamsMap)){
+            this.linkisParams = Json.toJson(this.linkisParamsMap, null);
+        }
         return labels;
     }
 

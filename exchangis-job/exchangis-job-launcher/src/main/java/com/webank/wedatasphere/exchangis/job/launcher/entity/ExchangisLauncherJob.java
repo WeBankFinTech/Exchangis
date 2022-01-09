@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.launcher;
+package com.webank.wedatasphere.exchangis.job.launcher.entity;
 
 import com.webank.wedatasphere.exchangis.job.domain.GenericExchangisJob;
 

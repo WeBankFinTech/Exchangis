@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.builder.transform;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.GenericExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
@@ -21,13 +21,23 @@ import java.util.stream.Collectors;
 /**
  * Transform job
  */
-public class ExchangisTransformJob extends GenericExchangisJob {
+public class TransformExchangisJob extends GenericExchangisJob {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ExchangisTransformJob.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TransformExchangisJob.class);
+
+    private ExchangisJobInfo exchangisJobInfo;
     /**
      * Set of sub jobs
      */
     private List<SubExchangisJob> subJobSet = new ArrayList<>();
+
+    public ExchangisJobInfo getExchangisJobInfo() {
+        return exchangisJobInfo;
+    }
+
+    public void setExchangisJobInfo(ExchangisJobInfo exchangisJobInfo) {
+        this.exchangisJobInfo = exchangisJobInfo;
+    }
 
     public List<SubExchangisJob> getSubJobSet() {
         return subJobSet;
