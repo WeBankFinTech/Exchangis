@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLaunchTask;
 
 /**
  * The interface Exchangis launch task mapper.

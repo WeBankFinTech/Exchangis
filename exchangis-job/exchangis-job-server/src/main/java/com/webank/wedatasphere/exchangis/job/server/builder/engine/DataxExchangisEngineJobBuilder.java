@@ -137,7 +137,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     }
 
     @Override
-    public DataxExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectJob, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+    public DataxExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
 
         try {
             DataxExchangisEngineJob engineJob = new DataxExchangisEngineJob();
@@ -151,16 +151,16 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             } catch (JsonProcessingException e) {
                 //Ignore
             }
-            if (Objects.nonNull(expectJob)) {
-                engineJob.setName(expectJob.getName());
-                engineJob.setEngineType(expectJob.getEngineType());
+            if (Objects.nonNull(expectOut)) {
+                engineJob.setName(expectOut.getName());
+                engineJob.setEngineType(expectOut.getEngineType());
             }
 
             engineJob.setRuntimeParams(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
             engineJob.setName(inputJob.getName());
-            if (Objects.nonNull(expectJob)) {
-                engineJob.setName(expectJob.getName());
-                engineJob.setEngineType(expectJob.getEngineType());
+            if (Objects.nonNull(expectOut)) {
+                engineJob.setName(expectOut.getName());
+                engineJob.setEngineType(expectOut.getEngineType());
             }
             engineJob.setCreateUser(inputJob.getCreateUser());
             return engineJob;

@@ -8,7 +8,7 @@ import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.builder.engine.DataxExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.server.builder.engine.SqoopExchangisEngineJob;
-import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class JobBuilderMainProgress {
         ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
         ctx.setOriginalJob(job);
         // ExchangisJob -> ExchangisTransformJob(SubExchangisJob)
-        ExchangisTransformJob transformJob = jobBuilderManager.doBuild(job, ExchangisTransformJob.class, ctx);
+        TransformExchangisJob transformJob = jobBuilderManager.doBuild(job, TransformExchangisJob.class, ctx);
         List<ExchangisEngineJob> engineJobs = new ArrayList<>();
         // ExchangisTransformJob(SubExchangisJob) -> List<ExchangisEngineJob>
         for(SubExchangisJob subExchangisJob : transformJob.getSubJobSet()){

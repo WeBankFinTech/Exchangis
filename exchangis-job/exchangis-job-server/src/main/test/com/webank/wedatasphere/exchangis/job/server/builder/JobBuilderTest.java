@@ -8,8 +8,8 @@ import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherJob;
-import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 
 import java.util.*;
 
@@ -79,7 +79,7 @@ public class JobBuilderTest {
         ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
         ctx.putEnv("USER_NAME", "xxxxyyyyzzzz");
         ctx.setOriginalJob(job);
-        ExchangisTransformJob transformJob = jobBuilderManager.doBuild(job, ExchangisTransformJob.class, ctx);
+        TransformExchangisJob transformJob = jobBuilderManager.doBuild(job, TransformExchangisJob.class, ctx);
         List<ExchangisEngineJob> engineJobs = new ArrayList<>();
 
 
