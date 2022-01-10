@@ -6,7 +6,7 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobConfiguration;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLauncher;
-import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
 import org.apache.linkis.common.conf.Configuration;
 import org.apache.linkis.computation.client.LinkisJobBuilder;
 import org.apache.linkis.computation.client.LinkisJobClient;
@@ -34,12 +34,12 @@ public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<Exchang
 
         SubmittableSimpleOnceJob onceJob = null;
 
-        if (launcherJob.getEngine().equalsIgnoreCase("SQOOP")) {
+        if (launcherJob.getEngineType().equalsIgnoreCase("SQOOP")) {
             onceJob = this.submitSqoopJob(launcherJob);
-        } else if (launcherJob.getEngine().equalsIgnoreCase("DATAX")) {
+        } else if (launcherJob.getEngineType().equalsIgnoreCase("DATAX")) {
             onceJob = this.submitDataxJob(launcherJob);
         } else {
-            throw new ExchangisJobException(ExchangisJobExceptionCode.UNSUPPORTED_JOB_EXECUTION_ENGINE.getCode(), "Unsupported job execution engine: '" + launcherJob.getEngine() + "'.");
+            throw new ExchangisJobException(ExchangisJobExceptionCode.UNSUPPORTED_JOB_EXECUTION_ENGINE.getCode(), "Unsupported job execution engine: '" + launcherJob.getEngineType() + "'.");
         }
 
         return onceJob;
@@ -62,7 +62,6 @@ public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<Exchang
     }
 
     private SubmittableSimpleOnceJob submitSqoopJob(ExchangisLauncherJob launcherJob) {
-
         LinkisJobBuilder<SubmittableSimpleOnceJob> jobBuilder = LinkisJobClient.once().simple().builder()
                 .setCreateService("Sqoop")
                 .setMaxSubmitTime(300000)
@@ -72,8 +71,9 @@ public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<Exchang
                 .addStartupParam(Configuration.IS_TEST_MODE().key(), false)
                 .addExecuteUser(launcherJob.getProxyUser())
                 .addJobContent("runType", "sqoop")
-                .addJobContent("sqoop-params", launcherJob.getJobContent().get("sqoop-params"))
-                .addSource("jobName", launcherJob.getJobName() + "." + launcherJob.getTaskName());
+                .addJobContent("sqoop-params", launcherJob.getJobContent().get("sqoop-params"));
+                //TODO getTaskName
+//                .addSource("jobName", launcherJob.getName() + "." + launcherJob.getTaskName());
 
         Optional.ofNullable(launcherJob.getRuntimeMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
 
@@ -110,8 +110,9 @@ public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<Exchang
                 .addStartupParam(Configuration.IS_TEST_MODE().key(), false)
                 .addExecuteUser(launcherJob.getProxyUser())
                 .addJobContent("runType", "appconn")
-                .addJobContent("code", job.toString())
-                .addSource("jobName", launcherJob.getJobName() + "." + launcherJob.getTaskName());
+                .addJobContent("code", job.toString());
+                //TODO getTaskName
+//                .addSource("jobName", launcherJob.getName() + "." + launcherJob.getTaskName());
 
         Optional.ofNullable(launcherJob.getRuntimeMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
 

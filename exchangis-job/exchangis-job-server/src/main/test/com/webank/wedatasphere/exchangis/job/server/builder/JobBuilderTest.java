@@ -3,12 +3,13 @@ package com.webank.wedatasphere.exchangis.job.server.builder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
-import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
-import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 
 import java.util.*;
 
@@ -73,12 +74,12 @@ public class JobBuilderTest {
                 "}";
 //        System.out.println(code);
 
-        ExchangisJob job = getSqoopJob();
-        System.out.println(job.getJobName());
+        ExchangisJobInfo job = getSqoopJob();
+        System.out.println(job.getName());
         ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
         ctx.putEnv("USER_NAME", "xxxxyyyyzzzz");
         ctx.setOriginalJob(job);
-        ExchangisTransformJob transformJob = jobBuilderManager.doBuild(job, ExchangisTransformJob.class, ctx);
+        TransformExchangisJob transformJob = jobBuilderManager.doBuild(job, TransformExchangisJob.class, ctx);
         List<ExchangisEngineJob> engineJobs = new ArrayList<>();
 
 
@@ -111,14 +112,14 @@ public class JobBuilderTest {
 
         for (ExchangisLauncherJob launcherJob : launcherJobs) {
             String launchName = launcherJob.getLaunchName();
-            System.out.println(launcherJob.getJobName());
+            System.out.println(launcherJob.getName());
             System.out.println(launchName);
         }
 
     }
 
-    public static ExchangisJob getSqoopJob() {
-        ExchangisJob job = new ExchangisJob();
+    public static ExchangisJobInfo getSqoopJob() {
+        ExchangisJobVO job = new ExchangisJobVO();
         job.setId(22L);
         job.setProjectId(1456173825011081218L);
         job.setJobName("T_SQOOP");
@@ -198,7 +199,7 @@ public class JobBuilderTest {
         job.setProxyUser("hdfs");
         job.setSyncType("FULL");
         job.setJobParams("{}");
-        return job;
+        return new ExchangisJobInfo(job);
     }
 
     public static Map<String, Object> getDsParam(String id) {

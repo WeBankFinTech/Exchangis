@@ -3,7 +3,7 @@
 <mapper namespace="com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisLaunchTaskMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask">
+    <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLaunchTask">
         <id column="id" property="id"/>
         <result column="task_name" property="taskName"/>
         <result column="job_id" property="jobId"/>

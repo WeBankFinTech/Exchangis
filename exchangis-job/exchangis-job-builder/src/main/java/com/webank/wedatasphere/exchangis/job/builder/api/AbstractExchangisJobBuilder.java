@@ -1,13 +1,13 @@
 package com.webank.wedatasphere.exchangis.job.builder.api;
 
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobBase;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.*;
 
-public abstract class AbstractExchangisJobBuilder<T extends ExchangisJobBase, E extends ExchangisJobBase> implements ExchangisJobBuilder<T, E> {
+public abstract class AbstractExchangisJobBuilder<T extends ExchangisJob, E extends ExchangisJob> implements ExchangisJobBuilder<T, E> {
     @Override
     @SuppressWarnings("unchecked")
     public Class<T> inputJob() {
