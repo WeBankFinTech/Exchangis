@@ -38,7 +38,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
             this.generatorFunction = generatorFunction();
         }
         if (Objects.isNull(this.generatorFunction)){
-            throw new ExchangisTaskGenerateException("Generator function is emtpy, please define it before generating!", null);
+            throw new ExchangisTaskGenerateException("Generator function is empty, please define it before generating!", null);
         }
         execute(this.generatorFunction, launchableExchangisJob, getTaskGeneratorContext());
         return launchableExchangisJob;
@@ -108,7 +108,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
                                     TaskGeneratorContext ctx) throws ExchangisTaskGenerateException;
 
     @FunctionalInterface
-    interface GeneratorFunction{
+    public interface GeneratorFunction{
         /**
          * Apply function
          * @param launchableExchangisJob origin job
