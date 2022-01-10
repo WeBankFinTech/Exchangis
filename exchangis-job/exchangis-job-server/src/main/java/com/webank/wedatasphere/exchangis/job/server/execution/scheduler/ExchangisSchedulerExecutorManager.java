@@ -7,9 +7,15 @@ import org.apache.linkis.scheduler.executer.*;
 import org.apache.linkis.scheduler.listener.ExecutorListener;
 import org.apache.linkis.scheduler.queue.SchedulerEvent;
 import scala.Option;
+import scala.Some;
 import scala.concurrent.duration.Duration;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -17,7 +23,11 @@ import java.io.IOException;
  */
 public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
+    private ExchangisSchedulerExecutorFactory schedulerExecutorFactory;
 
+    private ExchangisSchedulerExecutorManager(ExchangisSchedulerExecutorFactory schedulerExecutorFactory){
+        this.schedulerExecutorFactory = schedulerExecutorFactory;
+    }
     @Override
     public void setExecutorListener(ExecutorListener engineListener) {
         // Emm, It is never be used
@@ -25,12 +35,12 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
     @Override
     public Executor createExecutor(SchedulerEvent event) {
-        return null;
+        return schedulerExecutorFactory.getOrCreateExecutor(event);
     }
 
     @Override
     public Option<Executor> askExecutor(SchedulerEvent event) {
-        return null;
+        return Some.apply(schedulerExecutorFactory.getOrCreateExecutor(event));
     }
 
     @Override
@@ -55,16 +65,86 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
     @Override
     public void shutdown() {
-
+        // Do nothing
     }
 
-    /**
-     * Mark the executor is singleton
-     */
-    public interface SingletonExecutor extends Executor{
-
+    public ExchangisSchedulerExecutorFactory getSchedulerExecutorFactory() {
+        return schedulerExecutorFactory;
     }
-    private static class DefaultDirectExecutor implements SingletonExecutor{
+
+    private static class DefaultExchangisSchedulerExecutorFactory implements ExchangisSchedulerExecutorFactory{
+
+        private static final Class<? extends Executor> DEFAULT_DIRECT_EXECUTOR = DefaultDirectExecutor.class;
+
+        /**
+         * Register executor class
+         */
+        private Map<String, Class<? extends Executor>> registeredExecutorClass = new ConcurrentHashMap<>();
+        /**
+         * Singleton instance holder
+         */
+        private Map<String, Executor> singletonExecutorHolder = new ConcurrentHashMap<>();
+        /**
+         * Default true
+         */
+        boolean isSingleton = true;
+        @Override
+        public void setIsSingleTon(boolean singleton) {
+            this.isSingleton = singleton;
+        }
+
+        @Override
+        public Executor getOrCreateExecutor(SchedulerEvent event) {
+            String canonicalName = event.getClass().getCanonicalName();
+            if (isSingleton){
+                return singletonExecutorHolder.computeIfAbsent(canonicalName, this::createExecutorInternal);
+            }
+            return createExecutorInternal(canonicalName);
+        }
+
+        private Executor createExecutorInternal(String eventName){
+            Class<? extends Executor> executorClass = registeredExecutorClass
+                    .getOrDefault(eventName, DEFAULT_DIRECT_EXECUTOR);
+            try {
+                Constructor<?> constructor = executorClass.getConstructor();
+                return (Executor)constructor.newInstance();
+            } catch (NoSuchMethodException e) {
+               throw new ExchangisSchedulerException.Runtime("Fail to construct the executor for" +
+                       " scheduler task: [" + eventName + "], reason: has no suitable constructor", e);
+            } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+               throw new ExchangisSchedulerException.Runtime("Fail to construct the executor for" +
+                       " scheduler task: [" + eventName + "], reason: authority or other error", e);
+            }
+        }
+        /**
+         * Register method
+         * @param schedulerTask scheduler task
+         * @param schedulerExecutor scheduler executor
+         */
+        public void registerTaskExecutor(Class<? extends ExchangisSchedulerTask> schedulerTask,
+                                         Class<? extends Executor> schedulerExecutor){
+            String schedulerTaskClass = schedulerTask.getCanonicalName();
+            registeredExecutorClass.putIfAbsent(schedulerTaskClass, schedulerExecutor);
+        }
+    }
+
+    public static abstract class FactoryCreateExecutor implements Executor{
+
+        /**
+         * Executor factory
+         */
+        private ExchangisSchedulerExecutorFactory schedulerExecutorFactory;
+
+        public ExchangisSchedulerExecutorFactory getSchedulerExecutorFactory() {
+            return schedulerExecutorFactory;
+        }
+
+        public void setSchedulerExecutorFactory(ExchangisSchedulerExecutorFactory schedulerExecutorFactory) {
+            this.schedulerExecutorFactory = schedulerExecutorFactory;
+        }
+    }
+
+    private static class DefaultDirectExecutor extends FactoryCreateExecutor{
 
         @Override
         public long getId() {
@@ -76,11 +156,15 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
             if (executeRequest instanceof ExchangisSchedulerTask.DirectExecuteRequest){
                 try {
                     ((ExchangisSchedulerTask.DirectExecuteRequest)executeRequest).directExecute();
+                    return new SuccessExecuteResponse();
                 } catch (ExchangisSchedulerException | ExchangisSchedulerRetryException e) {
-                    // TODO convert to ExecuteResponse
+                    return new ErrorExecuteResponse("Exception occurred in scheduling, task will fail or retry on the next time, message: ["
+                            + e.getMessage() + "]", e);
+                } catch (Exception e){
+                    return new ErrorExecuteResponse("Unknown Exception occurred in scheduling, message: [" + e.getMessage() + "]", e);
                 }
             }
-            return null;
+            return new ErrorExecuteResponse("Unsupported execute request: code: [" + executeRequest.code() + "]", null);
         }
 
         @Override
