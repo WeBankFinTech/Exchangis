@@ -17,7 +17,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.OptionElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
@@ -48,7 +48,7 @@ import java.util.stream.Stream;
  * @since 2021-08-10
  */
 @Service
-public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, ExchangisJob> implements ExchangisJobService {
+public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, ExchangisJobVO> implements ExchangisJobService {
 
     @Autowired
     private ModelMapper modelMapper;
@@ -64,7 +64,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Override
     public ExchangisJobBasicInfoVO createJob(HttpServletRequest request, ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
-        ExchangisJob exchangisJob = modelMapper.map(exchangisJobBasicInfoDTO, ExchangisJob.class);
+        ExchangisJobVO exchangisJob = modelMapper.map(exchangisJobBasicInfoDTO, ExchangisJobVO.class);
         String proxyUser = "";
         try {
             proxyUser = SecurityFilter.getLoginUsername(request);
@@ -78,15 +78,15 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Override
     public List<ExchangisJobBasicInfoVO> getJobList(long projectId, String type, String name) {
-        LambdaQueryChainWrapper<ExchangisJob> query =
-                exchangisJobService.lambdaQuery().eq(ExchangisJob::getProjectId, projectId);
+        LambdaQueryChainWrapper<ExchangisJobVO> query =
+                exchangisJobService.lambdaQuery().eq(ExchangisJobVO::getProjectId, projectId);
         if (StringUtils.isNotBlank(type)) {
-            query.eq(ExchangisJob::getJobType, type);
+            query.eq(ExchangisJobVO::getJobType, type);
         }
         if (StringUtils.isNotBlank(name)) {
-            query.like(ExchangisJob::getJobName, name.trim());
+            query.like(ExchangisJobVO::getJobName, name.trim());
         }
-        List<ExchangisJob> exchangisJobs = query.list();
+        List<ExchangisJobVO> exchangisJobs = query.list();
 
         Stream<ExchangisJobBasicInfoVO> returnlist = Optional.ofNullable(exchangisJobs).orElse(new ArrayList<>()).stream()
                 .map(job -> modelMapper.map(job, ExchangisJobBasicInfoVO.class));
@@ -95,15 +95,15 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Override
     public List<ExchangisJobBasicInfoVO> getJobListByDssProject(long dssProjectId, String type, String name) {
-        LambdaQueryChainWrapper<ExchangisJob> query =
-                exchangisJobService.lambdaQuery().eq(ExchangisJob::getDssProjectId, dssProjectId);
+        LambdaQueryChainWrapper<ExchangisJobVO> query =
+                exchangisJobService.lambdaQuery().eq(ExchangisJobVO::getDssProjectId, dssProjectId);
         if (StringUtils.isNotBlank(type)) {
-            query.eq(ExchangisJob::getJobType, type);
+            query.eq(ExchangisJobVO::getJobType, type);
         }
         if (StringUtils.isNotBlank(name)) {
-            query.like(ExchangisJob::getJobName, name.trim());
+            query.like(ExchangisJobVO::getJobName, name.trim());
         }
-        List<ExchangisJob> exchangisJobs = query.list();
+        List<ExchangisJobVO> exchangisJobs = query.list();
 
         Stream<ExchangisJobBasicInfoVO> returnlist = Optional.ofNullable(exchangisJobs).orElse(new ArrayList<>()).stream()
                 .map(job -> modelMapper.map(job, ExchangisJobBasicInfoVO.class));
@@ -112,8 +112,8 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Override
     public ExchangisJobBasicInfoVO copyJob(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO, Long sourceJobId) {
-        ExchangisJob oldJob = exchangisJobService.getById(sourceJobId);
-        ExchangisJob newJob = modelMapper.map(exchangisJobBasicInfoDTO, ExchangisJob.class);
+        ExchangisJobVO oldJob = exchangisJobService.getById(sourceJobId);
+        ExchangisJobVO newJob = modelMapper.map(exchangisJobBasicInfoDTO, ExchangisJobVO.class);
         newJob.setProjectId(oldJob.getProjectId());
         newJob.setJobType(oldJob.getJobType());
         newJob.setEngineType(oldJob.getEngineType());
@@ -123,7 +123,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Override
     public ExchangisJobBasicInfoVO updateJob(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO, Long id) {
-        ExchangisJob job = exchangisJobService.getById(id);
+        ExchangisJobVO job = exchangisJobService.getById(id);
         job.setJobName(exchangisJobBasicInfoDTO.getJobName());
         job.setJobLabels(exchangisJobBasicInfoDTO.getJobLabels());
         job.setJobDesc(exchangisJobBasicInfoDTO.getJobDesc());
@@ -134,9 +134,9 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Override
     public ExchangisJobBasicInfoVO updateJobByDss(ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO, String nodeId) {
-        Optional<ExchangisJob> optional = this.getByNodeId(nodeId);
+        Optional<ExchangisJobVO> optional = this.getByNodeId(nodeId);
         if (optional.isPresent()) {
-            ExchangisJob job = optional.get();
+            ExchangisJobVO job = optional.get();
             job.setJobName(exchangisJobBasicInfoDTO.getJobName());
             job.setJobLabels(exchangisJobBasicInfoDTO.getJobLabels());
             job.setJobDesc(exchangisJobBasicInfoDTO.getJobDesc());
@@ -146,11 +146,11 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         return null;
     }
 
-    private Optional<ExchangisJob> getByNodeId(String nodeId) {
-        ExchangisJob job = null;
-        LambdaQueryChainWrapper<ExchangisJob> query =
-                exchangisJobService.lambdaQuery().eq(ExchangisJob::getNodeId, nodeId);
-        List<ExchangisJob> exchangisJobs = query.list();
+    private Optional<ExchangisJobVO> getByNodeId(String nodeId) {
+        ExchangisJobVO job = null;
+        LambdaQueryChainWrapper<ExchangisJobVO> query =
+                exchangisJobService.lambdaQuery().eq(ExchangisJobVO::getNodeId, nodeId);
+        List<ExchangisJobVO> exchangisJobs = query.list();
         if (null != exchangisJobs && exchangisJobs.size() == 1) {
             job = exchangisJobs.get(0);
         }
@@ -177,13 +177,13 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         });
     }
 
-    public ExchangisJob getJob(Long id) throws ExchangisJobErrorException {
+    public ExchangisJobVO getJob(Long id) throws ExchangisJobErrorException {
         return this.getJob(null, id);
     }
 
     @Override
-    public ExchangisJob getJob(HttpServletRequest request, Long id) throws ExchangisJobErrorException {
-        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+    public ExchangisJobVO getJob(HttpServletRequest request, Long id) throws ExchangisJobErrorException {
+        ExchangisJobVO exchangisJob = exchangisJobService.getById(id);
         if (exchangisJob != null) {
             // generate subjobs ui content
             List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(request, id);
@@ -202,11 +202,11 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     }
 
     @Override
-    public ExchangisJob getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobErrorException {
+    public ExchangisJobVO getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobErrorException {
 
-        Optional<ExchangisJob> optional = this.getByNodeId(nodeId);
+        Optional<ExchangisJobVO> optional = this.getByNodeId(nodeId);
         if (optional.isPresent()) {
-            ExchangisJob exchangisJob = optional.get();
+            ExchangisJobVO exchangisJob = optional.get();
             List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(request, exchangisJob.getId());
             ObjectMapper objectMapper = JsonUtils.jackson();
             try {
@@ -227,9 +227,9 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
 
     @Override
-    public ExchangisJob updateJobConfig(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
+    public ExchangisJobVO updateJobConfig(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
             throws ExchangisJobErrorException {
-        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+        ExchangisJobVO exchangisJob = exchangisJobService.getById(id);
         exchangisJob.setProxyUser(exchangisJobContentDTO.getProxyUser());
         exchangisJob.setExecuteNode(exchangisJobContentDTO.getExecuteNode());
         exchangisJob.setSyncType(exchangisJobContentDTO.getSyncType());
@@ -240,9 +240,9 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     }
 
     @Override
-    public ExchangisJob updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
+    public ExchangisJobVO updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
             throws ExchangisJobErrorException, ExchangisDataSourceException {
-        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+        ExchangisJobVO exchangisJob = exchangisJobService.getById(id);
         final String engine = exchangisJob.getEngineType();
 
         // 校验是否有重复子任务名
@@ -278,7 +278,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Override
     public List<ElementUI> getSpeedLimitSettings(Long id, String taskName) {
-        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+        ExchangisJobVO exchangisJob = exchangisJobService.getById(id);
         Map<String, String> values = new HashMap<>();
         if (null != exchangisJob && null != exchangisJob.getContent() && !"".equals(exchangisJob.getContent())) {
             List<ExchangisJobInfoContent> o = LabelUtils.Jackson.fromJson(exchangisJob.getContent(), List.class, ExchangisJobInfoContent.class);
@@ -311,7 +311,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Override
     public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings) {
-        ExchangisJob exchangisJob = exchangisJobService.getById(id);
+        ExchangisJobVO exchangisJob = exchangisJobService.getById(id);
         JsonArray content = new JsonParser().parse(exchangisJob.getContent()).getAsJsonArray();
         JsonArray newSet = new JsonArray();
         settings.getSettings().forEach(s -> {

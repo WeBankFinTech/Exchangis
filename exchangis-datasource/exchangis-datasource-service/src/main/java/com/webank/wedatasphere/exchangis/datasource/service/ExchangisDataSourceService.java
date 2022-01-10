@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
@@ -71,7 +71,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             return null;
         }
 
-        ExchangisJobInfo job = this.exchangisJobInfoMapper.selectById(jobId);
+        ExchangisJobEntity job = this.exchangisJobInfoMapper.selectById(jobId);
         if (Objects.isNull(job)) {
             return null;
         }
@@ -459,7 +459,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             return null;
         }
 
-        ExchangisJobInfo job = this.exchangisJobInfoMapper.selectById(jobId);
+        ExchangisJobEntity job = this.exchangisJobInfoMapper.selectById(jobId);
         if (Objects.isNull(job)) {
             return null;
         }
@@ -478,7 +478,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             return null;
         }
 
-        ExchangisJobInfo job = this.exchangisJobInfoMapper.selectById(jobId);
+        ExchangisJobEntity job = this.exchangisJobInfoMapper.selectById(jobId);
         if (Objects.isNull(job)) {
             return null;
         }
@@ -507,7 +507,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             return null;
         }
 
-        ExchangisJobInfo job = this.exchangisJobInfoMapper.selectById(jobId);
+        ExchangisJobEntity job = this.exchangisJobInfoMapper.selectById(jobId);
         if (Objects.isNull(job)) {
             return null;
         }

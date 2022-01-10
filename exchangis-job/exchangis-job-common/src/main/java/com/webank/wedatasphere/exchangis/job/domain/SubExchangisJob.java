@@ -11,12 +11,8 @@ import java.util.stream.Collectors;
  * For each sub job entity,
  * will have parameter set which divided into different realm
  */
-public class SubExchangisJob extends ExchangisJobBase{
+public class SubExchangisJob extends GenericExchangisJob {
 
-    /**
-     * Engine name
-     */
-    protected String engine;
 
     protected String sourceType;
 
@@ -36,14 +32,6 @@ public class SubExchangisJob extends ExchangisJobBase{
      * Realm params set
      */
     private Map<String, JobParamSet> realmParamSet = new ConcurrentHashMap<>();
-
-    public String getEngine() {
-        return engine;
-    }
-
-    public void setEngine(String engine) {
-        this.engine = engine;
-    }
 
     public String getSourceType() {
         return sourceType;

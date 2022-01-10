@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
@@ -183,7 +183,7 @@ public class AbstractDataSourceService {
         return paramsUI;
     }
 
-    protected ExchangisDataSourceUIViewer buildAllUI(HttpServletRequest request, ExchangisJobInfo job, ExchangisJobInfoContent content) {
+    protected ExchangisDataSourceUIViewer buildAllUI(HttpServletRequest request, ExchangisJobEntity job, ExchangisJobInfoContent content) {
         // ----------- 构建 dataSourceIdsUI
         ExchangisDataSourceIdsUI dataSourceIdsUI = buildDataSourceIdsUI(request, content);
 
