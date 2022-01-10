@@ -8,7 +8,7 @@ import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskGeneratorContext;
 import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
-
+import com.webank.wedatasphere.exchangis.job.server.execution.generator.AbstractTaskGenerator.GeneratorFunction;
 /**
  * Async exec,
  * construct a JobGenerationSchedulerTask and them submit to TaskExecution
@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 @Component
 public class DefaultAsyncTaskGenerator extends AbstractTaskGenerator{
 
-    @Resource
+//    @Resource
     private TaskExecution taskExecution;
 
     @Resource

@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.launcher.builder;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
@@ -17,15 +18,15 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
     @Override
     public ExchangisLauncherJob buildJob(ExchangisEngineJob inputJob, ExchangisLauncherJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         ExchangisLauncherJob launcherJob = new ExchangisLauncherJob();
-        ExchangisJobVO exchangisJob = ctx.getOriginalJob();
+        ExchangisJobInfo exchangisJob = ctx.getOriginalJob();
         launcherJob.setId(inputJob.getId());
-        launcherJob.setTaskName(inputJob.getTaskName());
+        launcherJob.setName(inputJob.getName());
         launcherJob.setCreateUser(inputJob.getCreateUser());
-        launcherJob.setExecuteNode(exchangisJob.getExecuteNode());
-        launcherJob.setProxyUser(exchangisJob.getProxyUser());
+//        launcherJob.setExecuteNode(exchangisJob.getExecuteNode());
+//        launcherJob.setProxyUser(exchangisJob.getProxyUser());
         launcherJob.setJobContent(inputJob.getJobContent());
         launcherJob.setRuntimeMap(inputJob.getRuntimeParams());
-        launcherJob.setEngine(inputJob.getEngine());
+//        launcherJob.setEngine(inputJob.getEngine());
         launcherJob.setName(inputJob.getName());
         launcherJob.setLaunchName(LAUNCHER_NAME);
         return launcherJob;
