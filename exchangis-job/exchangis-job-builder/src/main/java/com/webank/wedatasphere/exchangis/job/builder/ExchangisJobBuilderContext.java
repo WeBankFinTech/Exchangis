@@ -1,7 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.builder;
 
 
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,7 @@ public class ExchangisJobBuilderContext {
     /**
      * Origin job
      */
-    private ExchangisJob originalJob;
+    private ExchangisJobInfo originalJob;
 
     private Map<String, Object> env = new HashMap<>();
 
@@ -24,15 +25,15 @@ public class ExchangisJobBuilderContext {
 
     }
 
-    public ExchangisJobBuilderContext(ExchangisJob originalJob) {
+    public ExchangisJobBuilderContext(ExchangisJobInfo originalJob) {
         this.originalJob = originalJob;
     }
 
-    public ExchangisJob getOriginalJob() {
+    public ExchangisJobInfo getOriginalJob() {
         return originalJob;
     }
 
-    public void setOriginalJob(ExchangisJob originalJob) {
+    public void setOriginalJob(ExchangisJobInfo originalJob) {
         this.originalJob = originalJob;
     }
 

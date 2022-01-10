@@ -1,6 +1,6 @@
-package com.webank.wedatasphere.exchangis.job.launcher.builder;
+package com.webank.wedatasphere.exchangis.job.launcher.entity;
 
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobBase;
+import com.webank.wedatasphere.exchangis.job.domain.GenericExchangisJob;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,15 +8,13 @@ import java.util.Map;
 /**
  * Launcher Job
  */
-public class ExchangisLauncherJob extends ExchangisJobBase {
+public class ExchangisLauncherJob extends GenericExchangisJob {
 
     private String launchName;
 
     private Map<String, Object> jobContent = new HashMap<>();
 
     private Map<String, Object> runtimeMap = new HashMap<>();
-
-    private String engine;
 
     private String proxyUser;
 
@@ -46,14 +44,6 @@ public class ExchangisLauncherJob extends ExchangisJobBase {
 
     public void setRuntimeMap(Map<String, Object> runtimeMap) {
         this.runtimeMap = runtimeMap;
-    }
-
-    public String getEngine() {
-        return engine;
-    }
-
-    public void setEngine(String engine) {
-        this.engine = engine;
     }
 
     public String getProxyUser() {

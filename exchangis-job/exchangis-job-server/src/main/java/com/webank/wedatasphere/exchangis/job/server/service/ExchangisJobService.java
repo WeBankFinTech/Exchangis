@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
@@ -20,7 +20,7 @@ import java.util.List;
  * @author yuxin.yuan
  * @since 2021-08-10
  */
-public interface ExchangisJobService extends IService<ExchangisJob> {
+public interface ExchangisJobService extends IService<ExchangisJobVO> {
 
     /**
      * Create job.
@@ -61,7 +61,7 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
 
     public void deleteJobByDss(String nodeId);
 
-    public ExchangisJob getJob(Long id) throws ExchangisJobErrorException;
+    public ExchangisJobVO getJob(Long id) throws ExchangisJobErrorException;
     /**
      * Get exchangis job by id.
      *
@@ -69,9 +69,9 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      * @return the job
      * @throws ExchangisJobErrorException the exchangis job error exception
      */
-    public ExchangisJob getJob(HttpServletRequest request, Long id) throws ExchangisJobErrorException;
+    public ExchangisJobVO getJob(HttpServletRequest request, Long id) throws ExchangisJobErrorException;
 
-    public ExchangisJob getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobErrorException;
+    public ExchangisJobVO getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobErrorException;
 
     /**
      * Update exchangis job config.
@@ -80,7 +80,7 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      * @param id                     the id
      * @return the exchangis job
      */
-    public ExchangisJob updateJobConfig(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
+    public ExchangisJobVO updateJobConfig(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
             throws ExchangisJobErrorException;
 
     /**
@@ -90,7 +90,7 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      * @param id                     the id
      * @return the exchangis job
      */
-    public ExchangisJob updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
+    public ExchangisJobVO updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
             throws ExchangisJobErrorException, ExchangisDataSourceException;
 
      public  List<ElementUI> getSpeedLimitSettings(Long id, String taskName);
