@@ -62,7 +62,6 @@ public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<Exchang
     }
 
     private SubmittableSimpleOnceJob submitSqoopJob(ExchangisLauncherJob launcherJob) {
-
         LinkisJobBuilder<SubmittableSimpleOnceJob> jobBuilder = LinkisJobClient.once().simple().builder()
                 .setCreateService("Sqoop")
                 .setMaxSubmitTime(300000)
