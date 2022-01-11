@@ -12,8 +12,8 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
-import com.webank.wedatasphere.linkis.manager.label.utils.LabelUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.manager.label.utils.LabelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
