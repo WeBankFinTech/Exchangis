@@ -1,4 +1,4 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
-public class JobGenerationSchedulerTask {
+public class TaskGenerationSchedulerJob {
 }
