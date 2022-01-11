@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.dto;
 
-import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
+
+import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
 
 public class GetDataSourceTypeKeyDefinesSuccessResultDTO extends ResultDTO {
     private DataSourceKeyDefinition data;

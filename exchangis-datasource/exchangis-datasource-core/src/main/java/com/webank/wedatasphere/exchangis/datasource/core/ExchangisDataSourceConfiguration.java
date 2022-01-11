@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.core;
 
-import com.webank.wedatasphere.linkis.common.conf.CommonVars;
+
+import org.apache.linkis.common.conf.CommonVars;
 
 public class ExchangisDataSourceConfiguration {
     public static final CommonVars<String> SERVER_URL = CommonVars.apply("wds.exchangis.datasource.client.serverurl", "");

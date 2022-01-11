@@ -8,7 +8,7 @@ import com.webank.wedatasphere.exchangis.metrics.dto.ExchangisTaskProcessMetrics
 import com.webank.wedatasphere.exchangis.metrics.dto.ExchangisTaskStatusMetricsDTO;
 import com.webank.wedatasphere.exchangis.metrics.impl.MetricNames;
 import com.webank.wedatasphere.exchangis.metrics.service.ExchangisMetricsService;
-import com.webank.wedatasphere.linkis.server.Message;
+import org.apache.linkis.server.Message;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
