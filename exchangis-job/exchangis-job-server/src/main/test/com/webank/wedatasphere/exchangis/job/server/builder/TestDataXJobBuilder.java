@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.builder;
 
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
@@ -23,11 +24,11 @@ public class TestDataXJobBuilder {
 
     public static void main(String[] args) throws ExchangisJobException {
         ExchangisJobVO job = getDataxJob();
-        System.out.println(job.getName());
         ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
         ctx.putEnv("USER_NAME", "xxxxyyyyzzzz");
-        ctx.setOriginalJob(job);
-        TransformExchangisJob transformJob = jobBuilderManager.doBuild(job, TransformExchangisJob.class, ctx);
+        ExchangisJobInfo jobInfo = new ExchangisJobInfo(job);
+        ctx.setOriginalJob(jobInfo);
+        TransformExchangisJob transformJob = jobBuilderManager.doBuild(jobInfo, TransformExchangisJob.class, ctx);
         List<ExchangisEngineJob> engineJobs = new ArrayList<>();
 
 
@@ -69,7 +70,7 @@ public class TestDataXJobBuilder {
         ExchangisJobVO job = new ExchangisJobVO();
         job.setId(22L);
         job.setProjectId(1456173825011081218L);
-        job.setName("T_DATAX");
+//        job.setName("T_DATAX");
         job.setJobType("OFFLINE");
         job.setEngineType("DATAX");
         job.setJobLabels("");
