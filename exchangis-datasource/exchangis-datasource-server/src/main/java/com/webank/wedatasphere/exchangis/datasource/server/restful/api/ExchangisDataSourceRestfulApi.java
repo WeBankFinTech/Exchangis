@@ -4,24 +4,16 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
-import com.webank.wedatasphere.linkis.server.Message;
+import org.apache.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 
-@Component
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Path("exchangis")
+@RestController
+@RequestMapping(value = "exchangis", produces = {"application/json;charset=utf-8"})
 public class ExchangisDataSourceRestfulApi {
 
     private final ExchangisDataSourceService exchangisDataSourceService;
@@ -32,162 +24,127 @@ public class ExchangisDataSourceRestfulApi {
     }
 
     // list all datasource types
-    @GET
-    @Path("datasources/type")
-    public Response listDataSourceTypes(@Context HttpServletRequest request) throws Exception {
-        Message message = this.exchangisDataSourceService.listDataSources(request);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/type", method = RequestMethod.GET)
+    public Message listDataSourceTypes(HttpServletRequest request) throws Exception {
+        return this.exchangisDataSourceService.listDataSources(request);
     }
 
     // query paged datasource
-    @POST
-    @Path("datasources/query")
-    public Response create(@Context HttpServletRequest request, @RequestBody DataSourceQueryVO vo) throws Exception {
-        Message message = this.exchangisDataSourceService.queryDataSources(request, vo);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/query", method = {RequestMethod.GET,RequestMethod.POST})
+    public Message create(HttpServletRequest request, @RequestBody DataSourceQueryVO vo) throws Exception {
+        return this.exchangisDataSourceService.queryDataSources(request, vo);
     }
 
     // list all datasources
-    @GET
-    @Path("datasources")
+    @RequestMapping( value = "datasources", method = RequestMethod.GET)
     @Deprecated
-    public Response listAllDataSources(
-            @Context HttpServletRequest request,
-            @QueryParam("typeId") Long typeId,
-            @QueryParam("typeName") String typeName,
-            @QueryParam("page") Integer page,
-            @QueryParam("size") Integer size
+    public Message listAllDataSources(
+            HttpServletRequest request,
+            @RequestParam(value = "typeId", required = false) Long typeId,
+            @RequestParam(value = "typeName", required = false) String typeName,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size
     ) throws Exception {
-        Message message = this.exchangisDataSourceService.listAllDataSources(request, typeName, typeId, page, size);
-        return Message.messageToResponse(message);
+        return this.exchangisDataSourceService.listAllDataSources(request, typeName, typeId, page, size);
     }
 
     // get datasource key define
-    @GET
-    @Path("datasources/types/{dataSourceTypeId}/keydefines")
-    public Response getDataSourceKeyDefine(
-            @Context HttpServletRequest request,
-            @PathParam("dataSourceTypeId") Long dataSourceTypeId
+    @RequestMapping( value = "datasources/types/{dataSourceTypeId}/keydefines", method = RequestMethod.GET)
+    public Message getDataSourceKeyDefine(
+            HttpServletRequest request,
+            @PathVariable("dataSourceTypeId") Long dataSourceTypeId
     ) throws Exception {
-        Message message = this.exchangisDataSourceService.getDataSourceKeyDefine(request, dataSourceTypeId);
-        return Message.messageToResponse(message);
+        return this.exchangisDataSourceService.getDataSourceKeyDefine(request, dataSourceTypeId);
     }
 
 
     // get datasource version list
-    @GET
-    @Path("datasources/{id}/versions")
-    public Response getDataSourceVersionsById(@Context HttpServletRequest request, @PathParam("id") Long id) throws Exception {
-        Message message = this.exchangisDataSourceService.getDataSourceVersionsById(request, id);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/{id}/versions", method = RequestMethod.GET)
+    public Message getDataSourceVersionsById(HttpServletRequest request, @PathVariable("id") Long id) throws Exception {
+        return this.exchangisDataSourceService.getDataSourceVersionsById(request, id);
     }
 
     // create datasource
-    @POST
-    @Path("datasources")
-    public Response create(@Context HttpServletRequest request, /*@PathParam("type") String type, */@RequestBody Map<String, Object> json) throws Exception {
-        Message message = this.exchangisDataSourceService.create(request,/* type, */json);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources", method = RequestMethod.POST)
+    public Message create(HttpServletRequest request, /*@PathParam("type") String type, */@RequestBody Map<String, Object> json) throws Exception {
+        return this.exchangisDataSourceService.create(request,/* type, */json);
     }
 
     // get datasource details
-    @GET
-    @Path("datasources/{id}")
-    public Response getDataSourceInfoById(@Context HttpServletRequest request, @PathParam("id") Long id) throws Exception {
-        Message message = this.exchangisDataSourceService.getDataSource(request, id);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/{id}", method = RequestMethod.GET)
+    public Message getDataSourceInfoById(HttpServletRequest request, @PathVariable("id") Long id) throws Exception {
+        return this.exchangisDataSourceService.getDataSource(request, id);
     }
 
-    @GET
-    @Path("datasources/{id}/connect_params")
-    public Response getDataSourceConnectParamsById(@Context HttpServletRequest request, @PathParam("id") Long id) throws Exception {
-        Message message = this.exchangisDataSourceService.getDataSourceConnectParamsById(request, id);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/{id}/connect_params", method = RequestMethod.GET)
+    public Message getDataSourceConnectParamsById(HttpServletRequest request, @PathVariable("id") Long id) throws Exception {
+        return this.exchangisDataSourceService.getDataSourceConnectParamsById(request, id);
     }
 
     // update datasource and parameters (insert new record in datasource_version table)
-    @PUT
-//    @Path("datasources/{type}/{id}")
-    @Path("datasources/{id}")
-    public Response update(@Context HttpServletRequest request,/* @PathParam("type") String type, */@PathParam("id") Long id, Map<String, Object> json) throws Exception {
-        Message message = this.exchangisDataSourceService.updateDataSource(request, /*type, */id, json);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/{id}", method = RequestMethod.PUT)
+    public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, Map<String, Object> json) throws Exception {
+        return this.exchangisDataSourceService.updateDataSource(request, /*type, */id, json);
     }
 
     // publish datasource
-    @PUT
-//    @Path("datasources/{type}/{id}")
-    @Path("datasources/{id}/{version}/publish")
-    public Response publishDataSource(@Context HttpServletRequest request,/* @PathParam("type") String type, */@PathParam("id") Long id, @PathParam("version") Long version) throws Exception {
-        Message message = this.exchangisDataSourceService.publishDataSource(request, /*type, */id, version);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/{id}/{version}/publish", method = RequestMethod.PUT)
+    public Message publishDataSource(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id,
+                                     @PathVariable("version") Long version) throws Exception {
+        return this.exchangisDataSourceService.publishDataSource(request, /*type, */id, version);
     }
 
     // expire datasource
-    @PUT
-    @Path("datasources/{id}/expire")
-    public Response expireDataSource(@Context HttpServletRequest request,/* @PathParam("type") String type, */@PathParam("id") Long id) throws Exception {
-        Message message = this.exchangisDataSourceService.expireDataSource(request, /*type, */id);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/{id}/expire", method = RequestMethod.PUT)
+    public Message expireDataSource(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id) throws Exception {
+        return this.exchangisDataSourceService.expireDataSource(request, /*type, */id);
     }
 
     // test datasource connect
-    @PUT
-//    @Path("datasources/{type}/{id}")
-    @Path("datasources/{id}/{version}/connect")
-    public Response testConnect(@Context HttpServletRequest request,/* @PathParam("type") String type, */@PathParam("id") Long id, @PathParam("version") Long version) throws Exception {
-        Message message = this.exchangisDataSourceService.testConnect(request, /*type, */id, version);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/{id}/{version}/connect", method = RequestMethod.PUT)
+    public Message testConnect(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id,
+                               @PathVariable("version") Long version) throws Exception {
+       return this.exchangisDataSourceService.testConnect(request, /*type, */id, version);
     }
 
     // delete datasource (physical)
-    @DELETE
-//    @Path("datasources/{type}/{id}")
-    @Path("datasources/{id}")
-    public Response delete(@Context HttpServletRequest request, /*@PathParam("type") String type, */@PathParam("id") Long id) throws Exception {
-        Message message = this.exchangisDataSourceService.deleteDataSource(request, /*type, */id);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/{id}", method = RequestMethod.DELETE)
+    public Message delete(HttpServletRequest request, /*@PathParam("type") String type, */@PathVariable("id") Long id) throws Exception {
+        return this.exchangisDataSourceService.deleteDataSource(request, /*type, */id);
     }
 
-    @GET
-    @Path("datasources/{type}/{id}/dbs")
-    public Response queryDataSourceDBs(@Context HttpServletRequest request, @PathParam("type") String type, @PathParam("id") Long id) throws Exception {
-        Message message = this.exchangisDataSourceService.queryDataSourceDBs(request, type, id);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/{type}/{id}/dbs", method = RequestMethod.GET)
+    public Message queryDataSourceDBs(HttpServletRequest request, @PathVariable("type") String type, @PathVariable("id") Long id) throws Exception {
+        return this.exchangisDataSourceService.queryDataSourceDBs(request, type, id);
     }
 
-    @GET
-    @Path("datasources/{type}/{id}/dbs/{dbName}/tables")
-    public Response queryDataSourceDBTables(@Context HttpServletRequest request, @PathParam("type") String type, @PathParam("id") Long id, @PathParam("dbName") String dbName) throws Exception {
-        Message message = this.exchangisDataSourceService.queryDataSourceDBTables(request, type, id, dbName);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/{type}/{id}/dbs/{dbName}/tables", method = RequestMethod.GET)
+    public Message queryDataSourceDBTables(HttpServletRequest request, @PathVariable("type") String type,
+                                           @PathVariable("id") Long id, @PathVariable("dbName") String dbName) throws Exception {
+        return this.exchangisDataSourceService.queryDataSourceDBTables(request, type, id, dbName);
     }
 
-    @GET
-    @Path("datasources/{type}/{id}/dbs/{dbName}/tables/{tableName}/fields")
-    public Response queryDataSourceDBTableFields(@Context HttpServletRequest request, @PathParam("type") String type, @PathParam("id") Long id, @PathParam("dbName") String dbName, @PathParam("tableName") String tableName) throws Exception {
-        Message message = this.exchangisDataSourceService.queryDataSourceDBTableFields(request, type, id, dbName, tableName);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/{type}/{id}/dbs/{dbName}/tables/{tableName}/fields", method = RequestMethod.GET)
+    public Message queryDataSourceDBTableFields(HttpServletRequest request, @PathVariable("type") String type,
+                                                @PathVariable("id") Long id, @PathVariable("dbName") String dbName,
+                                                @PathVariable("tableName") String tableName) throws Exception {
+        return this.exchangisDataSourceService.queryDataSourceDBTableFields(request, type, id, dbName, tableName);
     }
 
-    @POST
-    @Path("datasources/fieldsmapping")
-    public Response queryDataSourceDBTableFieldsMapping(@Context HttpServletRequest request, @RequestBody FieldMappingVO vo) throws Exception {
-        Message message = this.exchangisDataSourceService.queryDataSourceDBTableFieldsMapping(request, vo);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "datasources/fieldsmapping", method = RequestMethod.POST)
+    public Message queryDataSourceDBTableFieldsMapping(HttpServletRequest request, @RequestBody FieldMappingVO vo) throws Exception {
+        return this.exchangisDataSourceService.queryDataSourceDBTableFieldsMapping(request, vo);
     }
 
-    @GET
-    @Path("datasources/{engine}/{type}/params/ui")
-    public Response getParamsUI(
-            @Context HttpServletRequest request,
-            @PathParam("engine") String engine,
-            @PathParam("type") String type,
-            @QueryParam(value = "dir") String dir
+    @RequestMapping( value = "datasources/{engine}/{type}/params/ui", method = RequestMethod.GET)
+    public Message getParamsUI(
+            HttpServletRequest request,
+            @PathVariable("engine") String engine,
+            @PathVariable("type") String type,
+            @RequestParam(value = "dir", required = false) String dir
     ) {
         List<ElementUI> uis = this.exchangisDataSourceService.getDataSourceParamsUI(type, String.format("%s-%s", engine, dir));
-        Message message = Message.ok().data("uis", uis);
-        return Message.messageToResponse(message);
+        return Message.ok().data("uis", uis);
     }
 
 }

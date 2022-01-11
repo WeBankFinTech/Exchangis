@@ -139,6 +139,9 @@ export default {
   methods: {
     async handleOk() {
       await this.$refs.formRef.validate();
+      if (!/^[a-zA-Z]/.test(this.formState.projectName)) {
+        return message.error("项目名请以字母开头进行填写")
+      }
       const formatData = {
         id: this.id ? this.id : undefined,
         projectName: this.formState.projectName,
