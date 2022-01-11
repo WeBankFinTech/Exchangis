@@ -18,7 +18,8 @@
 
 package com.webank.wedatasphere.exchangis.datasource.loader.utils;
 
-import com.webank.wedatasphere.linkis.common.exception.ErrorException;
+
+import org.apache.linkis.common.exception.ErrorException;
 
 import java.lang.reflect.Constructor;
 

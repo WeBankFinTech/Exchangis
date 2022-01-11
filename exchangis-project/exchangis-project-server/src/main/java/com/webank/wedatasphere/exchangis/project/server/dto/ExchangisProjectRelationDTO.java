@@ -1,8 +1,7 @@
 package com.webank.wedatasphere.exchangis.project.server.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class ExchangisProjectRelationDTO {
