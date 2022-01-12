@@ -6,7 +6,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,17 +61,17 @@ public interface ExchangisJobService extends IService<ExchangisJobVO> {
 
     public void deleteJobByDss(String nodeId);
 
-    public ExchangisJobVO getJob(Long id) throws ExchangisJobErrorException;
+    public ExchangisJobVO getJob(Long id) throws ExchangisJobServerException;
     /**
      * Get exchangis job by id.
      *
      * @param id the id
      * @return the job
-     * @throws ExchangisJobErrorException the exchangis job error exception
+     * @throws ExchangisJobServerException the exchangis job error exception
      */
-    public ExchangisJobVO getJob(HttpServletRequest request, Long id) throws ExchangisJobErrorException;
+    public ExchangisJobVO getJob(HttpServletRequest request, Long id) throws ExchangisJobServerException;
 
-    public ExchangisJobVO getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobErrorException;
+    public ExchangisJobVO getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobServerException;
 
     /**
      * Update exchangis job config.
@@ -81,7 +81,7 @@ public interface ExchangisJobService extends IService<ExchangisJobVO> {
      * @return the exchangis job
      */
     public ExchangisJobVO updateJobConfig(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
-            throws ExchangisJobErrorException;
+            throws ExchangisJobServerException;
 
     /**
      * Update exchangis job content.
@@ -91,7 +91,7 @@ public interface ExchangisJobService extends IService<ExchangisJobVO> {
      * @return the exchangis job
      */
     public ExchangisJobVO updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
-            throws ExchangisJobErrorException, ExchangisDataSourceException;
+            throws ExchangisJobServerException, ExchangisDataSourceException;
 
      public  List<ElementUI> getSpeedLimitSettings(Long id, String taskName);
 

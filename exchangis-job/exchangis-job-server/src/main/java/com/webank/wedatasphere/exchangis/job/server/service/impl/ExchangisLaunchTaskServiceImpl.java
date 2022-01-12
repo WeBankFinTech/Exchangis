@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,12 +59,12 @@ public class ExchangisLaunchTaskServiceImpl extends ServiceImpl<ExchangisLaunchT
     public void delete(Long historyId) throws Exception {
         ExchangisLaunchTask task = this.baseMapper.selectById(historyId);
         if (null == task) {
-            throw new ExchangisJobErrorException(ExchangisDataSourceExceptionCode.DELETE_HISTORY_ERROR.getCode(), "Task " + historyId + " not exists.");
+            throw new ExchangisJobServerException(ExchangisDataSourceExceptionCode.DELETE_HISTORY_ERROR.getCode(), "Task " + historyId + " not exists.");
         }
         if (task.getStatus().equals("SUCCESS") || task.getStatus().equals("FAILED")) {
             this.baseMapper.deleteById(historyId);
         } else {
-            throw new ExchangisJobErrorException(ExchangisDataSourceExceptionCode.DELETE_HISTORY_ERROR.getCode(), "The status of task " + historyId + " is " + task.getStatus() + ", " +
+            throw new ExchangisJobServerException(ExchangisDataSourceExceptionCode.DELETE_HISTORY_ERROR.getCode(), "The status of task " + historyId + " is " + task.getStatus() + ", " +
                     "only 'SUCCESS' or 'FAILED' status can be deleted.");
         }
     }

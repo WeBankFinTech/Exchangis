@@ -130,7 +130,7 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
          * @param schedulerTask scheduler task
          * @param schedulerExecutor scheduler executor
          */
-        public void registerTaskExecutor(Class<? extends ExchangisSchedulerJob> schedulerTask,
+        public void registerTaskExecutor(Class<? extends ExchangisSchedulerTask> schedulerTask,
                                          Class<? extends Executor> schedulerExecutor){
             String schedulerTaskClass = schedulerTask.getCanonicalName();
             registeredExecutorClass.putIfAbsent(schedulerTaskClass, schedulerExecutor);
@@ -162,9 +162,9 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
         @Override
         public ExecuteResponse execute(ExecuteRequest executeRequest) {
-            if (executeRequest instanceof ExchangisSchedulerJob.DirectExecuteRequest){
+            if (executeRequest instanceof ExchangisSchedulerTask.DirectExecuteRequest){
                 try {
-                    ((ExchangisSchedulerJob.DirectExecuteRequest)executeRequest).directExecute();
+                    ((ExchangisSchedulerTask.DirectExecuteRequest)executeRequest).directExecute();
                     return new SuccessExecuteResponse();
                 } catch (ExchangisSchedulerException | ExchangisSchedulerRetryException e) {
                     return new ErrorExecuteResponse("Exception occurred in scheduling, task will fail or retry on the next time, message: ["
