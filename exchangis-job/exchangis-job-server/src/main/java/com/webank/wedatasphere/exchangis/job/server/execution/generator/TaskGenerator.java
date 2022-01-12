@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.execution;
+package com.webank.wedatasphere.exchangis.job.server.execution.generator;
 
 /**
  * To generate task for execution
@@ -6,16 +6,15 @@ package com.webank.wedatasphere.exchangis.job.server.execution;
 
 import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
-import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGenerateListener;
 
 public interface TaskGenerator<T extends ExchangisJob> {
     /**
      * init method
-     * @throws ExchangisJobErrorException error in initializing
+     * @throws ExchangisJobException error in initializing
      */
-    void init() throws ExchangisJobErrorException;
+    void init() throws ExchangisJobException;
 
     /**
      * Generate exchangis job

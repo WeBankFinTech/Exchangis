@@ -54,8 +54,8 @@ public class TenancyParallelGroupFactory extends FIFOGroupFactory {
     @Override
     public String getGroupNameByEvent(SchedulerEvent event) {
         String tenancy = "";
-        if (Objects.nonNull(event) && (event instanceof ExchangisSchedulerJob)){
-            String tenancyInSchedule = ((ExchangisSchedulerJob)event).getTenancy();
+        if (Objects.nonNull(event) && (event instanceof ExchangisSchedulerTask)){
+            String tenancyInSchedule = ((ExchangisSchedulerTask)event).getTenancy();
             if (tenancies.contains(tenancyInSchedule)){
                 tenancy = tenancyInSchedule;
             }

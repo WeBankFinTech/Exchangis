@@ -5,15 +5,13 @@ import com.webank.wedatasphere.exchangis.job.builder.manager.DefaultExchangisJob
 import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
-import com.webank.wedatasphere.exchangis.job.server.execution.TaskGenerator;
-import com.webank.wedatasphere.exchangis.job.server.execution.TaskGeneratorContext;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateErrorEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateInitEvent;
@@ -34,8 +32,11 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
     private GeneratorFunction generatorFunction;
 
     private List<TaskGenerateListener> listeners = new ArrayList<>();
+
+    protected TaskGeneratorContext generatorContext;
+
     @Override
-    public void init() throws ExchangisJobErrorException {
+    public void init() throws ExchangisJobException {
         this.generatorFunction = generatorFunction();
     }
 
@@ -54,7 +55,14 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
         launchableExchangisJob.setJobExecutionId(UUID.randomUUID().toString());
         LOG.info("Generate job execution id: [{}] for job: [{}]" , launchableExchangisJob.getJobExecutionId(), launchableExchangisJob.getExchangisJobInfo().getName());
         onEvent(new TaskGenerateInitEvent(launchableExchangisJob));
-        execute(this.generatorFunction, launchableExchangisJob, getTaskGeneratorContext());
+        try {
+            execute(this.generatorFunction, launchableExchangisJob, getTaskGeneratorContext(), execUser);
+        } catch(ErrorException e){
+            if (e instanceof ExchangisTaskGenerateException){
+                throw (ExchangisTaskGenerateException)e;
+            }
+            throw new ExchangisTaskGenerateException("Error occurred in generating progress", e);
+        }
         return launchableExchangisJob;
     }
 
@@ -66,7 +74,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
 
     @Override
     public TaskGeneratorContext getTaskGeneratorContext() {
-        return new DefaultTaskGeneratorContext();
+        return generatorContext;
     }
 
 
@@ -100,7 +108,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
         }
     }
     protected GeneratorFunction generatorFunction(){
-        return launchableExchangisJob -> {
+        return (launchableExchangisJob, generatorContext) -> {
             ExchangisTaskGenerateException throwable = null;
             ExchangisJobInfo jobInfo = launchableExchangisJob.getExchangisJobInfo();
             List<LaunchableExchangisTask> launchableExchangisTasks = new ArrayList<>();
@@ -151,7 +159,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
      */
     protected abstract void execute(GeneratorFunction generatorFunction,
                                     LaunchableExchangisJob launchableExchangisJob,
-                                    TaskGeneratorContext ctx) throws ExchangisTaskGenerateException;
+                                    TaskGeneratorContext ctx, String execUser) throws ErrorException;
 
     @FunctionalInterface
     public interface GeneratorFunction{
@@ -159,6 +167,6 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
          * Apply function
          * @param launchableExchangisJob origin job
          */
-        List<LaunchableExchangisTask> apply(LaunchableExchangisJob launchableExchangisJob) throws ExchangisTaskGenerateException;
+        List<LaunchableExchangisTask> apply(LaunchableExchangisJob launchableExchangisJob, TaskGeneratorContext ctx) throws ExchangisTaskGenerateException;
     }
 }

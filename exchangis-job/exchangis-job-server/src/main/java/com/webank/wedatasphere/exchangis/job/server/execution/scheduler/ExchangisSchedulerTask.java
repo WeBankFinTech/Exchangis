@@ -9,9 +9,9 @@ import org.apache.linkis.scheduler.queue.Job;
 import java.io.IOException;
 
 /**
- * Inheritable scheduler task for exchangis
+ * Inheritable scheduler task for exchangis, different from ExchangisTask
  */
-public abstract class ExchangisSchedulerJob extends Job {
+public abstract class ExchangisSchedulerTask extends Job {
 
     public static final int MAX_RETRY_NUM = 3;
 
@@ -26,7 +26,7 @@ public abstract class ExchangisSchedulerJob extends Job {
      * Each schedule task should has an id
      * @param scheduleId schedule id
      */
-    public ExchangisSchedulerJob(String scheduleId){
+    public ExchangisSchedulerTask(String scheduleId){
         if (StringUtils.isBlank(scheduleId)){
             throw new ExchangisSchedulerException.Runtime("The schedule_id cannot be empty in scheduler task", null);
         }

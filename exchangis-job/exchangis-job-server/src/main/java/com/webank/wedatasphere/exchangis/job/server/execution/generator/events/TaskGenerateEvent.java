@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.generator.events;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
-import com.webank.wedatasphere.exchangis.job.server.listener.ExchangisEvent;
+import com.webank.wedatasphere.exchangis.job.listener.ExchangisEvent;
 
 public class TaskGenerateEvent implements ExchangisEvent {
 
