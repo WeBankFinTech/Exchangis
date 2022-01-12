@@ -39,6 +39,9 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
     private Map<String, ExecutorService> tenancyExecutorServices = new ConcurrentHashMap<>();
 
     private Map<String, Consumer> consumerGroupMap = new ConcurrentHashMap<>();
+
+    private int initResidentThreads = 1;
+
     @Override
     public void setConsumerListener(ConsumerListener consumerListener) {
         this.consumerListener = consumerListener;
@@ -51,7 +54,8 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
             try{
                 Group group = getSchedulerContext().getOrCreateGroupFactory().getOrCreateGroup(null);
                 if (group instanceof FIFOGroup){
-                    defaultExecutorService = Utils.newCachedThreadPool(((FIFOGroup) group).getMaxRunningJobs() + 1,
+                    defaultExecutorService = Utils.newCachedThreadPool(((FIFOGroup) group).getMaxRunningJobs() +
+                            this.initResidentThreads,
                             group.getGroupName() + "-Executor-", true);
                 } else {
                     throw new ExchangisSchedulerException.Runtime("Cannot construct the executor service " +
@@ -131,5 +135,13 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
             }
         }
         return getOrCreateExecutorService();
+    }
+
+    public int getInitResidentThreads() {
+        return initResidentThreads;
+    }
+
+    public void setInitResidentThreads(int initResidentThreads) {
+        this.initResidentThreads = initResidentThreads;
     }
 }

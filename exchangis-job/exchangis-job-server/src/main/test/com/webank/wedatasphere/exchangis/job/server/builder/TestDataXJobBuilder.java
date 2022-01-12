@@ -55,7 +55,7 @@ public class TestDataXJobBuilder {
                     ExchangisEngineJob.class, ExchangisLauncherJob.class, ctx)).ifPresent(launcherJobs::add);
         }
         if (launcherJobs.isEmpty()) {
-            throw new ExchangisJobException(ExchangisJobExceptionCode.JOB_BUILDER_ERROR.getCode(),
+            throw new ExchangisJobException(ExchangisJobExceptionCode.TASK_BUILDER_ERROR.getCode(),
                     "The result set of launcher job is empty, please examine your job entity, [ 生成LauncherJob为空 ]", null);
         }
 
