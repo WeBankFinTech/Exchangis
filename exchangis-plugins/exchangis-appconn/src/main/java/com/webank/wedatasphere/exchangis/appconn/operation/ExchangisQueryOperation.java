@@ -13,6 +13,9 @@ import com.webank.wedatasphere.exchangis.appconn.ref.ExchangisOpenResponseRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 

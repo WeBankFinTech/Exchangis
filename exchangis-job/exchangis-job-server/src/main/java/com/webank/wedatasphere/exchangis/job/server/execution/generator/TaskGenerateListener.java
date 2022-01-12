@@ -1,7 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.generator;
 
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateEvent;
-import com.webank.wedatasphere.exchangis.job.server.listener.ExchangisListener;
+import com.webank.wedatasphere.exchangis.job.listener.ExchangisListener;
 import org.apache.linkis.common.exception.ErrorException;
 
 /**
@@ -14,5 +15,5 @@ public interface TaskGenerateListener extends ExchangisListener {
       * @param generateEvent event
      * @throws ErrorException
      */
-    void onEvent(TaskGenerateEvent generateEvent) throws ErrorException;
+    void onEvent(TaskGenerateEvent generateEvent) throws ExchangisOnEventException;
 }

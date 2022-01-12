@@ -22,7 +22,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJo
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisLaunchTaskMapper;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisLaunchTaskService;
@@ -137,13 +137,13 @@ public class ExchangisJobController {
     }
 
     @RequestMapping( value = "/{id}", method = RequestMethod.GET)
-    public Message getJob(HttpServletRequest request, @PathVariable("id") Long id) throws ExchangisJobErrorException {
+    public Message getJob(HttpServletRequest request, @PathVariable("id") Long id) throws ExchangisJobServerException {
         ExchangisJobVO job = exchangisJobService.getJob(request, id);
         return Message.ok().data("result", job);
     }
 
     @RequestMapping( value = "/dss/{nodeId}", method = RequestMethod.GET)
-    public Message getJobByDssProject(HttpServletRequest request, @PathVariable("nodeId") String nodeId) throws ExchangisJobErrorException {
+    public Message getJobByDssProject(HttpServletRequest request, @PathVariable("nodeId") String nodeId) throws ExchangisJobServerException {
         LOGGER.info("getJobByDssProject nodeId {}", nodeId);
         ExchangisJobVO job = exchangisJobService.getJobByDss(request, nodeId);
         return Message.ok().data("result", job);
@@ -153,14 +153,14 @@ public class ExchangisJobController {
 
     @RequestMapping( value = "/{id}/config", method = RequestMethod.PUT)
     public Message saveJobConfig(@PathVariable("id") Long id,
-                                 @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException {
+                                 @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobServerException {
         ExchangisJobVO exchangisJob = exchangisJobService.updateJobConfig(exchangisJobContentDTO, id);
         return Message.ok().data("result", exchangisJob);
     }
 
     @RequestMapping( value = "/{id}/content", method = RequestMethod.PUT)
     public Message saveSubjobs(@PathVariable("id") Long id,
-                               @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException, ExchangisDataSourceException {
+                               @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobServerException, ExchangisDataSourceException {
         ExchangisJobVO exchangisJob = exchangisJobService.updateJobContent(exchangisJobContentDTO, id);
         return Message.ok().data("result", exchangisJob);
     }
@@ -217,7 +217,7 @@ public class ExchangisJobController {
                     ExchangisEngineJob.class, ExchangisLauncherJob.class, ctx)).ifPresent(launcherJobs::add);
         }
         if (launcherJobs.isEmpty()) {
-            throw new ExchangisJobException(ExchangisJobExceptionCode.JOB_BUILDER_ERROR.getCode(),
+            throw new ExchangisJobException(ExchangisJobExceptionCode.TASK_BUILDER_ERROR.getCode(),
                     "The result set of launcher job is empty, please examine your job entity, [ 生成LauncherJob为空 ]", null);
         }
 

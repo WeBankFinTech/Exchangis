@@ -4,8 +4,10 @@ package com.webank.wedatasphere.exchangis.job.exception;
  * Exception code, range:(31000 ~ 31999), the same as "ExchangisDataSourceExceptionCode"
  */
 public enum ExchangisJobExceptionCode {
+    TASK_OBSERVER_ERROR(31992),
+    ON_EVENT_ERROR(31993),
     SCHEDULER_ERROR(31994),
-    JOB_BUILDER_ERROR(31995),
+    TASK_BUILDER_ERROR(31995),
     UNSUPPORTED_JOB_EXECUTION_ENGINE(31996),
     TASK_GENERATE_ERROR(31997),
     JOB_EXCEPTION_CODE(31999),
