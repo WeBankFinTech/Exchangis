@@ -276,7 +276,10 @@ import {
   updateTaskConfiguration,
   getSyncHistory,
   executeJob,
-  getLogs
+  getLogs,
+  getJobStatus,
+  getJobTasks,
+  getProgress
 } from "@/common/service";
 import { message, notification } from "ant-design-vue";
 import { randomString } from "../../../common/utils";
@@ -409,7 +412,12 @@ export default {
         logs: ['', '', '', '']
       },
       executeId: '',
-      showLogTimer: null
+      showLogTimer: null,
+
+      jobStatus: '',
+      jobStatusTimer: null,
+      tasklist: [],
+      progressTimer: null,
     };
   },
   props: {
@@ -473,7 +481,6 @@ export default {
         });
         _config.jobParams = JSON.stringify(jobParams);
       }
-      console.log("_config", _config);
       updateTaskConfiguration(id, _config)
         .then((res) => {
           message.success("更新/保存成功");
@@ -791,23 +798,60 @@ export default {
     // 执行任务
     executeTask() {
       const { id } = this.curTab;
+      this.tasklist = []
       this.spinning = true
+//      this.getStatus('12')
       executeJob(id)
         .then((res) => {
-          if (res.tasks && res.tasks.length > this.activeIndex) {
-            this.executeId = res.tasks[this.activeIndex].id
-          }
-          this.spinning = false
-          message.success("开始执行");
-          this.visibleLog = true
-          this.showLogTimer = setInterval(() => {
-            this.showInfoLog()
-          }, 1000*10)
+          this.getStatus(res.jobExecutionId || res.result)
         })
         .catch((err) => {
+          console.log(err)
           this.spinning = false
           message.error("执行失败");
         });
+    },
+    // 获取Job状态
+    getStatus(jobExecutionId) {
+      this.getTasks(jobExecutionId)
+      /*this.jobStatusTimer = setInterval(() => {
+        getJobStatus(jobExecutionId)
+          .then(res => {
+            this.jobStatus = res.status
+            if (this.jobStatus === 'Running' && !this.tasklist.length) {
+              this.getTasks(jobExecutionId)
+            }
+          })
+          .catch(err => {
+            message.error("查询job状态失败");
+          })
+      }, 1000*5)*/
+    },
+    // 获取tasklist
+    getTasks(jobExecutionId) {
+      getJobTasks(jobExecutionId)
+        .then(res => {
+          this.tasklist = res.tasks || res.result
+          this.visibleLog = true
+          this.getJobProgress()
+//          this.showLogTimer = setInterval(() => {
+//            this.showInfoLog()
+//          }, 1000*10)
+        })
+        .catch(err => {
+          message.error("查询任务列表失败");
+        })
+    },
+    getJobProgress(jobExecutionId) {
+      this.progressTimer = setInterval(() => {
+        getProgress(jobExecutionId)
+          .then(res => {
+
+          })
+          .catch(err => {
+            message.error("查询进度失败");
+          })
+      }, 1000*5)
     },
     executeHistory() {
       this.visibleDrawer = true;
