@@ -304,13 +304,13 @@ export const getEngineriesSourceMem = () => {
 
 /* 作业执行模块接口 */
 export const executeJob = (id) => {
-  return request(`/job/${id}/execute?permitPartial=false`, {permitPartial: false}, {
+  return request(`/job/${id}/execute`,undefined, {
     method: "POST",
   })
 }
 
 export const getJobStatus = (id) => {
-  return request(`/job/execution/${id}/status`, null, {
+  return request(`/job/execution/${id}/status`, {}, {
     method: "GET",
   })
 }
@@ -324,5 +324,11 @@ export const getJobTasks = (id) => {
 export const getProgress = (id) => {
   return request(`/job/execution/${id}/progress`, null, {
     method: "GET",
+  })
+}
+
+export const getMetrics = (taskId, jobExecutionId) => {
+  return request(`/task/execution/${taskId}/metrics`, {jobExecutionId}, {
+    method: "POST",
   })
 }
