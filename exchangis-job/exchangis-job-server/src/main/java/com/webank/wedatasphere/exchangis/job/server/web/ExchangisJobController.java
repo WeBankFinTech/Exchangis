@@ -16,9 +16,9 @@ import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLauncher;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLaunchTask;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
@@ -64,7 +64,7 @@ public class ExchangisJobController {
     private ExchangisDataSourceService exchangisDataSourceService;
 
     @Autowired
-    private ExchangisJobLaunchManager<ExchangisLauncherJob> jobLaunchManager;
+    private ExchangisJobLaunchManager<LaunchableExchangisTask> jobLaunchManager;
 
     @Autowired
     private ExchangisLaunchTaskMapper launchTaskMapper;
@@ -211,10 +211,10 @@ public class ExchangisJobController {
                     SubExchangisJob.class, ExchangisEngineJob.class, ctx)).ifPresent(engineJobs::add);
         }
         // List<ExchangisEngineJob> -> List<ExchangisLauncherJob>
-        List<ExchangisLauncherJob> launcherJobs = new ArrayList<>();
+        List<LaunchableExchangisTask> launcherJobs = new ArrayList<>();
         for (ExchangisEngineJob engineJob : engineJobs) {
             Optional.ofNullable(jobBuilderManager.doBuild(engineJob,
-                    ExchangisEngineJob.class, ExchangisLauncherJob.class, ctx)).ifPresent(launcherJobs::add);
+                    ExchangisEngineJob.class, LaunchableExchangisTask.class, ctx)).ifPresent(launcherJobs::add);
         }
         if (launcherJobs.isEmpty()) {
             throw new ExchangisJobException(ExchangisJobExceptionCode.TASK_BUILDER_ERROR.getCode(),
@@ -224,9 +224,9 @@ public class ExchangisJobController {
         List<ExchangisLaunchTask> tasks = new ArrayList<>();
 
 
-        for (ExchangisLauncherJob launcherJob : launcherJobs) {
+        for (LaunchableExchangisTask launcherJob : launcherJobs) {
             String launchName = launcherJob.getLaunchName();
-            ExchangisJobLauncher<ExchangisLauncherJob> jobLauncher = this.jobLaunchManager.getJoblauncher("Linkis");
+            ExchangisTaskLauncher<LaunchableExchangisTask> jobLauncher = this.jobLaunchManager.getJoblauncher("Linkis");
             SubmittableSimpleOnceJob launch = jobLauncher.launch(launcherJob);
 
             String launchId = launch.getId();

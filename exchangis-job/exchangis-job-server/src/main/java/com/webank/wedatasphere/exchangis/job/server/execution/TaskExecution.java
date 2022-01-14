@@ -1,19 +1,20 @@
 package com.webank.wedatasphere.exchangis.job.server.execution;
 
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
-import org.apache.linkis.common.exception.ErrorException;
 
 /**
  * Task execution
  */
 public interface TaskExecution {
 
+
     /**
      * Submit scheduler task
      * @param schedulerTask scheduler task
      * @return scheduleId
      */
-    String submit(ExchangisSchedulerTask schedulerTask) throws ErrorException;
+    String submit(ExchangisSchedulerTask schedulerTask) throws ExchangisTaskExecuteException;
 
     /**
      * Start execution
@@ -24,4 +25,6 @@ public interface TaskExecution {
      * Stop execution
      */
     void stop();
+
+    void addListener(TaskExecutionListener listener);
 }

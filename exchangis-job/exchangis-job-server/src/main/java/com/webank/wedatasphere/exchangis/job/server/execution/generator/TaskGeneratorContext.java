@@ -7,5 +7,9 @@ import com.webank.wedatasphere.exchangis.job.listener.ExchangisJobLogListener;
  */
 public interface TaskGeneratorContext {
 
-    ExchangisJobLogListener getOrCreateJobLogListener();
+    /**
+     * Job Log listener
+     * @return
+     */
+    ExchangisJobLogListener gtJobLogListener();
 }

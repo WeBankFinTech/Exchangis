@@ -6,12 +6,11 @@ import org.springframework.stereotype.Component;
 /**
  * Default generator context
  */
-@Component
 public class DefaultTaskGeneratorContext implements TaskGeneratorContext {
 
 
     @Override
-    public ExchangisJobLogListener getOrCreateJobLogListener() {
+    public ExchangisJobLogListener gtJobLogListener() {
         return null;
     }
 }

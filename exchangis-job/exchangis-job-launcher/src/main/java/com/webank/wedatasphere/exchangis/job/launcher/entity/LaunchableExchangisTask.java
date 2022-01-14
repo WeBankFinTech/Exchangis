@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Launcher Job
  */
-public class ExchangisLauncherJob extends GenericExchangisJob {
+public class LaunchableExchangisTask extends GenericExchangisJob {
 
     private String launchName;
 

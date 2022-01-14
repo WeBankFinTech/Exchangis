@@ -10,9 +10,23 @@ import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExcept
  * Exception in subscribing task
  */
 public class ExchangisTaskObserverException extends ExchangisJobException {
+
+    private String methodName;
+    public ExchangisTaskObserverException(String methodName, String desc, Throwable t) {
+        this(desc, t);
+        this.methodName = methodName;
+    }
     public ExchangisTaskObserverException(String desc, Throwable t) {
         super(TASK_OBSERVER_ERROR.getCode(), desc);
         super.initCause(t);
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 
     public static class Runtime extends LinkisRuntimeException {
