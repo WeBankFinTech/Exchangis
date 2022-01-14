@@ -221,11 +221,11 @@ export const getSettingsParams = (engineType) => {
 };
 
 // job执行
-export const executeJob = (id) => {
+/*export const executeJob = (id) => {
   return request(`/job/${id}/action/execute`, {}, {
     method: "POST",
   });
-};
+};*/
 
 // 同步历史
 export const getSyncHistory = (body) => {
@@ -300,3 +300,41 @@ export const getEngineriesSourceCpu = () => {
 export const getEngineriesSourceMem = () => {
   return request("/metrics/engineresourcemem", {}, { method: "GET" });
 };
+
+
+/* 作业执行模块接口 */
+export const executeJob = (id) => {
+  return request(`/job/${id}/execute`,undefined, {
+    method: "POST",
+  })
+}
+
+export const getJobStatus = (id) => {
+  return request(`/job/execution/${id}/status`, {}, {
+    method: "GET",
+  })
+}
+
+export const getJobTasks = (id) => {
+  return request(`/job/execution/${id}/taskList`, null, {
+    method: "GET",
+  })
+}
+
+export const getProgress = (id) => {
+  return request(`/job/execution/${id}/progress`, null, {
+    method: "GET",
+  })
+}
+
+export const getMetrics = (taskId, jobExecutionId) => {
+  return request(`/task/execution/${taskId}/metrics`, {jobExecutionId}, {
+    method: "POST",
+  })
+}
+
+export const killJob = (id) => {
+  return request(`/job/execution/${id}/kill`, null, {
+    method: "GET",
+  })
+}
