@@ -332,3 +332,9 @@ export const getMetrics = (taskId, jobExecutionId) => {
     method: "POST",
   })
 }
+
+export const killJob = (id) => {
+  return request(`/job/execution/${id}/kill`, null, {
+    method: "GET",
+  })
+}
