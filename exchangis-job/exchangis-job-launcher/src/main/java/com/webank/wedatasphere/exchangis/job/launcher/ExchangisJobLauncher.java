@@ -1,8 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.launcher;
 
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
-import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
-import com.webank.wedatasphere.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
+import org.apache.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
 
 public interface ExchangisJobLauncher<T> {
 

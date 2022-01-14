@@ -1,10 +1,9 @@
 package com.webank.wedatasphere.exchangis;
 
-import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
-import com.webank.wedatasphere.linkis.datasource.client.request.DeleteDataSourceAction;
-import com.webank.wedatasphere.linkis.datasource.client.request.QueryDataSourceAction;
-import com.webank.wedatasphere.linkis.datasource.client.response.QueryDataSourceResult;
-import com.webank.wedatasphere.linkis.httpclient.response.Result;
+
+import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
+import org.apache.linkis.datasource.client.request.QueryDataSourceAction;
+import org.apache.linkis.datasource.client.response.QueryDataSourceResult;
 
 public class TestDataSourceClient {
 

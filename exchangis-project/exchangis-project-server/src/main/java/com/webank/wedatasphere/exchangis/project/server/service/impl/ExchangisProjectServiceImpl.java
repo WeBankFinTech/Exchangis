@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.project.server.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
 import com.webank.wedatasphere.exchangis.project.server.dao.ExchangisProjectMapper;
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -175,16 +174,16 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     @Override
     public void deleteProject(HttpServletRequest request, String id) {
 
-        QueryWrapper<ExchangisJobInfo> jobquery = new QueryWrapper<>();
+        QueryWrapper<ExchangisJobEntity> jobquery = new QueryWrapper<>();
         jobquery.eq("project_id", id);
 
-        List<ExchangisJobInfo> jobs = this.exchangisJobInfoMapper.selectList(jobquery);
+        List<ExchangisJobEntity> jobs = this.exchangisJobInfoMapper.selectList(jobquery);
 
         if (null != jobs && jobs.size() > 0) {
             this.exchangisJobInfoMapper.delete(jobquery);
 
             QueryWrapper<ExchangisJobDsBind> dsBindQuery = new QueryWrapper<ExchangisJobDsBind>().in("job_id",
-                    jobs.stream().map(ExchangisJobInfo::getId).toArray()
+                    jobs.stream().map(ExchangisJobEntity::getId).toArray()
             );
             this.exchangisJobDsBindMapper.delete(dsBindQuery);
         }

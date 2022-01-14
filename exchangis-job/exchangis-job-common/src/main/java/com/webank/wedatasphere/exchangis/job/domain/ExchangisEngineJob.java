@@ -7,10 +7,9 @@ import java.util.Map;
 /**
  * EngineJob
  */
-public class ExchangisEngineJob extends ExchangisJobBase {
+public class ExchangisEngineJob extends GenericExchangisJob {
 
 
-    private String engine;
     /**
      * Job content
      */
@@ -20,14 +19,6 @@ public class ExchangisEngineJob extends ExchangisJobBase {
      * Job runtime params(defined by user)
      */
     private Map<String, Object> runtimeParams = new HashMap<>();
-
-    public String getEngine() {
-        return engine;
-    }
-
-    public void setEngine(String engine) {
-        this.engine = engine;
-    }
 
     public Map<String, Object> getJobContent() {
         return jobContent;
