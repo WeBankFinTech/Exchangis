@@ -8,7 +8,7 @@ import org.apache.linkis.common.exception.ErrorException;
 /**
  * Listener of task generating
  */
-public interface TaskGenerateListener extends ExchangisListener {
+public interface TaskGenerateListener extends ExchangisListener<TaskGenerateEvent> {
 
     /**
      * listen generating event

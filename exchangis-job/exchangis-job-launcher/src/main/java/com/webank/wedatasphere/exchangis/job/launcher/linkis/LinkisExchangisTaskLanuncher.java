@@ -5,8 +5,8 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobConfiguration;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLauncher;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchableExchangisTask;
 import org.apache.linkis.common.conf.Configuration;
 import org.apache.linkis.computation.client.LinkisJobBuilder;
 import org.apache.linkis.computation.client.LinkisJobClient;
@@ -15,7 +15,7 @@ import org.apache.linkis.computation.client.utils.LabelKeyUtils;
 
 import java.util.*;
 
-public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<ExchangisLauncherJob> {
+public class LinkisExchangisTaskLanuncher implements ExchangisTaskLauncher<LaunchableExchangisTask> {
 
     @Override
     public String name() {
@@ -23,12 +23,12 @@ public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<Exchang
     }
 
     @Override
-    public void init(ExchangisJobLaunchManager<? extends ExchangisLauncherJob> jobLaunchManager) {
+    public void init(ExchangisJobLaunchManager<? extends LaunchableExchangisTask> jobLaunchManager) {
         LinkisJobClient.config().setDefaultServerUrl(ExchangisJobConfiguration.LINKIS_SERVER_URL.getValue());
     }
 
     @Override
-    public SubmittableSimpleOnceJob launch(ExchangisLauncherJob launcherJob) throws ExchangisJobException {
+    public SubmittableSimpleOnceJob launch(LaunchableExchangisTask launcherJob) throws ExchangisJobException {
 
         Date createTime = Calendar.getInstance().getTime();
 
@@ -41,7 +41,7 @@ public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<Exchang
         } else {
             throw new ExchangisJobException(ExchangisJobExceptionCode.UNSUPPORTED_JOB_EXECUTION_ENGINE.getCode(), "Unsupported job execution engine: '" + launcherJob.getEngineType() + "'.");
         }
-
+        onceJob.kill();
         return onceJob;
 
 //        LinkisJobClient.config().setDefaultServerUrl(ExchangisJobConfiguration.LINKIS_SERVER_URL.getValue());
@@ -61,7 +61,7 @@ public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<Exchang
 //        }
     }
 
-    private SubmittableSimpleOnceJob submitSqoopJob(ExchangisLauncherJob launcherJob) {
+    private SubmittableSimpleOnceJob submitSqoopJob(LaunchableExchangisTask launcherJob) {
         LinkisJobBuilder<SubmittableSimpleOnceJob> jobBuilder = LinkisJobClient.once().simple().builder()
                 .setCreateService("Sqoop")
                 .setMaxSubmitTime(300000)
@@ -84,7 +84,7 @@ public class LinkisExchangisJobLanuncher implements ExchangisJobLauncher<Exchang
         return onceJob;
     }
 
-    private SubmittableSimpleOnceJob submitDataxJob(ExchangisLauncherJob launcherJob) {
+    private SubmittableSimpleOnceJob submitDataxJob(LaunchableExchangisTask launcherJob) {
 
         Map<String, Object> jobContent = launcherJob.getJobContent();
 
