@@ -2,7 +2,6 @@ package com.webank.wedatasphere.exchangis.extension.datasource.mysql;
 
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisBatchDataSource;
-import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.DataSourceType;
 
 import java.util.List;
 

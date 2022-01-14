@@ -1,13 +1,14 @@
 package com.webank.wedatasphere.exchangis.job.builder.api;
 
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobBase;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisBase;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 
 /**
  * Builder chain
  */
-public interface ExchangisJobBuilderChain<T extends ExchangisJobBase, E extends ExchangisJobBase> {
+public interface ExchangisJobBuilderChain<T extends ExchangisJob, E extends ExchangisBase> {
 
     /**
      * Register builder
@@ -20,7 +21,7 @@ public interface ExchangisJobBuilderChain<T extends ExchangisJobBase, E extends 
      * Build method
      * @param inputJob input job
      * @param ctx context
-     * @return output job
+     * @return output entity
      */
     E build(T inputJob, ExchangisJobBuilderContext ctx) throws ExchangisJobException;
 
