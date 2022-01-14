@@ -1,14 +1,14 @@
 package com.webank.wedatasphere.exchangis.job.launcher;
 
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import org.apache.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
 
-public interface ExchangisJobLauncher<T> {
+public interface ExchangisTaskLauncher<T extends LaunchableExchangisTask> {
 
     String name();
 
-    default void init(ExchangisJobLaunchManager<? extends ExchangisLauncherJob> jobLaunchManager){}
+    default void init(ExchangisJobLaunchManager<? extends LaunchableExchangisTask> jobLaunchManager){}
 
     // void taskLog(Long taskId, Long startLine, int windSize);
 

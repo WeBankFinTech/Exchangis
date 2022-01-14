@@ -10,29 +10,26 @@ import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.GenerationSchedulerTask;
 import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.scheduler.exception.SchedulerErrorException;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 // Scala doc need
 
-import java.util.UUID;
 
 /**
  * Async exec,
  * construct a JobGenerationSchedulerTask and them submit to TaskExecution
  */
-@Component
 public class DefaultAsyncTaskGenerator extends AbstractTaskGenerator{
 
-//    @Resource
     private TaskExecution taskExecution;
 
-    @Resource
     protected TaskGeneratorContext ctx;
 
-    @Resource
-    private ExchangisJobBuilderManager springJobBuilderManager;
+    private ExchangisJobBuilderManager jobBuilderManager;
+
+    public DefaultAsyncTaskGenerator(TaskGeneratorContext ctx, ExchangisJobBuilderManager jobBuilderManager){
+        this.ctx = ctx;
+        this.jobBuilderManager = jobBuilderManager;
+    }
 
     @Override
     public TaskGeneratorContext getTaskGeneratorContext() {
@@ -40,7 +37,6 @@ public class DefaultAsyncTaskGenerator extends AbstractTaskGenerator{
     }
 
     @Override
-    @PostConstruct
     public void init() throws ExchangisJobException {
         super.init();
 
@@ -68,7 +64,7 @@ public class DefaultAsyncTaskGenerator extends AbstractTaskGenerator{
 
     @Override
     public ExchangisJobBuilderManager getExchangisJobBuilderManager() {
-        return springJobBuilderManager;
+        return jobBuilderManager;
     }
 
 }

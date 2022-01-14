@@ -1,13 +1,14 @@
 package com.webank.wedatasphere.exchangis.job.launcher;
 
-import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
 
-public interface ExchangisJobLaunchManager<T extends ExchangisLauncherJob> {
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 
-    void registerJobLauncher(ExchangisJobLauncher<T> jobLauncher);
+public interface ExchangisJobLaunchManager<T extends LaunchableExchangisTask> {
+
+    void registerJobLauncher(ExchangisTaskLauncher<T> jobLauncher);
 
     void unRgisterJobLauncher(String launcherName);
 
-    ExchangisJobLauncher<T> getJoblauncher(String launcherName);
+    ExchangisTaskLauncher<T> getJoblauncher(String launcherName);
 
 }

@@ -15,20 +15,21 @@ import javax.annotation.Resource;
 /**
  * Inherited the AbstractScheduler from linkis-scheduler
  */
-@Component
 public class ExchangisTaskScheduler extends TaskScheduler {
 
-    @Resource
+
     private SchedulerContext schedulerContext;
 
-    @Resource
     private ExecutorManager executorManager;
 
-    @Resource
     private ConsumerManager consumerManager;
 
+    public ExchangisTaskScheduler(ExecutorManager executorManager, ConsumerManager consumerManager){
+        this.executorManager = executorManager;
+        this.consumerManager = consumerManager;
+    }
+
     @Override
-    @PostConstruct
     public void init() {
         this.schedulerContext = new ExchangisSchedulerContext(Constraints.MAX_PARALLEL_PER_TENANCY.getValue(), Constraints.TENANCY_PATTERN.getValue());
         GroupFactory groupFactory = this.schedulerContext.getOrCreateGroupFactory();

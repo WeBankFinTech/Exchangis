@@ -4,6 +4,9 @@ package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TaskScheduler;
+import org.apache.linkis.common.conf.CommonVars;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -12,15 +15,22 @@ import java.util.concurrent.ArrayBlockingQueue;
  * Subscribe the task cached in memory(queue)
  */
 public abstract class CacheInTaskObserver extends AbstractTaskObserver {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CacheInTaskObserver.class);
+
     protected Queue<LaunchableExchangisTask> queue;
 
-    public CacheInTaskObserver(int batchSize, int cacheSize){
-        super(batchSize);
+    private static final CommonVars<Integer>  TASK_OBSERVER_CACHE_SIZE = CommonVars.apply("wds.exchangis.job.observer.cache.size", 3000);
+
+    public CacheInTaskObserver(int cacheSize){
         this.queue = new ArrayBlockingQueue<>(cacheSize);
     }
 
+    public CacheInTaskObserver(){
+        this.queue = new ArrayBlockingQueue<>(TASK_OBSERVER_CACHE_SIZE.getValue());
+    }
     @Override
-    public List<LaunchableExchangisTask> onPublish(int batchSize) {
+    public List<LaunchableExchangisTask> onPublish(int batchSize) throws ExchangisTaskObserverException {
         List<LaunchableExchangisTask> launchableExchangisTasks = new ArrayList<>(batchSize);
         LaunchableExchangisTask polledTask;
         while (launchableExchangisTasks.size() < batchSize && (polledTask = queue.poll()) != null){
@@ -28,7 +38,7 @@ public abstract class CacheInTaskObserver extends AbstractTaskObserver {
         }
         int fetchTaskSize = launchableExchangisTasks.size();
         int restBatchSize = batchSize - fetchTaskSize;
-        if (restBatchSize > 0) {
+        if (restBatchSize > 0 && (this.lastPublishTime + this.publishInterval < System.currentTimeMillis())) {
             launchableExchangisTasks.addAll(onPublishNext(restBatchSize));
         }
         return launchableExchangisTasks;
@@ -48,7 +58,7 @@ public abstract class CacheInTaskObserver extends AbstractTaskObserver {
         return chooseTasks;
     }
 
-    protected abstract List<LaunchableExchangisTask> onPublishNext(int batchSize);
+    protected abstract List<LaunchableExchangisTask> onPublishNext(int batchSize) throws ExchangisTaskObserverException;
     /**
      * Offer operation for service to add/offer queue
      * @return queue
@@ -60,7 +70,7 @@ public abstract class CacheInTaskObserver extends AbstractTaskObserver {
     /**
      * Limit the operation
      */
-    private static class OperateLimitQueue extends AbstractQueue<LaunchableExchangisTask>{
+    private class OperateLimitQueue extends AbstractQueue<LaunchableExchangisTask>{
 
         private Queue<LaunchableExchangisTask> innerQueue;
 
@@ -80,7 +90,15 @@ public abstract class CacheInTaskObserver extends AbstractTaskObserver {
 
         @Override
         public boolean offer(LaunchableExchangisTask launchableExchangisTask) {
-            return this.innerQueue.offer(launchableExchangisTask);
+            boolean offer = this.innerQueue.offer(launchableExchangisTask);
+            if(offer){
+                try {
+                    publish();
+                } catch (Exception e){
+                    LOG.warn("Publish the launchable task: {} has occurred an exception", launchableExchangisTask.getId(), e);
+                }
+            }
+            return offer;
         }
 
         @Override
