@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
@@ -19,11 +19,12 @@ import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoCont
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
 import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
-import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
-import com.webank.wedatasphere.linkis.datasource.client.request.GetInfoByDataSourceIdAction;
-import com.webank.wedatasphere.linkis.httpclient.response.Result;
-import com.webank.wedatasphere.linkis.metadatamanager.common.Json;
-import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
+import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
+import org.apache.linkis.datasource.client.request.GetInfoByDataSourceIdAction;
+import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
+import org.apache.linkis.datasourcemanager.common.util.json.Json;
+import org.apache.linkis.httpclient.response.Result;
+import org.apache.linkis.server.security.SecurityFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -91,8 +92,13 @@ public class AbstractDataSourceService {
 
                     Result execute = dsClient.execute(action);
                     String responseBody = execute.getResponseBody();
-                    GetDataSourceInfoResultDTO dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
-                    source.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                    GetDataSourceInfoResultDTO dsInfo = null;
+                    try {
+                        dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+                        source.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                    } catch (JsonErrorException e) {
+                        //TODO throws Exception
+                    }
                 });
             });
             source.setDb(split[2]);
@@ -116,8 +122,13 @@ public class AbstractDataSourceService {
                             .build();
                     Result execute = dsClient.execute(action);
                     String responseBody = execute.getResponseBody();
-                    GetDataSourceInfoResultDTO dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
-                    sink.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                    GetDataSourceInfoResultDTO dsInfo = null;
+                    try {
+                        dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+                        sink.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                    } catch (JsonErrorException e) {
+                        //TODO throw Exception
+                    }
                 });
             });
 
@@ -172,7 +183,7 @@ public class AbstractDataSourceService {
         return paramsUI;
     }
 
-    protected ExchangisDataSourceUIViewer buildAllUI(HttpServletRequest request, ExchangisJobInfo job, ExchangisJobInfoContent content) {
+    protected ExchangisDataSourceUIViewer buildAllUI(HttpServletRequest request, ExchangisJobEntity job, ExchangisJobInfoContent content) {
         // ----------- 构建 dataSourceIdsUI
         ExchangisDataSourceIdsUI dataSourceIdsUI = buildDataSourceIdsUI(request, content);
 
