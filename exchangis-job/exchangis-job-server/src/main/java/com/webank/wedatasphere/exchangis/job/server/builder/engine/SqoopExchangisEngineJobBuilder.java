@@ -111,7 +111,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     }
 
     @Override
-    public ExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectJob, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+    public ExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         try {
             SqoopExchangisEngineJob engineJob = new SqoopExchangisEngineJob();
             engineJob.setId(inputJob.getId());
@@ -128,12 +128,12 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             sqoopParams.put("sqoop.args.num.mappers", NUM_MAPPERS.newParam(jobSettings).getValue());
 
             if (mode.equals("import")) {
-                Map<String, Object> importParams = this.buildImportParam(inputJob, expectJob, ctx, jobSettings, sourceSettings, sinkSettings);
+                Map<String, Object> importParams = this.buildImportParam(inputJob, expectOut, ctx, jobSettings, sourceSettings, sinkSettings);
                 sqoopParams.putAll(importParams);
             }
 
             if (mode.equals("export")) {
-                Map<String, Object> exportParams = this.buildExportParam(inputJob, expectJob, ctx, jobSettings, sourceSettings, sinkSettings);
+                Map<String, Object> exportParams = this.buildExportParam(inputJob, expectOut, ctx, jobSettings, sourceSettings, sinkSettings);
                 sqoopParams.putAll(exportParams);
             }
 
@@ -141,10 +141,10 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
 
             engineJob.getJobContent().put("sqoop-params", sqoopParams);
             engineJob.setRuntimeParams(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
-            engineJob.setTaskName(inputJob.getTaskName());
-            if (Objects.nonNull(expectJob)) {
-                engineJob.setJobName(expectJob.getJobName());
-                engineJob.setEngine(expectJob.getEngine());
+            engineJob.setName(inputJob.getName());
+            if (Objects.nonNull(expectOut)) {
+                engineJob.setName(expectOut.getName());
+                engineJob.setEngineType(expectOut.getEngineType());
             }
             engineJob.setCreateUser(inputJob.getCreateUser());
             return engineJob;
@@ -156,7 +156,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
 
     @Override
     public boolean canBuild(SubExchangisJob inputJob) {
-        return "sqoop".equalsIgnoreCase(inputJob.getEngine());
+        return "sqoop".equalsIgnoreCase(inputJob.getEngineType());
     }
 
     /**

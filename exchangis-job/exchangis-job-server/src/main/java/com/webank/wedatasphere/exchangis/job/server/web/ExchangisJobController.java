@@ -9,16 +9,17 @@ import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceS
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLauncher;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask;
-import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
-import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
@@ -27,23 +28,17 @@ import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisLaunchTaskService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
-import com.webank.wedatasphere.linkis.computation.client.LinkisJobMetrics;
-import com.webank.wedatasphere.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
-import com.webank.wedatasphere.linkis.server.Message;
-import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
+import org.apache.linkis.computation.client.LinkisJobMetrics;
+import org.apache.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
+import org.apache.linkis.server.Message;
+import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.*;
 
 import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.REALM_JOB_CONTENT_SINK;
@@ -55,10 +50,8 @@ import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.REALM
  * @author yuxin.yuan
  * @date 2021/08/18
  */
-@Component
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Path("exchangis/job")
+@RestController
+@RequestMapping(value = "exchangis/job", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisJobController.class);
     @Autowired
@@ -78,106 +71,97 @@ public class ExchangisJobController {
 
     private final ObjectWriter writer = new ObjectMapper().writer();
 
-    @GET
-    public Message getJobList(@QueryParam(value = "projectId") Long projectId,
-                              @QueryParam(value = "jobType") String jobType, @QueryParam(value = "name") String name) {
+    @RequestMapping( value = "", method = RequestMethod.GET)
+    public Message getJobList(@RequestParam(value = "projectId") Long projectId,
+                              @RequestParam(value = "jobType", required = false) String jobType,
+                              @RequestParam(value = "name", required = false) String name) {
         List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobList(projectId, jobType, name);
         return Message.ok().data("result", joblist);
     }
 
-    @GET
-    @Path("/dss")
-    public Message getJobListByDss(@QueryParam(value = "dssProjectId") Long dssProjectId, @QueryParam(value = "jobType") String jobType,  @QueryParam(value = "name") String name) {
+    @RequestMapping( value = "/dss", method = RequestMethod.GET)
+    public Message getJobListByDss(@RequestParam(value = "dssProjectId") Long dssProjectId,
+                                   @RequestParam(value = "jobType", required = false) String jobType,
+                                   @RequestParam(value = "name", required = false) String name) {
         List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobListByDssProject(dssProjectId, jobType, name);
         return Message.ok().data("result", joblist);
     }
 
-    @GET
-    @Path("/engineType")
+    @RequestMapping( value = "/engineType", method = RequestMethod.GET)
     public Message getEngineList() {
         return Message.ok().data("result", EngineTypeEnum.values());
     }
 
-    @POST
-    public Message createJob(@Context HttpServletRequest request, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
+    @RequestMapping( value = "", method = RequestMethod.POST)
+    public Message createJob(HttpServletRequest request, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
         ExchangisJobBasicInfoVO job = exchangisJobService.createJob(request, exchangisJobBasicInfoDTO);
         return Message.ok().data("result", job);
     }
 
-    @POST
-    @Path("/{sourceJobId}/copy")
-    public Message copyJob(@PathParam("sourceJobId") Long sourceJobId,
+    @RequestMapping( value = "/{sourceJobId}/copy", method = RequestMethod.POST)
+    public Message copyJob(@PathVariable("sourceJobId") Long sourceJobId,
                            @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
         ExchangisJobBasicInfoVO job = exchangisJobService.copyJob(exchangisJobBasicInfoDTO, sourceJobId);
         return Message.ok().data("result", job);
     }
 
-    @PUT
-    @Path("/{id}")
-    public Message updateJob(@PathParam("id") Long id, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
+    @RequestMapping( value = "/{id}", method = RequestMethod.PUT)
+    public Message updateJob(@PathVariable("id") Long id, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
         ExchangisJobBasicInfoVO job = exchangisJobService.updateJob(exchangisJobBasicInfoDTO, id);
         return Message.ok().data("result", job);
     }
 
-    @PUT
-    @Path("/dss/{nodeId}")
-    public Message updateJobByDss(@PathParam("nodeId") String nodeId, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
+    @RequestMapping( value = "/dss/{nodeId}", method = RequestMethod.PUT)
+    public Message updateJobByDss(@PathVariable("nodeId") String nodeId, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
         LOGGER.info("updateJobByDss nodeId {},ExchangisJobBasicInfoDTO {}", nodeId,exchangisJobBasicInfoDTO.toString());
         ExchangisJobBasicInfoVO job = exchangisJobService.updateJobByDss(exchangisJobBasicInfoDTO, nodeId);
         return Message.ok().data("result", job);
     }
 
-    @POST
-    @Path("/import")
+    @RequestMapping( value = "/import", method = RequestMethod.POST, headers = {"content-type=multipart/form-data"})
     public Message importSingleJob(@RequestPart("multipartFile") MultipartFile multipartFile) {
         ExchangisJobBasicInfoVO job = exchangisJobService.importSingleJob(multipartFile);
         return Message.ok().data("result", job);
     }
 
-    @DELETE
-    @Path("/{id}")
-    public Message deleteJob(@PathParam("id") Long id) {
+    @RequestMapping( value = "/{id}", method = RequestMethod.DELETE)
+    public Message deleteJob(@PathVariable("id") Long id) {
         exchangisJobService.deleteJob(id);
         return Message.ok("job deleted");
     }
 
-    @DELETE
-    @Path("/dss/{nodeId}")
-    public Message deleteJobByDss(@PathParam("nodeId") String nodeId) {
+    @RequestMapping( value = "/dss/{nodeId}", method = RequestMethod.DELETE)
+    public Message deleteJobByDss(@PathVariable("nodeId") String nodeId) {
         LOGGER.info("deleteJobByDss nodeId {}", nodeId);
         return Message.ok("job deleted");
     }
 
-    @GET
-    @Path("/{id}")
-    public Message getJob(@Context HttpServletRequest request, @PathParam("id") Long id) throws ExchangisJobErrorException {
-        ExchangisJob job = exchangisJobService.getJob(request, id);
+    @RequestMapping( value = "/{id}", method = RequestMethod.GET)
+    public Message getJob(HttpServletRequest request, @PathVariable("id") Long id) throws ExchangisJobErrorException {
+        ExchangisJobVO job = exchangisJobService.getJob(request, id);
         return Message.ok().data("result", job);
     }
 
-    @GET
-    @Path("/dss/{nodeId}")
-    public Message getJobByDssProject(@Context HttpServletRequest request, @PathParam("nodeId") String nodeId) throws ExchangisJobErrorException {
+    @RequestMapping( value = "/dss/{nodeId}", method = RequestMethod.GET)
+    public Message getJobByDssProject(HttpServletRequest request, @PathVariable("nodeId") String nodeId) throws ExchangisJobErrorException {
         LOGGER.info("getJobByDssProject nodeId {}", nodeId);
-        ExchangisJob job = exchangisJobService.getJobByDss(request, nodeId);
+        ExchangisJobVO job = exchangisJobService.getJobByDss(request, nodeId);
         return Message.ok().data("result", job);
     }
 
 
 
-    @PUT
-    @Path("/{id}/config")
-    public Message saveJobConfig(@PathParam("id") Long id,
+    @RequestMapping( value = "/{id}/config", method = RequestMethod.PUT)
+    public Message saveJobConfig(@PathVariable("id") Long id,
                                  @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException {
-        ExchangisJob exchangisJob = exchangisJobService.updateJobConfig(exchangisJobContentDTO, id);
+        ExchangisJobVO exchangisJob = exchangisJobService.updateJobConfig(exchangisJobContentDTO, id);
         return Message.ok().data("result", exchangisJob);
     }
 
-    @PUT
-    @Path("/{id}/content")
-    public Message saveSubjobs(@PathParam("id") Long id,
+    @RequestMapping( value = "/{id}/content", method = RequestMethod.PUT)
+    public Message saveSubjobs(@PathVariable("id") Long id,
                                @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobErrorException, ExchangisDataSourceException {
-        ExchangisJob exchangisJob = exchangisJobService.updateJobContent(exchangisJobContentDTO, id);
+        ExchangisJobVO exchangisJob = exchangisJobService.updateJobContent(exchangisJobContentDTO, id);
         return Message.ok().data("result", exchangisJob);
     }
 
@@ -193,17 +177,16 @@ public class ExchangisJobController {
     private ExchangisLaunchTaskService exchangisLaunchTaskService;
 
 
-    @POST
-    @Path("/{id}/action/execute")
-    public Message executeJob(@Context HttpServletRequest request, @PathParam("id") Long id) throws Exception {
+    @RequestMapping( value = "/{id}/action/execute", method = RequestMethod.POST)
+    public Message executeJob(HttpServletRequest request, @PathVariable("id") Long id) throws Exception {
         String userName = SecurityFilter.getLoginUsername(request);
-        ExchangisJob job = exchangisJobService.getById(id);
+        ExchangisJobInfo job = new ExchangisJobInfo(exchangisJobService.getById(id));
         ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
         ctx.putEnv("USER_NAME", userName);
 
         ctx.setOriginalJob(job);
         // ExchangisJob -> ExchangisTransformJob(SubExchangisJob)
-        ExchangisTransformJob transformJob = jobBuilderManager.doBuild(job, ExchangisTransformJob.class, ctx);
+        TransformExchangisJob transformJob = jobBuilderManager.doBuild(job, TransformExchangisJob.class, ctx);
         List<ExchangisEngineJob> engineJobs = new ArrayList<>();
         // ExchangisTransformJob(SubExchangisJob) -> List<ExchangisEngineJob>
         for (SubExchangisJob subExchangisJob : transformJob.getSubJobSet()) {
@@ -252,9 +235,10 @@ public class ExchangisJobController {
             LinkisJobMetrics jobMetrics = launch.getJobMetrics();
 
             ExchangisLaunchTask task = new ExchangisLaunchTask();
-            task.setTaskName(launcherJob.getTaskName());
+            // TODO set task name
+//            task.setTaskName(launcherJob.getTaskName());
             task.setJobId(launcherJob.getId());
-            task.setJobName(launcherJob.getJobName());
+            task.setJobName(launcherJob.getName());
 
             try {
                 String content = writer.writeValueAsString(launcherJob.getJobContent());
@@ -279,7 +263,7 @@ public class ExchangisJobController {
 
             task.setLaunchId(launchId);
             task.setStatus(status);
-            task.setEngineType(launcherJob.getEngine());
+            task.setEngineType(launcherJob.getEngineType());
 
             this.launchTaskMapper.insert(task);
 
@@ -296,19 +280,17 @@ public class ExchangisJobController {
         return Message.ok().data("tasks", tasks);
     }
 
-    @GET
-    @Path("{id}/speedlimit/{task_name}/params/ui")
-    public Response getSpeedLimitSettings(@PathParam("id") Long id, @PathParam("task_name") String taskName) {
+    @RequestMapping( value = "{id}/speedlimit/{task_name}/params/ui", method = RequestMethod.GET)
+    public Message getSpeedLimitSettings(@PathVariable("id") Long id, @PathVariable("task_name") String taskName) {
         List<ElementUI> speedLimitSettings = this.exchangisJobService.getSpeedLimitSettings(id, taskName);
-        Message message = Message.ok().data("ui", speedLimitSettings);
-        return Message.messageToResponse(message);
+        return Message.ok().data("ui", speedLimitSettings);
     }
 
-    @PUT
-    @Path("{id}/speedlimit/{task_name}")
-    public Response setSpeedLimitSettings(@PathParam("id") Long id, @PathParam("task_name") String taskName, @RequestBody ExchangisTaskSpeedLimitVO settings) {
+    @RequestMapping( value = "{id}/speedlimit/{task_name}", method = RequestMethod.PUT)
+    public Message setSpeedLimitSettings(@PathVariable("id") Long id, @PathVariable("task_name") String taskName,
+                                         @RequestBody ExchangisTaskSpeedLimitVO settings) {
         this.exchangisJobService.setSpeedLimitSettings(id, taskName, settings);
-        return Message.messageToResponse(Message.ok());
+        return Message.ok();
     }
 
 

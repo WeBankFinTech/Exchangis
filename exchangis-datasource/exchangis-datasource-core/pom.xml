@@ -25,20 +25,20 @@
 
 
         <dependency>
-            <groupId>com.webank.wedatasphere.linkis</groupId>
+            <groupId>org.apache.linkis</groupId>
             <artifactId>linkis-datasource-client</artifactId>
             <version>${linkis.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>com.webank.wedatasphere.linkis</groupId>
+                    <groupId>org.apache.linkis</groupId>
                     <artifactId>linkis-metadata</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.webank.wedatasphere.linkis</groupId>
+                    <groupId>org.apache.linkis</groupId>
                     <artifactId>linkis-publicservice</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.webank.wedatasphere.linkis</groupId>
+                    <groupId>org.apache.linkis</groupId>
                     <artifactId>linkis-bml</artifactId>
                 </exclusion>
             </exclusions>
