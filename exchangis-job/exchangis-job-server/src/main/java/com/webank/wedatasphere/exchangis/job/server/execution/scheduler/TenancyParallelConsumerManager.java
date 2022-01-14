@@ -22,7 +22,6 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Tenancy parallel Consumer manager
  */
-@Component
 public class TenancyParallelConsumerManager extends ConsumerManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(TenancyParallelConsumerManager.class);

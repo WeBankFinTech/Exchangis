@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.listener.ExchangisEvent;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
@@ -36,10 +37,14 @@ public class GenerationSchedulerTask extends ExchangisSchedulerTask {
     protected void schedule() throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
         try {
             generatorFunction.apply(launchableExchangisJob, ctx);
-            List<LaunchableExchangisTask> launchableExchangisTasks = launchableExchangisJob.getLaunchableExchangisTasks();
         } catch (Exception e) {
-            throw new ExchangisSchedulerException("Exception in generating launchable job: [ name: " + launchableExchangisJob.getExchangisJobInfo().getName() +
-                    ", job_execution_id: " + launchableExchangisJob.getJobExecutionId() + "]", e);
+            String errorMessage = "Exception in generating launchable job: [ name: " + launchableExchangisJob.getExchangisJobInfo().getName() +
+                    ", job_execution_id: " + launchableExchangisJob.getJobExecutionId() + "]";
+            if (!(e instanceof ExchangisTaskGenerateException)){
+                // Retry the generate progress
+                throw new ExchangisSchedulerRetryException(errorMessage, e);
+            }
+            throw new ExchangisSchedulerException(errorMessage, e);
         }
     }
 

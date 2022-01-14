@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Executor manager for scheduler
  */
-@Component
 public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
     private ExchangisSchedulerExecutorFactory schedulerExecutorFactory;
