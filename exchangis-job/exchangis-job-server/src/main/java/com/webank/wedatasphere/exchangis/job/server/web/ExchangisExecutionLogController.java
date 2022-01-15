@@ -14,12 +14,12 @@ public class ExchangisExecutionLogController {
     private ExchangisExecutionService exchangisExecutionService;
 
 
-    @RequestMapping(value = "/tasks/{taskId}/logs", method = RequestMethod.GET)
+   /* @RequestMapping(value = "/tasks/{taskId}/logs", method = RequestMethod.GET)
     public Message getTaskExecutionLogs(@PathVariable(value = "taskId") String taskId,
                                         @RequestParam(value = "fromLine", required = false) Integer fromLine,
                                         @RequestParam(value = "pageSize", required = false) Integer pageSize) {
 
         return this.exchangisExecutionService.getTaskLogInfo(taskId, fromLine, pageSize);
-    }
+    }*/
 
 }
