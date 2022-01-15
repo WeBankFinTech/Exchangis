@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
 @Component
 public class ExchangisTaskScheduler extends AbstractScheduler {
     private SchedulerContext schedulerContext;
-    private static final CommonVars<String> COMMON_VARS = CommonVars.apply("", "");
+//    private static final CommonVars<String> COMMON_VARS = CommonVars.apply("/", "");
     @Override
     @PostConstruct
     public void init() {
