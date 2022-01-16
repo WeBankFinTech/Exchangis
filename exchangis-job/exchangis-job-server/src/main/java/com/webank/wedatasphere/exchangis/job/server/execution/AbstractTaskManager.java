@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTa
 import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskExecutionEvent;
+import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskMetricsUpdateEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskStatusUpdateEvent;
 
 import java.util.*;
@@ -68,7 +69,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
     @Override
     public void addRunningTask(LaunchedExchangisTask task) {
         onEvent(new TaskStatusUpdateEvent(task, TaskStatus.Running));
-        if (Objects.isNull(runningTasks.putIfAbsent(String.valueOf(task.getId()), task))){
+        if (Objects.isNull(runningTasks.putIfAbsent(task.getTaskId(), task))){
             jobWrappers.compute(task.getJobExecutionId(), (jobExecutionId, jobWrapper) -> {
                 if (Objects.nonNull(jobWrapper) && jobWrapper.addTask(task)){
                     return jobWrapper;
@@ -91,6 +92,42 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
                 wrapper.removeTask(task);
             }
         }
+    }
+
+    @Override
+    public boolean refreshRunningTaskMetrics(LaunchedExchangisTask task, Map<String, Object> metricsMap) {
+        task = runningTasks.computeIfPresent(task.getTaskId(), (taskId, runningTask) ->{
+            // Empty the previous value
+            runningTask.setMetrics(null);
+            runningTask.setMetricsMap(metricsMap);
+            return runningTask;
+        });
+        if (Objects.nonNull(task)) {
+            onEvent(new TaskMetricsUpdateEvent(task, metricsMap));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean refreshRunningTaskStatus(LaunchedExchangisTask task, TaskStatus status) {
+        if (TaskStatus.isCompleted(status)){
+            onEvent(new TaskStatusUpdateEvent(task, status));
+        }
+        task = runningTasks.computeIfPresent(task.getTaskId(), (taskId, runningTask) -> {
+            runningTask.setStatus(status);
+            return runningTask;
+        });
+        if (Objects.nonNull(task)) {
+            onEvent(new TaskStatusUpdateEvent(task, status));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public LaunchedExchangisTask getRunningTask(String taskId) {
+        return runningTasks.get(taskId);
     }
 
     /**
@@ -129,7 +166,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
          */
         public void removeTask(LaunchedExchangisTask task) {
             synchronized (taskNum) {
-                if (Objects.nonNull(tasksInJob.remove(String.valueOf(task.getId())))) {
+                if (Objects.nonNull(tasksInJob.remove(task.getTaskId()))) {
                     if (taskNum.decrementAndGet() == 0) {
                         jobWrappers.remove(jobExecutionId);
                         jobExecutionIds.remove(jobExecutionId);
@@ -142,7 +179,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
         public boolean addTask(LaunchedExchangisTask task){
             synchronized (taskNum) {
                 if (!destroy) {
-                    if (Objects.isNull(tasksInJob.put(String.valueOf(task.getId()), task))) {
+                    if (Objects.isNull(tasksInJob.put(task.getTaskId(), task))) {
                         taskNum.getAndIncrement();
                     }
                     return true;

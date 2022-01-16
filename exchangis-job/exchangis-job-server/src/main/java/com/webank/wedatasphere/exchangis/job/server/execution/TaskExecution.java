@@ -1,20 +1,21 @@
 package com.webank.wedatasphere.exchangis.job.server.execution;
 
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
 
 /**
  * Task execution
  */
-public interface TaskExecution {
+public interface TaskExecution<T extends ExchangisTask> {
 
-
+    void submit(T task) throws ExchangisTaskExecuteException;
     /**
      * Submit scheduler task
      * @param schedulerTask scheduler task
-     * @return scheduleId
      */
-    String submit(ExchangisSchedulerTask schedulerTask) throws ExchangisTaskExecuteException;
+    void submit(AbstractExchangisSchedulerTask schedulerTask) throws ExchangisSchedulerException;
 
     /**
      * Start execution

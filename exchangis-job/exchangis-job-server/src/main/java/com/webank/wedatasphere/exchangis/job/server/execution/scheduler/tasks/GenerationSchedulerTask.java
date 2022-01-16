@@ -1,19 +1,15 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
-import com.webank.wedatasphere.exchangis.job.listener.ExchangisEvent;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGeneratorContext;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.AbstractTaskGenerator;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
 import org.apache.linkis.scheduler.queue.JobInfo;
 
-import java.util.List;
-
-public class GenerationSchedulerTask extends ExchangisSchedulerTask {
+public class GenerationSchedulerTask extends AbstractExchangisSchedulerTask {
 
     private AbstractTaskGenerator.GeneratorFunction generatorFunction;
 

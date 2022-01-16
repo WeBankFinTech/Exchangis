@@ -1,10 +1,10 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
 
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TaskScheduler;
 import org.apache.linkis.common.conf.CommonVars;
+import org.apache.linkis.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,13 +14,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 /**
  * Subscribe the task cached in memory(queue)
  */
-public abstract class CacheInTaskObserver extends AbstractTaskObserver {
+public abstract class CacheInTaskObserver<T extends ExchangisTask> extends AbstractTaskObserver<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CacheInTaskObserver.class);
 
-    protected Queue<LaunchableExchangisTask> queue;
+    protected Queue<T> queue;
 
-    private static final CommonVars<Integer>  TASK_OBSERVER_CACHE_SIZE = CommonVars.apply("wds.exchangis.job.observer.cache.size", 3000);
+    private static final CommonVars<Integer>  TASK_OBSERVER_CACHE_SIZE = CommonVars.apply("wds.exchangis.job.task.observer.cache.size", 3000);
 
     public CacheInTaskObserver(int cacheSize){
         this.queue = new ArrayBlockingQueue<>(cacheSize);
@@ -30,24 +30,24 @@ public abstract class CacheInTaskObserver extends AbstractTaskObserver {
         this.queue = new ArrayBlockingQueue<>(TASK_OBSERVER_CACHE_SIZE.getValue());
     }
     @Override
-    public List<LaunchableExchangisTask> onPublish(int batchSize) throws ExchangisTaskObserverException {
-        List<LaunchableExchangisTask> launchableExchangisTasks = new ArrayList<>(batchSize);
-        LaunchableExchangisTask polledTask;
-        while (launchableExchangisTasks.size() < batchSize && (polledTask = queue.poll()) != null){
-            launchableExchangisTasks.add(polledTask);
+    public List<T> onPublish(int batchSize) throws ExchangisTaskObserverException {
+        List<T> cacheTasks = new ArrayList<>(batchSize);
+        T polledTask;
+        while (cacheTasks.size() < batchSize && (polledTask = queue.poll()) != null){
+            cacheTasks.add(polledTask);
         }
-        int fetchTaskSize = launchableExchangisTasks.size();
+        int fetchTaskSize = cacheTasks.size();
         int restBatchSize = batchSize - fetchTaskSize;
         if (restBatchSize > 0 && (this.lastPublishTime + this.publishInterval < System.currentTimeMillis())) {
-            launchableExchangisTasks.addAll(onPublishNext(restBatchSize));
+            cacheTasks.addAll(onPublishNext(restBatchSize));
         }
-        return launchableExchangisTasks;
+        return cacheTasks;
     }
 
     @Override
-    protected List<LaunchableExchangisTask> choose(List<LaunchableExchangisTask> candidateTasks,
-                                                   TaskChooseRuler chooseRuler, TaskScheduler taskScheduler) {
-        List<LaunchableExchangisTask> chooseTasks = chooseRuler.choose(candidateTasks, taskScheduler);
+    protected List<T> choose(List<T> candidateTasks,
+                                                   TaskChooseRuler<T> chooseRuler, Scheduler scheduler) {
+        List<T> chooseTasks = chooseRuler.choose(candidateTasks, scheduler);
         // Left the rejected tasks
         candidateTasks.removeAll(chooseTasks);
         // Update the lastUpdateTime
@@ -58,28 +58,28 @@ public abstract class CacheInTaskObserver extends AbstractTaskObserver {
         return chooseTasks;
     }
 
-    protected abstract List<LaunchableExchangisTask> onPublishNext(int batchSize) throws ExchangisTaskObserverException;
+    protected abstract List<T> onPublishNext(int batchSize) throws ExchangisTaskObserverException;
     /**
      * Offer operation for service to add/offer queue
      * @return queue
      */
-    public Queue<LaunchableExchangisTask> getCacheQueue(){
+    public Queue<T> getCacheQueue(){
         return new OperateLimitQueue(this.queue);
     }
 
     /**
      * Limit the operation
      */
-    private class OperateLimitQueue extends AbstractQueue<LaunchableExchangisTask>{
+    private class OperateLimitQueue extends AbstractQueue<T>{
 
-        private Queue<LaunchableExchangisTask> innerQueue;
+        private Queue<T> innerQueue;
 
-        public OperateLimitQueue(Queue<LaunchableExchangisTask> queue){
+        public OperateLimitQueue(Queue<T> queue){
             this.innerQueue = queue;
         }
 
         @Override
-        public Iterator<LaunchableExchangisTask> iterator() {
+        public Iterator<T> iterator() {
             throw new ExchangisTaskObserverException.Runtime("Unsupported operation 'iterator'", null);
         }
 
@@ -89,7 +89,7 @@ public abstract class CacheInTaskObserver extends AbstractTaskObserver {
         }
 
         @Override
-        public boolean offer(LaunchableExchangisTask launchableExchangisTask) {
+        public boolean offer(T launchableExchangisTask) {
             boolean offer = this.innerQueue.offer(launchableExchangisTask);
             if(offer){
                 try {
@@ -102,12 +102,12 @@ public abstract class CacheInTaskObserver extends AbstractTaskObserver {
         }
 
         @Override
-        public LaunchableExchangisTask poll() {
+        public T poll() {
             throw new ExchangisTaskObserverException.Runtime("Unsupported operation 'poll'", null);
         }
 
         @Override
-        public LaunchableExchangisTask peek() {
+        public T peek() {
             throw new ExchangisTaskObserverException.Runtime("Unsupported operation 'peek'", null);
         }
     }
