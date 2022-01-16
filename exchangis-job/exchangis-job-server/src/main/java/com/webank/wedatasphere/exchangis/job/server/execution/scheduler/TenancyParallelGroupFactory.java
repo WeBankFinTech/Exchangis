@@ -21,6 +21,8 @@ public class TenancyParallelGroupFactory extends FIFOGroupFactory {
 
     public static final String GROUP_NAME_PREFIX = "Multi-Tenancy-Group-";
 
+    public static final String DEFAULT_TENANCY = "default";
+
     private static final Pattern TENANCY_IN_GROUP_PATTERN = Pattern.compile("^" + GROUP_NAME_PREFIX + "([-_\\w\\W]+)?_\\d$");
 
     private int parallelPerTenancy = DEFAULT_PARALLEL_PER_TENANCY;
@@ -54,13 +56,13 @@ public class TenancyParallelGroupFactory extends FIFOGroupFactory {
     @Override
     public String getGroupNameByEvent(SchedulerEvent event) {
         String tenancy = "";
-        if (Objects.nonNull(event) && (event instanceof ExchangisSchedulerTask)){
-            String tenancyInSchedule = ((ExchangisSchedulerTask)event).getTenancy();
+        if (Objects.nonNull(event) && (event instanceof AbstractExchangisSchedulerTask)){
+            String tenancyInSchedule = ((AbstractExchangisSchedulerTask)event).getTenancy();
             if (tenancies.contains(tenancyInSchedule)){
                 tenancy = tenancyInSchedule;
             }
         }
-        return StringUtils.isNotBlank(tenancy)? GROUP_NAME_PREFIX + tenancy + "_" + (event.getId().hashCode() % parallelPerTenancy) : GROUP_NAME_PREFIX + "default";
+        return StringUtils.isNotBlank(tenancy)? GROUP_NAME_PREFIX + tenancy + "_" + (event.getId().hashCode() % parallelPerTenancy) : GROUP_NAME_PREFIX + DEFAULT_TENANCY;
     }
 
     public String getTenancyByGroupName(String groupName){

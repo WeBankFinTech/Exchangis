@@ -6,7 +6,6 @@ import org.apache.linkis.protocol.engine.EngineState;
 import org.apache.linkis.scheduler.executer.*;
 import org.apache.linkis.scheduler.listener.ExecutorListener;
 import org.apache.linkis.scheduler.queue.SchedulerEvent;
-import org.springframework.stereotype.Component;
 import scala.Option;
 import scala.Some;
 import scala.concurrent.duration.Duration;
@@ -129,7 +128,7 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
          * @param schedulerTask scheduler task
          * @param schedulerExecutor scheduler executor
          */
-        public void registerTaskExecutor(Class<? extends ExchangisSchedulerTask> schedulerTask,
+        public void registerTaskExecutor(Class<? extends AbstractExchangisSchedulerTask> schedulerTask,
                                          Class<? extends Executor> schedulerExecutor){
             String schedulerTaskClass = schedulerTask.getCanonicalName();
             registeredExecutorClass.putIfAbsent(schedulerTaskClass, schedulerExecutor);
@@ -161,9 +160,9 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
         @Override
         public ExecuteResponse execute(ExecuteRequest executeRequest) {
-            if (executeRequest instanceof ExchangisSchedulerTask.DirectExecuteRequest){
+            if (executeRequest instanceof AbstractExchangisSchedulerTask.DirectExecuteRequest){
                 try {
-                    ((ExchangisSchedulerTask.DirectExecuteRequest)executeRequest).directExecute();
+                    ((AbstractExchangisSchedulerTask.DirectExecuteRequest)executeRequest).directExecute();
                     return new SuccessExecuteResponse();
                 } catch (ExchangisSchedulerException | ExchangisSchedulerRetryException e) {
                     return new ErrorExecuteResponse("Exception occurred in scheduling, task will fail or retry on the next time, message: ["

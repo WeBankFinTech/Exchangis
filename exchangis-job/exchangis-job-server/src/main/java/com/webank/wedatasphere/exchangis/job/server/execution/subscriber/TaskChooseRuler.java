@@ -1,20 +1,20 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TaskScheduler;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
+import org.apache.linkis.scheduler.Scheduler;
 
 import java.util.List;
 
 /**
  * Choose rule
  */
-public interface TaskChooseRuler {
+public interface TaskChooseRuler<T extends ExchangisTask> {
 
     /**
      * Choose the tasks from candidates with scheduler
      * @param candidates candidate task
-     * @param taskScheduler task scheduler
+     * @param scheduler scheduler
      * @return
      */
-    List<LaunchableExchangisTask> choose(List<LaunchableExchangisTask> candidates, TaskScheduler taskScheduler);
+    List<T> choose(List<T> candidates, Scheduler scheduler);
 }

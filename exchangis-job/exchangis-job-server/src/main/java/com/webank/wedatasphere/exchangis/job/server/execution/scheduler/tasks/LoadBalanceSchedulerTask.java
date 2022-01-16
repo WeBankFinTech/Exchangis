@@ -1,34 +1,19 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
-import org.apache.linkis.scheduler.queue.JobInfo;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbalance.LoadBalancePoller;
 
-public abstract class LoadBalanceSchedulerTask extends ExchangisSchedulerTask {
+/**
+ * Scheduler task could be balanced,
+ * Each one is a resident task with a poller
+ * @param <T>
+ */
+public interface LoadBalanceSchedulerTask<T> extends ExchangisSchedulerTask {
 
     /**
-     * Each schedule task should has an id
-     *
-     * @param scheduleId schedule id
+     * Get/Create a poller
+     * @return
      */
-    public LoadBalanceSchedulerTask(String scheduleId) {
-        super(scheduleId);
-    }
-
-    @Override
-    protected void schedule() throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
-
-    }
-
-    @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
-    public JobInfo getJobInfo() {
-        return null;
-    }
+    LoadBalancePoller<T> getOrCreateLoadBalancePoller();
 
 }

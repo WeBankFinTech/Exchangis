@@ -3,16 +3,17 @@ package com.webank.wedatasphere.exchangis.job.server.execution;
 
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TaskScheduler;
+import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSchedulerLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
+import org.apache.linkis.scheduler.Scheduler;
 
 import java.util.List;
 
-public class DefaultGenericTaskExecution extends AbstractTaskExecution{
+public class DefaultTaskExecution extends AbstractTaskExecution{
 
-    public DefaultGenericTaskExecution(TaskScheduler taskScheduler, ExchangisJobLaunchManager<?> launchManager,
-                                       TaskManager<LaunchedExchangisTask> taskManager, List<TaskObserver<?>> taskObservers){
+    public DefaultTaskExecution(Scheduler scheduler, ExchangisJobLaunchManager<?> launchManager,
+                                TaskManager<LaunchedExchangisTask> taskManager, List<TaskObserver<?>> taskObservers,
+                                TaskSchedulerLoadBalancer<LaunchedExchangisTask> taskSchedulerLoadBalancer){
 
     }
     @Override
@@ -26,7 +27,7 @@ public class DefaultGenericTaskExecution extends AbstractTaskExecution{
     }
 
     @Override
-    protected TaskScheduler getTaskScheduler() {
+    protected Scheduler getScheduler() {
         return null;
     }
 
@@ -36,7 +37,7 @@ public class DefaultGenericTaskExecution extends AbstractTaskExecution{
     }
 
     @Override
-    public String submit(ExchangisSchedulerTask schedulerTask){
+    protected TaskSchedulerLoadBalancer<LaunchedExchangisTask> getTaskSchedulerLoadBalancer() {
         return null;
     }
 
