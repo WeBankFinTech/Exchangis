@@ -54,8 +54,9 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
                 Group group = getSchedulerContext().getOrCreateGroupFactory().getOrCreateGroup(null);
                 if (group instanceof FIFOGroup){
                     defaultExecutorService = Utils.newCachedThreadPool(((FIFOGroup) group).getMaxRunningJobs() +
-                            this.initResidentThreads,
-                            group.getGroupName() + "-Executor-", true);
+                            this.initResidentThreads + 1,
+                            group.getGroupName() + TenancyParallelGroupFactory.DEFAULT_TENANCY + "-Executor-", true);
+                    tenancyExecutorServices.put(TenancyParallelGroupFactory.DEFAULT_TENANCY, defaultExecutorService);
                 } else {
                     throw new ExchangisSchedulerException.Runtime("Cannot construct the executor service " +
                             "using the default group: [" + group.getClass().getCanonicalName() + "]", null);
@@ -128,7 +129,8 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
             if (StringUtils.isNotBlank(tenancy)){
                 return tenancyExecutorServices.computeIfAbsent(tenancy, tenancyName -> {
                     // Use the default value of max running jobs
-                    return Utils.newCachedThreadPool(parallelGroupFactory.getDefaultMaxRunningJobs()  + parallelGroupFactory.getParallelPerTenancy(),
+                    return Utils.newCachedThreadPool(parallelGroupFactory.getDefaultMaxRunningJobs()  + parallelGroupFactory.getParallelPerTenancy()
+                            + this.initResidentThreads,
                             TenancyParallelGroupFactory.GROUP_NAME_PREFIX + tenancy + "-Executor-", true);
                 });
             }
@@ -142,5 +144,13 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
 
     public void setInitResidentThreads(int initResidentThreads) {
         this.initResidentThreads = initResidentThreads;
+    }
+
+    /**
+     * Tenancy executor service
+     * @return
+     */
+    public Map<String, ExecutorService> getTenancyExecutorServices() {
+        return tenancyExecutorServices;
     }
 }

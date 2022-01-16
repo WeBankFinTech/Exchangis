@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;

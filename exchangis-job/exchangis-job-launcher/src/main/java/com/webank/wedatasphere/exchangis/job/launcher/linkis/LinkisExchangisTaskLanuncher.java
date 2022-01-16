@@ -6,7 +6,7 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobConfiguration;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import org.apache.linkis.common.conf.Configuration;
 import org.apache.linkis.computation.client.LinkisJobBuilder;
 import org.apache.linkis.computation.client.LinkisJobClient;
@@ -66,16 +66,16 @@ public class LinkisExchangisTaskLanuncher implements ExchangisTaskLauncher<Launc
                 .setCreateService("Sqoop")
                 .setMaxSubmitTime(300000)
                 .addLabel(LabelKeyUtils.ENGINE_TYPE_LABEL_KEY(), "sqoop-1.4.7")
-                .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), launcherJob.getProxyUser() + "-sqoop")
+                .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), launcherJob.getExecuteUser() + "-sqoop")
                 .addLabel(LabelKeyUtils.ENGINE_CONN_MODE_LABEL_KEY(), "once")
                 .addStartupParam(Configuration.IS_TEST_MODE().key(), false)
-                .addExecuteUser(launcherJob.getProxyUser())
+                .addExecuteUser(launcherJob.getExecuteUser())
                 .addJobContent("runType", "sqoop")
-                .addJobContent("sqoop-params", launcherJob.getJobContent().get("sqoop-params"));
+                .addJobContent("sqoop-params", launcherJob.getLinkisContentMap().get("sqoop-params"));
                 //TODO getTaskName
 //                .addSource("jobName", launcherJob.getName() + "." + launcherJob.getTaskName());
 
-        Optional.ofNullable(launcherJob.getRuntimeMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
+        Optional.ofNullable(launcherJob.getLinkisParamsMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
 
         SubmittableSimpleOnceJob onceJob = jobBuilder.build();
 
@@ -86,7 +86,7 @@ public class LinkisExchangisTaskLanuncher implements ExchangisTaskLauncher<Launc
 
     private SubmittableSimpleOnceJob submitDataxJob(LaunchableExchangisTask launcherJob) {
 
-        Map<String, Object> jobContent = launcherJob.getJobContent();
+        Map<String, Object> jobContent = launcherJob.getLinkisContentMap();
 
         JsonElement code = new JsonParser().parse(jobContent.get("code").toString());
 
@@ -105,16 +105,16 @@ public class LinkisExchangisTaskLanuncher implements ExchangisTaskLauncher<Launc
         LinkisJobBuilder<SubmittableSimpleOnceJob> jobBuilder = LinkisJobClient.once().simple().builder().setDescription(new Gson().toJson(rwMaps)).setCreateService("DataX")
                 .setMaxSubmitTime(300000)
                 .addLabel(LabelKeyUtils.ENGINE_TYPE_LABEL_KEY(), "datax-3.0.0")
-                .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), launcherJob.getProxyUser() + "-datax")
+                .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), launcherJob.getExecuteUser() + "-datax")
                 .addLabel(LabelKeyUtils.ENGINE_CONN_MODE_LABEL_KEY(), "once")
                 .addStartupParam(Configuration.IS_TEST_MODE().key(), false)
-                .addExecuteUser(launcherJob.getProxyUser())
+                .addExecuteUser(launcherJob.getExecuteUser())
                 .addJobContent("runType", "appconn")
                 .addJobContent("code", job.toString());
                 //TODO getTaskName
 //                .addSource("jobName", launcherJob.getName() + "." + launcherJob.getTaskName());
 
-        Optional.ofNullable(launcherJob.getRuntimeMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
+        Optional.ofNullable(launcherJob.getLinkisParamsMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
 
         SubmittableSimpleOnceJob onceJob = jobBuilder.build();
 

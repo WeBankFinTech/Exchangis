@@ -4,9 +4,9 @@ import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilder
 import com.webank.wedatasphere.exchangis.job.server.builder.SpringExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.*;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerExecutorManager;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisTaskScheduler;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TaskScheduler;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisGenericScheduler;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TenancyParallelConsumerManager;
+import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.executer.ExecutorManager;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,9 +41,9 @@ public class ExchangisJobExecuteAutoConfiguration {
     }
 
     @Bean(initMethod = "init")
-    @ConditionalOnMissingBean(TaskScheduler.class)
-    public TaskScheduler taskScheduler(ExecutorManager executorManager, ConsumerManager consumerManager){
-        return new ExchangisTaskScheduler(executorManager, consumerManager);
+    @ConditionalOnMissingBean(Scheduler.class)
+    public Scheduler scheduler(ExecutorManager executorManager, ConsumerManager consumerManager){
+        return new ExchangisGenericScheduler(executorManager, consumerManager);
     }
 
     @Bean(initMethod = "init")

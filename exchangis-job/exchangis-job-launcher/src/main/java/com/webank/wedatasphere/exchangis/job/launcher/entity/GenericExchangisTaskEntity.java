@@ -76,7 +76,7 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
     }
 
     @Override
-    public Integer errorCode() {
+    public Integer getErrorCode() {
         return this.errorCode;
     }
 
@@ -86,7 +86,7 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
     }
 
     @Override
-    public String errorMessage() {
+    public String getErrorMessage() {
         return this.errorMessage;
     }
 

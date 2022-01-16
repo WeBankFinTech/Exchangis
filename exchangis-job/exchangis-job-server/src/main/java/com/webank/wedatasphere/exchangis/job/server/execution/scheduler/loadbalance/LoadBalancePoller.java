@@ -2,11 +2,23 @@ package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbal
 
 import java.util.List;
 
+/**
+ * Poller for load balance
+ * @param <T>
+ */
 public interface LoadBalancePoller<T> {
 
-    List<T> poll();
+    List<T> poll() throws InterruptedException;
 
-    double pollFreqPerSec();
+    /**
+     * Push the element
+     * @param element element
+     */
+    void push(T element);
 
-    void setLoadBalanceRule(LoadBalanceRule<T> rule);
+    /**
+     * Combine with other poller
+     * @param other
+     */
+    void combine(LoadBalancePoller<T> other);
 }

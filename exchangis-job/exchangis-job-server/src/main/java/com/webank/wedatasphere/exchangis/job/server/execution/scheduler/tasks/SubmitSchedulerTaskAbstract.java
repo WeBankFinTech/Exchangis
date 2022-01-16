@@ -6,33 +6,40 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTa
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
+import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSchedulerLoadBalancer;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
 import org.apache.linkis.scheduler.queue.JobInfo;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
  * Submit scheduler task
  */
-public class SubmitSchedulerTask extends ExchangisSchedulerTask {
+public class SubmitSchedulerTaskAbstract extends AbstractExchangisSchedulerTask {
     private LaunchableExchangisTask launchableExchangisTask;
 
     private TaskManager<LaunchedExchangisTask> taskManager;
 
     private ExchangisTaskLauncher<? extends LaunchableExchangisTask> jobLauncher;
 
+    private TaskSchedulerLoadBalancer<LaunchedExchangisTask> loadBalancer;
+
     private Callable<Boolean> submitCondition;
+
     /**
      * Each schedule task should has an id
      *
      */
-    public SubmitSchedulerTask(LaunchableExchangisTask task, Callable<Boolean> submitCondition) {
+    public SubmitSchedulerTaskAbstract(LaunchableExchangisTask task, Callable<Boolean> submitCondition) {
         super(String.valueOf(task.getId()));
         this.launchableExchangisTask = task;
         this.submitCondition = submitCondition;
     }
 
-    public SubmitSchedulerTask(LaunchableExchangisTask task){
+    public SubmitSchedulerTaskAbstract(LaunchableExchangisTask task){
         this(task, null);
     }
     @Override
@@ -45,7 +52,14 @@ public class SubmitSchedulerTask extends ExchangisSchedulerTask {
         }
         // TODO invoke launcher
         // TODO add the success/launched job into taskManager
-
+        LaunchedExchangisTask launchedExchangisTask = new LaunchedExchangisTask(launchableExchangisTask);
+        if (Objects.nonNull(this.loadBalancer)){
+            // Add the launchedExchangisTask to the load balance poller
+            List<LoadBalanceSchedulerTask<LaunchedExchangisTask>> loadBalanceSchedulerTasks = this.loadBalancer.choose(launchedExchangisTask);
+            Optional.ofNullable(loadBalanceSchedulerTasks).ifPresent(tasks -> tasks.forEach(loadBalanceSchedulerTask -> {
+                loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(launchedExchangisTask);
+            }));
+        }
     }
 
     @Override

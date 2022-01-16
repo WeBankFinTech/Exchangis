@@ -7,15 +7,23 @@ import org.apache.linkis.scheduler.executer.ExecutorManager;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
 import org.apache.linkis.scheduler.queue.GroupFactory;
 import org.apache.linkis.scheduler.queue.fifoqueue.FIFOSchedulerContextImpl;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 /**
  * Inherited the AbstractScheduler from linkis-scheduler
  */
-public class ExchangisTaskScheduler extends TaskScheduler {
+public class ExchangisGenericScheduler extends AbstractScheduler {
+
+    private static class Constraints{
+        private static final CommonVars<Integer> MAX_PARALLEL_PER_TENANCY = CommonVars.apply("wds.exchangis.job.scheduler.consumer.max.parallel.per-tenancy", 1);
+
+        private static final CommonVars<String> TENANCY_PATTERN = CommonVars.apply("wds.exchangis.job.scheduler.consumer.tenancies", "hadoop");
+
+        private static final CommonVars<Integer> GROUP_INIT_CAPACITY = CommonVars.apply("wds.exchangis.job.scheduler.group.min.capacity", 1000);
+
+        private static final CommonVars<Integer> GROUP_MAX_CAPACITY = CommonVars.apply("wds.exchangis.job.scheduler.group.max.capacity", 5000);
+
+        private static final CommonVars<Integer> GROUP_MAX_RUNNING_JOBS = CommonVars.apply("wds.exchangis.job.scheduler.group.max.running-jobs", 30);
+    }
 
 
     private SchedulerContext schedulerContext;
@@ -24,7 +32,7 @@ public class ExchangisTaskScheduler extends TaskScheduler {
 
     private ConsumerManager consumerManager;
 
-    public ExchangisTaskScheduler(ExecutorManager executorManager, ConsumerManager consumerManager){
+    public ExchangisGenericScheduler(ExecutorManager executorManager, ConsumerManager consumerManager){
         this.executorManager = executorManager;
         this.consumerManager = consumerManager;
     }
@@ -53,15 +61,4 @@ public class ExchangisTaskScheduler extends TaskScheduler {
         return schedulerContext;
     }
 
-    private static class Constraints{
-        private static final CommonVars<Integer> MAX_PARALLEL_PER_TENANCY = CommonVars.apply("wds.exchangis.job.scheduler.consumer.max.parallel.per-tenancy", 1);
-
-        private static final CommonVars<String> TENANCY_PATTERN = CommonVars.apply("wds.exchangis.job.scheduler.consumer.tenancies", "hadoop");
-
-        private static final CommonVars<Integer> GROUP_INIT_CAPACITY = CommonVars.apply("wds.exchangis.job.scheduler.group.min.capacity", 1000);
-
-        private static final CommonVars<Integer> GROUP_MAX_CAPACITY = CommonVars.apply("wds.exchangis.job.scheduler.group.max.capacity", 5000);
-
-        private static final CommonVars<Integer> GROUP_MAX_RUNNING_JOBS = CommonVars.apply("wds.exchangis.job.scheduler.group.max.running-jobs", 30);
-    }
 }
