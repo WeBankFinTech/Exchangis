@@ -45,7 +45,7 @@ public interface ExchangisTaskEntity extends ExchangisTask {
      * Error code
      * @return default null
      */
-    Integer errorCode();
+    Integer getErrorCode();
 
     void setErrorCode(Integer code);
 
@@ -53,7 +53,7 @@ public interface ExchangisTaskEntity extends ExchangisTask {
      * Error message
      * @return default null
      */
-    String errorMessage();
+    String getErrorMessage();
 
     void setErrorMessage(String errorMessage);
 

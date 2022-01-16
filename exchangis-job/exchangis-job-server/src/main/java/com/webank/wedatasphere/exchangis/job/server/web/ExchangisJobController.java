@@ -10,6 +10,8 @@ import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
@@ -18,7 +20,6 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLaunchTask;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
@@ -225,7 +226,6 @@ public class ExchangisJobController {
 
 
         for (LaunchableExchangisTask launcherJob : launcherJobs) {
-            String launchName = launcherJob.getLaunchName();
             ExchangisTaskLauncher<LaunchableExchangisTask> jobLauncher = this.jobLaunchManager.getJoblauncher("Linkis");
             SubmittableSimpleOnceJob launch = jobLauncher.launch(launcherJob);
 
@@ -241,7 +241,7 @@ public class ExchangisJobController {
             task.setJobName(launcherJob.getName());
 
             try {
-                String content = writer.writeValueAsString(launcherJob.getJobContent());
+                String content = writer.writeValueAsString(launcherJob.getLinkisJobContent());
                 task.setContent(content);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
@@ -249,12 +249,12 @@ public class ExchangisJobController {
             }
 
             task.setCreateTime(new Date());
-            task.setCreateUser(launcherJob.getCreateUser());
+            task.setCreateUser(launcherJob.getExecuteUser());
             task.setLaunchTime(new Date());
-            task.setProxyUser(launcherJob.getProxyUser());
+            task.setProxyUser(launcherJob.getExecuteUser());
 
             try {
-                String runtimes = writer.writeValueAsString(launcherJob.getRuntimeMap());
+                String runtimes = writer.writeValueAsString(launcherJob.getLinkisParamsMap());
                 task.setParamsJson(runtimes);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();

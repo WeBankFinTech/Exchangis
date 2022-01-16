@@ -1,15 +1,14 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TaskScheduler;
 import org.apache.linkis.common.conf.CommonVars;
+import org.apache.linkis.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -21,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Contains the schedule and publish strategies
  */
-public abstract class AbstractTaskObserver implements TaskObserver<LaunchableExchangisTask> {
+public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements TaskObserver<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskObserver.class);
 
@@ -29,23 +28,20 @@ public abstract class AbstractTaskObserver implements TaskObserver<LaunchableExc
 
     private static final int DEFAULT_TASK_OBSERVER_PUBLISH_BATCH = 50;
 
-    private static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_INTERVAL = CommonVars.apply("wds.exchangis.job.observer.publish.interval-in-millisecond", DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL);
+    private static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_INTERVAL = CommonVars.apply("wds.exchangis.job.task.observer.publish.interval-in-millisecond", DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL);
 
-    private static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_BATCH = CommonVars.apply("wds.exchangis.job.observer.publish.batch", DEFAULT_TASK_OBSERVER_PUBLISH_BATCH);
-    @Resource
-    private TaskScheduler taskScheduler;
+    private static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_BATCH = CommonVars.apply("wds.exchangis.job.task.observer.publish.batch", DEFAULT_TASK_OBSERVER_PUBLISH_BATCH);
 
-    @Resource
-    private TaskChooseRuler taskChooseRuler;
+    private Scheduler scheduler;
+
+    private TaskChooseRuler<T> taskChooseRuler;
 
     /**
      * Task manager
      */
-    @Resource
-    private TaskManager taskManager;
+    private TaskManager<T> taskManager;
 
-    @Resource
-    private TaskExecution taskExecution;
+    private TaskExecution<T> taskExecution;
 
     private ReentrantLock observerLock = new ReentrantLock();
 
@@ -82,7 +78,7 @@ public abstract class AbstractTaskObserver implements TaskObserver<LaunchableExc
         LOG.info("Thread: [ {} ] is started. ", Thread.currentThread().getName());
         while (!isShutdown) {
             try {
-                List<LaunchableExchangisTask> publishedTasks;
+                List<T> publishedTasks;
                 try {
                     publishedTasks = onPublish(publishBatch);
                     this.lastPublishTime = System.currentTimeMillis();
@@ -91,9 +87,9 @@ public abstract class AbstractTaskObserver implements TaskObserver<LaunchableExc
                     throw e;
                 }
                 if (!publishedTasks.isEmpty()) {
-                    List<LaunchableExchangisTask> chooseTasks;
+                    List<T> chooseTasks;
                     try {
-                        chooseTasks = choose(publishedTasks, getTaskChooseRuler(), getTaskScheduler());
+                        chooseTasks = choose(publishedTasks, getTaskChooseRuler(), getScheduler());
                     } catch (Exception e){
                         throw new ExchangisTaskObserverException("call_choose_rule", "Fail to choose candidate tasks", e);
                     }
@@ -119,22 +115,22 @@ public abstract class AbstractTaskObserver implements TaskObserver<LaunchableExc
 
     @Override
     public synchronized void start() {
-        if (Objects.isNull(this.taskScheduler)){
+        if (Objects.isNull(this.scheduler)){
             throw new ExchangisTaskObserverException.Runtime("TaskScheduler cannot be empty, please set it before starting the ["+ getName() +"]!", null);
         }
         if (Objects.nonNull(this.observerFuture)){
             throw new ExchangisTaskObserverException.Runtime("The observer: [" + getName() +"]  has been started before", null);
         }
         // Submit self to default executor service
-        this.observerFuture = this.taskScheduler.getSchedulerContext()
+        this.observerFuture = this.scheduler.getSchedulerContext()
                 .getOrCreateConsumerManager().getOrCreateExecutorService().submit(this);
     }
 
     @Override
     public synchronized void stop() {
         if (Objects.nonNull(this.observerFuture)) {
-            this.observerFuture.cancel(true);
             this.isShutdown = true;
+            this.observerFuture.cancel(true);
         }
     }
 
@@ -142,7 +138,7 @@ public abstract class AbstractTaskObserver implements TaskObserver<LaunchableExc
      * Sleep or wait during the publish and subscribe
      * @param publishedTasks published tasks
      */
-    private void sleepOrWaitIfNeed(List<LaunchableExchangisTask> publishedTasks){
+    private void sleepOrWaitIfNeed(List<T> publishedTasks){
         long observerWait = this.lastPublishTime + publishInterval - System.currentTimeMillis();
         if (publishedTasks.isEmpty() || observerWait > 0) {
             observerWait = observerWait > 0? observerWait : publishBatch;
@@ -161,7 +157,7 @@ public abstract class AbstractTaskObserver implements TaskObserver<LaunchableExc
             }
         }
     }
-    protected abstract List<LaunchableExchangisTask> onPublish(int batchSize) throws ExchangisTaskObserverException;
+    protected abstract List<T> onPublish(int batchSize) throws ExchangisTaskObserverException;
 
     /**
      * Call publish
@@ -176,43 +172,42 @@ public abstract class AbstractTaskObserver implements TaskObserver<LaunchableExc
             }
         }
     }
-    protected List<LaunchableExchangisTask> choose(List<LaunchableExchangisTask> candidateTasks,
-                                                            TaskChooseRuler chooseRuler, TaskScheduler taskScheduler){
-        return chooseRuler.choose(candidateTasks, taskScheduler);
+    protected List<T> choose(List<T> candidateTasks, TaskChooseRuler<T> chooseRuler, Scheduler scheduler){
+        return chooseRuler.choose(candidateTasks, scheduler);
     }
 
     @Override
-    public TaskChooseRuler getTaskChooseRuler() {
+    public TaskChooseRuler<T> getTaskChooseRuler() {
         return this.taskChooseRuler;
     }
 
     @Override
-    public void setTaskChooseRuler(TaskChooseRuler ruler) {
+    public void setTaskChooseRuler(TaskChooseRuler<T> ruler) {
         this.taskChooseRuler = ruler;
     }
 
+
     @Override
-    public TaskScheduler getTaskScheduler() {
-        return this.taskScheduler;
+    public Scheduler getScheduler() {
+        return scheduler;
+    }
+
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
     }
 
     @Override
-    public void setTaskScheduler(TaskScheduler taskScheduler) {
-        this.taskScheduler = taskScheduler;
-    }
-
-    @Override
-    public TaskManager getTaskManager() {
+    public TaskManager<T> getTaskManager() {
         return this.taskManager;
     }
 
     @Override
-    public void setTaskManager(TaskManager taskManager) {
+    public void setTaskManager(TaskManager<T> taskManager) {
         this.taskManager = taskManager;
     }
 
     @Override
-    public TaskExecution getTaskExecution() {
+    public TaskExecution<T> getTaskExecution() {
         return taskExecution;
     }
 

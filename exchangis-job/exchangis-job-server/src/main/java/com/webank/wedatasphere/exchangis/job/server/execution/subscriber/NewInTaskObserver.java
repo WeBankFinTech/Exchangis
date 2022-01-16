@@ -2,12 +2,9 @@ package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
-import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TaskScheduler;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.SubmitSchedulerTask;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.SubmitSchedulerTaskAbstract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,7 +17,7 @@ import java.util.Objects;
  * Subscribe the new task from database and then submit to scheduler
  */
 @Component
-public class NewInTaskObserver extends CacheInTaskObserver {
+public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTask> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewInTaskObserver.class);
 
@@ -35,12 +32,15 @@ public class NewInTaskObserver extends CacheInTaskObserver {
     @Override
     public void subscribe(List<LaunchableExchangisTask> publishedTasks) throws ExchangisTaskObserverException {
         Iterator<LaunchableExchangisTask> iterator = publishedTasks.iterator();
-        TaskExecution taskExecution = getTaskExecution();
+        TaskExecution<?> taskExecution = getTaskExecution();
+        if (Objects.isNull(taskExecution)){
+            throw new ExchangisTaskObserverException("TaskExecution cannot be null, please set it before subscribing!", null);
+        }
         while(iterator.hasNext()){
             LaunchableExchangisTask launchableExchangisTask = iterator.next();
             if (Objects.nonNull(launchableExchangisTask)){
                 try {
-                    SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(launchableExchangisTask,
+                    SubmitSchedulerTaskAbstract submitSchedulerTask = new SubmitSchedulerTaskAbstract(launchableExchangisTask,
                             () -> {
                                 LaunchedExchangisTask launchedTask = new LaunchedExchangisTask(launchableExchangisTask);
                                 // TODO check the status of launchedTask
