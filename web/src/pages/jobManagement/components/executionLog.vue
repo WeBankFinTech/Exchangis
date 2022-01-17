@@ -57,7 +57,7 @@ export default defineComponent({
       searchKeyword,
       ignoreKeyword
     let logs = reactive({
-      logs: ['', '', '', ''],
+      logs: {},
       endLine: 0,
       isEnd : false,
     })
@@ -137,7 +137,7 @@ export default defineComponent({
     }
 
     const _resetData = () => {
-      logs.logs = ['', '', '', '']
+      logs.logs = {}
       logs.endLine = 0
       logs.isEnd = false
       curLog.all = ''
