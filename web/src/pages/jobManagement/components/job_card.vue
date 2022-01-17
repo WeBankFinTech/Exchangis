@@ -58,7 +58,7 @@ import { useI18n } from "@fesjs/fes";
 import { message } from "ant-design-vue";
 import { deleteJob } from "@/common/service";
 
-export default {
+export default defineComponent({
   components: {
     CopyOutlined,
     DeleteOutlined,
@@ -116,7 +116,7 @@ export default {
       handleJobCopy,
     };
   },
-};
+});
 </script>
 <style scoped lang="less">
 .job_card_icon {
