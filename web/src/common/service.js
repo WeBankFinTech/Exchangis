@@ -335,6 +335,39 @@ export const getMetrics = (taskId, jobExecutionId) => {
 
 export const killJob = (id) => {
   return request(`/job/execution/${id}/kill`, null, {
-    method: "GET",
+    method: "POST",
   })
+}
+
+// 获取job运行日志
+export const getJobExecLog = (params) => {
+  return request(
+    `/job/execution/${params.id}/log`,
+    {
+      fromLine: params.fromLine || 0,
+      pageSize: params.pageSize || 10,
+      onlyKeywords: params.onlyKeywords,
+      ignoreKeywords: params.ignoreKeywords
+    },
+    {
+      method: "GET",
+    }
+  );
+}
+
+// 获取task运行日志
+export const getTaskExecLog = (params) => {
+  return request(
+    `/task/execution/${params.taskId}/log`,
+    {
+      fromLine: params.fromLine || 0,
+      pageSize: params.pageSize || 10,
+      jobExecutionId: params.id,
+      onlyKeywords: params.onlyKeywords,
+      ignoreKeywords: params.ignoreKeywords
+    },
+    {
+      method: "GET",
+    }
+  );
 }

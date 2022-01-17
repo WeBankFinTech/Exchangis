@@ -187,15 +187,15 @@
           </div>
         </div>
       </div>
-      <div v-for="item in streamList" :key="item.id" class="card">
-        <job-card
-          :jobData="item"
-          type="STREAM"
-          @showJobDetail="showJobDetail"
-          @handleJobCopy="handleJobCopy"
-          @refreshList="getJobs"
-        />
-      </div>
+      <!--<div v-for="item in streamList" :key="item.id" class="card">-->
+        <!--<job-card-->
+          <!--:jobData="item"-->
+          <!--type="STREAM"-->
+          <!--@showJobDetail="showJobDetail"-->
+          <!--@handleJobCopy="handleJobCopy"-->
+          <!--@refreshList="getJobs"-->
+        <!--/>-->
+      <!--</div>-->
     </div>
     <!-- 执行历史  jd-bottom -->
     <div class="jd-bottom" v-show="visibleDrawer">
@@ -225,7 +225,7 @@
     </div>
 
     <!-- 执行日志  jd-bottom -->
-    <div class="jd-bottom" v-show="visibleLog">
+    <div class="jd-bottom jd-bottom-log" v-show="visibleLog">
       <div class="jd-bottom-top" >
         <!--<span>执行日志</span>-->
         <CloseOutlined
@@ -241,7 +241,7 @@
         />
       </div>
       <div class="jd-bottom-content log-bottom-content">
-        <a-tabs default-active-key="1" @change="callback">
+        <a-tabs default-active-key="1" class="exec-info-tab">
           <a-tab-pane key="1" tab="运行情况">
             <div v-if="jobProgress.tasks" class="job-progress-percent job-progress-wrap">
               <span>总进度</span>
@@ -313,7 +313,7 @@
               </div>
           </a-tab-pane>
           <a-tab-pane key="2" tab="实时日志" force-render>
-            Content of Tab Pane 2
+            <execution-log :param="logParams"></execution-log>
           </a-tab-pane>
         </a-tabs>
 
@@ -372,6 +372,7 @@ import {
 import { message, notification } from "ant-design-vue";
 import { randomString } from "../../../common/utils";
 import { useI18n } from "@fesjs/fes";
+import executionLog from './executionLog'
 
 /**
  * 用于判断一个对象是否有空 value,如果有返回 true
@@ -458,7 +459,8 @@ export default {
     ProcessControl: defineAsyncComponent(() => import("./processControl.vue")),
     MinusOutlined,
     CloseOutlined,
-    StopFilled
+    StopFilled,
+    executionLog
   },
   data() {
     const { t } = useI18n({ useScope: "global" });
@@ -518,6 +520,14 @@ export default {
   },
   created() {
     this.init();
+  },
+  computed: {
+    logParams(){
+      return {
+        list: this.tasklist,
+        id: this.jobExecutionId
+      }
+    }
   },
   methods: {
     init() {
@@ -1204,13 +1214,28 @@ export default {
       color: rgba(0, 0, 0, 0.85);
       font-weight: 500;
     }
+    &.jd-bottom-log {
+      height: 33%;
+     .jd-bottom-top {
+       bottom: 33%;
+     }
+    }
+
 
     &-content {
       padding: 18px 24px;
-      :deep(.ant-tabs-bar) {
-        position: fixed;
-        margin-top: -63px;
+      .exec-info-tab {
+        >:deep(.ant-tabs-bar) {
+           position: fixed;
+           margin-top: -45px;
+         }
+        :deep(.ant-tabs-content) {
+          padding: 5px 10px;
+        }
       }
+    }
+    .log-bottom-content {
+      padding: 0 24px;
     }
 
     .job-progress-wrap {

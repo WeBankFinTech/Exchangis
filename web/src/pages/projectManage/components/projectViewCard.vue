@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import { ApartmentOutlined } from "@ant-design/icons-vue";
+import { ApartmentOutlined, DeleteOutlined } from "@ant-design/icons-vue";
 import { useRouter } from "@fesjs/fes";
 import { toRefs } from "vue";
 const router = useRouter();
@@ -90,6 +90,7 @@ export default {
   name: "ProjectViewCard",
   components: {
     iconApartmentOutlined: ApartmentOutlined,
+    DeleteOutlined
   },
   props: {
     id: {
