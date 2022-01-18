@@ -12,16 +12,16 @@
           </a-col>
 
           <a-col :span="8">
-            <a-form-item label="任务名称">
+            <a-form-item label="作业名称">
               <a-input
-                v-model:value="formState.taskName"
+                v-model:value="formState.jobName"
                 placeholder="请输入"
               />
             </a-form-item>
           </a-col>
 
           <a-col :span="8">
-            <a-form-item label="任务状态">
+            <a-form-item label="作业状态">
               <a-select
                 v-model:value="formState.status"
                 placeholder="请选择任务状态"
@@ -36,7 +36,7 @@
 
         <a-row :gutter="24">
           <a-col :span="8">
-            <a-form-item label="触发时间">
+            <a-form-item label="开始时间">
               <a-range-picker
                 v-model:value="formState.time"
                 show-time
@@ -71,8 +71,6 @@
           @change="onChange"
         >
           <template #operation="{ record }">
-            <a @click="showInfoLog({id: record.id})">详细日志</a>
-            <a-divider type="vertical" />
             <a-popconfirm
               title="确定要删除这条历史吗？"
               ok-text="确定"
@@ -85,6 +83,15 @@
             <a @click="dyncSpeedlimit(record.taskName, record.jobId)"
               >动态限速</a
             >
+          </template>
+          <template #status="{ record }">
+            <span v-if="record.status != 'Running'">{{record.status}}</span>
+            <div class="progress-bg" v-else>
+              <div class="progress-bar" :style="{'width': `${record.progress * 100}%`}"></div>
+            </div>
+          </template>
+          <template #jobId="{ record }">
+            <a @click="showInfoLog(record.jobId)">{{record.jobId}}</a>
           </template>
         </a-table>
         <!-- 分页 -->
@@ -113,27 +120,8 @@
       </a-form>
     </a-modal>
 
-    <!-- 详细日志 弹窗 -->
-    <a-modal
-      v-model:visible="showLogs"
-      title="详细日志"
-      @ok="putSpeedLimit"
-      :footer="null"
-      :width="800"
-    >
-      <a-textarea :auto-size="{ minRows: 10 }" v-bind:value="logs.logs[3]" style="margin-bottom: 60px"></a-textarea>
-      <div class="log-btns">
-        <a-button key="prev" @click="showInfoLog({prev: true})">
-          上一页
-        </a-button>
-        <a-button key="next" @click="showInfoLog({next: true})">
-          下一页
-        </a-button>
-        <a-button key="refresh" type="primary" :loading="loading" @click="showInfoLog({refresh: true})">
-          查看最新日志
-        </a-button>
-      </div>
-    </a-modal>
+    <bottom-log :jobId="jobId" v-if="!!jobId" @onCloseLog="closeInfoLog"></bottom-log>
+
   </div>
 </template>
 
@@ -149,50 +137,53 @@ import {
 import { SearchOutlined } from "@ant-design/icons-vue";
 import { cloneDeep } from "lodash-es";
 import {
-  getSyncHistory,
+  getSyncHistoryJobList,
   delSyncHistory,
   getSpeedLimit,
   saveSpeedLimit,
-  getLogs
 } from "@/common/service";
 import { message } from "ant-design-vue";
 import { dateFormat } from "@/common/utils";
+import bottomLog from '../jobManagement/components/bottomLog';
+
 const columns = [
   {
-    title: "ID",
-    dataIndex: "id",
+    title: "执行ID",
+    dataIndex: "jobId",
+    slots: {
+      customRender: "jobId",
+    },
   },
-  // {
-  //   title: "执行节点",
-  //   dataIndex: "age",
-  // },
   {
-    title: "任务名称",
-    dataIndex: "taskName",
+    title: "执行节点",
+    dataIndex: "executeNode",
   },
-  // {
-  //   title: "触发类型",
-  //   dataIndex: "address",
-  // },
   {
-    title: "触发时间",
-    dataIndex: "launchTime",
+    title: "作业名称",
+    dataIndex: "name",
   },
-  // {
-  //   title: "速率（M/s）",
-  //   dataIndex: "address",
-  // },
   {
-    title: "创建用户",
-    dataIndex: "createUser",
+    title: "创建时间",
+    dataIndex: "createTime",
+  },
+  {
+    title: "速率",
+    dataIndex: "flow",
+  },
+  {
+    title: "提交用户",
+    dataIndex: "executeUser",
   },
   {
     title: "状态",
     dataIndex: "status",
+    slots: {
+      customRender: "status",
+    },
   },
   {
-    title: "完成时间",
-    dataIndex: "completeTime",
+    title: "最后更新时间",
+    dataIndex: "lastUpdateTime",
   },
   // {
   //   title: "参数",
@@ -213,17 +204,19 @@ export default {
     dyncRender: defineAsyncComponent(() =>
       import("../jobManagement/components/dyncRender.vue")
     ),
+    bottomLog
   },
   setup() {
     const state = reactive({
       formState: {
         jobId: "",
-        taskName: "",
+        jobName: "",
         status: "",
         time: [],
       },
     });
     const visibleSpeedLimit = ref(false);
+    const jobId = ref('');
     const showLogs = ref(false)
     const logs = reactive({
       logs: ['','','','']
@@ -261,13 +254,13 @@ export default {
       formData["size"] = pageSize;
       delete formData.time;
 
-      getSyncHistory(formData)
+      getSyncHistoryJobList(formData)
         .then((res) => {
-          const { result } = res;
-          if (result.length > 0) {
-            result.forEach((item) => {
-              item["launchTime"] = item["launchTime"] ? dateFormat(item["launchTime"]) : '';
-              item["completeTime"] = item["completeTime"] ? dateFormat(item["completeTime"]): '';
+          const { jobList } = res;
+          if (jobList.length > 0) {
+            jobList.forEach((item) => {
+              item["createTime"] = item["createTime"] ? dateFormat(item["createTime"]) : '';
+              item["lastUpdateTime"] = item["lastUpdateTime"] ? dateFormat(item["lastUpdateTime"]): '';
               switch (item["status"]) {
                 case "SUCCESS":
                   item["status"] = "执行成功";
@@ -278,13 +271,13 @@ export default {
                 case "RUNNING":
                   item["status"] = "运行中";
               }
-              item["key"] = item["id"];
+              item["key"] = item["jobId"];
             });
             if (type == "search") {
               tableData.value = [];
             }
             pagination.value.total = res["total"];
-            tableData.value = tableData.value.concat(result);
+            tableData.value = tableData.value.concat(jobList);
           }
         })
         .catch((err) => {
@@ -308,36 +301,14 @@ export default {
       getTableFormCurrent(current, "onChange");
     };
 
-    const showInfoLog = (params) => {
-      let fromLine = 1
-      if (params.prev) {
-        if (!logs.endLine || logs.endLine < 11) {
-          return message.warning("已经在第一页")
-        }
-        fromLine = logs.endLine - 10
-      }
-      if (params.next) {
-        if (logs.isEnd) {
-          return message.warning("已经在最后一页")
-        }
-        fromLine = logs.endLine
-      }
-      getLogs({
-        taskID: params.id || logs.id,
-        fromLine: fromLine
-      })
-        .then((res) => {
-          logs.logs = res.logs
-          logs.endLine = res.endLine
-          logs.isEnd = res.isEnd
-          logs.id = res.execID
-          showLogs.value = true
-          message.success("更新日志成功");
-        })
-        .catch((err) => {
-          message.error("更新日志失败");
-        });
+    const showInfoLog = (id) => {
+      jobId.value = id
+      showLogs.value = true
     };
+
+    const closeInfoLog = () => {
+      jobId.value = null
+    }
 
     const onConfirmDel = (id) => {
       let tmp, idx;
@@ -407,6 +378,7 @@ export default {
       tableData,
       pagination,
       showInfoLog,
+      closeInfoLog,
       dyncSpeedlimit,
       onChange,
       onConfirmDel,
@@ -414,6 +386,7 @@ export default {
       visibleSpeedLimit,
       showLogs,
       logs,
+      jobId,
       updateSpeedLimitData,
       putSpeedLimit,
       labelCol: {
@@ -462,6 +435,19 @@ export default {
   float: right;
   >button {
     margin-left: 10px;
+  }
+}
+.progress-bg {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+  vertical-align: middle;
+  background-color: #c9c9c9;
+  .progress-bar {
+    position: relative;
+    height: 12px;
+    background: #52c41a;
   }
 }
 </style>
