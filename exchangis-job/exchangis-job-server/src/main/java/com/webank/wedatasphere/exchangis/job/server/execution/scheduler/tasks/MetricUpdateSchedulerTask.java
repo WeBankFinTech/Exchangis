@@ -8,11 +8,15 @@ import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbala
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbalance.LoadBalancePoller;
 import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.scheduler.queue.JobInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Metric update scheduler task
  */
 public class MetricUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MetricUpdateSchedulerTask.class);
 
     private static final CommonVars<Long> METRIC_UPDATE_INTERVAL = CommonVars.apply("wds.exchangis.job.scheduler.task.metric.update.interval-in-millis", 3000L);
 
@@ -24,7 +28,8 @@ public class MetricUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
 
     @Override
     protected void onPoll(LaunchedExchangisTask launchedExchangisTask) throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
-        launchedExchangisTask.callMetricsUpdate();
+        LOG.info("Metrics update task: [" + launchedExchangisTask.getId() + "]");
+//        launchedExchangisTask.callMetricsUpdate();
     }
 
     @Override

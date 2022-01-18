@@ -47,6 +47,8 @@ public interface TaskObserver<T extends ExchangisTask> extends SchedulerThread {
 
     void setTaskManager(TaskManager<T> taskManager);
 
-    TaskExecution getTaskExecution();
+    void setTaskExecution(TaskExecution<T> execution);
+
+    TaskExecution<T> getTaskExecution();
 
 }
