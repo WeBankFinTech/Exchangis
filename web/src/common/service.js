@@ -233,6 +233,12 @@ export const getSyncHistory = (body) => {
     method: "GET",
   });
 };
+// 新版同步历史-获取job列表
+export const getSyncHistoryJobList = (body) => {
+  return request("/job/execution/listJob", body, {
+    method: "GET",
+  });
+};
 // 删除同步历史
 export const delSyncHistory = (taskId) => {
   return request(`/tasks/${taskId}`, null, {
