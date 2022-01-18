@@ -6,6 +6,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution.generator;
 
 import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
 
@@ -17,13 +18,19 @@ public interface TaskGenerator<T extends ExchangisJob> {
     void init() throws ExchangisJobException;
 
     /**
-     * Generate exchangis job
+     * Init the job info to suitable input
+     * @param jobInfo
+     * @return
+     */
+    T init(ExchangisJobInfo jobInfo);
+    /**
+     * Generate exchangis job (has tasks)
      * @param exchangisJob job extends ExchangisJob
-     * @param execUser exec user
+     * @param tenancy act as exec user
      * @return job has been handled
      * @throws ExchangisTaskGenerateException exception in generating
      */
-    T generate(T exchangisJob, String execUser) throws ExchangisTaskGenerateException;
+    T generate(T exchangisJob, String tenancy) throws ExchangisTaskGenerateException;
 
     T generate(T exchangisJob) throws ExchangisTaskGenerateException;
     /**

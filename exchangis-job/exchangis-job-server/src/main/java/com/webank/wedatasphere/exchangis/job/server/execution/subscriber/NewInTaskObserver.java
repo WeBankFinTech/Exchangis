@@ -4,7 +4,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangis
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.SubmitSchedulerTaskAbstract;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.SubmitSchedulerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -24,6 +24,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
 
     @Override
     protected List<LaunchableExchangisTask> onPublishNext(int batchSize){
+        LOG.info("Get the launchable task from launchable task inner join launched task");
         // TODO get the launchable task from launchable task inner join launched task
         return null;
     }
@@ -40,12 +41,12 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
             LaunchableExchangisTask launchableExchangisTask = iterator.next();
             if (Objects.nonNull(launchableExchangisTask)){
                 try {
-                    SubmitSchedulerTaskAbstract submitSchedulerTask = new SubmitSchedulerTaskAbstract(launchableExchangisTask,
+                    SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(launchableExchangisTask,
                             () -> {
                                 LaunchedExchangisTask launchedTask = new LaunchedExchangisTask(launchableExchangisTask);
                                 // TODO check the status of launchedTask
                                 // TODO insert or update launched task, status as TaskStatus.Scheduler
-                                return false;
+                                return true;
                     });
                     try {
                         taskExecution.submit(submitSchedulerTask);

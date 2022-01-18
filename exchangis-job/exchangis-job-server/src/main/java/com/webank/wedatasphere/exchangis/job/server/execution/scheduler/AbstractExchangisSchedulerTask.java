@@ -3,8 +3,12 @@ package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.scheduler.executer.CompletedExecuteResponse;
+import org.apache.linkis.scheduler.executer.ErrorExecuteResponse;
 import org.apache.linkis.scheduler.executer.ExecuteRequest;
 import org.apache.linkis.scheduler.queue.Job;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -12,6 +16,8 @@ import java.io.IOException;
  * Inheritable scheduler task for exchangis, different from ExchangisTask
  */
 public abstract class AbstractExchangisSchedulerTask extends Job implements ExchangisSchedulerTask{
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractExchangisSchedulerTask.class);
 
     public static final int MAX_RETRY_NUM = 3;
 
@@ -86,6 +92,15 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
                 // Need to throw again
                 throw e;
             }
+        }
+    }
+
+    @Override
+    public void transitionCompleted(CompletedExecuteResponse executeCompleted) {
+        super.transitionCompleted(executeCompleted);
+        if (executeCompleted instanceof ErrorExecuteResponse){
+            ErrorExecuteResponse response = ((ErrorExecuteResponse)executeCompleted);
+            LOG.error("Schedule Error: " + response.message(), response.t());
         }
     }
 

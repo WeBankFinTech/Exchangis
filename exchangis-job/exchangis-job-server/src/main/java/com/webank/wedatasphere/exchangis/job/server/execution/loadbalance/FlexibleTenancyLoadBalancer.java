@@ -104,7 +104,7 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
     private LoadBalanceSchedulerTask<LaunchedExchangisTask> createLoadBalanceSchedulerTask(Class<?> schedulerTaskClass){
         Constructor<?>[] constructors = schedulerTaskClass.getDeclaredConstructors();
         if (constructors.length <= 0){
-            throw new ExchangisTaskExecuteException.Runtime("Cannot find any constructors from load balance scheduler task: " + schedulerTaskClass.getSimpleName(), null);
+            throw new ExchangisTaskExecuteException.Runtime("Cannot find any constructors from load balance scheduler task: [" + schedulerTaskClass.getSimpleName() + "]", null);
         }
         // Use the first one constructor
         Constructor<?> constructor = constructors[0];
@@ -152,6 +152,12 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                     LOG.info("Receive the interrupt signal from shutdown operation");
                 } else {
                     LOG.warn("Unknown exception in scale-in/out segments of load balance scheduler task", e);
+                }
+                try {
+                    // Enforce to sleep
+                    Thread.sleep(Constraints.SCHEDULE_INTERVAL.getValue());
+                } catch (InterruptedException ex) {
+                    //Ignore
                 }
             }
         }
@@ -225,7 +231,7 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                 }
             }
         });
-        LOG.trace("Start to auto scale-in/out segments of load balance scheduler task");
+        LOG.trace("End to auto scale-in/out segments of load balance scheduler task");
     }
     @Override
     public void stop() {
@@ -399,13 +405,4 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
         }
     }
 
-    public static void main(String[] args){
-        FlexibleTenancyLoadBalancer flexibleTenancyLoadBalancer = new FlexibleTenancyLoadBalancer(new ExchangisGenericScheduler(new ExchangisSchedulerExecutorManager(), new TenancyParallelConsumerManager()), new DefaultTaskManager(new TaskExecutionListener() {
-            @Override
-            public void onEvent(TaskExecutionEvent taskExecutionEvent) throws ExchangisOnEventException {
-                System.out.println("hello world");
-            }
-        }));
-        flexibleTenancyLoadBalancer.createLoadBalanceSchedulerTask(MetricUpdateSchedulerTask.class);
-    }
 }

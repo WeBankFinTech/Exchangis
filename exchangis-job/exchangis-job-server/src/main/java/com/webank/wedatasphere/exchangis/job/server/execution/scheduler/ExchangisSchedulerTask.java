@@ -14,4 +14,5 @@ public interface ExchangisSchedulerTask extends SchedulerEvent {
     String getTenancy();
 
     void setTenancy(String tenancy);
+
 }

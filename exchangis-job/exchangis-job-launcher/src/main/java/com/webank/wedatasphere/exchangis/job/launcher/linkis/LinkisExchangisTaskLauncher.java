@@ -4,9 +4,11 @@ import com.google.gson.*;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobConfiguration;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
 import org.apache.linkis.common.conf.Configuration;
 import org.apache.linkis.computation.client.LinkisJobBuilder;
 import org.apache.linkis.computation.client.LinkisJobClient;
@@ -15,7 +17,7 @@ import org.apache.linkis.computation.client.utils.LabelKeyUtils;
 
 import java.util.*;
 
-public class LinkisExchangisTaskLanuncher implements ExchangisTaskLauncher<LaunchableExchangisTask> {
+public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<LaunchableExchangisTask> {
 
     @Override
     public String name() {
@@ -23,59 +25,60 @@ public class LinkisExchangisTaskLanuncher implements ExchangisTaskLauncher<Launc
     }
 
     @Override
-    public void init(ExchangisJobLaunchManager<? extends LaunchableExchangisTask> jobLaunchManager) {
+    public void init(ExchangisTaskLaunchManager jobLaunchManager) {
         LinkisJobClient.config().setDefaultServerUrl(ExchangisJobConfiguration.LINKIS_SERVER_URL.getValue());
     }
 
     @Override
-    public SubmittableSimpleOnceJob launch(LaunchableExchangisTask launcherJob) throws ExchangisJobException {
+    public LaunchedExchangisTask launch(LaunchableExchangisTask launchableTask) throws ExchangisJobException {
 
-        Date createTime = Calendar.getInstance().getTime();
-
-        SubmittableSimpleOnceJob onceJob = null;
-
-        if (launcherJob.getEngineType().equalsIgnoreCase("SQOOP")) {
-            onceJob = this.submitSqoopJob(launcherJob);
-        } else if (launcherJob.getEngineType().equalsIgnoreCase("DATAX")) {
-            onceJob = this.submitDataxJob(launcherJob);
+        SubmittableSimpleOnceJob onceJob;
+        String engineType = launchableTask.getEngineType();
+        if ("SQOOP".equalsIgnoreCase(engineType)) {
+            onceJob = this.submitSqoopJob(launchableTask);
+        } else if ("DATAX".equalsIgnoreCase(engineType)) {
+            onceJob = this.submitDataxJob(launchableTask);
         } else {
-            throw new ExchangisJobException(ExchangisJobExceptionCode.UNSUPPORTED_JOB_EXECUTION_ENGINE.getCode(), "Unsupported job execution engine: '" + launcherJob.getEngineType() + "'.");
+            throw new ExchangisJobException(ExchangisJobExceptionCode.UNSUPPORTED_JOB_EXECUTION_ENGINE.getCode(), "Unsupported job execution engine: '" + launchableTask.getEngineType() + "'.");
         }
-        onceJob.kill();
-        return onceJob;
+        SubmittableSimpleOnceJob finalOnceJob = onceJob;
+        LaunchedExchangisTask launchedExchangisTask =  new LaunchedExchangisTask(launchableTask) {
+            @Override
+            public Map<String, Object> callMetricsUpdate() {
+                return super.callMetricsUpdate();
+            }
 
-//        LinkisJobClient.config().setDefaultServerUrl(ExchangisJobConfiguration.LINKIS_SERVER_URL.getValue());
-//        SubmittableInteractiveJob job =
-//            LinkisJobClient.interactive().builder().setEngineType(launchTask.getEngineType())
-//                .setRunTypeStr(launchTask.getRunType()).setCreator(launchTask.getCreator())
-//                .setCode(launchTask.getCode()).addExecuteUser(launchTask.getExecuteUser()).build();
-//        // 3. Submit Job to Linkis
-//        job.submit();
-//        // 4. Wait for Job completed
-//        job.waitForCompleted();
-//        // 5. Get results from iterators.
-//        ResultSetIterator iterator = job.getResultSetIterables()[0].iterator();
-//        System.out.println(iterator.getMetadata());
-//        while (iterator.hasNext()) {
-//            System.out.println(iterator.next());
-//        }
+            @Override
+            public TaskStatus callStatusUpdate() {
+                return super.callStatusUpdate();
+            }
+
+            @Override
+            public void kill() {
+                finalOnceJob.kill();
+            }
+        };
+        launchedExchangisTask.setLinkisJobId(finalOnceJob.getId());
+        // Store linkis info (ECMServiceInstance,EngineConnType)
+        launchedExchangisTask.setLinkisJobInfoMap(new HashMap<>());
+        return launchedExchangisTask;
     }
 
-    private SubmittableSimpleOnceJob submitSqoopJob(LaunchableExchangisTask launcherJob) {
+    private SubmittableSimpleOnceJob submitSqoopJob(LaunchableExchangisTask launchableTask) {
         LinkisJobBuilder<SubmittableSimpleOnceJob> jobBuilder = LinkisJobClient.once().simple().builder()
                 .setCreateService("Sqoop")
                 .setMaxSubmitTime(300000)
                 .addLabel(LabelKeyUtils.ENGINE_TYPE_LABEL_KEY(), "sqoop-1.4.7")
-                .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), launcherJob.getExecuteUser() + "-sqoop")
+                .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), launchableTask.getExecuteUser() + "-sqoop")
                 .addLabel(LabelKeyUtils.ENGINE_CONN_MODE_LABEL_KEY(), "once")
                 .addStartupParam(Configuration.IS_TEST_MODE().key(), false)
-                .addExecuteUser(launcherJob.getExecuteUser())
+                .addExecuteUser(launchableTask.getExecuteUser())
                 .addJobContent("runType", "sqoop")
-                .addJobContent("sqoop-params", launcherJob.getLinkisContentMap().get("sqoop-params"));
+                .addJobContent("sqoop-params", launchableTask.getLinkisContentMap().get("sqoop-params"));
                 //TODO getTaskName
 //                .addSource("jobName", launcherJob.getName() + "." + launcherJob.getTaskName());
 
-        Optional.ofNullable(launcherJob.getLinkisParamsMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
+        Optional.ofNullable(launchableTask.getLinkisParamsMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
 
         SubmittableSimpleOnceJob onceJob = jobBuilder.build();
 
@@ -84,9 +87,9 @@ public class LinkisExchangisTaskLanuncher implements ExchangisTaskLauncher<Launc
         return onceJob;
     }
 
-    private SubmittableSimpleOnceJob submitDataxJob(LaunchableExchangisTask launcherJob) {
+    private SubmittableSimpleOnceJob submitDataxJob(LaunchableExchangisTask launchableTask) {
 
-        Map<String, Object> jobContent = launcherJob.getLinkisContentMap();
+        Map<String, Object> jobContent = launchableTask.getLinkisContentMap();
 
         JsonElement code = new JsonParser().parse(jobContent.get("code").toString());
 
@@ -105,16 +108,16 @@ public class LinkisExchangisTaskLanuncher implements ExchangisTaskLauncher<Launc
         LinkisJobBuilder<SubmittableSimpleOnceJob> jobBuilder = LinkisJobClient.once().simple().builder().setDescription(new Gson().toJson(rwMaps)).setCreateService("DataX")
                 .setMaxSubmitTime(300000)
                 .addLabel(LabelKeyUtils.ENGINE_TYPE_LABEL_KEY(), "datax-3.0.0")
-                .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), launcherJob.getExecuteUser() + "-datax")
+                .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), launchableTask.getExecuteUser() + "-datax")
                 .addLabel(LabelKeyUtils.ENGINE_CONN_MODE_LABEL_KEY(), "once")
                 .addStartupParam(Configuration.IS_TEST_MODE().key(), false)
-                .addExecuteUser(launcherJob.getExecuteUser())
+                .addExecuteUser(launchableTask.getExecuteUser())
                 .addJobContent("runType", "appconn")
                 .addJobContent("code", job.toString());
                 //TODO getTaskName
 //                .addSource("jobName", launcherJob.getName() + "." + launcherJob.getTaskName());
 
-        Optional.ofNullable(launcherJob.getLinkisParamsMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
+        Optional.ofNullable(launchableTask.getLinkisParamsMap()).ifPresent(rm -> rm.forEach(jobBuilder::addRuntimeParam));
 
         SubmittableSimpleOnceJob onceJob = jobBuilder.build();
 

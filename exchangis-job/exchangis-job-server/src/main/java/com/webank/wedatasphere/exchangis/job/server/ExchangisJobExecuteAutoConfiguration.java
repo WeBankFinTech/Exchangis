@@ -29,7 +29,7 @@ public class ExchangisJobExecuteAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ExecutorManager.class)
+    @ConditionalOnMissingBean(ConsumerManager.class)
     public ConsumerManager consumerManager(){
         return new TenancyParallelConsumerManager();
     }
@@ -49,7 +49,7 @@ public class ExchangisJobExecuteAutoConfiguration {
     @Bean(initMethod = "init")
     @ConditionalOnMissingBean(TaskGenerator.class)
     public AbstractTaskGenerator taskGenerator(TaskGeneratorContext taskGeneratorContext, ExchangisJobBuilderManager jobBuilderManager){
-        return new DefaultAsyncTaskGenerator(taskGeneratorContext, jobBuilderManager);
+        return new DefaultTaskGenerator(taskGeneratorContext, jobBuilderManager, null);
     }
 
 
