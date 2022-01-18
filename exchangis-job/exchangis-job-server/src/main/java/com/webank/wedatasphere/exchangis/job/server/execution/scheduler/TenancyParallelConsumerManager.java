@@ -55,7 +55,7 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
                 if (group instanceof FIFOGroup){
                     defaultExecutorService = Utils.newCachedThreadPool(((FIFOGroup) group).getMaxRunningJobs() +
                             this.initResidentThreads + 1,
-                            group.getGroupName() + TenancyParallelGroupFactory.DEFAULT_TENANCY + "-Executor-", true);
+                            TenancyParallelGroupFactory.GROUP_NAME_PREFIX + TenancyParallelGroupFactory.DEFAULT_TENANCY + "-Executor-", true);
                     tenancyExecutorServices.put(TenancyParallelGroupFactory.DEFAULT_TENANCY, defaultExecutorService);
                 } else {
                     throw new ExchangisSchedulerException.Runtime("Cannot construct the executor service " +

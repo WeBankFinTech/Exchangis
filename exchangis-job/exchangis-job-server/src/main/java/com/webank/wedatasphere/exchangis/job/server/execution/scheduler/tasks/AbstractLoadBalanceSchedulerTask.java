@@ -48,8 +48,7 @@ public abstract class AbstractLoadBalanceSchedulerTask<T> extends AbstractExchan
                         try {
                             onPoll(pollElement);
                         } catch (Exception e) {
-                            throw new ExchangisSchedulerException
-                                    .Runtime("Error occurred in onPoll in load balance scheduler task [{}]", e);
+                            LOG.warn("Error occurred in onPoll in load balance scheduler task [{}]", getName(), e);
                         }
                     });
                     for( T pollElement : elements){
@@ -57,7 +56,7 @@ public abstract class AbstractLoadBalanceSchedulerTask<T> extends AbstractExchan
                             rePushWithBalancer(pollElement, this.schedulerLoadBalancer);
                         } catch (Exception e) {
                             throw new ExchangisSchedulerException.Runtime(
-                                    "Error occurred in rePush in load balance scheduler task [{}]", e);
+                                    "Error occurred in rePush in load balance scheduler task [" + getName() + "]", e);
                         }
                     }
                 });

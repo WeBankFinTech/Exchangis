@@ -24,7 +24,7 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskObserver.class);
 
-    private static final int DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL = 5000;
+    private static final int DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL = 30000;
 
     private static final int DEFAULT_TASK_OBSERVER_PUBLISH_BATCH = 50;
 
@@ -51,9 +51,9 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
 
     private Future<?> observerFuture;
 
-    protected int publishBatch = DEFAULT_TASK_OBSERVER_PUBLISH_BATCH;
+    protected int publishBatch;
 
-    protected int publishInterval = DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL;
+    protected int publishInterval;
 
     protected long lastPublishTime = -1;
 
@@ -108,6 +108,12 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
                     LOG.warn("Observer exception in progress paragraph: [{}]",((ExchangisTaskObserverException)e).getMethodName(), e);
                 }
                 LOG.warn("Unknown exception happened in observing thread", e);
+                // Enforce to sleep
+                try {
+                    Thread.sleep(publishInterval);
+                } catch (InterruptedException ex) {
+                    //Ignore
+                }
             }
         }
         LOG.info("Thread: [ {} ] is stopped. ", Thread.currentThread().getName());
@@ -204,6 +210,11 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     @Override
     public void setTaskManager(TaskManager<T> taskManager) {
         this.taskManager = taskManager;
+    }
+
+    @Override
+    public void setTaskExecution(TaskExecution<T> taskExecution) {
+        this.taskExecution = taskExecution;
     }
 
     @Override

@@ -8,9 +8,14 @@ import org.springframework.stereotype.Component;
  */
 public class DefaultTaskGeneratorContext implements TaskGeneratorContext {
 
+    private ExchangisJobLogListener jobLogListener;
+
+    public DefaultTaskGeneratorContext(ExchangisJobLogListener jobLogListener){
+        this.jobLogListener = jobLogListener;
+    }
 
     @Override
     public ExchangisJobLogListener gtJobLogListener() {
-        return null;
+        return this.jobLogListener;
     }
 }

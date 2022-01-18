@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisJobLaunchManager;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import org.springframework.stereotype.Component;
@@ -11,29 +11,30 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class LinkisExchangisJobLaunchManager implements ExchangisJobLaunchManager<LaunchableExchangisTask> {
+public class LinkisExchangisTaskLaunchManager implements ExchangisTaskLaunchManager {
 
     private final Map<String, ExchangisTaskLauncher<LaunchableExchangisTask>> launchers = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
-        LinkisExchangisTaskLanuncher linkisExchangisJobLanuncher = new LinkisExchangisTaskLanuncher();
-        linkisExchangisJobLanuncher.init(this);
-        this.registerJobLauncher(linkisExchangisJobLanuncher);
+        LinkisExchangisTaskLauncher linkisExchangisJobLauncher = new LinkisExchangisTaskLauncher();
+        linkisExchangisJobLauncher.init(this);
+        this.registerTaskLauncher(linkisExchangisJobLauncher);
+    }
+
+
+    @Override
+    public void registerTaskLauncher(ExchangisTaskLauncher<LaunchableExchangisTask> taskLauncher) {
+        this.launchers.put(taskLauncher.name().toUpperCase(Locale.ROOT), taskLauncher);
     }
 
     @Override
-    public void registerJobLauncher(ExchangisTaskLauncher<LaunchableExchangisTask> jobLauncher) {
-        this.launchers.put(jobLauncher.name().toUpperCase(Locale.ROOT), jobLauncher);
-    }
-
-    @Override
-    public void unRgisterJobLauncher(String launcherName) {
+    public void unRegisterTaskLauncher(String launcherName) {
         this.launchers.remove(launcherName.toUpperCase(Locale.ROOT));
     }
 
     @Override
-    public ExchangisTaskLauncher<LaunchableExchangisTask> getJoblauncher(String launcherName) {
+    public ExchangisTaskLauncher<LaunchableExchangisTask> getTaskLauncher(String launcherName) {
         return this.launchers.get(launcherName.toUpperCase(Locale.ROOT));
     }
 }
