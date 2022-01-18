@@ -68,7 +68,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                 inputJob.getName(), inputJob.getId(), inputJob.getEngineType(), inputJob.getJobContent());
         //First to convert content to "ExchangisJobInfoContent"
         TransformExchangisJob outputJob = new TransformExchangisJob();
-        outputJob.setCreateUser(Optional.ofNullable(ctx.getEnv("USER_NAME")).orElse("").toString());
+        outputJob.setCreateUser(Optional.ofNullable(inputJob.getExecuteUser()).orElse(String.valueOf(ctx.getEnv("USER_NAME"))));
         try {
             if (StringUtils.isNotBlank(inputJob.getJobContent())) {
                 //First to convert content to "ExchangisJobInfoContent"

@@ -32,7 +32,7 @@ public class GenerationSchedulerTask extends AbstractExchangisSchedulerTask {
     @Override
     protected void schedule() throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
         try {
-            generatorFunction.apply(launchableExchangisJob, ctx);
+            generatorFunction.apply(launchableExchangisJob, ctx, getTenancy());
         } catch (Exception e) {
             String errorMessage = "Exception in generating launchable job: [ name: " + launchableExchangisJob.getExchangisJobInfo().getName() +
                     ", job_execution_id: " + launchableExchangisJob.getJobExecutionId() + "]";

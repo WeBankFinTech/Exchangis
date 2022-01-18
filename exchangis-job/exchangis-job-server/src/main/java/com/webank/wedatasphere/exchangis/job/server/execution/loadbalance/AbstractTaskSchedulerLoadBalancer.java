@@ -44,6 +44,7 @@ public abstract class AbstractTaskSchedulerLoadBalancer implements TaskScheduler
     @Override
     public void registerSchedulerTask(Class<?> schedulerTaskClass){
         if(isSuitableClass(schedulerTaskClass)){
+            LOG.info("Register the load balance scheduler class: [{}]", schedulerTaskClass.getName());
             registeredTaskClasses.add(schedulerTaskClass);
         }
     }

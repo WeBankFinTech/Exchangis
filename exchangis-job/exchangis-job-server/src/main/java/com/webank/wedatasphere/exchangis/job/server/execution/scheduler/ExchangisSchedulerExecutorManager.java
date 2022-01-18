@@ -48,7 +48,7 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
     @Override
     public Option<Executor> askExecutor(SchedulerEvent event, Duration wait) {
-        return null;
+        return askExecutor(event);
     }
 
     @Override
@@ -98,18 +98,18 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
         @Override
         public Executor getOrCreateExecutor(SchedulerEvent event) {
-            String canonicalName = event.getClass().getCanonicalName();
+            String name = event.getClass().getName();
             if (isSingleton){
-                return singletonExecutorHolder.computeIfAbsent(canonicalName, this::createExecutorInternal);
+                return singletonExecutorHolder.computeIfAbsent(name, this::createExecutorInternal);
             }
-            return createExecutorInternal(canonicalName);
+            return createExecutorInternal(name);
         }
 
         private Executor createExecutorInternal(String eventName){
             Class<? extends Executor> executorClass = registeredExecutorClass
                     .getOrDefault(eventName, DEFAULT_DIRECT_EXECUTOR);
             try {
-                Constructor<?> constructor = executorClass.getConstructor();
+                Constructor<?> constructor = executorClass.getDeclaredConstructor();
                 Executor executor = (Executor)constructor.newInstance();
                 if (executor instanceof FactoryCreateExecutor){
                     ((FactoryCreateExecutor)executor).setSchedulerExecutorFactory(this);
@@ -151,7 +151,7 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
         }
     }
 
-    private static class DefaultDirectExecutor extends FactoryCreateExecutor{
+    public static class DefaultDirectExecutor extends FactoryCreateExecutor{
 
         @Override
         public long getId() {

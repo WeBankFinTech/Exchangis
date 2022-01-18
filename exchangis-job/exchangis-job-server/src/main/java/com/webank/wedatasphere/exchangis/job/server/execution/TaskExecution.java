@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
 
 /**
  * Task execution
@@ -15,12 +15,12 @@ public interface TaskExecution<T extends ExchangisTask> {
      * Submit scheduler task
      * @param schedulerTask scheduler task
      */
-    void submit(AbstractExchangisSchedulerTask schedulerTask) throws ExchangisSchedulerException;
+    void submit(ExchangisSchedulerTask schedulerTask) throws ExchangisSchedulerException;
 
     /**
      * Start execution
      */
-    void start();
+    void start() throws ExchangisTaskExecuteException;
 
     /**
      * Stop execution

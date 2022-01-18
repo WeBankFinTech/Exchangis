@@ -41,7 +41,12 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
     }
 
     @Override
-    public LaunchableExchangisJob generate(LaunchableExchangisJob launchableExchangisJob, String execUser) throws ExchangisTaskGenerateException {
+    public LaunchableExchangisJob init(ExchangisJobInfo jobInfo) {
+        return null;
+    }
+
+    @Override
+    public LaunchableExchangisJob generate(LaunchableExchangisJob launchableExchangisJob, String tenancy) throws ExchangisTaskGenerateException {
         if (Objects.isNull(generatorFunction)){
             this.generatorFunction = generatorFunction();
         }
@@ -56,7 +61,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
         LOG.info("Generate job execution id: [{}] for job: [{}]" , launchableExchangisJob.getJobExecutionId(), launchableExchangisJob.getExchangisJobInfo().getName());
         onEvent(new TaskGenerateInitEvent(launchableExchangisJob));
         try {
-            execute(this.generatorFunction, launchableExchangisJob, getTaskGeneratorContext(), execUser);
+            execute(this.generatorFunction, launchableExchangisJob, getTaskGeneratorContext(), tenancy);
         } catch(ErrorException e){
             if (e instanceof ExchangisTaskGenerateException){
                 throw (ExchangisTaskGenerateException)e;
@@ -108,7 +113,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
         }
     }
     protected GeneratorFunction generatorFunction(){
-        return (launchableExchangisJob, generatorContext) -> {
+        return (launchableExchangisJob, generatorContext, tenancy) -> {
             ExchangisTaskGenerateException throwable = null;
             ExchangisJobInfo jobInfo = launchableExchangisJob.getExchangisJobInfo();
             List<LaunchableExchangisTask> launchableExchangisTasks = new ArrayList<>();
@@ -119,6 +124,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
             }
             ExchangisJobBuilderManager jobBuilderManager = getExchangisJobBuilderManager();
             ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
+            ctx.putEnv("USER_NAME", tenancy);
             // ExchangisJobInfo -> TransformExchangisJob(SubExchangisJob)
             try {
                 TransformExchangisJob transformJob = jobBuilderManager.doBuild(jobInfo, TransformExchangisJob.class, ctx);
@@ -167,6 +173,6 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
          * Apply function
          * @param launchableExchangisJob origin job
          */
-        List<LaunchableExchangisTask> apply(LaunchableExchangisJob launchableExchangisJob, TaskGeneratorContext ctx) throws ExchangisTaskGenerateException;
+        List<LaunchableExchangisTask> apply(LaunchableExchangisJob launchableExchangisJob, TaskGeneratorContext ctx, String tenancy) throws ExchangisTaskGenerateException;
     }
 }

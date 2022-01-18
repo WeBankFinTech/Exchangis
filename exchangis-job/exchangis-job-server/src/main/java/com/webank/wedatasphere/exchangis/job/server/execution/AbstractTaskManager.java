@@ -20,11 +20,8 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
     /**
      * Execution listener
      */
-    private TaskExecutionListener listener;
+    private TaskExecutionListener executionListener;
 
-    public AbstractTaskManager(TaskExecutionListener listener){
-        this.listener = listener;
-    }
     /**
      * Contains the job_execution_id
      */
@@ -68,6 +65,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
 
     @Override
     public void addRunningTask(LaunchedExchangisTask task) {
+        // TODO change to update information
         onEvent(new TaskStatusUpdateEvent(task, TaskStatus.Running));
         if (Objects.isNull(runningTasks.putIfAbsent(task.getTaskId(), task))){
             jobWrappers.compute(task.getJobExecutionId(), (jobExecutionId, jobWrapper) -> {
@@ -113,21 +111,32 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
     public boolean refreshRunningTaskStatus(LaunchedExchangisTask task, TaskStatus status) {
         if (TaskStatus.isCompleted(status)){
             onEvent(new TaskStatusUpdateEvent(task, status));
-        }
-        task = runningTasks.computeIfPresent(task.getTaskId(), (taskId, runningTask) -> {
-            runningTask.setStatus(status);
-            return runningTask;
-        });
-        if (Objects.nonNull(task)) {
-            onEvent(new TaskStatusUpdateEvent(task, status));
+            removeRunningTask(task.getTaskId());
             return true;
+        } else {
+            task = runningTasks.computeIfPresent(task.getTaskId(), (taskId, runningTask) -> {
+                runningTask.setStatus(status);
+                return runningTask;
+            });
+            if (Objects.nonNull(task)) {
+                onEvent(new TaskStatusUpdateEvent(task, status));
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     @Override
     public LaunchedExchangisTask getRunningTask(String taskId) {
         return runningTasks.get(taskId);
+    }
+
+    public TaskExecutionListener getExecutionListener() {
+        return executionListener;
+    }
+
+    public void setExecutionListener(TaskExecutionListener executionListener) {
+        this.executionListener = executionListener;
     }
 
     /**
@@ -136,7 +145,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
      */
     private void onEvent(TaskExecutionEvent event){
         try {
-            listener.onEvent(event);
+            executionListener.onEvent(event);
         } catch (Exception e) {
             throw new ExchangisTaskExecuteException.Runtime("Fail to call 'onEvent' event: [id: " + event.eventId() +", type:" + event.getClass().getSimpleName() +"]", e);
         }
