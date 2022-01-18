@@ -791,7 +791,7 @@ export default {
 
       return res;
     },
-    saveAll() {
+    saveAll(cb) {
       let saveContent = [],
         data = toRaw(this.jobData);
       const tips = this.checkPostData(data);
@@ -867,8 +867,9 @@ export default {
         saveContent.push(cur);
       }
       saveProject(this.jobData.id, {
-        content: JSON.stringify(saveContent),
+        content: JSON.stringify(saveContent)
       }).then((res) => {
+        cb && cb()
         message.success("保存成功");
       });
     },
@@ -900,19 +901,21 @@ export default {
     },
     // 执行任务
     executeTask() {
-      const { id } = this.curTab;
-      this.tasklist = []
-      this.spinning = true
-      executeJob(id)
-        .then((res) => {
-          this.jobExecutionId = res.jobExecutionId
-          this.getStatus(res.jobExecutionId)
-        })
-        .catch((err) => {
-          console.log(err)
-          this.spinning = false
-          message.error("执行失败")
-        });
+      this.saveAll(() => {
+        const { id } = this.curTab;
+        this.tasklist = []
+        this.spinning = true
+        executeJob(id)
+          .then((res) => {
+            this.jobExecutionId = res.jobExecutionId
+            this.getStatus(res.jobExecutionId)
+          })
+          .catch((err) => {
+            console.log(err)
+            this.spinning = false
+            message.error("执行失败")
+          });
+      })
     },
     killTask() {
       if (!this.jobStatus) {
@@ -1054,6 +1057,8 @@ export default {
       this.visibleDrawer = false;
     },
     onCloseLog() {
+      //clearInterval(this.jobStatusTimer)
+      clearInterval(this.progressTimer)
       this.visibleLog = false;
     }
   },
