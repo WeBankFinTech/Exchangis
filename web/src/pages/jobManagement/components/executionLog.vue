@@ -82,7 +82,7 @@ export default defineComponent({
     _updateInfo()
 
     const _showInfoLog = (curId) => {
-      const pageSize = logs.endLine ?  logs.endLine + 10 : 10
+      const fromLine = logs.endLine ?  logs.endLine + 1 : 0
       if (logs.isEnd) {
         clearInterval(showLogTimer)
         showLogTimer = null
@@ -92,10 +92,10 @@ export default defineComponent({
         logs.logs = res.logs
         logs.isEnd = res.isEnd
         logs.endLine = res.endLine
-        curLog.all = logs.logs?.all
-        curLog.error = logs.logs?.error
-        curLog.info = logs.logs?.info
-        curLog.warn = logs.logs?.warn
+        curLog.all = curLog.all ? curLog.all + logs.logs?.all :  logs.logs?.all
+        curLog.error = curLog.error ? curLog.error + logs.logs?.error : logs.logs?.error
+        curLog.info = curLog.info ? curLog.info + logs.logs?.info : logs.logs?.info
+        curLog.warn = curLog.warn ? curLog.warn + logs.logs?.warn : logs.logs?.warn
         //message.success("更新日志成功")
         nextTick(() => {
           const textareas = document.querySelectorAll('.exec-content textarea')
@@ -107,7 +107,7 @@ export default defineComponent({
       if (curId === id) {
         getJobExecLog({
           id: curId,
-          pageSize,
+          fromLine,
           onlyKeywords: searchKeyword,
           ignoreKeywords: ignoreKeyword
         })
@@ -122,7 +122,7 @@ export default defineComponent({
         getTaskExecLog({
           taskId: curId,
           id: id,
-          pageSize,
+          fromLine,
           onlyKeywords: searchKeyword,
           ignoreKeywords: ignoreKeyword
         })
