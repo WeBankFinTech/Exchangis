@@ -257,33 +257,6 @@ export default {
       getSyncHistoryJobList(formData)
         .then((res) => {
           const { jobList } = res;
-          // const jobList = [
-          //     {
-          //         "jobId": 23,
-          //         "executeNode": "EMCM1",
-          //         "name": "作业1",
-          //         "createTime": 1642382015882,
-          //         "flow": 555,
-          //         "executeUser": "enjoyyin",
-          //         "status": "Succeed",
-          //         "progress": 1.0,
-          //         "lastUpdateTime": 1642382015882,
-          //         "completeTime": 1642382015882
-          //     },
-          //     {
-          //         "jobId": 33,
-          //         "executeNode": "EMCM2",
-          //         "name": "作业2",
-          //         "createTime": 1642382015882,
-          //         "flow": 666,
-          //         "executeUser": "tikazhang",
-          //         "status": "Running",
-          //         "progress": 0.1,
-          //         "lastUpdateTime": 1642382015882,
-          //         "completeTime": 1642382015882
-          //     }
-          // ]
-
           if (jobList.length > 0) {
             jobList.forEach((item) => {
               item["createTime"] = item["createTime"] ? dateFormat(item["createTime"]) : '';
@@ -304,7 +277,6 @@ export default {
               tableData.value = [];
             }
             pagination.value.total = res["total"];
-            // pagination.value.total = 100;
             tableData.value = tableData.value.concat(jobList);
           }
         })
