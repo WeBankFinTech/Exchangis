@@ -235,7 +235,7 @@ export const getSyncHistory = (body) => {
 };
 // 新版同步历史-获取job列表
 export const getSyncHistoryJobList = (body) => {
-  return request("/job/execution/listJob", body, {
+  return request("/job/listJobs", body, {
     method: "GET",
   });
 };
