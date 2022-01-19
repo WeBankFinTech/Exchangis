@@ -221,15 +221,21 @@ export const getSettingsParams = (engineType) => {
 };
 
 // job执行
-export const executeJob = (id) => {
+/*export const executeJob = (id) => {
   return request(`/job/${id}/action/execute`, {}, {
     method: "POST",
   });
-};
+};*/
 
 // 同步历史
 export const getSyncHistory = (body) => {
   return request("/tasks", body, {
+    method: "GET",
+  });
+};
+// 新版同步历史-获取job列表
+export const getSyncHistoryJobList = (body) => {
+  return request("/job/listJobs", body, {
     method: "GET",
   });
 };
@@ -300,3 +306,74 @@ export const getEngineriesSourceCpu = () => {
 export const getEngineriesSourceMem = () => {
   return request("/metrics/engineresourcemem", {}, { method: "GET" });
 };
+
+
+/* 作业执行模块接口 */
+export const executeJob = (id) => {
+  return request(`/job/${id}/execute`,undefined, {
+    method: "POST",
+  })
+}
+
+export const getJobStatus = (id) => {
+  return request(`/job/execution/${id}/status`, {}, {
+    method: "GET",
+  })
+}
+
+export const getJobTasks = (id) => {
+  return request(`/job/execution/${id}/taskList`, null, {
+    method: "GET",
+  })
+}
+
+export const getProgress = (id) => {
+  return request(`/job/execution/${id}/progress`, null, {
+    method: "GET",
+  })
+}
+
+export const getMetrics = (taskId, jobExecutionId) => {
+  return request(`/task/execution/${taskId}/metrics`, {jobExecutionId}, {
+    method: "POST",
+  })
+}
+
+export const killJob = (id) => {
+  return request(`/job/execution/${id}/kill`, null, {
+    method: "POST",
+  })
+}
+
+// 获取job运行日志
+export const getJobExecLog = (params) => {
+  return request(
+    `/job/execution/${params.id}/log`,
+    {
+      fromLine: params.fromLine || 0,
+      pageSize: params.pageSize || 10,
+      onlyKeywords: params.onlyKeywords,
+      ignoreKeywords: params.ignoreKeywords
+    },
+    {
+      method: "GET",
+    }
+  );
+}
+
+// 获取task运行日志
+export const getTaskExecLog = (params) => {
+  return request(
+    `/task/execution/${params.taskId}/log`,
+    {
+      fromLine: params.fromLine || 0,
+      pageSize: params.pageSize || 10,
+      jobExecutionId: params.id,
+      onlyKeywords: params.onlyKeywords,
+      ignoreKeywords: params.ignoreKeywords
+    },
+    {
+      method: "GET",
+    }
+  );
+}
