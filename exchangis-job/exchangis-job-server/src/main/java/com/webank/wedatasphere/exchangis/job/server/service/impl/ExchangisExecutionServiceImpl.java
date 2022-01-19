@@ -1,26 +1,18 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.google.common.base.Joiner;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskIndicatorMetricsDTO;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskMetricsDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskResourceUsedMetricsDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskTrafficMetricsDTO;
-import com.webank.wedatasphere.exchangis.job.server.entity.ExchangisLaunchedJobEntity;
-import com.webank.wedatasphere.exchangis.job.server.entity.ExchangisLaunchedTaskEntity;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
-import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ExchangisExecutionServiceImpl implements ExchangisExecutionService {
@@ -29,13 +21,13 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
     private ExchangisJobService exchangisJobService;
 
     @Override
-    public List<ExchangisJobTaskListVO> getExecutedJobTaskList(String jobExecutionId) {
-        List<ExchangisJobTaskListVO> jobTaskList = new ArrayList<>();
+    public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) {
+        List<ExchangisJobTaskVo> jobTaskList = new ArrayList<>();
         Date date = new Date();
         //LaunchedExchangisTaskEntity launchedExchangisTaskEntity = new LaunchedExchangisTaskEntity();
-        ExchangisJobTaskListVO launchedTaskEntity1 = new ExchangisJobTaskListVO((long) 5, "test-1", "Inited",
+        ExchangisJobTaskVo launchedTaskEntity1 = new ExchangisJobTaskVo((long) 5, "test-1", "Inited",
                 date, date, date, "sqoop", null, null, "enjoyyin");
-        ExchangisJobTaskListVO launchedTaskEntity2 = new ExchangisJobTaskListVO((long) 7, "test-7", "Running",
+        ExchangisJobTaskVo launchedTaskEntity2 = new ExchangisJobTaskVo((long) 7, "test-7", "Running",
                 date, date, date, "datax", null, null, "tikazhang");
 
         jobTaskList.add(launchedTaskEntity1);
@@ -46,38 +38,12 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
     }
 
     @Override
-    public ExchangisJobAndTaskStatusVO getExecutedJobAndTaskStatus(String jobExecutionId) {
-        Date date =new Date();
-        Map<String, Object> tasks = new HashMap<>();
-        ExchangisJobAndTaskStatusVO exchangisLaunchedJobEntity = new ExchangisJobAndTaskStatusVO("Running", (long) 0.1, tasks);
-
-        ExchangisLaunchedTaskVO exchangisLaunchedTaskEntity1 = new ExchangisLaunchedTaskVO((long) 5, "test-5", "Running", (long) 0.1);
-
-        ExchangisLaunchedTaskVO exchangisLaunchedTaskEntity2 = new ExchangisLaunchedTaskVO((long) 6, "test-6", "Inited", (long) 0.1);
-
-        ExchangisLaunchedTaskVO exchangisLaunchedTaskEntity3 = new ExchangisLaunchedTaskVO((long) 7, "test-7", "Success", (long) 1);
-
-        List<ExchangisLaunchedTaskVO> RunningTaskList = new ArrayList<>();
-
-        List<ExchangisLaunchedTaskVO> InitedTaskList = new ArrayList<>();
-
-        List<ExchangisLaunchedTaskVO> SuccessTaskList = new ArrayList<>();
-
-        RunningTaskList.add(exchangisLaunchedTaskEntity1);
-
-        InitedTaskList.add(exchangisLaunchedTaskEntity2);
-
-        SuccessTaskList.add(exchangisLaunchedTaskEntity3);
-
-        tasks.put("running", RunningTaskList);
-
-        tasks.put("Inited", InitedTaskList);
-
-        tasks.put("Success", SuccessTaskList);
-
-        exchangisLaunchedJobEntity.setTasks(tasks);
-
-        return exchangisLaunchedJobEntity;
+    public ExchangisJobProgressVo getExecutedJobProgressInfo(String jobExecutionId) {
+        ExchangisJobProgressVo jobProgressVo = new ExchangisJobProgressVo(TaskStatus.Running, 0.1);
+        jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo("5", "test-5", TaskStatus.Running, 0.1d));
+        jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo("6", "test-6", TaskStatus.Inited, 0.1d));
+        jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo("7", "test-7", TaskStatus.Success, 1d));
+        return jobProgressVo;
     }
 
     @Override
@@ -155,6 +121,7 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
                 } else if (mockLogs.get(i - 1).contains("ERROR")) {
                     errLogs.add(mockLogs.get(i - 1));
                 }
+                endLine = i;
             }
         }
 
@@ -224,6 +191,7 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
                 } else if (mockLogs.get(i - 1).contains("ERROR")) {
                     errLogs.add(mockLogs.get(i - 1));
                 }
+                endLine = i;
             }
         }
 
@@ -245,6 +213,29 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
         return message;
     }
 
+    @Override
+    public List<ExchangisLaunchedJobListVO> getExecutedJobList(Long jobId, String jobName, String status,
+                                                               Long launchStartTime, Long launchEndTime, Integer  current, Integer size) {
+        List<ExchangisLaunchedJobListVO> jobList = new ArrayList<>();
+        Date date = new Date();
+        ExchangisLaunchedJobListVO exchangisLaunchedJobListVO1 = new ExchangisLaunchedJobListVO((long) 23, "EMCM1", "作业1", date, (long) 555, "enjoyyin",
+                "Succeed", 1.0, date, date);
+
+        ExchangisLaunchedJobListVO exchangisLaunchedJobListVO2 = new ExchangisLaunchedJobListVO((long) 33, "EMCM2", "作业2", date, (long) 666, "tikazhang",
+                "Running", 0.1, date, date);
+
+        jobList.add(exchangisLaunchedJobListVO1);
+        jobList.add(exchangisLaunchedJobListVO2);
+        return jobList;
+    }
+
+    @Override
+    public int count(Long jobId, String jobName, String status, Long launchStartTime, Long launchEndTime) {
+        Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
+        Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
+        return 100;
+    }
+
     // TODO
     private LinkedList<String> getMockLogs() {
         LinkedList<String> logs = new LinkedList<>();
@@ -258,6 +249,30 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
         logs.add("2021-12-27 15:41:08.041 INFO You have submitted a new job, script code (after variable substitution) is");
         logs.add("************************************SCRIPT CODE************************************");
         logs.add("select * from linkis_db.gujiantestdb1 limit 5000;");
+        // --- 10
+
+        logs.add("************************************SCRIPT CODE************************************");
+        logs.add("2021-12-27 15:41:08.041 INFO Your job is accepted,  jobID is IDE_hdfs_spark_1 and taskID is 771 in ServiceInstance(linkis-cg-entrance, ecs-f0cf-0004:9104). Please wait it to be scheduled");
+        logs.add("2021-12-27 15:41:08.041 INFO job is running.");
+        logs.add("2021-12-27 15:41:08.041 INFO Your job is Running now. Please wait it to complete.");
+        logs.add("Job with jobGroupId : 771 and subJobId : 757 was submitted to Orchestrator.");
+        logs.add("2021-12-27 15:41:08.041 INFO Background is starting a new engine for you, it may take several seconds, please wait");
+        logs.add("2021-12-27 15:41:08.041 INFO EngineConn local log path: ServiceInstance(linkis-cg-engineconn, ecs-f0cf-0004:46760) /opt/appcom/tmp/hdfs/workDir/cc7fbf2c-b72e-4124-b872-8c81801c822c/logs");
+        logs.add("2021-12-27 15:41:08.041 INFO yarn application id: application_1622705945711_0118");
+        logs.add("ecs-f0cf-0004:46760 >> select * from linkis_db.gujiantestdb1 limit 5000");
+        logs.add("ecs-f0cf-0004:46760 >> Time taken: 382, Fetched 1 row(s).");
+        // --- 10
+
+        logs.add("************************************SCRIPT CODE************************************");
+        logs.add("2021-12-27 15:41:08.041 INFO Your job is accepted,  jobID is IDE_hdfs_spark_1 and taskID is 771 in ServiceInstance(linkis-cg-entrance, ecs-f0cf-0004:9104). Please wait it to be scheduled");
+        logs.add("2021-12-27 15:41:08.041 INFO job is running.");
+        logs.add("2021-12-27 15:41:08.041 INFO Your job is Running now. Please wait it to complete.");
+        logs.add("Job with jobGroupId : 771 and subJobId : 757 was submitted to Orchestrator.");
+        logs.add("2021-12-27 15:41:08.041 INFO Background is starting a new engine for you, it may take several seconds, please wait");
+        logs.add("2021-12-27 15:41:08.041 INFO EngineConn local log path: ServiceInstance(linkis-cg-engineconn, ecs-f0cf-0004:46760) /opt/appcom/tmp/hdfs/workDir/cc7fbf2c-b72e-4124-b872-8c81801c822c/logs");
+        logs.add("2021-12-27 15:41:08.041 INFO yarn application id: application_1622705945711_0118");
+        logs.add("ecs-f0cf-0004:46760 >> select * from linkis_db.gujiantestdb1 limit 5000");
+        logs.add("ecs-f0cf-0004:46760 >> Time taken: 382, Fetched 1 row(s).");
         // --- 10
 
         logs.add("************************************SCRIPT CODE************************************");
