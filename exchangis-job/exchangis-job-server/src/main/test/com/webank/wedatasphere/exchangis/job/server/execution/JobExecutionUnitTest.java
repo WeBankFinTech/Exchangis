@@ -1,25 +1,22 @@
 package com.webank.wedatasphere.exchangis.job.server.execution;
 
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.linkis.LinkisExchangisTaskLaunchManager;
-import com.webank.wedatasphere.exchangis.job.listener.ExchangisJobLogEvent;
-import com.webank.wedatasphere.exchangis.job.listener.ExchangisJobLogListener;
+import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
+import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.FlexibleTenancyLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.*;
-import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.AbstractTaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.MaxUsageTaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.NewInTaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
-import org.apache.linkis.common.utils.Utils;
+import com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.executer.ExecutorManager;
-import org.apache.linkis.scheduler.listener.LogListener;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
 import org.apache.linkis.scheduler.queue.JobInfo;
 import org.slf4j.Logger;
@@ -27,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Unit test of execution module
@@ -35,14 +33,17 @@ public class JobExecutionUnitTest {
 //    private static final Logger LOG = LoggerFactory.getLogger(JobExecutionUnitTest.class);
 
     public static void main(String[] args) throws ExchangisTaskExecuteException {
-        System.setProperty("log4j.configurationFile", "C:\\Users\\davidhua\\IdeaProjects\\Exchangis\\exchangis-server\\src\\main\\resources\\log4j2.xml");
+//        System.setProperty("log4j.configurationFile", "C:\\Users\\davidhua\\IdeaProjects\\Exchangis\\exchangis-server\\src\\main\\resources\\log4j2.xml");
         System.setProperty("wds.exchangis.job.scheduler.consumer.tenancies", "hadoop");
         final Logger LOG = LoggerFactory.getLogger(JobExecutionUnitTest.class);
         LOG.info("Job Execution Unit Test begin to launch");
+        // Logger
+        DefaultRpcJobLogger jobLogger = new DefaultRpcJobLogger();
+        jobLogger.onEvent(new JobLogEvent(UUID.randomUUID().toString(), "That is just a test"));
         // Start an endless thread to hold the running of program
         new Thread(new EndlessThread()).start();
         try {
-            ExchangisJobLogListener logListener = getLogListener();
+            JobLogListener logListener = getLogListener();
             // Executor manager
             ExecutorManager executorManager = new ExchangisSchedulerExecutorManager();
             // Tenancy consumer manager
@@ -79,10 +80,10 @@ public class JobExecutionUnitTest {
         newInTaskObserver.getCacheQueue().offer(task);
     }
 
-    private static ExchangisJobLogListener getLogListener(){
-        return new ExchangisJobLogListener() {
+    private static JobLogListener getLogListener(){
+        return new JobLogListener() {
             @Override
-            public void onEvent(ExchangisJobLogEvent event) throws ExchangisOnEventException {
+            public void onEvent(JobLogEvent event) throws ExchangisOnEventException {
 
             }
         };

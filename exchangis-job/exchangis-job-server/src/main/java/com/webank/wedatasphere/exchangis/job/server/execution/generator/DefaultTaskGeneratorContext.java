@@ -1,21 +1,23 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.generator;
 
-import com.webank.wedatasphere.exchangis.job.listener.ExchangisJobLogListener;
-import org.springframework.stereotype.Component;
+import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 
 /**
  * Default generator context
  */
 public class DefaultTaskGeneratorContext implements TaskGeneratorContext {
 
-    private ExchangisJobLogListener jobLogListener;
+    private JobLogListener jobLogListener;
 
-    public DefaultTaskGeneratorContext(ExchangisJobLogListener jobLogListener){
+    public DefaultTaskGeneratorContext(){
+
+    }
+    public DefaultTaskGeneratorContext(JobLogListener jobLogListener){
         this.jobLogListener = jobLogListener;
     }
 
     @Override
-    public ExchangisJobLogListener gtJobLogListener() {
+    public JobLogListener gtJobLogListener() {
         return this.jobLogListener;
     }
 }

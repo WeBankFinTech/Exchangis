@@ -15,7 +15,7 @@ public interface SchedulerThread extends Runnable{
     void stop();
 
     /**
-     * Name of observer
+     * Name
      * @return
      */
     String getName();
