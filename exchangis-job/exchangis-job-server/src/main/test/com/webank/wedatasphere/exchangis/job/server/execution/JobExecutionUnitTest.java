@@ -34,6 +34,7 @@ public class JobExecutionUnitTest {
 
     public static void main(String[] args) throws ExchangisTaskExecuteException {
 //        System.setProperty("log4j.configurationFile", "C:\\Users\\davidhua\\IdeaProjects\\Exchangis\\exchangis-server\\src\\main\\resources\\log4j2.xml");
+        System.setProperty("log4j.configurationFile", "C:\\Users\\hadoop\\IdeaProjects\\Exchangis\\assembly-package\\config\\log4j2.xml");
         System.setProperty("wds.exchangis.job.scheduler.consumer.tenancies", "hadoop");
         final Logger LOG = LoggerFactory.getLogger(JobExecutionUnitTest.class);
         LOG.info("Job Execution Unit Test begin to launch");
@@ -47,7 +48,8 @@ public class JobExecutionUnitTest {
             // Executor manager
             ExecutorManager executorManager = new ExchangisSchedulerExecutorManager();
             // Tenancy consumer manager
-            ConsumerManager consumerManager = new TenancyParallelConsumerManager();
+            TenancyParallelConsumerManager consumerManager = new TenancyParallelConsumerManager();
+            consumerManager.setInitResidentThreads(4);
             // Task manager
             TaskManager<LaunchedExchangisTask> taskManager = new DefaultTaskManager(logListener);
             Scheduler scheduler = new ExchangisGenericScheduler(executorManager, consumerManager);
