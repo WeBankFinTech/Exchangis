@@ -15,6 +15,15 @@ public interface ExchangisJob extends ExchangisBase{
     String getEngineType();
 
     void setEngineType(String engineType);
+
+    /**
+     * Label String
+     * @return Label value
+     */
+    String getJobLabel();
+
+    void setJobLabel(String engineType);
+
     /**
      * Label map
      * @return entities
