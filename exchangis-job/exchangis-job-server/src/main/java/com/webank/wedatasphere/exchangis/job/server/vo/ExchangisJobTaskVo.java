@@ -7,7 +7,7 @@ import java.util.Date;
  * @Date 2022/1/12 22:34
  */
 
-public class ExchangisJobTaskListVO {
+public class ExchangisJobTaskVo {
 
     private String name;
 
@@ -29,7 +29,7 @@ public class ExchangisJobTaskListVO {
 
     private Date launchTime;
 
-    public ExchangisJobTaskListVO(Long taskId, String name, String status, Date createTime, Date launchTime, Date lastUpdateTime, String engineType, String linkisJobId, String linkisJobInfo, String executeUser){
+    public ExchangisJobTaskVo(Long taskId, String name, String status, Date createTime, Date launchTime, Date lastUpdateTime, String engineType, String linkisJobId, String linkisJobInfo, String executeUser){
         this.taskId = taskId;
         this.name = name;
         this.status = status;

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.webank.wedatasphere.exchangis.job.server.dao.ExchangisExecutionTaskDao">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao">
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
-        <id column="id" property="id"/>
+        <result column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="create_time" property="createTime"/>
         <result column="last_update_time" property="lastUpdateTime"/>
@@ -24,9 +24,6 @@
         <result column="running_time" property="runningTime"/>
         <result column="metrics" property="metrics"/>
         <result column="status" property="status"/>
-        <collection property="launchableExchangisTask" ofType="com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask" >
-            <id column="launchable_task_id" property="id" />
-        </collection>
     </resultMap>
 
     <sql id="TableName">
@@ -35,19 +32,19 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, job_id, launchable_task_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status </sql>
+        id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status </sql>
 
     <insert id="LaunchedTaskOrNot" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
         insert into
         <include refid="TableName"/>
-        (id, name, create_time, last_update_time, job_id, launchable_task_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status)
+        (id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status)
         values(
         #{id},
         #{name},
         #{createTime},
         #{lastUpdateTime},
         #{jobId},
-        #{launchableExchangisTask},
+        #{taskId},
         #{engineType},
         #{execute_user},
         #{jobName},
@@ -55,7 +52,6 @@
         #{errorCode},
         #{errorMessage},
         #{retryNum},
-        #{taskId},
         #{linkisJobId},
         #{linkisJobInfo},
         #{jobExecutionId},
@@ -69,7 +65,6 @@
         create_time = #{createTime},
         last_update_time = #{lastUpdateTime},
         job_id = #{jobId},
-        launchable_task_id = #{launchableExchangisTask},
         engine_type = #{engineType},
         execute_user = #{execute_user},
         job_name = #{jobName},
@@ -90,14 +85,13 @@
     <insert id="insertLaunchedTask" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
         insert into
         <include refid="TableName"/>
-        (id, name, create_time, last_update_time, job_id, launchable_task_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status)
+        (id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status)
         values(
         #{id},
         #{name},
         #{createTime},
         #{lastUpdateTime},
         #{jobId},
-        #{launchableExchangisTask},
         #{engineType},
         #{execute_user},
         #{jobName},
@@ -129,7 +123,6 @@
         create_time = #{createTime},
         last_update_time = #{lastUpdateTime},
         job_id = #{jobId},
-        launchable_task_id = #{launchableExchangisTask},
         engine_type = #{engineType},
         execute_user = #{execute_user},
         job_name = #{jobName},
@@ -171,11 +164,19 @@
         taskId = #{taskId}
     </update>
 
-    <select id="getTaskMetricsByStatus" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskStatusMetricsDTO">
-        select job_name as jobName, task_name as taskName, create_user as createUser, proxy_user as proxyUser, status, sum(1) as num
+    <select id="selectTaskListByJobExecutionId" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
+        select
+        <include refid="BaseColumnList"/>
         from
         <include refid="TableName" />
-        where status = #{status}
+        where job_execution_id = #{jobExecutionId}
+    </select>
+
+    <select id="getTaskMetricsByJobExecutionId" parameterType="java.lang.String" resultType="String">
+        select metrics
+        from
+        <include refid="TableName" />
+        where job_execution_id = #{job_execution_id}
     </select>
 
 </mapper>

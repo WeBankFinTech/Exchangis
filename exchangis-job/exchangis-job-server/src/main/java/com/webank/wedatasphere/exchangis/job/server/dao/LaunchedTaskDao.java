@@ -10,19 +10,14 @@ import java.util.List;
 /**
  * @author tikazhang
  */
-public interface ExchangisExecutionTaskDao {
-    /**
-     * Get Tasks need to execute
-     * @param
-     */
-
-    List<LaunchableExchangisTask> getTaskTolaunch();
+public interface LaunchedTaskDao {
 
     /**
-     * jubge task whether launch or not
-     * param launchedExchangisTaskEntity
+     * judge task whether launch(insert) or update
+     * @param launchedExchangisTaskEntity taskEntity
+     * @return insert/update result (1:insert 2:update)
      */
-    void LaunchedTaskOrNot(LaunchedExchangisTaskEntity launchedExchangisTaskEntity);
+    int insertLaunchedTaskOrUpdate(LaunchedExchangisTaskEntity launchedExchangisTaskEntity);
 
     /**
      * insert launchedTask
@@ -64,4 +59,20 @@ public interface ExchangisExecutionTaskDao {
      */
 
     void upgradeLaunchedTaskStatus(@Param("status") String status, @Param("taskId") String taskId);
+
+    /**
+     * search launchedTaskList
+     * @param jobExecutionId
+     */
+
+    List<LaunchedExchangisTaskEntity> selectTaskListByJobExecutionId(@Param("jobExecutionId") String jobExecutionId);
+
+    /**
+     * search getTaskMetrics
+     * @param jobExecutionId
+     */
+
+    List<String> getTaskMetricsByJobExecutionId(@Param("jobExecutionId") String jobExecutionId);
+
+
 }
