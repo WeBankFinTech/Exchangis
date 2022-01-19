@@ -5,7 +5,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskIndicatorMetricsDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskResourceUsedMetricsDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskTrafficMetricsDTO;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
+import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.linkis.server.Message;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class ExchangisExecutionServiceImpl implements ExchangisExecutionService {
+public class DefaultJobExecuteService implements JobExecuteService {
 
     @Autowired
     private ExchangisJobService exchangisJobService;

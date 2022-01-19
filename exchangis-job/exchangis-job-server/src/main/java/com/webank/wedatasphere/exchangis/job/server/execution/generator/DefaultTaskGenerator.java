@@ -11,7 +11,7 @@ import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.GenerationSchedulerTask;
 import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.scheduler.exception.SchedulerErrorException;
-
+import com.webank.wedatasphere.exchangis.job.server.execution.generator.AbstractTaskGenerator.GeneratorFunction;
 // Scala doc need
 
 

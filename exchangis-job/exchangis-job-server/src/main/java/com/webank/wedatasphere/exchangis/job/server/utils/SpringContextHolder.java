@@ -3,12 +3,14 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  */
-package com.webank.wedatasphere.exchangis.job.utils;
+package com.webank.wedatasphere.exchangis.job.server.utils;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 public class SpringContextHolder implements ApplicationContextAware, DisposableBean {
@@ -20,7 +22,10 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
     }
 
     public static <T> T getBean(Class<T> requiredType) {
-        return applicationContext.getBean(requiredType);
+        if (Objects.nonNull(applicationContext)) {
+            return applicationContext.getBean(requiredType);
+        }
+        return null;
     }
 
     @Override
