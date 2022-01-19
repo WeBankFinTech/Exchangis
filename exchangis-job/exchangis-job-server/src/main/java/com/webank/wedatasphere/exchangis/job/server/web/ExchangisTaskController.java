@@ -1,7 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
 import java.util.List;
-
 import org.apache.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisLaunchTaskService;
