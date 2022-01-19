@@ -6,7 +6,7 @@ import org.apache.linkis.server.Message;
 
 import java.util.List;
 
-public interface ExchangisExecutionService {
+public interface JobExecuteService {
 
     Message getJobLogInfo(String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows);
 

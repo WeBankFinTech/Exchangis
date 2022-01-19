@@ -18,6 +18,9 @@
 
 <configuration status="error" monitorInterval="30">
     <appenders>
+        <RpcLog name="RpcLog" >
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level - %msg%xEx%n"/>
+        </RpcLog>
         <Console name="Console" target="SYSTEM_OUT">
             <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger{36} %L %M - %msg%xEx%n"/>
@@ -34,6 +37,9 @@
             <appender-ref ref="RollingFile"/>
             <appender-ref ref="Console"/>
         </root>
+        <logger name="com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger" level="INFO" additivity="true">
+            <appender-ref ref="RpcLog"/>
+        </logger>
     </loggers>
 </configuration>
 

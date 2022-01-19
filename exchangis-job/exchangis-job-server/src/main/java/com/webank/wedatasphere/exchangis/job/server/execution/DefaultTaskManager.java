@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.execution;
 
-import com.webank.wedatasphere.exchangis.job.listener.ExchangisJobLogListener;
+import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 
 /**
  * Default implement
@@ -10,14 +10,14 @@ public class DefaultTaskManager extends AbstractTaskManager{
     /**
      * Log listener
      */
-    private ExchangisJobLogListener jobLogListener;
+    private JobLogListener jobLogListener;
 
-    public DefaultTaskManager(ExchangisJobLogListener jobLogListener) {
+    public DefaultTaskManager(JobLogListener jobLogListener) {
         this.jobLogListener = jobLogListener;
     }
 
     @Override
-    public ExchangisJobLogListener getJobLogListener() {
+    public JobLogListener getJobLogListener() {
         return  this.jobLogListener;
     }
 }

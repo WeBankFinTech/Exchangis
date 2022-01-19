@@ -89,11 +89,6 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
     }
 
     @Override
-    public void afterStateChanged(Enumeration.Value fromState, Enumeration.Value toState) {
-        super.afterStateChanged(fromState, toState);
-    }
-
-    @Override
     public String getName() {
         return "Scheduler-SubmitTask-" + getId();
     }

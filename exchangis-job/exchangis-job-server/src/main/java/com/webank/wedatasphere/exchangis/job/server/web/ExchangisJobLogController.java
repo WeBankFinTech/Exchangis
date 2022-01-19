@@ -1,17 +1,16 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
-import org.apache.linkis.server.Message;
+import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
 @RestController
 @RequestMapping(value = "exchangis/execution", produces = {"application/json;charset=utf-8"})
-public class ExchangisExecutionLogController {
+public class ExchangisJobLogController {
 
     @Resource
-    private ExchangisExecutionService exchangisExecutionService;
+    private JobExecuteService jobExecuteService;
 
 
    /* @RequestMapping(value = "/tasks/{taskId}/logs", method = RequestMethod.GET)

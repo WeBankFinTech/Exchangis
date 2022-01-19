@@ -18,7 +18,8 @@ public interface ExchangisListener<T extends ExchangisEvent>{
      * @param event
      */
     default void onEvent(T event) throws ExchangisOnEventException {
-        throw new ExchangisOnEventException("Unsupported event: " + event.eventId() + " in listener [" + this.getClass().getSimpleName() + "]", null);
+        getLogger().info("Event: [id: {}, type: {}] in listener [{}]", event.eventId(), event.getClass().getSimpleName(),
+                this.getClass().getSimpleName());
     }
 
     default void onAsyncEvent(T event){
