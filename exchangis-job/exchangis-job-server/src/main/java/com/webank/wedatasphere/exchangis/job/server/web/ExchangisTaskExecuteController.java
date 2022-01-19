@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
-import com.webank.wedatasphere.exchangis.job.server.entity.ExchangisLaunchedTaskEntity;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedTaskMetricsVO;
@@ -11,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,8 +19,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "exchangis/task", produces = {"application/json;charset=utf-8"})
-public class ExchangisTaskExecutionController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisTaskExecutionController.class);
+public class ExchangisTaskExecuteController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisTaskExecuteController.class);
     @Autowired
     private ExchangisJobService exchangisJobService;
 
