@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
-import com.webank.wedatasphere.exchangis.job.listener.ExchangisJobLogListener;
+import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 
 import java.util.List;
 import java.util.Map;
@@ -53,6 +53,6 @@ public interface TaskManager<T extends ExchangisTask> {
      */
     T getRunningTask(String taskId);
 
-    ExchangisJobLogListener getJobLogListener();
+    JobLogListener getJobLogListener();
 
 }

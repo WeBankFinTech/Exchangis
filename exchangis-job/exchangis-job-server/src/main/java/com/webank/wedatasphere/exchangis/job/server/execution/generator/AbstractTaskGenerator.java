@@ -42,7 +42,14 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
 
     @Override
     public LaunchableExchangisJob init(ExchangisJobInfo jobInfo) {
-        return null;
+        LaunchableExchangisJob launchableExchangisJob = new LaunchableExchangisJob();
+        launchableExchangisJob.setExchangisJobInfo(jobInfo);
+        launchableExchangisJob.setName(jobInfo.getName());
+        launchableExchangisJob.setEngineType(jobInfo.getEngineType());
+        // Generate launchable exchangis job id to UUID
+        launchableExchangisJob.setJobExecutionId(UUID.randomUUID().toString());
+        LOG.info("Generate job execution id: [{}] for job: [{}]" , launchableExchangisJob.getJobExecutionId(), launchableExchangisJob.getExchangisJobInfo().getName());
+        return launchableExchangisJob;
     }
 
     @Override
@@ -56,9 +63,10 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
         if (Objects.isNull(launchableExchangisJob.getExchangisJobInfo())){
             throw new ExchangisTaskGenerateException("Job info of launchableExchangisJob cannot be empty", null);
         }
-        // Generate launchable exchangis job id to UUID
-        launchableExchangisJob.setJobExecutionId(UUID.randomUUID().toString());
-        LOG.info("Generate job execution id: [{}] for job: [{}]" , launchableExchangisJob.getJobExecutionId(), launchableExchangisJob.getExchangisJobInfo().getName());
+        Calendar calendar = Calendar.getInstance();
+        launchableExchangisJob.setCreateUser(tenancy);
+        launchableExchangisJob.setCreateTime(calendar.getTime());
+        launchableExchangisJob.setLastUpdateTime(calendar.getTime());
         onEvent(new TaskGenerateInitEvent(launchableExchangisJob));
         try {
             execute(this.generatorFunction, launchableExchangisJob, getTaskGeneratorContext(), tenancy);

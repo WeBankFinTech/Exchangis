@@ -5,6 +5,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTa
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.SubmitSchedulerTask;
+import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
 
     private static final Logger LOG = LoggerFactory.getLogger(NewInTaskObserver.class);
 
+    private TaskObserverService taskExecuteService;
 
     @Override
     protected List<LaunchableExchangisTask> onPublishNext(int batchSize){

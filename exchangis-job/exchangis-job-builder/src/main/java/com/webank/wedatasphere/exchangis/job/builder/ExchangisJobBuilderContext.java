@@ -2,8 +2,7 @@ package com.webank.wedatasphere.exchangis.job.builder;
 
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
-import com.webank.wedatasphere.exchangis.job.listener.ExchangisJobLogListener;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
+import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,7 @@ public class ExchangisJobBuilderContext {
     /**
      * Listen the log event
      */
-    private ExchangisJobLogListener jobLogListener;
+    private JobLogListener jobLogListener;
 
     private Map<String, Object> env = new HashMap<>();
 
