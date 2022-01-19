@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.webank.wedatasphere.exchangis.job.server.dao.ExchangisExecutionJobDao">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao">
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
-        <id column="id" property="id"/>
+        <result column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="create_time" property="createTime"/>
         <result column="last_update_time" property="lastUpdateTime"/>
         <result column="job_id" property="jobId"/>
         <result column="job_execution_id" property="jobExecutionId"/>
         <result column="engine_type" property="engineType"/>
-        <result column="execute_user" property="createUser"/>
+        <result column="execute_user" property="executeUser"/>
         <result column="job_name" property="jobName"/>
         <result column="status" property="status"/>
         <result column="progress" property="progress"/>
@@ -41,7 +41,7 @@
         #{jobId},
         #{jobExecutionId},
         #{engineType},
-        #{createUser},
+        #{executeUser},
         #{jobName},
         #{status},
         #{progress},
@@ -52,6 +52,39 @@
         );
     </insert>
 
+    <delete id="jobExecutionId">
+        DELETE FROM <include refid="TableName"/> WHERE
+        job_execution_id = #{jobExecutionId}
+    </delete>
+
+    <update id="upgrateLaunchedJob">
+        UPDATE <include refid="TableName"/>
+        SET
+        id = #{id},
+        name = #{name},
+        create_time = #{createTime},
+        last_update_time = #{lastUpdateTime},
+        job_id = #{jobId},
+        job_execution_id = #{jobExecutionId},
+        engine_type = #{engineType},
+        execute_user = #{execute_user},
+        job_name = #{jobName},
+        status = #{status},
+        progress = #{progress},
+        error_code = #{errorCode},
+        error_msg = #{errorMessage},
+        retry_num = #{retryNum},
+        log_path = #{logPath}
+    </update>
+
+    <select id="searchLaunchedJob" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
+        select
+        <include refid="BaseColumnList"/>
+        from
+        <include refid="TableName" />
+        where job_execution_id = #{jobExecutionId}
+    </select>
+
     <update id="upgradeLaunchedJobStatus">
         UPDATE <include refid="TableName"/>
         SET
@@ -59,38 +92,5 @@
         WHERE
         job_execution_id = #{jobExecutionId}
     </update>
-
-    <select id="listTasks" resultMap="BaseResultMap">
-        SELECT
-        <include refid="BaseColumnList"/>
-        FROM
-        <include refid="TableName"/>
-        <where>
-            <if test="taskId != null">
-                and task_id = #{taskId}
-            </if>
-            <if test="taskName != null and taskName.trim() != ''">
-                and task_name like concat('%', #{taskName}, '%')
-            </if>
-            <if test="status != null and status.trim() != ''">
-                and status = #{status}
-            </if>
-            <if test="launchStartTime != null">
-                and launch_time &gt;= #{launchStartTime}
-            </if>
-            <if test="launchEndTime != null">
-                and launch_time &lt;= #{launchEndTime}
-            </if>
-        </where>
-        order by create_time desc
-        limit ${start}, ${size}
-    </select>
-
-    <select id="getTaskMetricsByStatus" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskStatusMetricsDTO">
-        select job_name as jobName, task_name as taskName, create_user as createUser, proxy_user as proxyUser, status, sum(1) as num
-        from
-        <include refid="TableName" />
-        where status = #{status}
-    </select>
 
 </mapper>
