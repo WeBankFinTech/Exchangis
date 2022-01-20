@@ -33,8 +33,8 @@ public class JobExecutionUnitTest {
 //    private static final Logger LOG = LoggerFactory.getLogger(JobExecutionUnitTest.class);
 
     public static void main(String[] args) throws ExchangisTaskExecuteException {
-//        System.setProperty("log4j.configurationFile", "C:\\Users\\davidhua\\IdeaProjects\\Exchangis\\exchangis-server\\src\\main\\resources\\log4j2.xml");
-        System.setProperty("log4j.configurationFile", "C:\\Users\\hadoop\\IdeaProjects\\Exchangis\\assembly-package\\config\\log4j2.xml");
+        System.setProperty("log4j.configurationFile", "C:\\Users\\davidhua\\IdeaProjects\\Exchangis\\assembly-package\\config\\log4j2.xml");
+//        System.setProperty("log4j.configurationFile", "C:\\Users\\hadoop\\IdeaProjects\\Exchangis\\assembly-package\\config\\log4j2.xml");
         System.setProperty("wds.exchangis.job.scheduler.consumer.tenancies", "hadoop");
         final Logger LOG = LoggerFactory.getLogger(JobExecutionUnitTest.class);
         LOG.info("Job Execution Unit Test begin to launch");
@@ -79,6 +79,7 @@ public class JobExecutionUnitTest {
     private static void submitTest(TaskExecution<LaunchableExchangisTask> execution, NewInTaskObserver newInTaskObserver){
         LaunchableExchangisTask task = new LaunchableExchangisTask();
         task.setId(1694451505815490560L);
+        task.setJobExecutionId(UUID.randomUUID().toString());
         newInTaskObserver.getCacheQueue().offer(task);
     }
 
