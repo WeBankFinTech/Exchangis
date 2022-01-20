@@ -16,8 +16,8 @@
       </a-popconfirm>
       <div class="divider"></div>
       <span @click="saveAll()"><SaveOutlined />保存</span>
-      <div class="divider"></div>
-      <span @click="executeHistory"><HistoryOutlined />执行历史</span>
+      <!--<div class="divider"></div>-->
+      <!--<span @click="executeHistory"><HistoryOutlined />执行历史</span>-->
     </div>
     <div class="jd-content" v-if="list.length !== 0">
       <div class="jd_left">
@@ -1062,6 +1062,10 @@ export default {
       this.visibleLog = false;
     }
   },
+  beforeUnmount() {
+    clearInterval(this.jobStatusTimer)
+    clearInterval(this.progressTimer)
+  }
 };
 </script>
 <style scoped lang="less">
