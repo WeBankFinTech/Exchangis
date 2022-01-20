@@ -35,6 +35,8 @@ public class GetDataSourceInfoResultDTO extends ResultDTO {
         private Map<String, Object> connectParams;
         private Long createTime;
         private String createUser;
+        private Long modifyTime;
+        private String modifyUser;
         private String labels;
         private Long versionId;
         private Integer publishedVersionId;
@@ -151,6 +153,22 @@ public class GetDataSourceInfoResultDTO extends ResultDTO {
 
         public void setDataSourceType(DataSourceItemDsTypeDTO dataSourceType) {
             this.dataSourceType = dataSourceType;
+        }
+
+        public Long getModifyTime() {
+            return modifyTime;
+        }
+
+        public void setModifyTime(Long modifyTime) {
+            this.modifyTime = modifyTime;
+        }
+
+        public String getModifyUser() {
+            return modifyUser;
+        }
+
+        public void setModifyUser(String modifyUser) {
+            this.modifyUser = modifyUser;
         }
     }
 

@@ -10,6 +10,7 @@ import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
+import com.webank.wedatasphere.exchangis.datasource.GetDataSourceInfoByIdAndVersionIdAction;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
@@ -689,40 +690,55 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         return Message.ok().data("list", dataSources);
     }
 
-    public Message getDataSource(HttpServletRequest request, Long id) throws ErrorException {
+    public Message getDataSource(HttpServletRequest request, Long id, String versionId) throws ErrorException {
         String userName = SecurityFilter.getLoginUsername(request);
         LOGGER.info("getDataSource userName:" + userName);
-        GetDataSourceInfoResultDTO result = getDataSource(userName, id);
+        GetDataSourceInfoResultDTO result;
+        if (Strings.isNullOrEmpty(versionId)) {
+            result = getDataSource(userName, id);
+        } else {
+            result = getDataSourceByIdAndVersionId(userName, id, versionId);
+        }
+//        GetDataSourceInfoResultDTO result = getDataSource(userName, id);
         return Message.ok().data("info", result.getData().getInfo());
     }
+
+    public GetDataSourceInfoResultDTO getDataSourceByIdAndVersionId(String userName, Long id, String versionId) throws ErrorException {
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        try {
+            Result execute = linkisDataSourceRemoteClient.execute(
+                    GetDataSourceInfoByIdAndVersionIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).setVersionId(versionId).build()
+            );
+            String responseBody = execute.getResponseBody();
+            GetDataSourceInfoResultDTO result = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+            if (result.getStatus() != 0) {
+                throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
+            }
+            return result;
+        } catch (Exception e) {
+            if (e instanceof ErrorException) {
+                ErrorException ee = (ErrorException) e;
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_QUERY_DATASOURCE_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
+            } else {
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_QUERY_DATASOURCE_ERROR.getCode(), e.getMessage());
+            }
+        }
+
+    }
+
 
     public GetDataSourceInfoResultDTO getDataSource(String userName, Long id) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         try {
-
-
-//            GetDataSourceInfoResultDTO
             Result execute = linkisDataSourceRemoteClient.execute(
                     GetInfoByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
             );
             String responseBody = execute.getResponseBody();
-
             GetDataSourceInfoResultDTO result = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
-
-//            GetInfoByDataSourceIdResult result = linkisDataSourceRemoteClient.getInfoByDataSourceId(
-//                    GetInfoByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
-//            );
             if (result.getStatus() != 0) {
                 throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
             }
-//            GetDataSourceInfoResultDTO.DataSourceItemDTO info = result.getData().getInfo();
-//            Map<String, Object> connectParams = info.getConnectParams();
-//            // TODO HARD CODE
-//            if (info.getCreateSystem().equalsIgnoreCase("hive")) {
-//                // 需要拆解成 host port 给前端
-//            }
             return result;
-//            return Message.ok().data("info", Objects.isNull(result.getInfo()) ? null : result.getInfo());
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
