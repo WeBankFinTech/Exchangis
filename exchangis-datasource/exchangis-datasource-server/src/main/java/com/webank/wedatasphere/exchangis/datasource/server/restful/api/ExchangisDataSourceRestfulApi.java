@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.QueryParam;
 import java.util.List;
 import java.util.Map;
 
@@ -72,8 +73,8 @@ public class ExchangisDataSourceRestfulApi {
 
     // get datasource details
     @RequestMapping( value = "datasources/{id}", method = RequestMethod.GET)
-    public Message getDataSourceInfoById(HttpServletRequest request, @PathVariable("id") Long id) throws Exception {
-        return this.exchangisDataSourceService.getDataSource(request, id);
+    public Message getDataSourceInfoById(HttpServletRequest request, @PathVariable("id") Long id, @QueryParam(value = "versionId") String versionId) throws Exception {
+        return this.exchangisDataSourceService.getDataSource(request, id, versionId);
     }
 
     @RequestMapping( value = "datasources/{id}/connect_params", method = RequestMethod.GET)
