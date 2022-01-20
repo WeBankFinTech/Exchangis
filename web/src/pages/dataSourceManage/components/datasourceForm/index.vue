@@ -1,7 +1,7 @@
 <template>
   <div class="table-warp" style="padding-bottom: 32px;">
     <form-create :rule="rule" v-model:api="fApi" :option="options" v-model="formData"/>
-    <a-button type="primary" @click="submit" style="float: right;margin: 0 0 0 10px;">确定</a-button>
+    <a-button type="primary" @click="submit" style="float: right;margin: 0 0 0 10px;" v-if="data.mode !== 'read'">确定</a-button>
     <a-button @click="$emit('cancel')" style="float: right">取消</a-button>
   </div>
 </template>
@@ -166,7 +166,7 @@ export default {
   methods: {
     getDataSource(newV){
       if(this.data.id){
-        getDataSourceById(newV.id).then(result=>{
+        getDataSourceById(newV.id, newV.versionId).then(result=>{
           const mConnect = result.info.connectParams;
           this.sourceConnectData = mConnect;
           delete result.info.connectParams;
