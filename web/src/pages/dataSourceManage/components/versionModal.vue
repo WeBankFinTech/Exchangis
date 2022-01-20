@@ -6,7 +6,9 @@
       </template>
       <template #action="row">
         <a-space>
-          <a-button v-show="!row.text.published" size="small" @click="publishDataSource(row.text.versionId)">发布</a-button>
+          <a-button v-if="!row.text.published" size="small" @click="publishDataSource(row.text.versionId)">发布</a-button>
+          <a-button size="small" @click="$emit('openModal', row.text, rowInfo)">查看</a-button>
+          <a-button size="small" @click="handleTestConnect(row)">测试链接</a-button>
         </a-space>
       </template>
     </a-table>
@@ -16,6 +18,9 @@
 <script>
 import { getDataSourceVersionList, publishDataSource } from "@/common/service";
 import { message } from "ant-design-vue";
+import {
+  testDataSourceConnect,
+} from "@/common/service";
 const columns = [
   {
     title: "版本ID",
@@ -54,6 +59,7 @@ export default {
   props: {
     visible: { type: Boolean },
     id: { type: [Number, String] },
+    rowInfo: {type: [Object]}
   },
   watch: {
     visible(val) {
@@ -81,6 +87,11 @@ export default {
       await this.getDataSourceVersionList();
       message.success("发布成功");
     },
+    // 测试链接
+    async handleTestConnect(row) {
+      await testDataSourceConnect(row.text.datasourceId, row.text.versionId);
+      message.success("连接成功");
+    }
   },
 };
 </script>
