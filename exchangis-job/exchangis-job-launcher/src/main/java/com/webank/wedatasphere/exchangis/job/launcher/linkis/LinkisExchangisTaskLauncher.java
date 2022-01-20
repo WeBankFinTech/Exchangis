@@ -39,7 +39,7 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
         } else if ("DATAX".equalsIgnoreCase(engineType)) {
             onceJob = this.submitDataxJob(launchableTask);
         } else {
-            throw new ExchangisJobException(ExchangisJobExceptionCode.UNSUPPORTED_JOB_EXECUTION_ENGINE.getCode(), "Unsupported job execution engine: '" + launchableTask.getEngineType() + "'.");
+            throw new ExchangisJobException(ExchangisJobExceptionCode.UNSUPPORTED_TASK_LAUNCH_ENGINE.getCode(), "Unsupported job execution engine: '" + launchableTask.getEngineType() + "'.");
         }
         SubmittableSimpleOnceJob finalOnceJob = onceJob;
         LaunchedExchangisTask launchedExchangisTask =  new LaunchedExchangisTask(launchableTask) {

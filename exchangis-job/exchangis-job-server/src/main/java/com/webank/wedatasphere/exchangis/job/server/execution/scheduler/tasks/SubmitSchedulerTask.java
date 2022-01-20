@@ -4,9 +4,14 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
+import com.webank.wedatasphere.exchangis.job.server.execution.AbstractTaskManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
+import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskExecutionEvent;
+import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskInfoDeleteEvent;
+import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskStatusUpdateEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSchedulerLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
 import org.apache.linkis.scheduler.queue.JobInfo;
@@ -18,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Submit scheduler task
@@ -36,6 +42,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
 
     private Callable<Boolean> submitCondition;
 
+    private AtomicInteger retryCnt = new AtomicInteger(0);
     /**
      * Each schedule task should has an id
      *
@@ -62,8 +69,19 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
             LaunchedExchangisTask launchedExchangisTask;
             try {
                 // Invoke launcher
-                launchedExchangisTask = launcher.launch(this.launchableExchangisTask);
+//                launchedExchangisTask = launcher.launch(this.launchableExchangisTask);
+                launchedExchangisTask = new LaunchedExchangisTask(launchableExchangisTask);
             } catch (Exception e) {
+                if (retryCnt.getAndIncrement() < getMaxRetryNum()) {
+                    // Remove the launched task stored
+                    onEvent(new TaskInfoDeleteEvent(String.valueOf(launchableExchangisTask.getId())));
+                    throw new ExchangisSchedulerRetryException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() +"]", e);
+                }else {
+                    // Update the launched task status to fail
+                    launchedExchangisTask = new LaunchedExchangisTask();
+                    launchedExchangisTask.setTaskId(String.valueOf(launchableExchangisTask.getId()));
+                    onEvent(new TaskStatusUpdateEvent(launchedExchangisTask, TaskStatus.Failed));
+                }
                 throw new ExchangisSchedulerException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() +"]", e);
             }
             // Add the success/launched job into taskManager
@@ -80,14 +98,24 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
                 if (successAdd && Objects.nonNull(this.loadBalancer)) {
                     // Add the launchedExchangisTask to the load balance poller
                     List<LoadBalanceSchedulerTask<LaunchedExchangisTask>> loadBalanceSchedulerTasks = this.loadBalancer.choose(launchedExchangisTask);
+                    LaunchedExchangisTask finalLaunchedExchangisTask = launchedExchangisTask;
                     Optional.ofNullable(loadBalanceSchedulerTasks).ifPresent(tasks -> tasks.forEach(loadBalanceSchedulerTask -> {
-                        loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(launchedExchangisTask);
+                        loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(finalLaunchedExchangisTask);
                     }));
                 }
             }
         }
     }
 
+    /**
+     * Listen the execution event
+     * @param event
+     */
+    private void onEvent(TaskExecutionEvent event){
+        if (this.taskManager instanceof AbstractTaskManager) {
+            ((AbstractTaskManager) this.taskManager).onEvent(event);
+        }
+    }
     @Override
     public String getName() {
         return "Scheduler-SubmitTask-" + getId();
