@@ -42,7 +42,7 @@ public class StatusUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
 
     @Override
     public String getName() {
-        return getId();
+        return getId() + "-Status";
     }
 
     @Override

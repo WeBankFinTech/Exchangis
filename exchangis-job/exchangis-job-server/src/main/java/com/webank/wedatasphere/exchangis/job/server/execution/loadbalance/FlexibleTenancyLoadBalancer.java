@@ -10,6 +10,7 @@ import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskExecutionEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.*;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbalance.LoadBalancePoller;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.AbstractLoadBalanceSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.LoadBalanceSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.MetricUpdateSchedulerTask;
 import org.apache.commons.lang.StringUtils;
@@ -78,6 +79,10 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                 SchedulerTaskContainer schedulerTaskContainer =tenancySchedulerTasks.compute(tenancy + "_" + schedulerTaskName,(key, taskContainer) -> {
                     if (Objects.isNull(taskContainer)){
                         LoadBalanceSchedulerTask<LaunchedExchangisTask> headSchedulerTask = createLoadBalanceSchedulerTask(schedulerTaskClass);
+                        if (headSchedulerTask instanceof AbstractLoadBalanceSchedulerTask){
+                            ((AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask>) headSchedulerTask)
+                                    .setSchedulerLoadBalancer(FlexibleTenancyLoadBalancer.this);
+                        }
                         headSchedulerTask.setTenancy(finalTenancy);
                         try {
                             getScheduler().submit(headSchedulerTask);
@@ -337,8 +342,12 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                 try {
                     LoadBalanceSchedulerTask<LaunchedExchangisTask> schedulerTask =
                             createLoadBalanceSchedulerTask(segments[0].loadBalanceSchedulerTask.getClass());
+                    if (schedulerTask instanceof AbstractLoadBalanceSchedulerTask){
+                        ((AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask>) schedulerTask)
+                                .setSchedulerLoadBalancer(FlexibleTenancyLoadBalancer.this);
+                    }
                     getScheduler().submit(schedulerTask);
-                    segments[i] = new SchedulerTaskSegment(1, schedulerTask);
+                    newSegments[i] = new SchedulerTaskSegment(1, schedulerTask);
                 } catch (Exception e){
                     LOG.warn("Scale-in segments for tenancy: [{}] wrong, index: [{}]", tenancy, i, e);
                 }

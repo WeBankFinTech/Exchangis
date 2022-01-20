@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskExecutionEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskMetricsUpdateEvent;
@@ -81,15 +82,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
 
     @Override
     public void removeRunningTask(String taskId) {
-        LaunchedExchangisTask task = runningTasks.get(taskId);
-        if (Objects.nonNull(task)){
-            onEvent(new TaskStatusUpdateEvent(task, task.getStatus()));
-            runningTasks.remove(taskId);
-            JobWrapper wrapper = jobWrappers.get(task.getJobExecutionId());
-            if (Objects.nonNull(wrapper)){
-                wrapper.removeTask(task);
-            }
-        }
+        removeRunningTaskInner(taskId, true);
     }
 
     @Override
@@ -111,7 +104,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
     public boolean refreshRunningTaskStatus(LaunchedExchangisTask task, TaskStatus status) {
         if (TaskStatus.isCompleted(status)){
             onEvent(new TaskStatusUpdateEvent(task, status));
-            removeRunningTask(task.getTaskId());
+            removeRunningTaskInner(task.getTaskId(), false);
             return true;
         } else {
             task = runningTasks.computeIfPresent(task.getTaskId(), (taskId, runningTask) -> {
@@ -140,12 +133,35 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
     }
 
     /**
+     * Remove inner
+     * @param taskId task id
+     * @param updateStatus if update status
+     */
+    private void removeRunningTaskInner(String taskId, boolean updateStatus){
+        LaunchedExchangisTask task = runningTasks.get(taskId);
+        if (Objects.nonNull(task)){
+            if (updateStatus) {
+                onEvent(new TaskStatusUpdateEvent(task, task.getStatus()));
+            }
+            runningTasks.remove(taskId);
+            JobWrapper wrapper = jobWrappers.get(task.getJobExecutionId());
+            if (Objects.nonNull(wrapper)){
+                wrapper.removeTask(task);
+            }
+        }
+    }
+    /**
      * OnEvent
      * @param event event entity
      */
-    private void onEvent(TaskExecutionEvent event){
+    public void onEvent(TaskExecutionEvent event){
         try {
             executionListener.onEvent(event);
+            Optional.ofNullable(getJobLogListener()).ifPresent(jobLogListener -> {
+                if (event instanceof TaskStatusUpdateEvent){
+
+                }
+            });
         } catch (Exception e) {
             throw new ExchangisTaskExecuteException.Runtime("Fail to call 'onEvent' event: [id: " + event.eventId() +", type:" + event.getClass().getSimpleName() +"]", e);
         }
