@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="create_time" property="createTime"/>
+        <result column="last_update_time" property="lastUpdateTime"/>
+        <result column="job_id" property="jobId"/>
+        <result column="job_execution_id" property="jobExecutionId"/>
+        <result column="engine_type" property="engineType"/>
+        <result column="execute_user" property="executeUser"/>
+        <result column="job_name" property="jobName"/>
+        <result column="status" property="status"/>
+        <result column="progress" property="progress"/>
+        <result column="error_code" property="errorCode"/>
+        <result column="error_msg" property="errorMessage"/>
+        <result column="retry_num" property="retryNum"/>
+        <result column="log_path" property="logPath"/>
+    </resultMap>
+
+    <sql id="TableName">
+        exchangis_launched_job_entity
+    </sql>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        id, name, create_time, last_update_time, job_id, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path    </sql>
+
+    <insert id="insertLaunchedJob" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
+        insert into
+        <include refid="TableName"/>
+        (id, name, create_time, last_update_time, job_id, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path)
+        values(
+        #{id},
+        #{name},
+        #{createTime},
+        #{lastUpdateTime},
+        #{jobId},
+        #{jobExecutionId},
+        #{engineType},
+        #{executeUser},
+        #{jobName},
+        #{status},
+        #{progress},
+        #{errorCode},
+        #{errorMessage},
+        #{retryNum},
+        #{logPath}
+        );
+    </insert>
+
+    <delete id="jobExecutionId">
+        DELETE FROM <include refid="TableName"/> WHERE
+        job_execution_id = #{jobExecutionId}
+    </delete>
+
+    <update id="upgrateLaunchedJob">
+        UPDATE <include refid="TableName"/>
+        SET
+        id = #{id},
+        name = #{name},
+        create_time = #{createTime},
+        last_update_time = #{lastUpdateTime},
+        job_id = #{jobId},
+        job_execution_id = #{jobExecutionId},
+        engine_type = #{engineType},
+        execute_user = #{execute_user},
+        job_name = #{jobName},
+        status = #{status},
+        progress = #{progress},
+        error_code = #{errorCode},
+        error_msg = #{errorMessage},
+        retry_num = #{retryNum},
+        log_path = #{logPath}
+    </update>
+
+    <select id="searchLaunchedJob" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
+        select
+        <include refid="BaseColumnList"/>
+        from
+        <include refid="TableName" />
+        where job_execution_id = #{jobExecutionId}
+    </select>
+
+    <update id="upgradeLaunchedJobStatus">
+        UPDATE <include refid="TableName"/>
+        SET
+        status = #{status}
+        WHERE
+        job_execution_id = #{jobExecutionId}
+    </update>
+
+</mapper>

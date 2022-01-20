@@ -19,6 +19,8 @@ public class GenericExchangisJob implements ExchangisJob {
 
     protected String engineType;
 
+    private String jobLabel;
+
     private Map<String, Object> labelHolder = new HashMap<>();
 
     protected Date createTime;
@@ -75,6 +77,16 @@ public class GenericExchangisJob implements ExchangisJob {
     @Override
     public void setEngineType(String engineType) {
         this.engineType = engineType;
+    }
+
+    @Override
+    public String getJobLabel() {
+        return jobLabel;
+    }
+
+    @Override
+    public void setJobLabel(String jobLabel) {
+        this.jobLabel = jobLabel;
     }
 
     @Override
