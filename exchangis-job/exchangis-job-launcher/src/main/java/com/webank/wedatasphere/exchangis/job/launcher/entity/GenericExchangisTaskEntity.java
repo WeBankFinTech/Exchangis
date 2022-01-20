@@ -25,7 +25,7 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
 
     protected String jobName;
 
-    protected TaskStatus status;
+    protected TaskStatus status = TaskStatus.Inited;
 
     protected double progress = 0.0;
 

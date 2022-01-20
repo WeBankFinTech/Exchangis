@@ -11,6 +11,8 @@ import org.apache.linkis.scheduler.queue.JobInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 /**
  * Metric update scheduler task
  */
@@ -28,8 +30,9 @@ public class MetricUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
 
     @Override
     protected void onPoll(LaunchedExchangisTask launchedExchangisTask) throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
-        LOG.info("Metrics update task: [" + launchedExchangisTask.getId() + "]");
-//        launchedExchangisTask.callMetricsUpdate();
+        LOG.trace("Metrics update task: [{}] in scheduler: [{}", launchedExchangisTask.getId(), getName());
+        Map<String, Object> metricsMap = launchedExchangisTask.callMetricsUpdate();
+        taskManager.refreshRunningTaskMetrics(launchedExchangisTask, metricsMap);
     }
 
     @Override
@@ -44,7 +47,7 @@ public class MetricUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
 
     @Override
     public String getName() {
-        return getId();
+        return getId() + "-Metric";
     }
 
     @Override
