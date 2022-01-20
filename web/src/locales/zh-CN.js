@@ -97,6 +97,7 @@ export default {
       title: {
         create: "创建数据源",
         edit: "修改数据源",
+        read: "查看数据源"
       },
       form: {
         fields: {
