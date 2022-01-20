@@ -82,7 +82,7 @@
           <template #version="{ text }">
             <a-button
               size="small"
-              @click="handleOpenVersionModal(text.id)"
+              @click="handleOpenVersionModal(text)"
               type="link"
               >{{ text.versionId }}</a-button
             >
@@ -101,6 +101,8 @@
     <version-modal
       v-model:visible="versionModalCfg.visible"
       :id="versionModalCfg.id"
+      :rowInfo="versionModalCfg.rowInfo"
+      @openModal="openModal"
     />
     <edit-modal
       v-model:visible="modalCfg.visible"
@@ -231,7 +233,8 @@ export default {
       // 版本弹窗
       versionModalCfg: {
         id: "",
-        visible: false,
+        rowInfo: {},
+        visible: false
       },
     };
   },
@@ -247,10 +250,11 @@ export default {
       this.getDataSourceList(data);
     },
     // 打开版本弹框
-    handleOpenVersionModal(id) {
+    handleOpenVersionModal(text) {
       this.versionModalCfg = {
         visible: true,
-        id: id,
+        rowInfo: text,
+        id: text.id,
       };
     },
     // 处理选择类型
@@ -305,6 +309,16 @@ export default {
       let { list } = await getDataSourceTypes();
       this.sourceTypeList = list;
     },
+    openModal(info, rowInfo) {
+      this.modalCfg = {
+        mode: "read",
+        id: info.datasourceId,
+        versionId: info.versionId,
+        type: rowInfo.dataSourceTypeId,
+        visible: true,
+        createSystem: rowInfo.createSystem
+      };
+    }
   },
   mounted() {
     this.getDataSourceList();

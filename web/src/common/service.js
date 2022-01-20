@@ -102,8 +102,8 @@ export const testDataSourceConnect = (type, id) => {
   return request(`/datasources/${type}/${id}/connect`, {}, { method: "PUT" });
 };
 
-export const getDataSourceById = (id) => {
-  return request(`/datasources/${id}`, {}, { method: "GET" });
+export const getDataSourceById = (id, versionId) => {
+  return request(`/datasources/${id}`, {versionId}, { method: "GET" });
 };
 
 export const getJobInfo = (id) => {

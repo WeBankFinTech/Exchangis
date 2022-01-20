@@ -27,7 +27,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, h, toRaw, watch, computed, reactive, ref, nextTick } from "vue"
+import { defineComponent, h, toRaw, watch, computed, reactive, ref, nextTick, onBeforeUnmount} from "vue"
 import { getJobExecLog, getTaskExecLog } from "@/common/service"
 import { message, notification } from "ant-design-vue";
 
@@ -166,6 +166,10 @@ export default defineComponent({
       _resetData()
       changeData(curLogId)
     }
+
+    onBeforeUnmount(() => {
+      clearInterval(showLogTimer)
+    })
 
     return {
       curLogId: ref(curLogId),
