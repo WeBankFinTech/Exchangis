@@ -10,6 +10,7 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
+import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,31 +21,99 @@ import java.util.function.BiFunction;
 import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.REALM_JOB_CONTENT_SINK;
 import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.REALM_JOB_CONTENT_SOURCE;
 import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.REALM_JOB_SETTINGS;
+import static com.webank.wedatasphere.exchangis.job.server.builder.engine.SqoopExchangisEngineJobBuilder.MODE_TYPE.IMPORT;
 
 public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<SubExchangisJob, ExchangisEngineJob> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SqoopExchangisEngineJobBuilder.class);
 
+    private static final List<String> SUPPORT_BIG_DATA_TYPES = Arrays.asList("HIVE", "HBASE");
+
+    private static final List<String> SUPPORT_RDBMS_TYPES = Arrays.asList("MYSQL", "ORACLE");
+
+    public enum MODE_TYPE { IMPORT, EXPORT}
     /**
-     * Mapping params
+     * Verbose, default null (means not open verbose)
+     */
+    private static final JobParamDefine<String> VERBOSE = JobParams.define("sqoop.args.verbose", (BiFunction<String, SubExchangisJob, String>) (k, job) -> null);
+    /**
+     * Sqoop mode
+     */
+    private static final JobParamDefine<String> MODE = JobParams.define("sqoop.mode", (BiFunction<String, SubExchangisJob, String>) (k, job) -> SUPPORT_BIG_DATA_TYPES.contains(job.getSourceType().toUpperCase())? "import": "export");
+
+    /**
+     * Driver default 'com.mysql.jdbc.Driver'
+     */
+    private static final JobParamDefine<String> CONNECT_DRIVER = JobParams.define("sqoop.args.driver", (BiFunction<String, SubExchangisJob, String>)(k, job) -> "com.mysql.jdbc.Driver");
+
+    private static final JobParamDefine<String> CONNECT_PROTOCOL = JobParams.define("sqoop.args.protocol", () -> "jdbc:mysql://%s:%s/%s");
+    /**
+     * Number of mapper
+     */
+    private static final JobParamDefine<Integer> NUM_MAPPERS = JobParams.define("sqoop.args.num.mappers", (BiFunction<String, SubExchangisJob, Integer>) (k, job) -> {
+        int numMappers = 1;
+        JobParamSet settings = job.getRealmParams(REALM_JOB_SETTINGS);
+        JobParam<?> parallel = settings.get(JobParamConstraints.SETTINGS_MAX_PARALLEL);
+        if (Objects.nonNull(parallel)){
+            Object value = parallel.getValue();
+            try {
+                return Integer.parseInt(String.valueOf(value));
+            }catch( NumberFormatException exception){
+                //Ignore
+            }
+        }
+        return numMappers;
+    });
+
+    /**
+     * Connect string
+     */
+    private static final JobParamDefine<String> CONNECT_STRING = JobParams.define("sqoop.args.connect", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
+        JobParam<String> modeParam = MODE.get(job);
+        if (StringUtils.isNotBlank(modeParam.getValue())){
+            MODE_TYPE mode = MODE_TYPE.valueOf(modeParam.getValue().toUpperCase());
+            JobParamSet paramSet = mode.equals(IMPORT)? job.getRealmParams(REALM_JOB_CONTENT_SOURCE) : job.getRealmParams(REALM_JOB_CONTENT_SINK);
+            String host = (String)paramSet.get(JobParamConstraints.HOST).getValue();
+            String database = (String)paramSet.get(JobParamConstraints.DATABASE).getValue();
+            Integer port = Integer.parseInt(String.valueOf(paramSet.get(JobParamConstraints.PORT).getValue()));
+            return String.format(CONNECT_PROTOCOL.get(job).getValue(), host, port, database);
+        }
+        return null;
+    });
+    /**
+     * Mapping params (ExchangisJobContent -> transforms -> mapping)
      */
     private static final JobParamDefine<List<Map<String, Object>>> TRANSFORM_MAPPING = JobParams.define("mapping");
+    /**
+     * Source field name in mapping
+     */
     private static final JobParamDefine<String> SOURCE_FIELD_NAME = JobParams.define("name", "source_field_name", String.class);
+    /**
+     * Sink field name in mapping
+     */
     private static final JobParamDefine<String> SINK_FIELD_NAME = JobParams.define("name", "sink_field_name", String.class);
-    private static final JobParamDefine<String> QUERY_STRING = JobParams.define("sqoop.args.query");
 
-    private static final JobParamDefine<String> COLUMN_SERIAL = JobParams.define("sqoop.args.columns", (BiFunction<String, DataSourceJobParamSet, String>) (key, paramSet) -> {
-        List<Map<String, Object>> mappings = TRANSFORM_MAPPING.newParam(paramSet.jobParamSet).getValue();
+    /**
+     * Query string in params
+     */
+    private static final JobParamDefine<String> QUERY_STRING = JobParams.define("sqoop.args.query", "query");
+
+    /**
+     * Column serializer
+     */
+    private static final JobParamDefine<String> COLUMN_SERIAL = JobParams.define("sqoop.args.columns", (BiFunction<String, SubExchangisJob, String>) (key, job) -> {
+        List<Map<String, Object>> mappings = TRANSFORM_MAPPING.get(job.getRealmParams(SubExchangisJob.REALM_JOB_COLUMN_MAPPING)).getValue();
         List<String> columnSerial = new ArrayList<>();
         if (Objects.nonNull(mappings)) {
-            if ("mysql".equalsIgnoreCase(paramSet.sourceType)) {
+            if (SUPPORT_RDBMS_TYPES.contains(job.getSourceType().toUpperCase())) {
                 mappings.forEach(mapping -> Optional.ofNullable(SOURCE_FIELD_NAME.newParam(mapping).getValue()).ifPresent(columnSerial::add));
-            } else if ("mysql".equalsIgnoreCase(paramSet.sinkType)) {
+            } else if (SUPPORT_RDBMS_TYPES.contains(job.getSinkType().toUpperCase())) {
                 mappings.forEach(mapping -> Optional.ofNullable(SINK_FIELD_NAME.newParam(mapping).getValue()).ifPresent(columnSerial::add));
             }
         }
         return StringUtils.join(columnSerial, ",");
     });
+
 
     private static final JobParamDefine<Map<String, Object>> HIVE_HCATALOG_EXPORT = JobParams.define("sqoop.hcatalog", (BiFunction<String, SubExchangisJob, Map<String, Object>>) (k, job) -> {
         Map<String, Object> params = new HashMap<>();
@@ -79,23 +148,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         return params;
     });
 
-    private static final JobParamDefine<String> NUM_MAPPERS = JobParams.define("sqoop.args.num.mappers", (BiFunction<String, JobParamSet, String>) (k, settings) -> {
-        String numMappers = "1";
-        if (null != settings.get("exchangis.sqoop.setting.max.parallelism")) {
-            JobParam<?> jobParam = settings.get("exchangis.sqoop.setting.max.parallelism");
-            if (null != jobParam) {
-                Object value = jobParam.getValue();
-                if (null != value && StringUtils.isNotBlank(value.toString())) {
-                    return value.toString();
-                }
-            }
-        }
-        return numMappers;
-    });
 
-    private static final JobParamDefine<String> MODE = JobParams.define("sqoop.mode", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
-        return job.getSourceType().equalsIgnoreCase("HIVE") ? "export" : "import";
-    });
 
     private static final JobParamDefine<String> RDBMS = JobParams.define("rdbms.type", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         return job.getSourceType().equalsIgnoreCase("HIVE") ? job.getSinkType() : job.getSourceType();
@@ -136,6 +189,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
                 Map<String, Object> exportParams = this.buildExportParam(inputJob, expectOut, ctx, jobSettings, sourceSettings, sinkSettings);
                 sqoopParams.putAll(exportParams);
             }
+
 
             resolveTransformMappings(inputJob, inputJob.getRealmParams(SubExchangisJob.REALM_JOB_COLUMN_MAPPING), sqoopParams);
 

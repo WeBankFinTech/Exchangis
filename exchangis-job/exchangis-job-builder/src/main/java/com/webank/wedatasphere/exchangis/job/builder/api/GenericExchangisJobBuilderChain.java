@@ -36,7 +36,7 @@ public class GenericExchangisJobBuilderChain<T extends ExchangisJob, E extends E
         if (Objects.nonNull(inputJob)){
             for( ExchangisJobBuilder<T, E> builder : builderChain){
                 if(builder.canBuild(inputJob)){
-                    expectJob.set(builder.buildJob(inputJob, expectJob.get(), ctx));
+                    expectJob.set(builder.build(inputJob, expectJob.get(), ctx));
                 }
             }
         }
