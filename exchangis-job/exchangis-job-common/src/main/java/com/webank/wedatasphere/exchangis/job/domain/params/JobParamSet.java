@@ -25,11 +25,11 @@ public class JobParamSet {
 
 
     public JobParamSet add(JobParamDefine<?> jobParamDefine){
-        return add(prepare(jobParamDefine));
+        return add(prepare(jobParamDefine, this));
     }
 
     public JobParamSet addNonNull(JobParamDefine<?> jobParamDefine){
-        JobParam<?> prepared = prepare(jobParamDefine);
+        JobParam<?> prepared = prepare(jobParamDefine, this);
         if(Objects.nonNull(prepared.getValue())){
             return add(prepared);
         }
@@ -46,14 +46,18 @@ public class JobParamSet {
     }
 
     public JobParamSet add(String key, JobParamDefine<?> jobParamDefine){
-        return add(key, prepare(jobParamDefine));
+        return add(key, prepare(jobParamDefine, this));
+    }
+
+    public <T>JobParam<T> load(JobParamDefine<T> jobParamDefine){
+        return load(jobParamDefine, this);
     }
 
     @SuppressWarnings("unchecked")
-    public <T>JobParam<T> load(JobParamDefine<T> jobParamDefine){
+    public <T>JobParam<T> load(JobParamDefine<T> jobParamDefine, Object source){
         return (JobParam<T>) jobParamStore.compute(jobParamDefine.getKey(), (key, value) -> {
             if (Objects.isNull(value)) {
-                value = prepare(jobParamDefine);
+                value = prepare(jobParamDefine, source);
             }
             return value;
         });
@@ -98,8 +102,8 @@ public class JobParamSet {
      * New param from definition
      * @param jobParam
      */
-    private <T>JobParam<T> prepare(JobParamDefine<T> jobParam){
-         return jobParam.newParam(this);
+    private <T>JobParam<T> prepare(JobParamDefine<T> jobParam, Object source){
+         return jobParam.newParam(source);
     }
 
 }
