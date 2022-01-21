@@ -249,10 +249,10 @@
                 <a-progress :percent="jobProgress.percent" :success-percent="jobProgress.successPercent"/>
               </a-tooltip>
             </div>
-            <div v-if="jobProgress.tasks && jobProgress.tasks.running" class="job-progress-wrap">
+            <div v-if="jobProgress.tasks && jobProgress.tasks.Running" class="job-progress-wrap">
               <span class="job-progress-title">正在运行</span>
               <div class="job-progress-body">
-                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.running">
+                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Running">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress status="active" :percent="progress.progress" />
                   <div class="job-progress-percent" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px">
@@ -908,6 +908,7 @@ export default {
         executeJob(id)
           .then((res) => {
             this.jobExecutionId = res.jobExecutionId
+            this.visibleLog = true
             this.getStatus(res.jobExecutionId)
           })
           .catch((err) => {
@@ -957,12 +958,8 @@ export default {
     getTasks(jobExecutionId) {
       getJobTasks(jobExecutionId)
         .then(res => {
-          this.tasklist = res.tasks || res.result
-          this.visibleLog = true
+          this.tasklist = res.tasks
           this.getJobProgress()
-//          this.showLogTimer = setInterval(() => {
-//            this.showInfoLog()
-//          }, 1000*10)
         })
         .catch(err => {
           message.error("查询任务列表失败");
@@ -975,7 +972,7 @@ export default {
             if (res.job && res.job.tasks) {
               res.job.successTasks = res.job.tasks.Success?.length || 0
               res.job.initedTasks = res.job.tasks.Inited?.length || 0
-              res.job.runningTasks = res.job.tasks.running?.length || 0
+              res.job.runningTasks = res.job.tasks.Running?.length || 0
               res.job.totalTasks = this.tasklist.length
               res.job.successPercent = res.job.successTasks * 100 / res.job.totalTasks
               res.job.percent = (res.job.successTasks + res.job.runningTasks) * 100 / res.job.totalTasks
