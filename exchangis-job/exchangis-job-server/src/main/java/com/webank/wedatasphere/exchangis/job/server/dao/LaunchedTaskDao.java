@@ -74,5 +74,12 @@ public interface LaunchedTaskDao {
 
     List<String> getTaskMetricsByJobExecutionId(@Param("jobExecutionId") String jobExecutionId);
 
+    /**
+     * search launchedTaskList by taskId and jobExecutionId
+     * @param jobExecutionId
+     */
+
+    LaunchedExchangisTaskEntity getLaunchedTaskMetrics(@Param("jobExecutionId") String jobExecutionId, @Param("taskId") String taskId);
+
 
 }

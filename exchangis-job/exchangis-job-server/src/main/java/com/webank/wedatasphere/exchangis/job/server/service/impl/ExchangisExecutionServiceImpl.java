@@ -1,14 +1,21 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import com.google.common.base.Joiner;
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
+import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
+import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskIndicatorMetricsDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskResourceUsedMetricsDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskTrafficMetricsDTO;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import org.apache.linkis.server.Message;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +27,25 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
     @Autowired
     private ExchangisJobService exchangisJobService;
 
+    @Autowired
+    private LaunchedTaskDao launchedTaskDao;
+
+    @Autowired
+    private LaunchedJobDao launchedJobDao;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
     public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) {
+        List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId);
         List<ExchangisJobTaskVo> jobTaskList = new ArrayList<>();
+        launchedExchangisTaskEntities.forEach(taskEntity -> {
+                    ExchangisJobTaskVo exchangisTaskVO = modelMapper.map(taskEntity, ExchangisJobTaskVo.class);
+                    jobTaskList.add(exchangisTaskVO);
+                }
+        );
+        /*List<ExchangisJobTaskVo> jobTaskList = new ArrayList<>();
         Date date = new Date();
         //LaunchedExchangisTaskEntity launchedExchangisTaskEntity = new LaunchedExchangisTaskEntity();
         ExchangisJobTaskVo launchedTaskEntity1 = new ExchangisJobTaskVo((long) 5, "test-1", "Inited",
@@ -32,23 +55,42 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
 
         jobTaskList.add(launchedTaskEntity1);
 
-        jobTaskList.add(launchedTaskEntity2);
+        jobTaskList.add(launchedTaskEntity2);*/
 
         return jobTaskList;
     }
 
     @Override
     public ExchangisJobProgressVo getExecutedJobProgressInfo(String jobExecutionId) {
-        ExchangisJobProgressVo jobProgressVo = new ExchangisJobProgressVo(TaskStatus.Running, 0.1);
+        LaunchedExchangisJobEntity launchedExchangisJobEntity = launchedJobDao.searchLaunchedJob(jobExecutionId);
+        ExchangisJobProgressVo jobProgressVo = modelMapper.map(launchedExchangisJobEntity, ExchangisJobProgressVo.class);
+        List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntity = launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId);
+        launchedExchangisTaskEntity.forEach(taskEntity -> {
+            jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), taskEntity.getStatus(), taskEntity.getProgress()));
+        });
+        /*ExchangisJobProgressVo jobProgressVo = new ExchangisJobProgressVo(TaskStatus.Running, 0.1);
         jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo("5", "test-5", TaskStatus.Running, 0.1d));
         jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo("6", "test-6", TaskStatus.Inited, 0.1d));
-        jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo("7", "test-7", TaskStatus.Success, 1d));
+        jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo("7", "test-7", TaskStatus.Success, 1d));*/
+        return jobProgressVo;
+    }
+
+    @Override
+    public ExchangisJobProgressVo getJobStatus(String jobExecutionId) {
+        LaunchedExchangisJobEntity launchedExchangisJobEntity = launchedJobDao.searchLaunchedJob(jobExecutionId);
+        ExchangisJobProgressVo jobProgressVo = modelMapper.map(launchedExchangisJobEntity, ExchangisJobProgressVo.class);
         return jobProgressVo;
     }
 
     @Override
     public ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskId, String jobExecutionId) {
-        Map<String, Object> metrics = new HashMap<>();
+        LaunchedExchangisTaskEntity launchedExchangisTaskEntity = launchedTaskDao.getLaunchedTaskMetrics(jobExecutionId, taskId);
+        ExchangisLaunchedTaskMetricsVO exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVO();
+        exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
+        exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
+        exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
+        exchangisLaunchedTaskVo.setMetrics(launchedExchangisTaskEntity.getMetricsMap());
+        /*Map<String, Object> metrics = new HashMap<>();
         ExchangisTaskResourceUsedMetricsDTO resourceUsed = new ExchangisTaskResourceUsedMetricsDTO();
         ExchangisTaskTrafficMetricsDTO traffic = new ExchangisTaskTrafficMetricsDTO();
         ExchangisTaskIndicatorMetricsDTO indicator = new ExchangisTaskIndicatorMetricsDTO();
@@ -68,9 +110,9 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
         metrics.put("traffic", traffic);
         metrics.put("indicator", indicator);
 
-        ExchangisLaunchedTaskMetricsVO exchangisLaunchedTaskEntity = new ExchangisLaunchedTaskMetricsVO((long) 12, "task12", "running", metrics);
+        ExchangisLaunchedTaskMetricsVO exchangisLaunchedTaskEntity = new ExchangisLaunchedTaskMetricsVO((long) 12, "task12", "running", metrics);*/
 
-        return exchangisLaunchedTaskEntity;
+        return exchangisLaunchedTaskVo;
     }
 
     @Override
