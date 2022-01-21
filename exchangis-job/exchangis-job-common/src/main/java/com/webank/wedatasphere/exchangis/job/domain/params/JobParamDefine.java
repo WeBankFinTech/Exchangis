@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.domain.params;
 
 
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
@@ -8,6 +9,9 @@ import java.util.function.BiFunction;
  * @param <T>
  */
 public class JobParamDefine<T>{
+
+    public static ThreadLocal<JobParamSet> defaultParam = new ThreadLocal<>();
+
     private String key;
 
     private BiFunction<String, Object, T> valueLoader;
@@ -26,8 +30,27 @@ public class JobParamDefine<T>{
         return valueLoader;
     }
 
+    /**
+     * New one param
+     * @param source source
+     * @return
+     */
     public JobParam<T> newParam(Object source){
         JobParam<T> jobParam = new DefaultJobParam<>(key, valueLoader);
         return jobParam.loadValue(source);
+    }
+
+
+    /**
+     * Get param from source (if param has been exist,it will not invoke the loadValue method)
+     * @param source source
+     * @return
+     */
+    public JobParam<T> get(Object source){
+        JobParamSet paramSet = defaultParam.get();
+        if (Objects.nonNull(paramSet)){
+           return paramSet.load(this, source);
+        }
+        return newParam(source);
     }
 }
