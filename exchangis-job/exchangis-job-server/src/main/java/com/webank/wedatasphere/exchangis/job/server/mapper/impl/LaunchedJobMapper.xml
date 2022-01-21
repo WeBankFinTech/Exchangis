@@ -3,7 +3,7 @@
 <mapper namespace="com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
+    <resultMap id="LaunchedJobMap" type="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
         <result column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="create_time" property="createTime"/>
@@ -60,7 +60,6 @@
     <update id="upgrateLaunchedJob">
         UPDATE <include refid="TableName"/>
         SET
-        id = #{id},
         name = #{name},
         create_time = #{createTime},
         last_update_time = #{lastUpdateTime},
@@ -75,6 +74,7 @@
         error_msg = #{errorMessage},
         retry_num = #{retryNum},
         log_path = #{logPath}
+        where id = #{id}
     </update>
 
     <select id="searchLaunchedJob" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">

@@ -179,4 +179,13 @@
         where job_execution_id = #{job_execution_id}
     </select>
 
+    <select id="getLaunchedTaskMetrics" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
+        select
+        <include refid="BaseColumnList"/>
+        from
+        <include refid="TableName" />
+        where job_execution_id = #{jobExecutionId}
+        and taskId = #{taskId}
+    </select>
+
 </mapper>
