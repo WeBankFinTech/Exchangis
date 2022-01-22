@@ -62,6 +62,7 @@ public class JobParamSet {
             return value;
         });
     }
+
     public JobParamSet combine(JobParamSet paramSet){
         Map<String, JobParam<?>> other = paramSet.jobParamStore;
         this.jobParamStore.putAll(other);
@@ -72,10 +73,15 @@ public class JobParamSet {
      * @param key param key
      * @return param entity
      */
-    public JobParam<?> get(String key){
-        return jobParamStore.get(key);
+    @SuppressWarnings("unchecked")
+    public <T>JobParam<T> get(String key){
+        return (JobParam<T>)jobParamStore.get(key);
     }
 
+    @SuppressWarnings("unchecked")
+    public <T>JobParam<T> get(String key, Class<T> type){
+        return (JobParam<T>)jobParamStore.get(key);
+    }
     /**
      * Remove
      * @param key param key
@@ -106,4 +112,7 @@ public class JobParamSet {
          return jobParam.newParam(source);
     }
 
+    public static void main(String[] args){
+        JobParam<String> ok = new JobParamSet().get("ok");
+    }
 }
