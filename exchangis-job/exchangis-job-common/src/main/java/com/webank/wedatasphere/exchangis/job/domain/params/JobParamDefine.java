@@ -40,7 +40,9 @@ public class JobParamDefine<T>{
         return jobParam.loadValue(source);
     }
 
-
+    public T newValue(Object source){
+        return newParam(source).getValue();
+    }
     /**
      * Get param from source (if param has been exist,it will not invoke the loadValue method)
      * @param source source
@@ -53,4 +55,9 @@ public class JobParamDefine<T>{
         }
         return newParam(source);
     }
+
+    public T getValue(Object source){
+        return get(source).getValue();
+    }
+
 }
