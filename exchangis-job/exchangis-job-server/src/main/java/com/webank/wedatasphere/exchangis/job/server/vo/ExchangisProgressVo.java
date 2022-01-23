@@ -8,6 +8,10 @@ public class ExchangisProgressVo {
 
     protected Double progress = 0.0d;
 
+    public ExchangisProgressVo(){
+
+    }
+
     public ExchangisProgressVo(TaskStatus status, Double progress){
         this.status = status;
         this.progress = progress;

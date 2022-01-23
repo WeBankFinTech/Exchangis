@@ -10,12 +10,15 @@ import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskIndicatorMetricsDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskResourceUsedMetricsDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskTrafficMetricsDTO;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import org.apache.linkis.server.Message;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,94 +26,81 @@ import java.util.*;
 
 @Service
 public class ExchangisExecutionServiceImpl implements ExchangisExecutionService {
+    private final static Logger logger = LoggerFactory.getLogger(ExchangisExecutionServiceImpl.class);
 
-    @Autowired
-    private ExchangisJobService exchangisJobService;
-
-    @Autowired
+    @Autowired(required=true)
     private LaunchedTaskDao launchedTaskDao;
 
-    @Autowired
+    @Autowired(required=true)
     private LaunchedJobDao launchedJobDao;
 
-    @Autowired
+    @Autowired(required=true)
     private ModelMapper modelMapper;
 
     @Override
     public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) {
         List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId);
         List<ExchangisJobTaskVo> jobTaskList = new ArrayList<>();
-        launchedExchangisTaskEntities.forEach(taskEntity -> {
-                    ExchangisJobTaskVo exchangisTaskVO = modelMapper.map(taskEntity, ExchangisJobTaskVo.class);
-                    jobTaskList.add(exchangisTaskVO);
-                }
-        );
-        /*List<ExchangisJobTaskVo> jobTaskList = new ArrayList<>();
-        Date date = new Date();
-        //LaunchedExchangisTaskEntity launchedExchangisTaskEntity = new LaunchedExchangisTaskEntity();
-        ExchangisJobTaskVo launchedTaskEntity1 = new ExchangisJobTaskVo((long) 5, "test-1", "Inited",
-                date, date, date, "sqoop", null, null, "enjoyyin");
-        ExchangisJobTaskVo launchedTaskEntity2 = new ExchangisJobTaskVo((long) 7, "test-7", "Running",
-                date, date, date, "datax", null, null, "tikazhang");
-
-        jobTaskList.add(launchedTaskEntity1);
-
-        jobTaskList.add(launchedTaskEntity2);*/
+        if(launchedExchangisTaskEntities != null) {
+            try {
+                launchedExchangisTaskEntities.forEach(taskEntity -> {
+                            ExchangisJobTaskVo exchangisTaskVO = modelMapper.map(taskEntity, ExchangisJobTaskVo.class);
+                            jobTaskList.add(exchangisTaskVO);
+                        }
+                );
+            } catch (Exception e) {
+                logger.error("Exception happened while get TaskLists mapping to Vo(获取task列表映射至页面是出错，请校验任务信息), " + "message: " + e.getMessage(), e);
+            }
+        }
 
         return jobTaskList;
     }
 
     @Override
-    public ExchangisJobProgressVo getExecutedJobProgressInfo(String jobExecutionId) {
+    public ExchangisJobProgressVo getExecutedJobProgressInfo(String jobExecutionId) throws ExchangisJobErrorException {
         LaunchedExchangisJobEntity launchedExchangisJobEntity = launchedJobDao.searchLaunchedJob(jobExecutionId);
-        ExchangisJobProgressVo jobProgressVo = modelMapper.map(launchedExchangisJobEntity, ExchangisJobProgressVo.class);
-        List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntity = launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId);
-        launchedExchangisTaskEntity.forEach(taskEntity -> {
-            jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), taskEntity.getStatus(), taskEntity.getProgress()));
-        });
-        /*ExchangisJobProgressVo jobProgressVo = new ExchangisJobProgressVo(TaskStatus.Running, 0.1);
-        jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo("5", "test-5", TaskStatus.Running, 0.1d));
-        jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo("6", "test-6", TaskStatus.Inited, 0.1d));
-        jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo("7", "test-7", TaskStatus.Success, 1d));*/
+        if (launchedExchangisJobEntity == null) {
+            throw new ExchangisJobErrorException(31100, "Get jobProgress information is null(獲取job进度信息为空), " + "jobExecutionId = " + jobExecutionId);
+        }
+        ExchangisJobProgressVo jobProgressVo = null;
+        try {
+            jobProgressVo = modelMapper.map(launchedExchangisJobEntity, ExchangisJobProgressVo.class);
+            List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntity = launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId);
+            ExchangisJobProgressVo finalJobProgressVo = jobProgressVo;
+            launchedExchangisTaskEntity.forEach(taskEntity -> {
+                finalJobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), TaskStatus.valueOf(taskEntity.getStatus()), taskEntity.getProgress()));
+                //jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), taskEntity.getStatus(), taskEntity.getProgress()));
+            });
+        } catch (Exception e){
+            logger.error("Get job and task progress happen execption ," +  "[jobExecutionId =" + jobExecutionId + "]", e);
+        }
         return jobProgressVo;
     }
 
     @Override
     public ExchangisJobProgressVo getJobStatus(String jobExecutionId) {
         LaunchedExchangisJobEntity launchedExchangisJobEntity = launchedJobDao.searchLaunchedJob(jobExecutionId);
-        ExchangisJobProgressVo jobProgressVo = modelMapper.map(launchedExchangisJobEntity, ExchangisJobProgressVo.class);
+        ExchangisJobProgressVo jobProgressVo = null;
+        try {
+            jobProgressVo = modelMapper.map(launchedExchangisJobEntity, ExchangisJobProgressVo.class);
+        } catch (Exception e) {
+            logger.error("Get job status happen execption, " +  "[jobExecutionId =" + jobExecutionId + "]（获取作业状态错误）", e);
+        }
         return jobProgressVo;
     }
 
     @Override
-    public ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskId, String jobExecutionId) {
+    public ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskId, String jobExecutionId) throws ExchangisJobErrorException {
         LaunchedExchangisTaskEntity launchedExchangisTaskEntity = launchedTaskDao.getLaunchedTaskMetrics(jobExecutionId, taskId);
+        if (launchedExchangisTaskEntity == null) {
+            throw new ExchangisJobErrorException(31100, "Get task metrics happened Exception (獲取task指标信息为空), " + "jobExecutionId = " + jobExecutionId+ "taskId = " + taskId);
+        }
         ExchangisLaunchedTaskMetricsVO exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVO();
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
-        exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
+        exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus());
+        //exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
         exchangisLaunchedTaskVo.setMetrics(launchedExchangisTaskEntity.getMetricsMap());
-        /*Map<String, Object> metrics = new HashMap<>();
-        ExchangisTaskResourceUsedMetricsDTO resourceUsed = new ExchangisTaskResourceUsedMetricsDTO();
-        ExchangisTaskTrafficMetricsDTO traffic = new ExchangisTaskTrafficMetricsDTO();
-        ExchangisTaskIndicatorMetricsDTO indicator = new ExchangisTaskIndicatorMetricsDTO();
-
-        resourceUsed.setCpu(0.25);
-        resourceUsed.setMemory((long) 20);
-
-        traffic.setSource("mysql");
-        traffic.setSink("hive");
-        traffic.setFlow((long) 100);
-
-        indicator.setExchangedRecords((long) 109345);
-        indicator.setErrorRecords((long) 5);
-        indicator.setIgnoredRecords((long) 5);
-
-        metrics.put("resourceUsed", resourceUsed);
-        metrics.put("traffic", traffic);
-        metrics.put("indicator", indicator);
-
-        ExchangisLaunchedTaskMetricsVO exchangisLaunchedTaskEntity = new ExchangisLaunchedTaskMetricsVO((long) 12, "task12", "running", metrics);*/
 
         return exchangisLaunchedTaskVo;
     }
