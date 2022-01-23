@@ -11,5 +11,5 @@ public interface TaskGeneratorContext {
      * Job Log listener
      * @return
      */
-    JobLogListener gtJobLogListener();
+    JobLogListener getJobLogListener();
 }

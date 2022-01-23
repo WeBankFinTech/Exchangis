@@ -16,7 +16,7 @@ trait JobLogCache[V] extends Logging {
     def flushCache: Unit
 }
 
-object JobLogCache{
+object JobLogCacheUtils{
     lazy val jobLogService: JobLogService = SpringContextHolder.getBean(classOf[JobLogService])
     def flush(jobExecId: String, isEnd: Boolean = false): Unit ={
         jobLogService match {

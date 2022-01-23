@@ -1,23 +1,29 @@
 package com.webank.wedatasphere.exchangis.job.server.execution;
 
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.linkis.LinkisExchangisTaskLaunchManager;
+import com.webank.wedatasphere.exchangis.job.launcher.manager.LinkisExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
 import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
+import com.webank.wedatasphere.exchangis.job.server.builder.JobBuilderMainProgress;
+import com.webank.wedatasphere.exchangis.job.server.builder.SpringExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
+import com.webank.wedatasphere.exchangis.job.server.execution.generator.DefaultTaskGenerator;
+import com.webank.wedatasphere.exchangis.job.server.execution.generator.DefaultTaskGeneratorContext;
+import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGenerator;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.FlexibleTenancyLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.*;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.GenerationSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.MaxUsageTaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.NewInTaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.executer.ExecutorManager;
-import org.apache.linkis.scheduler.queue.ConsumerManager;
 import org.apache.linkis.scheduler.queue.JobInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +39,8 @@ public class JobExecutionUnitTest {
 //    private static final Logger LOG = LoggerFactory.getLogger(JobExecutionUnitTest.class);
 
     public static void main(String[] args) throws ExchangisTaskExecuteException {
-        System.setProperty("log4j.configurationFile", "C:\\Users\\davidhua\\IdeaProjects\\Exchangis\\assembly-package\\config\\log4j2.xml");
-//        System.setProperty("log4j.configurationFile", "C:\\Users\\hadoop\\IdeaProjects\\Exchangis\\assembly-package\\config\\log4j2.xml");
+//        System.setProperty("log4j.configurationFile", "C:\\Users\\davidhua\\IdeaProjects\\Exchangis\\assembly-package\\config\\log4j2.xml");
+        System.setProperty("log4j.configurationFile", "C:\\Users\\hadoop\\IdeaProjects\\Exchangis\\assembly-package\\config\\log4j2.xml");
         System.setProperty("wds.exchangis.job.scheduler.consumer.tenancies", "hadoop");
         final Logger LOG = LoggerFactory.getLogger(JobExecutionUnitTest.class);
         LOG.info("Job Execution Unit Test begin to launch");
@@ -44,14 +50,18 @@ public class JobExecutionUnitTest {
         // Start an endless thread to hold the running of program
         new Thread(new EndlessThread()).start();
         try {
-            JobLogListener logListener = getLogListener();
+//            JobLogListener logListener = getLogListener();
+            // Task Generator
+            SpringExchangisJobBuilderManager jobBuilderManager = new SpringExchangisJobBuilderManager();
+            jobBuilderManager.init();
+            TaskGenerator<LaunchableExchangisJob> taskGenerator = new DefaultTaskGenerator(new DefaultTaskGeneratorContext(jobLogger), jobBuilderManager);
             // Executor manager
             ExecutorManager executorManager = new ExchangisSchedulerExecutorManager();
             // Tenancy consumer manager
             TenancyParallelConsumerManager consumerManager = new TenancyParallelConsumerManager();
             consumerManager.setInitResidentThreads(4);
             // Task manager
-            TaskManager<LaunchedExchangisTask> taskManager = new DefaultTaskManager(logListener);
+            TaskManager<LaunchedExchangisTask> taskManager = new DefaultTaskManager(jobLogger);
             Scheduler scheduler = new ExchangisGenericScheduler(executorManager, consumerManager);
             scheduler.init();
             // Load balancer
@@ -71,11 +81,20 @@ public class JobExecutionUnitTest {
             execution.submit(getTestUnitTask("hadoop"));
             // Submit LaunchableExchangisTask
             submitTest(execution, newInObserver);
+            // Generate
+            generateTest(execution, taskGenerator, "davidhua");
         } catch (Exception e){
             LOG.error("Job Execution Unit Test shutdown", e);
         }
     }
 
+    private static void generateTest(TaskExecution<LaunchableExchangisTask> execution,
+                                     TaskGenerator<LaunchableExchangisJob> taskGenerator,
+                                     String tenancy) throws ExchangisSchedulerException {
+        GenerationSchedulerTask task = new GenerationSchedulerTask(taskGenerator, JobBuilderMainProgress.getDemoSqoopJobInfo());
+        task.setTenancy(tenancy);
+        execution.submit(task);
+    }
     private static void submitTest(TaskExecution<LaunchableExchangisTask> execution, NewInTaskObserver newInTaskObserver){
         LaunchableExchangisTask task = new LaunchableExchangisTask();
         task.setId(1694451505815490560L);

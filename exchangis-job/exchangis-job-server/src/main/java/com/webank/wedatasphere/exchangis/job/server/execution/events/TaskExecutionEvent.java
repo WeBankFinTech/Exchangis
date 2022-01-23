@@ -21,6 +21,10 @@ public class TaskExecutionEvent implements ExchangisEvent {
         //null
     }
 
+    public LaunchedExchangisTask getLaunchedExchangisTask() {
+        return launchedExchangisTask;
+    }
+
     @Override
     public long getEventTime() {
         return this.eventTime;

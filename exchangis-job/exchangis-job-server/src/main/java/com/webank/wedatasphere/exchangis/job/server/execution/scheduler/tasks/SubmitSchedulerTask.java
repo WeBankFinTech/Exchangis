@@ -1,23 +1,22 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
-import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.execution.AbstractTaskManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskExecutionEvent;
-import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskInfoDeleteEvent;
+import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskDeleteEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskStatusUpdateEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSchedulerLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
 import org.apache.linkis.scheduler.queue.JobInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.Enumeration;
 
 import java.util.List;
 import java.util.Objects;
@@ -69,12 +68,12 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
             LaunchedExchangisTask launchedExchangisTask;
             try {
                 // Invoke launcher
-//                launchedExchangisTask = launcher.launch(this.launchableExchangisTask);
-                launchedExchangisTask = new LaunchedExchangisTask(launchableExchangisTask);
+                launchedExchangisTask = launcher.launch(this.launchableExchangisTask);
+//                launchedExchangisTask = new LaunchedExchangisTask(launchableExchangisTask);
             } catch (Exception e) {
                 if (retryCnt.getAndIncrement() < getMaxRetryNum()) {
                     // Remove the launched task stored
-                    onEvent(new TaskInfoDeleteEvent(String.valueOf(launchableExchangisTask.getId())));
+                    onEvent(new TaskDeleteEvent(String.valueOf(launchableExchangisTask.getId())));
                     throw new ExchangisSchedulerRetryException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() +"]", e);
                 }else {
                     // Update the launched task status to fail
@@ -93,7 +92,14 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
                     successAdd = false;
                     LOG.error("Error occurred in adding running task: [{}] to taskManager, linkis_id: [{}], should kill the job in linkis!",
                             launchedExchangisTask.getId(), launchedExchangisTask.getLinkisJobId(), e);
-                    launchedExchangisTask.kill();
+                    LaunchedExchangisTask finalLaunchedExchangisTask1 = launchedExchangisTask;
+                    Optional.ofNullable(launchedExchangisTask.getLauncherTask()).ifPresent(launcherTask -> {
+                        try {
+                            launcherTask.kill();
+                        } catch (ExchangisTaskLaunchException ex){
+                            LOG.error("Kill linkis_id: [{}] fail", finalLaunchedExchangisTask1.getLinkisJobId(), e);
+                        }
+                    });
                 }
                 if (successAdd && Objects.nonNull(this.loadBalancer)) {
                     // Add the launchedExchangisTask to the load balance poller

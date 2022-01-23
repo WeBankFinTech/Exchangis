@@ -50,7 +50,7 @@ public interface LaunchedTaskDao {
      * @param taskId
      */
 
-    void upgradeLaunchedTaskMtrics(@Param("metrics") String metrics, @Param("taskId") String taskId);
+    void upgradeLaunchedTaskMetrics(@Param("metrics") String metrics, @Param("taskId") String taskId);
 
     /**
      * upgrade launchedTask status

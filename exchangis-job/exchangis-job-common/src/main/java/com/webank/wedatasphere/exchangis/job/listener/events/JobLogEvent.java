@@ -3,13 +3,18 @@ package com.webank.wedatasphere.exchangis.job.listener.events;
 import com.webank.wedatasphere.exchangis.job.listener.ExchangisEvent;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.Objects;
+
 public class JobLogEvent implements ExchangisEvent {
 
+    public enum Level{
+        TRACE, INFO, WARN, ERROR
+    }
     private String jobExecutionId;
 
     private String message;
 
-    private String level = "INFO";
+    private Level level = Level.INFO;
 
     private Object[] args;
 
@@ -19,24 +24,31 @@ public class JobLogEvent implements ExchangisEvent {
 
     private String tenancy = "default";
 
-    public JobLogEvent(String tenancy, String jobExecutionId, String message, Object... args){
+    public JobLogEvent(Level level, String tenancy, String jobExecutionId, String message, Object... args){
         if (StringUtils.isNotBlank(tenancy)){
             this.tenancy = tenancy;
         }
         this.jobExecutionId = jobExecutionId;
         this.message = message;
         this.eventTime = System.currentTimeMillis();
+        if (Objects.nonNull(level)){
+            this.level = level;
+        }
         if (args != null && args.length > 0){
             Object lastEntry = args[args.length - 1];
             if (lastEntry instanceof Throwable ){
                 this.throwable = (Throwable)lastEntry;
-                this.level = "ERROR";
+                this.level = Level.ERROR;
             }
             this.args = args;
         }
     }
+
+    public JobLogEvent(String tenancy, String jobExecutionId, String message, Object... args){
+        this(Level.INFO, tenancy, jobExecutionId, jobExecutionId, message, args);
+    }
     public JobLogEvent(String jobExecutionId, String message, Object... args){
-        this(null, jobExecutionId, message, args);
+        this(Level.INFO, null, jobExecutionId, message, args);
     }
     @Override
     public String eventId() {
@@ -66,10 +78,6 @@ public class JobLogEvent implements ExchangisEvent {
         return message;
     }
 
-    public String getLevel() {
-        return level;
-    }
-
     public Object[] getArgs() {
         return args;
     }
@@ -80,5 +88,9 @@ public class JobLogEvent implements ExchangisEvent {
 
     public String getTenancy() {
         return tenancy;
+    }
+
+    public Level getLevel() {
+        return level;
     }
 }

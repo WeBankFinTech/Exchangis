@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.events;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 
 /**
  * Updating of task status
