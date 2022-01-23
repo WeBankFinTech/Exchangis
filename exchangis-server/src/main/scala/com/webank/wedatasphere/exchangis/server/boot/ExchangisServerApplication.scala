@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.server.boot
 
-
 import org.apache.commons.lang.{ArrayUtils, StringUtils}
 import org.apache.linkis.DataWorkCloudApplication
 import org.apache.linkis.common.utils.Utils
