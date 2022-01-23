@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.dao;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.List;
 /**
  * @author tikazhang
  */
+
+@Mapper
 public interface ExchangisJobEntityDao {
 
     /**
