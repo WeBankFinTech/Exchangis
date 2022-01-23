@@ -29,6 +29,13 @@ public interface JobExecuteService {
     ExchangisJobProgressVo getExecutedJobProgressInfo(String jobExecutionId);
 
     /**
+     * Gets job status info
+     * @param jobExecutionId      the job ExecutionId
+     * @return the job status
+     */
+    ExchangisJobProgressVo getJobStatus(String jobExecutionId);
+
+    /**
      * Gets Executed task list
      * @param jobExecutionId      the job ExecutionId
      * @return the launched taskList
@@ -53,4 +60,5 @@ public interface JobExecuteService {
      * @return the int
      */
     int count(Long jobId, String jobName, String status, Long launchStartTime, Long launchEndTime);
+
 }
