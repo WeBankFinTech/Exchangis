@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.launcher.entity;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 
 import java.util.Calendar;
 import java.util.Date;

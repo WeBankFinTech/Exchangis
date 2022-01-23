@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.launcher.domain;
+package com.webank.wedatasphere.exchangis.job.launcher.domain.task;
 
 /**
  * Status of task

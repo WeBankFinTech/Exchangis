@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.log
 
 import com.webank.wedatasphere.exchangis.job.listener.JobLogListener
 import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent
+import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent.Level
 import org.slf4j.{Logger, LoggerFactory}
 
 /**
@@ -19,8 +20,8 @@ class DefaultRpcJobLogger extends JobLogListener{
   override def onEvent(event: JobLogEvent): Unit = {
     val message = s"[${event.getTenancy}:${event.getJobExecutionId}] ${event.getMessage}"
     event.getLevel match {
-      case "INFO" => getLogger.info(message, event.getArgs)
-      case "ERROR" => getLogger.error(message, event.getArgs)
+      case Level.INFO => getLogger.info(message, event.getArgs: _*)
+      case Level.ERROR => getLogger.error(message, event.getArgs: _*)
       case _ => getLogger.trace(message, event.getArgs)
     }
   }

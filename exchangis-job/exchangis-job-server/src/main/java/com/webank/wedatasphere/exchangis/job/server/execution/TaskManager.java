@@ -1,7 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.server.execution;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskProgressInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 
 import java.util.List;
@@ -46,6 +47,14 @@ public interface TaskManager<T extends ExchangisTask> {
      * @return
      */
     boolean refreshRunningTaskStatus(T task, TaskStatus status);
+
+    /**
+     * Refresh progress
+     * @param task
+     * @param progressInfo
+     * @return
+     */
+    boolean refreshRunningTaskProgress(T task, TaskProgressInfo progressInfo);
     /**
      * Get running task
      * @param taskId task id

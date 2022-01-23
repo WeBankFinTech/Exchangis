@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -22,13 +23,17 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
 
     private static final Logger LOG = LoggerFactory.getLogger(NewInTaskObserver.class);
 
-    private TaskObserverService taskExecuteService;
+    @Resource
+    private TaskObserverService taskObserverService;
 
     @Override
     protected List<LaunchableExchangisTask> onPublishNext(int batchSize){
-        LOG.info("Get the launchable task from launchable task inner join launched task");
-        // TODO get the launchable task from launchable task inner join launched task
-        return null;
+        // Get the launchable task from launchable task inner join launched task
+        List<LaunchableExchangisTask> tasks = taskObserverService.onPublishLaunchableTask(batchSize);
+        if (!tasks.isEmpty()) {
+            LOG.info("Get the launchable task from database, size: [{}]", tasks.size());
+        }
+        return tasks;
     }
 
 
@@ -45,10 +50,9 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                 try {
                     SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(launchableExchangisTask,
                             () -> {
-                                LaunchedExchangisTask launchedTask = new LaunchedExchangisTask(launchableExchangisTask);
-                                // TODO check the status of launchedTask
-                                // TODO insert or update launched task, status as TaskStatus.Scheduler
-                                return true;
+                                // check the status of launchedTask
+                                // insert or update launched task, status as TaskStatus.Scheduler
+                                return taskObserverService.subscribe(launchableExchangisTask);
                     });
                     try {
                         taskExecution.submit(submitSchedulerTask);

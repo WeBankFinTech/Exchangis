@@ -1,6 +1,9 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskLaunchException;
+import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskProgressInfo;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
@@ -11,13 +14,15 @@ import org.apache.linkis.scheduler.queue.JobInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 /**
  * Status update scheduler task
  */
 public class StatusUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask> {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatusUpdateSchedulerTask.class);
-    private static final CommonVars<Long> STATUS_UPDATE_INTERVAL = CommonVars.apply("wds.exchangis.job.scheduler.task.status.update.interval-in-millis", 3000L);
+    private static final CommonVars<Long> STATUS_UPDATE_INTERVAL = CommonVars.apply("wds.exchangis.job.scheduler.task.status.update.interval-in-millis", 5000L);
 
     private TaskManager<LaunchedExchangisTask> taskManager;
 
@@ -26,8 +31,17 @@ public class StatusUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
     }
     @Override
     protected void onPoll(LaunchedExchangisTask launchedExchangisTask) throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
-        LOG.info("Status update task: [" + launchedExchangisTask.getId() + "]");
-//        launchedExchangisTask.callStatusUpdate();
+        LOG.trace("Status update task: [{}] in scheduler: [{}]", launchedExchangisTask.getId(), getName());
+        AccessibleLauncherTask launcherTask = launchedExchangisTask.getLauncherTask();
+        try{
+            TaskProgressInfo progressInfo = launcherTask.getProgressInfo();
+            this.taskManager.refreshRunningTaskStatus(launchedExchangisTask, launcherTask.getLocalStatus());
+            if (Objects.nonNull(progressInfo)){
+                this.taskManager.refreshRunningTaskProgress(launchedExchangisTask, progressInfo);
+            }
+        } catch (ExchangisTaskLaunchException e){
+            throw new ExchangisSchedulerException("Fail to update status(progress) for task: [" + launchedExchangisTask.getTaskId() + "]", e);
+        }
     }
 
     @Override

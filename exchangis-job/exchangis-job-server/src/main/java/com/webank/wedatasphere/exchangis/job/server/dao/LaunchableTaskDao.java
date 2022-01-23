@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.dao;
 
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import org.apache.ibatis.annotations.Param;
 
@@ -10,7 +9,7 @@ import java.util.List;
  * @author tikazhang
  * @Date 2022/1/17 21:58
  */
-public interface ExchangisLaunchableTaskDao {
+public interface LaunchableTaskDao {
 
     /**
      * Add new launchableTask
@@ -41,5 +40,5 @@ public interface ExchangisLaunchableTaskDao {
      * @param
      */
 
-    List<LaunchableExchangisTask> getTaskTolaunch();
+    List<LaunchableExchangisTask> getTaskToLaunch(@Param("limitSize") Integer limitSize);
 }

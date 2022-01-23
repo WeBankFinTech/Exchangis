@@ -1,19 +1,13 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import com.google.common.base.Joiner;
-import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskIndicatorMetricsDTO;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskResourceUsedMetricsDTO;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskTrafficMetricsDTO;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import org.apache.linkis.server.Message;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
