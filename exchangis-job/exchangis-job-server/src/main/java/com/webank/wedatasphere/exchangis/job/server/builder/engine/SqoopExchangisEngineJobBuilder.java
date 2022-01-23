@@ -43,7 +43,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      */
     private static final JobParamDefine<String> MODE = JobParams.define("sqoop.mode", (BiFunction<String, SubExchangisJob, String>) (k, job) -> SUPPORT_BIG_DATA_TYPES.contains(job.getSourceType().toUpperCase())? "import": "export");
 
-    private static final JobParamDefine<MODE_TYPE> MODE_ENUM = JobParams.define("sqoop.mode", (BiFunction<String, SubExchangisJob, MODE_TYPE>) (k, job) -> SUPPORT_BIG_DATA_TYPES.contains(job.getSourceType().toUpperCase())? IMPORT: EXPORT);
+    private static final JobParamDefine<MODE_TYPE> MODE_ENUM = JobParams.define("sqoop.mode.enum", (BiFunction<String, SubExchangisJob, MODE_TYPE>) (k, job) -> SUPPORT_BIG_DATA_TYPES.contains(job.getSourceType().toUpperCase())? IMPORT: EXPORT);
     /**
      * Sqoop RDBMS mode params
      */

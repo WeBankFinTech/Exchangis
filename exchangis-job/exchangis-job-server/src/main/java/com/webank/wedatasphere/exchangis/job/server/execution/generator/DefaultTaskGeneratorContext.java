@@ -17,7 +17,7 @@ public class DefaultTaskGeneratorContext implements TaskGeneratorContext {
     }
 
     @Override
-    public JobLogListener gtJobLogListener() {
+    public JobLogListener getJobLogListener() {
         return this.jobLogListener;
     }
 }

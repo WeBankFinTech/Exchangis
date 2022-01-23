@@ -95,10 +95,14 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         ExchangisDataSource exchangisDataSource = this.context.getExchangisDataSource(dsType);
         List<ExchangisJobParamConfig> paramConfigs = exchangisDataSource.getDataSourceParamConfigs();
         List<ExchangisJobParamConfig> filteredConfigs = new ArrayList<>();
+        String[] engineDirect = engineAndDirection.split("-");
+        String direction = engineDirect[1];
         for (ExchangisJobParamConfig paramConfig : paramConfigs) {
-            if (Optional.ofNullable(paramConfig.getConfigDirection()).orElse("").equalsIgnoreCase(engineAndDirection)) {
-                filteredConfigs.add(paramConfig);
-            }
+            Optional.ofNullable(paramConfig.getConfigDirection()).ifPresent(configDirection -> {
+                if (configDirection.equalsIgnoreCase(engineAndDirection) || configDirection.equalsIgnoreCase(direction)){
+                    filteredConfigs.add(paramConfig);
+                }
+            });
         }
         return this.buildDataSourceParamsUI(filteredConfigs);
     }

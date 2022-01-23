@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.entity;
 
-import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 
 import java.util.Date;
 

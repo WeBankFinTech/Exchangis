@@ -120,12 +120,12 @@ public class JobBuilderTest {
         ExchangisJobVO job = new ExchangisJobVO();
         job.setId(22L);
         job.setProjectId(1456173825011081218L);
-        job.setJobName("T_SQOOP");
+        job.setName("T_SQOOP");
         job.setJobType("OFFLINE");
         job.setEngineType("DATAX");
-        job.setJobLabels("");
+        job.setJobLabel("");
         job.setJobDesc("");
-        job.setContent("[{\n" +
+        job.setJobContent("[{\n" +
                 "    \"subJobName\": \"new\",\n" +
                 "    \"dataSources\": {\n" +
                 "        \"source_id\": \"HIVE.34.test.psn\",\n" +

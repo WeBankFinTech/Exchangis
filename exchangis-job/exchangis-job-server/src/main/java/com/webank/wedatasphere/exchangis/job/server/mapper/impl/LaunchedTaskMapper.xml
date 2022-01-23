@@ -34,7 +34,7 @@
     <sql id="BaseColumnList">
         id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status </sql>
 
-    <insert id="LaunchedTaskOrNot" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
+    <insert id="insertLaunchedTaskOrUpdate" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
         insert into
         <include refid="TableName"/>
         (id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status)
@@ -148,7 +148,7 @@
         where taskId = #{taskId}
     </select>
 
-    <update id="upgradeLaunchedTaskMtrics">
+    <update id="upgradeLaunchedTaskMetrics">
         UPDATE <include refid="TableName"/>
         SET
         metrics = #{metrics}

@@ -60,7 +60,7 @@ public class ExchangisJobExecuteController {
 
     @RequestMapping( value = "/execution/{jobExecutionId}/status", method = RequestMethod.GET)
     public Message getExecutedJobStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
-        ExchangisJobProgressVo jobStatus = exchangisExecutionService.getJobStatus(jobExecutionId);
+        ExchangisJobProgressVo jobStatus = jobExecuteService.getJobStatus(jobExecutionId);
         Message message = Message.ok("Submitted succeed(提交成功)！");
         message.setMethod("/api/rest_j/v1/exchangis/job/execution/{id}/status");
         message.data("status", jobStatus.getStatus());

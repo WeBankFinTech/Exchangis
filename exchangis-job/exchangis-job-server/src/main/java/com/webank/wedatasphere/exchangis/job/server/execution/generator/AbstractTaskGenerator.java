@@ -1,16 +1,12 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.generator;
 
-import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.manager.DefaultExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
-import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
+import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
+import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateErrorEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateEvent;
@@ -29,15 +25,12 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskGenerator.class);
 
-    private GeneratorFunction generatorFunction;
-
     private List<TaskGenerateListener> listeners = new ArrayList<>();
 
     protected TaskGeneratorContext generatorContext;
 
     @Override
     public void init() throws ExchangisJobException {
-        this.generatorFunction = generatorFunction();
     }
 
     @Override
@@ -54,12 +47,6 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
 
     @Override
     public LaunchableExchangisJob generate(LaunchableExchangisJob launchableExchangisJob, String tenancy) throws ExchangisTaskGenerateException {
-        if (Objects.isNull(generatorFunction)){
-            this.generatorFunction = generatorFunction();
-        }
-        if (Objects.isNull(this.generatorFunction)){
-            throw new ExchangisTaskGenerateException("Generator function is empty, please define it before generating!", null);
-        }
         if (Objects.isNull(launchableExchangisJob.getExchangisJobInfo())){
             throw new ExchangisTaskGenerateException("Job info of launchableExchangisJob cannot be empty", null);
         }
@@ -69,7 +56,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
         launchableExchangisJob.setLastUpdateTime(calendar.getTime());
         onEvent(new TaskGenerateInitEvent(launchableExchangisJob));
         try {
-            execute(this.generatorFunction, launchableExchangisJob, getTaskGeneratorContext(), tenancy);
+            execute(launchableExchangisJob, getTaskGeneratorContext(), tenancy);
         } catch(ErrorException e){
             if (e instanceof ExchangisTaskGenerateException){
                 throw (ExchangisTaskGenerateException)e;
@@ -111,6 +98,15 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
      * @throws ExchangisTaskGenerateException
      */
     protected void onEvent(TaskGenerateEvent taskGenerateEvent) throws ExchangisTaskGenerateException{
+        if (taskGenerateEvent instanceof TaskGenerateInitEvent){
+            log(JobLogEvent.Level.INFO, taskGenerateEvent.getLaunchableExchangisJob(), "Init to create launched job and begin generating");
+        } else if (taskGenerateEvent instanceof TaskGenerateSuccessEvent){
+            log(JobLogEvent.Level.ERROR, taskGenerateEvent.getLaunchableExchangisJob(), "Success to generate launched job, output tasks [{}]",
+                    taskGenerateEvent.getLaunchableExchangisJob().getLaunchableExchangisTasks().size());
+        } else if (taskGenerateEvent instanceof TaskGenerateErrorEvent){
+            log(JobLogEvent.Level.ERROR, taskGenerateEvent.getLaunchableExchangisJob(), "Error occurred in generating",
+                    ((TaskGenerateErrorEvent)taskGenerateEvent).getException());
+        }
         for (TaskGenerateListener listener : listeners) {
             try {
                 listener.onEvent(taskGenerateEvent);
@@ -120,67 +116,19 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
             }
         }
     }
-    protected GeneratorFunction generatorFunction(){
-        return (launchableExchangisJob, generatorContext, tenancy) -> {
-            ExchangisTaskGenerateException throwable = null;
-            ExchangisJobInfo jobInfo = launchableExchangisJob.getExchangisJobInfo();
-            List<LaunchableExchangisTask> launchableExchangisTasks = new ArrayList<>();
-            if (Objects.isNull(jobInfo)){
-                throwable = new ExchangisTaskGenerateException("Job information is empty in launchable exchangis job", null);
-                onEvent(new TaskGenerateErrorEvent(launchableExchangisJob, throwable));
-                throw throwable;
-            }
-            ExchangisJobBuilderManager jobBuilderManager = getExchangisJobBuilderManager();
-            ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
-            ctx.putEnv("USER_NAME", tenancy);
-            // ExchangisJobInfo -> TransformExchangisJob(SubExchangisJob)
-            try {
-                TransformExchangisJob transformJob = jobBuilderManager.doBuild(jobInfo, TransformExchangisJob.class, ctx);
-                List<ExchangisEngineJob> engineJobs = new ArrayList<>();
-                for (SubExchangisJob subExchangisJob : transformJob.getSubJobSet()){
-                    // Will deal with the parameters in source/sink of job
-                    Optional.ofNullable(jobBuilderManager.doBuild(subExchangisJob,
-                            SubExchangisJob.class, ExchangisEngineJob.class, ctx)).ifPresent(engineJobs::add);
-                }
-                // List<ExchangisEngineJob> -> List<LaunchableExchangisTask>
-                for (ExchangisEngineJob engineJob : engineJobs){
-                    Optional.ofNullable(jobBuilderManager.doBuild(engineJob,
-                            ExchangisEngineJob.class, LaunchableExchangisTask.class, ctx)).ifPresent(launchableExchangisTasks :: add);
-                }
-                if (launchableExchangisTasks.isEmpty()){
-                    throw new ExchangisTaskGenerateException("The result set of launchable tasks is empty, please examine your launchable job entity," +
-                            " content: [" + jobInfo.getJobContent() + "]", null);
-                }
-                launchableExchangisJob.setLaunchableExchangisTasks(launchableExchangisTasks);
-                onEvent(new TaskGenerateSuccessEvent(launchableExchangisJob));
-            } catch (Exception e) {
-                if (e instanceof ExchangisTaskGenerateException){
-                    // Just throws the generate exception
-                    throwable =  (ExchangisTaskGenerateException)e;
-                } else {
-                    throwable = new ExchangisTaskGenerateException("Error in building launchable tasks", e);
-                }
-                onEvent(new TaskGenerateErrorEvent(launchableExchangisJob, throwable));
-                throw throwable;
-            }
-            return launchableExchangisTasks;
-        };
-    }
-    /**
-     * Execute method
-     * @param generatorFunction generator function
-     * @param ctx context
-     */
-    protected abstract void execute(GeneratorFunction generatorFunction,
-                                    LaunchableExchangisJob launchableExchangisJob,
-                                    TaskGeneratorContext ctx, String execUser) throws ErrorException;
 
-    @FunctionalInterface
-    public interface GeneratorFunction{
-        /**
-         * Apply function
-         * @param launchableExchangisJob origin job
-         */
-        List<LaunchableExchangisTask> apply(LaunchableExchangisJob launchableExchangisJob, TaskGeneratorContext ctx, String tenancy) throws ExchangisTaskGenerateException;
+    /**
+     * Log method
+     * @param level log level
+     * @param job launchableJob
+     * @param message message
+     * @param args arguments
+     */
+    protected void log(JobLogEvent.Level level, LaunchableExchangisJob job, String message, Object... args){
+        JobLogListener logListener = getTaskGeneratorContext().getJobLogListener();
+        Optional.ofNullable(logListener).ifPresent(listener -> listener.onAsyncEvent(
+                new JobLogEvent(level, job.getCreateUser(), job.getJobExecutionId(), message, args)));
     }
+
+    protected abstract void execute(LaunchableExchangisJob launchableExchangisJob, TaskGeneratorContext ctx, String tenancy) throws ErrorException;
 }
