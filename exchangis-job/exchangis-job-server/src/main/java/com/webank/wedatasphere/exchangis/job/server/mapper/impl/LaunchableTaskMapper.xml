@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.webank.wedatasphere.exchangis.job.server.dao.ExchangisLaunchableTaskDao">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.server.dao.LaunchableTaskDao">
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask">
@@ -74,11 +74,11 @@
         where id = #{taskId}
     </select>
 
-    <select id="getTaskTolaunch" resultType="com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask">
+    <select id="getTaskToLaunch" resultType="com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask">
         SELECT
         *
         FROM
         <include refid="TableName"/>
-        left join exchangis_launched_task_entity where exchangis_launchable_task.id is NULL
+        left join exchangis_launched_task_entity where exchangis_launchable_task.id is NULL ORDER BY exchangis_launchable_task.create_time ASC LIMIT ${limitSize}
     </select>
 </mapper>

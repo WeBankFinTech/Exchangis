@@ -1,10 +1,10 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.events;
 
-public class TaskInfoDeleteEvent extends TaskExecutionEvent {
+public class TaskDeleteEvent extends TaskExecutionEvent {
 
     private String taskId;
 
-    public TaskInfoDeleteEvent(String taskId) {
+    public TaskDeleteEvent(String taskId) {
         super(null);
         this.taskId = taskId;
     }

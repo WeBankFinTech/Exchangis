@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.launcher.entity;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 
 /**
  * Task entity (could be persisted)

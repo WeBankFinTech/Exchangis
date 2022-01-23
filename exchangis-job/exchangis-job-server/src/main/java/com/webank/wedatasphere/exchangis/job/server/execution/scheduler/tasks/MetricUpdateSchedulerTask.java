@@ -1,5 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskLaunchException;
+import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
@@ -12,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Metric update scheduler task
@@ -30,9 +33,16 @@ public class MetricUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
 
     @Override
     protected void onPoll(LaunchedExchangisTask launchedExchangisTask) throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
-        LOG.trace("Metrics update task: [{}] in scheduler: [{}", launchedExchangisTask.getId(), getName());
-        Map<String, Object> metricsMap = launchedExchangisTask.callMetricsUpdate();
-        taskManager.refreshRunningTaskMetrics(launchedExchangisTask, metricsMap);
+        LOG.trace("Metrics update task: [{}] in scheduler: [{}]", launchedExchangisTask.getTaskId(), getName());
+        AccessibleLauncherTask launcherTask = launchedExchangisTask.getLauncherTask();
+        try {
+            Map<String, Object> metricsInfo = launcherTask.getMetricsInfo();
+            if (Objects.nonNull(metricsInfo)){
+                taskManager.refreshRunningTaskMetrics(launchedExchangisTask, metricsInfo);
+            }
+        } catch (ExchangisTaskLaunchException e) {
+            throw new ExchangisSchedulerException("Fail to get metrics information for task: [" + launchedExchangisTask.getTaskId() + "]", e);
+        }
     }
 
     @Override

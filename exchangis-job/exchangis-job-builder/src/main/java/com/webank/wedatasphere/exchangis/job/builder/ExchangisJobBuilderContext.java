@@ -30,8 +30,17 @@ public class ExchangisJobBuilderContext {
 
     }
 
-    public ExchangisJobBuilderContext(ExchangisJobInfo originalJob) {
+    public ExchangisJobBuilderContext(ExchangisJobInfo originalJob, JobLogListener jobLogListener){
         this.originalJob = originalJob;
+        this.jobLogListener = jobLogListener;
+    }
+
+    public ExchangisJobBuilderContext(ExchangisJobInfo originalJob) {
+        this(originalJob, null);
+    }
+
+    public JobLogListener getJobLogListener() {
+        return jobLogListener;
     }
 
     public ExchangisJobInfo getOriginalJob() {

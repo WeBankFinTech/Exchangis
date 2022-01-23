@@ -7,7 +7,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangis
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
-import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskExecutionEvent;
+import com.webank.wedatasphere.exchangis.job.server.execution.events.*;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSchedulerLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.SchedulerThread;
@@ -89,7 +89,15 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
 
     @Override
     public void stop() {
-
+        // Stop the scheduler
+        getScheduler().shutdown();
+        // Stop the observers
+        Optional.ofNullable(getTaskObservers()).ifPresent(taskObservers -> taskObservers.forEach(TaskObserver::stop));
+        // Stop the loadBalancer
+        TaskSchedulerLoadBalancer<LaunchedExchangisTask> loadBalancer = getTaskSchedulerLoadBalancer();
+        if (Objects.nonNull(loadBalancer) && loadBalancer instanceof SchedulerThread){
+            ((SchedulerThread) loadBalancer).stop();
+        }
     }
 
 
@@ -108,7 +116,6 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
             Optional.ofNullable(observers).ifPresent(taskObservers -> taskObservers.forEach(observer -> {
                 observer.setScheduler(scheduler);
                 Class<?> subType = TypeGenericUtils.getActualTypeFormGenericClass(observer.getClass(), null, 0);
-                System.out.println(subType);
                 if (LaunchedExchangisTask.class.equals(subType)){
                     ((TaskObserver<LaunchedExchangisTask>)observer).setTaskManager(taskManager);
                 } else if (LaunchableExchangisTask.class.equals(subType)){
@@ -132,6 +139,31 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
             for(TaskExecutionListener listener : listeners){
                 listener.onEvent(taskExecutionEvent);
             }
+        }
+
+        @Override
+        public void onMetricsUpdate(TaskMetricsUpdateEvent metricsUpdateEvent) {
+            // Ignore
+        }
+
+        @Override
+        public void onStatusUpdate(TaskStatusUpdateEvent statusUpdateEvent) {
+            // Ignore
+        }
+
+        @Override
+        public void onInfoUpdate(TaskInfoUpdateEvent infoUpdateEvent) {
+            // Ignore
+        }
+
+        @Override
+        public void onDelete(TaskDeleteEvent deleteEvent) {
+            // Ignore
+        }
+
+        @Override
+        public void onProgressUpdate(TaskProgressUpdateEvent updateEvent) {
+            // Ignore
         }
     }
 

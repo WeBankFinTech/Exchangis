@@ -1,35 +1,33 @@
 package com.webank.wedatasphere.exchangis.job.launcher.domain;
 
-import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLaunchedExchangisTask;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
-
-import java.util.Map;
 
 /**
  * To be hold by top level
  */
-public class LaunchedExchangisTask extends LaunchedExchangisTaskEntity implements AccessibleLaunchedExchangisTask {
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public class LaunchedExchangisTask extends LaunchedExchangisTaskEntity{
     public LaunchedExchangisTask(LaunchableExchangisTask launchableExchangisTask) {
         super(launchableExchangisTask);
     }
+
+    @JsonIgnore
+    private AccessibleLauncherTask launcherTask;
 
     public LaunchedExchangisTask(){
 
     }
 
-
-    @Override
-    public Map<String, Object> callMetricsUpdate() {
-        return null;
+    public AccessibleLauncherTask getLauncherTask() {
+        return launcherTask;
     }
 
-    @Override
-    public TaskStatus callStatusUpdate() {
-        return null;
+    public void setLauncherTask(AccessibleLauncherTask launcherTask) {
+        this.launcherTask = launcherTask;
     }
 
-    @Override
-    public void kill() {
 
-    }
 }
