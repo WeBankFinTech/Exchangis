@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedTaskMetricsVO;
@@ -28,8 +29,8 @@ public class ExchangisTaskExecuteController {
     private ExchangisExecutionService exchangisExecutionService;
 
     @RequestMapping( value = "/execution/{taskId}/metrics", method = RequestMethod.POST)
-    public Message getTaskMetrics(@PathVariable("taskId") String taskId, @RequestBody Map<String, String> jobExecutionId) {
-        ExchangisLaunchedTaskMetricsVO taskMetrics = exchangisExecutionService.getLaunchedTaskMetrics(taskId, "jobExecutionId");
+    public Message getTaskMetrics(@PathVariable("taskId") String taskId, @RequestBody Map<String, String> jobExecutionId) throws ExchangisJobErrorException {
+        ExchangisLaunchedTaskMetricsVO taskMetrics = exchangisExecutionService.getLaunchedTaskMetrics(taskId, jobExecutionId.get("jobExecutionId"));
         //return Message.ok("Submitted succeed(提交成功)！").data("task", taskMetrics);
         Message message = Message.ok("Submitted succeed(提交成功)！");
         message.setMethod("/api/rest_j/v1/exchangis/task/execution/{taskId}/metrics");

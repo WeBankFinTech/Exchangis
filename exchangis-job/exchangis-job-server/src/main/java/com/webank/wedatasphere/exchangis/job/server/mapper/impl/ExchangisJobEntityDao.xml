@@ -74,7 +74,7 @@
         modify_user = #{modifyUser}
     </update>
 
-    <select id="getJobEntity" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity">
+    <select id="getJobEntity" parameterType="java.lang.String" resultMap ="BaseResultMap">
         select
         <include refid="BaseColumnList"/>
         from
@@ -82,7 +82,7 @@
         where id = #{jobId}
     </select>
 
-    <select id="getJobEntityByFactor" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity">
+    <select id="getJobEntityByFactor" parameterType="java.lang.String" resultMap ="BaseResultMap">
         select
         <include refid="BaseColumnList"/>
         from
@@ -93,7 +93,7 @@
         </if>
     </select>
 
-    <select id="getJobEntityByName" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity">
+    <select id="getJobEntityByName" parameterType="java.lang.String" resultMap ="BaseResultMap">
         select
         <include refid="BaseColumnList"/>
         from
