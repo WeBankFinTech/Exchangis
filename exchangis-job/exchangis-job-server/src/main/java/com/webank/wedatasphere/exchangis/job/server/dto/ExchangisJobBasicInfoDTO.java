@@ -27,6 +27,16 @@ public class ExchangisJobBasicInfoDTO {
 
     private String jobDesc;
 
+    private String jobName;
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
     public Long getProjectId() {
         return projectId;
     }

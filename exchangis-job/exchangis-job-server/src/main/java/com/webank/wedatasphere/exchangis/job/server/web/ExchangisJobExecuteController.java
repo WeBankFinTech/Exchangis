@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobProgressVo;
@@ -33,7 +34,7 @@ public class ExchangisJobExecuteController {
 
     @RequestMapping( value = "/{id}/execute", method = RequestMethod.POST)
     public Message executeJob(@RequestBody(required = false) Map<String, Boolean> permitPartialFailures, @PathVariable("id") Long id) {
-        String jobExecutionId = "555node1node2node3execId1";
+        String jobExecutionId = "66";
         Message message = Message.ok("Submitted succeed(提交成功)！");
         message.setMethod("/api/rest_j/v1/exchangis/job/{id}/execute");
         message.data("jobExecutionId", jobExecutionId);
@@ -44,16 +45,16 @@ public class ExchangisJobExecuteController {
     public Message getExecutedJobTaskList(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
         List<ExchangisJobTaskVo> jobTaskList = exchangisExecutionService.getExecutedJobTaskList(jobExecutionId);
         Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/{id}/taskList");
+        message.setMethod("/api/rest_j/v1/exchangis/job/execution/"+ jobExecutionId +"/taskList");
         message.data("tasks", jobTaskList);
         return message;
     }
 
     @RequestMapping( value = "/execution/{jobExecutionId}/progress", method = RequestMethod.GET)
-    public Message getExecutedJobAndTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
+    public Message getExecutedJobAndTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobErrorException {
         ExchangisJobProgressVo jobAndTaskStatus = exchangisExecutionService.getExecutedJobProgressInfo(jobExecutionId);
         Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/progress");
+        message.setMethod("/api/rest_j/v1/exchangis/job/execution/" +jobExecutionId +"/progress");
         message.data("job", jobAndTaskStatus);
         return message;
     }
@@ -62,9 +63,11 @@ public class ExchangisJobExecuteController {
     public Message getExecutedJobStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
         ExchangisJobProgressVo jobStatus = exchangisExecutionService.getJobStatus(jobExecutionId);
         Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/{id}/status");
+        message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId +"/status");
         message.data("status", jobStatus.getStatus());
         message.data("progress", jobStatus.getProgress());
+        //message.data("status", "Running");
+        //message.data("progress", 0.1);
         return message;
     }
 
