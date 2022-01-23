@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -36,13 +38,13 @@ public class ExchangisJobVO {
 
     private String engineType;
 
-    private String jobLabels;
+    private String jobLabel;
 
-    private String jobName;
+    private String name;
 
     private String jobDesc;
 
-    private String content;
+    private String jobContent;
 
     private String alarmUser;
 
@@ -64,16 +66,26 @@ public class ExchangisJobVO {
 
     private String modifyUser;
 
+    private Map<String, Object> source = new HashMap<>();
+
+    public Map<String, Object> getSource() {
+        return source;
+    }
+
+    public void setSource(Map<String, Object> source) {
+        this.source = source;
+    }
+
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
 
-    public String getJobName() {
-        return jobName;
+    public String getName() {
+        return name;
     }
 
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getJobDesc() {
@@ -81,6 +93,7 @@ public class ExchangisJobVO {
     }
 
     public void setJobDesc(String jobDesc) {
+        source.put("jobDesc", jobDesc);
         this.jobDesc = jobDesc;
     }
 
@@ -97,6 +110,7 @@ public class ExchangisJobVO {
     }
 
     public void setModifyTime(Date modifyTime) {
+        source.put("modifyTime", modifyTime);
         this.modifyTime = modifyTime;
     }
 
@@ -110,18 +124,23 @@ public class ExchangisJobVO {
 
     public Long getDssProjectId() { return dssProjectId; }
 
-    public void setDssProjectId(Long dssProjectId) { this.dssProjectId = dssProjectId; }
+    public void setDssProjectId(Long dssProjectId) {
+        source.put("dssProjectId", dssProjectId);
+        this.dssProjectId = dssProjectId; }
 
 
     public String getNodeName() { return nodeName; }
 
-    public void setNodeName(String nodeName) { this.nodeName = nodeName; }
+    public void setNodeName(String nodeName) {
+        source.put("nodeName", nodeName);
+        this.nodeName = nodeName; }
 
     public String getJobType() {
         return jobType;
     }
 
     public void setJobType(String jobType) {
+        source.put("jobType", jobType);
         this.jobType = jobType;
     }
 
@@ -133,20 +152,20 @@ public class ExchangisJobVO {
         this.engineType = engineType;
     }
 
-    public String getJobLabels() {
-        return jobLabels;
+    public String getJobLabel() {
+        return jobLabel;
     }
 
-    public void setJobLabels(String jobLabels) {
-        this.jobLabels = jobLabels;
+    public void setJobLabel(String jobLabel) {
+        this.jobLabel = jobLabel;
     }
 
-    public String getContent() {
-        return content;
+    public String getJobContent() {
+        return jobContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setJobContent(String jobContent) {
+        this.jobContent = jobContent;
     }
 
     public String getAlarmUser() {
@@ -154,6 +173,7 @@ public class ExchangisJobVO {
     }
 
     public void setAlarmUser(String alarmUser) {
+        source.put("alarmUser", alarmUser);
         this.alarmUser = alarmUser;
     }
 
@@ -162,6 +182,7 @@ public class ExchangisJobVO {
     }
 
     public void setAlarmLevel(Integer alarmLevel) {
+        source.put("alarmLevel", alarmLevel);
         this.alarmLevel = alarmLevel;
     }
 
@@ -170,6 +191,7 @@ public class ExchangisJobVO {
     }
 
     public void setProxyUser(String proxyUser) {
+        source.put("proxyUser", proxyUser);
         this.proxyUser = proxyUser;
     }
 
@@ -178,6 +200,7 @@ public class ExchangisJobVO {
     }
 
     public void setExecuteNode(String executeNode) {
+        source.put("executeNode", executeNode);
         this.executeNode = executeNode;
     }
 
@@ -186,6 +209,7 @@ public class ExchangisJobVO {
     }
 
     public void setSyncType(String syncType) {
+        source.put("syncType", syncType);
         this.syncType = syncType;
     }
 
@@ -218,10 +242,12 @@ public class ExchangisJobVO {
     }
 
     public void setDssProjectName(String dssProjectName) {
+        source.put("dssProjectName", dssProjectName);
         this.dssProjectName = dssProjectName;
     }
 
     public void setNodeId(String nodeId) {
+        source.put("nodeId", nodeId);
         this.nodeId = nodeId;
     }
 
@@ -231,10 +257,10 @@ public class ExchangisJobVO {
 
     @Override
     public String toString() {
-        return "ExchangisJob{" + "id=" + id + ", projectId=" + projectId + ", jobName=" + jobName + ", jobType="
+        return "ExchangisJob{" + "id=" + id + ", projectId=" + projectId + ", jobName=" + name + ", jobType="
                 + jobType
-                + ", engineType=" + engineType + ", jobLabels=" + jobLabels + ", jobDesc=" + jobDesc + ", content="
-                + content + ", alarmUser=" + alarmUser + ", alarmLevel=" + alarmLevel + ", proxyUser=" + proxyUser
+                + ", engineType=" + engineType + ", jobLabels=" + jobLabel + ", jobDesc=" + jobDesc + ", content="
+                + jobContent + ", alarmUser=" + alarmUser + ", alarmLevel=" + alarmLevel + ", proxyUser=" + proxyUser
                 + ", executeNode=" + executeNode + ", syncType=" + syncType + ", jobParams=" + jobParams + ", createTime="
                 + createTime + ", createUser=" + createUser + ", modifyTime=" + modifyTime + ", modifyUser=" + modifyUser
                 + "}";
