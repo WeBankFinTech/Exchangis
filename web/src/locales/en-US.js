@@ -97,6 +97,7 @@ export default {
       title: {
         create: "CreateDataSource",
         edit: "EditDataSource",
+        read: "DataSource"
       },
       form: {
         fields: {
