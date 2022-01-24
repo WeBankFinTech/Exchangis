@@ -15,6 +15,7 @@
         <result column="linkis_params" property="linkisParams"/>
         <result column="linkis_source" property="linkisSource"/>
         <result column="labels" property="labels"/>
+        <result column="job_execution_id" property="jobExecutionId"/>
     </resultMap>
 
     <sql id="TableName">
@@ -25,23 +26,26 @@
     <sql id="BaseColumnList">
         id, name, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, linkis_source, labels </sql>
 
-    <insert id="addLaunchableTask" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask">
+    <insert id="addLaunchableTask" >
+        <foreach collection="tasks" item="task">
         insert into
         <include refid="TableName"/>
-        (id, name, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, linkis_source, labels)
+        (id, name, job_execution_id, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, linkis_source, labels)
         values(
-        #{id},
-        #{name},
-        #{createTime},
-        #{lastUpdateTime},
-        #{engineType},
-        #{executeUser},
-        #{linkisJobName},
-        #{linkisJobContent},
-        #{linkisParams},
-        #{linkisSource},
-        #{labels}
+        #{task.id},
+        #{task.name},
+        #{task.jobExecutionId},
+        #{task.createTime},
+        #{task.lastUpdateTime},
+        #{task.engineType},
+        #{task.executeUser},
+        #{task.linkisJobName},
+        #{task.linkisJobContent},
+        #{task.linkisParams},
+        #{task.linkisSource},
+        #{task.labels}
         );
+        </foreach>
     </insert>
 
     <delete id="deleteLaunchableTask">
@@ -74,7 +78,7 @@
         where id = #{taskId}
     </select>
 
-    <select id="getTaskToLaunch" resultType="com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask">
+    <select id="getTaskToLaunch" resultMap="BaseResultMap">
         SELECT
         *
         FROM
