@@ -12,6 +12,7 @@ import com.webank.wedatasphere.exchangis.job.server.builder.SpringExchangisJobBu
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.DefaultTaskGenerator;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.DefaultTaskGeneratorContext;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGenerator;
@@ -90,7 +91,7 @@ public class JobExecutionUnitTest {
 
     private static void generateTest(TaskExecution<LaunchableExchangisTask> execution,
                                      TaskGenerator<LaunchableExchangisJob> taskGenerator,
-                                     String tenancy) throws ExchangisSchedulerException {
+                                     String tenancy) throws ExchangisSchedulerException, ExchangisTaskGenerateException {
         GenerationSchedulerTask task = new GenerationSchedulerTask(taskGenerator, JobBuilderMainProgress.getDemoSqoopJobInfo());
         task.setTenancy(tenancy);
         execution.submit(task);

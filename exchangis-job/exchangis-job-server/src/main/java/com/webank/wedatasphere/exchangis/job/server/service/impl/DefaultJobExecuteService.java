@@ -1,12 +1,19 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import com.google.common.base.Joiner;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
+import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
+import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGenerator;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.GenerationSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.linkis.server.Message;
@@ -16,21 +23,35 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
+
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.JOB_EXCEPTION_CODE;
 
 @Service
 public class DefaultJobExecuteService implements JobExecuteService {
-    private final static Logger logger = LoggerFactory.getLogger(DefaultJobExecuteService.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DefaultJobExecuteService.class);
 
-    @Autowired(required=true)
+    @Autowired
     private LaunchedTaskDao launchedTaskDao;
 
-    @Autowired(required=true)
+    @Autowired
     private LaunchedJobDao launchedJobDao;
 
-    @Autowired(required=true)
+    @Autowired
     private ModelMapper modelMapper;
 
+    /**
+     * Task generator
+     */
+    @Resource
+    private TaskGenerator<LaunchableExchangisJob> taskGenerator;
+
+    /**
+     * Task execution
+     */
+    @Resource
+    private TaskExecution<LaunchableExchangisTask> taskExecution;
     @Override
     public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) {
         List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId);
@@ -43,7 +64,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
                         }
                 );
             } catch (Exception e) {
-                logger.error("Exception happened while get TaskLists mapping to Vo(获取task列表映射至页面是出错，请校验任务信息), " + "message: " + e.getMessage(), e);
+                LOG.error("Exception happened while get TaskLists mapping to Vo(获取task列表映射至页面是出错，请校验任务信息), " + "message: " + e.getMessage(), e);
             }
         }
 
@@ -66,7 +87,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
                 //jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), taskEntity.getStatus(), taskEntity.getProgress()));
             });
         } catch (Exception e){
-            logger.error("Get job and task progress happen execption ," +  "[jobExecutionId =" + jobExecutionId + "]", e);
+            LOG.error("Get job and task progress happen execption ," +  "[jobExecutionId =" + jobExecutionId + "]", e);
         }
         return jobProgressVo;
     }
@@ -78,7 +99,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         try {
             jobProgressVo = modelMapper.map(launchedExchangisJobEntity, ExchangisJobProgressVo.class);
         } catch (Exception e) {
-            logger.error("Get job status happen execption, " +  "[jobExecutionId =" + jobExecutionId + "]（获取作业状态错误）", e);
+            LOG.error("Get job status happen execption, " +  "[jobExecutionId =" + jobExecutionId + "]（获取作业状态错误）", e);
         }
         return jobProgressVo;
     }
@@ -262,6 +283,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         return 100;
     }
 
+
     // TODO
     private LinkedList<String> getMockLogs() {
         LinkedList<String> logs = new LinkedList<>();
@@ -325,5 +347,25 @@ public class DefaultJobExecuteService implements JobExecuteService {
         return logs;
     }
 
-
+    @Override
+    public String executeJob(ExchangisJobInfo jobInfo, String execUser) throws ExchangisJobServerException {
+        // Build generator scheduler task
+        GenerationSchedulerTask schedulerTask = null;
+        try {
+            schedulerTask = new GenerationSchedulerTask(taskGenerator, jobInfo);
+        } catch (ExchangisTaskGenerateException e) {
+            throw new ExchangisJobServerException(JOB_EXCEPTION_CODE.getCode(), "Exception in initial the launchable job", e);
+        }
+        // The scheduler task id is execution id
+        String jobExecutionId = schedulerTask.getId();
+        // Use exec user as tenancy
+        schedulerTask.setTenancy(execUser);
+        LOG.info("Submit the generation scheduler task: [{}] for job: [{}], tenancy: [{}] to TaskExecution", jobExecutionId, jobInfo.getId(), execUser);
+        try {
+            taskExecution.submit(schedulerTask);
+        } catch (ExchangisSchedulerException e) {
+            throw new ExchangisJobServerException(JOB_EXCEPTION_CODE.getCode(), "Exception in submitting to taskExecution", e);
+        }
+        return jobExecutionId;
+    }
 }
