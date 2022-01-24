@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.exception;
+package com.webank.wedatasphere.exchangis.job.launcher.exception;
 
 import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.TASK_LAUNCH_NOT_EXIST;
 

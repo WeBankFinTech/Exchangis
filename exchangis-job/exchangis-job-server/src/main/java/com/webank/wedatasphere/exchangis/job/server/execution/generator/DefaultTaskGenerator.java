@@ -11,9 +11,10 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangis
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
-import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateErrorEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateSuccessEvent;
+import com.webank.wedatasphere.exchangis.job.utils.SnowFlake;
+import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.common.exception.ErrorException;
 
 import java.util.ArrayList;
@@ -28,9 +29,21 @@ import java.util.Optional;
 public class DefaultTaskGenerator extends AbstractTaskGenerator{
 
 
+    private static class Constraints{
+        private static final CommonVars<Long> TASK_ID_GENERATOR_DATA_CENTER = CommonVars.apply("wds.exchangis.job.task.generator.id.data-center", 1L);
+
+        private static final CommonVars<Long> TASK_ID_GENERATOR_WORKER = CommonVars.apply("wds.exchangis.job.task.generator.id.worker", 1L);
+
+        private static final CommonVars<Long> TASK_ID_GENERATOR_START_TIME = CommonVars.apply("wds.exchangis.job.task.generator.id.start-time", 1238434978657L);
+    }
     protected TaskGeneratorContext ctx;
 
     private ExchangisJobBuilderManager jobBuilderManager;
+
+    /**
+     * Generate task id
+     */
+    private SnowFlake idGenerator;
 
     public DefaultTaskGenerator(TaskGeneratorContext ctx, ExchangisJobBuilderManager jobBuilderManager){
         this.ctx = ctx;
@@ -45,7 +58,8 @@ public class DefaultTaskGenerator extends AbstractTaskGenerator{
     @Override
     public void init() throws ExchangisJobException {
         super.init();
-
+        idGenerator = new SnowFlake(Constraints.TASK_ID_GENERATOR_DATA_CENTER.getValue(), Constraints.TASK_ID_GENERATOR_WORKER.getValue(),
+                Constraints.TASK_ID_GENERATOR_START_TIME.getValue());
     }
 
     @Override
@@ -80,6 +94,8 @@ public class DefaultTaskGenerator extends AbstractTaskGenerator{
                 throw new ExchangisTaskGenerateException("The result set of launchable tasks is empty, please examine your launchable job entity," +
                         " content: [" + jobInfo.getJobContent() + "]", null);
             }
+            // Create task id
+            launchableExchangisTasks.forEach(task -> task.setId(idGenerator.nextId()));
             launchableExchangisJob.setLaunchableExchangisTasks(launchableExchangisTasks);
             onEvent(new TaskGenerateSuccessEvent(launchableExchangisJob));
         } catch (Exception e) {

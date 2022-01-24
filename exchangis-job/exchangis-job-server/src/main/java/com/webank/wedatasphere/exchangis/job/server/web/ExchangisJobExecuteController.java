@@ -1,8 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
+import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobProgressVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobTaskVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedJobListVO;
@@ -30,7 +30,7 @@ public class ExchangisJobExecuteController {
     private ExchangisJobService exchangisJobService;
 
     @Resource
-    private ExchangisExecutionService exchangisExecutionService;
+    private DefaultJobExecuteService exchangisExecutionService;
 
     @RequestMapping( value = "/{id}/execute", method = RequestMethod.POST)
     public Message executeJob(@RequestBody(required = false) Map<String, Boolean> permitPartialFailures, @PathVariable("id") Long id) {
@@ -51,7 +51,7 @@ public class ExchangisJobExecuteController {
     }
 
     @RequestMapping( value = "/execution/{jobExecutionId}/progress", method = RequestMethod.GET)
-    public Message getExecutedJobAndTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobErrorException {
+    public Message getExecutedJobAndTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobServerException {
         ExchangisJobProgressVo jobAndTaskStatus = exchangisExecutionService.getExecutedJobProgressInfo(jobExecutionId);
         Message message = Message.ok("Submitted succeed(提交成功)！");
         message.setMethod("/api/rest_j/v1/exchangis/job/execution/" +jobExecutionId +"/progress");

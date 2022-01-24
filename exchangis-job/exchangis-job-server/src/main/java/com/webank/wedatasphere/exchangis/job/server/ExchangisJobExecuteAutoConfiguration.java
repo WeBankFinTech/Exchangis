@@ -15,6 +15,7 @@ import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSc
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerExecutorManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisGenericScheduler;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TenancyParallelConsumerManager;
+import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.MaxUsageTaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger;
@@ -132,6 +133,15 @@ public class ExchangisJobExecuteAutoConfiguration {
         return new LinkisExchangisTaskLaunchManager();
     }
 
+    /**
+     * Choose rule
+     * @return
+     */
+    @Bean
+    @ConditionalOnMissingBean(TaskChooseRuler.class)
+    public TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler(){
+        return new MaxUsageTaskChooseRuler();
+    }
     /**
      * Task execution
      * @param scheduler scheduler

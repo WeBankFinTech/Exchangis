@@ -11,9 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 
+/**
+ * Task observer service
+ */
 @Service
 public class DefaultTaskObserverService implements TaskObserverService {
 
+    /**
+     * Launchable task
+     */
     @Resource
     private LaunchableTaskDao launchableTaskDao;
 

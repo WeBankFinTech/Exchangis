@@ -10,9 +10,11 @@ import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.T
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateInitEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateSuccessEvent;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskGenerateService;
+import com.webank.wedatasphere.exchangis.job.utils.SnowFlake;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Calendar;
 import java.util.List;
@@ -26,7 +28,7 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
     private LaunchedJobDao launchedJobDao;
 
     @Resource
-    private LaunchableTaskDao launchedTaskDao;
+    private LaunchableTaskDao launchableTaskDao;
 
     @Override
     public void onError(TaskGenerateErrorEvent errorEvent) {
@@ -52,7 +54,7 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
             task.setCreateTime(calendar.getTime());
             task.setLastUpdateTime(task.getCreateTime());
         });
-        this.launchedTaskDao.addLaunchableTask(tasks);
+        this.launchableTaskDao.addLaunchableTask(tasks);
         this.launchedJobDao.upgradeLaunchedJobStatus(launchableExchangisJob.getJobExecutionId(), TaskStatus.Scheduled.name(), calendar.getTime());
     }
 }

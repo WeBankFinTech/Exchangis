@@ -60,10 +60,6 @@ public class ExchangisJobEntity {
 
     private String modifyUser;
 
-    private Map<String, Object> sourceMap = new HashMap<>();
-
-    private String source;
-
     public Long getId() {
         return id;
     }
@@ -77,14 +73,10 @@ public class ExchangisJobEntity {
     }
 
     public void setProjectId(Long projectId) {
-        getSourceMap().put("projectId", projectId);
         this.projectId = projectId;
     }
 
     public Long getDssProjectId() {
-        if (Objects.isNull(dssProjectId)){
-            this.dssProjectId = Long.parseLong(String.valueOf(getSourceMap().get("dssProjectId")));
-        }
         return dssProjectId;
     }
 
@@ -226,19 +218,4 @@ public class ExchangisJobEntity {
         this.modifyUser = modifyUser;
     }
 
-    public Map<String, Object> getSourceMap() {
-        return sourceMap;
-    }
-
-    public void setSourceMap(Map<String, Object> sourceMap) {
-        this.sourceMap = sourceMap;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
 }

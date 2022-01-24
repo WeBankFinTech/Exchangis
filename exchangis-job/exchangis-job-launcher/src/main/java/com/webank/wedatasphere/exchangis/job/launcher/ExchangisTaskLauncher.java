@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher;
 
-import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskLaunchException;
+import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 

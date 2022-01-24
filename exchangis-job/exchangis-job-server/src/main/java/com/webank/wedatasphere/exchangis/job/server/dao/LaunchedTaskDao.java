@@ -13,7 +13,6 @@ import java.util.List;
 /**
  * @author tikazhang
  */
-@Mapper
 public interface LaunchedTaskDao {
 
     /**
