@@ -1,7 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.vo;
 
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskMetricsDTO;
-
 import java.util.Map;
 
 /**
@@ -9,7 +7,7 @@ import java.util.Map;
  * @Date 2022/1/12 23:00
  */
 public class ExchangisLaunchedTaskMetricsVO {
-    private Long taskId;
+    private String taskId;
 
     private String name;
 
@@ -17,18 +15,22 @@ public class ExchangisLaunchedTaskMetricsVO {
 
     private Map<String, Object> metrics;
 
-    public ExchangisLaunchedTaskMetricsVO(Long taskId, String name, String status, Map<String, Object> metrics){
+    public ExchangisLaunchedTaskMetricsVO(){
+
+    }
+
+    public ExchangisLaunchedTaskMetricsVO(String taskId, String name, String status, Map<String, Object> metrics){
         this.taskId = taskId;
         this.name = name;
         this.status = status;
         this.metrics = metrics;
     }
 
-    public Long getTaskId() {
+    public String getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(Long taskId) {
+    public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
 
