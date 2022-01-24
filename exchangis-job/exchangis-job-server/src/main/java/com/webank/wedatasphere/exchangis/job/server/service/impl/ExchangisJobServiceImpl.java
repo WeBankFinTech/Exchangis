@@ -65,13 +65,15 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     @Override
     public ExchangisJobBasicInfoVO createJob(HttpServletRequest request, ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
         ExchangisJobVO exchangisJob = modelMapper.map(exchangisJobBasicInfoDTO, ExchangisJobVO.class);
-        String proxyUser = "";
+        Calendar calendar = Calendar.getInstance();
+        String createUser = "";
         try {
-            proxyUser = SecurityFilter.getLoginUsername(request);
+            createUser = SecurityFilter.getLoginUsername(request);
         } catch (Exception e) {
-            log.error("Get proxy user error.", e);
+            log.error("Get create user error.", e);
         }
-        exchangisJob.setProxyUser(proxyUser);
+        exchangisJob.setCreateUser(createUser);
+        exchangisJob.setCreateTime(calendar.getTime());
         exchangisJobService.save(exchangisJob);
         return modelMapper.map(exchangisJob, ExchangisJobBasicInfoVO.class);
     }

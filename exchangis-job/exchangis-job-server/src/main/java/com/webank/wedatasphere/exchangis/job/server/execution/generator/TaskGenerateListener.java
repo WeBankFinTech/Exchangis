@@ -14,7 +14,7 @@ public interface TaskGenerateListener extends ExchangisListener<TaskGenerateEven
 
     @Override
     default void onEvent(TaskGenerateEvent event) throws ExchangisOnEventException {
-        getLogger().info("Event: [id: {}, type: {}] in listener [{}]", event.eventId(), event.getClass().getSimpleName(),
+        getLogger().trace("Event: [id: {}, type: {}] in listener [{}]", event.eventId(), event.getClass().getSimpleName(),
                 this.getClass().getSimpleName());
         if (event instanceof TaskGenerateErrorEvent){
             onError((TaskGenerateErrorEvent) event);

@@ -42,8 +42,8 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
         }
         LaunchedExchangisTask launchedExchangisTask =  new LaunchedExchangisTask(launchableTask);
         LinkisLauncherTask launcherTask = LinkisLauncherTask.init(launchableTask, this.engineVersions);
-        launchedExchangisTask.setLinkisJobId(launcherTask.getJobId());
         launcherTask.submit();
+        launchedExchangisTask.setLinkisJobId(launcherTask.getJobId());
         launchedExchangisTask.setLinkisJobInfoMap(launcherTask.getJobInfo(true));
         return launchedExchangisTask;
     }

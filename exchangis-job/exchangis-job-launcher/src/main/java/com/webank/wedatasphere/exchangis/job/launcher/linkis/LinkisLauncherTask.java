@@ -16,8 +16,11 @@ import org.apache.linkis.computation.client.once.simple.SubmittableSimpleOnceJob
 import org.apache.linkis.computation.client.operator.impl.*;
 import org.apache.linkis.computation.client.utils.LabelKeyUtils;
 import org.apache.linkis.protocol.engine.JobProgressInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration.*;
 
@@ -25,6 +28,8 @@ import static com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherCo
  * Linkis launcher task
  */
 public class LinkisLauncherTask implements AccessibleLauncherTask {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LinkisLauncherTask.class);
 
     /**
      * Engine versions
@@ -68,6 +73,11 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
      * Metrics operator
      */
     private EngineConnMetricsOperator metricsOperator;
+
+    /**
+     * Request error count
+     */
+    private AtomicInteger reqError = new AtomicInteger(0);
 
     static{
 
@@ -233,7 +243,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
     private SimpleOnceJob toSubmittableJob(LaunchableExchangisTask task){
         //TODO deal the start up params
         LinkisJobBuilder<SubmittableSimpleOnceJob> jobBuilder = LinkisJobClient.once().simple().builder().setCreateService(LAUNCHER_LINKIS_CREATOR.getValue())
-                .setMaxSubmitTime(LAUNCHER_MAX_SUBMIT.getValue())
+                .setMaxSubmitTime(LAUNCHER_LINKIS_MAX_SUBMIT.getValue())
                 .addLabel(LabelKeyUtils.ENGINE_TYPE_LABEL_KEY(), task.getEngineType().toLowerCase() + "-" +
                         engineVersions.getOrDefault(task.getEngineType().toLowerCase(), "0.0.0"))
                 .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), task.getExecuteUser() + "-" + LAUNCHER_LINKIS_CREATOR.getValue())
@@ -250,11 +260,16 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
     }
     /**
      * Deal exception
-     * @param e
+     * @param e exception entity
      * @throws ExchangisTaskLaunchException
      */
     private void dealException(Exception e) throws ExchangisTaskLaunchException {
         String message = e.getMessage();
+        if (reqError.incrementAndGet() > LAUNCHER_LINKIS_MAX_ERROR.getValue()){
+            this.status = TaskStatus.Failed;
+            LOG.info("Error to connect to the linkis server over {} times, linkis_id: {}, now to mark the task status: {}", LAUNCHER_LINKIS_CREATOR.getValue(), this.jobId, this.status, e);
+            return;
+        }
         if (message.contains(TASK_NOT_EXIST)){
             throw new ExchangisTaskNotExistException("It seems that the linkis job: [ linkis_id: " + getJobId() + "] cannot be found in linkis server", e);
         } else{

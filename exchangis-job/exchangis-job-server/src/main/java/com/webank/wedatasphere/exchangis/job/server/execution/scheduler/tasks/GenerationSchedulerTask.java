@@ -23,7 +23,7 @@ public class GenerationSchedulerTask extends AbstractExchangisSchedulerTask {
      *
      */
     public GenerationSchedulerTask(TaskGenerator<LaunchableExchangisJob> taskGenerator,
-                                   ExchangisJobInfo exchangisJobInfo) {
+                                   ExchangisJobInfo exchangisJobInfo) throws ExchangisTaskGenerateException {
         super("");
         this.taskGenerator = taskGenerator;
         this.launchableExchangisJob = taskGenerator.init(exchangisJobInfo);
@@ -51,6 +51,7 @@ public class GenerationSchedulerTask extends AbstractExchangisSchedulerTask {
     public String getName() {
         return "Scheduler-GenerationTask-" + getId();
     }
+
 
     @Override
     public JobInfo getJobInfo() {
