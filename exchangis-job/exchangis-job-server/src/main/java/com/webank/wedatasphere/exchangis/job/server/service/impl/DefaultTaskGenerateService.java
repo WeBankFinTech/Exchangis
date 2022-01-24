@@ -37,6 +37,7 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void onInit(TaskGenerateInitEvent initEvent) {
         LaunchableExchangisJob job = initEvent.getLaunchableExchangisJob();
         LaunchedExchangisJobEntity launchedJob = new LaunchedExchangisJobEntity(job);

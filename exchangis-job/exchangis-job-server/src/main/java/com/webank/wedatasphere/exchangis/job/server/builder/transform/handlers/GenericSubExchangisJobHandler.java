@@ -22,9 +22,9 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
 
     public static final String ID_SPLIT_SYMBOL = "\\.";
 
-    private static final JobParamDefine<String> SOURCE_ID = JobParams.define("sourceId", String.class);
+    private static final JobParamDefine<String> SOURCE_ID = JobParams.define("source_id", String.class);
 
-    private static final JobParamDefine<String> SINK_ID = JobParams.define("sinkId", String.class);
+    private static final JobParamDefine<String> SINK_ID = JobParams.define("sink_id", String.class);
 
     @Override
     public String dataSourceType() {

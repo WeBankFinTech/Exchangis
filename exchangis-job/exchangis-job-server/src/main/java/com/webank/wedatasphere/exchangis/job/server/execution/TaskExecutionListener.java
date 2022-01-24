@@ -13,7 +13,7 @@ public interface TaskExecutionListener extends ExchangisListener<TaskExecutionEv
      * @param event event
      */
     default void onEvent(TaskExecutionEvent event) throws ExchangisOnEventException{
-        getLogger().info("Event: [id: {}, type: {}] in listener [{}]", event.eventId(), event.getClass().getSimpleName(),
+        getLogger().trace("Event: [id: {}, type: {}] in listener [{}]", event.eventId(), event.getClass().getSimpleName(),
                 this.getClass().getSimpleName());
         if (event instanceof TaskMetricsUpdateEvent){
             onMetricsUpdate((TaskMetricsUpdateEvent)event);

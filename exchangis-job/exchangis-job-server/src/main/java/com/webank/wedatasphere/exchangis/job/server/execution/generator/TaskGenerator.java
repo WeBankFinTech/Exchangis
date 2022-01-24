@@ -22,7 +22,7 @@ public interface TaskGenerator<T extends ExchangisJob> {
      * @param jobInfo
      * @return
      */
-    T init(ExchangisJobInfo jobInfo);
+    T init(ExchangisJobInfo jobInfo) throws ExchangisTaskGenerateException;
     /**
      * Generate exchangis job (has tasks)
      * @param exchangisJob job extends ExchangisJob
