@@ -24,6 +24,7 @@
     </a-tabs>
     <a-input-search v-model:value="searchKeyword" placeholder="关键字" style="position: absolute;width: 120px;left:420px;z-index: 1;top: 5px" @search="onSearch"></a-input-search>
     <a-input-search v-model:value="ignoreKeyword" placeholder="忽略字" style="position: absolute;width: 120px;left:550px;z-index: 1;top: 5px" @search="onSearch2"></a-input-search>
+    <a-input-search v-if="logs.isEnd" v-model:value="lastRows" placeholder="读取最后n行日志" style="position: absolute;width: 240px;left:680px;z-index: 1;top: 5px" @search="onSearch3"></a-input-search>
   </div>
 </template>
 <script>
@@ -55,7 +56,8 @@ export default defineComponent({
         warn: ''
       }),
       searchKeyword,
-      ignoreKeyword
+      ignoreKeyword,
+      lastRows
     let logs = reactive({
       logs: {},
       endLine: 0,
@@ -109,7 +111,8 @@ export default defineComponent({
           id: curId,
           fromLine,
           onlyKeywords: searchKeyword,
-          ignoreKeywords: ignoreKeyword
+          ignoreKeywords: ignoreKeyword,
+          lastRows: lastRows
         })
           .then((res) => {
             _updateLog(res)
@@ -124,7 +127,8 @@ export default defineComponent({
           id: id,
           fromLine,
           onlyKeywords: searchKeyword,
-          ignoreKeywords: ignoreKeyword
+          ignoreKeywords: ignoreKeyword,
+          lastRows: lastRows
         })
           .then((res) => {
             _updateLog(res)
@@ -167,6 +171,12 @@ export default defineComponent({
       changeData(curLogId)
     }
 
+    const onSearch3 = (keyword) => {
+      lastRows = keyword
+      _resetData()
+      _showInfoLog(curLogId)
+    }
+
     onBeforeUnmount(() => {
       clearInterval(showLogTimer)
     })
@@ -178,8 +188,11 @@ export default defineComponent({
       curLog,
       searchKeyword: ref(searchKeyword),
       ignoreKeyword: ref(ignoreKeyword),
+      lastRows: ref(lastRows),
       onSearch,
-      onSearch2
+      onSearch2,
+      onSearch3,
+      logs
     }
   }
 })
