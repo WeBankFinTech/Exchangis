@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTa
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class ReceiveTaskSubscriber extends AbstractTaskObserver<LaunchedExchangi
 
     @Override
     protected List<LaunchedExchangisTask> onPublish(int batchSize) throws ExchangisTaskObserverException {
-        return null;
+        return new ArrayList<>();
     }
 
 

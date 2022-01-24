@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.exception;
+package com.webank.wedatasphere.exchangis.job.launcher.exception;
 
 import org.apache.linkis.common.exception.ErrorException;
 

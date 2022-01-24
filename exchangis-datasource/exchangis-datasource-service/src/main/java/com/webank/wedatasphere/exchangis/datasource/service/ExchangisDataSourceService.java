@@ -1196,7 +1196,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         List<DataSourceDbTableColumnDTO> sinkFields = (List<DataSourceDbTableColumnDTO>) sinkMessage.getData().get("columns");
         for (int i = 0; i < sinkFields.size(); i++) {
             DataSourceDbTableColumnDTO field = sinkFields.get(i);
-            field.setFieldIndex(i);
+//            field.setFieldIndex(i);
             field.setFieldEditable(!"HIVE".equals(vo.getSinkTypeId()));
         }
         message.data("sinkFields", sinkFields);
@@ -1213,21 +1213,28 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             right = sourceFields;
             exchanged = !exchanged;
         }
-
-        for (DataSourceDbTableColumnDTO l : left) {
-            String lname = l.getName();
-            for (DataSourceDbTableColumnDTO r : right) {
-                String rname = r.getName();
-                if (lname.equals(rname)) {
-                    Map<String, Object> deduction = new HashMap<>();
-                    deduction.put("source", exchanged ? r : l);
-                    deduction.put("sink", exchanged ? l : r);
-                    deduction.put("deleteEnable", !containHive);
-                    deductions.add(deduction);
-                }
-            }
+//        for (DataSourceDbTableColumnDTO l : left) {
+//            String lname = l.getName();
+//            for (DataSourceDbTableColumnDTO r : right) {
+//                String rname = r.getName();
+//                if (lname.equals(rname)) {
+//                    Map<String, Object> deduction = new HashMap<>();
+//                    deduction.put("source", exchanged ? r : l);
+//                    deduction.put("sink", exchanged ? l : r);
+//                    deduction.put("deleteEnable", !containHive);
+//                    deductions.add(deduction);
+//                }
+//            }
+//        }
+        for (int i = 0; i < left.size(); i ++){
+            DataSourceDbTableColumnDTO leftElement = left.get(i);
+            DataSourceDbTableColumnDTO rightElement = right.get(i % right.size());
+            Map<String, Object> deduction = new HashMap<>();
+            deduction.put("source", exchanged ? rightElement : leftElement);
+            deduction.put("sink", exchanged ? leftElement : rightElement);
+            deduction.put("deleteEnable", !containHive);
+            deductions.add(deduction);
         }
-
         message.data("deductions", deductions);
 
         return message;

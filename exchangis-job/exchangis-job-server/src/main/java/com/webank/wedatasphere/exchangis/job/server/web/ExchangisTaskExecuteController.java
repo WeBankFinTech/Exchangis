@@ -1,8 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
+import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedTaskMetricsVO;
 import org.apache.linkis.server.Message;
 import org.slf4j.Logger;
@@ -26,10 +26,10 @@ public class ExchangisTaskExecuteController {
     private ExchangisJobService exchangisJobService;
 
     @Resource
-    private ExchangisExecutionService exchangisExecutionService;
+    private JobExecuteService exchangisExecutionService;
 
     @RequestMapping( value = "/execution/{taskId}/metrics", method = RequestMethod.POST)
-    public Message getTaskMetrics(@PathVariable("taskId") String taskId, @RequestBody Map<String, String> jobExecutionId) throws ExchangisJobErrorException {
+    public Message getTaskMetrics(@PathVariable("taskId") String taskId, @RequestBody Map<String, String> jobExecutionId) throws ExchangisJobServerException {
         ExchangisLaunchedTaskMetricsVO taskMetrics = exchangisExecutionService.getLaunchedTaskMetrics(taskId, jobExecutionId.get("jobExecutionId"));
         //return Message.ok("Submitted succeed(提交成功)！").data("task", taskMetrics);
         Message message = Message.ok("Submitted succeed(提交成功)！");

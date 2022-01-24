@@ -1,20 +1,14 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import com.google.common.base.Joiner;
-import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskIndicatorMetricsDTO;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskResourceUsedMetricsDTO;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskTrafficMetricsDTO;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import org.apache.linkis.server.Message;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -25,8 +19,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class ExchangisExecutionServiceImpl implements ExchangisExecutionService {
-    private final static Logger logger = LoggerFactory.getLogger(ExchangisExecutionServiceImpl.class);
+public class DefaultJobExecuteService implements JobExecuteService {
+    private final static Logger logger = LoggerFactory.getLogger(DefaultJobExecuteService.class);
 
     @Autowired(required=true)
     private LaunchedTaskDao launchedTaskDao;
@@ -57,10 +51,10 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
     }
 
     @Override
-    public ExchangisJobProgressVo getExecutedJobProgressInfo(String jobExecutionId) throws ExchangisJobErrorException {
+    public ExchangisJobProgressVo getExecutedJobProgressInfo(String jobExecutionId) throws ExchangisJobServerException {
         LaunchedExchangisJobEntity launchedExchangisJobEntity = launchedJobDao.searchLaunchedJob(jobExecutionId);
         if (launchedExchangisJobEntity == null) {
-            throw new ExchangisJobErrorException(31100, "Get jobProgress information is null(獲取job进度信息为空), " + "jobExecutionId = " + jobExecutionId);
+            throw new ExchangisJobServerException(31100, "Get jobProgress information is null(獲取job进度信息为空), " + "jobExecutionId = " + jobExecutionId);
         }
         ExchangisJobProgressVo jobProgressVo = null;
         try {
@@ -68,7 +62,7 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
             List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntity = launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId);
             ExchangisJobProgressVo finalJobProgressVo = jobProgressVo;
             launchedExchangisTaskEntity.forEach(taskEntity -> {
-                finalJobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), TaskStatus.valueOf(taskEntity.getStatus()), taskEntity.getProgress()));
+                finalJobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), taskEntity.getStatus(), taskEntity.getProgress()));
                 //jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), taskEntity.getStatus(), taskEntity.getProgress()));
             });
         } catch (Exception e){
@@ -90,15 +84,15 @@ public class ExchangisExecutionServiceImpl implements ExchangisExecutionService 
     }
 
     @Override
-    public ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskId, String jobExecutionId) throws ExchangisJobErrorException {
+    public ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskId, String jobExecutionId) throws ExchangisJobServerException {
         LaunchedExchangisTaskEntity launchedExchangisTaskEntity = launchedTaskDao.getLaunchedTaskMetrics(jobExecutionId, taskId);
         if (launchedExchangisTaskEntity == null) {
-            throw new ExchangisJobErrorException(31100, "Get task metrics happened Exception (獲取task指标信息为空), " + "jobExecutionId = " + jobExecutionId+ "taskId = " + taskId);
+            throw new ExchangisJobServerException(31100, "Get task metrics happened Exception (獲取task指标信息为空), " + "jobExecutionId = " + jobExecutionId+ "taskId = " + taskId);
         }
         ExchangisLaunchedTaskMetricsVO exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVO();
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
-        exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus());
+        exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
         //exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
         exchangisLaunchedTaskVo.setMetrics(launchedExchangisTaskEntity.getMetricsMap());
 
