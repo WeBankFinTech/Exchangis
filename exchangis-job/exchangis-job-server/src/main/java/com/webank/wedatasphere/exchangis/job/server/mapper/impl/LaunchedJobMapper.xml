@@ -77,7 +77,7 @@
         where id = #{id}
     </update>
 
-    <select id="searchLaunchedJob" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
+    <select id="searchLaunchedJob" parameterType="java.lang.String" resultMap="LaunchedJobMap">
         select
         <include refid="BaseColumnList"/>
         from

@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
-import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
+import com.webank.wedatasphere.exchangis.job.server.service.ExchangisExecutionService;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedTaskMetricsVO;
 import org.apache.linkis.server.Message;
@@ -25,11 +26,11 @@ public class ExchangisTaskExecuteController {
     private ExchangisJobService exchangisJobService;
 
     @Resource
-    private JobExecuteService jobExecuteService;
+    private ExchangisExecutionService exchangisExecutionService;
 
     @RequestMapping( value = "/execution/{taskId}/metrics", method = RequestMethod.POST)
-    public Message getTaskMetrics(@PathVariable("taskId") String taskId, @RequestBody Map<String, String> jobExecutionId) {
-        ExchangisLaunchedTaskMetricsVO taskMetrics = jobExecuteService.getLaunchedTaskMetrics(taskId, "jobExecutionId");
+    public Message getTaskMetrics(@PathVariable("taskId") String taskId, @RequestBody Map<String, String> jobExecutionId) throws ExchangisJobErrorException {
+        ExchangisLaunchedTaskMetricsVO taskMetrics = exchangisExecutionService.getLaunchedTaskMetrics(taskId, jobExecutionId.get("jobExecutionId"));
         //return Message.ok("Submitted succeed(提交成功)！").data("task", taskMetrics);
         Message message = Message.ok("Submitted succeed(提交成功)！");
         message.setMethod("/api/rest_j/v1/exchangis/task/execution/{taskId}/metrics");
@@ -46,6 +47,6 @@ public class ExchangisTaskExecuteController {
                                         @RequestParam(value = "onlyKeywords", required = false) String onlyKeywords,
                                         @RequestParam(value = "lastRows", required = false) Integer lastRows) {
 
-        return this.jobExecuteService.getTaskLogInfo(taskId, jobExecutionId, fromLine, pageSize, ignoreKeywords, onlyKeywords, lastRows);
+        return this.exchangisExecutionService.getTaskLogInfo(taskId, jobExecutionId, fromLine, pageSize, ignoreKeywords, onlyKeywords, lastRows);
     }
 }
