@@ -353,7 +353,8 @@ export const getJobExecLog = (params) => {
       fromLine: params.fromLine || 0,
       pageSize: params.pageSize || 10,
       onlyKeywords: params.onlyKeywords,
-      ignoreKeywords: params.ignoreKeywords
+      ignoreKeywords: params.ignoreKeywords,
+      lastRows: params.lastRows
     },
     {
       method: "GET",
@@ -370,7 +371,8 @@ export const getTaskExecLog = (params) => {
       pageSize: params.pageSize || 10,
       jobExecutionId: params.id,
       onlyKeywords: params.onlyKeywords,
-      ignoreKeywords: params.ignoreKeywords
+      ignoreKeywords: params.ignoreKeywords,
+      lastRows: params.lastRows
     },
     {
       method: "GET",
