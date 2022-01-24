@@ -25,7 +25,7 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
 
     protected String jobName;
 
-    protected TaskStatus status;
+    protected TaskStatus statusm;
 
     protected double progress = 0.0;
 
@@ -34,6 +34,18 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
     protected String errorMessage;
 
     protected Integer retryNum = 0;
+
+    protected String status;
+
+    @Override
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Override
+    public String getStatus(){
+        return this.status;
+    }
 
     @Override
     public Long getJobId() {
@@ -56,13 +68,13 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
     }
 
     @Override
-    public TaskStatus getStatus() {
-        return this.status;
+    public TaskStatus getStatuss() {
+        return this.statusm;
     }
 
     @Override
     public void setStatus(TaskStatus status) {
-        this.status = status;
+        this.statusm = status;
     }
 
     @Override

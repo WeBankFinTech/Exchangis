@@ -9,7 +9,7 @@
         <result column="create_time" property="createTime"/>
         <result column="last_update_time" property="lastUpdateTime"/>
         <result column="engine_type" property="engineType"/>
-        <result column="job_labels" property="jobLabels"/>
+        <result column="job_labels" property="jobLabel"/>
         <result column="create_user" property="createUser"/>
         <result column="job_content" property="jobContent"/>
         <result column="execute_user" property="executeUser"/>
@@ -39,7 +39,7 @@
         #{createTime},
         #{lastUpdateTime},
         #{engineType},
-        #{jobLabels},
+        #{jobLabel},
         #{createUser},
         #{jobContent},
         #{executeUser},
@@ -64,7 +64,7 @@
         create_time = #{createTime},
         last_update_time = #{lastUpdateTime},
         engine_type = #{engineType},
-        job_labels = #{jobLabels},
+        job_labels = #{jobLabel},
         create_user = #{createUser},
         job_content = #{jobContent},
         execute_user = #{executeUser},
@@ -74,12 +74,34 @@
         modify_user = #{modifyUser}
     </update>
 
-    <select id="getJobEntity" parameterType="java.lang.String" resultType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity">
+    <select id="getJobEntity" parameterType="java.lang.String" resultMap ="BaseResultMap">
         select
         <include refid="BaseColumnList"/>
         from
         <include refid="TableName" />
         where id = #{jobId}
+    </select>
+
+    <select id="getJobEntityByFactor" parameterType="java.lang.String" resultMap ="BaseResultMap">
+        select
+        <include refid="BaseColumnList"/>
+        from
+        <include refid="TableName" />
+        where project_id = #{projectId}
+        <if test="name != null and name = ''">
+            and name like '%#{name}%'
+        </if>
+    </select>
+
+    <select id="getJobEntityByName" parameterType="java.lang.String" resultMap ="BaseResultMap">
+        select
+        <include refid="BaseColumnList"/>
+        from
+        <include refid="TableName" />
+        where
+        <if test="name != null and name = ''">
+            and name like '%#{name}%'
+        </if>
     </select>
 
 </mapper>

@@ -17,7 +17,7 @@ public class ExchangisJobBasicInfoDTO {
 
     private String nodeName;
 
-    private String jobName;
+    private String name;
 
     private JobTypeEnum jobType;
 
@@ -26,6 +26,16 @@ public class ExchangisJobBasicInfoDTO {
     private String jobLabels;
 
     private String jobDesc;
+
+    private String jobName;
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
 
     public Long getProjectId() {
         return projectId;
@@ -51,12 +61,12 @@ public class ExchangisJobBasicInfoDTO {
 
     public void setNodeName(String nodeName) { this.nodeName = nodeName; }
 
-    public String getJobName() {
-        return jobName;
+    public String getName() {
+        return name;
     }
 
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public JobTypeEnum getJobType() {
