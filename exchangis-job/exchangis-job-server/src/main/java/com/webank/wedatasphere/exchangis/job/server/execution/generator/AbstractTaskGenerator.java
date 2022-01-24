@@ -35,13 +35,14 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
 
     @Override
     public LaunchableExchangisJob init(ExchangisJobInfo jobInfo) throws ExchangisTaskGenerateException {
+        Calendar calendar = Calendar.getInstance();
         LaunchableExchangisJob launchableExchangisJob = new LaunchableExchangisJob();
         launchableExchangisJob.setExchangisJobInfo(jobInfo);
         launchableExchangisJob.setName(jobInfo.getName());
         launchableExchangisJob.setEngineType(jobInfo.getEngineType());
         launchableExchangisJob.setJobLabel(jobInfo.getJobLabel());
-        launchableExchangisJob.setCreateTime(jobInfo.getCreateTime());
-        launchableExchangisJob.setLastUpdateTime(jobInfo.getLastUpdateTime());
+        launchableExchangisJob.setCreateTime(calendar.getTime());
+        launchableExchangisJob.setLastUpdateTime(calendar.getTime());
         launchableExchangisJob.setId(jobInfo.getId());
         launchableExchangisJob.setCreateUser(jobInfo.getExecuteUser());
         // Generate launchable exchangis job id to UUID
@@ -56,10 +57,7 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
         if (Objects.isNull(launchableExchangisJob.getExchangisJobInfo())){
             throw new ExchangisTaskGenerateException("Job info of launchableExchangisJob cannot be empty", null);
         }
-        Calendar calendar = Calendar.getInstance();
         launchableExchangisJob.setCreateUser(tenancy);
-        launchableExchangisJob.setCreateTime(calendar.getTime());
-        launchableExchangisJob.setLastUpdateTime(calendar.getTime());
         try {
             execute(launchableExchangisJob, getTaskGeneratorContext(), tenancy);
         } catch(ErrorException e){
