@@ -13,6 +13,10 @@ public class ExchangisJobProgressVo extends ExchangisProgressVo{
         super(status, progress);
     }
 
+    public ExchangisJobProgressVo(){
+        super();
+    }
+
     /**
      * Add task progress
      * @param progressVo progress vo

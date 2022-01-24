@@ -17,14 +17,15 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.OptionElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobMapper;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
+import com.webank.wedatasphere.exchangis.job.server.service.impl.ExchangisJobDsBindServiceImpl;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.utils.JsonUtils;
 import org.apache.linkis.manager.label.utils.LabelUtils;
@@ -221,7 +222,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
             return exchangisJob;
         }
 
-      return null;
+        return null;
     }
 
 

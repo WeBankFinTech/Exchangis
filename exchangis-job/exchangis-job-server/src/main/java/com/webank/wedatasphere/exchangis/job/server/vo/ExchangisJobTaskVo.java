@@ -29,6 +29,10 @@ public class ExchangisJobTaskVo {
 
     private Date launchTime;
 
+    public ExchangisJobTaskVo(){
+
+    }
+
     public ExchangisJobTaskVo(Long taskId, String name, String status, Date createTime, Date launchTime, Date lastUpdateTime, String engineType, String linkisJobId, String linkisJobInfo, String executeUser){
         this.taskId = taskId;
         this.name = name;
