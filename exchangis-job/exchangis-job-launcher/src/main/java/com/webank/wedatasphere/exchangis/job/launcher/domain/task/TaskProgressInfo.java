@@ -82,7 +82,7 @@ public class TaskProgressInfo {
         this.status = status;
     }
 
-    public double getProgress() {
+    public float getProgress() {
         return progress;
     }
 

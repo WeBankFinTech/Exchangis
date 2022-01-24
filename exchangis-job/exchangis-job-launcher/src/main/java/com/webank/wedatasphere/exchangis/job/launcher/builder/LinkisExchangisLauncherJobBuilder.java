@@ -23,6 +23,7 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
         launchableTask.setLinkisContentMap(inputJob.getJobContent());
         launchableTask.setLinkisParamsMap(inputJob.getRuntimeParams());
         launchableTask.setEngineType(inputJob.getEngineType());
+        launchableTask.setLabels(inputJob.getJobLabel());
         launchableTask.setName(inputJob.getName());
         // Use launcher name placeholder
         launchableTask.setLinkisJobName(LAUNCHER_NAME);
