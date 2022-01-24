@@ -26,9 +26,18 @@ public interface ExchangisTaskEntity extends ExchangisTask {
 
     /**
      * Task status
+     * @return status String
+     */
+    String getStatus();
+
+
+    void setStatus(String status);
+
+    /**
+     * Task status
      * @return status enum
      */
-    TaskStatus getStatus();
+    TaskStatus getStatuss();
 
 
     void setStatus(TaskStatus status);

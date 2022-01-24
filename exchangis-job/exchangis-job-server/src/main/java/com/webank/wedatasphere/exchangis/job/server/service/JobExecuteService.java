@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.service;
 
 
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.linkis.server.Message;
 
@@ -19,14 +20,14 @@ public interface JobExecuteService {
      * @param jobExecutionId      the job ExecutionId
      * @return the task launched metrics
      */
-    ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskid, String jobExecutionId);
+    ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskid, String jobExecutionId) throws ExchangisJobErrorException;
 
     /**
      * Gets job progress info
      * @param jobExecutionId      the job ExecutionId
      * @return the job tasks status
      */
-    ExchangisJobProgressVo getExecutedJobProgressInfo(String jobExecutionId);
+    ExchangisJobProgressVo getExecutedJobProgressInfo(String jobExecutionId) throws ExchangisJobErrorException;
 
     /**
      * Gets job status info
