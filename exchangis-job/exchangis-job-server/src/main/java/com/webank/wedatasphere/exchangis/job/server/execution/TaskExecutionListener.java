@@ -30,29 +30,29 @@ public interface TaskExecutionListener extends ExchangisListener<TaskExecutionEv
      * Listen metrics update
      * @param metricsUpdateEvent update event
      */
-    void onMetricsUpdate(TaskMetricsUpdateEvent metricsUpdateEvent);
+    void onMetricsUpdate(TaskMetricsUpdateEvent metricsUpdateEvent) throws ExchangisOnEventException;
 
     /**
      * Status update
      * @param statusUpdateEvent update event
      */
-    void onStatusUpdate(TaskStatusUpdateEvent statusUpdateEvent);
+    void onStatusUpdate(TaskStatusUpdateEvent statusUpdateEvent) throws ExchangisOnEventException;
 
     /**
      * Info update
      * @param infoUpdateEvent update event
      */
-    void onInfoUpdate(TaskInfoUpdateEvent infoUpdateEvent);
+    void onInfoUpdate(TaskInfoUpdateEvent infoUpdateEvent) throws ExchangisOnEventException;
 
     /**
      * Delete
      * @param deleteEvent delete event
      */
-    void onDelete(TaskDeleteEvent deleteEvent);
+    void onDelete(TaskDeleteEvent deleteEvent) throws ExchangisOnEventException;
 
     /**
      * Progress update
      * @param updateEvent update event
      */
-    void onProgressUpdate(TaskProgressUpdateEvent updateEvent);
+    void onProgressUpdate(TaskProgressUpdateEvent updateEvent) throws ExchangisOnEventException;
 }

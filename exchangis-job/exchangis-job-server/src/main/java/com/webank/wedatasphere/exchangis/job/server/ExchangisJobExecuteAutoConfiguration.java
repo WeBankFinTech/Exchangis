@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Auto configure the beans in job execution
@@ -64,8 +65,11 @@ public class ExchangisJobExecuteAutoConfiguration {
      */
     @Bean(initMethod = "init")
     @ConditionalOnMissingBean(TaskGenerator.class)
-    public AbstractTaskGenerator taskGenerator(TaskGeneratorContext taskGeneratorContext, ExchangisJobBuilderManager jobBuilderManager){
-        return new DefaultTaskGenerator(taskGeneratorContext, jobBuilderManager);
+    public AbstractTaskGenerator taskGenerator(TaskGeneratorContext taskGeneratorContext,
+                                               ExchangisJobBuilderManager jobBuilderManager, List<TaskGenerateListener> generateListeners){
+        AbstractTaskGenerator taskGenerator = new DefaultTaskGenerator(taskGeneratorContext, jobBuilderManager);
+        Optional.ofNullable(generateListeners).ifPresent(listeners -> listeners.forEach(taskGenerator::addListener));
+        return taskGenerator;
     }
 
     @Bean
@@ -143,7 +147,9 @@ public class ExchangisJobExecuteAutoConfiguration {
     public AbstractTaskExecution taskExecution(Scheduler scheduler, ExchangisTaskLaunchManager launchManager,
                                                TaskManager<LaunchedExchangisTask> taskManager, List<TaskObserver<?>> observers,
                                                TaskSchedulerLoadBalancer<LaunchedExchangisTask> loadBalancer,
-                                               TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler){
-        return new DefaultTaskExecution(scheduler, launchManager, taskManager, observers, loadBalancer, taskChooseRuler);
+                                               TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler, List<TaskExecutionListener> executionListeners){
+        AbstractTaskExecution taskExecution = new DefaultTaskExecution(scheduler, launchManager, taskManager, observers, loadBalancer, taskChooseRuler);
+        Optional.ofNullable(executionListeners).ifPresent(listeners -> listeners.forEach(taskExecution::addListener));
+        return taskExecution;
     }
 }
