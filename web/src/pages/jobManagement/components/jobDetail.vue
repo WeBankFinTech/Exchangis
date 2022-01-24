@@ -959,7 +959,7 @@ export default {
       getJobTasks(jobExecutionId)
         .then(res => {
           this.tasklist = res.tasks
-          this.getJobProgress()
+          this.getJobProgress(jobExecutionId)
         })
         .catch(err => {
           message.error("查询任务列表失败");
