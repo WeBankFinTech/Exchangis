@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.service;
 
 
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.linkis.server.Message;
@@ -62,4 +63,11 @@ public interface JobExecuteService {
      */
     int count(Long jobId, String jobName, String status, Long launchStartTime, Long launchEndTime);
 
+    /**
+     * Execute job
+     * @param jobInfo job info
+     * @return job execution id
+     * @throws ExchangisJobServerException
+     */
+    String executeJob(ExchangisJobInfo jobInfo, String execUser) throws ExchangisJobServerException;
 }
