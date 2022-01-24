@@ -88,7 +88,8 @@
     <update id="upgradeLaunchedJobStatus">
         UPDATE <include refid="TableName"/>
         SET
-        status = #{status}
+        status = #{status},
+        last_update_time = #{updateTime}
         WHERE
         job_execution_id = #{jobExecutionId}
     </update>

@@ -13,9 +13,9 @@ public interface LaunchableTaskDao {
 
     /**
      * Add new launchableTask
-     * @param launchableExchangisTask
+     * @param tasks
      */
-    void addLaunchableTask(LaunchableExchangisTask launchableExchangisTask);
+    void addLaunchableTask(@Param("tasks")List<LaunchableExchangisTask> tasks);
 
     /**
      * Delete launchableTask
