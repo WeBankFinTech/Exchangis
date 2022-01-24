@@ -1,16 +1,18 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
-import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskLaunchException;
-import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskNotExistException;
+import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
+import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskNotExistException;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskLog;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskLogQuery;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskProgressInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
+import org.apache.linkis.computation.client.LinkisJobBuilder;
+import org.apache.linkis.computation.client.LinkisJobClient;
 import org.apache.linkis.computation.client.once.SubmittableOnceJob;
 import org.apache.linkis.computation.client.once.simple.SimpleOnceJob;
-import org.apache.linkis.computation.client.once.simple.SimpleOnceJobBuilder;
+import org.apache.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
 import org.apache.linkis.computation.client.operator.impl.*;
 import org.apache.linkis.computation.client.utils.LabelKeyUtils;
 import org.apache.linkis.protocol.engine.JobProgressInfo;
@@ -85,7 +87,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
 
     private LinkisLauncherTask(String jobId, String user, Map<String, Object> jobInfo, String engineConn){
         // Build existing job
-        this.onceJob = SimpleOnceJob.build(jobId, user);
+        this.onceJob = LinkisJobClient.once().simple().build(jobId, user);
         this.jobId = jobId;
         this.jobInfo = jobInfo;
         this.engineConn = engineConn;
@@ -147,7 +149,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 // invoke getStatus() to get real time status
                 TaskStatus taskStatus = getStatus();
                 if (!TaskStatus.isCompleted(taskStatus)){
-                   EngineConnProgressInfo progressInfo =  this.progressOperator.apply();
+                   EngineConnProgressInfo progressInfo =  (EngineConnProgressInfo)this.progressOperator.apply();
                    JobProgressInfo[] progressInfoArray = progressInfo.progressInfo();
                    TaskProgressInfo taskProgressInfo = new TaskProgressInfo();
                    if (progressInfoArray.length > 1){
@@ -195,7 +197,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 logOperator.setIgnoreKeywords(query.getIgnoreKeywords());
                 logOperator.setOnlyKeywords(query.getOnlyKeywords());
                 logOperator.setLastRows(query.getLastRows());
-                EngineConnLogs logs = logOperator.apply();
+                EngineConnLogs logs = (EngineConnLogs)logOperator.apply();
                 boolean isEnd = logs.logs().size() <= 0;
                 if (isEnd){
                     isEnd = TaskStatus.isCompleted(getStatus());
@@ -230,12 +232,12 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
      */
     private SimpleOnceJob toSubmittableJob(LaunchableExchangisTask task){
         //TODO deal the start up params
-        SimpleOnceJobBuilder jobBuilder = SimpleOnceJob.builder().setCreateService("")
+        LinkisJobBuilder<SubmittableSimpleOnceJob> jobBuilder = LinkisJobClient.once().simple().builder().setCreateService(LAUNCHER_LINKIS_CREATOR.getValue())
+                .setMaxSubmitTime(LAUNCHER_MAX_SUBMIT.getValue())
                 .addLabel(LabelKeyUtils.ENGINE_TYPE_LABEL_KEY(), task.getEngineType().toLowerCase() + "-" +
                         engineVersions.getOrDefault(task.getEngineType().toLowerCase(), "0.0.0"))
                 .addLabel(LabelKeyUtils.USER_CREATOR_LABEL_KEY(), task.getExecuteUser() + "-" + LAUNCHER_LINKIS_CREATOR.getValue())
                 .addLabel(LabelKeyUtils.ENGINE_CONN_MODE_LABEL_KEY(), LAUNCHER_LINKIS_ENGINE_CONN_MODE.getValue())
-                .setMaxSubmitTime(LAUNCHER_MAX_SUBMIT.getValue())
                 .addExecuteUser(task.getExecuteUser());
         Optional.ofNullable(task.getLinkisContentMap()).ifPresent(params -> params.forEach(jobBuilder::addJobContent));
         Optional.ofNullable(task.getLinkisParamsMap()).ifPresent(params -> params.forEach(jobBuilder::addRuntimeParam));

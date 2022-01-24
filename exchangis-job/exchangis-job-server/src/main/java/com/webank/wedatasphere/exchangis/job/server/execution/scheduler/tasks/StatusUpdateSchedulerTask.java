@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
-import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskLaunchException;
+import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskProgressInfo;
