@@ -19,10 +19,9 @@ import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoCont
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobMapper;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
-import com.webank.wedatasphere.exchangis.job.server.service.impl.ExchangisJobDsBindServiceImpl;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
@@ -178,12 +177,12 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         });
     }
 
-    public ExchangisJobVO getJob(Long id) throws ExchangisJobErrorException {
+    public ExchangisJobVO getJob(Long id) throws ExchangisJobServerException {
         return this.getJob(null, id);
     }
 
     @Override
-    public ExchangisJobVO getJob(HttpServletRequest request, Long id) throws ExchangisJobErrorException {
+    public ExchangisJobVO getJob(HttpServletRequest request, Long id) throws ExchangisJobServerException {
         ExchangisJobVO exchangisJob = exchangisJobService.getById(id);
         if (exchangisJob != null) {
             // generate subjobs ui content
@@ -196,14 +195,14 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
                 objectNode.set("subJobs", contentJsonNode);
                 exchangisJob.setContent(objectNode.toString());
             } catch (JsonProcessingException e) {
-                throw new ExchangisJobErrorException(31100, "exchangis.subjob.ui.create.error", e);
+                throw new ExchangisJobServerException(31100, "exchangis.subjob.ui.create.error", e);
             }
         }
         return exchangisJob;
     }
 
     @Override
-    public ExchangisJobVO getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobErrorException {
+    public ExchangisJobVO getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobServerException {
 
         Optional<ExchangisJobVO> optional = this.getByNodeId(nodeId);
         if (optional.isPresent()) {
@@ -217,7 +216,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
                 objectNode.set("subJobs", contentJsonNode);
                 exchangisJob.setContent(objectNode.toString());
             } catch (JsonProcessingException e) {
-                throw new ExchangisJobErrorException(31100, "exchangis.subjob.ui.create.error", e);
+                throw new ExchangisJobServerException(31100, "exchangis.subjob.ui.create.error", e);
             }
             return exchangisJob;
         }
@@ -229,7 +228,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Override
     public ExchangisJobVO updateJobConfig(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
-            throws ExchangisJobErrorException {
+            throws ExchangisJobServerException {
         ExchangisJobVO exchangisJob = exchangisJobService.getById(id);
         exchangisJob.setProxyUser(exchangisJobContentDTO.getProxyUser());
         exchangisJob.setExecuteNode(exchangisJobContentDTO.getExecuteNode());
@@ -242,7 +241,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
     @Override
     public ExchangisJobVO updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
-            throws ExchangisJobErrorException, ExchangisDataSourceException {
+            throws ExchangisJobServerException, ExchangisDataSourceException {
         ExchangisJobVO exchangisJob = exchangisJobService.getById(id);
         final String engine = exchangisJob.getEngineType();
 
@@ -250,7 +249,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         List<ExchangisJobInfoContent> content = LabelUtils.Jackson.fromJson(exchangisJobContentDTO.getContent(), List.class, ExchangisJobInfoContent.class);
         long count = content.stream().map(ExchangisJobInfoContent::getSubJobName).distinct().count();
         if (count < content.size()) {
-            throw new ExchangisJobErrorException(31101, "存在重复子任务名");
+            throw new ExchangisJobServerException(31101, "存在重复子任务名");
         }
 
         List<ExchangisJobDsBind> dsBinds = new ArrayList<>(content.size());

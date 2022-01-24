@@ -79,10 +79,7 @@
     </select>
 
     <select id="getTaskToLaunch" resultMap="BaseResultMap">
-        SELECT
-        *
-        FROM
-        <include refid="TableName"/>
-        left join exchangis_launched_task_entity where exchangis_launchable_task.id is NULL ORDER BY exchangis_launchable_task.create_time ASC LIMIT ${limitSize}
+        <![CDATA[SELECT * FROM exchangis_launchable_task t
+        left join exchangis_launched_task_entity l on t.id = l.task_id where l.task_id is NULL ORDER BY t.create_time ASC LIMIT ${limitSize};]]>
     </select>
 </mapper>
