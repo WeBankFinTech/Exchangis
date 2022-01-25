@@ -41,9 +41,9 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     /**
      * Sqoop mode
      */
-    private static final JobParamDefine<String> MODE = JobParams.define("sqoop.mode", (BiFunction<String, SubExchangisJob, String>) (k, job) -> SUPPORT_BIG_DATA_TYPES.contains(job.getSourceType().toUpperCase())? "import": "export");
+    private static final JobParamDefine<String> MODE = JobParams.define("sqoop.mode", (BiFunction<String, SubExchangisJob, String>) (k, job) -> SUPPORT_BIG_DATA_TYPES.contains(job.getSourceType().toUpperCase())? "export": "import");
 
-    private static final JobParamDefine<MODE_TYPE> MODE_ENUM = JobParams.define("sqoop.mode.enum", (BiFunction<String, SubExchangisJob, MODE_TYPE>) (k, job) -> SUPPORT_BIG_DATA_TYPES.contains(job.getSourceType().toUpperCase())? IMPORT: EXPORT);
+    private static final JobParamDefine<MODE_TYPE> MODE_ENUM = JobParams.define("sqoop.mode.enum", (BiFunction<String, SubExchangisJob, MODE_TYPE>) (k, job) -> SUPPORT_BIG_DATA_TYPES.contains(job.getSourceType().toUpperCase())? EXPORT: IMPORT);
     /**
      * Sqoop RDBMS mode params
      */
@@ -63,7 +63,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      * //TODO Get the file type from service
      * Whether hcatalog
      */
-    private static final JobParamDefine<Boolean> IS_USE_HCATALOG = JobParams.define("sqoop.use.hcatalog", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) -> false);
+    private static final JobParamDefine<Boolean> IS_USE_HCATALOG = JobParams.define("sqoop.use.hcatalog", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) -> true);
 
     /**
      * Driver default 'com.mysql.jdbc.Driver'
@@ -180,8 +180,9 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     @SuppressWarnings("unchecked")
     private static final JobParamDefine<Map<String, String>> PARTITION_MAP = JobParams.define("sqoop.partition.map", (BiFunction<String, SubExchangisJob, Map<String, String>>) (k, job) -> {
         if ("hive".equalsIgnoreCase(job.getSinkType()) || "hive".equalsIgnoreCase(job.getSourceType())){
-            Object partition = MODE_HADOOP_PARAMS.getValue(job).get(JobParamConstraints.PARTITION);
-            if (Objects.nonNull(partition)) {
+            JobParam<?> partitionParam = MODE_HADOOP_PARAMS.getValue(job).get(JobParamConstraints.PARTITION);
+            if (Objects.nonNull(partitionParam)) {
+                Object partition = partitionParam.getValue();
                 if (partition instanceof Map) {
                     return (Map<String, String>) partition;
                 } else {
@@ -293,7 +294,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      */
     private static final JobParamDefine<String> HIVE_NULL_STRING = JobParams.define("sqoop.args.null.string", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         if (MODE_ENUM.getValue(job) == IMPORT && "hive".equalsIgnoreCase(job.getSinkType())){
-            return "\\N";
+            return "\\\\N";
         }
         return null;
     });
@@ -304,7 +305,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      */
     private static final JobParamDefine<String> HIVE_NULL_NON_STRING = JobParams.define("sqoop.args.null.non.string", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         if (MODE_ENUM.getValue(job) == IMPORT && "hive".equalsIgnoreCase(job.getSinkType())){
-            return "\\N";
+            return "\\\\N";
         }
         return null;
     });
@@ -380,7 +381,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      * Export: Hcatalog-partition-values
      */
     private static final JobParamDefine<String> HCATALOG_PARTITION_VALUE = JobParams.define("sqoop.args.hcatalog.partition.values", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
-        if (Objects.nonNull(HCATALOG_TABLE.getValue(job))){
+        if (Objects.nonNull(HCATALOG_PARTITION_KEY.getValue(job))){
             return StringUtils.join(PARTITION_MAP.getValue(job).values(), ",");
         }
         return null;
@@ -403,7 +404,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      */
     private static final JobParamDefine<String> HIVE_INPUT_NULL_STRING = JobParams.define("sqoop.args.input.null.string", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         if (MODE_ENUM.getValue(job) == EXPORT && "hive".equalsIgnoreCase(job.getSourceType())){
-            return "\\N";
+            return "\\\\N";
         }
         return null;
     });
@@ -414,7 +415,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      */
     private static final JobParamDefine<String> HIVE_INPUT_NULL_NON_STRING = JobParams.define("sqoop.args.input.null.non.string", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         if (MODE_ENUM.getValue(job) == EXPORT && "hive".equalsIgnoreCase(job.getSourceType())){
-            return "\\N";
+            return "\\\\N";
         }
         return null;
     });
@@ -423,7 +424,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     /**
      * Mapping params (ExchangisJobContent -> transforms -> mapping)
      */
-    private static final JobParamDefine<List<Map<String, Object>>> TRANSFORM_MAPPING = JobParams.define("sqoop.transform.mapping");
+    private static final JobParamDefine<List<Map<String, Object>>> TRANSFORM_MAPPING = JobParams.define("sqoop.transform.mapping", "mapping");
     /**
      * Source field name in mapping
      */

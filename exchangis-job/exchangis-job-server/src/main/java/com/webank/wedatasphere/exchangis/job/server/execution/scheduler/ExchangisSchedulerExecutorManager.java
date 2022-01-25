@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import org.apache.linkis.protocol.engine.EngineState;
+import org.apache.linkis.scheduler.exception.LinkisJobRetryException;
 import org.apache.linkis.scheduler.executer.*;
 import org.apache.linkis.scheduler.listener.ExecutorListener;
 import org.apache.linkis.scheduler.queue.SchedulerEvent;
@@ -165,6 +166,7 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
                     ((AbstractExchangisSchedulerTask.DirectExecuteRequest)executeRequest).directExecute();
                     return new SuccessExecuteResponse();
                 } catch (ExchangisSchedulerException | ExchangisSchedulerRetryException e) {
+                    e.setErrCode(LinkisJobRetryException.JOB_RETRY_ERROR_CODE());
                     return new ErrorExecuteResponse("Exception occurred in scheduling, task will fail or retry on the next time, message: ["
                             + e.getMessage() + "]", e);
                 } catch (Exception e){

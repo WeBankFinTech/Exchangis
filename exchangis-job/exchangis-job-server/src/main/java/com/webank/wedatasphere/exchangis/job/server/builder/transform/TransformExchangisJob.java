@@ -60,6 +60,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
 
         public SubExchangisJobAdapter(ExchangisJobInfoContent jobInfoContent){
             if(Objects.nonNull(jobInfoContent)) {
+                this.jobInfoContent = jobInfoContent;
                 this.engineType = jobInfoContent.getEngine();
                 this.name = jobInfoContent.getSubJobName();
                 convertContentToParams(jobInfoContent);

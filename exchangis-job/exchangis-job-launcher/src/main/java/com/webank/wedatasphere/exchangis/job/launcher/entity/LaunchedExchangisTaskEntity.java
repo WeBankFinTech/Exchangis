@@ -46,11 +46,12 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
     }
 
     public LaunchedExchangisTaskEntity(LaunchableExchangisTask launchableExchangisTask){
+        Calendar calendar = Calendar.getInstance();
         this.launchableExchangisTask = launchableExchangisTask;
         this.id = launchableExchangisTask.getId();
         this.name = launchableExchangisTask.getName();
-        this.createTime = launchableExchangisTask.getCreateTime();
-        this.lastUpdateTime = launchableExchangisTask.getLastUpdateTime();
+        this.createTime = calendar.getTime();
+        this.lastUpdateTime = calendar.getTime();
         this.engineType = launchableExchangisTask.getEngineType();
         this.executeUser = launchableExchangisTask.getExecuteUser();
         this.jobId = launchableExchangisTask.getJobId();

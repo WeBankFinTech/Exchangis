@@ -115,7 +115,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                             sourceHandler.handleSource(subExchangisJob, ctx);
                         }
                         if (Objects.nonNull(sinkHandler)){
-                            sinkHandler.handleSource(subExchangisJob, ctx);
+                            sinkHandler.handleSink(subExchangisJob, ctx);
                         }
                     }
                 }else{

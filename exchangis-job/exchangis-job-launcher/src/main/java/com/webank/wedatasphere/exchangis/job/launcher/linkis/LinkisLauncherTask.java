@@ -91,8 +91,8 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
     }
 
     private LinkisLauncherTask(LaunchableExchangisTask task, Map<String, String> engineVersions){
-        this.onceJob = toSubmittableJob(task);
         this.engineVersions = engineVersions;
+        this.onceJob = toSubmittableJob(task);
     }
 
     private LinkisLauncherTask(String jobId, String user, Map<String, Object> jobInfo, String engineConn){
@@ -143,7 +143,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
             try{
                 // Invoke getStatus() to get real time status
                 if(!TaskStatus.isCompleted(getStatus())){
-                    this.metricsOperator.apply();
+                    return (Map<String, Object>)this.metricsOperator.apply();
                 }
             }catch(Exception e){
                 dealException(e);
@@ -230,6 +230,8 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
             ((SubmittableOnceJob) this.onceJob).submit();
             // New the operators for job
             prepareOperators(this.onceJob);
+            Map<String, Object> jobInfo = getJobInfo(false);
+            jobInfo.put("ecmServiceInstance", ((SubmittableSimpleOnceJob)this.onceJob).getECMServiceInstance());
         } catch (Exception e){
             dealException(e);
         }
@@ -283,7 +285,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
     public Map<String, Object> getJobInfo(boolean refresh){
         if (Objects.nonNull(onceJob)){
             if (Objects.isNull(this.jobInfo) || refresh){
-                this.jobInfo = onceJob.getNodeInfo();
+                this.jobInfo = this.onceJob.getNodeInfo();
             }
         }
         return this.jobInfo;

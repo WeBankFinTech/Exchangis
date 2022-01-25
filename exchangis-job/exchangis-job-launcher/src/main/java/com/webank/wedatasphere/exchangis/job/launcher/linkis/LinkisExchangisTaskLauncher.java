@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
+import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
@@ -15,12 +16,14 @@ import java.util.*;
 /**
  * Linkis task launcher
  */
-public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<LaunchableExchangisTask> {
+public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<LaunchableExchangisTask, LaunchedExchangisTask> {
 
+    private final String[] STORE_INFO = new String[]{"ecmServiceInstance"};
     /**
      * Engine versions
      */
     private Map<String, String> engineVersions = new HashMap<>();
+
     @Override
     public String name() {
         return "Linkis";
@@ -35,6 +38,11 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
     }
 
     @Override
+    public AccessibleLauncherTask launcherTask(LaunchedExchangisTask launchedTask) {
+        return null;
+    }
+
+    @Override
     public LaunchedExchangisTask launch(LaunchableExchangisTask launchableTask) throws ExchangisTaskLaunchException {
         String engineType = launchableTask.getEngineType();
         if (StringUtils.isBlank(engineType)) {
@@ -44,8 +52,23 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
         LinkisLauncherTask launcherTask = LinkisLauncherTask.init(launchableTask, this.engineVersions);
         launcherTask.submit();
         launchedExchangisTask.setLinkisJobId(launcherTask.getJobId());
-        launchedExchangisTask.setLinkisJobInfoMap(launcherTask.getJobInfo(true));
+        launchedExchangisTask.setLinkisJobInfoMap(convertJobInfoToStore(launcherTask.getJobInfo(false)));
+        launchedExchangisTask.setLauncherTask(launcherTask);
         return launchedExchangisTask;
     }
 
+    /**
+     * Convert to store job information
+     * @param jobInfo job info
+     * @return
+     */
+    private Map<String, Object> convertJobInfoToStore(Map<String, Object> jobInfo){
+        Map<String, Object> storeInfo = new HashMap<>();
+        Optional.ofNullable(jobInfo).ifPresent( info -> {
+            for (String infoKey : STORE_INFO){
+                Optional.ofNullable(info.get(infoKey)).ifPresent(infoItem -> storeInfo.put(infoKey,infoItem));
+            }
+        });
+        return storeInfo;
+    }
 }
