@@ -104,6 +104,7 @@ export default {
       options: {
         submitBtn: false,
       },
+      originalDefine: [],
       rule: [],
       defaultRule: [
         {
@@ -149,6 +150,7 @@ export default {
     
     getKeyDefine(this.data.type).then((data)=>{
       this.loading = false;
+      this.originalDefine = data.list
       this.transformData(data.list);
     })
   },
@@ -156,6 +158,7 @@ export default {
     data: {
       handler (newV) {
         getKeyDefine(this.data.type).then((data)=>{
+          this.originalDefine = data.list
           this.transformData(data.list);
           this.getDataSource(newV);
         })
@@ -259,7 +262,7 @@ export default {
     submit(){
       this.fApi.submit((formData, fApi)=>{
         console.log(JSON.stringify(formData))
-        this.$emit("submit", JSON.stringify(formData));
+        this.$emit("submit", JSON.stringify(formData), this.originalDefine);
       })
     }
   }
