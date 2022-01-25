@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.launcher.manager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.linkis.LinkisExchangisTaskLauncher;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class LinkisExchangisTaskLaunchManager implements ExchangisTaskLaunchManager {
 
-    private final Map<String, ExchangisTaskLauncher<LaunchableExchangisTask>> launchers = new ConcurrentHashMap<>();
+    private final Map<String, ExchangisTaskLauncher<LaunchableExchangisTask, LaunchedExchangisTask>> launchers = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
@@ -25,7 +26,7 @@ public class LinkisExchangisTaskLaunchManager implements ExchangisTaskLaunchMana
 
 
     @Override
-    public void registerTaskLauncher(ExchangisTaskLauncher<LaunchableExchangisTask> taskLauncher) {
+    public void registerTaskLauncher(ExchangisTaskLauncher<LaunchableExchangisTask, LaunchedExchangisTask> taskLauncher) {
         this.launchers.put(taskLauncher.name().toUpperCase(Locale.ROOT), taskLauncher);
     }
 
@@ -35,7 +36,7 @@ public class LinkisExchangisTaskLaunchManager implements ExchangisTaskLaunchMana
     }
 
     @Override
-    public ExchangisTaskLauncher<LaunchableExchangisTask> getTaskLauncher(String launcherName) {
+    public ExchangisTaskLauncher<LaunchableExchangisTask, LaunchedExchangisTask> getTaskLauncher(String launcherName) {
         return this.launchers.get(launcherName.toUpperCase(Locale.ROOT));
     }
 }

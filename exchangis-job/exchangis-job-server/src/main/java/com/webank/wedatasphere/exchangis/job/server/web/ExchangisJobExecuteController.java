@@ -79,8 +79,14 @@ public class ExchangisJobExecuteController {
     }
 
     @RequestMapping( value = "/execution/{jobExecutionId}/progress", method = RequestMethod.GET)
-    public Message getExecutedJobAndTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobServerException {
-        ExchangisJobProgressVo jobAndTaskStatus = executeService.getExecutedJobProgressInfo(jobExecutionId);
+    public Message getExecutedJobAndTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
+        ExchangisJobProgressVo jobAndTaskStatus;
+        try {
+            jobAndTaskStatus = executeService.getExecutedJobProgressInfo(jobExecutionId);
+        } catch (ExchangisJobServerException e) {
+            // TODO Log exception
+            return Message.error("Fail to get progress info (获取任务执行状态失败), reason: [" + e.getMessage() + "]");
+        }
         Message message = Message.ok("Submitted succeed(提交成功)！");
         message.setMethod("/api/rest_j/v1/exchangis/job/execution/" +jobExecutionId +"/progress");
         message.data("job", jobAndTaskStatus);

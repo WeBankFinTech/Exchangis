@@ -107,7 +107,6 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
      * Will invoke if the spring container is down
      */
     @Override
-    @PreDestroy
     public void shutdown() {
         LOG.warn("Shutdown all the consumers which is working");
         consumerGroupMap.forEach((group, consumer) -> consumer.shutdown());

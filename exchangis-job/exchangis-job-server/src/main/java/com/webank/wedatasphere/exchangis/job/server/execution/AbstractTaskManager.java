@@ -71,6 +71,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
     @Override
     public void addRunningTask(LaunchedExchangisTask task) {
         task.setStatus(TaskStatus.Running);
+        task.setRunningTime(Calendar.getInstance().getTime());
         onEvent(new TaskInfoUpdateEvent(task));
         log(JobLogEvent.Level.INFO, task, "Status of task: [{}] change to {}, info: [{}]", task.getTaskId(), task.getStatus(), Json.toJson(task, null));
         if (Objects.isNull(runningTasks.putIfAbsent(task.getTaskId(), task))){

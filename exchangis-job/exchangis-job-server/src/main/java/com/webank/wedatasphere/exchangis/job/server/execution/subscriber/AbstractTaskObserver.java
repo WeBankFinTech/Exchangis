@@ -155,7 +155,11 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
                     waitStatus.set(true);
                     emptyCondition.await(observerWait, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
-                    LOG.warn("TaskObserver wait is interrupted", e);
+                    if (isShutdown){
+                        LOG.warn("TaskObserver wait is interrupted by shutdown");
+                    } else {
+                        LOG.warn("TaskObserver wait is interrupted", e);
+                    }
                 } finally {
                     waitStatus.set(false);
                     observerLock.unlock();
