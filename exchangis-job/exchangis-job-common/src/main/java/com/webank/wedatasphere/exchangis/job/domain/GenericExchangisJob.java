@@ -19,7 +19,7 @@ public class GenericExchangisJob implements ExchangisJob {
 
     protected String engineType;
 
-    private String jobLabel;
+    protected String jobLabel;
 
     private Map<String, Object> labelHolder = new HashMap<>();
 

@@ -26,6 +26,10 @@ public class LaunchableExchangisTask implements ExchangisTask {
 
     private String linkisJobName;
 
+    private Long jobId;
+
+    private String jobExecutionId;
+
     /**
      * Job content in Linkis
      */
@@ -112,6 +116,22 @@ public class LaunchableExchangisTask implements ExchangisTask {
     @Override
     public void setLastUpdateTime(Date lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public Long getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(Long jobId) {
+        this.jobId = jobId;
+    }
+
+    public String getJobExecutionId() {
+        return jobExecutionId;
+    }
+
+    public void setJobExecutionId(String jobExecutionId) {
+        this.jobExecutionId = jobExecutionId;
     }
 
     public void setLinkisContentMap(Map<String, Object> linkisContentMap) {
@@ -209,4 +229,5 @@ public class LaunchableExchangisTask implements ExchangisTask {
     public void setLabels(String labels) {
         this.labels = labels;
     }
+
 }

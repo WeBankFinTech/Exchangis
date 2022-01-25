@@ -8,6 +8,7 @@ import com.webank.wedatasphere.exchangis.job.domain.GenericExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
+import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.GenericSubExchangisJobHandler;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
 
         public SubExchangisJobAdapter(ExchangisJobInfoContent jobInfoContent){
             if(Objects.nonNull(jobInfoContent)) {
+                this.jobInfoContent = jobInfoContent;
                 this.engineType = jobInfoContent.getEngine();
                 this.name = jobInfoContent.getSubJobName();
                 convertContentToParams(jobInfoContent);
@@ -134,9 +136,9 @@ public class TransformExchangisJob extends GenericExchangisJob {
             String[] idSerial = result.get();
             if(idSerial.length > 0){
                 if(idSerial.length >= 4){
-                    paramSet.add(JobParams.newOne("datasource", idSerial[1], true));
-                    paramSet.add(JobParams.newOne("database", idSerial[2], true));
-                    paramSet.add(JobParams.newOne("table", idSerial[3], true));
+                    paramSet.add(JobParams.newOne(JobParamConstraints.DATA_SOURCE_ID, idSerial[1], true));
+                    paramSet.add(JobParams.newOne(JobParamConstraints.DATABASE, idSerial[2], true));
+                    paramSet.add(JobParams.newOne(JobParamConstraints.TABLE, idSerial[3], true));
                 }
                return idSerial[0];
             }

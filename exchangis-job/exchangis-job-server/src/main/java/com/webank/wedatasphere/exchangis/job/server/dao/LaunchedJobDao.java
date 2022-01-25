@@ -3,6 +3,8 @@ package com.webank.wedatasphere.exchangis.job.server.dao;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
+
 /**
  * @author tikazhang
  */
@@ -40,5 +42,5 @@ public interface LaunchedJobDao {
      * @param status status
      */
 
-    void upgradeLaunchedJobStatus(@Param("jobExecutionId")String jobExecutionId, @Param("status") String status);
+    void upgradeLaunchedJobStatus(@Param("jobExecutionId")String jobExecutionId, @Param("status") String status, @Param("updateTime")Date updateTime);
 }
