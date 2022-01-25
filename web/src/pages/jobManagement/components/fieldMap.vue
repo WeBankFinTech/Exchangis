@@ -198,7 +198,7 @@ export default defineComponent({
       JSON.parse(JSON.stringify(props.deductions))
     );
     watch(deductionsArray, (val, oldVal) => {
-      if (val && val.length)
+      if (val)
         createDataSource(toRaw(props.fmData.mapping) || []);
     });
 
