@@ -9,6 +9,7 @@ import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateErrorEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateInitEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateSuccessEvent;
+import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.NewInTaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskGenerateService;
 import com.webank.wedatasphere.exchangis.job.utils.SnowFlake;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
     @Resource
     private LaunchableTaskDao launchableTaskDao;
 
+    @Resource
+    private NewInTaskObserver newInTaskObserver;
     @Override
     public void onError(TaskGenerateErrorEvent errorEvent) {
         this.launchedJobDao.upgradeLaunchedJobStatus(errorEvent.getLaunchableExchangisJob().getJobExecutionId()
@@ -57,5 +60,7 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
         });
         this.launchableTaskDao.addLaunchableTask(tasks);
         this.launchedJobDao.upgradeLaunchedJobStatus(launchableExchangisJob.getJobExecutionId(), TaskStatus.Scheduled.name(), calendar.getTime());
+        // Offer to the observer
+        tasks.forEach(task -> this.newInTaskObserver.getCacheQueue().offer(task));
     }
 }

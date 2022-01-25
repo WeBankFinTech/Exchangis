@@ -89,8 +89,6 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
 
     @Override
     public void stop() {
-        // Stop the scheduler
-        getScheduler().shutdown();
         // Stop the observers
         Optional.ofNullable(getTaskObservers()).ifPresent(taskObservers -> taskObservers.forEach(TaskObserver::stop));
         // Stop the loadBalancer
@@ -98,6 +96,8 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
         if (Objects.nonNull(loadBalancer) && loadBalancer instanceof SchedulerThread){
             ((SchedulerThread) loadBalancer).stop();
         }
+        // Stop the scheduler
+        getScheduler().shutdown();
     }
 
 
