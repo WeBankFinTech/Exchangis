@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 
 import java.util.*;
@@ -100,20 +100,18 @@ public class JobBuilderTest {
         }
 
         //  List<ExchangisEngineJob> -> List<ExchangisLauncherJob>
-        List<ExchangisLauncherJob> launcherJobs = new ArrayList<>();
+        List<LaunchableExchangisTask> launchableTasks = new ArrayList<>();
         for (ExchangisEngineJob engineJob : engineJobs) {
             Optional.ofNullable(jobBuilderManager.doBuild(engineJob,
-                    ExchangisEngineJob.class, ExchangisLauncherJob.class, ctx)).ifPresent(launcherJobs::add);
+                    ExchangisEngineJob.class, LaunchableExchangisTask.class, ctx)).ifPresent(launchableTasks::add);
         }
-        if (launcherJobs.isEmpty()) {
-            throw new ExchangisJobException(ExchangisJobExceptionCode.JOB_BUILDER_ERROR.getCode(),
+        if (launchableTasks.isEmpty()) {
+            throw new ExchangisJobException(ExchangisJobExceptionCode.TASK_BUILDER_ERROR.getCode(),
                     "The result set of launcher job is empty, please examine your job entity, [ 生成LauncherJob为空 ]", null);
         }
 
-        for (ExchangisLauncherJob launcherJob : launcherJobs) {
-            String launchName = launcherJob.getLaunchName();
-            System.out.println(launcherJob.getName());
-            System.out.println(launchName);
+        for (LaunchableExchangisTask launchableTask : launchableTasks) {
+            System.out.println(launchableTask.getName());
         }
 
     }

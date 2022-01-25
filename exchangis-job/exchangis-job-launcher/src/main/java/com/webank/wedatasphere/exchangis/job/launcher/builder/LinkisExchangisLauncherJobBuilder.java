@@ -3,32 +3,30 @@ package com.webank.wedatasphere.exchangis.job.launcher.builder;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLauncherJob;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 
 /**
  * Launcher job builder
  */
 
-public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuilder<ExchangisEngineJob, ExchangisLauncherJob> {
+public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuilder<ExchangisEngineJob, LaunchableExchangisTask> {
 
     private static final String LAUNCHER_NAME = "Linkis";
     @Override
-    public ExchangisLauncherJob buildJob(ExchangisEngineJob inputJob, ExchangisLauncherJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
-        ExchangisLauncherJob launcherJob = new ExchangisLauncherJob();
-        ExchangisJobInfo exchangisJob = ctx.getOriginalJob();
-        launcherJob.setId(inputJob.getId());
-        launcherJob.setName(inputJob.getName());
-        launcherJob.setCreateUser(inputJob.getCreateUser());
+    public LaunchableExchangisTask buildJob(ExchangisEngineJob inputJob, LaunchableExchangisTask expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+        LaunchableExchangisTask launchableTask = new LaunchableExchangisTask();
+        launchableTask.setName(inputJob.getName());
+        launchableTask.setJobId(inputJob.getId());
+        launchableTask.setExecuteUser(inputJob.getCreateUser());
 //        launcherJob.setExecuteNode(exchangisJob.getExecuteNode());
-//        launcherJob.setProxyUser(exchangisJob.getProxyUser());
-        launcherJob.setJobContent(inputJob.getJobContent());
-        launcherJob.setRuntimeMap(inputJob.getRuntimeParams());
-//        launcherJob.setEngine(inputJob.getEngine());
-        launcherJob.setName(inputJob.getName());
-        launcherJob.setLaunchName(LAUNCHER_NAME);
-        return launcherJob;
+        launchableTask.setLinkisContentMap(inputJob.getJobContent());
+        launchableTask.setLinkisParamsMap(inputJob.getRuntimeParams());
+        launchableTask.setEngineType(inputJob.getEngineType());
+        launchableTask.setLabels(inputJob.getJobLabel());
+        launchableTask.setName(inputJob.getName());
+        // Use launcher name placeholder
+        launchableTask.setLinkisJobName(LAUNCHER_NAME);
+        return launchableTask;
     }
 }

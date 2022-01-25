@@ -4,13 +4,12 @@ import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultD
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
-import com.webank.wedatasphere.exchangis.job.utils.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
 import org.apache.linkis.common.exception.ErrorException;
 
 import java.util.Objects;
@@ -23,9 +22,9 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
 
     public static final String ID_SPLIT_SYMBOL = "\\.";
 
-    private static final JobParamDefine<String> SOURCE_ID = JobParams.define("sourceId", String.class);
+    private static final JobParamDefine<String> SOURCE_ID = JobParams.define("source_id", String.class);
 
-    private static final JobParamDefine<String> SINK_ID = JobParams.define("sinkId", String.class);
+    private static final JobParamDefine<String> SINK_ID = JobParams.define("sink_id", String.class);
 
     @Override
     public String dataSourceType() {

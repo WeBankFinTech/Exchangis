@@ -3,7 +3,9 @@ package com.webank.wedatasphere.exchangis.job.launcher.entity;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
@@ -39,6 +41,25 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
 
     private Map<String, Object> metricsMap;
 
+    public LaunchedExchangisTaskEntity(){
+
+    }
+
+    public LaunchedExchangisTaskEntity(LaunchableExchangisTask launchableExchangisTask){
+        Calendar calendar = Calendar.getInstance();
+        this.launchableExchangisTask = launchableExchangisTask;
+        this.id = launchableExchangisTask.getId();
+        this.name = launchableExchangisTask.getName();
+        this.createTime = calendar.getTime();
+        this.lastUpdateTime = calendar.getTime();
+        this.engineType = launchableExchangisTask.getEngineType();
+        this.executeUser = launchableExchangisTask.getExecuteUser();
+        this.jobId = launchableExchangisTask.getJobId();
+        // jobName
+        this.jobExecutionId = launchableExchangisTask.getJobExecutionId();
+        this.status = TaskStatus.Scheduled;
+        this.lastUpdateTime = Calendar.getInstance().getTime();
+    }
     public String getTaskId(){
         if (Objects.isNull(taskId) && Objects.nonNull(getId())){
             this.taskId = String.valueOf(getId());

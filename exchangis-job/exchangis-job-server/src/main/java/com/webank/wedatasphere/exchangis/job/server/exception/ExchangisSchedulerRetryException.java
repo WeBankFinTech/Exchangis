@@ -18,7 +18,8 @@ public class ExchangisSchedulerRetryException extends LinkisRetryException {
         this.retryNum = retryNum;
     }
 
-    public ExchangisSchedulerRetryException(int errCode, String desc) {
+    public ExchangisSchedulerRetryException(String desc, Throwable t) {
         super(SCHEDULER_ERROR.getCode(), desc);
+        super.initCause(t);
     }
 }

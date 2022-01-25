@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.launcher.entity;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 
 /**
  * Task entity (could be persisted)
@@ -24,20 +24,12 @@ public interface ExchangisTaskEntity extends ExchangisTask {
 
     void setJobName(String jobName);
 
-    /**
-     * Task status
-     * @return status String
-     */
-    String getStatus();
-
-
-    void setStatus(String status);
 
     /**
      * Task status
      * @return status enum
      */
-    TaskStatus getStatuss();
+    TaskStatus getStatus();
 
 
     void setStatus(TaskStatus status);
@@ -54,7 +46,7 @@ public interface ExchangisTaskEntity extends ExchangisTask {
      * Error code
      * @return default null
      */
-    Integer errorCode();
+    Integer getErrorCode();
 
     void setErrorCode(Integer code);
 
@@ -62,7 +54,7 @@ public interface ExchangisTaskEntity extends ExchangisTask {
      * Error message
      * @return default null
      */
-    String errorMessage();
+    String getErrorMessage();
 
     void setErrorMessage(String errorMessage);
 

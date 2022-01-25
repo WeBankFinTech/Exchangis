@@ -1,6 +1,9 @@
 package com.webank.wedatasphere.exchangis.dao.domain;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -73,7 +76,9 @@ public class ExchangisJobEntity {
         this.projectId = projectId;
     }
 
-    public Long getDssProjectId() { return dssProjectId; }
+    public Long getDssProjectId() {
+        return dssProjectId;
+    }
 
     public void setDssProjectId(Long dssProjectId) { this.dssProjectId = dssProjectId; }
 
@@ -211,16 +216,6 @@ public class ExchangisJobEntity {
 
     public void setModifyUser(String modifyUser) {
         this.modifyUser = modifyUser;
-    }
-
-    @Override
-    public String toString() {
-        return "ExchangisJob{" + "id=" + id + ", projectId=" + projectId + ", jobName=" + jobName + ", jobType="
-            + jobType + ", engineType=" + engineType + ", jobLabels=" + jobLabels + ", jobDesc=" + jobDesc
-            + ", content=" + content + ", alarmUser=" + alarmUser + ", alarmLevel=" + alarmLevel + ", proxyUser="
-            + proxyUser + ", executeNode=" + executeNode + ", syncType=" + syncType + ", jobParams=" + jobParams
-            + ", createTime=" + createTime + ", createUser=" + createUser + ", modifyTime=" + modifyTime
-            + ", modifyUser=" + modifyUser + "}";
     }
 
 }

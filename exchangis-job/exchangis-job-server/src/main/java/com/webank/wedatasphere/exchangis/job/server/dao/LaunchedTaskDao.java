@@ -7,12 +7,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author tikazhang
  */
-@Mapper
 public interface LaunchedTaskDao {
 
     /**
@@ -53,7 +53,7 @@ public interface LaunchedTaskDao {
      * @param taskId
      */
 
-    void upgradeLaunchedTaskMtrics(@Param("metrics") String metrics, @Param("taskId") String taskId);
+    void upgradeLaunchedTaskMetrics(@Param("taskId") String taskId, @Param("metrics") String metrics, @Param("updateTime")Date updateTime);
 
     /**
      * upgrade launchedTask status
@@ -61,7 +61,20 @@ public interface LaunchedTaskDao {
      * @param taskId
      */
 
-    void upgradeLaunchedTaskStatus(@Param("status") String status, @Param("taskId") String taskId);
+    void upgradeLaunchedTaskStatus(@Param("taskId") String taskId, @Param("status") String status,  @Param("updateTime")Date updateTime);
+
+    /**
+     * upgrade launchedTask progress
+     * @param taskId
+     * @param progress
+     * @param updateTime
+     */
+    void upgradeLaunchedTaskProgress(@Param("taskId") String taskId, @Param("progress") Float progress, @Param("updateTime")Date updateTime);
+    /**
+     * Update the launch information
+     * @param launchedExchangisTaskEntity entity
+     */
+    void updateLaunchInfo(LaunchedExchangisTaskEntity launchedExchangisTaskEntity);
 
     /**
      * search launchedTaskList
@@ -70,6 +83,12 @@ public interface LaunchedTaskDao {
 
     List<LaunchedExchangisTaskEntity> selectTaskListByJobExecutionId(@Param("jobExecutionId") String jobExecutionId);
 
+    /**
+     * Select status list
+     * @param jobExecutionId job execution id
+     * @return
+     */
+    List<String> selectTaskStatusByJobExecutionId(@Param("jobExecutionId")String jobExecutionId);
     /**
      * search getTaskMetrics
      * @param jobExecutionId
