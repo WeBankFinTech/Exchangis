@@ -1,70 +1,18 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
-import org.apache.linkis.scheduler.executer.ExecuteRequest;
-import org.apache.linkis.scheduler.queue.Job;
-
-import java.io.IOException;
+import org.apache.linkis.scheduler.queue.SchedulerEvent;
 
 /**
- * Inheritable scheduler task for exchangis
+ * Exchangis scheduler task
  */
-public abstract class ExchangisSchedulerTask extends Job {
-
-    public static final int MAX_RETRY_NUM = 3;
-
-    private int maxRetryNum = MAX_RETRY_NUM;
-
-    @Override
-    public void init() throws Exception {
-
-    }
-
-    @Override
-    public ExecuteRequest jobToExecuteRequest() throws Exception {
-        return new DirectExecuteRequest();
-    }
-
-    @Override
-    public int getMaxRetryNum() {
-        return maxRetryNum;
-    }
-
-    private void setMaxRetryNum(int maxRetryNum){
-        this.maxRetryNum = maxRetryNum;
-    }
-
-    @Override
-    public void close() throws IOException {
-
-    }
+public interface ExchangisSchedulerTask extends SchedulerEvent {
 
     /**
-     *  schedule main method
-     * @throws ExchangisSchedulerException error exception
-     * @throws ExchangisSchedulerRetryException retry exception
+     * Tenancy
+     * @return
      */
-    protected abstract void schedule() throws ExchangisSchedulerException, ExchangisSchedulerRetryException;
+    String getTenancy();
 
-    public class DirectExecuteRequest implements ExecuteRequest {
+    void setTenancy(String tenancy);
 
-        @Override
-        public String code() {
-            return null;
-        }
-
-        public void directExecute() throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
-             // Direct execute
-            try {
-                schedule();
-            } catch (ExchangisSchedulerRetryException e){
-                if (e.getRetryNum() > 0){
-                    setMaxRetryNum(e.getRetryNum());
-                }
-                // Need to throw again
-                throw e;
-            }
-        }
-    }
 }

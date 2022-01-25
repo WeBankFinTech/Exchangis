@@ -1,23 +1,29 @@
 package com.webank.wedatasphere.exchangis.job.builder.api;
 
+import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisBase;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import com.webank.wedatasphere.exchangis.job.utils.TypeGenericUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.*;
 
-public abstract class AbstractExchangisJobBuilder<T extends ExchangisJob, E extends ExchangisJob> implements ExchangisJobBuilder<T, E> {
+public abstract class AbstractExchangisJobBuilder<T extends ExchangisJob, E extends ExchangisBase> implements ExchangisJobBuilder<T, E> {
     @Override
     @SuppressWarnings("unchecked")
     public Class<T> inputJob() {
-        return (Class<T>) getGenericType(0);
+        return (Class<T>) TypeGenericUtils.getActualTypeFormGenericClass(this.getClass(), AbstractExchangisJobBuilder.class, 0);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Class<E> outputJob() {
-        return (Class<E>)getGenericType(1);
+        return (Class<E>) TypeGenericUtils.getActualTypeFormGenericClass(this.getClass(), AbstractExchangisJobBuilder.class, 1);
     }
 
     @Override
@@ -30,46 +36,16 @@ public abstract class AbstractExchangisJobBuilder<T extends ExchangisJob, E exte
         return true;
     }
 
-    public Class<?> getGenericType(int position){
-        Map<String, Type> typeVariableReflect = new HashMap<>();
-        Map<Class<?>, Type[]> classTypeVariableMap = new HashMap<>();
-        Queue<Class<?>> traverseQueue = new LinkedList<>();
-        Type[] classTypes = null;
-        Class<?> currentClass = null;
-        traverseQueue.offer(this.getClass());
-        while (!traverseQueue.isEmpty()) {
-            currentClass = traverseQueue.poll();
-            Type[] typeParameters = currentClass.getTypeParameters();
-            if (typeParameters.length > 0) {
-                classTypes = classTypeVariableMap.get(currentClass);
-                //Ignore the builder which has the parameterType (not resolved)
-                if (null == classTypes) {
-                    return null;
-                }
-                for (int i = 0; i < classTypes.length; i++) {
-                    typeVariableReflect.put(typeParameters[i].getTypeName(), classTypes[i]);
-                }
-            }
-            if (Objects.equals(currentClass, AbstractExchangisJobBuilder.class)) {
-                break;
-            }
-            //Just traverse the superclass ignore interfaces
-            Type superclassType = currentClass.getGenericSuperclass();
-            if (Objects.nonNull(superclassType) && superclassType instanceof ParameterizedType) {
-                Type[] actualTypes = ((ParameterizedType) superclassType).getActualTypeArguments();
-                for (int i = 0 ; i < actualTypes.length; i++){
-                    Type actualType =  actualTypes[i];
-                    if (actualType instanceof  TypeVariable){
-                        actualTypes[i] = typeVariableReflect.getOrDefault(actualType.getTypeName(), actualType);
-                    }
-                }
-                classTypeVariableMap.put(currentClass.getSuperclass(), actualTypes);
-            }
-            traverseQueue.offer(currentClass.getSuperclass());
-        };
-        if (Objects.nonNull(classTypes) && classTypes.length > position){
-            return (Class<?>)classTypes[position];
+
+    @Override
+    public E build(T inputJob, E expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+        JobParamDefine.defaultParam.set(new JobParamSet());
+        try {
+            return buildJob(inputJob, expectOut, ctx);
+        } finally{
+            JobParamDefine.defaultParam.remove();
         }
-        return null;
     }
+
+    public abstract E buildJob(T inputJob, E expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException;
 }

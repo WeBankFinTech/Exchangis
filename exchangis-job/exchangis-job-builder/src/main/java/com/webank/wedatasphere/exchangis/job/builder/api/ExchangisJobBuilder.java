@@ -44,5 +44,5 @@ public interface ExchangisJobBuilder<T extends ExchangisJob, E extends Exchangis
      * @param ctx context
      * @return outputJob
      */
-    E buildJob(T inputJob, E expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException;
+    E build(T inputJob, E expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException;
 }

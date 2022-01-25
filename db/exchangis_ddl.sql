@@ -74,8 +74,8 @@ CREATE TABLE `exchangis_job_param_config`
     `sort`             int(11)      DEFAULT NULL,
     `description`      varchar(255) DEFAULT NULL,
     `status`           tinyint(4)   DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `config_key` (`config_key`)
+    PRIMARY KEY (`id`)
+--    UNIQUE KEY `config_key` (`config_key`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 

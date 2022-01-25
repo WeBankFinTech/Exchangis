@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import org.apache.linkis.protocol.engine.EngineState;
+import org.apache.linkis.scheduler.exception.LinkisJobRetryException;
 import org.apache.linkis.scheduler.executer.*;
 import org.apache.linkis.scheduler.listener.ExecutorListener;
 import org.apache.linkis.scheduler.queue.SchedulerEvent;
@@ -13,7 +14,6 @@ import scala.concurrent.duration.Duration;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,8 +25,12 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
     private ExchangisSchedulerExecutorFactory schedulerExecutorFactory;
 
-    private ExchangisSchedulerExecutorManager(ExchangisSchedulerExecutorFactory schedulerExecutorFactory){
+    public ExchangisSchedulerExecutorManager(ExchangisSchedulerExecutorFactory schedulerExecutorFactory){
         this.schedulerExecutorFactory = schedulerExecutorFactory;
+    }
+
+    public ExchangisSchedulerExecutorManager(){
+        this.schedulerExecutorFactory = new DefaultExchangisSchedulerExecutorFactory();
     }
     @Override
     public void setExecutorListener(ExecutorListener engineListener) {
@@ -45,7 +49,7 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
     @Override
     public Option<Executor> askExecutor(SchedulerEvent event, Duration wait) {
-        return null;
+        return askExecutor(event);
     }
 
     @Override
@@ -72,7 +76,7 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
         return schedulerExecutorFactory;
     }
 
-    private static class DefaultExchangisSchedulerExecutorFactory implements ExchangisSchedulerExecutorFactory{
+    public static class DefaultExchangisSchedulerExecutorFactory implements ExchangisSchedulerExecutorFactory{
 
         private static final Class<? extends Executor> DEFAULT_DIRECT_EXECUTOR = DefaultDirectExecutor.class;
 
@@ -95,19 +99,23 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
         @Override
         public Executor getOrCreateExecutor(SchedulerEvent event) {
-            String canonicalName = event.getClass().getCanonicalName();
+            String name = event.getClass().getName();
             if (isSingleton){
-                return singletonExecutorHolder.computeIfAbsent(canonicalName, this::createExecutorInternal);
+                return singletonExecutorHolder.computeIfAbsent(name, this::createExecutorInternal);
             }
-            return createExecutorInternal(canonicalName);
+            return createExecutorInternal(name);
         }
 
         private Executor createExecutorInternal(String eventName){
             Class<? extends Executor> executorClass = registeredExecutorClass
                     .getOrDefault(eventName, DEFAULT_DIRECT_EXECUTOR);
             try {
-                Constructor<?> constructor = executorClass.getConstructor();
-                return (Executor)constructor.newInstance();
+                Constructor<?> constructor = executorClass.getDeclaredConstructor();
+                Executor executor = (Executor)constructor.newInstance();
+                if (executor instanceof FactoryCreateExecutor){
+                    ((FactoryCreateExecutor)executor).setSchedulerExecutorFactory(this);
+                }
+                return executor;
             } catch (NoSuchMethodException e) {
                throw new ExchangisSchedulerException.Runtime("Fail to construct the executor for" +
                        " scheduler task: [" + eventName + "], reason: has no suitable constructor", e);
@@ -121,7 +129,7 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
          * @param schedulerTask scheduler task
          * @param schedulerExecutor scheduler executor
          */
-        public void registerTaskExecutor(Class<? extends ExchangisSchedulerTask> schedulerTask,
+        public void registerTaskExecutor(Class<? extends AbstractExchangisSchedulerTask> schedulerTask,
                                          Class<? extends Executor> schedulerExecutor){
             String schedulerTaskClass = schedulerTask.getCanonicalName();
             registeredExecutorClass.putIfAbsent(schedulerTaskClass, schedulerExecutor);
@@ -144,7 +152,7 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
         }
     }
 
-    private static class DefaultDirectExecutor extends FactoryCreateExecutor{
+    public static class DefaultDirectExecutor extends FactoryCreateExecutor{
 
         @Override
         public long getId() {
@@ -153,11 +161,12 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
         @Override
         public ExecuteResponse execute(ExecuteRequest executeRequest) {
-            if (executeRequest instanceof ExchangisSchedulerTask.DirectExecuteRequest){
+            if (executeRequest instanceof AbstractExchangisSchedulerTask.DirectExecuteRequest){
                 try {
-                    ((ExchangisSchedulerTask.DirectExecuteRequest)executeRequest).directExecute();
+                    ((AbstractExchangisSchedulerTask.DirectExecuteRequest)executeRequest).directExecute();
                     return new SuccessExecuteResponse();
                 } catch (ExchangisSchedulerException | ExchangisSchedulerRetryException e) {
+                    e.setErrCode(LinkisJobRetryException.JOB_RETRY_ERROR_CODE());
                     return new ErrorExecuteResponse("Exception occurred in scheduling, task will fail or retry on the next time, message: ["
                             + e.getMessage() + "]", e);
                 } catch (Exception e){
