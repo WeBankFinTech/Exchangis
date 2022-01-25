@@ -156,9 +156,12 @@ export default {
       };
     },*/
     // modal完成
-    async handleOk(formState) {
+    async handleOk(formState, originalDefine) {
       formState = JSON.parse(formState)
-      console.log(formState)
+      let connectParams = {}
+      originalDefine.forEach(item => {
+        connectParams[item.key] = formState[item.key]
+      })
       this.confirmLoading = true;
       try {
         if (this.mode === "create") {
@@ -171,7 +174,7 @@ export default {
             labels: formState.labels || "",
             comment: formState.comment || "",
             connectParams: {
-              ...formState
+              ...connectParams
             }
           });
           message.success("创建成功");
@@ -186,7 +189,7 @@ export default {
             labels: formState.labels || "",
             comment: formState.comment || "",
             connectParams: {
-              ...formState
+              ...connectParams
             }
           });
           message.success("修改成功");
