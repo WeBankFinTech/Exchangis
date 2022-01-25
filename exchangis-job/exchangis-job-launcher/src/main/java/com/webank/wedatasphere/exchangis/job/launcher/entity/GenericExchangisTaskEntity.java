@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.entity;
 
-import com.webank.wedatasphere.exchangis.job.launcher.domain.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 
 import java.util.Date;
 
@@ -25,7 +25,7 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
 
     protected String jobName;
 
-    protected TaskStatus statusm;
+    protected TaskStatus status = TaskStatus.Inited;
 
     protected double progress = 0.0;
 
@@ -34,18 +34,6 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
     protected String errorMessage;
 
     protected Integer retryNum = 0;
-
-    protected String status;
-
-    @Override
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    @Override
-    public String getStatus(){
-        return this.status;
-    }
 
     @Override
     public Long getJobId() {
@@ -68,13 +56,13 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
     }
 
     @Override
-    public TaskStatus getStatuss() {
-        return this.statusm;
+    public TaskStatus getStatus() {
+        return this.status;
     }
 
     @Override
     public void setStatus(TaskStatus status) {
-        this.statusm = status;
+        this.status = status;
     }
 
     @Override
@@ -88,7 +76,7 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
     }
 
     @Override
-    public Integer errorCode() {
+    public Integer getErrorCode() {
         return this.errorCode;
     }
 
@@ -98,7 +86,7 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
     }
 
     @Override
-    public String errorMessage() {
+    public String getErrorMessage() {
         return this.errorMessage;
     }
 

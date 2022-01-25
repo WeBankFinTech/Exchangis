@@ -23,10 +23,19 @@ public class ExchangisJobInfo extends GenericExchangisJob {
 
     /**
      * Convert from view object
-     * @param exchangisJobVO vo
+     * @param jobVo vo
      */
-    public ExchangisJobInfo(ExchangisJobVO exchangisJobVO){
-
+    public ExchangisJobInfo(ExchangisJobVO jobVo){
+        this.id = jobVo.getId();
+        this.name = jobVo.getJobName();
+        this.engineType = jobVo.getEngineType();
+        this.jobLabel = jobVo.getJobLabels();
+        this.createTime = jobVo.getCreateTime();
+        this.createUser = jobVo.getCreateUser();
+        this.lastUpdateTime = jobVo.getModifyTime();
+        this.jobContent = jobVo.getContent();
+        this.executeUser = jobVo.getProxyUser();
+        this.jobParams = jobVo.getJobParams();
     }
 
     public ExchangisJobInfo(){

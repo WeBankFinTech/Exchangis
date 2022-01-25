@@ -31,6 +31,7 @@ public class DefaultExchangisEngineJobBuilder extends AbstractExchangisJobBuilde
         }
         exchangisEngineJob.setEngineType(ctx.getOriginalJob().getEngineType());
         exchangisEngineJob.setName(inputJob.getName());
+        exchangisEngineJob.setJobLabel(ctx.getOriginalJob().getJobLabel());
         return exchangisEngineJob;
     }
 }
