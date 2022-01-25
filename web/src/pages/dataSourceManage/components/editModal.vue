@@ -158,7 +158,6 @@ export default {
     // modal完成
     async handleOk(formState, originalDefine) {
       formState = JSON.parse(formState)
-      console.log(formState, originalDefine)
       let connectParams = {}
       originalDefine.forEach(item => {
         connectParams[item.key] = formState[item.key]
