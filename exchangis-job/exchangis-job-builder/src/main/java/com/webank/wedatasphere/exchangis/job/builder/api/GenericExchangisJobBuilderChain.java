@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.builder.api;
 
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisBase;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 
@@ -13,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @param <T> input job
  * @param <E> output job
  */
-public class GenericExchangisJobBuilderChain<T extends ExchangisJob, E extends ExchangisJob> implements ExchangisJobBuilderChain<T, E>{
+public class GenericExchangisJobBuilderChain<T extends ExchangisJob, E extends ExchangisBase> implements ExchangisJobBuilderChain<T, E>{
 
     /**
      * Chain list

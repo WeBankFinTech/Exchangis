@@ -34,7 +34,7 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     public void onMetricsUpdate(TaskMetricsUpdateEvent metricsUpdateEvent) {
         LaunchedExchangisTask task = metricsUpdateEvent.getLaunchedExchangisTask();
         task.setLastUpdateTime(Calendar.getInstance().getTime());
-        launchedTaskDao.upgradeLaunchedTaskMetrics(Json.toJson(task.getMetrics(), null),
+        launchedTaskDao.upgradeLaunchedTaskMetrics(Json.toJson(metricsUpdateEvent.getMetrics(), null),
                 task.getTaskId(), task.getLastUpdateTime());
     }
 

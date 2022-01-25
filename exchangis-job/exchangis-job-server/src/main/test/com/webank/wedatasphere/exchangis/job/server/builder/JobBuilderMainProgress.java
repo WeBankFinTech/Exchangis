@@ -17,7 +17,8 @@ import java.util.*;
 public class JobBuilderMainProgress {
 
     public static void main(String[] args) throws Exception{
-        System.setProperty("log4j.configurationFile", "C:\\Users\\hadoop\\IdeaProjects\\Exchangis\\assembly-package\\config\\log4j2.xml");
+//        System.setProperty("log4j.configurationFile", "C:\\Users\\hadoop\\IdeaProjects\\Exchangis\\assembly-package\\config\\log4j2.xml");
+        System.setProperty("log4j.configurationFile", "C:\\Users\\davidhua\\IdeaProjects\\Exchangis\\assembly-package\\config\\log4j2.xml");
         SpringExchangisJobBuilderManager jobBuilderManager = new SpringExchangisJobBuilderManager();
         jobBuilderManager.init();
         ExchangisJobInfo jobInfo = getDemoSqoopJobInfo();

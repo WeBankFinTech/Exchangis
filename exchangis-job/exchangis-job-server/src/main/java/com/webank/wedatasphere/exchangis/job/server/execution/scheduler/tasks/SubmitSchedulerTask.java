@@ -18,9 +18,7 @@ import org.apache.linkis.scheduler.queue.JobInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,7 +33,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
 
     private TaskManager<LaunchedExchangisTask> taskManager;
 
-    private ExchangisTaskLauncher<LaunchableExchangisTask> launcher;
+    private ExchangisTaskLauncher<LaunchableExchangisTask, LaunchedExchangisTask> launcher;
 
     private TaskSchedulerLoadBalancer<LaunchedExchangisTask> loadBalancer;
 
@@ -68,10 +66,12 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
             LaunchedExchangisTask launchedExchangisTask;
             try {
                 // Invoke launcher
+                Date launchTime = Calendar.getInstance().getTime();
                 launchedExchangisTask = launcher.launch(this.launchableExchangisTask);
 //                launchedExchangisTask = new LaunchedExchangisTask(launchableExchangisTask);
+                launchedExchangisTask.setLaunchTime(launchTime);
             } catch (Exception e) {
-                if (retryCnt.getAndIncrement() < getMaxRetryNum()) {
+                if (retryCnt.incrementAndGet() < getMaxRetryNum()) {
                     // Remove the launched task stored
                     onEvent(new TaskDeleteEvent(String.valueOf(launchableExchangisTask.getId())));
                     throw new ExchangisSchedulerRetryException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() +"]", e);
@@ -79,6 +79,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
                     // Update the launched task status to fail
                     launchedExchangisTask = new LaunchedExchangisTask();
                     launchedExchangisTask.setTaskId(String.valueOf(launchableExchangisTask.getId()));
+                    launchedExchangisTask.setJobExecutionId(launchableExchangisTask.getJobExecutionId());
                     onEvent(new TaskStatusUpdateEvent(launchedExchangisTask, TaskStatus.Failed));
                 }
                 throw new ExchangisSchedulerException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() +"]", e);
@@ -140,11 +141,11 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
         this.taskManager = taskManager;
     }
 
-    public ExchangisTaskLauncher<LaunchableExchangisTask> getLauncher() {
+    public ExchangisTaskLauncher<LaunchableExchangisTask,LaunchedExchangisTask> getLauncher() {
         return launcher;
     }
 
-    public void setLauncher(ExchangisTaskLauncher<LaunchableExchangisTask> launcher) {
+    public void setLauncher(ExchangisTaskLauncher<LaunchableExchangisTask, LaunchedExchangisTask> launcher) {
         this.launcher = launcher;
     }
 
