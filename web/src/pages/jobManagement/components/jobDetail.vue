@@ -244,9 +244,10 @@
         <a-tabs default-active-key="1" class="exec-info-tab">
           <a-tab-pane key="1" tab="运行情况">
             <div v-if="jobProgress.tasks" class="job-progress-percent job-progress-wrap">
-              <span>总进度</span>
+              <span>总进度<span style="font-size: 11px;color:rgba(0,0,0,0.5)">({{statusMap[jobStatus]}})</span></span>
               <a-tooltip :title="jobProgress.title">
-                <a-progress :percent="jobProgress.percent" :success-percent="jobProgress.successPercent"/>
+                <a-progress v-if="jobProgress.failedTasks" :percent="jobProgress.percent" status="exception"/>
+                <a-progress v-else :percent="jobProgress.percent" :success-percent="jobProgress.successPercent"/>
               </a-tooltip>
             </div>
             <div v-if="jobProgress.tasks && jobProgress.tasks.Running" class="job-progress-wrap">
@@ -304,13 +305,21 @@
               </div>
             </div>
             <div v-if="jobProgress.tasks && jobProgress.tasks.Inited" class="job-progress-wrap">
-                <span class="job-progress-title">准备中</span>
-                <div class="job-progress-body">
-                  <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Inited">
-                    <span :title="progress.name">{{ progress.name }}</span><a-progress :percent="0" />
-                  </div>
+              <span class="job-progress-title">准备中</span>
+              <div class="job-progress-body">
+                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Inited">
+                  <span :title="progress.name">{{ progress.name }}</span><a-progress :percent="0" />
                 </div>
               </div>
+            </div>
+            <div v-if="jobProgress.tasks && jobProgress.tasks.Failed" class="job-progress-wrap">
+              <span class="job-progress-title">失败</span>
+              <div class="job-progress-body">
+                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Failed">
+                  <span :title="progress.name">{{ progress.name }}</span><a-progress :percent="progress.progress" status="exception" />
+                </div>
+              </div>
+            </div>
           </a-tab-pane>
           <a-tab-pane key="2" tab="实时日志" force-render>
             <execution-log :param="logParams"></execution-log>
@@ -512,7 +521,19 @@ export default {
       progressTimer: null,
       jobProgress: {},
       metricsInfo: {},
-      openMetricsId: ''
+      openMetricsId: '',
+      statusMap: {
+        'Inited': '准备',
+        'Scheduled': '预排',
+        'Running': '运行',
+        'WaitForRetry': '等待重试',
+        'Cancelled': '取消',
+        'Failed': '失败',
+        'Partial_Success': '部分成功',
+        'Success': '成功',
+        'Undefined': '未定义',
+        'Timeout': '超时'
+      }
     };
   },
   props: {
@@ -563,7 +584,7 @@ export default {
           this.activeIndex = 0;
           this.curTask = this.list[this.activeIndex];
           this.addEnable = this.curTask.transforms.addEnable
-          this.updateSourceInfo(this.curTask);
+          this.updateSourceInfo(this.curTask, true);
           // this.updateSinkInfo(this.curTask); 当sink和source都有值的时候,请求的结果是一致的,所以省去一次多余重复请求
         }
       } catch (error) {}
@@ -720,7 +741,7 @@ export default {
       });
       return mapping
     },
-    updateSourceInfo(dataSource) {
+    updateSourceInfo(dataSource, firstInit) {
       /*getFields(source.type, source.id, source.db, source.table).then((res) => {
        this.fieldsSource = res.columns;
        })*/
@@ -732,13 +753,13 @@ export default {
           this.deductions = res.deductions;
           this.addEnable = res.addEnable;
           // 不在使用deductions 直接将deductions作为值使用
-          if (!this.curTask.transforms.mapping || !this.curTask.transforms.mapping.length) {
+          if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
             this.curTask.transforms.mapping = this.convertDeductions(res.deductions)
           }
         });
       }
     },
-    updateSinkInfo(dataSource) {
+    updateSinkInfo(dataSource, firstInit) {
       /*getFields(sink.type, sink.id, sink.db, sink.table).then((res) => {
         this.fieldsSink = res.columns;
       })*/
@@ -750,7 +771,7 @@ export default {
           this.deductions = res.deductions;
           this.addEnable = res.addEnable;
           // 不在使用deductions 直接将deductions作为值使用
-          if (!this.curTask.transforms.mapping || !this.curTask.transforms.mapping.length) {
+          if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
             this.curTask.transforms.mapping = this.convertDeductions(res.deductions)
           }
         });
@@ -937,22 +958,28 @@ export default {
     },
     // 获取Job状态
     getStatus(jobExecutionId) {
-      const unfinishedStatusList = ['Inited', 'Scheduled', 'Running', 'WaitForRetry']
+      this.getStatusInvoke(jobExecutionId)
       this.jobStatusTimer = setInterval(() => {
-        getJobStatus(jobExecutionId)
-          .then(res => {
-            this.jobStatus = res.status
-            if (this.jobStatus === 'Running' && !this.tasklist.length) {
-              this.getTasks(jobExecutionId)
-            }
-            if (unfinishedStatusList.indexOf(this.jobStatus) === -1) {
-              this.spinning = false
-            }
-          })
-          .catch(err => {
-            message.error("查询job状态失败");
-          })
+        this.getStatusInvoke(jobExecutionId)
       }, 1000*5)
+    },
+    getStatusInvoke(jobExecutionId) {
+      const unfinishedStatusList = ['Inited', 'Scheduled', 'Running', 'WaitForRetry']
+      getJobStatus(jobExecutionId)
+        .then(res => {
+          this.jobStatus = res.status
+          if (!this.tasklist.length) {
+            this.getTasks(jobExecutionId)
+          }
+          if (unfinishedStatusList.indexOf(this.jobStatus) === -1) {
+            this.spinning = false
+            clearInterval(this.jobStatusTimer)
+            clearInterval(this.progressTimer)
+          }
+        })
+        .catch(err => {
+          message.error("查询job状态失败");
+        })
     },
     // 获取tasklist
     getTasks(jobExecutionId) {
@@ -966,24 +993,29 @@ export default {
         })
     },
     getJobProgress(jobExecutionId) {
+      this.getJobProgressInvoke(jobExecutionId)
       this.progressTimer = setInterval(() => {
-        getProgress(jobExecutionId)
-          .then(res => {
-            if (res.job && res.job.tasks) {
-              res.job.successTasks = res.job.tasks.Success?.length || 0
-              res.job.initedTasks = res.job.tasks.Inited?.length || 0
-              res.job.runningTasks = res.job.tasks.Running?.length || 0
-              res.job.totalTasks = this.tasklist.length
-              res.job.successPercent = res.job.successTasks * 100 / res.job.totalTasks
-              res.job.percent = (res.job.successTasks + res.job.runningTasks) * 100 / res.job.totalTasks
-              res.job.title = `${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.initedTasks}正在准备`
-            }
-            this.jobProgress = res.job
-          })
-          .catch(err => {
-            message.error("查询进度失败");
-          })
+        this.getJobProgressInvoke(jobExecutionId)
       }, 1000*5)
+    },
+    getJobProgressInvoke(jobExecutionId) {
+      getProgress(jobExecutionId)
+        .then(res => {
+          if (res.job && res.job.tasks) {
+            res.job.successTasks = res.job.tasks.Success?.length || 0
+            res.job.initedTasks = res.job.tasks.Inited?.length || 0
+            res.job.runningTasks = res.job.tasks.Running?.length || 0
+            res.job.failedTasks = res.job.tasks.Failed?.length || 0
+            res.job.totalTasks = this.tasklist.length
+            res.job.successPercent = res.job.successTasks * 100 / res.job.totalTasks
+            res.job.percent = (res.job.successTasks + res.job.runningTasks) * 100 / res.job.totalTasks
+            res.job.title = res.job.failedTasks ? `${res.job.failedTasks}失败,${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.initedTasks}正在准备` : `${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.initedTasks}正在准备`
+          }
+          this.jobProgress = res.job
+        })
+        .catch(err => {
+          message.error("查询进度失败");
+        })
     },
     getTaskInfo(progress) {
       if (this.openMetricsId !== progress.taskId) {
