@@ -14,9 +14,12 @@ import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,12 +33,14 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     @Resource
     private LaunchedJobDao launchedJobDao;
 
+    private TaskExecuteService selfService;
+
     @Override
     public void onMetricsUpdate(TaskMetricsUpdateEvent metricsUpdateEvent) {
         LaunchedExchangisTask task = metricsUpdateEvent.getLaunchedExchangisTask();
         task.setLastUpdateTime(Calendar.getInstance().getTime());
-        launchedTaskDao.upgradeLaunchedTaskMetrics(Json.toJson(metricsUpdateEvent.getMetrics(), null),
-                task.getTaskId(), task.getLastUpdateTime());
+        launchedTaskDao.upgradeLaunchedTaskMetrics(task.getTaskId(), Json.toJson(metricsUpdateEvent.getMetrics(), null),
+                task.getLastUpdateTime());
     }
 
     @Override
@@ -59,11 +64,7 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
         }
         // Have different status, then update
         if (!task.getStatus().equals(status)){
-            TaskExecuteService taskExecuteService = SpringContextHolder.getBean(TaskExecuteService.class);
-            if (Objects.isNull(taskExecuteService)){
-                throw new ExchangisOnEventException("TaskExecuteService cannot be found in spring context", null);
-            }
-            taskExecuteService.updateTaskStatus(task, status);
+            getSelfService().updateTaskStatus(task, status);
         }
     }
 
@@ -80,32 +81,71 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     }
 
     @Override
-    public void onProgressUpdate(TaskProgressUpdateEvent updateEvent) {
+    public void onProgressUpdate(TaskProgressUpdateEvent updateEvent) throws ExchangisOnEventException {
         LaunchedExchangisTask task = updateEvent.getLaunchedExchangisTask();
         if (task.getProgress() != updateEvent.getProgressInfo().getProgress()) {
-            task.setLastUpdateTime(Calendar.getInstance().getTime());
-            this.launchedTaskDao.upgradeLaunchedTaskProgress(task.getTaskId(), updateEvent.getProgressInfo().getProgress(), task.getLastUpdateTime());
+            getSelfService().updateTaskProgress(task, updateEvent.getProgressInfo().getProgress());
         }
     }
 
     /**
-     * First to update task status, then update the job(don't use transaction)
+     * First to update task status, then update the job
      * @param task task
      * @param status status
      */
     @Override
-    public void updateTaskStatus(LaunchedExchangisTask task, TaskStatus status) {
-        Calendar calendar = Calendar.getInstance();
-        task.setLastUpdateTime(calendar.getTime());
+    @Transactional(rollbackFor = Exception.class)
+    public void updateTaskStatus(LaunchedExchangisTask task, TaskStatus status) throws ExchangisOnEventException {
+        task.setLastUpdateTime(Calendar.getInstance().getTime());
         launchedTaskDao.upgradeLaunchedTaskStatus(task.getTaskId(), status.name(), task.getLastUpdateTime());
         if (status == TaskStatus.Failed || status == TaskStatus.Cancelled){
+            // Update directly, no open anther transaction
             launchedJobDao.upgradeLaunchedJobStatus(task.getJobExecutionId(), TaskStatus.Failed.name(), task.getLastUpdateTime());
         } else if (status == TaskStatus.Success){
-            List<String> statusList = launchedTaskDao.selectTaskStatusByJobExecutionId(task.getJobExecutionId());
-            if (statusList.stream().allMatch(taskStatus -> taskStatus.equalsIgnoreCase(TaskStatus.Success.name()))){
-                launchedJobDao.upgradeLaunchedJobStatus(task.getJobExecutionId(), TaskStatus.Success.name(), task.getLastUpdateTime());
-            }
+            getSelfService().updateJobStatus(task.getJobExecutionId(), TaskStatus.Success, task.getLastUpdateTime());
         }
 
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateTaskProgress(LaunchedExchangisTask task, float progress) throws ExchangisOnEventException {
+        task.setLastUpdateTime(Calendar.getInstance().getTime());
+        this.launchedTaskDao.upgradeLaunchedTaskProgress(task.getTaskId(), progress, task.getLastUpdateTime());
+        getSelfService().updateJobProgress(task.getJobExecutionId(), task.getLastUpdateTime());
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    public void updateJobProgress(String jobExecutionId, Date updateTime) {
+        // Sum all the task's progress
+        float totalTaskProgress = this.launchedTaskDao.sumProgressByJobExecutionId(jobExecutionId);
+        if (totalTaskProgress > 0){
+           this.launchedJobDao.upgradeLaunchedJobProgressInVersion(jobExecutionId, totalTaskProgress, updateTime);
+        }
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    public void updateJobStatus(String jobExecutionId, TaskStatus status, Date updateTime) {
+        List<String> statusList = launchedTaskDao.selectTaskStatusByJobExecutionId(jobExecutionId);
+        if (statusList.stream().allMatch(taskStatus -> taskStatus.equalsIgnoreCase(TaskStatus.Success.name()))){
+            launchedJobDao.upgradeLaunchedJobStatusInVersion(jobExecutionId,
+                    TaskStatus.Success.name(), statusList.size(), updateTime);
+        }
+    }
+
+    /**
+     * Get the self service
+     * @return service
+     */
+    private TaskExecuteService getSelfService() throws ExchangisOnEventException {
+        if (Objects.isNull(selfService)){
+            this.selfService = SpringContextHolder.getBean(TaskExecuteService.class);
+            if (Objects.isNull(this.selfService)){
+                throw new ExchangisOnEventException("TaskExecuteService cannot be found in spring context", null);
+            }
+        }
+        return this.selfService;
     }
 }

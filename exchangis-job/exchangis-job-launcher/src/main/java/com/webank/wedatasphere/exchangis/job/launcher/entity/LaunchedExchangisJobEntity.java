@@ -19,6 +19,11 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
      */
     private String logPath;
 
+    /**
+     * Number of launchable task
+     */
+    private int launchableTaskNum = 0;
+
     public LaunchedExchangisJobEntity(){
 
     }
@@ -48,5 +53,13 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
 
     public void setLogPath(String logPath) {
         this.logPath = logPath;
+    }
+
+    public int getLaunchableTaskNum() {
+        return launchableTaskNum;
+    }
+
+    public void setLaunchableTaskNum(int launchableTaskNum) {
+        this.launchableTaskNum = launchableTaskNum;
     }
 }

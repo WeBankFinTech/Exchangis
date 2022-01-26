@@ -11,6 +11,7 @@
         <result column="job_id" property="jobId"/>
         <result column="job_execution_id" property="jobExecutionId"/>
         <result column="engine_type" property="engineType"/>
+        <result column="launchable_task_num" property="launchableTaskNum"/>
         <result column="execute_user" property="executeUser"/>
         <result column="job_name" property="jobName"/>
         <result column="status" property="status"/>
@@ -32,12 +33,13 @@
     <insert id="insertLaunchedJob" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
         insert into
         <include refid="TableName"/>
-        (name, create_time, last_update_time, job_id, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path)
+        (name, create_time, last_update_time, job_id, launchable_task_num, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path)
         values(
         #{name},
         #{createTime},
         #{lastUpdateTime},
         #{jobId},
+        #{launchableTaskNum},
         #{jobExecutionId},
         #{engineType},
         #{executeUser},
@@ -63,6 +65,7 @@
         create_time = #{createTime},
         last_update_time = #{lastUpdateTime},
         job_id = #{jobId},
+        launchable_task_num = #{launchableTaskNum},
         job_execution_id = #{jobExecutionId},
         engine_type = #{engineType},
         execute_user = #{execute_user},
@@ -75,7 +78,14 @@
         log_path = #{logPath}
         where id = #{id}
     </update>
-
+    <update id="updateLaunchInfo">
+        UPDATE <include refid="TableName"/>
+        SET
+        last_update_time = #{lastUpdateTime},
+        launchable_task_num = #{launchableTaskNum},
+        status = #{status}
+        WHERE job_execution_id = #{jobExecutionId}
+    </update>
     <select id="searchLaunchedJob" parameterType="java.lang.String" resultMap="LaunchedJobMap">
         select
         <include refid="BaseColumnList"/>
@@ -93,4 +103,23 @@
         job_execution_id = #{jobExecutionId}
     </update>
 
+    <update id="upgradeLaunchedJobStatusInVersion">
+        <![CDATA[UPDATE ]]>
+        <include refid="TableName"/>
+        <![CDATA[SET
+        status = #{status},
+        last_update_time = #{updateTime}
+        WHERE
+        job_execution_id = #{jobExecutionId} AND #{updateTime} > last_update_time AND launchable_task_num = #{launchableTaskNum};]]>
+    </update>
+
+    <update id="upgradeLaunchedJobProgressInVersion">
+        <![CDATA[UPDATE ]]>
+        <include refid="TableName"/>
+        <![CDATA[SET
+        progress = ${totalTaskProgress} / launchable_task_num,
+        last_update_time = #{updateTime}
+        WHERE
+        job_execution_id = #{jobExecutionId} AND #{updateTime} > last_update_time;]]>
+    </update>
 </mapper>
