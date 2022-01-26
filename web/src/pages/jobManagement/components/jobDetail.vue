@@ -244,9 +244,10 @@
         <a-tabs default-active-key="1" class="exec-info-tab">
           <a-tab-pane key="1" tab="运行情况">
             <div v-if="jobProgress.tasks" class="job-progress-percent job-progress-wrap">
-              <span>总进度</span>
+              <span>总进度<span style="font-size: 11px;color:rgba(0,0,0,0.5)">({{statusMap[jobStatus]}})</span></span>
               <a-tooltip :title="jobProgress.title">
-                <a-progress :percent="jobProgress.percent" :success-percent="jobProgress.successPercent"/>
+                <a-progress v-if="jobProgress.failedTasks" :percent="jobProgress.percent" status="exception"/>
+                <a-progress v-else :percent="jobProgress.percent" :success-percent="jobProgress.successPercent"/>
               </a-tooltip>
             </div>
             <div v-if="jobProgress.tasks && jobProgress.tasks.Running" class="job-progress-wrap">
@@ -304,13 +305,21 @@
               </div>
             </div>
             <div v-if="jobProgress.tasks && jobProgress.tasks.Inited" class="job-progress-wrap">
-                <span class="job-progress-title">准备中</span>
-                <div class="job-progress-body">
-                  <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Inited">
-                    <span :title="progress.name">{{ progress.name }}</span><a-progress :percent="0" />
-                  </div>
+              <span class="job-progress-title">准备中</span>
+              <div class="job-progress-body">
+                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Inited">
+                  <span :title="progress.name">{{ progress.name }}</span><a-progress :percent="0" />
                 </div>
               </div>
+            </div>
+            <div v-if="jobProgress.tasks && jobProgress.tasks.Failed" class="job-progress-wrap">
+              <span class="job-progress-title">失败</span>
+              <div class="job-progress-body">
+                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Failed">
+                  <span :title="progress.name">{{ progress.name }}</span><a-progress :percent="progress.progress" status="exception" />
+                </div>
+              </div>
+            </div>
           </a-tab-pane>
           <a-tab-pane key="2" tab="实时日志" force-render>
             <execution-log :param="logParams"></execution-log>
@@ -512,7 +521,19 @@ export default {
       progressTimer: null,
       jobProgress: {},
       metricsInfo: {},
-      openMetricsId: ''
+      openMetricsId: '',
+      statusMap: {
+        'Inited': '准备',
+        'Scheduled': '预排',
+        'Running': '运行',
+        'WaitForRetry': '等待重试',
+        'Cancelled': '取消',
+        'Failed': '失败',
+        'Partial_Success': '部分成功',
+        'Success': '成功',
+        'Undefined': '未定义',
+        'Timeout': '超时'
+      }
     };
   },
   props: {
@@ -984,10 +1005,11 @@ export default {
             res.job.successTasks = res.job.tasks.Success?.length || 0
             res.job.initedTasks = res.job.tasks.Inited?.length || 0
             res.job.runningTasks = res.job.tasks.Running?.length || 0
+            res.job.failedTasks = res.job.tasks.Failed?.length || 0
             res.job.totalTasks = this.tasklist.length
             res.job.successPercent = res.job.successTasks * 100 / res.job.totalTasks
             res.job.percent = (res.job.successTasks + res.job.runningTasks) * 100 / res.job.totalTasks
-            res.job.title = `${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.initedTasks}正在准备`
+            res.job.title = res.job.failedTasks ? `${res.job.failedTasks}失败,${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.initedTasks}正在准备` : `${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.initedTasks}正在准备`
           }
           this.jobProgress = res.job
         })
