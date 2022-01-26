@@ -59,7 +59,11 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
             task.setLastUpdateTime(task.getCreateTime());
         });
         this.launchableTaskDao.addLaunchableTask(tasks);
-        this.launchedJobDao.upgradeLaunchedJobStatus(launchableExchangisJob.getJobExecutionId(), TaskStatus.Scheduled.name(), calendar.getTime());
+        LaunchedExchangisJobEntity launchedJob = new LaunchedExchangisJobEntity(launchableExchangisJob);
+        launchedJob.setStatus(TaskStatus.Scheduled);
+        launchedJob.setLaunchableTaskNum(tasks.size());
+        launchedJob.setLastUpdateTime(calendar.getTime());
+        this.launchedJobDao.updateLaunchInfo(launchedJob);
         // Offer to the observer
         tasks.forEach(task -> this.newInTaskObserver.getCacheQueue().offer(task));
     }

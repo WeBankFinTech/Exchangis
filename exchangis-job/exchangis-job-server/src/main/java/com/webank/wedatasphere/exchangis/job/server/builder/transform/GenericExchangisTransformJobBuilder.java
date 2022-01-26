@@ -80,7 +80,6 @@ public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBui
                     List<SubExchangisJob> subExchangisJobs = contents.stream().map(job -> {
                                 TransformExchangisJob.SubExchangisJobAdapter jobAdapter = new TransformExchangisJob.SubExchangisJobAdapter(job);
                                 jobAdapter.setId(inputJob.getId());
-                                jobAdapter.setName(inputJob.getName());
                                 jobAdapter.setCreateUser(outputJob.getCreateUser());
                                 return jobAdapter;
                             })
