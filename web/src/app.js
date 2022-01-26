@@ -39,6 +39,7 @@ export const request = {
   },
   errorHandler: {
     default(error) {
+      console.log(error, '系统异常')
       message.error(error?.response?.data?.message || "系统异常");
     },
   },
