@@ -974,7 +974,9 @@ export default {
           if (unfinishedStatusList.indexOf(this.jobStatus) === -1) {
             this.spinning = false
             clearInterval(this.jobStatusTimer)
-            clearInterval(this.progressTimer)
+            setTimeout(() => {
+              clearInterval(this.progressTimer)
+            }, 1000*5)
           }
         })
         .catch(err => {
@@ -994,6 +996,7 @@ export default {
     },
     getJobProgress(jobExecutionId) {
       this.getJobProgressInvoke(jobExecutionId)
+      clearInterval(this.progressTimer)
       this.progressTimer = setInterval(() => {
         this.getJobProgressInvoke(jobExecutionId)
       }, 1000*5)
