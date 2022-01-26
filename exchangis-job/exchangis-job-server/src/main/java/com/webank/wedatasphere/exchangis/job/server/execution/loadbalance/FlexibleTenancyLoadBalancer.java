@@ -123,7 +123,10 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
             }
         }
         try {
-            return (LoadBalanceSchedulerTask<LaunchedExchangisTask>) constructor.newInstance(parameters);
+            LoadBalanceSchedulerTask<LaunchedExchangisTask> loadBalanceSchedulerTask =  (LoadBalanceSchedulerTask<LaunchedExchangisTask>) constructor.newInstance(parameters);
+            //Use the current timestamp as ID
+            loadBalanceSchedulerTask.setId(String.valueOf(System.currentTimeMillis()));
+            return loadBalanceSchedulerTask;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new ExchangisTaskExecuteException.Runtime("Cannot new instance of load balance scheduler task: [" + schedulerTaskClass.getSimpleName() + "]", e);
         }
@@ -341,6 +344,7 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                         ((AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask>) schedulerTask)
                                 .setSchedulerLoadBalancer(FlexibleTenancyLoadBalancer.this);
                     }
+                    schedulerTask.setTenancy(tenancy);
                     getScheduler().submit(schedulerTask);
                     newSegments[i] = new SchedulerTaskSegment(1, schedulerTask);
                 } catch (Exception e){
