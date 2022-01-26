@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.service;
 
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.linkis.server.Message;
@@ -12,7 +13,7 @@ public interface JobExecuteService {
 
     Message getJobLogInfo(String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows);
 
-    Message getTaskLogInfo(String taskId, String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows);
+    Message getTaskLogInfo(String taskId, String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows) throws ExchangisTaskLaunchException;
 
     /**
      * Gets task Metrics
@@ -70,4 +71,11 @@ public interface JobExecuteService {
      * @throws ExchangisJobServerException
      */
     String executeJob(ExchangisJobInfo jobInfo, String execUser) throws ExchangisJobServerException;
+    /**
+     * Kill job.
+     *
+     * @param jobExecutionId      the job ExecutionId
+     */
+    void killJob(String jobExecutionId);
+
 }
