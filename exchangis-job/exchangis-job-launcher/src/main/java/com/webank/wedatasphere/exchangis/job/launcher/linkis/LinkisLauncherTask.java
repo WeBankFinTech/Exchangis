@@ -4,8 +4,8 @@ import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLau
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskNotExistException;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskLog;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskLogQuery;
+import com.webank.wedatasphere.exchangis.job.log.LogResult;
+import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskProgressInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import org.apache.linkis.computation.client.LinkisJobBuilder;
@@ -195,7 +195,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
     }
 
     @Override
-    public TaskLog queryLogs(TaskLogQuery query) throws ExchangisTaskLaunchException {
+    public LogResult queryLogs(LogQuery query) throws ExchangisTaskLaunchException {
         // The logOperator is not thread safe, so create it each time
         if (Objects.nonNull(this.onceJob)){
             try{
@@ -212,7 +212,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 if (isEnd){
                     isEnd = TaskStatus.isCompleted(getStatus());
                 }
-                return new TaskLog(logs.endLine(), isEnd, logs.logs());
+                return new LogResult(logs.endLine(), isEnd, logs.logs());
             } catch (Exception e){
                 dealException(e);
             }

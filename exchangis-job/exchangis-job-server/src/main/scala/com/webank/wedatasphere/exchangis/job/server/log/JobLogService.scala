@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.log
 import java.util
 
+import com.webank.wedatasphere.exchangis.job.log.{LogQuery, LogResult}
 import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCache
 
 
@@ -9,9 +10,9 @@ import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCache
  */
 trait JobLogService{
 
-  def getOrCreateLogCache: JobLogCache[String]
+  def getOrCreateLogCache(jobExecId: String): JobLogCache[String]
 
-  def logsFromPage() : Unit
+  def logsFromPage(jobExecId: String, logQuery: LogQuery): LogResult
 
   def appendLog(tenancy: String, jobExecId: String, logs: util.List[String]): Unit
 

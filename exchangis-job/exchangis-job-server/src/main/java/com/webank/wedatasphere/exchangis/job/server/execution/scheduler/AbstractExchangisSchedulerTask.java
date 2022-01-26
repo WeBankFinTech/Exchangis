@@ -36,6 +36,11 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
     public AbstractExchangisSchedulerTask(String scheduleId){
         this.scheduleId = scheduleId;
     }
+
+    public AbstractExchangisSchedulerTask() {
+
+    }
+
     @Override
     public void init() throws Exception {
 

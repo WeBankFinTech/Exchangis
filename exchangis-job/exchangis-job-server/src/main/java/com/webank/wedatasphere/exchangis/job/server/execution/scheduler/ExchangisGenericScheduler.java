@@ -14,9 +14,10 @@ import org.apache.linkis.scheduler.queue.fifoqueue.FIFOSchedulerContextImpl;
 public class ExchangisGenericScheduler extends AbstractScheduler {
 
     private static class Constraints{
+
         private static final CommonVars<Integer> MAX_PARALLEL_PER_TENANCY = CommonVars.apply("wds.exchangis.job.scheduler.consumer.max.parallel.per-tenancy", 1);
 
-        private static final CommonVars<String> TENANCY_PATTERN = CommonVars.apply("wds.exchangis.job.scheduler.consumer.tenancies", "hadoop");
+        private static final CommonVars<String> TENANCY_PATTERN = CommonVars.apply("wds.exchangis.job.scheduler.consumer.tenancies", "hadoop,log");
 
         private static final CommonVars<Integer> GROUP_INIT_CAPACITY = CommonVars.apply("wds.exchangis.job.scheduler.group.min.capacity", 1000);
 
