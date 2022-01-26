@@ -20,7 +20,7 @@ object JobLogCacheUtils{
     lazy val jobLogService: JobLogService = SpringContextHolder.getBean(classOf[JobLogService])
     def flush(jobExecId: String, isEnd: Boolean = false): Unit ={
         jobLogService match {
-            case service: JobLogService => service.getOrCreateLogCache match {
+            case service: JobLogService => service.getOrCreateLogCache(jobExecId) match {
                 case cache: JobLogCache[String] => cache.flushCache
             }
             case _ =>

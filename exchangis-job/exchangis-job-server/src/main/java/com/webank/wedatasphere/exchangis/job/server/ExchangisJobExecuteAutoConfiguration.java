@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -82,9 +83,7 @@ public class ExchangisJobExecuteAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ConsumerManager.class)
     public ConsumerManager consumerManager(){
-        TenancyParallelConsumerManager consumerManager = new TenancyParallelConsumerManager();
-        consumerManager.setInitResidentThreads(4);
-        return consumerManager;
+        return new TenancyParallelConsumerManager();
     }
 
     /**
@@ -159,6 +158,11 @@ public class ExchangisJobExecuteAutoConfiguration {
                                                TaskSchedulerLoadBalancer<LaunchedExchangisTask> loadBalancer,
                                                TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler, List<TaskExecutionListener> executionListeners){
         AbstractTaskExecution taskExecution = new DefaultTaskExecution(scheduler, launchManager, taskManager, observers, loadBalancer, taskChooseRuler);
+        ConsumerManager consumerManager = scheduler.getSchedulerContext().getOrCreateConsumerManager();
+        if (consumerManager instanceof TenancyParallelConsumerManager){
+            ((TenancyParallelConsumerManager) consumerManager).setInitResidentThreads(observers.size() +
+                    (Objects.nonNull(loadBalancer)? 1: 0) + 1);
+        }
         Optional.ofNullable(executionListeners).ifPresent(listeners -> listeners.forEach(taskExecution::addListener));
         return taskExecution;
     }
