@@ -1,9 +1,9 @@
-package com.webank.wedatasphere.exchangis.job.launcher.domain.task;
+package com.webank.wedatasphere.exchangis.job.log;
 
 /**
  * Query task Log
  */
-public class TaskLogQuery {
+public class LogQuery {
 
     private int fromLine = 0;
 
@@ -15,11 +15,11 @@ public class TaskLogQuery {
 
     private Integer lastRows;
 
-    public TaskLogQuery(){
+    public LogQuery(){
 
     }
 
-    public TaskLogQuery(int fromLine, int pageSize){
+    public LogQuery(int fromLine, int pageSize){
         this.fromLine = fromLine;
         this.pageSize = pageSize;
     }
