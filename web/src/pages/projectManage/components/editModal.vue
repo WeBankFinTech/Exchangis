@@ -17,6 +17,7 @@
         >
           <a-input
             v-model:value="formState.projectName"
+            :maxLength="100"
             :placeholder="
               $t(`projectManage.editModal.form.fields.projectName.placeholder`)
             "
