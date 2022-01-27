@@ -4,7 +4,7 @@
       v-model:value="curLogId"
       ref="select"
       :options="checkOptions.options"
-      @change="changeData(curLogId)"
+      @change="resetData();changeData(curLogId)"
       style="position: absolute;width: 90px;left: 21px;z-index: 1;top: 7px"
     >
     </a-select>
@@ -24,7 +24,21 @@
     </a-tabs>
     <a-input-search v-model:value="searchKeyword" placeholder="关键字" style="position: absolute;width: 120px;left:420px;z-index: 1;top: 5px" @search="onSearch"></a-input-search>
     <a-input-search v-model:value="ignoreKeyword" placeholder="忽略字" style="position: absolute;width: 120px;left:550px;z-index: 1;top: 5px" @search="onSearch2"></a-input-search>
-    <a-input-search v-if="logs.isEnd" v-model:value="lastRows" placeholder="读取最后n行日志" style="position: absolute;width: 240px;left:680px;z-index: 1;top: 5px" @search="onSearch3"></a-input-search>
+    <a-input-search v-if="pauseLog.isPause" v-model:value="lastRows" placeholder="读取最后n行日志" style="position: absolute;width: 240px;left:680px;z-index: 1;top: 5px" @search="onSearch3"></a-input-search>
+    <a-button
+      size="small"
+      @click="pauseFetchingLog(true)"
+      type="link"
+      v-if="!pauseLog.isPause"
+      style="position: absolute;left:680px;z-index: 1;top: 8px"
+    >{{logs.isEnd ? '显示读取最后n行日志' :'暂停日志拉取' }}</a-button>
+    <a-button
+      size="small"
+      @click="pauseFetchingLog(false)"
+      type="link"
+      v-if="pauseLog.isPause"
+      style="position: absolute;left:930px;z-index: 1;top: 8px"
+    >{{logs.isEnd ? '隐藏读取最后n行日志' :'恢复日志拉取' }}</a-button>
   </div>
 </template>
 <script>
@@ -45,8 +59,14 @@ export default defineComponent({
       list = val.list
       _updateInfo()
       if (val.id && val.id !== oldVal.id) {
+        resetData()
         changeData(id)
       }
+    })
+    let pauseLog = reactive({
+      isPause: false,
+      pauseEndLine: 0,
+      pauseIsEnd: false
     })
     let curLogId,
       curLog = reactive({
@@ -93,12 +113,18 @@ export default defineComponent({
       const _updateLog = (res) => {
         logs.logs = res.logs
         logs.isEnd = res.isEnd
+        const buildLog = (key) => {
+          let arr = logs.logs[key].split('\n')
+          for (let i = 0; i < arr.length; i++) {
+            arr[i] = `${logs.endLine + i + 1}.   ${arr[i]}`
+          }
+          return curLog[key] ? curLog[key] + '\n' + arr.join('\n') : arr.join('\n')
+        }
+        curLog.all = buildLog('all')
+        curLog.error = buildLog('error')
+        curLog.info = buildLog('info')
+        curLog.warn = buildLog('warn')
         logs.endLine = res.endLine
-        curLog.all = curLog.all ? curLog.all + logs.logs?.all :  logs.logs?.all
-        curLog.error = curLog.error ? curLog.error + logs.logs?.error : logs.logs?.error
-        curLog.info = curLog.info ? curLog.info + logs.logs?.info : logs.logs?.info
-        curLog.warn = curLog.warn ? curLog.warn + logs.logs?.warn : logs.logs?.warn
-        //message.success("更新日志成功")
         nextTick(() => {
           const textareas = document.querySelectorAll('.exec-content textarea')
           textareas.forEach(textarea => {
@@ -140,41 +166,64 @@ export default defineComponent({
       }
     }
 
-    const _resetData = () => {
+    const resetData = (data) => {
       logs.logs = {}
       logs.endLine = 0
+      pauseLog.pauseEndLine = 0
       logs.isEnd = false
+      pauseLog.pauseIsEnd = false
       curLog.all = ''
       curLog.error = ''
       curLog.info = ''
       curLog.warn = ''
       clearInterval(showLogTimer)
       showLogTimer = null
+      if (data) {
+        logs.endLine = data.endLine
+        logs.isEnd = data.isEnd
+      }
     }
 
     const changeData = (curId) => {
-      _resetData()
+      _showInfoLog(curId)
       showLogTimer = setInterval(() => {
         _showInfoLog(curId)
-      }, 1000*5)
+      }, 1000*2)
     }
 
     const onSearch = (keyword) => {
       searchKeyword = keyword
-      _resetData()
+      resetData()
       changeData(curLogId)
     }
 
     const onSearch2 = (keyword) => {
       ignoreKeyword = keyword
-      _resetData()
+      resetData()
       changeData(curLogId)
     }
 
     const onSearch3 = (keyword) => {
       lastRows = keyword
-      _resetData()
+      resetData()
       _showInfoLog(curLogId)
+    }
+
+    const pauseFetchingLog = (isPause) => {
+      pauseLog.isPause = isPause
+      if (isPause) {
+        pauseLog.pauseEndLine = logs.endLine
+        pauseLog.pauseIsEnd = logs.isEnd
+        clearInterval(showLogTimer)
+      } else {
+        if (!pauseLog.pauseIsEnd) {
+          /*resetData({
+            endLine: pauseLog.pauseEndLine,
+            isEnd: pauseLog.pauseIsEnd
+          })*/
+          changeData(curLogId)
+        }
+      }
     }
 
     onBeforeUnmount(() => {
@@ -186,13 +235,16 @@ export default defineComponent({
       changeData,
       checkOptions,
       curLog,
+      pauseLog,
       searchKeyword: ref(searchKeyword),
       ignoreKeyword: ref(ignoreKeyword),
       lastRows: ref(lastRows),
       onSearch,
       onSearch2,
       onSearch3,
-      logs
+      logs,
+      pauseFetchingLog,
+      resetData
     }
   }
 })
