@@ -1107,7 +1107,7 @@ export default {
         .then(res => {
           this.jobStatus = res.status
           if (!this.tasklist.length) {
-            this.getTasks(jobExecutionId)
+            this.getTasks(jobExecutionId, true)
           }
           if (unfinishedStatusList.indexOf(this.jobStatus) === -1) {
             this.spinning = false
@@ -1122,11 +1122,12 @@ export default {
         })
     },
     // 获取tasklist
-    getTasks(jobExecutionId) {
+    getTasks(jobExecutionId, shouldGetJobProgress) {
       getJobTasks(jobExecutionId)
         .then(res => {
           this.tasklist = res.tasks
-          this.getJobProgress(jobExecutionId)
+          if (shouldGetJobProgress)
+            this.getJobProgress(jobExecutionId)
         })
         .catch(err => {
           message.error("查询任务列表失败");
@@ -1151,6 +1152,10 @@ export default {
             res.job.scheduledTasks = res.job.tasks.Scheduled?.length || 0
 
             res.job.totalTasks = this.tasklist.length
+            if (res.job.total && res.job.total !== this.tasklist.length) {
+              res.job.totalTasks = res.job.total
+              this.getTasks(jobExecutionId)
+            }
             res.job.successPercent = res.job.successTasks * 100 / res.job.totalTasks
             res.job.percent = (res.job.successTasks + res.job.runningTasks) * 100 / res.job.totalTasks
             res.job.title = res.job.failedTasks ? `${res.job.failedTasks}失败,${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.scheduledTasks}正在准备` : `${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.scheduledTasks}正在准备`

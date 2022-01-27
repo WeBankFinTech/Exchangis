@@ -36,7 +36,7 @@
     <div class="card-main">
       <div class="card-main-title">
         <router-link :to="`/jobManagement?id=${id}&name=${name}`">
-          <div class="title">
+          <div class="title" :title="name">
             {{ name }}
           </div>
         </router-link>
@@ -142,6 +142,9 @@ export default {
 
 .title {
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   &:hover {
     color: #1890ff;
   }
@@ -162,7 +165,6 @@ export default {
 }
 
 .card {
-  // min-width: 381px;
   min-height: 115px;
   border: 1px solid #dee4ec;
   background-color: #fff;
@@ -175,6 +177,7 @@ export default {
     padding-left: 24px;
     height: 115px;
     flex: 1;
+    width: calc(100% - 37px);
     &-title {
       font-family: PingFangSC-Medium;
       font-size: 16px;
