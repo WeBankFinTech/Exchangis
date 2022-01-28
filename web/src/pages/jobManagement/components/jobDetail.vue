@@ -20,7 +20,8 @@
       <!--<span @click="executeHistory"><HistoryOutlined />执行历史</span>-->
     </div>
     <div class="jd-content" v-if="list.length !== 0">
-      <div class="jd_left">
+      <a-spin size="large" :spinning="loading">
+        <div class="jd_left">
           <div class="sub-title">
             <!--<DatabaseFilled class="database-icon" />-->
             <span>子任务列表</span>
@@ -124,7 +125,7 @@
             <template #icon> <PlusOutlined /></template>添加子任务
           </a-button>
         </div>
-      <div class="jd_right">
+        <div class="jd_right">
         <div>
           <DataSource
             v-if="curTask"
@@ -157,9 +158,11 @@
           />
         </div>
       </div>
+      </a-spin>
     </div>
     <div class="cardWrap" v-if="list.length === 0">
-      <div class="emptyTab">
+      <a-spin :spinning="loading">
+        <div class="emptyTab">
         <div class="void-page-wrap">
           <div class="void-page-main">
             <div class="void-page-main-img">
@@ -196,6 +199,7 @@
           <!--@refreshList="getJobs"-->
         <!--/>-->
       <!--</div>-->
+      </a-spin>
     </div>
     <!-- 执行历史  jd-bottom -->
     <div class="jd-bottom" v-show="visibleDrawer">
@@ -460,6 +464,7 @@ export default {
   data() {
     const { t } = useI18n({ useScope: "global" });
     return {
+      loading: false,
       name: "",
       modalCfg: {
         id: "",
@@ -541,7 +546,9 @@ export default {
     },
     async getInfo() {
       try {
+        this.loading = true
         let data = (await getJobInfo(this.curTab.id)).result;
+        this.loading = false
         if (!data.content || data.content === "[]") {
           data.content = {
             subJobs: [],
@@ -571,7 +578,9 @@ export default {
           this.updateSourceInfo(this.curTask, true);
           // this.updateSinkInfo(this.curTask); 当sink和source都有值的时候,请求的结果是一致的,所以省去一次多余重复请求
         }
-      } catch (error) {}
+      } catch (error) {
+        this.loading = false
+      }
     },
     // 更新保存任务配置
     handleModalFinish(config) {
