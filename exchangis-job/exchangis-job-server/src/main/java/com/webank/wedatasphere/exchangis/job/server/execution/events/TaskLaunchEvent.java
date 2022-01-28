@@ -5,9 +5,9 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTa
 /**
  * Insert event
  */
-public class TaskInfoUpdateEvent extends TaskExecutionEvent{
+public class TaskLaunchEvent extends TaskExecutionEvent{
 
-    public TaskInfoUpdateEvent(LaunchedExchangisTask task) {
+    public TaskLaunchEvent(LaunchedExchangisTask task) {
         super(task);
     }
 }

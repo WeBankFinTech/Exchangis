@@ -152,7 +152,7 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
         }
 
         @Override
-        public void onInfoUpdate(TaskInfoUpdateEvent infoUpdateEvent) {
+        public void onLaunch(TaskLaunchEvent infoUpdateEvent) {
             // Ignore
         }
 

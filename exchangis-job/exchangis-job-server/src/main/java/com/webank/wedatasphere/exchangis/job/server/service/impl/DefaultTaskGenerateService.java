@@ -10,6 +10,7 @@ import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.T
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateInitEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateSuccessEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.NewInTaskObserver;
+import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCacheUtils;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskGenerateService;
 import com.webank.wedatasphere.exchangis.job.utils.SnowFlake;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
     private NewInTaskObserver newInTaskObserver;
     @Override
     public void onError(TaskGenerateErrorEvent errorEvent) {
+        JobLogCacheUtils.flush(errorEvent.getLaunchableExchangisJob().getJobExecutionId(), true);
         this.launchedJobDao.upgradeLaunchedJobStatus(errorEvent.getLaunchableExchangisJob().getJobExecutionId()
                 , TaskStatus.Failed.name(), Calendar.getInstance().getTime());
     }
@@ -45,6 +47,7 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
         LaunchableExchangisJob job = initEvent.getLaunchableExchangisJob();
         LaunchedExchangisJobEntity launchedJob = new LaunchedExchangisJobEntity(job);
         launchedJobDao.insertLaunchedJob(launchedJob);
+        JobLogCacheUtils.flush(job.getJobExecutionId(), false);
     }
 
     @Override
@@ -66,5 +69,6 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
         this.launchedJobDao.updateLaunchInfo(launchedJob);
         // Offer to the observer
         tasks.forEach(task -> this.newInTaskObserver.getCacheQueue().offer(task));
+        JobLogCacheUtils.flush(launchableExchangisJob.getJobExecutionId(), false);
     }
 }

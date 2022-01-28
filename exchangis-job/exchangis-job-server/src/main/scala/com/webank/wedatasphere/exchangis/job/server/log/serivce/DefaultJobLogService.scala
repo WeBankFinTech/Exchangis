@@ -14,4 +14,6 @@ class DefaultJobLogService extends JobLogService{
   override def appendLog(tenancy: String, jobExecId: String, logs: util.List[String]): Unit = ???
 
   override def appendLog(jobExecId: String, logs: util.List[String]): Unit = ???
+
+  override def logsFromPageAndPath(logPath: String, logQuery: LogQuery): LogResult = ???
 }
