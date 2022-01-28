@@ -19,6 +19,8 @@ import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.MaxUsag
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger;
+import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
+import com.webank.wedatasphere.exchangis.job.server.log.service.LocalSimpleJobLogService;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.executer.ExecutorManager;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
@@ -41,6 +43,12 @@ public class ExchangisJobExecuteAutoConfiguration {
     @ConditionalOnMissingBean(JobLogListener.class)
     public JobLogListener logListener(){
         return new DefaultRpcJobLogger();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(JobLogService.class)
+    public JobLogService jobLogService(){
+        return new LocalSimpleJobLogService();
     }
 
     /**

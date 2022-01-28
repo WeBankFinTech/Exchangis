@@ -7,7 +7,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.*;
-import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCache;
+import com.webank.wedatasphere.exchangis.job.server.log.JobServerLogging;
 import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCacheUtils;
 
 import java.util.*;
@@ -58,7 +58,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
         LaunchedExchangisTask task = runningTasks.get(taskId);
         if (Objects.nonNull(task)){
             onEvent(new TaskStatusUpdateEvent(task, TaskStatus.Cancelled));
-            log(JobLogEvent.Level.INFO, task, "Status of task: [{}] change {} => {}", task.getTaskId(), task.getStatus(), TaskStatus.Cancelled);
+            info(task, "Status of task: [{}] change {} => {}", task.getTaskId(), task.getStatus(), TaskStatus.Cancelled);
             JobLogCacheUtils.flush(task.getJobExecutionId(), false);
             runningTasks.remove(taskId);
             JobWrapper wrapper = jobWrappers.get(task.getJobExecutionId());
@@ -72,8 +72,8 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
     public void addRunningTask(LaunchedExchangisTask task) {
         task.setStatus(TaskStatus.Running);
         task.setRunningTime(Calendar.getInstance().getTime());
-        onEvent(new TaskInfoUpdateEvent(task));
-        log(JobLogEvent.Level.INFO, task, "Status of task: [{}] change to {}, info: [{}]", task.getTaskId(), task.getStatus(), Json.toJson(task, null));
+        onEvent(new TaskLaunchEvent(task));
+        info(task, "Status of task: [{}] change to {}, info: [{}]", task.getTaskId(), task.getStatus(), Json.toJson(task, null));
         if (Objects.isNull(runningTasks.putIfAbsent(task.getTaskId(), task))){
             jobWrappers.compute(task.getJobExecutionId(), (jobExecutionId, jobWrapper) -> {
                 if (Objects.nonNull(jobWrapper) && jobWrapper.addTask(task)){
@@ -99,7 +99,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
             onEvent(new TaskMetricsUpdateEvent(task, metricsMap));
             task.setMetrics(null);
             task.setMetricsMap(metricsMap);
-            log(JobLogEvent.Level.TRACE, task, "Metrics info of task: [{}]", Json.toJson(metricsMap, null));
+            trace(task, "Metrics info of task: [{}]", Json.toJson(metricsMap, null));
             return true;
         }
         return false;
@@ -109,7 +109,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
     public boolean refreshRunningTaskStatus(LaunchedExchangisTask task, TaskStatus status) {
         TaskStatus beforeStatus = task.getStatus();
         if (TaskStatus.isCompleted(status)){
-            log(JobLogEvent.Level.INFO, task, "Status of task: [{}] change {} => {}", task.getTaskId(), beforeStatus, status);
+            info(task, "Status of task: [{}] change {} => {}", task.getTaskId(), beforeStatus, status);
             onEvent(new TaskStatusUpdateEvent(task, status));
             removeRunningTaskInner(task.getTaskId(), false);
             return true;
@@ -118,7 +118,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
             if (Objects.nonNull(task) ) {
                 onEvent(new TaskStatusUpdateEvent(task, status));
                 if (isTransition(task, status)) {
-                    log(JobLogEvent.Level.INFO, task, "Status of task: [{}] change {} => {}", task.getTaskId(), beforeStatus, status);
+                    info(task, "Status of task: [{}] change {} => {}", task.getTaskId(), beforeStatus, status);
                 }
                 task.setStatus(status);
                 return true;
@@ -133,7 +133,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
         if (Objects.nonNull(task)){
             onEvent(new TaskProgressUpdateEvent(task, progressInfo));
             if (task.getProgress() != progressInfo.getProgress()){
-                log(JobLogEvent.Level.INFO, task, "Progress of task: [{}] change {} => {}", task.getTaskId(), task.getProgress(), progressInfo.getProgress());
+                info(task, "Progress of task: [{}] change {} => {}", task.getTaskId(), task.getProgress(), progressInfo.getProgress());
             }
             task.setProgress(progressInfo.getProgress());
             return true;
@@ -191,12 +191,11 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
         return false;
     }
 
-    protected void log(JobLogEvent.Level level, LaunchedExchangisTask task, String message, Object... args){
-        Optional.ofNullable(getJobLogListener()).ifPresent(listener -> {
-            listener.onAsyncEvent(
-                    new JobLogEvent(level, task.getExecuteUser(), task.getJobExecutionId(), message, args));
-        });
+    @Override
+    public JobLogEvent getJobLogEvent(JobLogEvent.Level level, LaunchedExchangisTask task, String message, Object... args) {
+        return new JobLogEvent(level, task.getExecuteUser(), task.getJobExecutionId(), message, args);
     }
+
     private class JobWrapper{
 
         /**
@@ -223,6 +222,8 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
             synchronized (taskNum) {
                 if (Objects.nonNull(tasksInJob.remove(task.getTaskId()))) {
                     if (taskNum.decrementAndGet() == 0) {
+                        // Flush the job log cache
+                        JobLogCacheUtils.flush(jobExecutionId, true);
                         jobWrappers.remove(jobExecutionId);
                         jobExecutionIds.remove(jobExecutionId);
                         destroy = true;

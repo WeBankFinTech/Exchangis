@@ -42,6 +42,12 @@ public interface LaunchedJobDao {
     LaunchedExchangisJobEntity searchLaunchedJob(@Param("jobExecutionId")String jobExecutionId);
 
     /**
+     * Search log path and status info
+     * @param jobExecutionId execution id
+     * @return
+     */
+    LaunchedExchangisJobEntity searchLogPathInfo(@Param("jobExecutionId")String jobExecutionId);
+    /**
      * upgrade launchedJob status
      * @param jobExecutionId execution id
      * @param status status
@@ -61,11 +67,11 @@ public interface LaunchedJobDao {
                                        @Param("updateTime")Date updateTime);
 
     /**
-     * Try to upgrade launchedJob progress in version control
+     * To upgrade launchedJob progress
      * @param jobExecutionId execution id
      * @param totalTaskProgress progress of total related task
      * @param updateTime updateTime
      */
-    int upgradeLaunchedJobProgressInVersion(@Param("jobExecutionId")String jobExecutionId, @Param("totalTaskProgress") Float totalTaskProgress,
+    int upgradeLaunchedJobProgress(@Param("jobExecutionId")String jobExecutionId, @Param("totalTaskProgress") Float totalTaskProgress,
                                          @Param("updateTime")Date updateTime);
 }
