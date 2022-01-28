@@ -9,6 +9,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJo
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.*;
+import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCacheUtils;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
 import org.slf4j.Logger;
@@ -47,7 +48,6 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     public void onStatusUpdate(TaskStatusUpdateEvent statusUpdateEvent) throws ExchangisOnEventException {
         LaunchedExchangisTask task = statusUpdateEvent.getLaunchedExchangisTask();
         TaskStatus status = statusUpdateEvent.getUpdateStatus();
-        Calendar calendar = Calendar.getInstance();
         if (!TaskStatus.isCompleted(status)){
             LaunchedExchangisJobEntity launchedJob = launchedJobDao.searchLaunchedJob(task.getJobExecutionId());
             TaskStatus jobStatus = launchedJob.getStatus();
@@ -59,7 +59,7 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
                     throw new ExchangisOnEventException("Kill linkis_id: [" + task.getLinkisJobId() + "] fail", e);
                 }
             }else if (jobStatus == TaskStatus.Scheduled || jobStatus == TaskStatus.Inited){
-                launchedJobDao.upgradeLaunchedJobStatus(launchedJob.getJobExecutionId(), TaskStatus.Running.name(), calendar.getTime());
+                launchedJobDao.upgradeLaunchedJobStatusInVersion(launchedJob.getJobExecutionId(), TaskStatus.Running.name(), 0, launchedJob.getLastUpdateTime());
             }
         }
         // Have different status, then update
@@ -69,10 +69,20 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     }
 
     @Override
-    public void onInfoUpdate(TaskInfoUpdateEvent infoUpdateEvent) {
-        LaunchedExchangisTask task = infoUpdateEvent.getLaunchedExchangisTask();
+    @Transactional(rollbackFor = Exception.class)
+    public void onLaunch(TaskLaunchEvent taskLaunchEvent) {
+        LaunchedExchangisTask task = taskLaunchEvent.getLaunchedExchangisTask();
         task.setLastUpdateTime(Calendar.getInstance().getTime());
         this.launchedTaskDao.updateLaunchInfo(task);
+        // Well, search the job info
+        LaunchedExchangisJobEntity launchedJob = launchedJobDao.searchLaunchedJob(task.getJobExecutionId());
+        TaskStatus jobStatus = launchedJob.getStatus();
+        if (jobStatus == TaskStatus.Scheduled || jobStatus == TaskStatus.Inited) {
+            // Update the job status also, status change to Running
+            this.launchedJobDao.upgradeLaunchedJobStatusInVersion(task.getJobExecutionId(),
+                    TaskStatus.Running.name(), 0, launchedJob.getLastUpdateTime());
+        }
+        JobLogCacheUtils.flush(task.getJobExecutionId(), false);
     }
 
     @Override
@@ -96,6 +106,7 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateTaskStatus(LaunchedExchangisTask task, TaskStatus status) throws ExchangisOnEventException {
+        JobLogCacheUtils.flush(task.getJobExecutionId(), false);
         task.setLastUpdateTime(Calendar.getInstance().getTime());
         launchedTaskDao.upgradeLaunchedTaskStatus(task.getTaskId(), status.name(), task.getLastUpdateTime());
         if (status == TaskStatus.Failed || status == TaskStatus.Cancelled){
@@ -104,7 +115,6 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
         } else if (status == TaskStatus.Success){
             getSelfService().updateJobStatus(task.getJobExecutionId(), TaskStatus.Success, task.getLastUpdateTime());
         }
-
     }
 
     @Override
@@ -121,7 +131,7 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
         // Sum all the task's progress
         float totalTaskProgress = this.launchedTaskDao.sumProgressByJobExecutionId(jobExecutionId);
         if (totalTaskProgress > 0){
-           this.launchedJobDao.upgradeLaunchedJobProgressInVersion(jobExecutionId, totalTaskProgress, updateTime);
+           this.launchedJobDao.upgradeLaunchedJobProgress(jobExecutionId, totalTaskProgress, updateTime);
         }
     }
 

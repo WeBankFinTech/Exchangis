@@ -94,6 +94,10 @@
         where job_execution_id = #{jobExecutionId}
     </select>
 
+    <select id="searchLogPathInfo" parameterType="java.lang.String" resultMap="LaunchedJobMap">
+        <![CDATA[SELECT log_path,status FROM exchangis_launched_job_entity WHERE job_execution_id = #{jobExecutionId} LIMIT 1;]]>
+    </select>
+
     <update id="upgradeLaunchedJobStatus">
         UPDATE <include refid="TableName"/>
         SET
@@ -108,18 +112,27 @@
         <include refid="TableName"/>
         <![CDATA[SET
         status = #{status},
-        last_update_time = #{updateTime}
-        WHERE
-        job_execution_id = #{jobExecutionId} AND #{updateTime} > last_update_time AND launchable_task_num = #{launchableTaskNum};]]>
+        last_update_time = #{updateTime}]]>
+        <where>
+            <if test="jobExecutionId != null and jobExecutionId != ''">
+                AND job_execution_id = #{jobExecutionId}
+            </if>
+            <if test="updateTime != null">
+                AND #{updateTime} >= last_update_time
+            </if>
+            <if test="launchableTaskNum > 0">
+                AND launchable_task_num = #{launchableTaskNum};
+            </if>
+        </where>
     </update>
 
-    <update id="upgradeLaunchedJobProgressInVersion">
+    <update id="upgradeLaunchedJobProgress">
         <![CDATA[UPDATE ]]>
         <include refid="TableName"/>
         <![CDATA[SET
         progress = ${totalTaskProgress} / launchable_task_num,
         last_update_time = #{updateTime}
         WHERE
-        job_execution_id = #{jobExecutionId} AND #{updateTime} > last_update_time;]]>
+        job_execution_id = #{jobExecutionId}]]>
     </update>
 </mapper>

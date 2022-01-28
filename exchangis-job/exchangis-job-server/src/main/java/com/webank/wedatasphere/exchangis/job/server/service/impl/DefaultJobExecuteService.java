@@ -4,8 +4,11 @@ import com.google.common.base.Joiner;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
+import com.webank.wedatasphere.exchangis.job.log.LogQuery;
+import com.webank.wedatasphere.exchangis.job.log.LogResult;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
@@ -14,8 +17,10 @@ import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGener
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGenerator;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.GenerationSchedulerTask;
+import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -27,6 +32,7 @@ import javax.annotation.Resource;
 import java.util.*;
 
 import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.JOB_EXCEPTION_CODE;
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.LOG_OP_ERROR;
 
 @Service
 public class DefaultJobExecuteService implements JobExecuteService {
@@ -52,6 +58,10 @@ public class DefaultJobExecuteService implements JobExecuteService {
      */
     @Resource
     private TaskExecution<LaunchableExchangisTask> taskExecution;
+
+    @Autowired
+    private JobLogService jobLogService;
+
     @Override
     public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) {
         List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId);
@@ -121,73 +131,29 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public Message getJobLogInfo(String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows) {
-        int from = 1;
-        int size = 10;
-        if (Objects.nonNull(fromLine) && fromLine > 0) {
-            from = fromLine;
+    public ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords,
+                                                String onlyKeywords, Integer lastRows) throws ExchangisJobServerException {
+        LaunchedExchangisJobEntity launchedExchangisJob = this.launchedJobDao.searchLogPathInfo(jobExecutionId);
+        if (Objects.isNull(launchedExchangisJob)){
+            throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
         }
-
-        if (Objects.nonNull(pageSize) && pageSize > 0) {
-            size = pageSize;
-        }
-
-        // TODO mock data
-        int warningLineIdx = 1;
-        LinkedList<String> mockLogs = getMockLogs();
-        int mockLogsSize = mockLogs.size();
-        LinkedList<String> errLogs = new LinkedList<>();
-        LinkedList<String> warningLogs = new LinkedList<>();
-        LinkedList<String> infoLogs = new LinkedList<>();
-        LinkedList<String> allLogs = new LinkedList<>();
-        int endLine = from;
-//        int actualSize = 0;
-        if (Objects.nonNull(lastRows) && lastRows > 0) {
-            for (int i = mockLogsSize - lastRows; i <= mockLogsSize; i++){
-                allLogs.add(mockLogs.get(i));
-                if (mockLogs.get(i - 1).contains("WARN")) {
-                    warningLogs.add(mockLogs.get(i - 1));
-                }
-                else if (mockLogs.get(i - 1).contains("INFO")) {
-                    infoLogs.add(mockLogs.get(i - 1));
-                }
-                else if (mockLogs.get(i - 1).contains("ERROR")) {
-                    errLogs.add(mockLogs.get(i - 1));
-                }
-                endLine = mockLogsSize;
+        LogResult logResult = jobLogService.logsFromPageAndPath(launchedExchangisJob.getLogPath(), new LogQuery(fromLine, pageSize,
+                ignoreKeywords, onlyKeywords, lastRows));
+        ExchangisCategoryLogVo categoryLogVo = new ExchangisCategoryLogVo();
+        if (logResult.getLogs().isEmpty()){
+            categoryLogVo.setEndLine(logResult.getEndLine());
+            categoryLogVo.setIsEnd(logResult.isEnd());
+            if (TaskStatus.isCompleted(launchedExchangisJob.getStatus())){
+                categoryLogVo.setIsEnd(true);
             }
+        }else {
+            categoryLogVo.newCategory("error", log -> log.contains("ERROR"));
+            categoryLogVo.newCategory("warn", log -> log.contains("WARN"));
+            categoryLogVo.newCategory("info", log -> log.contains("INFO"));
+            categoryLogVo.processLogResult(logResult);
+            categoryLogVo.getLogs().put("all", StringUtils.join(logResult.getLogs(), "\n"));
         }
-        else {
-            for (int i = from, j = 0; (i <= mockLogsSize && j < size); i++, j++) {
-                allLogs.add(mockLogs.get(i - 1));
-
-                if (mockLogs.get(i - 1).contains("WARN")) {
-                    warningLogs.add(mockLogs.get(i - 1));
-                } else if (mockLogs.get(i - 1).contains("INFO")) {
-                    infoLogs.add(mockLogs.get(i - 1));
-                } else if (mockLogs.get(i - 1).contains("ERROR")) {
-                    errLogs.add(mockLogs.get(i - 1));
-                }
-                endLine = i;
-            }
-        }
-
-        String allLogsStr = Joiner.on("\n").join(allLogs);
-        String warningLogsStr = Joiner.on("\n").join(warningLogs);
-        String infoLogsStr = Joiner.on("\n").join(infoLogs);
-        String errLogsStr = Joiner.on("\n").join(errLogs);
-        Map<String, String> logs = new HashMap<>();
-        logs.put("all", allLogsStr);
-        logs.put("error", errLogsStr);
-        logs.put("warn", warningLogsStr);
-        logs.put("info", infoLogsStr);
-
-        Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/log");
-        message.data("endLine", endLine);
-        message.data("isEnd", from + size >= mockLogsSize);
-        message.data("logs", logs);
-        return message;
+        return categoryLogVo;
     }
 
     @Override

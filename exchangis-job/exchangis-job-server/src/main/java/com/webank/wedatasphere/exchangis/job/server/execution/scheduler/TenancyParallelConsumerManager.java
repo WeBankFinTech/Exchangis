@@ -129,7 +129,7 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
                 return tenancyExecutorServices.computeIfAbsent(tenancy, tenancyName -> {
                     // Use the default value of max running jobs
                     return Utils.newCachedThreadPool(parallelGroupFactory.getDefaultMaxRunningJobs()  + parallelGroupFactory.getParallelPerTenancy()
-                            + this.initResidentThreads,
+                            + 1,
                             TenancyParallelGroupFactory.GROUP_NAME_PREFIX + tenancy + "-Executor-", true);
                 });
             }

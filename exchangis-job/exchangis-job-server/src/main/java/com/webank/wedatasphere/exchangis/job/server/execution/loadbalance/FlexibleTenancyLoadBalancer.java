@@ -195,12 +195,17 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
             }
             counter.containers.incrementAndGet();
             counter.segments.addAndGet(taskContainer.segments.length);
+            for (SchedulerTaskSegment segment : taskContainer.segments){
+                counter.pollerSize.addAndGet(segment.loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().size());
+            }
             counter.taskContainers.add(taskContainer);
             return counter;
         }));
         tenancyExecutorServices.forEach((tenancy, executorService) -> {
             LoopCounter loopCounter = tenancyLoopCounter.get(tenancy);
             if (Objects.nonNull(loopCounter)){
+                LOG.info("Monitor: [tenancy: {}, task_segments: {}, wait_in_poll: {}]" , tenancy, loopCounter.segments.get(),
+                        loopCounter.pollerSize.get());
                 ThreadPoolExecutor pool = (ThreadPoolExecutor)executorService;
                 int adjustSegmentNum = 0;
                 int coreSize = pool.getCorePoolSize();
@@ -241,6 +246,19 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
         if (Objects.nonNull(this.balanceFuture)){
             this.isShutdown = true;
             this.balanceFuture.cancel(true);
+            this.tenancySchedulerTasks.forEach((tenancy, container) -> {
+                container.segmentLock.writeLock().lock();
+                try{
+                    for(SchedulerTaskSegment segment : container.segments){
+                        if (segment.loadBalanceSchedulerTask instanceof AbstractExchangisSchedulerTask){
+                            ((AbstractExchangisSchedulerTask) segment.loadBalanceSchedulerTask).kill();
+                        }
+                    }
+                }finally {
+                    container.segmentLock.writeLock().unlock();
+                }
+            });
+            this.tenancySchedulerTasks.clear();
         }
     }
 
@@ -254,6 +272,8 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
         AtomicInteger containers = new AtomicInteger(0);
 
         AtomicInteger segments = new AtomicInteger(0);
+
+        AtomicInteger pollerSize = new AtomicInteger(0);
 
         List<SchedulerTaskContainer> taskContainers = new ArrayList<>();
     }

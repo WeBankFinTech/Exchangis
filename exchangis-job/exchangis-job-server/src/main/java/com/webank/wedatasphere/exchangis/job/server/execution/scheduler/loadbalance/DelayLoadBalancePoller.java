@@ -55,6 +55,11 @@ public abstract class DelayLoadBalancePoller<T> implements LoadBalancePoller<T>{
         }
     }
 
+    @Override
+    public int size() {
+        return delayQueue.size();
+    }
+
     /**
      * Get the delay time from element
      * @param element element

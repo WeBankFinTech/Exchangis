@@ -10,7 +10,8 @@ import java.util.List;
 
 public interface JobExecuteService {
 
-    Message getJobLogInfo(String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows);
+    ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, Integer fromLine, Integer pageSize,
+                                         String ignoreKeywords, String onlyKeywords, Integer lastRows) throws ExchangisJobServerException;
 
     Message getTaskLogInfo(String taskId, String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows);
 

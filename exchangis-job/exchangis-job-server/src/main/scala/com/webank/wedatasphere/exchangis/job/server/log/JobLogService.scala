@@ -14,6 +14,8 @@ trait JobLogService{
 
   def logsFromPage(jobExecId: String, logQuery: LogQuery): LogResult
 
+  def logsFromPageAndPath(logPath: String, logQuery: LogQuery): LogResult
+
   def appendLog(tenancy: String, jobExecId: String, logs: util.List[String]): Unit
 
   def appendLog(jobExecId: String, logs: util.List[String]): Unit

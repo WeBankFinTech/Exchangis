@@ -10,28 +10,32 @@ import org.apache.linkis.scheduler.Scheduler
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.LOG_OP_ERROR
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService
 import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder
+import org.slf4j.{Logger, LoggerFactory}
 trait JobLogCache[V] extends Logging {
     def cacheLog(log: V)
 
-    def flushCache: Unit
+    def flushCache(isEnd: Boolean): Unit
 }
 
 object JobLogCacheUtils{
     lazy val jobLogService: JobLogService = SpringContextHolder.getBean(classOf[JobLogService])
+    val LOG: Logger = LoggerFactory.getLogger(classOf[JobLogCache[String]])
     def flush(jobExecId: String, isEnd: Boolean = false): Unit ={
-        jobLogService match {
-            case service: JobLogService => service.getOrCreateLogCache(jobExecId) match {
-                case cache: JobLogCache[String] => cache.flushCache
+        Utils.tryAndWarn{
+            jobLogService match {
+                case service: JobLogService => service.getOrCreateLogCache(jobExecId) match {
+                    case cache: JobLogCache[String] => cache.flushCache(isEnd)
+                }
+                case _ =>
             }
-            case _ =>
-        }
+        }(LOG)
     }
 }
 abstract class AbstractJobLogCache[V](scheduler: Scheduler, maxSize: Int = 100, flushInterval: Int = 2000) extends JobLogCache[V] with SchedulerThread{
 
     var lastFlush: Long = -1L
 
-    var cacheQueue: util.Queue[Any] = new ArrayBlockingQueue[Any](maxSize)
+    var cacheQueue: util.concurrent.ArrayBlockingQueue[Any] = new ArrayBlockingQueue[Any](maxSize)
 
     var isShutdown: Boolean = false
 
@@ -51,7 +55,7 @@ abstract class AbstractJobLogCache[V](scheduler: Scheduler, maxSize: Int = 100, 
         info(s"Thread: [ ${Thread.currentThread.getName} ] is started.")
         while (!isShutdown){
             Utils.tryAndError{
-                flushCache
+                flushCache(false)
                 lastFlush = System.currentTimeMillis
             }
             Utils.tryAndError(Thread.sleep(flushInterval))
@@ -63,10 +67,10 @@ abstract class AbstractJobLogCache[V](scheduler: Scheduler, maxSize: Int = 100, 
         val element: Any = getCacheQueueElement(log)
         if (!cacheQueue.offer(element)) {
             warn("The cache queue is full, should flush the cache immediately")
-            flushCache
+            flushCache(false)
         } else if (lastFlush + flushInterval < System.currentTimeMillis){
             trace("The cache has reached the time to be flush")
-            flushCache
+            flushCache(false)
         } else onCache(log)
     }
 

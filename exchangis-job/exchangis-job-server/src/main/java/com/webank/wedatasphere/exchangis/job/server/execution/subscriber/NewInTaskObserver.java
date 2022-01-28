@@ -54,6 +54,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                                 // insert or update launched task, status as TaskStatus.Scheduler
                                 return taskObserverService.subscribe(launchableExchangisTask);
                     });
+                    submitSchedulerTask.setTenancy(launchableExchangisTask.getExecuteUser());
                     try {
                         taskExecution.submit(submitSchedulerTask);
                     } catch (Exception e) {
