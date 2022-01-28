@@ -1,9 +1,11 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobProgressVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobTaskVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedJobListVO;
@@ -113,7 +115,18 @@ public class ExchangisJobExecuteController {
                                         @RequestParam(value = "onlyKeywords", required = false) String onlyKeywords,
                                         @RequestParam(value = "lastRows", required = false) Integer lastRows) {
 
-        return this.executeService.getJobLogInfo(jobExecutionId, fromLine, pageSize, ignoreKeywords, onlyKeywords, lastRows);
+        Message result = Message.ok("Submitted succeed(提交成功)！");
+        try {
+            ExchangisCategoryLogVo categoryLogVo = this.executeService
+                    .getJobLogInfo(jobExecutionId, fromLine, pageSize, ignoreKeywords, onlyKeywords, lastRows);
+            result.setData(Json.convert(categoryLogVo, Map.class, String.class, Object.class));
+        } catch (ExchangisJobServerException e) {
+            String message = "Error occur while querying job log: [id: " + jobExecutionId  +"]";
+            LOG.error(message, e);
+            result = Message.error(message + ", reason: " + e.getMessage());
+        }
+        result.setMethod("/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/log");
+        return result;
     }
 
     @RequestMapping( value = "/execution/{jobExecutionId}/kill", method = RequestMethod.POST)
