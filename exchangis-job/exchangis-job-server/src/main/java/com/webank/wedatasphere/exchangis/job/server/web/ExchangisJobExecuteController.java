@@ -118,9 +118,9 @@ public class ExchangisJobExecuteController {
 
     @RequestMapping( value = "/execution/{jobExecutionId}/kill", method = RequestMethod.POST)
     public Message ExecutedJobKill(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
-        //ExchangisLaunchedJobEntity jobAndTaskStatus = exchangisExecutionService.getExecutedJobAndTaskStatus(jobExecutionId);
+        executeService.killJob(jobExecutionId);
         Message message = Message.ok("Kill succeed(停止成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/kill");
+        message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId + "/kill");
         return message;
     }
 
@@ -143,7 +143,9 @@ public class ExchangisJobExecuteController {
     }
 
     @RequestMapping(value = "/partitionInfo", method = RequestMethod.GET)
-    public Message listJobs() {
+    public Message listJobs(@RequestParam(value = "dataSourceType", required = false) String dataSourceTpe,
+                            @RequestParam(value = "dbname", required = false) String dbname,
+                            @RequestParam(value = "table", required = false) String table) {
         Map<String, Object> render = new HashMap<>();
         List<String> partitionList = new ArrayList<>();
         List<String> partitionEmpty = new ArrayList<>();

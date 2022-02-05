@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
+import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
@@ -45,7 +46,7 @@ public class ExchangisTaskExecuteController {
                                         @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                         @RequestParam(value = "ignoreKeywords", required = false) String ignoreKeywords,
                                         @RequestParam(value = "onlyKeywords", required = false) String onlyKeywords,
-                                        @RequestParam(value = "lastRows", required = false) Integer lastRows) {
+                                        @RequestParam(value = "lastRows", required = false) Integer lastRows) throws ExchangisTaskLaunchException {
 
         return this.exchangisExecutionService.getTaskLogInfo(taskId, jobExecutionId, fromLine, pageSize, ignoreKeywords, onlyKeywords, lastRows);
     }
