@@ -13,7 +13,8 @@ public interface JobExecuteService {
     ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, Integer fromLine, Integer pageSize,
                                          String ignoreKeywords, String onlyKeywords, Integer lastRows) throws ExchangisJobServerException;
 
-    Message getTaskLogInfo(String taskId, String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows);
+    ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, Integer fromLine, Integer pageSize,
+                                          String ignoreKeywords, String onlyKeywords, Integer lastRows) throws ExchangisJobServerException;
 
     /**
      * Gets task Metrics
