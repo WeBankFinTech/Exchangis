@@ -1,5 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.launcher.entity;
 
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
+
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 
 import java.util.Calendar;
@@ -15,6 +17,12 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
     private String jobExecutionId;
 
     /**
+     * ExchangisJobEntity
+     */
+
+    private ExchangisJobEntity exchangisJobEntity;
+
+    /**
      * Log path, could be a uri
      */
     private String logPath;
@@ -23,6 +31,15 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
      * Number of launchable task
      */
     private int launchableTaskNum = 0;
+
+    public ExchangisJobEntity getExchangisJobEntity() {
+        return exchangisJobEntity;
+    }
+
+    public void setExchangisJobEntity(ExchangisJobEntity exchangisJobEntity) {
+        this.exchangisJobEntity = exchangisJobEntity;
+    }
+
 
     public LaunchedExchangisJobEntity(){
 

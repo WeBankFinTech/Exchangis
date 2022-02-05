@@ -23,7 +23,7 @@ import java.util.Optional;
  */
 public class DefaultTaskExecution extends AbstractTaskExecution{
 
-    private static final String DEFAULT_LAUNCHER_NAME = "Linkis";
+    public static final String DEFAULT_LAUNCHER_NAME = "Linkis";
     /**
      * Scheduler
      */
