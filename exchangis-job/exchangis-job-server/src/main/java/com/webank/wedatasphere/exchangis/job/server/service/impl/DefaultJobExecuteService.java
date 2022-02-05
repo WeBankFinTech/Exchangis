@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import com.google.common.base.Joiner;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
@@ -9,18 +10,19 @@ import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJo
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.log.LogResult;
+import com.webank.wedatasphere.exchangis.job.server.dao.LaunchableTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
+import com.webank.wedatasphere.exchangis.job.server.execution.DefaultTaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGenerator;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.GenerationSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
-import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -32,7 +34,6 @@ import javax.annotation.Resource;
 import java.util.*;
 
 import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.JOB_EXCEPTION_CODE;
-import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.LOG_OP_ERROR;
 
 @Service
 public class DefaultJobExecuteService implements JobExecuteService {
@@ -43,6 +44,9 @@ public class DefaultJobExecuteService implements JobExecuteService {
 
     @Autowired
     private LaunchedJobDao launchedJobDao;
+
+    @Autowired
+    private LaunchableTaskDao launchableTaskDao;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -61,6 +65,13 @@ public class DefaultJobExecuteService implements JobExecuteService {
 
     @Autowired
     private JobLogService jobLogService;
+
+
+    /**
+     * Launch manager
+     */
+    @Resource
+    private ExchangisTaskLaunchManager launchManager;
 
     @Override
     public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) {
@@ -115,6 +126,12 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
+    public void killJob(String jobExecutionId) {
+        Calendar calendar = Calendar.getInstance();
+        launchedJobDao.upgradeLaunchedJobStatus(jobExecutionId, "Cancelled", calendar.getTime());
+    }
+
+    @Override
     public ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskId, String jobExecutionId) throws ExchangisJobServerException {
         LaunchedExchangisTaskEntity launchedExchangisTaskEntity = launchedTaskDao.getLaunchedTaskMetrics(jobExecutionId, taskId);
         if (launchedExchangisTaskEntity == null) {
@@ -161,6 +178,31 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
+    public ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows) throws ExchangisTaskLaunchException {
+        LaunchableExchangisTask launchableExchangisTask = launchableTaskDao.getLaunchableTask(taskId);
+        //LaunchedExchangisTaskEntity launchedExchangisTaskEntity = launchedTaskDao.getLaunchedTaskMetrics(jobExecutionId, taskId);
+        LaunchedExchangisTask launchedExchangisTask = new LaunchedExchangisTask(launchableExchangisTask);
+        AccessibleLauncherTask task = launchManager.getTaskLauncher(DefaultTaskExecution.DEFAULT_LAUNCHER_NAME)
+                .launcherTask(launchedExchangisTask);
+        TaskLogQuery logQuery = new TaskLogQuery(fromLine, pageSize);
+        if(ignoreKeywords != null){
+            logQuery.setIgnoreKeywords(ignoreKeywords);
+        }
+        if(onlyKeywords != null){
+            logQuery.setOnlyKeywords(onlyKeywords);
+        }
+        if(lastRows != null){
+            logQuery.setLastRows(lastRows);
+        }
+
+        TaskLog taskLog = null;
+        try {
+            taskLog = task.queryLogs(logQuery);
+        } catch (Throwable e) {
+            throw new ExchangisTaskLaunchException( "Get task logs happened Exception (獲取task日志时出错), " + "jobExecutionId = " + jobExecutionId+ "taskId = " + taskId, e);
+        }
+        List<String> taskLogs = taskLog.getLogs();
+
     public ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows) {
         int from = 1;
         int size = 10;
@@ -174,8 +216,8 @@ public class DefaultJobExecuteService implements JobExecuteService {
 
         // TODO mock data
         int warningLineIdx = 1;
-        LinkedList<String> mockLogs = getMockLogs();
-        int mockLogsSize = mockLogs.size();
+        //LinkedList<String> taskLogs = getMockLogs();
+        int mockLogsSize = taskLogs.size();
         LinkedList<String> errLogs = new LinkedList<>();
         LinkedList<String> warningLogs = new LinkedList<>();
         LinkedList<String> infoLogs = new LinkedList<>();
@@ -184,29 +226,29 @@ public class DefaultJobExecuteService implements JobExecuteService {
 //        int actualSize = 0;
         if (Objects.nonNull(lastRows) && lastRows > 0) {
             for (int i = mockLogsSize - lastRows; i <= mockLogsSize; i++){
-                allLogs.add(mockLogs.get(i));
-                if (mockLogs.get(i - 1).contains("WARN")) {
-                    warningLogs.add(mockLogs.get(i - 1));
+                allLogs.add(taskLogs.get(i));
+                if (taskLogs.get(i - 1).contains("WARN")) {
+                    warningLogs.add(taskLogs.get(i - 1));
                 }
-                else if (mockLogs.get(i - 1).contains("INFO")) {
-                    infoLogs.add(mockLogs.get(i - 1));
+                else if (taskLogs.get(i - 1).contains("INFO")) {
+                    infoLogs.add(taskLogs.get(i - 1));
                 }
-                else if (mockLogs.get(i - 1).contains("ERROR")) {
-                    errLogs.add(mockLogs.get(i - 1));
+                else if (taskLogs.get(i - 1).contains("ERROR")) {
+                    errLogs.add(taskLogs.get(i - 1));
                 }
                 endLine = mockLogsSize;
             }
         }
         else {
             for (int i = from, j = 0; (i <= mockLogsSize && j < size); i++, j++) {
-                allLogs.add(mockLogs.get(i - 1));
+                allLogs.add(taskLogs.get(i - 1));
 
-                if (mockLogs.get(i - 1).contains("WARN")) {
-                    warningLogs.add(mockLogs.get(i - 1));
-                } else if (mockLogs.get(i - 1).contains("INFO")) {
-                    infoLogs.add(mockLogs.get(i - 1));
-                } else if (mockLogs.get(i - 1).contains("ERROR")) {
-                    errLogs.add(mockLogs.get(i - 1));
+                if (taskLogs.get(i - 1).contains("WARN")) {
+                    warningLogs.add(taskLogs.get(i - 1));
+                } else if (taskLogs.get(i - 1).contains("INFO")) {
+                    infoLogs.add(taskLogs.get(i - 1));
+                } else if (taskLogs.get(i - 1).contains("ERROR")) {
+                    errLogs.add(taskLogs.get(i - 1));
                 }
                 endLine = i;
             }
@@ -234,15 +276,33 @@ public class DefaultJobExecuteService implements JobExecuteService {
     public List<ExchangisLaunchedJobListVO> getExecutedJobList(Long jobId, String jobName, String status,
                                                                Long launchStartTime, Long launchEndTime, Integer  current, Integer size) {
         List<ExchangisLaunchedJobListVO> jobList = new ArrayList<>();
-        Date date = new Date();
-        ExchangisLaunchedJobListVO exchangisLaunchedJobListVO1 = new ExchangisLaunchedJobListVO((long) 23, "EMCM1", "作业1", date, (long) 555, "enjoyyin",
-                "Succeed", 1.0, date, date);
-
-        ExchangisLaunchedJobListVO exchangisLaunchedJobListVO2 = new ExchangisLaunchedJobListVO((long) 33, "EMCM2", "作业2", date, (long) 666, "tikazhang",
-                "Running", 0.1, date, date);
-
-        jobList.add(exchangisLaunchedJobListVO1);
-        jobList.add(exchangisLaunchedJobListVO2);
+        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobId, jobName, status, launchStartTime, launchEndTime);
+        if(jobEntitylist != null) {
+            try {
+                jobEntitylist.forEach(jobEntity -> {
+                    ExchangisLaunchedJobListVO exchangisJobVo = modelMapper.map(jobEntity, ExchangisLaunchedJobListVO.class);
+                    Map<String, Object> sourceObject = Json.fromJson(jobEntity.getExchangisJobEntity().getSource(), Map.class);
+                    exchangisJobVo.setExecuteNode(sourceObject.get("execute_node").toString());
+                    List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(jobEntity.getJobExecutionId());
+                    if(launchedExchangisTaskEntities == null){
+                        exchangisJobVo.setFlow((long) 0);
+                    }
+                    else {
+                        int flows = 0;
+                        int taskNum = launchedExchangisTaskEntities.size();
+                        for (int i = 0; i < taskNum; i++) {
+                            Map<String, Object> flowMap = Json.fromJson(launchedExchangisTaskEntities.get(i).getMetricsMap().get("traffic").toString(), Map.class);
+                            flows += flowMap == null ? 0 : Integer.parseInt(flowMap.get("flow").toString());
+                        }
+                        exchangisJobVo.setFlow((long) (flows / taskNum));
+                    }
+                    jobList.add(exchangisJobVo);
+                        }
+                );
+            } catch (Exception e) {
+                LOG.error("Exception happened while get JobLists mapping to Vo(获取job列表映射至页面是出错，请校验任务信息), " + "message: " + e.getMessage(), e);
+            }
+        }
         return jobList;
     }
 
