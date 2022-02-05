@@ -328,7 +328,7 @@ export const getJobTasks = (id) => {
 }
 
 export const getProgress = (id) => {
-  return request(`/job/execution/${id}/progress`, null, {
+  return request(`/job/execution/${id}/progress?_=${Math.random()}`, null, {
     method: "GET",
   })
 }
@@ -368,7 +368,7 @@ export const getTaskExecLog = (params) => {
     `/task/execution/${params.taskId}/log`,
     {
       fromLine: params.fromLine || 0,
-      pageSize: params.pageSize || 10,
+      pageSize: params.pageSize || 100,
       jobExecutionId: params.id,
       onlyKeywords: params.onlyKeywords,
       ignoreKeywords: params.ignoreKeywords,
