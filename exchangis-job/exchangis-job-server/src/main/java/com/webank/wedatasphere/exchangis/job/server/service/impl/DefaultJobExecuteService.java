@@ -140,6 +140,10 @@ public class DefaultJobExecuteService implements JobExecuteService {
         LogResult logResult = jobLogService.logsFromPageAndPath(launchedExchangisJob.getLogPath(), new LogQuery(fromLine, pageSize,
                 ignoreKeywords, onlyKeywords, lastRows));
         ExchangisCategoryLogVo categoryLogVo = new ExchangisCategoryLogVo();
+        // TODO Cannot find the log
+        if (logResult.getLogs().isEmpty()){
+            logResult.getLogs().add("The log content is not ready");
+        }
         if (logResult.getLogs().isEmpty()){
             categoryLogVo.setEndLine(logResult.getEndLine());
             categoryLogVo.setIsEnd(logResult.isEnd());
@@ -157,7 +161,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public Message getTaskLogInfo(String taskId, String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows) {
+    public ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows) {
         int from = 1;
         int size = 10;
         if (Objects.nonNull(fromLine) && fromLine > 0) {
@@ -223,7 +227,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         message.data("endLine", endLine);
         message.data("isEnd", from + size >= mockLogsSize);
         message.data("logs", logs);
-        return message;
+        return null;
     }
 
     @Override
