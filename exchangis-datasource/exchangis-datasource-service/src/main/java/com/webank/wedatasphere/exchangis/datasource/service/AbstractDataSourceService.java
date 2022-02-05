@@ -313,6 +313,7 @@ public class AbstractDataSourceService {
         ui.setSort(config.getSort());
         ui.setRequired(config.getRequired());
         ui.setUnit(config.getUnit());
+        ui.setSource(config.getSource());
         ui.setValidateType(config.getValidateType());
         ui.setValidateRange(config.getValidateRange());
         ui.setValidateMsg(config.getValidateMsg());
