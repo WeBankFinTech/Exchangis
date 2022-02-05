@@ -12,6 +12,15 @@ public class InputElementUI implements ElementUI {
     private String validateType;
     private String validateRange;
     private String validateMsg;
+    private String source;
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public String getKey() {
         return key;
