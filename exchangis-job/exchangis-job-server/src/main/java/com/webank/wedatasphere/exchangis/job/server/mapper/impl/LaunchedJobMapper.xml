@@ -19,6 +19,10 @@
         <result column="error_msg" property="errorMessage"/>
         <result column="retry_num" property="retryNum"/>
         <result column="log_path" property="logPath"/>
+        <association property="jobEntity" javaType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity" >
+            <result property="id" column="id" />
+            <result property="source" column="source" />
+        </association>
     </resultMap>
 
     <sql id="TableName">
@@ -92,5 +96,34 @@
         WHERE
         job_execution_id = #{jobExecutionId}
     </update>
+
+    <select id="getAllLaunchedJob" parameterType="java.lang.String" resultMap="LaunchedJobMap">
+        SELECT
+        l.job_execution_id,
+        l.name,
+        l.create_time,
+        l.execute_user,
+        l.status,
+        l.progress,
+        l.last_update_time,
+        c.source
+        FROM
+        `exchangis_launched_job_entity` l
+        LEFT JOIN `exchangis_job_entity` c ON l.job_id = c.id
+        WHERE
+        <if test="id != '' and id != null">
+            and id =#{jobId}
+        </if>
+        <!--如果name有值，则模糊匹配name-->
+        <if test="name!= '' and name!= null">
+            and name like CONCAT('%',$(jobName),'%')
+        </if>
+        <if test="status!= '' and status!= null">
+            and status = #{status}
+        </if>
+        <if test="launchStartTime!= '' and launchStartTime!= null and launchEndTime!= '' and launchEndTime!= null">
+            and  create_time Between #{launchStartTime} And #{launchEndTime}
+        </if>
+    </select>
 
 </mapper>

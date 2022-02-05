@@ -5,6 +5,8 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 
+import java.util.List;
+
 /**
  * @author tikazhang
  */
@@ -43,4 +45,10 @@ public interface LaunchedJobDao {
      */
 
     void upgradeLaunchedJobStatus(@Param("jobExecutionId")String jobExecutionId, @Param("status") String status, @Param("updateTime")Date updateTime);
+
+    /**
+     * get All launchJob
+     * @return job entity list
+     */
+    List<LaunchedExchangisJobEntity> getAllLaunchedJob(@Param("jobId") long jobId, @Param("jobName") String jobName, @Param("status") String status, @Param("launchStartTime") long launchStartTime, @Param("launchEndTime") long launchEndTime);
 }

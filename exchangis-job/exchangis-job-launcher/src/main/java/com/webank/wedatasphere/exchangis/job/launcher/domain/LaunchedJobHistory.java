@@ -1,12 +1,13 @@
-package com.webank.wedatasphere.exchangis.job.server.vo;
+package com.webank.wedatasphere.exchangis.job.launcher.domain;
 
 import java.util.Date;
 
 /**
  * @author tikazhang
- * @Date 2022/1/16 10:21
+ * @Date 2022/1/25 14:36
  */
-public class ExchangisLaunchedJobListVO {
+public class LaunchedJobHistory {
+
     private String jobExecutionId;
 
     private String executeNode;
@@ -25,7 +26,7 @@ public class ExchangisLaunchedJobListVO {
 
     private Date lastUpdateTime;
 
-    public ExchangisLaunchedJobListVO(String jobExecutionId, String executeNode, String name, Date createTime, Long flow, String executeUser, String status, double progress, Date lastUpdateTime){
+    public LaunchedJobHistory(String jobExecutionId, String executeNode, String name, Date createTime, Long flow, String executeUser, String status, double progress, Date lastUpdateTime){
         this.jobExecutionId = jobExecutionId;
         this.executeNode = executeNode;
         this.name = name;
