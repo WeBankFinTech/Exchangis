@@ -2,6 +2,9 @@ package com.webank.wedatasphere.exchangis.job.server.service;
 
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
+import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
+import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.linkis.server.Message;
@@ -10,11 +13,17 @@ import java.util.List;
 
 public interface JobExecuteService {
 
-    ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, Integer fromLine, Integer pageSize,
-                                         String ignoreKeywords, String onlyKeywords, Integer lastRows) throws ExchangisJobServerException;
+    /**
+     * Check if the user has the authority of execution job
+     * @param jobExecutionId job execution id
+     * @param userName user name
+     * @return bool
+     */
+    boolean hasExecuteJobAuthority(String jobExecutionId, String userName);
 
-    ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, Integer fromLine, Integer pageSize,
-                                          String ignoreKeywords, String onlyKeywords, Integer lastRows) throws ExchangisJobServerException;
+    ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, LogQuery logQuery, String userName) throws ExchangisJobServerException;
+
+    ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, LogQuery logQuery, String userName) throws ExchangisJobServerException, ExchangisTaskLaunchException;
 
     /**
      * Gets task Metrics

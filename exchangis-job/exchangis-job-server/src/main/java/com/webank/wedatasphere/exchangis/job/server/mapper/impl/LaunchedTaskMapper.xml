@@ -200,4 +200,9 @@
         and task_id = #{taskId}
     </select>
 
+    <select id="getLaunchedTaskStatus" resultType="String">
+        <![CDATA[SELECT status FROM ]]>
+        <include refid="TableName" />
+        <![CDATA[ WHERE task_id = #{taskId}; ]]>
+    </select>
 </mapper>

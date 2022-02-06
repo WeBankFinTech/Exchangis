@@ -112,5 +112,10 @@ public interface LaunchedTaskDao {
 
     LaunchedExchangisTaskEntity getLaunchedTaskMetrics(@Param("jobExecutionId") String jobExecutionId, @Param("taskId") String taskId);
 
-
+    /**
+     * Get launched task status
+     * @param taskId
+     * @return
+     */
+    String getLaunchedTaskStatus(@Param("taskId") String taskId);
 }
