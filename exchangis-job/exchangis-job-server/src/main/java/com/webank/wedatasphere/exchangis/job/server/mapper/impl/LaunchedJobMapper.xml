@@ -20,7 +20,7 @@
         <result column="error_msg" property="errorMessage"/>
         <result column="retry_num" property="retryNum"/>
         <result column="log_path" property="logPath"/>
-        <association property="jobEntity" javaType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity" >
+        <association property="exchangisJobEntity" javaType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity" >
             <result property="id" column="id" />
             <result property="source" column="source" />
         </association>
@@ -154,17 +154,17 @@
         LEFT JOIN `exchangis_job_entity` c ON l.job_id = c.id
         WHERE
         <if test="id != '' and id != null">
-            and id =#{jobId}
+            and l.job_id =#{jobId}
         </if>
         <!--如果name有值，则模糊匹配name-->
         <if test="name!= '' and name!= null">
-            and name like CONCAT('%',$(jobName),'%')
+            and l.name like CONCAT('%',$(jobName),'%')
         </if>
         <if test="status!= '' and status!= null">
-            and status = #{status}
+            and l.status = #{status}
         </if>
         <if test="launchStartTime!= '' and launchStartTime!= null and launchEndTime!= '' and launchEndTime!= null">
-            and  create_time Between #{launchStartTime} And #{launchEndTime}
+            and l.create_time Between #{launchStartTime} And #{launchEndTime}
         </if>
     </select>
 

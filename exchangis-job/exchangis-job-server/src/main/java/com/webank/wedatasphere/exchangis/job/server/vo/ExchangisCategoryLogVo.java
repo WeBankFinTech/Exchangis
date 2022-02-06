@@ -27,7 +27,7 @@ public class ExchangisCategoryLogVo {
         this.categoryStrategy.put(name, new CategoryLog(logAcceptable));
     }
 
-    public void processLogResult(LogResult logResult){
+    public void processLogResult(LogResult logResult, boolean acceptEmpty){
         this.endLine = logResult.getEndLine();
         this.isEnd = logResult.isEnd();
         List<CategoryLog> categoryLogs = new ArrayList<>(this.categoryStrategy.values());
@@ -39,7 +39,7 @@ public class ExchangisCategoryLogVo {
             }
         }));
         this.categoryStrategy.forEach((category, categoryLog) -> {
-            if (!categoryLog.logs.isEmpty()) {
+            if (!categoryLog.logs.isEmpty() || acceptEmpty) {
                 this.logs.put(category, StringUtils.join(categoryLog.logs, "\n"));
                 categoryLog.logs.clear();
             }

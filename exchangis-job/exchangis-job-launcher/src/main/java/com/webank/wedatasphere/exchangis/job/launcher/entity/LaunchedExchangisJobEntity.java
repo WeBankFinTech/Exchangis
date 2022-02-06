@@ -79,4 +79,6 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
     public void setLaunchableTaskNum(int launchableTaskNum) {
         this.launchableTaskNum = launchableTaskNum;
     }
+
+
 }
