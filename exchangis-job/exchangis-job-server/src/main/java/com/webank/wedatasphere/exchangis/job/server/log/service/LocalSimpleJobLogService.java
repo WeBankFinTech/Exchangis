@@ -237,6 +237,8 @@ public class LocalSimpleJobLogService implements JobLogService {
                         LOG.info("Create the new job log file: {}", logFile.getAbsolutePath());
                     }
                     RandomAccessFile file = new RandomAccessFile(logFile, "rw");
+                    // Seek to the end of file
+                    file.seek(file.length());
                     return new AbstractJobLogCache<String>(scheduler, 100, 2000) {
                         @Override
                         public synchronized void flushCache(boolean isEnd) {
