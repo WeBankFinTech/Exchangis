@@ -99,7 +99,7 @@
     </select>
 
     <select id="searchLogPathInfo" parameterType="java.lang.String" resultMap="LaunchedJobMap">
-        <![CDATA[SELECT log_path,status FROM exchangis_launched_job_entity WHERE job_execution_id = #{jobExecutionId} LIMIT 1;]]>
+        <![CDATA[SELECT log_path,status,execute_user FROM exchangis_launched_job_entity WHERE job_execution_id = #{jobExecutionId} LIMIT 1;]]>
     </select>
 
     <update id="upgradeLaunchedJobStatus">
