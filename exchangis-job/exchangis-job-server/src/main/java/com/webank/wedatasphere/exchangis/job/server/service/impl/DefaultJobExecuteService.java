@@ -133,7 +133,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
     @Override
     public void killJob(String jobExecutionId) {
         Calendar calendar = Calendar.getInstance();
-        launchedJobDao.upgradeLaunchedJobStatus(jobExecutionId, "Cancelled", calendar.getTime());
+        launchedJobDao.upgradeLaunchedJobStatus(jobExecutionId, TaskStatus.Cancelled.name(), calendar.getTime());
     }
 
     @Override
@@ -146,7 +146,6 @@ public class DefaultJobExecuteService implements JobExecuteService {
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
         exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
-        //exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
         exchangisLaunchedTaskVo.setMetrics(launchedExchangisTaskEntity.getMetricsMap());
 
         return exchangisLaunchedTaskVo;
@@ -181,8 +180,11 @@ public class DefaultJobExecuteService implements JobExecuteService {
     public ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, LogQuery logQuery, String userName)
             throws ExchangisJobServerException, ExchangisTaskLaunchException {
         LaunchedExchangisTaskEntity launchedTaskEntity = this.launchedTaskDao.getLaunchedTaskEntity(taskId);
-        if (Objects.isNull(launchedTaskEntity) || !hasExecuteJobAuthority(jobExecutionId, userName)){
-            throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Unable to find the launched task by [" + taskId + "]", null);
+        if (Objects.isNull(launchedTaskEntity)){
+            return resultToCategoryLog(new LogResult(0, false, new ArrayList<>()), TaskStatus.Inited);
+        }
+        if (!hasExecuteJobAuthority(jobExecutionId, userName)){
+            throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Not have permission of accessing task [" + taskId + "]", null);
         }
         // Construct the launchedExchangisTask
         LaunchedExchangisTask launchedTask = new LaunchedExchangisTask();
@@ -279,13 +281,14 @@ public class DefaultJobExecuteService implements JobExecuteService {
             categoryLogVo.setEndLine(logResult.getEndLine());
             categoryLogVo.setIsEnd(logResult.isEnd());
             if (TaskStatus.isCompleted(status)){
-                categoryLogVo.setIsEnd(true);
+                logResult.setEnd(true);
+//                categoryLogVo.setIsEnd(true);
             }
         }
         categoryLogVo.newCategory("error", log -> log.contains("ERROR") || noLogs);
         categoryLogVo.newCategory("warn", log -> log.contains("WARN") || noLogs);
         categoryLogVo.newCategory("info", log -> log.contains("INFO") || noLogs);
-        categoryLogVo.processLogResult(logResult);
+        categoryLogVo.processLogResult(logResult, true);
         categoryLogVo.getLogs().put("all", StringUtils.join(logResult.getLogs(), "\n"));
         return categoryLogVo;
     }
