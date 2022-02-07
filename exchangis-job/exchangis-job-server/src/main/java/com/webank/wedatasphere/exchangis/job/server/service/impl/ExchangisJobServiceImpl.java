@@ -279,9 +279,9 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     }
 
     @Override
-    public List<ElementUI> getSpeedLimitSettings(Long id, String taskName) {
+    public List<ElementUI<?>> getSpeedLimitSettings(Long id, String taskName) {
         ExchangisJobVO exchangisJob = exchangisJobService.getById(id);
-        Map<String, String> values = new HashMap<>();
+        Map<String, Object> values = new HashMap<>();
         if (null != exchangisJob && null != exchangisJob.getContent() && !"".equals(exchangisJob.getContent())) {
             List<ExchangisJobInfoContent> o = LabelUtils.Jackson.fromJson(exchangisJob.getContent(), List.class, ExchangisJobInfoContent.class);
             o.forEach(task -> {
@@ -293,16 +293,16 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
             });
         }
 
-        List<ElementUI> jobEngineSettingsUI = this.exchangisDataSourceService.getJobEngineSettingsUI(exchangisJob.getEngineType());
+        List<ElementUI<?>> jobEngineSettingsUI = this.exchangisDataSourceService.getJobEngineSettingsUI(exchangisJob.getEngineType());
         jobEngineSettingsUI.forEach(s -> {
             if (values.containsKey(s.getField())) {
                 if (s instanceof InputElementUI) {
                     InputElementUI e = (InputElementUI) s;
-                    e.setValue(values.get(s.getField()));
+                    e.setValue(String.valueOf(values.get(s.getField())));
                 }
                 if (s instanceof OptionElementUI) {
                     OptionElementUI e = (OptionElementUI) s;
-                    e.setValue(values.get(s.getField()));
+                    e.setValue(String.valueOf(values.get(s.getField())));
                 }
             }
         });

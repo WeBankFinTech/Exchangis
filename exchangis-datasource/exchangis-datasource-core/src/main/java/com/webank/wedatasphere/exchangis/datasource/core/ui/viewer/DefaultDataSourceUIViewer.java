@@ -11,9 +11,9 @@ public class DefaultDataSourceUIViewer implements ExchangisDataSourceUIViewer {
     private final ExchangisDataSourceParamsUI params;
 //    private final ExchangisDataSourceTransformsUI transforms;
     private final ExchangisJobTransformsContent transforms;
-    private final List<ElementUI> settings;
+    private final List<ElementUI<?>> settings;
 
-    public DefaultDataSourceUIViewer(String subJobName, ExchangisDataSourceIdsUI dataSourceIds, ExchangisDataSourceParamsUI params, ExchangisJobTransformsContent transforms, List<ElementUI> settings) {
+    public DefaultDataSourceUIViewer(String subJobName, ExchangisDataSourceIdsUI dataSourceIds, ExchangisDataSourceParamsUI params, ExchangisJobTransformsContent transforms, List<ElementUI<?>> settings) {
         this.subJobName = subJobName;
         this.dataSourceIds = dataSourceIds;
         this.params = params;
@@ -46,7 +46,7 @@ public class DefaultDataSourceUIViewer implements ExchangisDataSourceUIViewer {
     }
 
     @Override
-    public List<ElementUI> getSettings() {
+    public List<ElementUI<?>> getSettings() {
         return this.settings;
     }
 }
