@@ -1,9 +1,12 @@
 package com.webank.wedatasphere.exchangis.job.server.web;
 
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobProgressVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobTaskVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedJobListVO;
@@ -100,8 +103,6 @@ public class ExchangisJobExecuteController {
         message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId +"/status");
         message.data("status", jobStatus.getStatus());
         message.data("progress", jobStatus.getProgress());
-        //message.data("status", "Running");
-        //message.data("progress", 0.1);
         return message;
     }
 
@@ -111,9 +112,22 @@ public class ExchangisJobExecuteController {
                                         @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                         @RequestParam(value = "ignoreKeywords", required = false) String ignoreKeywords,
                                         @RequestParam(value = "onlyKeywords", required = false) String onlyKeywords,
-                                        @RequestParam(value = "lastRows", required = false) Integer lastRows) {
+                                        @RequestParam(value = "lastRows", required = false) Integer lastRows, HttpServletRequest request) {
 
-        return this.executeService.getJobLogInfo(jobExecutionId, fromLine, pageSize, ignoreKeywords, onlyKeywords, lastRows);
+        Message result = Message.ok("Submitted succeed(提交成功)！");
+        LogQuery logQuery = new LogQuery(fromLine, pageSize,
+                ignoreKeywords, onlyKeywords, lastRows);
+        try {
+            ExchangisCategoryLogVo categoryLogVo = this.executeService
+                    .getJobLogInfo(jobExecutionId, logQuery, SecurityFilter.getLoginUsername(request));
+            result.setData(Json.convert(categoryLogVo, Map.class, String.class, Object.class));
+        } catch (ExchangisJobServerException e) {
+            String message = "Error occur while querying job log: [job_execution_id: " + jobExecutionId  +"]";
+            LOG.error(message, e);
+            result = Message.error(message + ", reason: " + e.getMessage());
+        }
+        result.setMethod("/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/log");
+        return result;
     }
 
     @RequestMapping( value = "/execution/{jobExecutionId}/kill", method = RequestMethod.POST)

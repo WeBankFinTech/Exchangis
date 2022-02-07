@@ -21,7 +21,7 @@ public interface ExchangisTaskLauncher<T extends LaunchableExchangisTask, U exte
      * @param launchedTask launched task
      * @return
      */
-    AccessibleLauncherTask launcherTask(U launchedTask);
+    AccessibleLauncherTask launcherTask(U launchedTask) throws ExchangisTaskLaunchException;
     /**
      * Launch method
      * @param launchableTask launchable task

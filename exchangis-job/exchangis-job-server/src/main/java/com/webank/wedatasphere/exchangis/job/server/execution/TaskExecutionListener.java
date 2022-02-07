@@ -19,8 +19,8 @@ public interface TaskExecutionListener extends ExchangisListener<TaskExecutionEv
             onMetricsUpdate((TaskMetricsUpdateEvent)event);
         } else if (event instanceof TaskStatusUpdateEvent){
             onStatusUpdate((TaskStatusUpdateEvent)event);
-        } else if (event instanceof TaskInfoUpdateEvent){
-            onInfoUpdate((TaskInfoUpdateEvent)event);
+        } else if (event instanceof TaskLaunchEvent){
+            onLaunch((TaskLaunchEvent)event);
         } else if (event instanceof TaskDeleteEvent){
             onDelete((TaskDeleteEvent)event);
         }
@@ -42,7 +42,7 @@ public interface TaskExecutionListener extends ExchangisListener<TaskExecutionEv
      * Info update
      * @param infoUpdateEvent update event
      */
-    void onInfoUpdate(TaskInfoUpdateEvent infoUpdateEvent) throws ExchangisOnEventException;
+    void onLaunch(TaskLaunchEvent infoUpdateEvent) throws ExchangisOnEventException;
 
     /**
      * Delete

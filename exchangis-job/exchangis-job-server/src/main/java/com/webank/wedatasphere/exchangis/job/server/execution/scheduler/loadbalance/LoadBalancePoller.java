@@ -21,4 +21,6 @@ public interface LoadBalancePoller<T> {
      * @param other
      */
     void combine(LoadBalancePoller<T> other);
+
+    int size();
 }
