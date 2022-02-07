@@ -33,7 +33,7 @@
 <!--        </RollingFile>-->
     </appenders>
     <loggers>
-        <root level="INFO">
+        <root level="INFO" additivity="false">
 <!--            <appender-ref ref="RollingFile"/>-->
             <appender-ref ref="Console"/>
         </root>

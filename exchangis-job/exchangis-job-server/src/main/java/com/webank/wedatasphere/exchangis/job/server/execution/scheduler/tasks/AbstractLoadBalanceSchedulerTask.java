@@ -62,10 +62,14 @@ public abstract class AbstractLoadBalanceSchedulerTask<T> extends AbstractExchan
                 });
 
             } catch (Exception e) {
-                if(e instanceof ExchangisSchedulerException.Runtime){
-                    LOG.warn("Schedule method error", e);
+                if (e instanceof InterruptedException && pollFinish){
+                    LOG.trace("Poller is interrupted by shutdown, will exit gradually");
+                }else {
+                    if (e instanceof ExchangisSchedulerException.Runtime) {
+                        LOG.warn("Schedule method error", e);
+                    }
+                    LOG.warn("Error occurred in poll/onPoll/rePush in load balance scheduler task [{}]", getName(), e);
                 }
-                LOG.warn("Error occurred in poll/onPoll/rePush in load balance scheduler task [{}]", getName(), e);
             }
         }
         LOG.info("End to iterate the poller in load balance scheduler task [{}]", getName());

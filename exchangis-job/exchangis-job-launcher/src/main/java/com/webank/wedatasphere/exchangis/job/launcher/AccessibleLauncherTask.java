@@ -1,8 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.launcher;
 
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskLog;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskLogQuery;
+import com.webank.wedatasphere.exchangis.job.log.LogResult;
+import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskProgressInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 
@@ -44,7 +44,7 @@ public interface AccessibleLauncherTask {
      * @param query query
      * @return
      */
-    TaskLog queryLogs(TaskLogQuery query) throws ExchangisTaskLaunchException;
+    LogResult queryLogs(LogQuery query) throws ExchangisTaskLaunchException;
 
     /**
      * Submit

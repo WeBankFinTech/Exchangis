@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
+import org.apache.linkis.scheduler.Scheduler;
 
 /**
  * Task execution
@@ -28,4 +29,5 @@ public interface TaskExecution<T extends ExchangisTask> {
     void stop();
 
     void addListener(TaskExecutionListener listener);
+
 }
