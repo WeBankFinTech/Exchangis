@@ -12,25 +12,30 @@ import java.util.List;
  */
 public interface LaunchedJobDao {
     /**
-     * insert launchJob
+     * insert launchedJob
      * @param launchedExchangisJobEntity entity
      */
 
     void insertLaunchedJob(LaunchedExchangisJobEntity launchedExchangisJobEntity);
 
     /**
-     * delete launchJob
+     * delete launchedJob
      * @param jobExecutionId execution id
      */
 
     void deleteLaunchedJob(@Param("jobExecutionId")String jobExecutionId);
 
     /**
-     * upgrade launchJob
+     * upgrade launchedJob
      * @param launchedExchangisJobEntity entity
      */
     void upgradeLaunchedJob(LaunchedExchangisJobEntity launchedExchangisJobEntity);
 
+    /**
+     * Update launch info
+     * @param launchedExchangisJobEntity entity
+     */
+    void updateLaunchInfo(LaunchedExchangisJobEntity launchedExchangisJobEntity);
     /**
      * search launchJob
      * @param jobExecutionId execution id
@@ -39,12 +44,38 @@ public interface LaunchedJobDao {
     LaunchedExchangisJobEntity searchLaunchedJob(@Param("jobExecutionId")String jobExecutionId);
 
     /**
-     * upgrade launchJob status
+     * Search log path and status info
+     * @param jobExecutionId execution id
+     * @return
+     */
+    LaunchedExchangisJobEntity searchLogPathInfo(@Param("jobExecutionId")String jobExecutionId);
+    /**
+     * upgrade launchedJob status
      * @param jobExecutionId execution id
      * @param status status
      */
 
     void upgradeLaunchedJobStatus(@Param("jobExecutionId")String jobExecutionId, @Param("status") String status, @Param("updateTime")Date updateTime);
+
+    /**
+     * Try to upgrade launchedJob status in version control
+     * @param jobExecutionId execution id
+     * @param status update status
+     * @param launchableTaskNum expected launchable task number
+     * @param updateTime updateTime
+     */
+    int upgradeLaunchedJobStatusInVersion(@Param("jobExecutionId")String jobExecutionId, @Param("status") String status,
+                                       @Param("launchableTaskNum") Integer launchableTaskNum,
+                                       @Param("updateTime")Date updateTime);
+
+    /**
+     * To upgrade launchedJob progress
+     * @param jobExecutionId execution id
+     * @param totalTaskProgress progress of total related task
+     * @param updateTime updateTime
+     */
+    int upgradeLaunchedJobProgress(@Param("jobExecutionId")String jobExecutionId, @Param("totalTaskProgress") Float totalTaskProgress,
+                                         @Param("updateTime")Date updateTime);
 
     /**
      * get All launchJob

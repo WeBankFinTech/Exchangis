@@ -101,15 +101,6 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
      * @throws ExchangisTaskGenerateException
      */
     protected void onEvent(TaskGenerateEvent taskGenerateEvent) throws ExchangisTaskGenerateException{
-        if (taskGenerateEvent instanceof TaskGenerateInitEvent){
-            log(JobLogEvent.Level.INFO, taskGenerateEvent.getLaunchableExchangisJob(), "Init to create launched job and begin generating");
-        } else if (taskGenerateEvent instanceof TaskGenerateSuccessEvent){
-            log(JobLogEvent.Level.ERROR, taskGenerateEvent.getLaunchableExchangisJob(), "Success to generate launched job, output tasks [{}]",
-                    taskGenerateEvent.getLaunchableExchangisJob().getLaunchableExchangisTasks().size());
-        } else if (taskGenerateEvent instanceof TaskGenerateErrorEvent){
-            log(JobLogEvent.Level.ERROR, taskGenerateEvent.getLaunchableExchangisJob(), "Error occurred in generating",
-                    ((TaskGenerateErrorEvent)taskGenerateEvent).getException());
-        }
         for (TaskGenerateListener listener : listeners) {
             try {
                 listener.onEvent(taskGenerateEvent);
@@ -118,20 +109,27 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
                         "] for event: [id: " + taskGenerateEvent.eventId() +", type:" + taskGenerateEvent.getClass().getSimpleName() +"]", e);
             }
         }
+        if (taskGenerateEvent instanceof TaskGenerateInitEvent){
+            info(taskGenerateEvent.getLaunchableExchangisJob(), "Init to create launched job and begin generating");
+        } else if (taskGenerateEvent instanceof TaskGenerateSuccessEvent){
+            info(taskGenerateEvent.getLaunchableExchangisJob(), "Success to generate launched job, output tasks [{}]",
+                    taskGenerateEvent.getLaunchableExchangisJob().getLaunchableExchangisTasks().size());
+        } else if (taskGenerateEvent instanceof TaskGenerateErrorEvent){
+            error(taskGenerateEvent.getLaunchableExchangisJob(), "Error occurred in generating",
+                    ((TaskGenerateErrorEvent)taskGenerateEvent).getException());
+        }
     }
 
-    /**
-     * Log method
-     * @param level log level
-     * @param job launchableJob
-     * @param message message
-     * @param args arguments
-     */
-    protected void log(JobLogEvent.Level level, LaunchableExchangisJob job, String message, Object... args){
-        JobLogListener logListener = getTaskGeneratorContext().getJobLogListener();
-        Optional.ofNullable(logListener).ifPresent(listener -> listener.onAsyncEvent(
-                new JobLogEvent(level, job.getCreateUser(), job.getJobExecutionId(), message, args)));
+    @Override
+    public JobLogListener getJobLogListener() {
+        return getTaskGeneratorContext().getJobLogListener();
     }
+
+    @Override
+    public JobLogEvent getJobLogEvent(JobLogEvent.Level level, LaunchableExchangisJob job, String message, Object... args) {
+        return new JobLogEvent(level, job.getCreateUser(), job.getJobExecutionId(), message, args);
+    }
+
 
     protected abstract void execute(LaunchableExchangisJob launchableExchangisJob, TaskGeneratorContext ctx, String tenancy) throws ErrorException;
 }

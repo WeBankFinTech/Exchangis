@@ -5,6 +5,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJo
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.jmx.export.annotation.ManagedOperationParameter;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -70,6 +71,14 @@ public interface LaunchedTaskDao {
      * @param updateTime
      */
     void upgradeLaunchedTaskProgress(@Param("taskId") String taskId, @Param("progress") Float progress, @Param("updateTime")Date updateTime);
+
+
+    /**
+     * Sum the progress value
+     * @param jobExecutionId job execution id
+     * @return sum result
+     */
+    float sumProgressByJobExecutionId(@Param("jobExecutionId") String jobExecutionId);
     /**
      * Update the launch information
      * @param launchedExchangisTaskEntity entity
@@ -103,5 +112,10 @@ public interface LaunchedTaskDao {
 
     LaunchedExchangisTaskEntity getLaunchedTaskMetrics(@Param("jobExecutionId") String jobExecutionId, @Param("taskId") String taskId);
 
-
+    /**
+     * Get launched task status
+     * @param taskId
+     * @return
+     */
+    String getLaunchedTaskStatus(@Param("taskId") String taskId);
 }

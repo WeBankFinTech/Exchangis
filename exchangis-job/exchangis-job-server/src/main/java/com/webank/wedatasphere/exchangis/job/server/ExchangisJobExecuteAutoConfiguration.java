@@ -19,6 +19,8 @@ import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.MaxUsag
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger;
+import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
+import com.webank.wedatasphere.exchangis.job.server.log.service.LocalSimpleJobLogService;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.executer.ExecutorManager;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
@@ -28,6 +30,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -40,6 +43,12 @@ public class ExchangisJobExecuteAutoConfiguration {
     @ConditionalOnMissingBean(JobLogListener.class)
     public JobLogListener logListener(){
         return new DefaultRpcJobLogger();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(JobLogService.class)
+    public JobLogService jobLogService(){
+        return new LocalSimpleJobLogService();
     }
 
     /**
@@ -82,9 +91,7 @@ public class ExchangisJobExecuteAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ConsumerManager.class)
     public ConsumerManager consumerManager(){
-        TenancyParallelConsumerManager consumerManager = new TenancyParallelConsumerManager();
-        consumerManager.setInitResidentThreads(4);
-        return consumerManager;
+        return new TenancyParallelConsumerManager();
     }
 
     /**
@@ -159,6 +166,11 @@ public class ExchangisJobExecuteAutoConfiguration {
                                                TaskSchedulerLoadBalancer<LaunchedExchangisTask> loadBalancer,
                                                TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler, List<TaskExecutionListener> executionListeners){
         AbstractTaskExecution taskExecution = new DefaultTaskExecution(scheduler, launchManager, taskManager, observers, loadBalancer, taskChooseRuler);
+        ConsumerManager consumerManager = scheduler.getSchedulerContext().getOrCreateConsumerManager();
+        if (consumerManager instanceof TenancyParallelConsumerManager){
+            ((TenancyParallelConsumerManager) consumerManager).setInitResidentThreads(observers.size() +
+                    (Objects.nonNull(loadBalancer)? 1: 0) + 1);
+        }
         Optional.ofNullable(executionListeners).ifPresent(listeners -> listeners.forEach(taskExecution::addListener));
         return taskExecution;
     }

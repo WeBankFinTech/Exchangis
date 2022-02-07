@@ -82,4 +82,8 @@
         <![CDATA[SELECT * FROM exchangis_launchable_task t
         left join exchangis_launched_task_entity l on t.id = l.task_id where l.task_id is NULL ORDER BY t.create_time ASC LIMIT ${limitSize};]]>
     </select>
+
+    <select id="sumProgressByJobExecutionId">
+        <![CDATA[SELECT SUM(progress) FROM exchangis_launched_task_entity WHERE job_execution_id = #{jobExecutionId};]]>
+    </select>
 </mapper>

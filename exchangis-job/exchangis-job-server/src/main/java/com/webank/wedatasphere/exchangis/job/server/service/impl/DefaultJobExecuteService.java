@@ -1,18 +1,19 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
-import com.google.common.base.Joiner;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskLog;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskLogQuery;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
+import com.webank.wedatasphere.exchangis.job.log.LogQuery;
+import com.webank.wedatasphere.exchangis.job.log.LogResult;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchableTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
@@ -23,11 +24,10 @@ import com.webank.wedatasphere.exchangis.job.server.execution.DefaultTaskExecuti
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGenerator;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.GenerationSchedulerTask;
+import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
-import javafx.beans.binding.IntegerBinding;
-import org.apache.linkis.server.Message;
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +38,7 @@ import javax.annotation.Resource;
 import java.util.*;
 
 import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.JOB_EXCEPTION_CODE;
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.LOG_OP_ERROR;
 
 @Service
 public class DefaultJobExecuteService implements JobExecuteService {
@@ -67,11 +68,16 @@ public class DefaultJobExecuteService implements JobExecuteService {
     @Resource
     private TaskExecution<LaunchableExchangisTask> taskExecution;
 
+    @Autowired
+    private JobLogService jobLogService;
+
+
     /**
      * Launch manager
      */
     @Resource
     private ExchangisTaskLaunchManager launchManager;
+
     @Override
     public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) {
         List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId);
@@ -109,7 +115,6 @@ public class DefaultJobExecuteService implements JobExecuteService {
         } catch (Exception e){
             LOG.error("Get job and task progress happen execption ," +  "[jobExecutionId =" + jobExecutionId + "]", e);
         }
-
         return jobProgressVo;
     }
 
@@ -128,7 +133,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
     @Override
     public void killJob(String jobExecutionId) {
         Calendar calendar = Calendar.getInstance();
-        launchedJobDao.upgradeLaunchedJobStatus(jobExecutionId, "Cancelled", calendar.getTime());
+        launchedJobDao.upgradeLaunchedJobStatus(jobExecutionId, TaskStatus.Cancelled.name(), calendar.getTime());
     }
 
     @Override
@@ -141,177 +146,61 @@ public class DefaultJobExecuteService implements JobExecuteService {
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
         exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
-        //exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
         exchangisLaunchedTaskVo.setMetrics(launchedExchangisTaskEntity.getMetricsMap());
-
-
 
         return exchangisLaunchedTaskVo;
     }
 
     @Override
-    public Message getJobLogInfo(String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows) {
-        int from = 1;
-        int size = 10;
-        if (Objects.nonNull(fromLine) && fromLine > 0) {
-            from = fromLine;
-        }
+    public boolean hasExecuteJobAuthority(String jobExecutionId, String userName) {
+        return hasExecuteJobAuthority(this.launchedJobDao.searchLaunchedJob(jobExecutionId) , userName);
+    }
 
-        if (Objects.nonNull(pageSize) && pageSize > 0) {
-            size = pageSize;
-        }
-
-        // TODO mock data
-        int warningLineIdx = 1;
-        LinkedList<String> mockLogs = getMockLogs();
-        int mockLogsSize = mockLogs.size();
-        LinkedList<String> errLogs = new LinkedList<>();
-        LinkedList<String> warningLogs = new LinkedList<>();
-        LinkedList<String> infoLogs = new LinkedList<>();
-        LinkedList<String> allLogs = new LinkedList<>();
-        int endLine = from;
-//        int actualSize = 0;
-        if (Objects.nonNull(lastRows) && lastRows > 0) {
-            for (int i = mockLogsSize - lastRows; i <= mockLogsSize; i++){
-                allLogs.add(mockLogs.get(i));
-                if (mockLogs.get(i - 1).contains("WARN")) {
-                    warningLogs.add(mockLogs.get(i - 1));
-                }
-                else if (mockLogs.get(i - 1).contains("INFO")) {
-                    infoLogs.add(mockLogs.get(i - 1));
-                }
-                else if (mockLogs.get(i - 1).contains("ERROR")) {
-                    errLogs.add(mockLogs.get(i - 1));
-                }
-                endLine = mockLogsSize;
-            }
-        }
-        else {
-            for (int i = from, j = 0; (i <= mockLogsSize && j < size); i++, j++) {
-                allLogs.add(mockLogs.get(i - 1));
-
-                if (mockLogs.get(i - 1).contains("WARN")) {
-                    warningLogs.add(mockLogs.get(i - 1));
-                } else if (mockLogs.get(i - 1).contains("INFO")) {
-                    infoLogs.add(mockLogs.get(i - 1));
-                } else if (mockLogs.get(i - 1).contains("ERROR")) {
-                    errLogs.add(mockLogs.get(i - 1));
-                }
-                endLine = i;
-            }
-        }
-
-        String allLogsStr = Joiner.on("\n").join(allLogs);
-        String warningLogsStr = Joiner.on("\n").join(warningLogs);
-        String infoLogsStr = Joiner.on("\n").join(infoLogs);
-        String errLogsStr = Joiner.on("\n").join(errLogs);
-        Map<String, String> logs = new HashMap<>();
-        logs.put("all", allLogsStr);
-        logs.put("error", errLogsStr);
-        logs.put("warn", warningLogsStr);
-        logs.put("info", infoLogsStr);
-
-        Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/log");
-        message.data("endLine", endLine);
-        message.data("isEnd", from + size >= mockLogsSize);
-        message.data("logs", logs);
-        return message;
+    /**
+     * Check if has the authority of accessing execution job
+     * @param launchedExchangisJob launched job
+     * @param userName userName
+     * @return
+     */
+    public boolean hasExecuteJobAuthority(LaunchedExchangisJobEntity launchedExchangisJob, String userName){
+        return Objects.nonNull(launchedExchangisJob) && launchedExchangisJob.getExecuteUser().equals(userName);
     }
 
     @Override
-    public Message getTaskLogInfo(String taskId, String jobExecutionId, Integer fromLine, Integer pageSize, String ignoreKeywords, String onlyKeywords, Integer lastRows) throws ExchangisTaskLaunchException {
-        LaunchableExchangisTask launchableExchangisTask = launchableTaskDao.getLaunchableTask(taskId);
-        //LaunchedExchangisTaskEntity launchedExchangisTaskEntity = launchedTaskDao.getLaunchedTaskMetrics(jobExecutionId, taskId);
-        LaunchedExchangisTask launchedExchangisTask = new LaunchedExchangisTask(launchableExchangisTask);
-        AccessibleLauncherTask task = launchManager.getTaskLauncher(DefaultTaskExecution.DEFAULT_LAUNCHER_NAME)
-                .launcherTask(launchedExchangisTask);
-        TaskLogQuery logQuery = new TaskLogQuery(fromLine, pageSize);
-        if(ignoreKeywords != null){
-            logQuery.setIgnoreKeywords(ignoreKeywords);
+    public ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, LogQuery logQuery, String userName) throws ExchangisJobServerException {
+        LaunchedExchangisJobEntity launchedExchangisJob = this.launchedJobDao.searchLogPathInfo(jobExecutionId);
+        if (Objects.isNull(launchedExchangisJob) || !hasExecuteJobAuthority(launchedExchangisJob, userName)){
+            throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
         }
-        if(onlyKeywords != null){
-            logQuery.setOnlyKeywords(onlyKeywords);
+        LogResult logResult = jobLogService.logsFromPageAndPath(launchedExchangisJob.getLogPath(), logQuery);
+        return resultToCategoryLog(logResult, launchedExchangisJob.getStatus());
+    }
+
+    @Override
+    public ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, LogQuery logQuery, String userName)
+            throws ExchangisJobServerException, ExchangisTaskLaunchException {
+        LaunchedExchangisTaskEntity launchedTaskEntity = this.launchedTaskDao.getLaunchedTaskEntity(taskId);
+        if (Objects.isNull(launchedTaskEntity)){
+            return resultToCategoryLog(new LogResult(0, false, new ArrayList<>()), TaskStatus.Inited);
         }
-        if(lastRows != null){
-            logQuery.setLastRows(lastRows);
+        if (!hasExecuteJobAuthority(jobExecutionId, userName)){
+            throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Not have permission of accessing task [" + taskId + "]", null);
         }
-
-        TaskLog taskLog = null;
-        try {
-            taskLog = task.queryLogs(logQuery);
-        } catch (Throwable e) {
-            throw new ExchangisTaskLaunchException( "Get task logs happened Exception (獲取task日志时出错), " + "jobExecutionId = " + jobExecutionId+ "taskId = " + taskId, e);
+        // Construct the launchedExchangisTask
+        LaunchedExchangisTask launchedTask = new LaunchedExchangisTask();
+        launchedTask.setLinkisJobId(launchedTaskEntity.getLinkisJobId());
+        launchedTask.setLinkisJobInfo(launchedTaskEntity.getLinkisJobInfo());
+        launchedTask.setTaskId(launchedTaskEntity.getTaskId());
+        launchedTask.setExecuteUser(launchedTaskEntity.getExecuteUser());
+        launchedTask.setEngineType(launchedTaskEntity.getEngineType());
+        ExchangisTaskLauncher<LaunchableExchangisTask, LaunchedExchangisTask> taskLauncher =
+                this.launchManager.getTaskLauncher(DefaultTaskExecution.DEFAULT_LAUNCHER_NAME);
+        if (Objects.isNull(taskLauncher)){
+            throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Unable to find the suitable launcher for [task: " + taskId + ", engine type: " +
+                    launchedTask.getEngineType() +"]", null);
         }
-        List<String> taskLogs = taskLog.getLogs();
-
-        int from = 1;
-        int size = 10;
-        if (Objects.nonNull(fromLine) && fromLine > 0) {
-            from = fromLine;
-        }
-
-        if (Objects.nonNull(pageSize) && pageSize > 0) {
-            size = pageSize;
-        }
-
-        // TODO mock data
-        int warningLineIdx = 1;
-        //LinkedList<String> taskLogs = getMockLogs();
-        int mockLogsSize = taskLogs.size();
-        LinkedList<String> errLogs = new LinkedList<>();
-        LinkedList<String> warningLogs = new LinkedList<>();
-        LinkedList<String> infoLogs = new LinkedList<>();
-        LinkedList<String> allLogs = new LinkedList<>();
-        int endLine = from;
-//        int actualSize = 0;
-        if (Objects.nonNull(lastRows) && lastRows > 0) {
-            for (int i = mockLogsSize - lastRows; i <= mockLogsSize; i++){
-                allLogs.add(taskLogs.get(i));
-                if (taskLogs.get(i - 1).contains("WARN")) {
-                    warningLogs.add(taskLogs.get(i - 1));
-                }
-                else if (taskLogs.get(i - 1).contains("INFO")) {
-                    infoLogs.add(taskLogs.get(i - 1));
-                }
-                else if (taskLogs.get(i - 1).contains("ERROR")) {
-                    errLogs.add(taskLogs.get(i - 1));
-                }
-                endLine = mockLogsSize;
-            }
-        }
-        else {
-            for (int i = from, j = 0; (i <= mockLogsSize && j < size); i++, j++) {
-                allLogs.add(taskLogs.get(i - 1));
-
-                if (taskLogs.get(i - 1).contains("WARN")) {
-                    warningLogs.add(taskLogs.get(i - 1));
-                } else if (taskLogs.get(i - 1).contains("INFO")) {
-                    infoLogs.add(taskLogs.get(i - 1));
-                } else if (taskLogs.get(i - 1).contains("ERROR")) {
-                    errLogs.add(taskLogs.get(i - 1));
-                }
-                endLine = i;
-            }
-        }
-
-        String allLogsStr = Joiner.on("\n").join(allLogs);
-        String warningLogsStr = Joiner.on("\n").join(warningLogs);
-        String infoLogsStr = Joiner.on("\n").join(infoLogs);
-        String errLogsStr = Joiner.on("\n").join(errLogs);
-        Map<String, String> logs = new HashMap<>();
-        logs.put("all", allLogsStr);
-        logs.put("error", errLogsStr);
-        logs.put("warn", warningLogsStr);
-        logs.put("info", infoLogsStr);
-
-        Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/task/execution/{taskId}/log");
-        message.data("endLine", endLine);
-        message.data("isEnd", from + size >= mockLogsSize);
-        message.data("logs", logs);
-        return message;
-
+        AccessibleLauncherTask accessibleLauncherTask = taskLauncher.launcherTask(launchedTask);
+        return resultToCategoryLog(accessibleLauncherTask.queryLogs(logQuery), launchedTaskEntity.getStatus());
     }
 
     @Override
@@ -355,69 +244,6 @@ public class DefaultJobExecuteService implements JobExecuteService {
         return 100;
     }
 
-    // TODO
-    private LinkedList<String> getMockLogs() {
-        LinkedList<String> logs = new LinkedList<>();
-        logs.add("2021-12-27 15:41:08.041 INFO Variables substitution ended successfully");
-        logs.add("2021-12-27 15:41:08.041 WARN You submitted a sql without limit, DSS will add limit 5000 to your sql");
-        logs.add("2021-12-27 15:41:08.041 INFO SQL code check has passed");
-        logs.add("job is scheduled.");
-        logs.add("2021-12-27 15:41:08.041 INFO Your job is Scheduled. Please wait it to run.");
-        logs.add("Your job is being scheduled by orchestrator.");
-        logs.add("Job with jobId : IDE_hdfs_spark_1 and execID : IDE_hdfs_spark_1 submitted");
-        logs.add("2021-12-27 15:41:08.041 INFO You have submitted a new job, script code (after variable substitution) is");
-        logs.add("************************************SCRIPT CODE************************************");
-        logs.add("select * from linkis_db.gujiantestdb1 limit 5000;");
-        // --- 10
-
-        logs.add("************************************SCRIPT CODE************************************");
-        logs.add("2021-12-27 15:41:08.041 INFO Your job is accepted,  jobID is IDE_hdfs_spark_1 and taskID is 771 in ServiceInstance(linkis-cg-entrance, ecs-f0cf-0004:9104). Please wait it to be scheduled");
-        logs.add("2021-12-27 15:41:08.041 INFO job is running.");
-        logs.add("2021-12-27 15:41:08.041 INFO Your job is Running now. Please wait it to complete.");
-        logs.add("Job with jobGroupId : 771 and subJobId : 757 was submitted to Orchestrator.");
-        logs.add("2021-12-27 15:41:08.041 INFO Background is starting a new engine for you, it may take several seconds, please wait");
-        logs.add("2021-12-27 15:41:08.041 INFO EngineConn local log path: ServiceInstance(linkis-cg-engineconn, ecs-f0cf-0004:46760) /opt/appcom/tmp/hdfs/workDir/cc7fbf2c-b72e-4124-b872-8c81801c822c/logs");
-        logs.add("2021-12-27 15:41:08.041 INFO yarn application id: application_1622705945711_0118");
-        logs.add("ecs-f0cf-0004:46760 >> select * from linkis_db.gujiantestdb1 limit 5000");
-        logs.add("ecs-f0cf-0004:46760 >> Time taken: 382, Fetched 1 row(s).");
-        // --- 10
-
-        logs.add("************************************SCRIPT CODE************************************");
-        logs.add("2021-12-27 15:41:08.041 INFO Your job is accepted,  jobID is IDE_hdfs_spark_1 and taskID is 771 in ServiceInstance(linkis-cg-entrance, ecs-f0cf-0004:9104). Please wait it to be scheduled");
-        logs.add("2021-12-27 15:41:08.041 INFO job is running.");
-        logs.add("2021-12-27 15:41:08.041 INFO Your job is Running now. Please wait it to complete.");
-        logs.add("Job with jobGroupId : 771 and subJobId : 757 was submitted to Orchestrator.");
-        logs.add("2021-12-27 15:41:08.041 INFO Background is starting a new engine for you, it may take several seconds, please wait");
-        logs.add("2021-12-27 15:41:08.041 INFO EngineConn local log path: ServiceInstance(linkis-cg-engineconn, ecs-f0cf-0004:46760) /opt/appcom/tmp/hdfs/workDir/cc7fbf2c-b72e-4124-b872-8c81801c822c/logs");
-        logs.add("2021-12-27 15:41:08.041 INFO yarn application id: application_1622705945711_0118");
-        logs.add("ecs-f0cf-0004:46760 >> select * from linkis_db.gujiantestdb1 limit 5000");
-        logs.add("ecs-f0cf-0004:46760 >> Time taken: 382, Fetched 1 row(s).");
-        // --- 10
-
-        logs.add("************************************SCRIPT CODE************************************");
-        logs.add("2021-12-27 15:41:08.041 INFO Your job is accepted,  jobID is IDE_hdfs_spark_1 and taskID is 771 in ServiceInstance(linkis-cg-entrance, ecs-f0cf-0004:9104). Please wait it to be scheduled");
-        logs.add("2021-12-27 15:41:08.041 INFO job is running.");
-        logs.add("2021-12-27 15:41:08.041 INFO Your job is Running now. Please wait it to complete.");
-        logs.add("Job with jobGroupId : 771 and subJobId : 757 was submitted to Orchestrator.");
-        logs.add("2021-12-27 15:41:08.041 INFO Background is starting a new engine for you, it may take several seconds, please wait");
-        logs.add("2021-12-27 15:41:08.041 INFO EngineConn local log path: ServiceInstance(linkis-cg-engineconn, ecs-f0cf-0004:46760) /opt/appcom/tmp/hdfs/workDir/cc7fbf2c-b72e-4124-b872-8c81801c822c/logs");
-        logs.add("2021-12-27 15:41:08.041 INFO yarn application id: application_1622705945711_0118");
-        logs.add("ecs-f0cf-0004:46760 >> select * from linkis_db.gujiantestdb1 limit 5000");
-        logs.add("ecs-f0cf-0004:46760 >> Time taken: 382, Fetched 1 row(s).");
-        // --- 10
-
-        logs.add("Your subjob : 757 execue with state succeed, has 1 resultsets.");
-        logs.add("Congratuaions! Your job : IDE_hdfs_spark_1 executed with status succeed and 0 results.");
-        logs.add("2021-12-27 15:41:09.041 INFO job is completed.");
-        logs.add("2021-12-27 15:41:09.041 INFO Task creation time(任务创建时间): 2021-12-27 15:41:08, Task scheduling time(任务调度时间): 2021-12-27 15:41:08, Task start time(任务开始时间): 2021-12-27 15:41:08, Mission end time(任务结束时间): 2021-12-27 15:41:09");
-        logs.add("2021-12-27 15:41:09.041 INFO Your mission(您的任务) 771 The total time spent is(总耗时时间为): 880 ms");
-        logs.add("2021-12-27 15:41:09.041 INFO Congratulations. Your job completed with status Success.");
-        logs.add("**result tips: 任务执行完成，正在获取结果集！");
-        logs.add("**result tips: 获取结果集成功！");
-        // --- 8
-        return logs;
-    }
-
     @Override
     public String executeJob(ExchangisJobInfo jobInfo, String execUser) throws ExchangisJobServerException {
         // Build generator scheduler task
@@ -438,5 +264,32 @@ public class DefaultJobExecuteService implements JobExecuteService {
             throw new ExchangisJobServerException(JOB_EXCEPTION_CODE.getCode(), "Exception in submitting to taskExecution", e);
         }
         return jobExecutionId;
+    }
+
+    /**
+     * Convert the log result to category log
+     * @param logResult log result
+     * @param status status
+     * @return category log
+     */
+    private ExchangisCategoryLogVo resultToCategoryLog(LogResult logResult, TaskStatus status){
+        ExchangisCategoryLogVo categoryLogVo = new ExchangisCategoryLogVo();
+        boolean noLogs = logResult.getLogs().isEmpty();
+        // TODO Cannot find the log
+        if (noLogs){
+            logResult.getLogs().add("<<The log content is empty>>");
+            categoryLogVo.setEndLine(logResult.getEndLine());
+            categoryLogVo.setIsEnd(logResult.isEnd());
+            if (TaskStatus.isCompleted(status)){
+                logResult.setEnd(true);
+//                categoryLogVo.setIsEnd(true);
+            }
+        }
+        categoryLogVo.newCategory("error", log -> log.contains("ERROR") || noLogs);
+        categoryLogVo.newCategory("warn", log -> log.contains("WARN") || noLogs);
+        categoryLogVo.newCategory("info", log -> log.contains("INFO") || noLogs);
+        categoryLogVo.processLogResult(logResult, true);
+        categoryLogVo.getLogs().put("all", StringUtils.join(logResult.getLogs(), "\n"));
+        return categoryLogVo;
     }
 }
