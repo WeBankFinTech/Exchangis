@@ -33,7 +33,7 @@ public class ExchangisJobParamsContent {
         private String configName;
 
         @JsonProperty("config_value")
-        private String configValue;
+        private Object configValue;
 
         private Integer sort;
 
@@ -53,11 +53,11 @@ public class ExchangisJobParamsContent {
             this.configName = configName;
         }
 
-        public String getConfigValue() {
+        public Object getConfigValue() {
             return configValue;
         }
 
-        public void setConfigValue(String configValue) {
+        public void setConfigValue(Object configValue) {
             this.configValue = configValue;
         }
 
