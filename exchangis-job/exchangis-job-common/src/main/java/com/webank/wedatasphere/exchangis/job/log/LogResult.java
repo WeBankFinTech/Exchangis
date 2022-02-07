@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.launcher.domain.task;
+package com.webank.wedatasphere.exchangis.job.log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Task log
  */
-public class TaskLog {
+public class LogResult {
 
     /**
      * End line
@@ -23,7 +23,7 @@ public class TaskLog {
      */
     private List<String> logs =  new ArrayList<>();
 
-    public TaskLog(int endLine, boolean isEnd, List<String> logs){
+    public LogResult(int endLine, boolean isEnd, List<String> logs){
         this.endLine = endLine;
         this.isEnd = isEnd;
         this.logs = logs;

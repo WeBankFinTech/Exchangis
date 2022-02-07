@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskProgressInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
+import com.webank.wedatasphere.exchangis.job.server.log.JobServerLogging;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  * Task manager
  */
-public interface TaskManager<T extends ExchangisTask> {
+public interface TaskManager<T extends ExchangisTask> extends JobServerLogging<T> {
 
 
     List<T> getRunningTasks();

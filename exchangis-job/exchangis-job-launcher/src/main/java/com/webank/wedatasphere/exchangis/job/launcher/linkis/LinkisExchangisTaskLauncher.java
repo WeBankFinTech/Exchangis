@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
@@ -38,8 +39,15 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
     }
 
     @Override
-    public AccessibleLauncherTask launcherTask(LaunchedExchangisTask launchedTask) {
-        return null;
+    public AccessibleLauncherTask launcherTask(LaunchedExchangisTask launchedTask) throws ExchangisTaskLaunchException {
+        String linkisJobId = launchedTask.getLinkisJobId();
+        String execUser = launchedTask.getExecuteUser();
+        Map<String, Object> jobInfoMap = launchedTask.getLinkisJobInfoMap();
+        try {
+            return LinkisLauncherTask.init(linkisJobId, execUser, jobInfoMap, launchedTask.getEngineType());
+        }catch (Exception e){
+            throw new ExchangisTaskLaunchException("Unable to build accessible launcher task from launched task: [" + launchedTask.getTaskId() + "]", e);
+        }
     }
 
     @Override

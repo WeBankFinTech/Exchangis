@@ -5,6 +5,8 @@ import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
+import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
+import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.execution.AbstractTaskManager;
@@ -14,6 +16,7 @@ import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskDeleteE
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskStatusUpdateEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSchedulerLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
+import com.webank.wedatasphere.exchangis.job.server.log.JobServerLogging;
 import org.apache.linkis.scheduler.queue.JobInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Submit scheduler task
  */
-public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
+public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implements JobServerLogging<String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubmitSchedulerTask.class);
 
@@ -56,13 +59,15 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
     @Override
     protected void schedule() throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
         Boolean submitAble;
+        String jobExecutionId = this.launchableExchangisTask.getJobExecutionId();
         try {
             submitAble = submitCondition.call();
         } catch (Exception e){
             throw new ExchangisSchedulerRetryException("Error occurred in examining submit condition for task: [" + launchableExchangisTask.getId() + "]", e);
         }
         if (submitAble) {
-            LOG.info("Submit the launchable task: [" + launchableExchangisTask.getId() + "] to launcher: [" + launcher.name() + "]");
+            info(jobExecutionId, "Submit the launchable task: [name:{} ,id:{} ] to launcher: [{}], retry_count: {}",
+                    launchableExchangisTask.getName(), launchableExchangisTask.getId(), launcher.name(), retryCnt.get());
             LaunchedExchangisTask launchedExchangisTask;
             try {
                 // Invoke launcher
@@ -91,7 +96,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
                     this.taskManager.addRunningTask(launchedExchangisTask);
                 } catch (Exception e){
                     successAdd = false;
-                    LOG.error("Error occurred in adding running task: [{}] to taskManager, linkis_id: [{}], should kill the job in linkis!",
+                    error(jobExecutionId, "Error occurred in adding running task: [{}] to taskManager, linkis_id: [{}], should kill the job in linkis!",
                             launchedExchangisTask.getId(), launchedExchangisTask.getLinkisJobId(), e);
                     LaunchedExchangisTask finalLaunchedExchangisTask1 = launchedExchangisTask;
                     Optional.ofNullable(launchedExchangisTask.getLauncherTask()).ifPresent(launcherTask -> {
@@ -123,6 +128,20 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask {
             ((AbstractTaskManager) this.taskManager).onEvent(event);
         }
     }
+
+    @Override
+    public JobLogEvent getJobLogEvent(JobLogEvent.Level level, String executionId, String message, Object... args) {
+        return new JobLogEvent(level, this.getTenancy(), executionId, message, args);
+    }
+
+    @Override
+    public JobLogListener getJobLogListener() {
+        if (Objects.nonNull(this.taskManager)){
+            return this.taskManager.getJobLogListener();
+        }
+        return null;
+    }
+
     @Override
     public String getName() {
         return "Scheduler-SubmitTask-" + getId();
