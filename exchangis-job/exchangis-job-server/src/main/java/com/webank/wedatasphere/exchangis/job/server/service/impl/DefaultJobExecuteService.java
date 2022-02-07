@@ -146,7 +146,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
         exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
-        exchangisLaunchedTaskVo.setMetrics(launchedExchangisTaskEntity.getMetricsMap());
+        //exchangisLaunchedTaskVo.setMetrics(launchedExchangisTaskEntity.getMetricsMap());
 
         return exchangisLaunchedTaskVo;
     }

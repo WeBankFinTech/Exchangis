@@ -36,7 +36,7 @@ public class ExchangisJobDataSourceRestfulApi {
     // 根据 任务引擎类型 获取该引擎的配置项 UI 数据
     @RequestMapping( value = "jobs/engine/{engineType}/settings/ui", method = RequestMethod.GET)
     public Message getJobEngineSettingsUI(HttpServletRequest request, @PathVariable("engineType")String engineType) {
-        List<ElementUI> jobSettingsUI = this.exchangisDataSourceService.getJobEngineSettingsUI(engineType);
+        List<ElementUI<?>> jobSettingsUI = this.exchangisDataSourceService.getJobEngineSettingsUI(engineType);
         return Message.ok().data("ui", jobSettingsUI);
     }
 
