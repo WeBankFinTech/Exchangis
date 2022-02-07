@@ -144,7 +144,7 @@ public class ExchangisDataSourceRestfulApi {
             @PathVariable("type") String type,
             @RequestParam(value = "dir", required = false) String dir
     ) {
-        List<ElementUI> uis = this.exchangisDataSourceService.getDataSourceParamsUI(type, String.format("%s-%s", engine, dir));
+        List<ElementUI<?>> uis = this.exchangisDataSourceService.getDataSourceParamsUI(type, String.format("%s-%s", engine, dir));
         return Message.ok().data("uis", uis);
     }
 
