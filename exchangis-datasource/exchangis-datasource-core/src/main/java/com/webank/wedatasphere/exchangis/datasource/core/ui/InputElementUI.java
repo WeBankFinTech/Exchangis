@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui;
 
-public class InputElementUI implements ElementUI {
+public class InputElementUI implements ElementUI<String> {
     private String key;
     private String field;
     private String label;

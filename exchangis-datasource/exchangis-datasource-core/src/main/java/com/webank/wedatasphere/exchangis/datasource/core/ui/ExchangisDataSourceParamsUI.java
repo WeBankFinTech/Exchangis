@@ -5,31 +5,31 @@ import java.util.List;
 
 public class ExchangisDataSourceParamsUI {
 
-    private List<ElementUI> sources = Collections.emptyList();
+    private List<ElementUI<?>> sources = Collections.emptyList();
 
-    private List<ElementUI> sinks = Collections.emptyList();
+    private List<ElementUI<?>> sinks = Collections.emptyList();
 
-    public List<ElementUI> getSources() {
+    public List<ElementUI<?>> getSources() {
         return sources;
     }
 
-    public void setSources(List<ElementUI> sources) {
+    public void setSources(List<ElementUI<?>> sources) {
         this.sources = sources;
     }
 
-    public List<ElementUI> getSinks() {
+    public List<ElementUI<?>> getSinks() {
         return sinks;
     }
 
-    public void setSinks(List<ElementUI> sinks) {
+    public void setSinks(List<ElementUI<?>> sinks) {
         this.sinks = sinks;
     }
 
-    public void addSourceUI(ElementUI ui) {
+    public void addSourceUI(ElementUI<?> ui) {
         this.sources.add(ui);
     }
 
-    public void addSinkUI(ElementUI ui) {
+    public void addSinkUI(ElementUI<?> ui) {
         this.sinks.add(ui);
     }
 

@@ -90,7 +90,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     // 根据数据源类型获取参数
     @Override
-    public List<ElementUI> getDataSourceParamsUI(String dsType, String engineAndDirection) {
+    public List<ElementUI<?>> getDataSourceParamsUI(String dsType, String engineAndDirection) {
 
         ExchangisDataSource exchangisDataSource = this.context.getExchangisDataSource(dsType);
         List<ExchangisJobParamConfig> paramConfigs = exchangisDataSource.getDataSourceParamConfigs();
@@ -108,7 +108,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     }
 
     @Override
-    public List<ElementUI> getJobEngineSettingsUI(String engineType) {
+    public List<ElementUI<?>> getJobEngineSettingsUI(String engineType) {
         return this.buildJobSettingsUI(engineType);
     }
 
@@ -521,7 +521,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         for (ExchangisJobInfoContent content : contents) {
             if (content.getSubJobName().equalsIgnoreCase(jobName)) {
-                List<ElementUI> uis = this.buildJobSettingsUI(job.getEngineType(), content);
+                List<ElementUI<?>> uis = this.buildJobSettingsUI(job.getEngineType(), content);
                 return Message.ok().data("uis", uis);
             }
         }
