@@ -265,7 +265,7 @@ public class ExchangisJobController {
 
     @RequestMapping( value = "{id}/speedlimit/{task_name}/params/ui", method = RequestMethod.GET)
     public Message getSpeedLimitSettings(@PathVariable("id") Long id, @PathVariable("task_name") String taskName) {
-        List<ElementUI> speedLimitSettings = this.exchangisJobService.getSpeedLimitSettings(id, taskName);
+        List<ElementUI<?>> speedLimitSettings = this.exchangisJobService.getSpeedLimitSettings(id, taskName);
         return Message.ok().data("ui", speedLimitSettings);
     }
 
