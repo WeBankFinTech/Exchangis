@@ -20,7 +20,8 @@
       <!--<span @click="executeHistory"><HistoryOutlined />执行历史</span>-->
     </div>
     <div class="jd-content" v-if="list.length !== 0">
-      <div class="jd_left">
+      <a-spin size="large" :spinning="loading">
+        <div class="jd_left">
           <div class="sub-title">
             <!--<DatabaseFilled class="database-icon" />-->
             <span>子任务列表</span>
@@ -124,7 +125,7 @@
             <template #icon> <PlusOutlined /></template>添加子任务
           </a-button>
         </div>
-      <div class="jd_right">
+        <div class="jd_right">
         <div>
           <DataSource
             v-if="curTask"
@@ -157,9 +158,11 @@
           />
         </div>
       </div>
+      </a-spin>
     </div>
     <div class="cardWrap" v-if="list.length === 0">
-      <div class="emptyTab">
+      <a-spin :spinning="loading">
+        <div class="emptyTab">
         <div class="void-page-wrap">
           <div class="void-page-main">
             <div class="void-page-main-img">
@@ -196,6 +199,7 @@
           <!--@refreshList="getJobs"-->
         <!--/>-->
       <!--</div>-->
+      </a-spin>
     </div>
     <!-- 执行历史  jd-bottom -->
     <div class="jd-bottom" v-show="visibleDrawer">
@@ -256,45 +260,7 @@
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Running">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress status="active" :percent="progress.progress" />
-                  <div class="job-progress-percent" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px">
-                    <span>资源使用</span>
-                    <div style="margin-bottom: 5px">
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].resourceUsed.cpu}} vcores</div>
-                        <div>CPU使用</div>
-                      </div>
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].resourceUsed.memory}} GB</div>
-                        <div>内存使用</div>
-                      </div>
-                    </div>
-                    <span>流量情况</span>
-                    <div style="position: relative;padding-bottom: 20px;margin-bottom: 5px">
-                      <span style="position: absolute;bottom: 0;left:0;font-size: 12px">{{metricsInfo[progress.taskId].traffic.source}}</span>
-                      <DatabaseFilled  style="margin-right: 50px;color:#2e92f7;font-size: 25px"/>
-                      <span style="position: absolute;bottom: 0;left:67px;font-size: 12px">{{metricsInfo[progress.taskId].traffic.flow}} Records/S</span>
-                      <svg class="icon icon-symbol" aria-hidden="true" style="font-size: 40px;margin-right: 50px">
-                        <use xlink:href="#icon-lansejiantoudaikuang"></use>
-                      </svg>
-                      <span style="position: absolute;bottom: 0;left:167px;font-size: 12px">{{metricsInfo[progress.taskId].traffic.sink}}</span>
-                      <DatabaseFilled  style="color:#2e92f7;font-size: 25px" />
-                    </div>
-                    <span>核心指标</span>
-                    <div>
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].indicator.exchangedRecords}}</div>
-                        <div>已同步</div>
-                      </div>
-                      <div class="core-block" style="background-color: #ff4d4f">
-                        <div>{{metricsInfo[progress.taskId].indicator.errorRecords}}</div>
-                        <div>错误记录</div>
-                      </div>
-                      <div class="core-block" style="background-color: gold">
-                        <div>{{metricsInfo[progress.taskId].indicator.ignoredRecords}}</div>
-                        <div>忽略记录</div>
-                      </div>
-                    </div>
-                  </div>
+                  <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
             </div>
@@ -320,45 +286,7 @@
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Failed">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress status="active" :percent="progress.progress" />
-                  <div class="job-progress-percent" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px">
-                    <span>资源使用</span>
-                    <div style="margin-bottom: 5px">
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].resourceUsed.cpu}} vcores</div>
-                        <div>CPU使用</div>
-                      </div>
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].resourceUsed.memory}} GB</div>
-                        <div>内存使用</div>
-                      </div>
-                    </div>
-                    <span>流量情况</span>
-                    <div style="position: relative;padding-bottom: 20px;margin-bottom: 5px">
-                      <span style="position: absolute;bottom: 0;left:0;font-size: 12px">{{metricsInfo[progress.taskId].traffic.source}}</span>
-                      <DatabaseFilled  style="margin-right: 50px;color:#2e92f7;font-size: 25px"/>
-                      <span style="position: absolute;bottom: 0;left:67px;font-size: 12px">{{metricsInfo[progress.taskId].traffic.flow}} Records/S</span>
-                      <svg class="icon icon-symbol" aria-hidden="true" style="font-size: 40px;margin-right: 50px">
-                        <use xlink:href="#icon-lansejiantoudaikuang"></use>
-                      </svg>
-                      <span style="position: absolute;bottom: 0;left:167px;font-size: 12px">{{metricsInfo[progress.taskId].traffic.sink}}</span>
-                      <DatabaseFilled  style="color:#2e92f7;font-size: 25px" />
-                    </div>
-                    <span>核心指标</span>
-                    <div>
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].indicator.exchangedRecords}}</div>
-                        <div>已同步</div>
-                      </div>
-                      <div class="core-block" style="background-color: #ff4d4f">
-                        <div>{{metricsInfo[progress.taskId].indicator.errorRecords}}</div>
-                        <div>错误记录</div>
-                      </div>
-                      <div class="core-block" style="background-color: gold">
-                        <div>{{metricsInfo[progress.taskId].indicator.ignoredRecords}}</div>
-                        <div>忽略记录</div>
-                      </div>
-                    </div>
-                  </div>
+                  <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
             </div>
@@ -368,45 +296,7 @@
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Cancelled">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress status="active" :percent="progress.progress" />
-                  <div class="job-progress-percent" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px">
-                    <span>资源使用</span>
-                    <div style="margin-bottom: 5px">
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].resourceUsed.cpu}} vcores</div>
-                        <div>CPU使用</div>
-                      </div>
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].resourceUsed.memory}} GB</div>
-                        <div>内存使用</div>
-                      </div>
-                    </div>
-                    <span>流量情况</span>
-                    <div style="position: relative;padding-bottom: 20px;margin-bottom: 5px">
-                      <span style="position: absolute;bottom: 0;left:0;font-size: 12px">{{metricsInfo[progress.taskId].traffic.source}}</span>
-                      <DatabaseFilled  style="margin-right: 50px;color:#2e92f7;font-size: 25px"/>
-                      <span style="position: absolute;bottom: 0;left:67px;font-size: 12px">{{metricsInfo[progress.taskId].traffic.flow}} Records/S</span>
-                      <svg class="icon icon-symbol" aria-hidden="true" style="font-size: 40px;margin-right: 50px">
-                        <use xlink:href="#icon-lansejiantoudaikuang"></use>
-                      </svg>
-                      <span style="position: absolute;bottom: 0;left:167px;font-size: 12px">{{metricsInfo[progress.taskId].traffic.sink}}</span>
-                      <DatabaseFilled  style="color:#2e92f7;font-size: 25px" />
-                    </div>
-                    <span>核心指标</span>
-                    <div>
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].indicator.exchangedRecords}}</div>
-                        <div>已同步</div>
-                      </div>
-                      <div class="core-block" style="background-color: #ff4d4f">
-                        <div>{{metricsInfo[progress.taskId].indicator.errorRecords}}</div>
-                        <div>错误记录</div>
-                      </div>
-                      <div class="core-block" style="background-color: gold">
-                        <div>{{metricsInfo[progress.taskId].indicator.ignoredRecords}}</div>
-                        <div>忽略记录</div>
-                      </div>
-                    </div>
-                  </div>
+                  <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
             </div>
@@ -416,45 +306,7 @@
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Success">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress status="active" :percent="progress.progress" />
-                  <div class="job-progress-percent" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px">
-                    <span>资源使用</span>
-                    <div style="margin-bottom: 5px">
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].resourceUsed.cpu}} vcores</div>
-                        <div>CPU使用</div>
-                      </div>
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].resourceUsed.memory}} GB</div>
-                        <div>内存使用</div>
-                      </div>
-                    </div>
-                    <span>流量情况</span>
-                    <div style="position: relative;padding-bottom: 20px;margin-bottom: 5px">
-                      <span style="position: absolute;bottom: 0;left:0;font-size: 12px">{{metricsInfo[progress.taskId].traffic.source}}</span>
-                      <DatabaseFilled  style="margin-right: 50px;color:#2e92f7;font-size: 25px"/>
-                      <span style="position: absolute;bottom: 0;left:67px;font-size: 12px">{{metricsInfo[progress.taskId].traffic.flow}} Records/S</span>
-                      <svg class="icon icon-symbol" aria-hidden="true" style="font-size: 40px;margin-right: 50px">
-                        <use xlink:href="#icon-lansejiantoudaikuang"></use>
-                      </svg>
-                      <span style="position: absolute;bottom: 0;left:167px;font-size: 12px">{{metricsInfo[progress.taskId].traffic.sink}}</span>
-                      <DatabaseFilled  style="color:#2e92f7;font-size: 25px" />
-                    </div>
-                    <span>核心指标</span>
-                    <div>
-                      <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].indicator.exchangedRecords}}</div>
-                        <div>已同步</div>
-                      </div>
-                      <div class="core-block" style="background-color: #ff4d4f">
-                        <div>{{metricsInfo[progress.taskId].indicator.errorRecords}}</div>
-                        <div>错误记录</div>
-                      </div>
-                      <div class="core-block" style="background-color: gold">
-                        <div>{{metricsInfo[progress.taskId].indicator.ignoredRecords}}</div>
-                        <div>忽略记录</div>
-                      </div>
-                    </div>
-                  </div>
+                  <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
             </div>
@@ -463,8 +315,6 @@
             <execution-log :param="logParams"></execution-log>
           </a-tab-pane>
         </a-tabs>
-
-        <!--<a-textarea :auto-size="{ minRows: 10, maxRows: 10 }" v-bind:value="logs.logs[3]"></a-textarea>-->
       </div>
     </div>
 
@@ -520,6 +370,7 @@ import { message, notification } from "ant-design-vue";
 import { randomString } from "../../../common/utils";
 import { useI18n } from "@fesjs/fes";
 import executionLog from './executionLog'
+import metrics from './metricsInfo'
 
 /**
  * 用于判断一个对象是否有空 value,如果有返回 true
@@ -607,11 +458,13 @@ export default {
     MinusOutlined,
     CloseOutlined,
     StopFilled,
-    executionLog
+    executionLog,
+    metrics
   },
   data() {
     const { t } = useI18n({ useScope: "global" });
     return {
+      loading: false,
       name: "",
       modalCfg: {
         id: "",
@@ -650,8 +503,6 @@ export default {
         logs: ['', '', '', '']
       },
       executeId: '',
-      showLogTimer: null,
-
       jobExecutionId: '',
       jobStatus: '',
       jobStatusTimer: null,
@@ -695,7 +546,9 @@ export default {
     },
     async getInfo() {
       try {
+        this.loading = true
         let data = (await getJobInfo(this.curTab.id)).result;
+        this.loading = false
         if (!data.content || data.content === "[]") {
           data.content = {
             subJobs: [],
@@ -725,7 +578,9 @@ export default {
           this.updateSourceInfo(this.curTask, true);
           // this.updateSinkInfo(this.curTask); 当sink和source都有值的时候,请求的结果是一致的,所以省去一次多余重复请求
         }
-      } catch (error) {}
+      } catch (error) {
+        this.loading = false
+      }
     },
     // 更新保存任务配置
     handleModalFinish(config) {
@@ -1032,32 +887,6 @@ export default {
         message.success("保存成功");
       });
     },
-    showInfoLog() {
-      const pageSize = this.logs.endLine ?  this.logs.endLine + 10 : 10
-      if (this.logs.isEnd) {
-        clearInterval(this.showLogTimer)
-        return message.warning("已经在最后一页")
-      }
-      getLogs({
-        taskID: this.executeId || this.logs.id,
-        fromLine: 1,
-        pageSize: pageSize
-      })
-        .then((res) => {
-          this.logs.logs = res.logs
-          this.logs.endLine = res.endLine
-          this.logs.isEnd = res.isEnd
-          this.logs.id = res.execID
-          message.success("更新日志成功");
-          this.$nextTick(() => {
-            const textarea = document.querySelector('.log-bottom-content textarea');
-            textarea.scrollTop = textarea.scrollHeight;
-          })
-        })
-        .catch((err) => {
-          message.error("更新日志失败");
-        });
-    },
     // 执行任务
     executeTask() {
       this.saveAll(() => {
@@ -1171,6 +1000,7 @@ export default {
         this.openMetricsId = progress.taskId
         getMetrics(progress.taskId, this.jobExecutionId)
           .then(res => {
+            res.task.taskId = progress.taskId
             this.metricsInfo[res.task.taskId] = res.task?.metrics
           })
           .catch(err => {
@@ -1451,15 +1281,6 @@ export default {
         display: inline-block;
         width: calc(100% - 100px);
       }
-    }
-    .core-block {
-      display: inline-block;
-      padding: 5px;
-      font-size: 12px;
-      color: white;
-      text-align: center;
-      border-radius: 4px;
-      margin-right: 20px;
     }
   }
 }
