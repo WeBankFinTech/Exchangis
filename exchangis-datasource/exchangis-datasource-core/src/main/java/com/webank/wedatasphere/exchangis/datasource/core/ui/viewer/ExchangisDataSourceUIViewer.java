@@ -14,5 +14,5 @@ public interface ExchangisDataSourceUIViewer {
 
     ExchangisJobTransformsContent getTransforms();
 
-    List<ElementUI> getSettings();
+    List<ElementUI<?>> getSettings();
 }
