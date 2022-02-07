@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.datasource.core.ui;
 
 import java.util.Collection;
 
-public class OptionElementUI implements ElementUI {
+public class OptionElementUI implements ElementUI<String> {
     private String key;
     private String field;
     private String label;

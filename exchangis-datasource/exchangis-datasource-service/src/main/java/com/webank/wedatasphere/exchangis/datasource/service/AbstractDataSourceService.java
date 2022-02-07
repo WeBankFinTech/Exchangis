@@ -152,7 +152,8 @@ public class AbstractDataSourceService {
                 String type = source.getType();
                 ExchangisDataSource exchangisSourceDataSource = this.context.getExchangisDataSource(type);
                 if (null != exchangisSourceDataSource) {
-                    sourceParamConfigs = exchangisSourceDataSource.getDataSourceParamConfigs().stream().filter(i -> i.getConfigDirection().equals(content.getEngine() + "-SOURCE")).collect(Collectors.toList());
+                    sourceParamConfigs = exchangisSourceDataSource.getDataSourceParamConfigs().stream().filter(
+                            i -> i.getConfigDirection().equals(content.getEngine() + "-SOURCE") || "SOURCE".equalsIgnoreCase(i.getConfigDirection())).collect(Collectors.toList());
                 }
             }
 
@@ -161,7 +162,8 @@ public class AbstractDataSourceService {
                 String type = sink.getType();
                 ExchangisDataSource exchangisSinkDataSource = this.context.getExchangisDataSource(type);
                 if (null != exchangisSinkDataSource) {
-                    sinkParamConfigs = exchangisSinkDataSource.getDataSourceParamConfigs().stream().filter(i -> i.getConfigDirection().equals(content.getEngine() + "-SINK")).collect(Collectors.toList());
+                    sinkParamConfigs = exchangisSinkDataSource.getDataSourceParamConfigs().stream().filter(i ->
+                            i.getConfigDirection().equals(content.getEngine() + "-SINK") || "SINK".equalsIgnoreCase(i.getConfigDirection())).collect(Collectors.toList());
                 }
             }
         }
@@ -175,8 +177,8 @@ public class AbstractDataSourceService {
             sinkParamsItems = params.getSinks();
         }
 
-        List<ElementUI> jobDataSourceParamsUI1 = buildDataSourceParamsFilledValueUI(sourceParamConfigs, sourceParamsItems);
-        List<ElementUI> jobDataSourceParamsUI2 = buildDataSourceParamsFilledValueUI(sinkParamConfigs, sinkParamsItems);
+        List<ElementUI<?>> jobDataSourceParamsUI1 = buildDataSourceParamsFilledValueUI(sourceParamConfigs, sourceParamsItems);
+        List<ElementUI<?>> jobDataSourceParamsUI2 = buildDataSourceParamsFilledValueUI(sinkParamConfigs, sinkParamsItems);
         ExchangisDataSourceParamsUI paramsUI = new ExchangisDataSourceParamsUI();
         paramsUI.setSources(jobDataSourceParamsUI1);
         paramsUI.setSinks(jobDataSourceParamsUI2);
@@ -196,13 +198,13 @@ public class AbstractDataSourceService {
 
 //        ExchangisDataSourceTransformsUI dataSourceTransFormsUI = ExchangisDataSourceUIViewBuilder.getDataSourceTransFormsUI(transforms);
 
-        List<ElementUI> jobDataSourceSettingsUI = this.buildJobSettingsUI(job.getEngineType(), content);
+        List<ElementUI<?>> jobDataSourceSettingsUI = this.buildJobSettingsUI(job.getEngineType(), content);
 
         return new DefaultDataSourceUIViewer(content.getSubJobName(), dataSourceIdsUI, paramsUI, transforms, jobDataSourceSettingsUI);
     }
 
 
-    protected List<ElementUI> buildJobSettingsUI(String jobEngineType) {
+    protected List<ElementUI<?>> buildJobSettingsUI(String jobEngineType) {
         if (Strings.isNullOrEmpty(jobEngineType)) {
             return Collections.emptyList();
         }
@@ -214,7 +216,7 @@ public class AbstractDataSourceService {
         return buildDataSourceParamsFilledValueUI(settingParamConfigs, null);
     }
 
-    protected List<ElementUI> buildJobSettingsUI(String jobEngineType, ExchangisJobInfoContent content) {
+    protected List<ElementUI<?>> buildJobSettingsUI(String jobEngineType, ExchangisJobInfoContent content) {
         if (Strings.isNullOrEmpty(jobEngineType)) {
             return Collections.emptyList();
         }
@@ -227,19 +229,19 @@ public class AbstractDataSourceService {
         return buildDataSourceParamsFilledValueUI(settingParamConfigs, settings);
     }
 
-    protected List<ElementUI> buildDataSourceParamsUI(List<ExchangisJobParamConfig> paramConfigs) {
-        List<ElementUI> uis = new ArrayList<>();
+    protected List<ElementUI<?>> buildDataSourceParamsUI(List<ExchangisJobParamConfig> paramConfigs) {
+        List<ElementUI<?>> uis = new ArrayList<>();
         if (!Objects.isNull(paramConfigs) && !paramConfigs.isEmpty()) {
             for (ExchangisJobParamConfig cfg : paramConfigs) {
-                ElementUI ui = fillElementUIValue(cfg, "");
+                ElementUI<?> ui = fillElementUIValue(cfg, "");
                 uis.add(ui);
             }
         }
         return uis;
     }
 
-    protected List<ElementUI> buildDataSourceParamsFilledValueUI(List<ExchangisJobParamConfig> paramConfigs, List<ExchangisJobParamsContent.ExchangisJobParamsItem> paramsList) {
-        List<ElementUI> uis = new ArrayList<>();
+    protected List<ElementUI<?>> buildDataSourceParamsFilledValueUI(List<ExchangisJobParamConfig> paramConfigs, List<ExchangisJobParamsContent.ExchangisJobParamsItem> paramsList) {
+        List<ElementUI<?>> uis = new ArrayList<>();
         if (!Objects.isNull(paramConfigs) && !paramConfigs.isEmpty()) {
             for (ExchangisJobParamConfig cfg : paramConfigs) {
                 if (Objects.isNull(paramsList) || paramsList.isEmpty()) {
@@ -248,10 +250,10 @@ public class AbstractDataSourceService {
                 }
                 ExchangisJobParamsContent.ExchangisJobParamsItem selectedParamItem = getJobParamsItem(cfg.getConfigKey(), paramsList);
                 if (Objects.isNull(selectedParamItem)) {
-                    ElementUI ui = fillElementUIValue(cfg, "");
+                    ElementUI<?> ui = fillElementUIValue(cfg, "");
                     uis.add(ui);
                 } else {
-                    ElementUI ui = fillElementUIValue(cfg, selectedParamItem.getConfigValue());
+                    ElementUI<?> ui = fillElementUIValue(cfg, selectedParamItem.getConfigValue());
                     uis.add(ui);
                 }
             }
@@ -268,13 +270,13 @@ public class AbstractDataSourceService {
         return null;
     }
 
-    private ElementUI fillElementUIValue(ExchangisJobParamConfig config, String value) {
+    private ElementUI<?> fillElementUIValue(ExchangisJobParamConfig config, Object value) {
         String uiType = config.getUiType();
         switch (uiType) {
             case ElementUI.OPTION:
-                return fillOptionElementUIValue(config, value);
+                return fillOptionElementUIValue(config, String.valueOf(value));
             case ElementUI.INPUT:
-                return fillInputElementUIValue(config, value);
+                return fillInputElementUIValue(config, String.valueOf(value));
             default:
                 return null;
         }
