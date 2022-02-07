@@ -153,18 +153,18 @@
         `exchangis_launched_job_entity` l
         LEFT JOIN `exchangis_job_entity` c ON l.job_id = c.id
         WHERE
-        <if test="id != '' and id != null">
-            and l.job_id =#{jobId}
+        <if test="jobId != '' and jobId != null">
+            l.job_id = #{jobId}
         </if>
         <!--如果name有值，则模糊匹配name-->
-        <if test="name!= '' and name!= null">
-            and l.name like CONCAT('%',$(jobName),'%')
+        <if test="jobName != '' and jobName != null">
+            and l.name like concat('%', #{jobName}, '%')
         </if>
-        <if test="status!= '' and status!= null">
+        <if test="status != '' and status != null">
             and l.status = #{status}
         </if>
-        <if test="launchStartTime!= '' and launchStartTime!= null and launchEndTime!= '' and launchEndTime!= null">
-            and l.create_time Between #{launchStartTime} And #{launchEndTime}
+        <if test="launchStartTime != null and launchEndTime != null">
+            and l.create_time Between #{launchStartTime} and #{launchEndTime}
         </if>
     </select>
 

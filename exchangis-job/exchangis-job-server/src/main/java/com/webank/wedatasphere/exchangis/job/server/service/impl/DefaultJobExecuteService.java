@@ -207,7 +207,9 @@ public class DefaultJobExecuteService implements JobExecuteService {
     public List<ExchangisLaunchedJobListVO> getExecutedJobList(Long jobId, String jobName, String status,
                                                                Long launchStartTime, Long launchEndTime, Integer  current, Integer size) {
         List<ExchangisLaunchedJobListVO> jobList = new ArrayList<>();
-        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobId, jobName, status, launchStartTime, launchEndTime);
+        LOG.info("jobList information: " + jobId + jobName + status + launchStartTime + launchEndTime);
+        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobId, jobName, status, new Date(launchStartTime), new Date(launchEndTime));
+        LOG.info("jobEntitylist information: ", jobEntitylist);
         if(jobEntitylist != null) {
             try {
                 jobEntitylist.forEach(jobEntity -> {
