@@ -8,6 +8,7 @@ import com.webank.wedatasphere.exchangis.job.log.LogResult;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskProgressInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
+import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.computation.client.LinkisJobBuilder;
 import org.apache.linkis.computation.client.LinkisJobClient;
 import org.apache.linkis.computation.client.once.SubmittableOnceJob;
@@ -100,6 +101,10 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
         this.onceJob = LinkisJobClient.once().simple().build(jobId, user);
         this.jobId = jobId;
         this.jobInfo = jobInfo;
+        if (StringUtils.isNotBlank(engineConn)){
+            // To lower case
+            engineConn = engineConn.toLowerCase();
+        }
         this.engineConn = engineConn;
         prepareOperators(this.onceJob);
     }
@@ -169,8 +174,9 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                         taskProgressInfo.setSucceed(progressInfoArray[0].succeedTasks());
                    }
                    taskProgressInfo.setProgress(progressInfo.progress());
+                   this.progressInfo = taskProgressInfo;
                 } else if (taskStatus == TaskStatus.Success){
-                    if (Objects.nonNull(this.progressInfo)){
+                    if (Objects.isNull(this.progressInfo)){
                         this.progressInfo = new TaskProgressInfo();
                     }
                     this.progressInfo.setProgress(1.0f);
@@ -206,7 +212,9 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 logOperator.setECMServiceInstance(this.onceJob.getECMServiceInstance(this.jobInfo));
                 logOperator.setIgnoreKeywords(query.getIgnoreKeywords());
                 logOperator.setOnlyKeywords(query.getOnlyKeywords());
-                logOperator.setLastRows(query.getLastRows());
+                if (Objects.nonNull(query.getLastRows())){
+                    logOperator.setLastRows(query.getLastRows());
+                }
                 EngineConnLogs logs = (EngineConnLogs)logOperator.apply();
                 boolean isEnd = logs.logs().size() <= 0;
                 if (isEnd){
@@ -272,7 +280,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
             LOG.info("Error to connect to the linkis server over {} times, linkis_id: {}, now to mark the task status: {}", LAUNCHER_LINKIS_CREATOR.getValue(), this.jobId, this.status, e);
             return;
         }
-        if (message.contains(TASK_NOT_EXIST)){
+        if (StringUtils.isNotBlank(message) && message.contains(TASK_NOT_EXIST)){
             throw new ExchangisTaskNotExistException("It seems that the linkis job: [ linkis_id: " + getJobId() + "] cannot be found in linkis server", e);
         } else{
             throw new ExchangisTaskLaunchException("Unexpected exception in communicating with linkis server", e);
