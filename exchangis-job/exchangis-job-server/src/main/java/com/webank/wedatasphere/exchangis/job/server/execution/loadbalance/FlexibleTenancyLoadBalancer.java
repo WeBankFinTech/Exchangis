@@ -204,8 +204,10 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
         tenancyExecutorServices.forEach((tenancy, executorService) -> {
             LoopCounter loopCounter = tenancyLoopCounter.get(tenancy);
             if (Objects.nonNull(loopCounter)){
-                LOG.info("Monitor: [tenancy: {}, task_segments: {}, wait_in_poll: {}]" , tenancy, loopCounter.segments.get(),
-                        loopCounter.pollerSize.get());
+                if (loopCounter.pollerSize.get() > 0) {
+                    LOG.info("Monitor: [tenancy: {}, task_segments: {}, wait_in_poll: {}]", tenancy, loopCounter.segments.get(),
+                            loopCounter.pollerSize.get());
+                }
                 ThreadPoolExecutor pool = (ThreadPoolExecutor)executorService;
                 int adjustSegmentNum = 0;
                 int coreSize = pool.getCorePoolSize();
@@ -228,7 +230,7 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                         LOG.info("Adjust total number of load balance scheduler task segments for tenancy: [{}] to [{}], average [{}]",
                                 tenancy, adjustSegmentNum, average);
                         for (int i = 0; i < loopCounter.containers.get(); i++) {
-                            if (adjustSegmentNum < average) {
+                            if (i == loopCounter.containers.get() - 1) {
                                 loopCounter.taskContainers.get(i).adjustSegment(adjustSegmentNum);
                             } else {
                                 loopCounter.taskContainers.get(i).adjustSegment(average);
