@@ -278,7 +278,7 @@ public class AbstractDataSourceService {
             case ElementUI.INPUT:
                 return fillInputElementUIValue(config, String.valueOf(value));
             case ElementUI.MAP:
-                return fillMapElementUIValue(config, (Map) value);
+                return fillMapElementUIValue(config, (Map<String, Object>) value);
             default:
                 return null;
         }
@@ -324,7 +324,7 @@ public class AbstractDataSourceService {
         return ui;
     }
 
-    private MapElementUI fillMapElementUIValue(ExchangisJobParamConfig config, Map value) {
+    private MapElementUI fillMapElementUIValue(ExchangisJobParamConfig config, Map<String, Object> value) {
         MapElementUI ui = new MapElementUI();
         ui.setKey(config.getConfigKey());
         ui.setField(config.getUiField());
