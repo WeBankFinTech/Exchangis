@@ -1,12 +1,14 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui;
 
-public class MapElementUI implements ElementUI<String> {
+import java.util.Map;
+
+public class MapElementUI implements ElementUI<Map> {
     private String key;
     private String field;
     private String label;
     private Integer sort;
-    private String value;
-    private String defaultValue;
+    private Map value;
+    private Map defaultValue;
     private String unit;
     private Boolean required;
     private String validateType;
@@ -63,18 +65,18 @@ public class MapElementUI implements ElementUI<String> {
     }
 
     @Override
-    public String getValue() {
+    public Map getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(Map value) {
         this.value = value;
     }
 
     @Override
-    public String getDefaultValue() { return defaultValue; }
+    public Map getDefaultValue() { return defaultValue; }
 
-    public void setDefaultValue(String defaultValue) { this.defaultValue = defaultValue; }
+    public void setDefaultValue(Map defaultValue) { this.defaultValue = defaultValue; }
 
     public String getUnit() {
         return unit;
