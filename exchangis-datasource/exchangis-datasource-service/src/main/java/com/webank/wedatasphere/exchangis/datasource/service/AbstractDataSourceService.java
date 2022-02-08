@@ -278,7 +278,7 @@ public class AbstractDataSourceService {
             case ElementUI.INPUT:
                 return fillInputElementUIValue(config, String.valueOf(value));
             case ElementUI.MAP:
-                return fillMapElementUIValue(config, String.valueOf(value));
+                return fillMapElementUIValue(config, (Map) value);
             default:
                 return null;
         }
@@ -324,13 +324,13 @@ public class AbstractDataSourceService {
         return ui;
     }
 
-    private MapElementUI fillMapElementUIValue(ExchangisJobParamConfig config, String value) {
+    private MapElementUI fillMapElementUIValue(ExchangisJobParamConfig config, Map value) {
         MapElementUI ui = new MapElementUI();
         ui.setKey(config.getConfigKey());
         ui.setField(config.getUiField());
         ui.setLabel(config.getUiLabel());
         ui.setValue(value);
-        ui.setDefaultValue(config.getDefaultValue());
+        //ui.setDefaultValue(config.getDefaultValue());
         ui.setSort(config.getSort());
         ui.setRequired(config.getRequired());
         ui.setUnit(config.getUnit());
