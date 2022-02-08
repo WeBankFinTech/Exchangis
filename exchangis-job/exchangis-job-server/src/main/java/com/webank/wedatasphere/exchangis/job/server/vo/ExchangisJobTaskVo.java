@@ -21,7 +21,7 @@ public class ExchangisJobTaskVo {
 
     private String executeUser;
 
-    private Long taskId;
+    private String taskId;
 
     private String linkisJobId;
 
@@ -33,7 +33,7 @@ public class ExchangisJobTaskVo {
 
     }
 
-    public ExchangisJobTaskVo(Long taskId, String name, String status, Date createTime, Date launchTime, Date lastUpdateTime, String engineType, String linkisJobId, String linkisJobInfo, String executeUser){
+    public ExchangisJobTaskVo(String taskId, String name, String status, Date createTime, Date launchTime, Date lastUpdateTime, String engineType, String linkisJobId, String linkisJobInfo, String executeUser){
         this.taskId = taskId;
         this.name = name;
         this.status = status;
@@ -94,11 +94,11 @@ public class ExchangisJobTaskVo {
         this.executeUser = executeUser;
     }
 
-    public Long getTaskId() {
+    public String getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(Long taskId) {
+    public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
 
