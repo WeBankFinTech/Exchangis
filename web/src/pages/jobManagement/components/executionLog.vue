@@ -114,11 +114,15 @@ export default defineComponent({
         logs.logs = res.logs
         logs.isEnd = res.isEnd
         const buildLog = (key) => {
-          let arr = logs.logs[key].split('\n')
+          let arr = logs.logs[key] ? logs.logs[key].split('\n') : []
           for (let i = 0; i < arr.length; i++) {
             arr[i] = `${logs.endLine + i + 1}.   ${arr[i]}`
           }
-          return curLog[key] ? curLog[key] + '\n' + arr.join('\n') : arr.join('\n')
+          if (logs.logs[key]) {
+            return curLog[key] ? curLog[key] + '\n' + arr.join('\n') : arr.join('\n')
+          } else {
+            return curLog[key] ? curLog[key] : ''
+          }
         }
         curLog.all = buildLog('all')
         curLog.error = buildLog('error')
