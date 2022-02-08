@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
@@ -209,7 +210,9 @@ public class DefaultJobExecuteService implements JobExecuteService {
                                                                Long launchStartTime, Long launchEndTime, Integer  current, Integer size) {
         List<ExchangisLaunchedJobListVO> jobList = new ArrayList<>();
         LOG.info("jobList information: " + jobId + jobName + status + launchStartTime + launchEndTime);
-        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobId, jobName, status, new Date(launchStartTime), new Date(launchEndTime));
+        Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
+        Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
+        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobId, jobName, status, startTime, endTime);
         LOG.info("jobEntitylist information: ", jobEntitylist);
         if(jobEntitylist != null) {
             try {
@@ -295,4 +298,10 @@ public class DefaultJobExecuteService implements JobExecuteService {
         categoryLogVo.getLogs().put("all", StringUtils.join(logResult.getLogs(), "\n"));
         return categoryLogVo;
     }
+
+   /* public static void main(String[] args) {
+        ExchangisJobParamsContent.ExchangisJobParamsItem jobParamsContent = new ExchangisJobParamsContent.ExchangisJobParamsItem();
+        jobParamsContent = Json.fromJson("", jobParamsContent.getClass());
+        System.out.println(jobParamsContent.getConfigValue());
+    }*/
 }

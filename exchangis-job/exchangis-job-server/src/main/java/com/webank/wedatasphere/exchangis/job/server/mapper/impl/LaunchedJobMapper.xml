@@ -139,7 +139,7 @@
         WHERE
         job_execution_id = #{jobExecutionId}]]>
     </update>
-    <select id="getAllLaunchedJob" parameterType="java.lang.String" resultMap="LaunchedJobMap">
+    <select id="getAllLaunchedJob" resultMap="LaunchedJobMap">
         SELECT
         l.job_execution_id,
         l.name,
@@ -152,20 +152,24 @@
         FROM
         `exchangis_launched_job_entity` l
         LEFT JOIN `exchangis_job_entity` c ON l.job_id = c.id
-        WHERE
-        <if test="jobId != '' and jobId != null">
-            l.job_id = #{jobId}
-        </if>
-        <!--如果name有值，则模糊匹配name-->
-        <if test="jobName != '' and jobName != null">
-            and l.name like concat('%', #{jobName}, '%')
-        </if>
-        <if test="status != '' and status != null">
-            and l.status = #{status}
-        </if>
-        <if test="launchStartTime != null and launchEndTime != null">
-            and l.create_time Between #{launchStartTime} and #{launchEndTime}
-        </if>
+        <where>
+            <if test="jobId != null">
+                and l.job_id = #{jobId}
+            </if>
+            <!--如果name有值，则模糊匹配name-->
+            <if test="jobName.trim() != '' and jobName != null">
+                and l.name like concat('%', #{jobName}, '%')
+            </if>
+            <if test="status.trim() != '' and status != null">
+                and l.status = #{status}
+            </if>
+            <if test="launchStartTime != null">
+                and l.create_time >= #{launchStartTime}
+            </if>
+            <if test="launchEndTime != null">
+                and l.create_time &lt;= #{launchEndTime}
+            </if>
+        </where>
     </select>
 
 </mapper>
