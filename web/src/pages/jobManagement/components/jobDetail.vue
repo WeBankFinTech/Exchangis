@@ -1289,6 +1289,9 @@ export default {
   display: flex;
   flex-wrap: wrap;
   padding-bottom: 30px;
+  :deep(.ant-spin-nested-loading) {
+    width: 100%;
+  }
   .emptyTab {
     font-size: 16px;
     height: calc(100vh - 130px);
