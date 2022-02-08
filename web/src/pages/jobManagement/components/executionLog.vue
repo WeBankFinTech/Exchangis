@@ -48,7 +48,8 @@ import { message, notification } from "ant-design-vue";
 
 export default defineComponent({
   props: {
-    param: Object
+    param: Object,
+    isShow: Boolean
   },
   emits: ["updateInfo"],
   setup(props, context) {
@@ -63,6 +64,15 @@ export default defineComponent({
         changeData(id)
       }
     })
+
+    const showProp = computed(() => `${props.isShow}`)
+    watch(showProp, (newVal, oldVal) => {
+      if(!props.isShow) {
+        clearInterval(showLogTimer)
+        pauseLog.isPause = false
+      }
+    })
+
     let pauseLog = reactive({
       isPause: false,
       pauseEndLine: 0,
@@ -189,6 +199,7 @@ export default defineComponent({
     }
 
     const changeData = (curId) => {
+      pauseLog.isPause = false
       _showInfoLog(curId)
       showLogTimer = setInterval(() => {
         _showInfoLog(curId)
