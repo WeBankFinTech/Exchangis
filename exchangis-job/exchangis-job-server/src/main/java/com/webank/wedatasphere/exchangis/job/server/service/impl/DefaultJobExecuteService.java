@@ -184,6 +184,11 @@ public class DefaultJobExecuteService implements JobExecuteService {
         if (Objects.isNull(launchedTaskEntity)){
             return resultToCategoryLog(new LogResult(0, false, new ArrayList<>()), TaskStatus.Inited);
         }
+        if (StringUtils.isBlank(launchedTaskEntity.getLinkisJobId())){
+            TaskStatus status = launchedTaskEntity.getStatus();
+            // Means that the task is not ready or task submit failed
+            return resultToCategoryLog(new LogResult(0, TaskStatus.isCompleted(status), new ArrayList<>()), status);
+        }
         if (!hasExecuteJobAuthority(jobExecutionId, userName)){
             throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Not have permission of accessing task [" + taskId + "]", null);
         }
@@ -278,9 +283,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         boolean noLogs = logResult.getLogs().isEmpty();
         // TODO Cannot find the log
         if (noLogs){
-            logResult.getLogs().add("<<The log content is empty>>");
-            categoryLogVo.setEndLine(logResult.getEndLine());
-            categoryLogVo.setIsEnd(logResult.isEnd());
+//            logResult.getLogs().add("<<The log content is empty>>");
             if (TaskStatus.isCompleted(status)){
                 logResult.setEnd(true);
 //                categoryLogVo.setIsEnd(true);
@@ -289,8 +292,10 @@ public class DefaultJobExecuteService implements JobExecuteService {
         categoryLogVo.newCategory("error", log -> log.contains("ERROR") || noLogs);
         categoryLogVo.newCategory("warn", log -> log.contains("WARN") || noLogs);
         categoryLogVo.newCategory("info", log -> log.contains("INFO") || noLogs);
-        categoryLogVo.processLogResult(logResult, true);
-        categoryLogVo.getLogs().put("all", StringUtils.join(logResult.getLogs(), "\n"));
+        categoryLogVo.processLogResult(logResult, false);
+        if (!noLogs) {
+            categoryLogVo.getLogs().put("all", StringUtils.join(logResult.getLogs(), "\n"));
+        }
         return categoryLogVo;
     }
 }
