@@ -1,5 +1,6 @@
 // 服务端接口管理
 import { request } from "@fesjs/fes";
+import { BASE_URL } from "@/common/constants";
 ////////////////////////////////////////////////////////////////////
 export const getProjectList = (name) => {
   return request("/projects", { name }, { method: "POST" });
@@ -374,6 +375,19 @@ export const getTaskExecLog = (params) => {
       ignoreKeywords: params.ignoreKeywords,
       lastRows: params.lastRows
     },
+    {
+      method: "GET",
+    }
+  );
+}
+
+// 获取分区信息
+export const getPartitionInfo = (params) => {
+  if (!params.source) return
+  const url = params.source.split(BASE_URL)[1]
+  return request(
+    `${url}?dataSourceId=${params.dataSourceId}&database=${params.database}&table=${params.table}&_=${Math.random()}`,
+    {},
     {
       method: "GET",
     }
