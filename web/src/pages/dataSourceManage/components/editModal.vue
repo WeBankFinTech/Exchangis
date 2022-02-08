@@ -172,7 +172,7 @@ export default {
             dataSourceName: formState.dataSourceName,
             dataSourceDesc: formState.dataSourceDesc || "",
             labels: formState.labels || "",
-            comment: formState.comment || "",
+            comment: formState.comment || "更新",
             connectParams: {
               ...connectParams
             }
@@ -187,7 +187,7 @@ export default {
             dataSourceName: formState.dataSourceName,
             dataSourceDesc: formState.dataSourceDesc || "",
             labels: formState.labels || "",
-            comment: formState.comment || "",
+            comment: formState.comment || "更新",
             connectParams: {
               ...connectParams
             }
