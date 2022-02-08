@@ -312,7 +312,7 @@
             </div>
           </a-tab-pane>
           <a-tab-pane key="2" tab="实时日志" force-render>
-            <execution-log :param="logParams"></execution-log>
+            <execution-log :param="logParams" :isShow="visibleLog"></execution-log>
           </a-tab-pane>
         </a-tabs>
       </div>
