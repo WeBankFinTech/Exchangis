@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Copy and simplify from 'Configuration' in 'DataX'
@@ -322,7 +323,8 @@ public class JsonEntity {
     }
 
     private List<String> split2List(final String path){
-        return Arrays.asList(StringUtils.split(path.replace("[", ".["), "."));
+        return Arrays.asList(StringUtils.split(path.replace("[", ".["), ".")).stream()
+                .map(value -> value.replace("0x2e", ".")).collect(Collectors.toList());
     }
 
     private int getIndex(final String index) {
@@ -381,6 +383,13 @@ public class JsonEntity {
             return false;
         }
     }
+
+    public static String encodePath(String path){
+        if (StringUtils.isNotBlank(path)){
+            return path.replace(".", "0x2e");
+        }
+        return path;
+    }
     private JsonEntity(final String json){
         this.root = Json.fromJson(json, Map.class);
     }
@@ -388,5 +397,4 @@ public class JsonEntity {
     private JsonEntity(final Map<String, Object> jsonMap){
         this.root = new HashMap<>(jsonMap);
     }
-
 }

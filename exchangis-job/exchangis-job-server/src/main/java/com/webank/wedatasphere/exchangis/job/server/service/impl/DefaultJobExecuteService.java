@@ -26,6 +26,9 @@ import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGenerator;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.GenerationSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
+import com.webank.wedatasphere.exchangis.job.server.metrics.ExchangisMetricsVo;
+import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricConverterFactory;
+import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricsConverter;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.commons.lang.StringUtils;
@@ -77,6 +80,12 @@ public class DefaultJobExecuteService implements JobExecuteService {
      */
     @Resource
     private ExchangisTaskLaunchManager launchManager;
+
+    /**
+     * Metrics converter factory
+     */
+    @Resource
+    private MetricConverterFactory<ExchangisMetricsVo> metricConverterFactory;
 
     @Override
     public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) {
@@ -146,7 +155,15 @@ public class DefaultJobExecuteService implements JobExecuteService {
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
         exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
-
+        MetricsConverter<ExchangisMetricsVo> metricsConverter = metricConverterFactory.getOrCreateMetricsConverter(launchedExchangisTaskEntity.getEngineType());
+        if (Objects.nonNull(metricsConverter)){
+            try {
+                exchangisLaunchedTaskVo.setMetrics(metricsConverter.convert(launchedExchangisTaskEntity.getMetricsMap()));
+            }catch (ExchangisJobServerException e){
+                // Print the problem in convert metrics vo
+                LOG.warn("Problem occurred in convert of metrics vo", e);
+            }
+        }
         return exchangisLaunchedTaskVo;
     }
 
