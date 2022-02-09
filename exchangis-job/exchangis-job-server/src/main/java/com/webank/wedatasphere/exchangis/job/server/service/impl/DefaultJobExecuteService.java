@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
@@ -146,7 +147,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
         exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
-        exchangisLaunchedTaskVo.setMetrics(launchedExchangisTaskEntity.getMetricsMap());
+        //exchangisLaunchedTaskVo.setMetrics(launchedExchangisTaskEntity.getMetricsMap());
 
         return exchangisLaunchedTaskVo;
     }
@@ -208,7 +209,11 @@ public class DefaultJobExecuteService implements JobExecuteService {
     public List<ExchangisLaunchedJobListVO> getExecutedJobList(Long jobId, String jobName, String status,
                                                                Long launchStartTime, Long launchEndTime, Integer  current, Integer size) {
         List<ExchangisLaunchedJobListVO> jobList = new ArrayList<>();
-        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobId, jobName, status, launchStartTime, launchEndTime);
+        LOG.info("jobList information: " + jobId + jobName + status + launchStartTime + launchEndTime);
+        Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
+        Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
+        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobId, jobName, status, startTime, endTime);
+        LOG.info("jobEntitylist information: ", jobEntitylist);
         if(jobEntitylist != null) {
             try {
                 jobEntitylist.forEach(jobEntity -> {
@@ -293,4 +298,10 @@ public class DefaultJobExecuteService implements JobExecuteService {
         categoryLogVo.getLogs().put("all", StringUtils.join(logResult.getLogs(), "\n"));
         return categoryLogVo;
     }
+
+   /* public static void main(String[] args) {
+        ExchangisJobParamsContent.ExchangisJobParamsItem jobParamsContent = new ExchangisJobParamsContent.ExchangisJobParamsItem();
+        jobParamsContent = Json.fromJson("", jobParamsContent.getClass());
+        System.out.println(jobParamsContent.getConfigValue());
+    }*/
 }
