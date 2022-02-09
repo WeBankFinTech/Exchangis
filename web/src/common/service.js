@@ -349,10 +349,10 @@ export const killJob = (id) => {
 // 获取job运行日志
 export const getJobExecLog = (params) => {
   return request(
-    `/job/execution/${params.id}/log`,
+    `/job/execution/${params.id}/log?_=${Math.random()}`,
     {
       fromLine: params.fromLine || 0,
-      pageSize: params.pageSize || 10,
+      pageSize: params.pageSize || 100,
       onlyKeywords: params.onlyKeywords,
       ignoreKeywords: params.ignoreKeywords,
       lastRows: params.lastRows
@@ -366,7 +366,7 @@ export const getJobExecLog = (params) => {
 // 获取task运行日志
 export const getTaskExecLog = (params) => {
   return request(
-    `/task/execution/${params.taskId}/log`,
+    `/task/execution/${params.taskId}/log?_=${Math.random()}`,
     {
       fromLine: params.fromLine || 0,
       pageSize: params.pageSize || 100,
