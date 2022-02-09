@@ -126,7 +126,7 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void updateJobProgress(String jobExecutionId, Date updateTime) {
         // Sum all the task's progress
         float totalTaskProgress = this.launchedTaskDao.sumProgressByJobExecutionId(jobExecutionId);

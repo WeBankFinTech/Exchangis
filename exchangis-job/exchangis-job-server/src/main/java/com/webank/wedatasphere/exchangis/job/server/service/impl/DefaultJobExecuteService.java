@@ -38,8 +38,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.*;
 
-import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.JOB_EXCEPTION_CODE;
-import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.LOG_OP_ERROR;
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.*;
 
 @Service
 public class DefaultJobExecuteService implements JobExecuteService {
@@ -138,16 +137,15 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskId, String jobExecutionId) throws ExchangisJobServerException {
+    public ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskId, String jobExecutionId, String userName) throws ExchangisJobServerException {
         LaunchedExchangisTaskEntity launchedExchangisTaskEntity = launchedTaskDao.getLaunchedTaskMetrics(jobExecutionId, taskId);
-        if (launchedExchangisTaskEntity == null) {
-            throw new ExchangisJobServerException(31100, "Get task metrics happened Exception (獲取task指标信息为空), " + "jobExecutionId = " + jobExecutionId+ "taskId = " + taskId);
+        if (Objects.isNull(launchedExchangisTaskEntity) || !hasExecuteJobAuthority(jobExecutionId, userName)) {
+            throw new ExchangisJobServerException(METRICS_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
         }
         ExchangisLaunchedTaskMetricsVO exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVO();
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
         exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
-        //exchangisLaunchedTaskVo.setMetrics(launchedExchangisTaskEntity.getMetricsMap());
 
         return exchangisLaunchedTaskVo;
     }
