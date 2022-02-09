@@ -176,8 +176,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }
 
-        String comment = vo.getComment();
-        String createSystem = vo.getCreateSystem();
+        //String comment = vo.getComment();
+        String comment = "新增";
+        //String createSystem = vo.getCreateSystem();
+        String createSystem = "Linkis";
         if (Objects.isNull(comment)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter comment should not be null");
         }
@@ -275,8 +277,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(30401, e.getMessage());
         }
 
-        String comment = vo.getComment();
-        String createSystem = vo.getCreateSystem();
+        //String comment = vo.getComment();
+        String comment = "更新";
+        //String createSystem = vo.getCreateSystem();
+        String createSystem = "Linkis";
         if (Objects.isNull(comment)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter comment should not be null");
         }
@@ -287,6 +291,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String user = SecurityFilter.getLoginUsername(request);
         LOGGER.info("updateDataSource userName:" + user);
 
+        LOGGER.info("DataSourceTypeId:" + vo.getDataSourceTypeId());
         ExchangisDataSource exchangisDataSource = context.getExchangisDataSource(vo.getDataSourceTypeId());
         if (Objects.isNull(exchangisDataSource)) {
             throw new ExchangisDataSourceException(30401, "exchangis.datasource.null");
