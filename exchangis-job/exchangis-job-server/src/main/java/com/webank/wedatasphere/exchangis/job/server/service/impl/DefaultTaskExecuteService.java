@@ -136,7 +136,7 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void updateJobStatus(String jobExecutionId, TaskStatus status, Date updateTime) {
         List<String> statusList = launchedTaskDao.selectTaskStatusByJobExecutionId(jobExecutionId);
         if (statusList.stream().allMatch(taskStatus -> taskStatus.equalsIgnoreCase(TaskStatus.Success.name()))){
