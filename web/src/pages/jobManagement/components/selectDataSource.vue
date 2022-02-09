@@ -57,7 +57,7 @@
           <span>搜索库表</span>
           <a-input
             placeholder="按回车搜库表"
-            style="width: 300px;margin-top: 10px;margin-left:10px"
+            style="width: 300px;margin-top: 10px;margin-left:0"
             v-model:value="searchWord"
             @keyup.enter="filterTree(dsId)"
           ></a-input>
@@ -406,7 +406,7 @@ export default defineComponent({
 }
 .sds-wrap-b {
   min-height: 300px;
-  max-height: 500px;
+  max-height: 400px;
   overflow-y: auto;
 }
 
