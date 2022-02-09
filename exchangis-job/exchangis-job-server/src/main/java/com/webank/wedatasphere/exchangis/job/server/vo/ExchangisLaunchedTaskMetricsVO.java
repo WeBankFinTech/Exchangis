@@ -13,13 +13,14 @@ public class ExchangisLaunchedTaskMetricsVO {
 
     private String status;
 
-    private Map<String, Object> metrics;
+    private ExchangisMetricsVo metrics;
+    //private Map<String, Object> metrics;
 
     public ExchangisLaunchedTaskMetricsVO(){
 
     }
 
-    public ExchangisLaunchedTaskMetricsVO(String taskId, String name, String status, Map<String, Object> metrics){
+    public ExchangisLaunchedTaskMetricsVO(String taskId, String name, String status, ExchangisMetricsVo metrics){
         this.taskId = taskId;
         this.name = name;
         this.status = status;
@@ -50,11 +51,11 @@ public class ExchangisLaunchedTaskMetricsVO {
         this.status = status;
     }
 
-    public Map<String, Object> getMetrics() {
+    public ExchangisMetricsVo getMetrics() {
         return metrics;
     }
 
-    public void setMetrics(Map<String, Object> metrics) {
+    public void setMetrics(ExchangisMetricsVo metrics) {
         this.metrics = metrics;
     }
 }
