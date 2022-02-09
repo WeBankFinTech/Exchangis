@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.builder.engine;
+package com.webank.wedatasphere.exchangis.job.server.utils;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import org.apache.commons.lang.StringUtils;
@@ -8,22 +8,22 @@ import java.util.*;
 /**
  * Copy and simplify from 'Configuration' in 'DataX'
  */
-public class JsonConfiguration {
+public class JsonEntity {
     public static final String SPLIT_CHAR = ".";
     private Object root;
 
-    public static JsonConfiguration from(String json){
-        return new JsonConfiguration(json);
+    public static JsonEntity from(String json){
+        return new JsonEntity(json);
     }
 
-    public static JsonConfiguration from(Map<String, Object> map){
-        return new JsonConfiguration(map);
+    public static JsonEntity from(Map<String, Object> map){
+        return new JsonEntity(map);
     }
 
 
-    public static boolean searchKeyToInsertValue(JsonConfiguration configuration, String path,
+    public static boolean searchKeyToInsertValue(JsonEntity configuration, String path,
                                                  String key, Object value){
-        JsonConfiguration subConf = configuration.getConfiguration(path);
+        JsonEntity subConf = configuration.getConfiguration(path);
         Set<String> keys = subConf.getKeys();
         //search key
         for(String key0 : keys){
@@ -37,15 +37,15 @@ public class JsonConfiguration {
     }
 
 
-    public static List<String> searchKeyPaths(JsonConfiguration configuration, String path,
+    public static List<String> searchKeyPaths(JsonEntity configuration, String path,
                                               String key){
         return searchKeyPaths(configuration, path, key, Integer.MAX_VALUE);
     }
 
-    public static List<String> searchKeyPaths(JsonConfiguration configuration, String path,
+    public static List<String> searchKeyPaths(JsonEntity configuration, String path,
                                               String key, int depth){
         List<String> result = new ArrayList<>();
-        JsonConfiguration subConf = configuration.getConfiguration(path);
+        JsonEntity subConf = configuration.getConfiguration(path);
         Set<String> keys = subConf.getKeys(depth);
         keys.forEach(key0 -> {
             if(key0.equals(key) || key0.endsWith(SPLIT_CHAR + key)){
@@ -130,6 +130,31 @@ public class JsonConfiguration {
     }
 
     /**
+     * get double value by path
+     * @param path path
+     * @return
+     */
+    public Double getDouble(final String path){
+        String result = this.getString(path);
+        if(null == result){
+            return null;
+        }
+        return Double.valueOf(result);
+    }
+
+    /**
+     * get long value by path
+     * @param path path
+     * @return
+     */
+    public Long getLong(final String path){
+        String result = this.getString(path);
+        if(null == result){
+            return null;
+        }
+        return Long.valueOf(result);
+    }
+    /**
      * Get string value by path
      * @param path path
      * @return
@@ -152,7 +177,7 @@ public class JsonConfiguration {
         return collect;
     }
 
-    public JsonConfiguration getConfiguration(final String path){
+    public JsonEntity getConfiguration(final String path){
         Object object = this.get(path);
         if(null == object){
             return null;
@@ -267,8 +292,8 @@ public class JsonConfiguration {
     }
 
     private Object extract(final Object object){
-        if(object instanceof JsonConfiguration){
-            return ((JsonConfiguration)object).root;
+        if(object instanceof JsonEntity){
+            return ((JsonEntity)object).root;
         }
         if(object instanceof List){
             List<Object> result = new ArrayList<>();
@@ -356,11 +381,11 @@ public class JsonConfiguration {
             return false;
         }
     }
-    private JsonConfiguration(final String json){
+    private JsonEntity(final String json){
         this.root = Json.fromJson(json, Map.class);
     }
 
-    private JsonConfiguration(final Map<String, Object> jsonMap){
+    private JsonEntity(final Map<String, Object> jsonMap){
         this.root = new HashMap<>(jsonMap);
     }
 
