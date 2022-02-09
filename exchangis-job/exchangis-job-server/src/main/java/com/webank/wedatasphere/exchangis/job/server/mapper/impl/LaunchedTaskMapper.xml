@@ -179,7 +179,7 @@
         where job_execution_id = #{jobExecutionId}
     </select>
 
-    <select id="selectTaskStatusByJobExecutionId">
+    <select id="selectTaskStatusByJobExecutionId" resultType="String">
         <![CDATA[SELECT status FROM ]]>
         <include refid="TableName" />
         <![CDATA[ WHERE job_execution_id = #{jobExecutionId};]]>
