@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.vo;
 
-import java.util.Map;
+import com.webank.wedatasphere.exchangis.job.server.metrics.ExchangisMetricsVo;
 
 /**
  * @author tikazhang

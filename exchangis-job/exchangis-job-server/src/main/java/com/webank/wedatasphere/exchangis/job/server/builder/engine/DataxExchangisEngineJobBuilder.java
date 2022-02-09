@@ -12,6 +12,7 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
+import com.webank.wedatasphere.exchangis.job.server.utils.JsonEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.manager.label.utils.LabelUtils;
 import org.slf4j.Logger;
@@ -235,7 +236,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
 
     private Map<String, Object> buildContentParam(JobParamSet paramSet, JobParamSet transformJobParamSet,
                                                   JobParamDefine<List<Map<String, Object>>> columnJobParamDefine) {
-        JsonConfiguration item = JsonConfiguration.from("{}");
+        JsonEntity item = JsonEntity.from("{}");
         //Ignore temp params
         paramSet.toList(false).forEach(param -> item.set(param.getStrKey(), param.getValue()));
         if (Objects.nonNull(transformJobParamSet)) {
