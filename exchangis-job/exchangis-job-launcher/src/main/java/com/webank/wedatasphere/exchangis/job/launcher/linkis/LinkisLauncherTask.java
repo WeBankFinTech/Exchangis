@@ -9,6 +9,7 @@ import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskProgressInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.common.utils.Utils;
 import org.apache.linkis.computation.client.LinkisJobBuilder;
 import org.apache.linkis.computation.client.LinkisJobClient;
 import org.apache.linkis.computation.client.once.SubmittableOnceJob;
