@@ -86,14 +86,14 @@ public class JobBuilderTest {
         for (SubExchangisJob subExchangisJob : transformJob.getSubJobSet()) {
             String sourceDsId = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE).get("datasource").getValue().toString();
             String sinkDsId = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK).get("datasource").getValue().toString();
-            if (!ctx.containsDatasourceParam(sourceDsId)) {
-                Map<String, Object> sourceDsParam = getDsParam(sourceDsId);
-                ctx.putDatasourceParam(sourceDsId, sourceDsParam);
-            }
-            if (!ctx.containsDatasourceParam(sinkDsId)) {
-                Map<String, Object> sinkDsParam = getDsParam(sinkDsId);
-                ctx.putDatasourceParam(sinkDsId, sinkDsParam);
-            }
+//            if (!ctx.containsDatasourceParam(sourceDsId)) {
+//                Map<String, Object> sourceDsParam = getDsParam(sourceDsId);
+//                ctx.putDatasourceParam(sourceDsId, sourceDsParam);
+//            }
+//            if (!ctx.containsDatasourceParam(sinkDsId)) {
+//                Map<String, Object> sinkDsParam = getDsParam(sinkDsId);
+//                ctx.putDatasourceParam(sinkDsId, sinkDsParam);
+//            }
             // connectParams
             Optional.ofNullable(jobBuilderManager.doBuild(subExchangisJob,
                     SubExchangisJob.class, ExchangisEngineJob.class, ctx)).ifPresent(engineJobs::add);
