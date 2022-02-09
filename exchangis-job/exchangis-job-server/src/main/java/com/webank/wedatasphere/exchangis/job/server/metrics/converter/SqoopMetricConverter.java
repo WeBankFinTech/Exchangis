@@ -24,7 +24,7 @@ public class SqoopMetricConverter extends AbstractMetricConverter implements Abs
 
     @Override
     public String indicatorKey() {
-        return "TaskCounter";
+        return JsonEntity.encodePath("org.apache.hadoop.mapreduce.TaskCounter");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SqoopMetricConverter extends AbstractMetricConverter implements Abs
             if (StringUtils.isNotBlank(memoryUnit)){
                 String[] memory = memoryUnit.split(" ");
                 resourceUsed.setMemory(memory.length >= 2 ?
-                        MemUtils.convertToMB(Long.parseLong(memory[0]), memory[1]) : Long.parseLong(memory[0]));
+                        MemUtils.convertToMB((long) Double.parseDouble(memory[0]), memory[1]) : (long) Double.parseDouble(memory[0]));
             }
             String cpuVCores = nodeResourceJson.getString("driver.cpu");
             if (StringUtils.isNotBlank(cpuVCores)){
@@ -55,10 +55,10 @@ public class SqoopMetricConverter extends AbstractMetricConverter implements Abs
     @Override
     public ExchangisMetricsVo.Traffic parseTraffic(String key, JsonEntity rawValue) {
         ExchangisMetricsVo.Traffic traffic = new ExchangisMetricsVo.Traffic();
-        Double records = rawValue.getDouble("TaskCounter.MAP_OUTPUT_RECORDS");
+        Double records = rawValue.getDouble(JsonEntity.encodePath("org.apache.hadoop.mapreduce.TaskCounter") + ".MAP_OUTPUT_RECORDS");
         Double runTime = rawValue.getDouble("MetricsRunTime");
         if (Objects.nonNull(records) && Objects.nonNull(runTime)){
-            traffic.setFlow(records / runTime);
+            traffic.setFlow(records / runTime * 1000);
         }
         return traffic;
     }
