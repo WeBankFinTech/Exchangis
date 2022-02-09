@@ -4,6 +4,7 @@ public interface ElementUI<T> {
     String TEXTAREA = "TEXTAREA";
     String INPUT = "INPUT";
     String OPTION = "OPTION";
+    String MAP = "MAP";
 
     String getField();
 

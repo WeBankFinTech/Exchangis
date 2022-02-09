@@ -62,6 +62,7 @@
                   v-bind:param="item"
                   @updateInfo="updateSourceParams"
                   :style="styleObject"
+                  :data="dataSource.dataSourceIds.source"
                 />
               </a-form-item>
             </a-form>
@@ -108,6 +109,7 @@
                   v-bind:param="item"
                   @updateInfo="updateSinkParams"
                   :style="styleObject"
+                  :data="dataSource.dataSourceIds.sink"
                 />
               </a-form-item>
             </a-form>
