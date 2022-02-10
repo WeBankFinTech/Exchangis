@@ -35,10 +35,10 @@ public class StatusUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
         AccessibleLauncherTask launcherTask = launchedExchangisTask.getLauncherTask();
         try{
             TaskProgressInfo progressInfo = launcherTask.getProgressInfo();
-            this.taskManager.refreshRunningTaskStatus(launchedExchangisTask, launcherTask.getLocalStatus());
             if (Objects.nonNull(progressInfo)){
                 this.taskManager.refreshRunningTaskProgress(launchedExchangisTask, progressInfo);
             }
+            this.taskManager.refreshRunningTaskStatus(launchedExchangisTask, launcherTask.getLocalStatus());
         } catch (ExchangisTaskLaunchException e){
             throw new ExchangisSchedulerException("Fail to update status(progress) for task: [" + launchedExchangisTask.getTaskId() + "]", e);
         }

@@ -205,4 +205,10 @@
         <include refid="TableName" />
         <![CDATA[ WHERE task_id = #{taskId}; ]]>
     </select>
+
+    <select id="sumProgressByJobExecutionId" resultType="Float">
+        <![CDATA[SELECT SUM(progress) FROM ]]>
+        <include refid="TableName"/>
+        <![CDATA[ WHERE job_execution_id = #{jobExecutionId};]]>
+    </select>
 </mapper>

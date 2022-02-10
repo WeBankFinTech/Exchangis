@@ -26,6 +26,9 @@ import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGenerator;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.GenerationSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
+import com.webank.wedatasphere.exchangis.job.server.metrics.ExchangisMetricsVo;
+import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricConverterFactory;
+import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricsConverter;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.commons.lang.StringUtils;
@@ -38,8 +41,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.*;
 
-import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.JOB_EXCEPTION_CODE;
-import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.LOG_OP_ERROR;
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.*;
 
 @Service
 public class DefaultJobExecuteService implements JobExecuteService {
@@ -78,6 +80,12 @@ public class DefaultJobExecuteService implements JobExecuteService {
      */
     @Resource
     private ExchangisTaskLaunchManager launchManager;
+
+    /**
+     * Metrics converter factory
+     */
+    @Resource
+    private MetricConverterFactory<ExchangisMetricsVo> metricConverterFactory;
 
     @Override
     public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) {
@@ -138,17 +146,24 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskId, String jobExecutionId) throws ExchangisJobServerException {
+    public ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskId, String jobExecutionId, String userName) throws ExchangisJobServerException {
         LaunchedExchangisTaskEntity launchedExchangisTaskEntity = launchedTaskDao.getLaunchedTaskMetrics(jobExecutionId, taskId);
-        if (launchedExchangisTaskEntity == null) {
-            throw new ExchangisJobServerException(31100, "Get task metrics happened Exception (獲取task指标信息为空), " + "jobExecutionId = " + jobExecutionId+ "taskId = " + taskId);
+        if (Objects.isNull(launchedExchangisTaskEntity) || !hasExecuteJobAuthority(jobExecutionId, userName)) {
+            throw new ExchangisJobServerException(METRICS_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
         }
         ExchangisLaunchedTaskMetricsVO exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVO();
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
         exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
-        //exchangisLaunchedTaskVo.setMetrics(launchedExchangisTaskEntity.getMetricsMap());
-
+        MetricsConverter<ExchangisMetricsVo> metricsConverter = metricConverterFactory.getOrCreateMetricsConverter(launchedExchangisTaskEntity.getEngineType());
+        if (Objects.nonNull(metricsConverter)){
+            try {
+                exchangisLaunchedTaskVo.setMetrics(metricsConverter.convert(launchedExchangisTaskEntity.getMetricsMap()));
+            }catch (ExchangisJobServerException e){
+                // Print the problem in convert metrics vo
+                LOG.warn("Problem occurred in convert of metrics vo", e);
+            }
+        }
         return exchangisLaunchedTaskVo;
     }
 

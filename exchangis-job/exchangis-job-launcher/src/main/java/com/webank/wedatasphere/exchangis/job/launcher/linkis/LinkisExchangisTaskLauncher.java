@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
+import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
@@ -32,8 +33,8 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
 
     @Override
     public void init(ExchangisTaskLaunchManager jobLaunchManager) {
-        this.engineVersions.put("sqoop", "1.4.6");
-        this.engineVersions.put("datax", "3.0.0");
+        this.engineVersions.put(EngineTypeEnum.SQOOP.name().toLowerCase(), "1.4.6");
+        this.engineVersions.put(EngineTypeEnum.DATAX.name().toLowerCase(), "3.0.0");
         LinkisJobClient.config().setDefaultAuthToken(ExchangisLauncherConfiguration.LINKIS_TOKEN_VALUE.getValue());
         LinkisJobClient.config().setDefaultServerUrl(ExchangisLauncherConfiguration.LINKIS_SERVER_URL.getValue());
     }

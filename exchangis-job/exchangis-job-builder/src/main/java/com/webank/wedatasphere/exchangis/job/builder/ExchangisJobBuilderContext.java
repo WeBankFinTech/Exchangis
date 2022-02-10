@@ -58,10 +58,6 @@ public class ExchangisJobBuilderContext {
         return this.datasourceParams.get(datasourceId);
     }
 
-    public boolean containsDatasourceParam(String datasourceId) {
-        return this.datasourceParams.containsKey(datasourceId);
-    }
-
     public void putEnv(String name, Object value) {
         this.env.put(name, value);
     }
