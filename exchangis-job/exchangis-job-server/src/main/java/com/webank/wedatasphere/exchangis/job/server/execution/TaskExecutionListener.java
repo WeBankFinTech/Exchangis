@@ -23,6 +23,8 @@ public interface TaskExecutionListener extends ExchangisListener<TaskExecutionEv
             onLaunch((TaskLaunchEvent)event);
         } else if (event instanceof TaskDeleteEvent){
             onDelete((TaskDeleteEvent)event);
+        } else if (event instanceof TaskProgressUpdateEvent){
+            onProgressUpdate((TaskProgressUpdateEvent)event);
         }
     }
 

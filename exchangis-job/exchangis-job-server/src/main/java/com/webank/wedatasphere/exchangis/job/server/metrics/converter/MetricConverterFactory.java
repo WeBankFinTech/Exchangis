@@ -5,14 +5,14 @@ import com.webank.wedatasphere.exchangis.job.server.metrics.MetricsVo;
 
 /**
  * Metric ConverterFactory
+ * <T> Metrics vo
  */
-public interface MetricConverterFactory {
+public interface MetricConverterFactory<T extends MetricsVo> {
 
     /**
      *  getConverter
-     * @param metricsVoClass vo class
-     * @param <T> Metrics converter
-     * @return
+     * @param engineType engine type
+     * @return converter
      */
-    <T extends MetricsVo> MetricsConverter <T> getOrCreateMetricsConverter(Class<T> metricsVoClass, String engineType);
+     MetricsConverter<T> getOrCreateMetricsConverter(String engineType);
 }

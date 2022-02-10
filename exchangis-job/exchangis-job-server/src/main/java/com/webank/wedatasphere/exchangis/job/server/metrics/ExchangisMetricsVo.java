@@ -1,90 +1,105 @@
-package com.webank.wedatasphere.exchangis.job.server.vo;
+package com.webank.wedatasphere.exchangis.job.server.metrics;
 
-import java.util.Map;
 
 /**
- * @author tikazhang
- * @Date 2022/2/7 19:33
  */
-public class ExchangisMetricsVo {
-    private Map<String, resourceUsed> resourceUsed;
+public class ExchangisMetricsVo implements MetricsVo{
 
-    private Map<String, traffic> traffic;
+    /**
+     * Resource used
+     */
+    private ResourceUsed resourceUsed;
 
-    private Map<String, indicator> indicator;
+    /**
+     * Traffic
+     */
+    private Traffic traffic;
+
+    /**
+     * Indicator
+     */
+    private Indicator indicator;
 
     public ExchangisMetricsVo(){
 
     }
 
-    public ExchangisMetricsVo(Map<String, resourceUsed> resourceUsed, Map<String, traffic> traffic, Map<String, indicator> indicator) {
+    public ExchangisMetricsVo(ResourceUsed resourceUsed, Traffic traffic, Indicator indicator) {
         this.resourceUsed = resourceUsed;
         this.traffic = traffic;
         this.indicator = indicator;
     }
 
-    public Map<String, ExchangisMetricsVo.resourceUsed> getResourceUsed() {
+    public ResourceUsed getResourceUsed() {
         return resourceUsed;
     }
 
-    public void setResourceUsed(Map<String, ExchangisMetricsVo.resourceUsed> resourceUsed) {
+    public void setResourceUsed(ResourceUsed resourceUsed) {
         this.resourceUsed = resourceUsed;
     }
 
-    public Map<String, ExchangisMetricsVo.traffic> getTraffic() {
+    public Traffic getTraffic() {
         return traffic;
     }
 
-    public void setTraffic(Map<String, ExchangisMetricsVo.traffic> traffic) {
+    public void setTraffic(Traffic traffic) {
         this.traffic = traffic;
     }
 
-    public Map<String, ExchangisMetricsVo.indicator> getIndicator() {
+    public Indicator getIndicator() {
         return indicator;
     }
 
-    public void setIndicator(Map<String, ExchangisMetricsVo.indicator> indicator) {
+    public void setIndicator(Indicator indicator) {
         this.indicator = indicator;
     }
 
-    public static class resourceUsed {
-        private String cpu;
+    public static class ResourceUsed {
+        private double cpu = 0.0;
 
-        private String memory;
+        private long memory = 0;
 
-        public resourceUsed(String cpu, String memory){
+        public ResourceUsed(double cpu, long memory){
             this.cpu = cpu;
             this.memory = memory;
         }
 
-        public String getCpu() {
+        public ResourceUsed(){
+
+        }
+
+        public double getCpu() {
             return cpu;
         }
 
-        public void setCpu(String cpu) {
+        public void setCpu(double cpu) {
             this.cpu = cpu;
         }
 
-        public String getMemory() {
+        public long getMemory() {
             return memory;
         }
 
-        public void setMemory(String memory) {
+        public void setMemory(long memory) {
             this.memory = memory;
         }
     }
 
-    public static class traffic{
-        private String source;
+    public static class Traffic{
+        private String source = "source";
 
-        private String sink;
+        private String sink = "sink";
 
         private double flow;
 
-        public traffic(String source, String sink, double flow){
+        public Traffic(String source, String sink, double flow){
             this.source = source;
             this.sink = sink;
             this.flow = flow;
+        }
+
+        public Traffic(){
+
         }
 
         public String getSource() {
@@ -112,20 +127,23 @@ public class ExchangisMetricsVo {
         }
     }
 
-    public static class indicator{
-        private Long exchangedRecords;
+    public static class Indicator{
+        private long exchangedRecords = 0;
 
-        private Long errorRecords;
+        private long errorRecords = 0;
 
-        private Long ignoredRecords;
+        private long ignoredRecords = 0;
 
-        public indicator(Long exchangedRecords, Long errorRecords, Long ignoredRecords){
+        public Indicator(long exchangedRecords, long errorRecords, long ignoredRecords){
             this.exchangedRecords = exchangedRecords;
             this.errorRecords = errorRecords;
             this.ignoredRecords = ignoredRecords;
         }
 
-        public Long getExchangedRecords() {
+        public Indicator(){
+
+        }
+        public long getExchangedRecords() {
             return exchangedRecords;
         }
 
@@ -133,7 +151,7 @@ public class ExchangisMetricsVo {
             this.exchangedRecords = exchangedRecords;
         }
 
-        public Long getErrorRecords() {
+        public long getErrorRecords() {
             return errorRecords;
         }
 
@@ -141,7 +159,7 @@ public class ExchangisMetricsVo {
             this.errorRecords = errorRecords;
         }
 
-        public Long getIgnoredRecords() {
+        public long getIgnoredRecords() {
             return ignoredRecords;
         }
 
