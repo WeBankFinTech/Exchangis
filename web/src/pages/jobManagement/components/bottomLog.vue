@@ -44,7 +44,7 @@
                         <div>CPU使用</div>
                       </div>
                       <div class="core-block" style="background-color: #2e92f7">
-                        <div>{{metricsInfo[progress.taskId].resourceUsed.memory}} GB</div>
+                        <div>{{metricsInfo[progress.taskId].resourceUsed.memory}} MB</div>
                         <div>内存使用</div>
                       </div>
                     </div>
