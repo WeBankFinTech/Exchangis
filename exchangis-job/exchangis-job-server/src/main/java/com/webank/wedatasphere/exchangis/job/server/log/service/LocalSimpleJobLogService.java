@@ -205,8 +205,11 @@ public class LocalSimpleJobLogService implements JobLogService {
 
 
     private boolean isIncludeLine(String line, List<String> onlyKeywordList, List<String> ignoreKeywordList){
-        return (onlyKeywordList.isEmpty() && ignoreKeywordList.isEmpty()) || (!onlyKeywordList.isEmpty() && onlyKeywordList.stream().anyMatch(line::contains))
-                || (!ignoreKeywordList.isEmpty() && ignoreKeywordList.stream().noneMatch(line::contains));
+        boolean accept = ignoreKeywordList.isEmpty() || ignoreKeywordList.stream().noneMatch(line::contains);
+        if (accept){
+            accept = onlyKeywordList.isEmpty() || onlyKeywordList.stream().anyMatch(line::contains);
+        }
+        return accept;
     }
 
     /**

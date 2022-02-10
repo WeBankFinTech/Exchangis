@@ -63,7 +63,10 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      * //TODO Get the file type from service
      * Whether hcatalog
      */
-    private static final JobParamDefine<Boolean> IS_USE_HCATALOG = JobParams.define("sqoop.use.hcatalog", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) -> true);
+    private static final JobParamDefine<Boolean> IS_USE_HCATALOG = JobParams.define("sqoop.use.hcatalog", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) ->{
+
+        return true;
+    });
 
     /**
      * Driver default 'com.mysql.jdbc.Driver'
