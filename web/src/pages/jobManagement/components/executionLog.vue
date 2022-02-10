@@ -118,7 +118,7 @@ export default defineComponent({
       if (logs.isEnd) {
         clearInterval(showLogTimer)
         showLogTimer = null
-        return message.warning("已经在最后一页")
+        return message.warning("查询日志结束")
       }
       const _updateLog = (res) => {
         logs.logs = res.logs
@@ -220,6 +220,9 @@ export default defineComponent({
     }
 
     const onSearch3 = (keyword) => {
+      if (!/^[1-9]\d*$/.test(keyword)) {
+        return message.error('请正确输入')
+      }
       lastRows = keyword
       resetData()
       _showInfoLog(curLogId)
