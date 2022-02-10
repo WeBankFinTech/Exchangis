@@ -81,5 +81,5 @@ public interface LaunchedJobDao {
      * get All launchJob
      * @return job entity list
      */
-    List<LaunchedExchangisJobEntity> getAllLaunchedJob(@Param("jobId") long jobId, @Param("jobName") String jobName, @Param("status") String status, @Param("launchStartTime") Date launchStartTime, @Param("launchEndTime") Date launchEndTime);
+    List<LaunchedExchangisJobEntity> getAllLaunchedJob(@Param("jobId") Long jobId, @Param("jobName") String jobName, @Param("status") String status, @Param("launchStartTime") Date launchStartTime, @Param("launchEndTime") Date launchEndTime);
 }

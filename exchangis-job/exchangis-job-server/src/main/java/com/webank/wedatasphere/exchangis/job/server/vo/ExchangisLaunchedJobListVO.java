@@ -25,6 +25,10 @@ public class ExchangisLaunchedJobListVO {
 
     private Date lastUpdateTime;
 
+    public ExchangisLaunchedJobListVO(){
+
+    }
+
     public ExchangisLaunchedJobListVO(String jobExecutionId, String executeNode, String name, Date createTime, Long flow, String executeUser, String status, double progress, Date lastUpdateTime){
         this.jobExecutionId = jobExecutionId;
         this.executeNode = executeNode;

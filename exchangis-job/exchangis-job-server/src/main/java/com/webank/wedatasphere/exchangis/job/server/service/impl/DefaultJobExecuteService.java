@@ -229,33 +229,39 @@ public class DefaultJobExecuteService implements JobExecuteService {
     public List<ExchangisLaunchedJobListVO> getExecutedJobList(Long jobId, String jobName, String status,
                                                                Long launchStartTime, Long launchEndTime, Integer  current, Integer size) {
         List<ExchangisLaunchedJobListVO> jobList = new ArrayList<>();
-        LOG.info("jobList information: " + jobId + jobName + status + launchStartTime + launchEndTime);
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
         List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobId, jobName, status, startTime, endTime);
-        LOG.info("jobEntitylist information: ", jobEntitylist);
         if(jobEntitylist != null) {
             try {
-                jobEntitylist.forEach(jobEntity -> {
-                    ExchangisLaunchedJobListVO exchangisJobVo = modelMapper.map(jobEntity, ExchangisLaunchedJobListVO.class);
-                    Map<String, Object> sourceObject = Json.fromJson(jobEntity.getExchangisJobEntity().getSource(), Map.class);
-                    exchangisJobVo.setExecuteNode(sourceObject.get("execute_node").toString());
-                    List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(jobEntity.getJobExecutionId());
+                for (int i = 0; i < jobEntitylist.size(); i++) {
+                    ExchangisLaunchedJobListVO exchangisJobVo = modelMapper.map(jobEntitylist.get(i), ExchangisLaunchedJobListVO.class);
+                    if(jobEntitylist.get(i).getExchangisJobEntity() == null || jobEntitylist.get(i).getExchangisJobEntity().getSource() == null) {
+                        exchangisJobVo.setExecuteNode("-");
+                    }
+                    else {
+                        Map<String, Object> sourceObject = Json.fromJson(jobEntitylist.get(i).getExchangisJobEntity().getSource(), Map.class);
+                        exchangisJobVo.setExecuteNode(sourceObject.get("execute_node").toString());
+                    }
+                    List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(jobEntitylist.get(i).getJobExecutionId());
                     if(launchedExchangisTaskEntities == null){
                         exchangisJobVo.setFlow((long) 0);
                     }
                     else {
                         int flows = 0;
                         int taskNum = launchedExchangisTaskEntities.size();
-                        for (int i = 0; i < taskNum; i++) {
-                            Map<String, Object> flowMap = Json.fromJson(launchedExchangisTaskEntities.get(i).getMetricsMap().get("traffic").toString(), Map.class);
+                        for (int j = 0; j < taskNum; j++) {
+                            if(launchedExchangisTaskEntities.get(j).getMetricsMap() == null){
+                                flows += 0;
+                                continue;
+                            }
+                            Map<String, Object> flowMap = Json.fromJson(launchedExchangisTaskEntities.get(j).getMetricsMap().get("traffic").toString(), Map.class);
                             flows += flowMap == null ? 0 : Integer.parseInt(flowMap.get("flow").toString());
                         }
-                        exchangisJobVo.setFlow((long) (flows / taskNum));
+                        exchangisJobVo.setFlow(taskNum == 0 ? 0 : (long) (flows / taskNum));
                     }
                     jobList.add(exchangisJobVo);
-                        }
-                );
+                }
             } catch (Exception e) {
                 LOG.error("Exception happened while get JobLists mapping to Vo(获取job列表映射至页面是出错，请校验任务信息), " + "message: " + e.getMessage(), e);
             }
