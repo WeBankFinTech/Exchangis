@@ -39,6 +39,9 @@ export const request = {
   },
   errorHandler: {
     default(error) {
+      if (error.message && error.message.indexOf('timeout of') > -1) {
+        return message.error('请求超时')
+      }
       console.log(error, '系统异常')
       message.error(error?.response?.data?.message || "系统异常");
     },
