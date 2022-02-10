@@ -287,6 +287,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String user = SecurityFilter.getLoginUsername(request);
         LOGGER.info("updateDataSource userName:" + user);
 
+        LOGGER.info("DataSourceTypeId:" + vo.getDataSourceTypeId());
         ExchangisDataSource exchangisDataSource = context.getExchangisDataSource(vo.getDataSourceTypeId());
         if (Objects.isNull(exchangisDataSource)) {
             throw new ExchangisDataSourceException(30401, "exchangis.datasource.null");
