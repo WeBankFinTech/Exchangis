@@ -84,7 +84,7 @@ public class ExchangisDataSourceRestfulApi {
 
     // update datasource and parameters (insert new record in datasource_version table)
     @RequestMapping( value = "datasources/{id}", method = RequestMethod.PUT)
-    public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, Map<String, Object> json) throws Exception {
+    public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, @RequestBody Map<String, Object> json) throws Exception {
         return this.exchangisDataSourceService.updateDataSource(request, /*type, */id, json);
     }
 
