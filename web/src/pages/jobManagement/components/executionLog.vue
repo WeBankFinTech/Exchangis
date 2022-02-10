@@ -151,7 +151,7 @@ export default defineComponent({
           id: curId,
           fromLine,
           onlyKeywords: searchKeyword,
-          ignoreKeywords: ignoreKeyword,
+          ignoreKeywords: ignoreKeyword || '[main],[SpringContextShutdownHook]',
           lastRows: lastRows
         })
           .then((res) => {
@@ -167,7 +167,7 @@ export default defineComponent({
           id: id,
           fromLine,
           onlyKeywords: searchKeyword,
-          ignoreKeywords: ignoreKeyword,
+          ignoreKeywords: ignoreKeyword || '[main],[SpringContextShutdownHook]',
           lastRows: lastRows
         })
           .then((res) => {
@@ -199,6 +199,7 @@ export default defineComponent({
     }
 
     const changeData = (curId) => {
+      curLogId = curId
       pauseLog.isPause = false
       _showInfoLog(curId)
       showLogTimer = setInterval(() => {
