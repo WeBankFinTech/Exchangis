@@ -7,7 +7,7 @@
         <a-row :gutter="24">
           <a-col :span="8">
             <a-form-item label="作业ID">
-              <a-input v-model:value="formState.jobId" placeholder="请输入"/>
+              <a-input v-model:value="formState.jobExecutionId" placeholder="请输入"/>
             </a-form-item>
           </a-col>
 
@@ -149,9 +149,9 @@ import bottomLog from '../jobManagement/components/bottomLog';
 const columns = [
   {
     title: "执行ID",
-    dataIndex: "jobId",
+    dataIndex: "jobExecutionId",
     slots: {
-      customRender: "jobId",
+      customRender: "jobExecutionId",
     },
   },
   {
@@ -209,6 +209,7 @@ export default {
   setup() {
     const state = reactive({
       formState: {
+        jobExecutionId: '',
         jobId: "",
         jobName: "",
         status: "",
@@ -294,6 +295,7 @@ export default {
       state.formState["taskName"] = "";
       state.formState["status"] = "";
       state.formState["time"] = [];
+      state.formState['jobExecutionId'] = ''
     };
 
     const onChange = (page) => {
