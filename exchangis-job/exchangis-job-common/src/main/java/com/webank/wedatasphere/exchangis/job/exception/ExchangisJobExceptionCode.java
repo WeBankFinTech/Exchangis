@@ -4,6 +4,7 @@ package com.webank.wedatasphere.exchangis.job.exception;
  * Exception code, range:(31000 ~ 31999), the same as "ExchangisDataSourceExceptionCode"
  */
 public enum ExchangisJobExceptionCode {
+    METRICS_OP_ERROR(31886),
     TASK_LAUNCH_NOT_EXIST(31887),
     TASK_LAUNCH_ERROR(31888),
     TASK_PARM_ERROR(31889),

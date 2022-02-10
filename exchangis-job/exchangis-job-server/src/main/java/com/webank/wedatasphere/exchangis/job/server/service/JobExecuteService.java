@@ -33,7 +33,7 @@ public interface JobExecuteService {
      * @param jobExecutionId      the job ExecutionId
      * @return the task launched metrics
      */
-    ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskid, String jobExecutionId) throws ExchangisJobServerException;
+    ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskid, String jobExecutionId, String userName) throws ExchangisJobServerException;
 
     /**
      * Gets job progress info
