@@ -241,9 +241,9 @@ export const getSyncHistoryJobList = (body) => {
   });
 };
 // 删除同步历史
-export const delSyncHistory = (taskId) => {
-  return request(`/tasks/${taskId}`, null, {
-    method: "DELETE",
+export const delSyncHistory = (jobExecutionId) => {
+  return request(`/job/${jobExecutionId}/deleteJob`, {}, {
+    method: "POST",
   });
 };
 // 读取Task限速配置
