@@ -68,7 +68,6 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      * Whether hcatalog
      */
     private static final JobParamDefine<Boolean> IS_USE_HCATALOG = JobParams.define("sqoop.use.hcatalog", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) ->{
-
         return true;
     });
 
