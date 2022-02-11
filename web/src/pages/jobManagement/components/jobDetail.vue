@@ -259,7 +259,7 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Running">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress" />
+                  <a-progress status="active" :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
@@ -285,7 +285,7 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Failed">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress" />
+                  <a-progress status="active" :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
@@ -295,7 +295,7 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Cancelled">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress" />
+                  <a-progress status="active" :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
@@ -305,7 +305,7 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Success">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress" />
+                  <a-progress status="active" :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
