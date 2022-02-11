@@ -139,16 +139,16 @@ public class ExchangisJobExecuteController {
     }
 
     @RequestMapping(value = "/listJobs", method = RequestMethod.GET)
-    public Message listJobs(@RequestParam(value = "jobId", required = false) Long jobId,
+    public Message listJobs(@RequestParam(value = "jobExecutionId", required = false) String jobExecutionId,
                              @RequestParam(value = "jobName", required = false) String jobName,
                              @RequestParam(value = "status", required = false) String status,
                              @RequestParam(value = "launchStartTime", required = false) Long launchStartTime,
                              @RequestParam(value = "launchEndTime", required = false) Long launchEndTime,
-                             @RequestParam(value = "current", required = false) Integer current,
-                             @RequestParam(value = "size", required = false) Integer size) {
-        List<ExchangisLaunchedJobListVO> jobList = executeService.getExecutedJobList(jobId, jobName, status,
+                             @RequestParam(value = "current", required = false) int current,
+                             @RequestParam(value = "size", required = false) int size) {
+        List<ExchangisLaunchedJobListVO> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
                 launchStartTime, launchEndTime, current, size);
-        int total = executeService.count(jobId, jobName, status, launchStartTime, launchEndTime);
+        int total = executeService.count(jobExecutionId, jobName, status, launchStartTime, launchEndTime);
         Message message = Message.ok("Submitted succeed(提交成功)！");
         message.setMethod("/api/rest_j/v1/exchangis/job/execution/listJobs");
         message.data("jobList", jobList);
@@ -186,5 +186,15 @@ public class ExchangisJobExecuteController {
      */
     private boolean hasAuthority(String username, ExchangisJobInfo jobInfo){
         return username.equals(jobInfo.getCreateUser());
+    }
+
+    @RequestMapping( value = "/{jobExecutionId}/deleteJob", method = RequestMethod.POST)
+    public Message ExecutedJobDelete(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobServerException {
+        //ExchangisLaunchedJobEntity jobAndTaskStatus = exchangisExecutionService.getExecutedJobAndTaskStatus(jobExecutionId);
+        executeService.deleteJob(jobExecutionId);
+        Message message = Message.ok("Kill succeed(停止成功)！");
+        message.setMethod("/api/rest_j/v1/exchangis/job/" + jobExecutionId + "/deleteJob");
+        message.data("jobExecutionId", jobExecutionId);
+        return message;
     }
 }
