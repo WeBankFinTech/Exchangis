@@ -211,4 +211,16 @@
         <include refid="TableName"/>
         <![CDATA[ WHERE job_execution_id = #{jobExecutionId};]]>
     </select>
+
+    <select id="getTaskStatusList" parameterType="java.lang.String" resultType="java.lang.String">
+        select status
+        from
+        <include refid="TableName" />
+        where job_execution_id = #{jobExecutionId}
+    </select>
+
+    <delete id="deleteTask">
+        DELETE FROM <include refid="TableName"/> WHERE
+        job_execution_id = #{jobExecutionId}
+    </delete>
 </mapper>
