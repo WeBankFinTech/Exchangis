@@ -25,6 +25,8 @@ import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
 import org.apache.linkis.datasourcemanager.common.util.json.Json;
 import org.apache.linkis.httpclient.response.Result;
 import org.apache.linkis.server.security.SecurityFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -35,6 +37,9 @@ public class AbstractDataSourceService {
     protected final ExchangisDataSourceContext context;
     protected final ExchangisJobParamConfigMapper exchangisJobParamConfigMapper;
     protected final ExchangisJobInfoMapper exchangisJobInfoMapper;
+
+    private final static Logger LOG = LoggerFactory.getLogger(AbstractDataSourceService.class);
+
 
     public AbstractDataSourceService(ExchangisDataSourceContext context, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper, ExchangisJobInfoMapper exchangisJobInfoMapper) {
         this.context = context;
@@ -278,7 +283,13 @@ public class AbstractDataSourceService {
             case ElementUI.INPUT:
                 return fillInputElementUIValue(config, String.valueOf(value));
             case ElementUI.MAP:
-                return fillMapElementUIValue(config, (Map<String, Object>) value);
+                Map<String, Object> mapElement = null;
+                try {
+                    mapElement = Json.fromJson(String.valueOf(value), Map.class);
+                } catch (Exception e) {
+                    LOG.info("Exception happened while parse json"+ "Config value: " + value + "message: " + e.getMessage(), e);
+                }
+                return fillMapElementUIValue(config, mapElement);
             default:
                 return null;
         }

@@ -118,4 +118,19 @@ public interface LaunchedTaskDao {
      * @return
      */
     String getLaunchedTaskStatus(@Param("taskId") String taskId);
+
+    /**
+     * search TaskStatusList
+     * @param
+     */
+
+    List<String> getTaskStatusList(@Param("jobExecutionId") String jobExecutionId);
+
+    /**
+     * delete task
+     * @param
+     */
+
+    void deleteTask(@Param("jobExecutionId") String jobExecutionId);
+
 }
