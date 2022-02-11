@@ -190,7 +190,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
             throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
         }
         LogResult logResult = jobLogService.logsFromPageAndPath(launchedExchangisJob.getLogPath(), logQuery);
-        return resultToCategoryLog(logResult, launchedExchangisJob.getStatus());
+        return resultToCategoryLog(logQuery, logResult, launchedExchangisJob.getStatus());
     }
 
     @Override
@@ -198,12 +198,12 @@ public class DefaultJobExecuteService implements JobExecuteService {
             throws ExchangisJobServerException, ExchangisTaskLaunchException {
         LaunchedExchangisTaskEntity launchedTaskEntity = this.launchedTaskDao.getLaunchedTaskEntity(taskId);
         if (Objects.isNull(launchedTaskEntity)){
-            return resultToCategoryLog(new LogResult(0, false, new ArrayList<>()), TaskStatus.Inited);
+            return resultToCategoryLog(logQuery, new LogResult(0, false, new ArrayList<>()), TaskStatus.Inited);
         }
         if (StringUtils.isBlank(launchedTaskEntity.getLinkisJobId())){
             TaskStatus status = launchedTaskEntity.getStatus();
             // Means that the task is not ready or task submit failed
-            return resultToCategoryLog(new LogResult(0, TaskStatus.isCompleted(status), new ArrayList<>()), status);
+            return resultToCategoryLog(logQuery, new LogResult(0, TaskStatus.isCompleted(status), new ArrayList<>()), status);
         }
         if (!hasExecuteJobAuthority(jobExecutionId, userName)){
             throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Not have permission of accessing task [" + taskId + "]", null);
@@ -222,7 +222,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
                     launchedTask.getEngineType() +"]", null);
         }
         AccessibleLauncherTask accessibleLauncherTask = taskLauncher.launcherTask(launchedTask);
-        return resultToCategoryLog(accessibleLauncherTask.queryLogs(logQuery), launchedTaskEntity.getStatus());
+        return resultToCategoryLog(logQuery, accessibleLauncherTask.queryLogs(logQuery), launchedTaskEntity.getStatus());
     }
 
     @Override
@@ -304,11 +304,12 @@ public class DefaultJobExecuteService implements JobExecuteService {
      * @param status status
      * @return category log
      */
-    private ExchangisCategoryLogVo resultToCategoryLog(LogResult logResult, TaskStatus status){
+    private ExchangisCategoryLogVo resultToCategoryLog(LogQuery logQuery, LogResult logResult, TaskStatus status){
         ExchangisCategoryLogVo categoryLogVo = new ExchangisCategoryLogVo();
         boolean noLogs = logResult.getLogs().isEmpty();
-        // TODO Cannot find the log
-        if (noLogs){
+        if (Objects.nonNull(logQuery.getLastRows())){
+            logResult.setEnd(true);
+        }else if (noLogs){
 //            logResult.getLogs().add("<<The log content is empty>>");
             if (TaskStatus.isCompleted(status)){
                 logResult.setEnd(true);
