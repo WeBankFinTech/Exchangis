@@ -346,9 +346,5 @@ public class DefaultJobExecuteService implements JobExecuteService {
         }
     }
 
-   /* public static void main(String[] args) {
-        ExchangisJobParamsContent.ExchangisJobParamsItem jobParamsContent = new ExchangisJobParamsContent.ExchangisJobParamsItem();
-        jobParamsContent = Json.fromJson("", jobParamsContent.getClass());
-        System.out.println(jobParamsContent.getConfigValue());
-    }*/
+
 }
