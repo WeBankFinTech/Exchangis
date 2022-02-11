@@ -159,7 +159,7 @@ export default defineComponent({
           })
           .catch((err) => {
             console.log(err)
-            message.error("获取日志失败")
+            //message.error("获取日志失败")
           })
       } else {
         getTaskExecLog({
