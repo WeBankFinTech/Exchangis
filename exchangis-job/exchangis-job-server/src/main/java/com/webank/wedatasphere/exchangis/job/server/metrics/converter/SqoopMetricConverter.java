@@ -5,6 +5,7 @@ import com.webank.wedatasphere.exchangis.job.server.utils.JsonEntity;
 import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -28,7 +29,7 @@ public class SqoopMetricConverter extends AbstractMetricConverter implements Abs
     }
 
     @Override
-    protected MetricsParser getParser() {
+    protected AbstractMetricConverter.MetricsParser getParser() {
         return this;
     }
 
@@ -58,7 +59,7 @@ public class SqoopMetricConverter extends AbstractMetricConverter implements Abs
         Double records = rawValue.getDouble(JsonEntity.encodePath("org.apache.hadoop.mapreduce.TaskCounter") + ".MAP_OUTPUT_RECORDS");
         Double runTime = rawValue.getDouble("MetricsRunTime");
         if (Objects.nonNull(records) && Objects.nonNull(runTime)){
-            traffic.setFlow(records / runTime * 1000);
+            traffic.setFlow(new BigDecimal(records / runTime * 1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
         }
         return traffic;
     }
