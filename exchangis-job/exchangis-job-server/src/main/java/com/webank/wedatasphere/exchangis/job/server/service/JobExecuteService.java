@@ -60,20 +60,20 @@ public interface JobExecuteService {
      * Gets Executed job list
      * @return the launched jobList
      */
-    List<ExchangisLaunchedJobListVO> getExecutedJobList(Long jobId, String jobName, String status,
-                                                        Long launchStartTime, Long launchEndTime, Integer  current, Integer size);
+    List<ExchangisLaunchedJobListVO> getExecutedJobList(String jobExecutionId, String jobName, String status,
+                                                        Long launchStartTime, Long launchEndTime, int  current, int size);
 
     /**
      * Count int.
      *
-     * @param jobId          the job id
+     * @param jobExecutionId          the job id
      * @param jobName        the job name
      * @param status          the status
      * @param launchStartTime the launch start time
      * @param launchEndTime   the launch end time
      * @return the int
      */
-    int count(Long jobId, String jobName, String status, Long launchStartTime, Long launchEndTime);
+    int count(String jobExecutionId, String jobName, String status, Long launchStartTime, Long launchEndTime);
 
     /**
      * Execute job
@@ -89,4 +89,8 @@ public interface JobExecuteService {
      */
     void killJob(String jobExecutionId);
 
+    /**
+     * @param jobExecutionId      the job ExecutionId
+     */
+    void deleteJob(String jobExecutionId) throws ExchangisJobServerException;
 }
