@@ -153,8 +153,8 @@
         `exchangis_launched_job_entity` l
         LEFT JOIN `exchangis_job_entity` c ON l.job_id = c.id
         <where>
-            <if test="jobId != null">
-                and l.job_id = #{jobId}
+            <if test="jobExecutionId.trim() != '' and jobExecutionId != null">
+                and l.job_execution_id = #{jobExecutionId}
             </if>
             <!--如果name有值，则模糊匹配name-->
             <if test="jobName.trim() != '' and jobName != null">
@@ -170,6 +170,13 @@
                 and l.create_time &lt;= #{launchEndTime}
             </if>
         </where>
+        order by create_time desc
+        limit ${start}, ${size}
     </select>
+
+    <delete id="deleteJob">
+        DELETE FROM <include refid="TableName"/> WHERE
+        job_execution_id = #{jobExecutionId}
+    </delete>
 
 </mapper>

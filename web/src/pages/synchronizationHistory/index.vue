@@ -7,7 +7,7 @@
         <a-row :gutter="24">
           <a-col :span="8">
             <a-form-item label="作业ID">
-              <a-input v-model:value="formState.jobId" placeholder="请输入"/>
+              <a-input v-model:value="formState.jobExecutionId" placeholder="请输入"/>
             </a-form-item>
           </a-col>
 
@@ -26,9 +26,7 @@
                 v-model:value="formState.status"
                 placeholder="请选择任务状态"
               >
-                <a-select-option value="SUCCESS">执行成功</a-select-option>
-                <a-select-option value="FAILED">执行失败</a-select-option>
-                <a-select-option value="RUNNING">运行中</a-select-option>
+                <a-select-option v-for="status in statusList" :value="status">{{statusMap[status]}}</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -72,26 +70,25 @@
         >
           <template #operation="{ record }">
             <a-popconfirm
+              v-if="unfinishedStatusList.indexOf(record.status) === -1"
               title="确定要删除这条历史吗？"
               ok-text="确定"
               cancel-text="取消"
-              @confirm="onConfirmDel(record.id)"
+              @confirm="onConfirmDel(record.jobExecutionId)"
             >
               <a href="#">删除</a>
             </a-popconfirm>
-            <a-divider type="vertical" />
-            <a @click="dyncSpeedlimit(record.taskName, record.jobId)"
-              >动态限速</a
-            >
+            <!--<a-divider type="vertical" />-->
+            <!--<a @click="dyncSpeedlimit(record.taskName, record.jobId)">动态限速</a>-->
           </template>
           <template #status="{ record }">
-            <span v-if="record.status != 'Running'">{{record.status}}</span>
+            <span v-if="record.status != 'Running'">{{statusMap[record.status]}}</span>
             <div class="progress-bg" v-else>
               <div class="progress-bar" :style="{'width': `${record.progress * 100}%`}"></div>
             </div>
           </template>
-          <template #jobId="{ record }">
-            <a @click="showInfoLog(record.jobId)">{{record.jobId}}</a>
+          <template #jobExecutionId="{ record }">
+            <a @click="showInfoLog(record.jobExecutionId)">{{record.jobExecutionId}}</a>
           </template>
         </a-table>
         <!-- 分页 -->
@@ -149,9 +146,9 @@ import bottomLog from '../jobManagement/components/bottomLog';
 const columns = [
   {
     title: "执行ID",
-    dataIndex: "jobId",
+    dataIndex: "jobExecutionId",
     slots: {
-      customRender: "jobId",
+      customRender: "jobExecutionId",
     },
   },
   {
@@ -198,6 +195,24 @@ const columns = [
   },
 ];
 
+const statusMap = {
+  'Inited': '初始化',
+  'Scheduled': '准备',
+  'Running': '运行',
+  'WaitForRetry': '等待重试',
+  'Cancelled': '取消',
+  'Failed': '失败',
+  'Partial_Success': '部分成功',
+  'Success': '成功',
+  'Undefined': '未定义',
+  'Timeout': '超时'
+}
+
+const statusList = ['Inited', 'Scheduled', 'Running', 'WaitForRetry',
+  'Cancelled', 'Failed', 'Partial_Success', 'Success', 'Undefined', 'Timeout']
+
+const unfinishedStatusList = ['Inited', 'Scheduled', 'Running', 'WaitForRetry']
+
 export default {
   components: {
     SearchOutlined,
@@ -209,6 +224,7 @@ export default {
   setup() {
     const state = reactive({
       formState: {
+        jobExecutionId: '',
         jobId: "",
         jobName: "",
         status: "",
@@ -261,7 +277,7 @@ export default {
             jobList.forEach((item) => {
               item["createTime"] = item["createTime"] ? dateFormat(item["createTime"]) : '';
               item["lastUpdateTime"] = item["lastUpdateTime"] ? dateFormat(item["lastUpdateTime"]): '';
-              switch (item["status"]) {
+              /*switch (item["status"]) {
                 case "SUCCESS":
                   item["status"] = "执行成功";
                   break;
@@ -270,8 +286,9 @@ export default {
                   break;
                 case "RUNNING":
                   item["status"] = "运行中";
-              }
-              item["key"] = item["jobId"];
+              }*/
+              item['jobExecutionId'] = item['jobExecutionId'] || item['jobId']
+              item['key'] = item['jobExecutionId']
             });
             if (type == "search") {
               tableData.value = [];
@@ -294,6 +311,7 @@ export default {
       state.formState["taskName"] = "";
       state.formState["status"] = "";
       state.formState["time"] = [];
+      state.formState['jobExecutionId'] = ''
     };
 
     const onChange = (page) => {
@@ -310,19 +328,12 @@ export default {
       jobId.value = null
     }
 
-    const onConfirmDel = (id) => {
-      let tmp, idx;
-      tableData.value.forEach((item, index) => {
-        if (item.id == id) {
-          tmp = item;
-          idx = index;
-        }
-      });
-      if (tmp) {
-        delSyncHistory(tmp.id)
+    const onConfirmDel = (jobExecutionId) => {
+      if (jobExecutionId) {
+        delSyncHistory(jobExecutionId)
           .then((res) => {
-            tableData.value.splice(idx, 1);
-            message.success("删除成功");
+            message.success("删除成功")
+            search()
           })
           .catch((err) => {
             console.log("delSyncHistory error", err);
@@ -375,6 +386,9 @@ export default {
       search,
       clearData,
       columns,
+      statusMap,
+      statusList,
+      unfinishedStatusList,
       tableData,
       pagination,
       showInfoLog,
