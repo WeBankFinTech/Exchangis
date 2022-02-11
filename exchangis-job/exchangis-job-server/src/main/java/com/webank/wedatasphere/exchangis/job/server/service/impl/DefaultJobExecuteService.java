@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -226,12 +227,20 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public List<ExchangisLaunchedJobListVO> getExecutedJobList(Long jobId, String jobName, String status,
-                                                               Long launchStartTime, Long launchEndTime, Integer  current, Integer size) {
+    public List<ExchangisLaunchedJobListVO> getExecutedJobList(String jobExecutionId, String jobName, String status,
+                                                               Long launchStartTime, Long launchEndTime, int current, int size) {
+        if (current <= 0) {
+            current = 1;
+        }
+        if (size <= 0) {
+            size = 10;
+        }
+        int start = (current - 1) * size;
         List<ExchangisLaunchedJobListVO> jobList = new ArrayList<>();
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
-        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobId, jobName, status, startTime, endTime);
+        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, start, size);
+        LOG.info("ExecutedJobList information: " + jobExecutionId + jobName + status + launchStartTime + launchEndTime + current + size);
         if(jobEntitylist != null) {
             try {
                 for (int i = 0; i < jobEntitylist.size(); i++) {
@@ -251,7 +260,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
                         int flows = 0;
                         int taskNum = launchedExchangisTaskEntities.size();
                         for (int j = 0; j < taskNum; j++) {
-                            if(launchedExchangisTaskEntities.get(j).getMetricsMap() == null){
+                            if(launchedExchangisTaskEntities.get(j).getMetricsMap() == null || launchedExchangisTaskEntities.get(j).getMetricsMap().get("traffic") == null){
                                 flows += 0;
                                 continue;
                             }
@@ -270,7 +279,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public int count(Long jobId, String jobName, String status, Long launchStartTime, Long launchEndTime) {
+    public int count(String jobExecutionId, String jobName, String status, Long launchStartTime, Long launchEndTime) {
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
         return 100;
@@ -325,9 +334,17 @@ public class DefaultJobExecuteService implements JobExecuteService {
         return categoryLogVo;
     }
 
-   /* public static void main(String[] args) {
-        ExchangisJobParamsContent.ExchangisJobParamsItem jobParamsContent = new ExchangisJobParamsContent.ExchangisJobParamsItem();
-        jobParamsContent = Json.fromJson("", jobParamsContent.getClass());
-        System.out.println(jobParamsContent.getConfigValue());
-    }*/
+    @Transactional
+    @Override
+    public void deleteJob(String jobExecutionId) throws ExchangisJobServerException {
+        List<String> taskStatusList = launchedTaskDao.getTaskStatusList(jobExecutionId);
+        if(taskStatusList.contains("Inited") || taskStatusList.contains("Scheduled") || taskStatusList.contains("Running") || taskStatusList.contains("WaitForRetry")){
+            throw new ExchangisJobServerException(JOB_EXCEPTION_CODE.getCode(), "不能删除该作业");
+        }else {
+            launchedTaskDao.deleteTask(jobExecutionId);
+            launchedJobDao.deleteJob(jobExecutionId);
+        }
+    }
+
+
 }
