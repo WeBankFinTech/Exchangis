@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.datasource.service;
+package com.webank.wedatasphere.exchangis.datasource.core.service;
 
 
 import com.webank.wedatasphere.exchangis.datasource.core.service.rpc.ServiceRpcDispatcher;
