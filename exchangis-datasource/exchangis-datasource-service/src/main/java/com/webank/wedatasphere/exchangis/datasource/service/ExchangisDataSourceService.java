@@ -52,7 +52,7 @@ import static com.webank.wedatasphere.exchangis.datasource.core.exception.Exchan
 import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_TABLES_ERROR;
 
 @Service
-public class ExchangisDataSourceService extends AbstractDataSourceService implements DataSourceUIGetter, DataSourceServiceDispatcher, MetadataServiceDispatcher {
+public class ExchangisDataSourceService extends AbstractDataSourceService implements DataSourceUIGetter{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisDataSourceService.class);
 

@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.datasource.core.exception;
 // 31000 ~ 31999
 public enum ExchangisDataSourceExceptionCode {
 
+    CLIENT_RPC_ERROR(31000),
     CLIENT_QUERY_DATASOURCE_ERROR(31001),
     CLIENT_GET_DATASOURCE_VERSION_ERROR(31002),
     CLIENT_GET_DATASOURCE_ERROR(31003),
