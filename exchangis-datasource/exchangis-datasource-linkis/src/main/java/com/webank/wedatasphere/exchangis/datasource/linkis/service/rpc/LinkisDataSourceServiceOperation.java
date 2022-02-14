@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.datasource.linkis.service;
+package com.webank.wedatasphere.exchangis.datasource.linkis.service.rpc;
 
 import com.webank.wedatasphere.exchangis.datasource.core.service.rpc.ServiceOperation;
 import org.apache.commons.lang.StringUtils;
