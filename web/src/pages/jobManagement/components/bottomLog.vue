@@ -97,7 +97,8 @@ import {
 import {
   getJobTasks,
   getProgress,
-  getMetrics
+  getMetrics,
+  getJobStatus
 } from "@/common/service";
 import { message, notification } from "ant-design-vue";
 import executionLog from './executionLog'
@@ -151,6 +152,7 @@ export default {
     },
     // 获取tasklist
     getTasks() {
+      clearInterval(this.progressTimer)
       getJobTasks(this.jobExecutionId)
         .then(res => {
           this.tasklist = res.tasks || res.result
@@ -166,6 +168,15 @@ export default {
       }, 1000*5)
     },
     getJobProgress() {
+      getJobStatus(this.jobExecutionId)
+        .then(res => {
+          if (res.allTaskStatus) {
+            clearInterval(this.progressTimer)
+          }
+        })
+        .catch(err => {
+          message.error("查询job状态失败");
+        })
       getProgress(this.jobExecutionId)
         .then(res => {
           if (res.job && res.job.tasks) {
@@ -188,7 +199,6 @@ export default {
         this.openMetricsId = progress.taskId
         getMetrics(progress.taskId, this.jobExecutionId)
           .then(res => {
-            res.task.taskId = 5
             this.metricsInfo[res.task.taskId] = res.task?.metrics
           })
           .catch(err => {
