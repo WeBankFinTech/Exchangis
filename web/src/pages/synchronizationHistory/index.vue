@@ -294,7 +294,7 @@ export default {
               tableData.value = [];
             }
             pagination.value.total = res["total"];
-            tableData.value = tableData.value.concat(jobList);
+            tableData.value = jobList
           }
         })
         .catch((err) => {
