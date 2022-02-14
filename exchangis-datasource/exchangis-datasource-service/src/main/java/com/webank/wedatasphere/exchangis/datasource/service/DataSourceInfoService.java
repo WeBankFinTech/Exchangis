@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.service;
 
+public interface DataSourceInfoService {
 
-public interface MetadataServiceDispatcher {
+
 
 }
