@@ -16,12 +16,14 @@
           :data-source="dataSourceList"
           :loading="loading"
           rowKey="id"
+          class="data-source-manage-table"
         >
           <template #tags="{ text: tags }">
             <span>
               <a-tag
                 v-if="tags"
                 v-for="tag in tags.split(',')"
+                :title="tag.toUpperCase()"
                 :key="tag"
                 :color="
                   tag === 'loser'
@@ -349,4 +351,13 @@ export default {
 :deep(.ant-table-pagination.ant-pagination) {
   float: left;
 }
+.data-source-manage-table {
+  :deep(.ant-tag) {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 150px;
+  }
+}
+
 </style>
