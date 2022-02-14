@@ -72,7 +72,7 @@
 		<module>exchangis-project</module>
 		<module>exchangis-datasource</module>
 		<module>exchangis-job</module>
-		<module>exchangis-plugins</module>
+<!--		<module>exchangis-plugins</module>-->
 		<module>exchangis-server</module>
 		<module>assembly-package</module>
     </modules>
