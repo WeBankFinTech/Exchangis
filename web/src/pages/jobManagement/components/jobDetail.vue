@@ -932,10 +932,8 @@ export default {
           if (!this.tasklist.length) {
             this.getTasks(jobExecutionId, true)
           }
-          if (unfinishedStatusList.indexOf(this.jobStatus) === -1) {
+          if (unfinishedStatusList.indexOf(this.jobStatus) === -1 && this.allTaskStatus) {
             this.spinning = false
-          }
-          if (this.allTaskStatus) {
             clearInterval(this.jobStatusTimer)
             setTimeout(() => {
               clearInterval(this.progressTimer)
