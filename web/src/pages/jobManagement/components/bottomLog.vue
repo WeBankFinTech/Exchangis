@@ -168,9 +168,10 @@ export default {
       }, 1000*5)
     },
     getJobProgress() {
+      const unfinishedStatusList = ['Inited', 'Scheduled', 'Running', 'WaitForRetry']
       getJobStatus(this.jobExecutionId)
         .then(res => {
-          if (res.allTaskStatus) {
+          if (res.allTaskStatus && unfinishedStatusList.indexOf(res.status) === -1) {
             clearInterval(this.progressTimer)
           }
         })
