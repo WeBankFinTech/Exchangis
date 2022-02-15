@@ -220,7 +220,7 @@ export default defineComponent({
     }
 
     const onSearch3 = (keyword) => {
-      if (!/^[1-9]\d*$/.test(keyword)) {
+      if (keyword && !/^[1-9]\d*$/.test(keyword)) {
         return message.error('请正确输入')
       }
       lastRows = keyword
