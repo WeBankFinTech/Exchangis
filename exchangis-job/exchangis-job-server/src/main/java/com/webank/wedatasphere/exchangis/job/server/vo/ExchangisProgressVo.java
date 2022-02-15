@@ -8,6 +8,8 @@ public class ExchangisProgressVo {
 
     protected Double progress = 0.0d;
 
+    protected Boolean allTaskStatus;
+
     public ExchangisProgressVo(){
 
     }
@@ -15,6 +17,12 @@ public class ExchangisProgressVo {
     public ExchangisProgressVo(TaskStatus status, Double progress){
         this.status = status;
         this.progress = progress;
+    }
+
+    public ExchangisProgressVo(TaskStatus status, Double progress, Boolean allTaskStatus){
+        this.status = status;
+        this.progress = progress;
+        this.allTaskStatus = allTaskStatus;
     }
 
     public TaskStatus getStatus() {
@@ -31,5 +39,13 @@ public class ExchangisProgressVo {
 
     public void setProgress(Double progress) {
         this.progress = progress;
+    }
+
+    public Boolean getAllTaskStatus() {
+        return allTaskStatus;
+    }
+
+    public void setAllTaskStatus(Boolean allTaskStatus) {
+        this.allTaskStatus = allTaskStatus;
     }
 }
