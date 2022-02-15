@@ -1052,30 +1052,9 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     }
 
     public Message getDataSourceConnectParamsById(HttpServletRequest request, Long id) throws ErrorException {
-        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         String userName = SecurityFilter.getLoginUsername(request);
         LOGGER.info("getDataSourceConnectParamsById userName:" + userName);
-        GetConnectParamsByDataSourceIdResult result;
-        try {
-            result = linkisDataSourceRemoteClient.getConnectParams(
-                    GetConnectParamsByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
-            );
-        } catch (Exception e) {
-            if (e instanceof ErrorException) {
-                ErrorException ee = (ErrorException) e;
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_PARAMS_GET_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-            } else {
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_PARAMS_GET_ERROR.getCode(), e.getMessage());
-            }
-        }
-        if (Objects.isNull(result)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_PARAMS_GET_ERROR.getCode(), "datasource params get response body null or empty");
-        }
-
-        if (result.getStatus() != 0) {
-            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
-        }
-
+        GetConnectParamsByDataSourceIdResult result =  getDataSourceConnectParamsById(userName, id);
         return Message.ok().data("info", Objects.isNull(result.getConnectParams()) ? null : result.getConnectParams());
     }
 
@@ -1118,6 +1097,31 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         return Message.ok();
     }
 
+    public GetConnectParamsByDataSourceIdResult getDataSourceConnectParamsById(String userName, Long id) throws ErrorException{
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        LOGGER.info("getDataSourceConnectParamsById userName:" + userName);
+        GetConnectParamsByDataSourceIdResult result;
+        try {
+            result = linkisDataSourceRemoteClient.getConnectParams(
+                    GetConnectParamsByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
+            );
+        } catch (Exception e) {
+            if (e instanceof ErrorException) {
+                ErrorException ee = (ErrorException) e;
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_PARAMS_GET_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
+            } else {
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_PARAMS_GET_ERROR.getCode(), e.getMessage());
+            }
+        }
+        if (Objects.isNull(result)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_PARAMS_GET_ERROR.getCode(), "datasource params get response body null or empty");
+        }
+
+        if (result.getStatus() != 0) {
+            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
+        }
+        return result;
+    }
     public Message getDataSourceKeyDefine(HttpServletRequest request, Long dataSourceTypeId) throws ErrorException {
         if (Objects.isNull(dataSourceTypeId)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "dataSourceType id should not be null");
