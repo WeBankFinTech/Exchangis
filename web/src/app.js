@@ -42,10 +42,16 @@ export const request = {
       if (error.message && error.message.indexOf('timeout of') > -1) {
         return message.warning('请求超时')
       }
-      console.log(error, '系统异常')
-      message.error(error?.response?.data?.message || "系统异常");
+      if (error?.response?.data?.data?.errorMsg) {
+        return message.error(error.response.data.data.errorMsg.desc);
+      }
+      console.log(error, error?.response)
+      message.error(error?.response?.data?.message || error?.data?.message ||  "系统异常");
     },
   },
+  otherConfigs: {
+    timeout: 30000
+  }
 };
 
 // 这里 自定义注册header
