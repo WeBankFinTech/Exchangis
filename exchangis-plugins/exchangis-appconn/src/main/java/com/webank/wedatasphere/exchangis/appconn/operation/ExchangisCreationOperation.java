@@ -12,7 +12,7 @@ import com.webank.wedatasphere.exchangis.appconn.config.ExchangisConfig;
 import com.webank.wedatasphere.exchangis.appconn.model.ExchangisGetAction;
 import com.webank.wedatasphere.exchangis.appconn.model.ExchangisPostAction;
 import com.webank.wedatasphere.exchangis.appconn.ref.ExchangisCommonResponseRef;
-import com.webank.wedatasphere.exchangis.appconn.utils.AppconnUtils;
+import com.webank.wedatasphere.exchangis.appconn.utils.AppConnUtils;
 import org.apache.linkis.httpclient.response.HttpResult;
 import org.apache.linkis.server.BDPJettyServerHelper;
 import org.slf4j.Logger;
@@ -60,7 +60,6 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
         }catch (Exception e){
             throw new ExternalOperationFailedException(31023, "Get node Id failed!", e);
         }
-
         String projectId = this.queryProject(requestRef, projectName);
 
         exchangisPostAction.setUser(requestRef.getUserName());
@@ -70,7 +69,7 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
         exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_ID,requestRef.getJobContent().get("nodeId").toString());
         exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_NAME,requestRef.getName());
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_DESC,requestRef.getJobContent().get("desc").toString());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_LABELS, AppconnUtils.changeDssLabelName(requestRef.getDSSLabels()));
+        exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_LABELS, AppConnUtils.changeDssLabelName(requestRef.getDSSLabels()));
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_NAME,requestRef.getName());
         exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_TYPE,ExchangisConfig.JOB_TYPE_OFFLINE);
         exchangisPostAction.addRequestPayload(ExchangisConfig.ENGINE_TYPE,engineType);

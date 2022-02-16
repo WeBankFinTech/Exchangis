@@ -1,7 +1,6 @@
-package com.webank.wedatasphere.exchangis.job.server.web;
+package com.webank.wedatasphere.exchangis.job.server.restful.execute;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
@@ -27,8 +26,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "exchangis/task", produces = {"application/json;charset=utf-8"})
-public class ExchangisTaskExecuteController {
-    private static final Logger LOG = LoggerFactory.getLogger(ExchangisTaskExecuteController.class);
+public class ExchangisTaskExecuteRestfulApi {
+    private static final Logger LOG = LoggerFactory.getLogger(ExchangisTaskExecuteRestfulApi.class);
     @Autowired
     private ExchangisJobService exchangisJobService;
 

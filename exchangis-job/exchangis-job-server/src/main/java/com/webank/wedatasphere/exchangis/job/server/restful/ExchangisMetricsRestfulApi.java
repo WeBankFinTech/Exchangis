@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.web;
+package com.webank.wedatasphere.exchangis.job.server.restful;
 
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisMetricsService;
 import org.apache.linkis.server.Message;
@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(value = "exchangis", produces = {"application/json;charset=utf-8"})
-public class ExchangisMetricsController {
+public class ExchangisMetricsRestfulApi {
 
     private final ExchangisMetricsService exchangisMetricsService;
 
     @Autowired
-    public ExchangisMetricsController(ExchangisMetricsService exchangisMetricsService) {
+    public ExchangisMetricsRestfulApi(ExchangisMetricsService exchangisMetricsService) {
         this.exchangisMetricsService = exchangisMetricsService;
     }
 
