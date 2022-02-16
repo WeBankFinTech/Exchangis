@@ -194,17 +194,17 @@ export default {
         title: t("dataSource.table.list.columns.title.creator"),
         align: "center",
         dataIndex: "createUser",
-        width: 80
+        width: 120
       },
       {
         title: t("dataSource.table.list.columns.title.updater"),
         align: "center",
         dataIndex: "modifyUser",
-        width: 80
+        width: 120
       },
       {
         title: t("dataSource.table.list.columns.title.action"),
-        align: "center",
+        align: "left",
         slots: { customRender: "action" },
       },
     ]);
