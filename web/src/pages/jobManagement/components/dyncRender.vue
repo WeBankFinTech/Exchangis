@@ -12,7 +12,7 @@
     <template v-if="type === 'MAP'">
       <div style="margin-bottom: 5px" v-for="item in partitionArr">
         <a-input
-          style="width: 100px"
+          style="width: 30%"
           disabled
           v-model:value = item.label
         />
@@ -20,7 +20,7 @@
           v-if="item.type === 'INPUT'"
           v-model:value="item.value"
           @change="handleChange"
-          style="margin-left: 10px;width: 220px"
+          style="margin-left: 5px;width: 60%"
         />
         <a-select
           v-if="item.type === 'OPTION'"
@@ -29,7 +29,7 @@
           :maxTagCount="1"
           @change="handleChange(item.value, item)"
           :options="item.options"
-          style="margin-left: 10px;width: 220px"
+          style="margin-left: 5px;width: 60%"
         />
       </div>
     </template>
@@ -63,10 +63,11 @@ export default defineComponent({
   emits: ["updateInfo"],
   setup(props, context) {
     let { type, field, value, unit, source} = props.param;
+    value = ref(value)
     let tmlName = field.split(".").pop();
     const newProps = computed(() => JSON.parse(JSON.stringify(props.param)));
     watch(newProps, (val, oldVal) => {
-      value = val.value;
+      value.value = val.value;
     });
     let checkOptions = []
     if (type === 'OPTION'){
@@ -92,7 +93,7 @@ export default defineComponent({
               partitionArr.value.push({
                 type: 'INPUT',
                 label: i,
-                value: value && value[i] ? value[i] : ''//res.render[i]
+                value: value && value[i] ? value[i] : res.render[i]
               })
             } else {
               let checkOptions = []
@@ -152,7 +153,7 @@ export default defineComponent({
     return {
       checkOptions: ref(checkOptions),
       type,
-      value: ref(value),
+      value: value,
       emitData,
       unit,
       source,
