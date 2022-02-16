@@ -110,8 +110,8 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
         task.setLastUpdateTime(Calendar.getInstance().getTime());
         launchedTaskDao.upgradeLaunchedTaskStatus(task.getTaskId(), status.name(), task.getLastUpdateTime());
         if (status == TaskStatus.Failed || status == TaskStatus.Cancelled){
-            // Update directly, no open anther transaction
-            launchedJobDao.upgradeLaunchedJobStatus(task.getJobExecutionId(), TaskStatus.Failed.name(), task.getLastUpdateTime());
+            // Update directly, no open another transaction
+            launchedJobDao.upgradeLaunchedJobStatus(task.getJobExecutionId(), status.name(), task.getLastUpdateTime());
         } else if (status == TaskStatus.Success){
             getSelfService().updateJobStatus(task.getJobExecutionId(), TaskStatus.Success, task.getLastUpdateTime());
         }
