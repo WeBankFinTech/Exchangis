@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class AppconnUtils {
+public class AppConnUtils {
     public static String changeDssLabelName(List<DSSLabel> list){
         String dssLabelStr="";
         if(list != null && !list.isEmpty()){

@@ -27,8 +27,8 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/exchangis", produces = {"application/json;charset=utf-8"})
-public class ExchangisProjectRestful {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisProjectRestful.class);
+public class ExchangisProjectRestfulApi {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisProjectRestfulApi.class);
 
     @Autowired
     private ExchangisProjectService projectService;
