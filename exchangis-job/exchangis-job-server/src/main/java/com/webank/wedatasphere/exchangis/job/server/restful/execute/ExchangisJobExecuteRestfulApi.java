@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.web;
+package com.webank.wedatasphere.exchangis.job.server.restful.execute;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
@@ -29,8 +29,8 @@ import java.util.*;
  */
 @RestController
 @RequestMapping(value = "exchangis/job", produces = {"application/json;charset=utf-8"})
-public class ExchangisJobExecuteController {
-    private static final Logger LOG = LoggerFactory.getLogger(ExchangisJobExecuteController.class);
+public class ExchangisJobExecuteRestfulApi {
+    private static final Logger LOG = LoggerFactory.getLogger(ExchangisJobExecuteRestfulApi.class);
     @Autowired
     private ExchangisJobService exchangisJobService;
 
