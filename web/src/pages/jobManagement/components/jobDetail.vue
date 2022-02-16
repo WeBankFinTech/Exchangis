@@ -23,26 +23,16 @@
       <a-spin size="large" :spinning="loading">
         <div class="jd_left">
           <div class="sub-title">
-            <!--<DatabaseFilled class="database-icon" />-->
             <span>子任务列表</span>
-            <!--<a-popconfirm
-              title="是否新增子任务?"
-              ok-text="确定"
-              cancel-text="取消"
-              @confirm="addNewTask"
-              @cancel="cancel"
-            >
-              <PlusSquareOutlined class="ps-icon" />
-            </a-popconfirm>-->
           </div>
           <div v-for="(item, idx) in list" :key="idx" :class="getClass(idx)">
             <div class="task-title">
               <div
                 class="subjobName"
-                @click="changeCurTask(idx)"
                 v-if="
                   activeIndex !== idx || (activeIndex === idx && !nameEditable)
                 "
+                @click="changeCurTask(idx)"
                 :title="item.subJobName"
               >
                 {{ item.subJobName }}
@@ -85,6 +75,7 @@
             >
               <div
                 class="sub-table"
+                @click="changeCurTask(idx)"
                 :title="
                   item.dataSourceIds.source.db +
                   '.' +
@@ -97,9 +88,10 @@
                   item.dataSourceIds.source.table
                 }}
               </div>
-              <div class="arrow-down-icon"><ArrowDownOutlined /></div>
+              <div class="arrow-down-icon" @click="changeCurTask(idx)"><ArrowDownOutlined /></div>
               <div
                 class="sub-table"
+                @click="changeCurTask(idx)"
                 :title="
                   item.dataSourceIds.sink.db + '.' + item.dataSourceIds.sink.table
                 "
@@ -259,7 +251,7 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Running">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress * 100" />
+                  <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
@@ -285,7 +277,7 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Failed">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress * 100" />
+                  <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
@@ -295,7 +287,7 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Cancelled">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress * 100" />
+                  <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
@@ -305,7 +297,7 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Success">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress * 100" />
+                  <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
@@ -505,6 +497,7 @@ export default {
       executeId: '',
       jobExecutionId: '',
       jobStatus: '',
+      allTaskStatus: '',
       jobStatusTimer: null,
       tasklist: [],
       progressTimer: null,
@@ -935,10 +928,11 @@ export default {
       getJobStatus(jobExecutionId)
         .then(res => {
           this.jobStatus = res.status
+          this.allTaskStatus = res.allTaskStatus
           if (!this.tasklist.length) {
             this.getTasks(jobExecutionId, true)
           }
-          if (unfinishedStatusList.indexOf(this.jobStatus) === -1) {
+          if (unfinishedStatusList.indexOf(this.jobStatus) === -1 && this.allTaskStatus) {
             this.spinning = false
             clearInterval(this.jobStatusTimer)
             setTimeout(() => {
@@ -986,7 +980,7 @@ export default {
               this.getTasks(jobExecutionId)
             }
             res.job.successPercent = res.job.successTasks * 100 / res.job.totalTasks
-            res.job.percent = (res.job.successTasks + res.job.runningTasks) * 100 / res.job.totalTasks
+            res.job.percent = res.job.progress * 100 //(res.job.successTasks + res.job.runningTasks) * 100 / res.job.totalTasks
             res.job.title = res.job.failedTasks ? `${res.job.failedTasks}失败,${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.scheduledTasks}正在准备` : `${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.scheduledTasks}正在准备`
           }
           this.jobProgress = res.job
@@ -1187,12 +1181,14 @@ export default {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
+          cursor: pointer;
         }
         .arrow-down-icon {
           text-align: center;
           font-weight: bolder;
           font-size: 16px;
           color: #677c99;
+          cursor: pointer;
         }
         .mask {
           width: 100%;

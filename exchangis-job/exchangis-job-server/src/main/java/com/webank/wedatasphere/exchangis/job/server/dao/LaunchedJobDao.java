@@ -84,6 +84,12 @@ public interface LaunchedJobDao {
     List<LaunchedExchangisJobEntity> getAllLaunchedJob(@Param("jobExecutionId") String jobExecutionId, @Param("jobName") String jobName, @Param("status") String status, @Param("launchStartTime") Date launchStartTime, @Param("launchEndTime") Date launchEndTime, @Param("start")int start, @Param("size") int size);
 
     /**
+     * get launchJob count
+     * return job entity number
+     */
+    int count(@Param("jobExecutionId") String jobExecutionId, @Param("jobName") String jobName, @Param("status") String status, @Param("launchStartTime") Date launchStartTime, @Param("launchEndTime") Date launchEndTime);
+
+    /**
      * delete launchJob
      */
     void deleteJob(@Param("jobExecutionId")String jobExecutionId);
