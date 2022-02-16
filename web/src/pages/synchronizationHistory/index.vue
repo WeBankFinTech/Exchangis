@@ -78,6 +78,15 @@
             >
               <a href="#">删除</a>
             </a-popconfirm>
+            <a-popconfirm
+              v-if="unfinishedStatusList.indexOf(record.status) > -1"
+              title="确定要停止当前作业吗？"
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm="killTask(record.jobExecutionId)"
+            >
+              <a href="#">停止当前作业</a>
+            </a-popconfirm>
             <!--<a-divider type="vertical" />-->
             <!--<a @click="dyncSpeedlimit(record.taskName, record.jobId)">动态限速</a>-->
           </template>
@@ -138,6 +147,7 @@ import {
   delSyncHistory,
   getSpeedLimit,
   saveSpeedLimit,
+  killJob,
 } from "@/common/service";
 import { message } from "ant-design-vue";
 import { dateFormat } from "@/common/utils";
@@ -273,29 +283,27 @@ export default {
       getSyncHistoryJobList(formData)
         .then((res) => {
           const { jobList } = res;
-          if (jobList.length > 0) {
-            jobList.forEach((item) => {
-              item["createTime"] = item["createTime"] ? dateFormat(item["createTime"]) : '';
-              item["lastUpdateTime"] = item["lastUpdateTime"] ? dateFormat(item["lastUpdateTime"]): '';
-              /*switch (item["status"]) {
-                case "SUCCESS":
-                  item["status"] = "执行成功";
-                  break;
-                case "FAILED":
-                  item["status"] = "执行失败";
-                  break;
-                case "RUNNING":
-                  item["status"] = "运行中";
-              }*/
-              item['jobExecutionId'] = item['jobExecutionId'] || item['jobId']
-              item['key'] = item['jobExecutionId']
-            });
-            if (type == "search") {
-              tableData.value = [];
-            }
-            pagination.value.total = res["total"];
-            tableData.value = jobList
+          jobList.forEach((item) => {
+            item["createTime"] = item["createTime"] ? dateFormat(item["createTime"]) : '';
+            item["lastUpdateTime"] = item["lastUpdateTime"] ? dateFormat(item["lastUpdateTime"]): '';
+            /*switch (item["status"]) {
+              case "SUCCESS":
+                item["status"] = "执行成功";
+                break;
+              case "FAILED":
+                item["status"] = "执行失败";
+                break;
+              case "RUNNING":
+                item["status"] = "运行中";
+            }*/
+            item['jobExecutionId'] = item['jobExecutionId'] || item['jobId']
+            item['key'] = item['jobExecutionId']
+          });
+          if (type == "search") {
+            tableData.value = [];
           }
+          pagination.value.total = res["total"];
+          tableData.value = jobList
         })
         .catch((err) => {
           console.log("syncHistory error", err);
@@ -308,7 +316,7 @@ export default {
 
     const clearData = () => {
       state.formState["jobId"] = "";
-      state.formState["taskName"] = "";
+      state.formState["jobName"] = "";
       state.formState["status"] = "";
       state.formState["time"] = [];
       state.formState['jobExecutionId'] = ''
@@ -377,6 +385,18 @@ export default {
         });
     };
 
+    const killTask = (jobExecutionId) => {
+      killJob(jobExecutionId)
+        .then((res) => {
+          message.success("停止成功")
+          search()
+        })
+        .catch((err) => {
+          console.log(err)
+          message.error("停止失败");
+        });
+    }
+
     onMounted(() => {
       search();
     });
@@ -408,6 +428,7 @@ export default {
           width: "150px",
         },
       },
+      killTask
     };
   },
 };

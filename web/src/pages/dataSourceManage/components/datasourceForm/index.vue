@@ -120,8 +120,8 @@ export default {
             message: `${this.$t('message.linkis.datasource.pleaseInput')}${this.$t('message.linkis.datasource.sourceName')}`,
             trigger: 'blur'
           },{
-            pattern: /^(.){1,250}$/,
-            message: '最多250字',
+            pattern: /^(.){0,240}$/,
+            message: '最多240字',
             trigger: 'change'
           }],
         },
@@ -134,8 +134,8 @@ export default {
             "placeholder": this.$t('message.linkis.datasource.sourceDec'),
           },
           validate: [{
-            pattern: /^(.){1,250}$/,
-            message: '最多250字',
+            pattern: /^(.){0,240}$/,
+            message: '最多240字',
             trigger: 'change'
           }]
         },
@@ -148,8 +148,8 @@ export default {
             "placeholder": this.$t('message.linkis.datasource.label'),
           },
           validate: [{
-            pattern: /^(.){1,250}$/,
-            message: '最多250字',
+            pattern: /^(.){0,240}$/,
+            message: '最多240字',
             trigger: 'change'
           }]
         }
