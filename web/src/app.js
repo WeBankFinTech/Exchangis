@@ -49,6 +49,9 @@ export const request = {
       message.error(error?.response?.data?.message || error?.data?.message ||  "系统异常");
     },
   },
+  otherConfigs: {
+    timeout: 30000
+  }
 };
 
 // 这里 自定义注册header
