@@ -59,7 +59,7 @@ export default defineComponent({
       id = val.id
       list = val.list
       _updateInfo()
-      if (val.id && val.id !== oldVal.id) {
+      if ((val.id && val.id !== oldVal.id) || (val.id && val.sync)) {
         resetData()
         changeData(id)
       }

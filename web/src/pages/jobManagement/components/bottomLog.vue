@@ -1,6 +1,6 @@
 <template>
     <!-- 执行日志  jd-bottom -->
-    <div class="jd-bottom jd-bottom-log" v-if="visibleLog">
+    <div class="jd-bottom jd-bottom-log" v-show="visibleLog">
       <div class="jd-bottom-top" >
         <!--<span>执行日志</span>-->
         <CloseOutlined
@@ -82,7 +82,7 @@
             </div>
           </a-tab-pane>
           <a-tab-pane key="2" tab="实时日志" force-render>
-            <execution-log :param="logParams"></execution-log>
+            <execution-log :param="logParams" :isShow="visibleLog"></execution-log>
           </a-tab-pane>
         </a-tabs>
       </div>
@@ -133,13 +133,15 @@ export default {
     jobId(val) {
       this.jobExecutionId = val;
       this.getTasks()
+      this.getJobProgressWithPoll()
     }
   },
   computed: {
     logParams(){
       return {
         list: this.tasklist,
-        id: this.jobExecutionId
+        id: this.jobExecutionId,
+        sync: true
       }
     }
   },
@@ -152,7 +154,6 @@ export default {
     },
     // 获取tasklist
     getTasks() {
-      clearInterval(this.progressTimer)
       getJobTasks(this.jobExecutionId)
         .then(res => {
           this.tasklist = res.tasks || res.result
@@ -162,6 +163,7 @@ export default {
         })
     },
     getJobProgressWithPoll() {
+      clearInterval(this.progressTimer)
       this.getJobProgress()
       this.progressTimer = setInterval(() => {
         this.getJobProgress()
