@@ -352,7 +352,7 @@ export const getJobExecLog = (params) => {
     `/job/execution/${params.id}/log?_=${Math.random()}`,
     {
       fromLine: params.fromLine || 0,
-      pageSize: params.pageSize || 100,
+      pageSize: params.pageSize || 50,
       onlyKeywords: params.onlyKeywords,
       ignoreKeywords: params.ignoreKeywords,
       lastRows: params.lastRows
@@ -369,7 +369,7 @@ export const getTaskExecLog = (params) => {
     `/task/execution/${params.taskId}/log?_=${Math.random()}`,
     {
       fromLine: params.fromLine || 0,
-      pageSize: params.pageSize || 100,
+      pageSize: params.pageSize || 50,
       jobExecutionId: params.id,
       onlyKeywords: params.onlyKeywords,
       ignoreKeywords: params.ignoreKeywords,
