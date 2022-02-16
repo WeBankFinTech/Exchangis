@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.web;
+package com.webank.wedatasphere.exchangis.job.server.restful;
 
 import java.util.List;
 import org.apache.linkis.server.Message;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping(value = "exchangis/tasks", produces = {"application/json;charset=utf-8"})
-public class ExchangisTaskController {
+public class ExchangisTaskRestfulApi {
 
     @Autowired
     private ExchangisLaunchTaskService exchangisLaunchTaskService;

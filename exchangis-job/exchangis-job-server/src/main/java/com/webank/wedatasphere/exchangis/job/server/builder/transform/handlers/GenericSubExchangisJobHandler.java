@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers;
 
-import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
@@ -68,7 +67,7 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
             String[] idSerial = sourceId.split(ID_SPLIT_SYMBOL);
             if (idSerial.length >= 2){
                 GetConnectParamsByDataSourceIdResult infoResult = dataSourceService.getDataSourceConnectParamsById(userName, Long.valueOf(idSerial[1]));
-                Optional.ofNullable(infoResult.getData()).ifPresent(connectParams ->
+                Optional.ofNullable(infoResult.connectParams()).ifPresent(connectParams ->
                         connectParams.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, true))));
             }
         }

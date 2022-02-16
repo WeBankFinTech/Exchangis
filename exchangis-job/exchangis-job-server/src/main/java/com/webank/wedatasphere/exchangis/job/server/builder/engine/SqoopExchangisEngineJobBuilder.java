@@ -494,6 +494,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             if (Objects.nonNull(expectOut)) {
                 engineJob.setName(expectOut.getName());
                 engineJob.setEngineType(expectOut.getEngineType());
+                jobContent.putAll(expectOut.getJobContent());
             }
             engineJob.setCreateUser(inputJob.getCreateUser());
             return engineJob;
