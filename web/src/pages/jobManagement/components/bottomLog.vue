@@ -1,6 +1,6 @@
 <template>
     <!-- 执行日志  jd-bottom -->
-    <div class="jd-bottom jd-bottom-log" v-if="visibleLog">
+    <div class="jd-bottom jd-bottom-log" v-show="visibleLog">
       <div class="jd-bottom-top" >
         <!--<span>执行日志</span>-->
         <CloseOutlined
@@ -29,7 +29,7 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="progress in jobProgress.tasks.Running" :key="progress.name">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress * 100" />
+                  <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
@@ -55,7 +55,7 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Failed">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress * 100" />
+                  <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
@@ -65,7 +65,7 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Cancelled">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress * 100" />
+                  <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
@@ -75,14 +75,14 @@
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Success">
                   <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
-                  <a-progress status="active" :percent="progress.progress * 100" />
+                  <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
               </div>
             </div>
           </a-tab-pane>
           <a-tab-pane key="2" tab="实时日志" force-render>
-            <execution-log :param="logParams"></execution-log>
+            <execution-log :param="logParams" :isShow="visibleLog"></execution-log>
           </a-tab-pane>
         </a-tabs>
       </div>
@@ -97,7 +97,8 @@ import {
 import {
   getJobTasks,
   getProgress,
-  getMetrics
+  getMetrics,
+  getJobStatus
 } from "@/common/service";
 import { message, notification } from "ant-design-vue";
 import executionLog from './executionLog'
@@ -132,13 +133,15 @@ export default {
     jobId(val) {
       this.jobExecutionId = val;
       this.getTasks()
+      this.getJobProgressWithPoll()
     }
   },
   computed: {
     logParams(){
       return {
         list: this.tasklist,
-        id: this.jobExecutionId
+        id: this.jobExecutionId,
+        sync: true
       }
     }
   },
@@ -160,12 +163,23 @@ export default {
         })
     },
     getJobProgressWithPoll() {
+      clearInterval(this.progressTimer)
       this.getJobProgress()
       this.progressTimer = setInterval(() => {
         this.getJobProgress()
       }, 1000*5)
     },
     getJobProgress() {
+      const unfinishedStatusList = ['Inited', 'Scheduled', 'Running', 'WaitForRetry']
+      getJobStatus(this.jobExecutionId)
+        .then(res => {
+          if (res.allTaskStatus && unfinishedStatusList.indexOf(res.status) === -1) {
+            clearInterval(this.progressTimer)
+          }
+        })
+        .catch(err => {
+          message.error("查询job状态失败");
+        })
       getProgress(this.jobExecutionId)
         .then(res => {
           if (res.job && res.job.tasks) {
@@ -188,7 +202,6 @@ export default {
         this.openMetricsId = progress.taskId
         getMetrics(progress.taskId, this.jobExecutionId)
           .then(res => {
-            res.task.taskId = 5
             this.metricsInfo[res.task.taskId] = res.task?.metrics
           })
           .catch(err => {

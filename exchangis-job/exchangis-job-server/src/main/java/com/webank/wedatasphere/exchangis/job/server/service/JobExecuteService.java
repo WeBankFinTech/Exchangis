@@ -93,4 +93,6 @@ public interface JobExecuteService {
      * @param jobExecutionId      the job ExecutionId
      */
     void deleteJob(String jobExecutionId) throws ExchangisJobServerException;
+
+    List<String> allTaskStatus(String jobExecutionId) throws ExchangisJobServerException;
 }
