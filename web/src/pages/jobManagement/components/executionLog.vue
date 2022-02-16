@@ -59,7 +59,7 @@ export default defineComponent({
       id = val.id
       list = val.list
       _updateInfo()
-      if (val.id && val.id !== oldVal.id) {
+      if ((val.id && val.id !== oldVal.id) || (val.id && val.sync)) {
         resetData()
         changeData(id)
       }
@@ -220,7 +220,7 @@ export default defineComponent({
     }
 
     const onSearch3 = (keyword) => {
-      if (!/^[1-9]\d*$/.test(keyword)) {
+      if (keyword && !/^[1-9]\d*$/.test(keyword)) {
         return message.error('请正确输入')
       }
       lastRows = keyword
