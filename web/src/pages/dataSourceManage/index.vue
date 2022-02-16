@@ -16,12 +16,14 @@
           :data-source="dataSourceList"
           :loading="loading"
           rowKey="id"
+          class="data-source-manage-table"
         >
           <template #tags="{ text: tags }">
             <span>
               <a-tag
                 v-if="tags"
                 v-for="tag in tags.split(',')"
+                :title="tag.toUpperCase()"
                 :key="tag"
                 :color="
                   tag === 'loser'
@@ -192,17 +194,17 @@ export default {
         title: t("dataSource.table.list.columns.title.creator"),
         align: "center",
         dataIndex: "createUser",
-        width: 80
+        width: 120
       },
       {
         title: t("dataSource.table.list.columns.title.updater"),
         align: "center",
         dataIndex: "modifyUser",
-        width: 80
+        width: 120
       },
       {
         title: t("dataSource.table.list.columns.title.action"),
-        align: "center",
+        align: "left",
         slots: { customRender: "action" },
       },
     ]);
@@ -349,4 +351,13 @@ export default {
 :deep(.ant-table-pagination.ant-pagination) {
   float: left;
 }
+.data-source-manage-table {
+  :deep(.ant-tag) {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 150px;
+  }
+}
+
 </style>

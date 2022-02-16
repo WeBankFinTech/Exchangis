@@ -119,6 +119,10 @@ export default {
             required: true,
             message: `${this.$t('message.linkis.datasource.pleaseInput')}${this.$t('message.linkis.datasource.sourceName')}`,
             trigger: 'blur'
+          },{
+            pattern: /^(.){0,240}$/,
+            message: '最多240字',
+            trigger: 'change'
           }],
         },
         {
@@ -128,7 +132,12 @@ export default {
           value: "",
           props: {
             "placeholder": this.$t('message.linkis.datasource.sourceDec'),
-          }
+          },
+          validate: [{
+            pattern: /^(.){0,240}$/,
+            message: '最多240字',
+            trigger: 'change'
+          }]
         },
         {
           type: "input",
@@ -137,7 +146,12 @@ export default {
           value: "",
           props: {
             "placeholder": this.$t('message.linkis.datasource.label'),
-          }
+          },
+          validate: [{
+            pattern: /^(.){0,240}$/,
+            message: '最多240字',
+            trigger: 'change'
+          }]
         }
       ],
 

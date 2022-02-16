@@ -103,6 +103,7 @@ public class ExchangisJobExecuteController {
         message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId +"/status");
         message.data("status", jobStatus.getStatus());
         message.data("progress", jobStatus.getProgress());
+        message.data("allTaskStatus", jobStatus.getAllTaskStatus());
         return message;
     }
 
@@ -194,6 +195,17 @@ public class ExchangisJobExecuteController {
         executeService.deleteJob(jobExecutionId);
         Message message = Message.ok("Kill succeed(停止成功)！");
         message.setMethod("/api/rest_j/v1/exchangis/job/" + jobExecutionId + "/deleteJob");
+        message.data("jobExecutionId", jobExecutionId);
+        return message;
+    }
+
+    @RequestMapping( value = "/{jobExecutionId}/allTaskStatus", method = RequestMethod.GET)
+    public Message allTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobServerException {
+        //ExchangisLaunchedJobEntity jobAndTaskStatus = exchangisExecutionService.getExecutedJobAndTaskStatus(jobExecutionId);
+        List<String> allStatus = executeService.allTaskStatus(jobExecutionId);
+        Message message = Message.ok("所有任务状态");
+        message.setMethod("/api/rest_j/v1/exchangis/job/" + jobExecutionId + "/allTaskStatus");
+        message.data("allStatus", allStatus);
         message.data("jobExecutionId", jobExecutionId);
         return message;
     }
