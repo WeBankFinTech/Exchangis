@@ -137,6 +137,15 @@ public class DefaultJobExecuteService implements JobExecuteService {
         } catch (Exception e) {
             LOG.error("Get job status happen execption, " +  "[jobExecutionId =" + jobExecutionId + "]（获取作业状态错误）", e);
         }
+
+        Boolean allTaskStatus = false;
+        List<String> taskStatusList = launchedTaskDao.getTaskStatusList(jobExecutionId);
+        if(!taskStatusList.isEmpty()) {
+            if (!taskStatusList.contains("Inited") || !taskStatusList.contains("Scheduled") || !taskStatusList.contains("Running") || !taskStatusList.contains("WaitForRetry")) {
+                allTaskStatus = true;
+            }
+        }
+        jobProgressVo.setAllTaskStatus(allTaskStatus);
         return jobProgressVo;
     }
 
@@ -282,7 +291,8 @@ public class DefaultJobExecuteService implements JobExecuteService {
     public int count(String jobExecutionId, String jobName, String status, Long launchStartTime, Long launchEndTime) {
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
-        return 100;
+
+        return launchedJobDao.count(jobExecutionId, jobName, status, startTime,endTime);
     }
 
     @Override
@@ -347,5 +357,10 @@ public class DefaultJobExecuteService implements JobExecuteService {
         }
     }
 
+    @Override
+    public List<String> allTaskStatus(String jobExecutionId) throws ExchangisJobServerException {
+        List<String> taskStatusList = launchedTaskDao.getTaskStatusList(jobExecutionId);
+        return taskStatusList;
+    }
 
 }
