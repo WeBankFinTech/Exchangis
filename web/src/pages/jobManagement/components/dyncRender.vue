@@ -63,10 +63,11 @@ export default defineComponent({
   emits: ["updateInfo"],
   setup(props, context) {
     let { type, field, value, unit, source} = props.param;
+    value = ref(value)
     let tmlName = field.split(".").pop();
     const newProps = computed(() => JSON.parse(JSON.stringify(props.param)));
     watch(newProps, (val, oldVal) => {
-      value = val.value;
+      value.value = val.value;
     });
     let checkOptions = []
     if (type === 'OPTION'){
@@ -152,7 +153,7 @@ export default defineComponent({
     return {
       checkOptions: ref(checkOptions),
       type,
-      value: ref(value),
+      value: value,
       emitData,
       unit,
       source,
