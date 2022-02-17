@@ -561,8 +561,6 @@ export default {
         configData["jobParams"] = JSON.parse(data["jobParams"]);
         this.configModalData = configData;
 
-        console.log("configData", configData);
-
         this.list = this.jobData.content.subJobs;
         if (this.list.length) {
           this.activeIndex = 0;
@@ -728,9 +726,6 @@ export default {
       return mapping
     },
     updateSourceInfo(dataSource, firstInit) {
-      /*getFields(source.type, source.id, source.db, source.table).then((res) => {
-       this.fieldsSource = res.columns;
-       })*/
       const data = this.getFieldsParams(dataSource);
       if (data) {
         getFields(data).then((res) => {
@@ -743,12 +738,16 @@ export default {
             this.curTask.transforms.mapping = this.convertDeductions(res.deductions)
           }
         });
+      } else {
+        // 没有数据源的情况下清空字段映射
+        this.fieldsSource = []
+        this.fieldsSink = []
+        this.deductions = []
+        this.addEnable = false
+        this.curTask.transforms.mapping = []
       }
     },
     updateSinkInfo(dataSource, firstInit) {
-      /*getFields(sink.type, sink.id, sink.db, sink.table).then((res) => {
-        this.fieldsSink = res.columns;
-      })*/
       const data = this.getFieldsParams(dataSource);
       if (data) {
         getFields(data).then((res) => {
@@ -761,6 +760,13 @@ export default {
             this.curTask.transforms.mapping = this.convertDeductions(res.deductions)
           }
         });
+      } else {
+        // 没有数据源的情况下清空字段映射
+        this.fieldsSource = []
+        this.fieldsSink = []
+        this.deductions = []
+        this.addEnable = false
+        this.curTask.transforms.mapping = []
       }
     },
     updateSourceParams(dataSource) {
