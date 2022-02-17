@@ -296,7 +296,7 @@ export default {
   methods: {
     async getJobs(type, current=1, size=10) {
       this.spinning = true;
-      const { result, total } = await getJobs(this.projectId, type, current, size);
+      const { result, total } = await getJobs(this.projectId, type, this.search, current, size);
       this.spinning = false;
       if (type === "OFFLINE") {
         this.offlineList = result;
@@ -307,8 +307,8 @@ export default {
         this.streamListOrigin = result;
         this.total2 = total
       }
-      this.search = "";
-      this.handleSearch();
+      //this.search = "";
+      //this.handleSearch();
     },
     handleSearch() {
       const search = this.search;
