@@ -3,7 +3,7 @@ import { request } from "@fesjs/fes";
 import { BASE_URL } from "@/common/constants";
 ////////////////////////////////////////////////////////////////////
 export const getProjectList = (name, current, size) => {
-  return request("/projects", { name, current, size }, { method: "POST" });
+  return request(`/projects?name=${name}&current=${current}&size=${size}`, {}, { method: "POST" });
 };
 
 export const createProject = (body) => {
@@ -185,8 +185,8 @@ export const executeTask = (id) => {
   });
 };
 
-export const getJobs = (id, jobType, current, size) => {
-  return request(`/job?projectId=${id}&jobType=${jobType}&current=${current}&size=${size}`, null, {
+export const getJobs = (id, jobType, name, current, size) => {
+  return request(`/job?projectId=${id}&jobType=${jobType}&name=${name}&current=${current}&size=${size}`, null, {
     method: "GET",
   });
 };
