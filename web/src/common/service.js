@@ -2,8 +2,8 @@
 import { request } from "@fesjs/fes";
 import { BASE_URL } from "@/common/constants";
 ////////////////////////////////////////////////////////////////////
-export const getProjectList = (name) => {
-  return request("/projects", { name }, { method: "POST" });
+export const getProjectList = (name, current, size) => {
+  return request("/projects", { name, current, size }, { method: "POST" });
 };
 
 export const createProject = (body) => {
@@ -149,6 +149,17 @@ export const copyJob = (id, params) => {
   );
 };
 
+//编辑任务
+export const modifyJob = (id, params) => {
+  return request(
+    `/job/${id}`,
+    { ...params },
+    {
+      method: "PUT",
+    }
+  );
+};
+
 //删除任务
 export const deleteJob = (id) => {
   return request(`/job/${id}`, null, {
@@ -174,8 +185,8 @@ export const executeTask = (id) => {
   });
 };
 
-export const getJobs = (id, jobType) => {
-  return request(`/job?projectId=${id}&jobType=${jobType}`, null, {
+export const getJobs = (id, jobType, current, size) => {
+  return request(`/job?projectId=${id}&jobType=${jobType}&current=${current}&size=${size}`, null, {
     method: "GET",
   });
 };
