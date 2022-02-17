@@ -129,6 +129,9 @@ export default {
   created() {
     this.init();
   },
+  beforeUnmount() {
+    clearInterval(this.progressTimer)
+  },
   watch: {
     jobId(val) {
       this.jobExecutionId = val;
