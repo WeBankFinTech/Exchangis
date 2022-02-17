@@ -3,7 +3,7 @@
     <div class="content-main">
       <div><img class="img" :src="imageSrc" v-if="imageSrc" /></div>
       <div class="content-main-c">
-        <div class="content-main-c-header" @click="gotoDetail">
+        <div class="content-main-c-header" @click="gotoDetail" :title="jobData.jobName">
           {{ jobData.jobName }}
         </div>
         <div class="content-main-c-desc">
@@ -163,6 +163,10 @@ export default defineComponent({
         line-height: 22px;
         font-weight: 500;
         cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 224px;
       }
       &-desc {
         font-family: PingFangSC-Regular;
