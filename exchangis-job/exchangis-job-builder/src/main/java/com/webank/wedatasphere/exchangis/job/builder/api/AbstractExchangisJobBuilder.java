@@ -14,6 +14,9 @@ import java.lang.reflect.TypeVariable;
 import java.util.*;
 
 public abstract class AbstractExchangisJobBuilder<T extends ExchangisJob, E extends ExchangisBase> implements ExchangisJobBuilder<T, E> {
+
+    private static final ThreadLocal<ExchangisJobBuilderContext> contextThreadLocal = new ThreadLocal<>();
+
     @Override
     @SuppressWarnings("unchecked")
     public Class<T> inputJob() {
@@ -40,12 +43,22 @@ public abstract class AbstractExchangisJobBuilder<T extends ExchangisJob, E exte
     @Override
     public E build(T inputJob, E expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         JobParamDefine.defaultParam.set(new JobParamSet());
+        contextThreadLocal.set(ctx);
         try {
             return buildJob(inputJob, expectOut, ctx);
         } finally{
             JobParamDefine.defaultParam.remove();
+            contextThreadLocal.remove();
         }
     }
 
     public abstract E buildJob(T inputJob, E expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException;
+
+    /**
+     * Get current job builder context
+     * @return
+     */
+    protected static ExchangisJobBuilderContext getCurrentBuilderContext(){
+        return contextThreadLocal.get();
+    }
 }

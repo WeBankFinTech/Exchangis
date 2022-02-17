@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers;
 
-import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
@@ -11,6 +10,7 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
 import org.apache.linkis.common.exception.ErrorException;
+import org.apache.linkis.datasource.client.response.GetConnectParamsByDataSourceIdResult;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -66,12 +66,9 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
             // {TYPE}.{ID}.{DB}.{TABLE}
             String[] idSerial = sourceId.split(ID_SPLIT_SYMBOL);
             if (idSerial.length >= 2){
-                GetDataSourceInfoResultDTO infoResult = dataSourceService.getDataSource(userName, Long.valueOf(idSerial[1]));
-                Optional.ofNullable(infoResult.getData()).ifPresent(info ->{
-                    if(Objects.nonNull(info.getInfo())){
-                        info.getInfo().getConnectParams().forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, true)));
-                    }
-                });
+                GetConnectParamsByDataSourceIdResult infoResult = dataSourceService.getDataSourceConnectParamsById(userName, Long.valueOf(idSerial[1]));
+                Optional.ofNullable(infoResult.connectParams()).ifPresent(connectParams ->
+                        connectParams.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, true))));
             }
         }
     }

@@ -13,6 +13,8 @@ public class JobParamConstraints {
 
     public static final String DATABASE = "database";
 
+    public static final String CONNECT_PARAMS = "params";
+
     public static final String TABLE = "table";
 
     public static final String HOST = "host";
