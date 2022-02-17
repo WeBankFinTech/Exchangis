@@ -10,6 +10,7 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Default implements
@@ -26,8 +27,10 @@ public class DefaultExchangisEngineJobBuilder extends AbstractExchangisJobBuilde
         String paramsString = ctx.getOriginalJob().getJobParams();
         ExchangisEngineJob exchangisEngineJob = new ExchangisEngineJob();
         if (StringUtils.isNotBlank(paramsString)){
-            Map<String, Object> runtimeParams = Json.fromJson(paramsString, Map.class);
-            exchangisEngineJob.setRuntimeParams(runtimeParams);
+            Map<String, Object> jobParams = Json.fromJson(paramsString, Map.class);
+            if (Objects.nonNull(jobParams)){
+                exchangisEngineJob.getJobContent().putAll(jobParams);
+            }
         }
         exchangisEngineJob.setEngineType(ctx.getOriginalJob().getEngineType());
         exchangisEngineJob.setName(inputJob.getName());
