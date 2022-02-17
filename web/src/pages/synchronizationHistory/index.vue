@@ -178,6 +178,10 @@ const columns = [
     dataIndex: "flow",
   },
   {
+    title: "创建用户",
+    dataIndex: "createUser",
+  },
+  {
     title: "提交用户",
     dataIndex: "executeUser",
   },
@@ -311,6 +315,7 @@ export default {
     };
 
     const search = () => {
+      jobId.value = null
       getTableFormCurrent(1, "search");
     };
 
