@@ -82,7 +82,7 @@
               <project-create-card @action="handleCreateCardAction" />
             </a-col> -->
               <!-- 视图卡片 -->
-              <a-col v-for="item in projectListData" :key="item.id">
+              <a-col v-for="item in projectList" :key="item.id">
                 <project-view-card
                   @delete="handleOnDelteProject"
                   @edit="handleOnEditProject"
@@ -97,8 +97,9 @@
                 <div class="pagination-line">
                   <a-pagination
                     v-model:current="pageCfg.current"
-                    v-model:pageSize="pageCfg.pageSize"
-                    :total="projectList.lenght"
+                    v-model:pageSize="pageCfg.size"
+                    @change="handleChangePage"
+                    :total="total"
                     show-less-items
                   />
                 </div>
@@ -157,22 +158,19 @@ export default {
       // 分页配置
       pageCfg: {
         current: 1,
-        pageSize: 11,
+        size: 10,
       },
+      total : 0
     };
   },
   computed: {
-    projectListData() {
-      let strIndex =
-        Math.max(this.pageCfg.current - 1, 0) * this.pageCfg.pageSize;
-      return this.projectList.slice(strIndex, strIndex + this.pageCfg.pageSize);
-    },
   },
   methods: {
-    async getDataList(name) {
+    async getDataList(name, current=1, size=10) {
       this.loading = true;
-      let { list } = await getProjectList(name);
+      let { list, total } = await getProjectList(name, current, size);
       this.loading = false;
+      this.total = total
       this.projectList = list
         .map((item) => ({
           id: item.id,
@@ -180,7 +178,6 @@ export default {
           describe: item.description,
           tags: item.tags.split(","),
         }))
-        .reverse();
     },
     // 模态框操作完成
     handleModalFinish() {
@@ -212,6 +209,10 @@ export default {
         id: id,
       };
     },
+    handleChangePage(current) {
+      this.pageCfg.current = current
+      this.getDataList(this.projectName, current)
+    }
   },
   async mounted() {
     this.getDataList();
