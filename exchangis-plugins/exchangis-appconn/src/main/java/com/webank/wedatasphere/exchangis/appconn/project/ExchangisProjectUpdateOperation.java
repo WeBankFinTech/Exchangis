@@ -12,7 +12,7 @@ import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalO
 import com.webank.wedatasphere.exchangis.appconn.config.ExchangisConfig;
 import com.webank.wedatasphere.exchangis.appconn.model.ExchangisPutAction;
 import com.webank.wedatasphere.exchangis.appconn.ref.ExchangisProjectResponseRef;
-import com.webank.wedatasphere.exchangis.appconn.utils.AppconnUtils;
+import com.webank.wedatasphere.exchangis.appconn.utils.AppConnUtils;
 import org.apache.linkis.httpclient.request.HttpAction;
 import org.apache.linkis.httpclient.response.HttpResult;
 import org.apache.linkis.server.BDPJettyServerHelper;
@@ -49,7 +49,7 @@ public class ExchangisProjectUpdateOperation implements ProjectUpdateOperation {
         exchangisPutAction.addRequestPayload(ExchangisConfig.EDIT_USERS,projectRequestRef.getUpdateBy());
         exchangisPutAction.addRequestPayload(ExchangisConfig.EXEC_USERS,projectRequestRef.getUpdateBy());
         exchangisPutAction.addRequestPayload(ExchangisConfig.VIEW_USERS,projectRequestRef.getUpdateBy());
-        exchangisPutAction.addRequestPayload(ExchangisConfig.TAGS, AppconnUtils.changeDssLabelName(projectRequestRef.getDSSLabels()));
+        exchangisPutAction.addRequestPayload(ExchangisConfig.TAGS, AppConnUtils.changeDssLabelName(projectRequestRef.getDSSLabels()));
 
         SSOUrlBuilderOperation ssoUrlBuilderOperation = projectRequestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
         ssoUrlBuilderOperation.setAppName(getAppName());

@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.engine;
 
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
@@ -15,9 +16,12 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.REALM_JOB_CONTENT_SINK;
 import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.REALM_JOB_CONTENT_SOURCE;
@@ -63,7 +67,9 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      * //TODO Get the file type from service
      * Whether hcatalog
      */
-    private static final JobParamDefine<Boolean> IS_USE_HCATALOG = JobParams.define("sqoop.use.hcatalog", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) -> true);
+    private static final JobParamDefine<Boolean> IS_USE_HCATALOG = JobParams.define("sqoop.use.hcatalog", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) ->{
+        return true;
+    });
 
     /**
      * Driver default 'com.mysql.jdbc.Driver'
@@ -100,8 +106,23 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         JobParamSet paramSet = MODE_RDBMS_PARAMS.getValue(job);
         String host = paramSet.get(JobParamConstraints.HOST, String.class).getValue();
         String database = paramSet.get(JobParamConstraints.DATABASE, String.class).getValue();
+        JobParam<String> connectParams = paramSet.get(JobParamConstraints.CONNECT_PARAMS, String.class);
+        Map<String, String> paramsMap = null;
+        if (Objects.nonNull(connectParams)){
+            paramsMap = Json.fromJson(connectParams.getValue(), Map.class);
+        }
         Integer port = Integer.parseInt(String.valueOf(paramSet.get(JobParamConstraints.PORT).getValue()));
-        return String.format(CONNECT_PROTOCOL.getValue(job), host, port, database);
+        String connectStr =  String.format(CONNECT_PROTOCOL.getValue(job), host, port, database);
+        if (Objects.nonNull(paramsMap) && !paramsMap.isEmpty()){
+            connectStr += "?" + paramsMap.entrySet().stream().map(entry -> {
+                try {
+                    return entry.getKey() + "=" + URLEncoder.encode(entry.getValue(), "UTF-8" );
+                } catch (UnsupportedEncodingException e) {
+                    return null;
+                }
+            }).filter(StringUtils::isNotBlank).collect(Collectors.joining("&"));
+        }
+        return connectStr;
     });
 
     /**
@@ -473,6 +494,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             if (Objects.nonNull(expectOut)) {
                 engineJob.setName(expectOut.getName());
                 engineJob.setEngineType(expectOut.getEngineType());
+                jobContent.putAll(expectOut.getJobContent());
             }
             engineJob.setCreateUser(inputJob.getCreateUser());
             return engineJob;

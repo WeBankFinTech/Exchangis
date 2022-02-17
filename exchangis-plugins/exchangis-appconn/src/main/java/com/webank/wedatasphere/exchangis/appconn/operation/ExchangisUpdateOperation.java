@@ -11,7 +11,7 @@ import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalO
 import com.webank.wedatasphere.exchangis.appconn.config.ExchangisConfig;
 import com.webank.wedatasphere.exchangis.appconn.model.ExchangisPutAction;
 import com.webank.wedatasphere.exchangis.appconn.ref.ExchangisCommonResponseRef;
-import com.webank.wedatasphere.exchangis.appconn.utils.AppconnUtils;
+import com.webank.wedatasphere.exchangis.appconn.utils.AppConnUtils;
 import org.apache.linkis.httpclient.response.HttpResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class ExchangisUpdateOperation implements RefUpdateOperation<UpdateReques
         exchangisPutAction.setUser(exchangisupdateRequestRef.getUserName());
         exchangisPutAction.addRequestPayload(ExchangisConfig.NODE_NAME,exchangisupdateRequestRef.getName());
         exchangisPutAction.addRequestPayload(ExchangisConfig.JOB_DESC,exchangisupdateRequestRef.getJobContent().get("desc").toString());
-        exchangisPutAction.addRequestPayload(ExchangisConfig.JOB_LABELS, AppconnUtils.changeDssLabelName(exchangisupdateRequestRef.getDSSLabels()));
+        exchangisPutAction.addRequestPayload(ExchangisConfig.JOB_LABELS, AppConnUtils.changeDssLabelName(exchangisupdateRequestRef.getDSSLabels()));
         exchangisPutAction.addRequestPayload(ExchangisConfig.JOB_NAME,exchangisupdateRequestRef.getName());
         exchangisPutAction.addRequestPayload(ExchangisConfig.JOB_TYPE,ExchangisConfig.JOB_TYPE_OFFLINE);
         exchangisPutAction.addRequestPayload(ExchangisConfig.ENGINE_TYPE,engineType);
