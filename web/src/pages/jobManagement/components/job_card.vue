@@ -96,7 +96,7 @@ export default defineComponent({
       console.log(result);
       if (result) {
         message.success(t("job.action.deleteJobSuccess"));
-        context.emit("refreshList", props.type, projectId);
+        context.emit("refreshList", props.type);
         changeManagement();
       }
     };
@@ -110,7 +110,6 @@ export default defineComponent({
     };
 
     const handleJobModify = () => {
-      console.log(jobData)
       context.emit("handleJobModify", jobData);
     }
 

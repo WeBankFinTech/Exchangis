@@ -1,8 +1,7 @@
 <template>
     <!-- 执行日志  jd-bottom -->
     <div class="jd-bottom jd-bottom-log" v-show="visibleLog">
-      <div class="jd-bottom-top" >
-        <!--<span>执行日志</span>-->
+      <div class="jd-bottom-top jd-bottom-log-top" >
         <CloseOutlined
           style="
             color: rgba(0, 0, 0, 0.45);
@@ -103,6 +102,7 @@ import {
 import { message, notification } from "ant-design-vue";
 import executionLog from './executionLog'
 import metrics from './metricsInfo'
+import { moveUpDown } from "../../../common/utils";
 
 export default {
   components: {
@@ -152,6 +152,9 @@ export default {
     init() {
       this.tasklist = []
       this.visibleLog = true
+      this.$nextTick(()=> {
+        moveUpDown('.jd-bottom-log', '.sync-history-wrap', '.jd-bottom-log-top', 350, 400)
+      })
       this.getTasks()
       this.getJobProgressWithPoll()
     },
