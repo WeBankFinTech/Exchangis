@@ -38,7 +38,7 @@
       type="link"
       v-if="pauseLog.isPause"
       style="position: absolute;left:930px;z-index: 1;top: 8px"
-    >{{logs.isEnd ? '隐藏读取最后n行日志' :'恢复日志拉取' }}</a-button>
+    >{{pauseLog.pauseIsEnd ? '隐藏读取最后n行日志' : '恢复日志拉取' }}</a-button>
   </div>
 </template>
 <script>
@@ -85,9 +85,9 @@ export default defineComponent({
         info: '',
         warn: ''
       }),
-      searchKeyword,
-      ignoreKeyword,
-      lastRows
+      searchKeyword = ref(''),
+      ignoreKeyword = ref(''),
+      lastRows = ref('')
     let logs = reactive({
       logs: {},
       endLine: 0,
@@ -150,9 +150,9 @@ export default defineComponent({
         getJobExecLog({
           id: curId,
           fromLine,
-          onlyKeywords: searchKeyword,
-          ignoreKeywords: ignoreKeyword || '[main],[SpringContextShutdownHook]',
-          lastRows: lastRows
+          onlyKeywords: searchKeyword.value,
+          ignoreKeywords: ignoreKeyword.value || '[main],[SpringContextShutdownHook]',
+          lastRows: lastRows.value
         })
           .then((res) => {
             _updateLog(res)
@@ -166,9 +166,9 @@ export default defineComponent({
           taskId: curId,
           id: id,
           fromLine,
-          onlyKeywords: searchKeyword,
-          ignoreKeywords: ignoreKeyword || '[main],[SpringContextShutdownHook]',
-          lastRows: lastRows
+          onlyKeywords: searchKeyword.value,
+          ignoreKeywords: ignoreKeyword.value || '[main],[SpringContextShutdownHook]',
+          lastRows: lastRows.value
         })
           .then((res) => {
             _updateLog(res)
@@ -208,13 +208,13 @@ export default defineComponent({
     }
 
     const onSearch = (keyword) => {
-      searchKeyword = keyword
+      searchKeyword.value = keyword
       resetData()
       changeData(curLogId)
     }
 
     const onSearch2 = (keyword) => {
-      ignoreKeyword = keyword
+      ignoreKeyword.value = keyword
       resetData()
       changeData(curLogId)
     }
@@ -223,7 +223,7 @@ export default defineComponent({
       if (keyword && !/^[1-9]\d*$/.test(keyword)) {
         return message.error('请正确输入')
       }
-      lastRows = keyword
+      lastRows.value = keyword
       resetData()
       _showInfoLog(curLogId)
     }
@@ -235,6 +235,7 @@ export default defineComponent({
         pauseLog.pauseIsEnd = logs.isEnd
         clearInterval(showLogTimer)
       } else {
+        lastRows.value = ''
         if (!pauseLog.pauseIsEnd) {
           /*resetData({
             endLine: pauseLog.pauseEndLine,
@@ -255,9 +256,9 @@ export default defineComponent({
       checkOptions,
       curLog,
       pauseLog,
-      searchKeyword: ref(searchKeyword),
-      ignoreKeyword: ref(ignoreKeyword),
-      lastRows: ref(lastRows),
+      searchKeyword,
+      ignoreKeyword,
+      lastRows,
       onSearch,
       onSearch2,
       onSearch3,
