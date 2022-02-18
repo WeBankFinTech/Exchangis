@@ -299,10 +299,12 @@ export default {
       const { result, total } = await getJobs(this.projectId, type, this.search, current, size);
       this.spinning = false;
       if (type === "OFFLINE") {
+        this.pageCfg.current = current
         this.offlineList = result;
         this.offlineListOrigin = result;
         this.total = total
       } else {
+        this.pageCfg2.current = current
         this.streamList = result;
         this.streamListOrigin = result;
         this.total2 = total
@@ -311,7 +313,7 @@ export default {
       //this.handleSearch();
     },
     handleSearch() {
-      const search = this.search;
+      /*const search = this.search;
       if (!search) {
         this.offlineList = [...this.offlineListOrigin];
         this.streamList = [...this.streamListOrigin];
@@ -322,7 +324,8 @@ export default {
         this.streamList = [...this.streamListOrigin].filter((item) =>
           item.jobName.toLowerCase().includes(search.toLowerCase())
         );
-      }
+      }*/
+      this.handleChangePage(1)
     },
     addJob() {
       this.mode = 'create'
