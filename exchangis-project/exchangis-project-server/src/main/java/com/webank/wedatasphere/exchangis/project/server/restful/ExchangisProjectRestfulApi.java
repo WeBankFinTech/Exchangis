@@ -35,15 +35,22 @@ public class ExchangisProjectRestfulApi {
 
     @RequestMapping( value = "projects", method = RequestMethod.POST)
     public Message queryProjects(HttpServletRequest request,
-                                 @Valid @RequestBody ProjectQueryRequest projectQueryRequest) {
+                                 @Valid @RequestBody ProjectQueryRequest projectQueryRequest,
+                                 @RequestParam(value = "current", required = false) int current,
+                                 @RequestParam(value = "size", required = false) int size) {
         String username = SecurityFilter.getLoginUsername(request);
         if (null == projectQueryRequest) {
             projectQueryRequest = new ProjectQueryRequest();
         }
         projectQueryRequest.setUsername(username);
         try {
-            List<ExchangisProjectDTO> projects = projectService.queryProjects(projectQueryRequest);
-            return Message.ok().data("list", projects);
+            List<ExchangisProjectDTO> projects = projectService.queryProjects(projectQueryRequest, current, size);
+            int total = projectService.count(projectQueryRequest);
+            Message message = Message.ok();
+            message.data("total", total);
+            message.data("list", projects);
+            return message;
+            //return Message.ok().data("list", projects);
         } catch (final Throwable t) {
             LOGGER.error("failed to create project for user {}", username, t);
             return Message.error("获取工程列表失败,原因是:" + t.getMessage());
