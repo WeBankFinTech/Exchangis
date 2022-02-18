@@ -3,7 +3,7 @@
     <div class="content-main">
       <div><img class="img" :src="imageSrc" v-if="imageSrc" /></div>
       <div class="content-main-c">
-        <div class="content-main-c-header" @click="gotoDetail">
+        <div class="content-main-c-header" @click="gotoDetail" :title="jobData.jobName">
           {{ jobData.jobName }}
         </div>
         <div class="content-main-c-desc">
@@ -32,6 +32,10 @@
     <div class="content-sidebar">
       <div @click="handleJobCopy">
         <span class="iconfont icon-copy job_card_icon"></span>
+      </div>
+      <a-divider type="horizontal" style="width: 16px" />
+      <div @click="handleJobModify">
+        <span class="iconfont icon-need-fault-tolerance job_card_icon"></span>
       </div>
       <a-divider type="horizontal" style="width: 16px" />
       <div>
@@ -68,11 +72,10 @@ export default defineComponent({
     jobData: Object,
     type: String,
   },
-  emits: ["showJobDetail", "handleJobCopy", "refreshList"],
+  emits: ["showJobDetail", "handleJobCopy", "refreshList", "handleJobModify"],
   setup(props, context) {
     const { t } = useI18n({ useScope: "global" });
     const jobData = toRaw(props.jobData);
-    console.log(jobData);
     const { engineType, id, projectId } = jobData;
     const imageText = engineType.toUpperCase();
     const imageName =
@@ -106,6 +109,11 @@ export default defineComponent({
       context.emit("handleJobCopy", jobData);
     };
 
+    const handleJobModify = () => {
+      console.log(jobData)
+      context.emit("handleJobModify", jobData);
+    }
+
     return {
       imageSrc: imageName ? require(`../../../images/${imageName}`) : "",
       imageText,
@@ -114,6 +122,7 @@ export default defineComponent({
       confirmDelete,
       gotoDetail,
       handleJobCopy,
+      handleJobModify
     };
   },
 });
@@ -154,6 +163,10 @@ export default defineComponent({
         line-height: 22px;
         font-weight: 500;
         cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 224px;
       }
       &-desc {
         font-family: PingFangSC-Regular;
@@ -196,6 +209,9 @@ export default defineComponent({
     justify-content: space-around;
     border: 1px solid #dee4ec;
     border-top: none;
+    :deep(.ant-divider-horizontal) {
+      margin: 8px 0;
+    }
   }
 }
 .img {
