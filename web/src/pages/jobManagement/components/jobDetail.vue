@@ -308,9 +308,11 @@
           </a-tab-pane>
           <a-tab-pane key="3" tab="执行历史" force-render>
             <a-table
-              style="margin: 0 24px"
+              style="margin: 0px 150px 0 24px;"
               :columns="ehColumns"
               :data-source="ehTableData"
+              :pagination="false"
+              :scroll="{y:240}"
             >
               <template #jobExecutionId="{ record }">
                 <router-link :to="`/synchronizationHistory?jobExecutionId=${jobExecutionId}`">
