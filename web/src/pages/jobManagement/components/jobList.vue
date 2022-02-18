@@ -127,7 +127,17 @@
                   type="OFFLINE"
                   @showJobDetail="showJobDetail"
                   @handleJobCopy="handleJobCopy"
+                  @handleJobModify="handleJobModify"
                   @refreshList="getJobs"
+                />
+              </div>
+              <div class="pagination-line">
+                <a-pagination
+                  v-model:current="pageCfg.current"
+                  v-model:pageSize="pageCfg.size"
+                  @change="handleChangePage"
+                  :total="total"
+                  show-less-items
                 />
               </div>
             </div>
@@ -199,7 +209,17 @@
                   type="STREAM"
                   @showJobDetail="showJobDetail"
                   @handleJobCopy="handleJobCopy"
+                  @handleJobModify="handleJobModify"
                   @refreshList="getJobs"
+                />
+              </div>
+              <div class="pagination-line">
+                <a-pagination
+                  v-model:current="pageCfg2.current"
+                  v-model:pageSize="pageCfg2.size"
+                  @change="handleChangePage"
+                  :total="total2"
+                  show-less-items
                 />
               </div>
             </div>
@@ -211,6 +231,7 @@
       :visible="visible"
       :editData="editJobData"
       :projectId="projectId"
+      :mode="mode"
       @handleJobAction="handleJobAction"
     />
   </div>
@@ -254,6 +275,18 @@ export default {
       streamListOrigin: [],
       projectId: this.$route.query.id,
       spinning: false,
+      mode: 'create',
+      // 分页配置
+      pageCfg: {
+        current: 1,
+        size: 10,
+      },
+      pageCfg2: {
+        current: 1,
+        size: 10,
+      },
+      total: 0,
+      total2: 0
     };
   },
   mounted() {
@@ -261,20 +294,21 @@ export default {
     this.getJobs("STREAM");
   },
   methods: {
-    async getJobs(type) {
+    async getJobs(type, current=1, size=10) {
       this.spinning = true;
-      const list = await getJobs(this.projectId, type);
+      const { result, total } = await getJobs(this.projectId, type, this.search, current, size);
       this.spinning = false;
-      const result = (list && list.result) || [];
       if (type === "OFFLINE") {
         this.offlineList = result;
         this.offlineListOrigin = result;
+        this.total = total
       } else {
         this.streamList = result;
         this.streamListOrigin = result;
+        this.total2 = total
       }
-      this.search = "";
-      this.handleSearch();
+      //this.search = "";
+      //this.handleSearch();
     },
     handleSearch() {
       const search = this.search;
@@ -289,11 +323,11 @@ export default {
           item.jobName.toLowerCase().includes(search.toLowerCase())
         );
       }
-      console.log(this.search);
     },
     addJob() {
-      console.log(122);
+      this.mode = 'create'
       this.visible = true;
+      this.editJobData = {}
     },
     handleJobAction(newJobData) {
       this.visible = false;
@@ -308,6 +342,12 @@ export default {
       this.$emit("changeType");
     },
     handleJobCopy(data) {
+      this.mode = 'copy'
+      this.visible = true;
+      this.editJobData = data;
+    },
+    handleJobModify(data) {
+      this.mode = 'modify'
       this.visible = true;
       this.editJobData = data;
     },
@@ -327,6 +367,15 @@ export default {
         message.error(this.t("job.action.fileUpFailed"));
       }
     },
+    handleChangePage(current) {
+      if (this.activeKey == 1) {
+        this.pageCfg.current = current
+        this.getJobs('OFFLINE', current, this.pageCfg.size)
+      } else {
+        this.pageCfg2.current = current
+        this.getJobs('STREAM', current, this.pageCfg2.size)
+      }
+    }
   },
   watch: {
     activeKey: {
@@ -363,6 +412,10 @@ export default {
   }
   .card {
     margin: 10px 20px 10px 0px;
+  }
+  .pagination-line {
+    width: 100%;
+    text-align: right;
   }
 }
 
