@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.vo;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskMetricsDTO;
 
 /**
- * @author tikazhang
+ *
  * @Date 2022/1/12 22:50
  */
 public class ExchangisLaunchedTaskVO {
