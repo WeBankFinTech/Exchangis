@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container jd-container">
     <div class="tools-bar">
       <span @click="modalCfg.visible = true"><SettingOutlined />配置</span>
       <div class="divider"></div>
@@ -16,8 +16,8 @@
       </a-popconfirm>
       <div class="divider"></div>
       <span @click="saveAll()"><SaveOutlined />保存</span>
-      <!--<div class="divider"></div>-->
-      <!--<span @click="executeHistory"><HistoryOutlined />执行历史</span>-->
+      <div class="divider"></div>
+      <span @click="executeHistory"><HistoryOutlined />执行历史</span>
     </div>
     <div class="jd-content" v-if="list.length !== 0">
       <a-spin size="large" :spinning="loading">
@@ -222,7 +222,7 @@
 
     <!-- 执行日志  jd-bottom -->
     <div class="jd-bottom jd-bottom-log" v-show="visibleLog">
-      <div class="jd-bottom-top" >
+      <div class="jd-bottom-top jd-bottom-log-top" >
         <!--<span>执行日志</span>-->
         <CloseOutlined
           style="
@@ -237,7 +237,7 @@
         />
       </div>
       <div class="jd-bottom-content log-bottom-content">
-        <a-tabs default-active-key="1" class="exec-info-tab">
+        <a-tabs v-model:activeKey="activeKey" class="exec-info-tab">
           <a-tab-pane key="1" tab="运行情况">
             <div v-if="jobProgress.tasks" class="job-progress-percent job-progress-wrap">
               <span>总进度<span style="font-size: 11px;color:rgba(0,0,0,0.5)">({{statusMap[jobStatus]}})</span></span>
@@ -306,6 +306,25 @@
           <a-tab-pane key="2" tab="实时日志" force-render>
             <execution-log :param="logParams" :isShow="visibleLog"></execution-log>
           </a-tab-pane>
+          <a-tab-pane key="3" tab="执行历史" force-render>
+            <a-table
+              style="margin: 0 24px"
+              :columns="ehColumns"
+              :data-source="ehTableData"
+            >
+              <template #jobExecutionId="{ record }">
+                <router-link :to="`/synchronizationHistory?jobExecutionId=${jobExecutionId}`">
+                  {{record.jobExecutionId}}
+                </router-link>
+              </template>
+              <template #status="{ record }">
+                <span>{{statusMap[record.status]}}</span>
+              </template>
+              <template #createTime="{ record }">
+                <span>{{dateFormat(record.createTime)}}</span>
+              </template>
+            </a-table>
+          </a-tab-pane>
         </a-tabs>
       </div>
     </div>
@@ -359,7 +378,7 @@ import {
   killJob
 } from "@/common/service";
 import { message, notification } from "ant-design-vue";
-import { randomString } from "../../../common/utils";
+import { randomString, moveUpDown, dateFormat } from "../../../common/utils";
 import { useI18n } from "@fesjs/fes";
 import executionLog from './executionLog'
 import metrics from './metricsInfo'
@@ -396,36 +415,34 @@ const formatDate = (d) => {
 
 const ehColumns = [
   {
-    title: "ID",
-    dataIndex: "id",
+    title: "编号",
+    dataIndex: "key",
+    align: 'center'
   },
   {
-    title: "任务名称",
-    dataIndex: "taskName",
-  },
-  {
-    title: "触发时间",
-    dataIndex: "launchTime",
-  },
-  {
-    title: "创建用户",
-    dataIndex: "createUser",
+    title: "执行ID",
+    dataIndex: "jobExecutionId",
+    slots: {
+      customRender: "jobExecutionId",
+    },
+    align: 'center'
   },
   {
     title: "状态",
     dataIndex: "status",
+    slots: {
+      customRender: "status",
+    },
+    align: 'center'
   },
   {
-    title: "完成时间",
-    dataIndex: "completeTime",
-  },
-  // {
-  //   title: "操作",
-  //   dataIndex: "options",
-  //   slots: {
-  //     customRender: "operation",
-  //   },
-  // },
+    title: "创建时间",
+    dataIndex: "createTime",
+    slots: {
+      customRender: "createTime",
+    },
+    align: 'center'
+  }
 ];
 
 export default {
@@ -515,7 +532,9 @@ export default {
         'Success': '成功',
         'Undefined': '未定义',
         'Timeout': '超时'
-      }
+      },
+      activeKey: "1",
+      dateFormat
     };
   },
   props: {
@@ -896,7 +915,16 @@ export default {
           .then((res) => {
             this.jobExecutionId = res.jobExecutionId
             this.visibleLog = true
+            moveUpDown('.jd-bottom-log', '.jd-container', '.jd-bottom-log-top')
             this.getStatus(res.jobExecutionId)
+
+            // 新增执行历史
+            this.ehTableData.push({
+              jobExecutionId : this.jobExecutionId,
+              createTime: new Date().getTime(),
+              status: '',
+              key: this.ehTableData.length + 1
+            })
           })
           .catch((err) => {
             console.log(err)
@@ -914,7 +942,16 @@ export default {
           this.spinning = false
           clearInterval(this.jobStatusTimer)
           clearInterval(this.progressTimer)
-          this.visibleLog = false
+          //this.visibleLog = false
+
+          // 更新执行历史状态
+          for (let i = this.ehTableData.length; i > 0; i--) {
+            let cur = this.ehTableData[i - 1]
+            if (cur.jobExecutionId === this.jobExecutionId) {
+              cur.status = 'Cancelled'
+              break
+            }
+          }
         })
         .catch((err) => {
           console.log(err)
@@ -935,6 +972,16 @@ export default {
         .then(res => {
           this.jobStatus = res.status
           this.allTaskStatus = res.allTaskStatus
+
+          // 更新执行历史状态
+          for (let i = this.ehTableData.length; i > 0; i--) {
+            let cur = this.ehTableData[i - 1]
+            if (cur.jobExecutionId === jobExecutionId) {
+              cur.status = res.status
+              break
+            }
+          }
+
           if (!this.tasklist.length) {
             this.getTasks(jobExecutionId, true)
           }
@@ -1012,8 +1059,8 @@ export default {
     },
 
     executeHistory() {
-      this.visibleDrawer = true;
-      this.getTableFormCurrent(1, "search");
+      this.visibleLog = true;
+      this.activeKey = "3"
     },
     getTableFormCurrent(current, type) {
       let _this = this;
@@ -1078,6 +1125,7 @@ export default {
 <style scoped lang="less">
 @import "../../../common/content.less";
 .container {
+  position: relative;
   .tools-bar {
     width: 100%;
     border-bottom: 1px solid #dee4ec;
@@ -1233,9 +1281,10 @@ export default {
       font-weight: 500;
     }
     &.jd-bottom-log {
-      height: 33%;
+      height: 350px;
+      width: 100%;
      .jd-bottom-top {
-       bottom: 33%;
+       bottom: 350px;
      }
     }
 

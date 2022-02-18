@@ -89,6 +89,9 @@
               >{{ text.versionId }}</a-button
             >
           </template>
+          <template #desc="{ text }">
+            <div class="dsm-desc" :title="text.desc">{{ text.desc }}</div>
+          </template>
           <template #modifyTime="{ text }">
             {{ text && dateFormat(text) }}
           </template>
@@ -181,7 +184,7 @@ export default {
       {
         title: t("dataSource.table.list.columns.title.describe"),
         align: "center",
-        dataIndex: "desc",
+        slots: { customRender: "desc" },
         width: 250
       },
       {
@@ -358,6 +361,12 @@ export default {
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 150px;
+  }
+  .dsm-desc {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 250px;
   }
 }
 
