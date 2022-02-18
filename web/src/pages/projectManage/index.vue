@@ -166,7 +166,7 @@ export default {
   computed: {
   },
   methods: {
-    async getDataList(name, current=1, size=10) {
+    async getDataList(name='', current=1, size=10) {
       this.loading = true;
       let { list, total } = await getProjectList(name, current, size);
       this.loading = false;
@@ -181,6 +181,7 @@ export default {
     },
     // 模态框操作完成
     handleModalFinish() {
+      this.pageCfg.current = 1;
       this.getDataList();
     },
     // 新建卡片点击
@@ -199,6 +200,7 @@ export default {
     async handleOnDelteProject(id) {
       await deleteProject(id);
       message.success("删除成功");
+      this.pageCfg.current = 1;
       this.getDataList();
     },
     // 编辑项目
