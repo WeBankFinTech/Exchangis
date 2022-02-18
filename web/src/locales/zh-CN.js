@@ -126,6 +126,7 @@ export default {
     action: {
       createJob: "创建任务",
       copyJob: "复制任务",
+      modifyJob: "编辑任务",
       import: "导入",
       export: "导出",
       save: "保存",

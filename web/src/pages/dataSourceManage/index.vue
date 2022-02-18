@@ -181,7 +181,8 @@ export default {
       {
         title: t("dataSource.table.list.columns.title.describe"),
         align: "center",
-        dataIndex: "desc"
+        dataIndex: "desc",
+        width: 250
       },
       {
         title: t("dataSource.table.list.columns.title.updatetim"),
