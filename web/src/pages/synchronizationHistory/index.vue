@@ -138,8 +138,9 @@ import {
   toRaw,
   ref,
   onMounted,
-  defineAsyncComponent,
+  defineAsyncComponent
 } from "vue";
+import { useRoute } from "vue-router"
 import { SearchOutlined } from "@ant-design/icons-vue";
 import { cloneDeep } from "lodash-es";
 import {
@@ -159,7 +160,7 @@ const columns = [
     dataIndex: "jobExecutionId",
     slots: {
       customRender: "jobExecutionId",
-    },
+    }
   },
   {
     title: "执行节点",
@@ -176,6 +177,10 @@ const columns = [
   {
     title: "速率",
     dataIndex: "flow",
+  },
+  {
+    title: "创建用户",
+    dataIndex: "createUser",
   },
   {
     title: "提交用户",
@@ -232,15 +237,18 @@ export default {
     bottomLog
   },
   setup() {
+    const route = useRoute()
+    let defaultExecutionId = route.query.jobExecutionId
     const state = reactive({
       formState: {
-        jobExecutionId: '',
+        jobExecutionId: defaultExecutionId || '',
         jobId: "",
         jobName: "",
         status: "",
         time: [],
       },
-    });
+    })
+    defaultExecutionId = ''
     const visibleSpeedLimit = ref(false);
     const jobId = ref('');
     const showLogs = ref(false)
@@ -258,7 +266,6 @@ export default {
       total: 0,
       pageSize: pageSize,
       showQuickJumper: true,
-      showSizeChanger: true,
       showTotal: total => `总计 ${total} 条`
     });
 
@@ -311,6 +318,7 @@ export default {
     };
 
     const search = () => {
+      jobId.value = null
       getTableFormCurrent(1, "search");
     };
 
