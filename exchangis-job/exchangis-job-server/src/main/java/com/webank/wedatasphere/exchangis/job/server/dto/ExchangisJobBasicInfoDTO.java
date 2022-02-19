@@ -7,6 +7,8 @@ import com.webank.wedatasphere.exchangis.job.enums.JobTypeEnum;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExchangisJobBasicInfoDTO {
 
+    private int id;
+
     private Long projectId;
 
     private Long dssProjectId;
@@ -28,6 +30,14 @@ public class ExchangisJobBasicInfoDTO {
     private String jobDesc;
 
     private String jobName;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getJobName() {
         return jobName;

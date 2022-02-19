@@ -10,6 +10,7 @@ import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServer
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
 import org.springframework.web.multipart.MultipartFile;
+import scala.Int;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -38,7 +39,9 @@ public interface ExchangisJobService extends IService<ExchangisJobVO> {
      * @param name      the name
      * @return the job list
      */
-    public List<ExchangisJobBasicInfoVO> getJobList(long projectId, String type, String name);
+    public List<ExchangisJobBasicInfoVO> getJobList(long projectId, String type, String name, int current, int size);
+
+    int count(long projectId, String type, String name);
 
     public List<ExchangisJobBasicInfoVO> getJobListByDssProject(long dssProjectId, String type, String name);
 

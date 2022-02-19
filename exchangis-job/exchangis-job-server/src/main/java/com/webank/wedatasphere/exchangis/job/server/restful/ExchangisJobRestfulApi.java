@@ -52,9 +52,17 @@ public class ExchangisJobRestfulApi {
     @RequestMapping( value = "", method = RequestMethod.GET)
     public Message getJobList(@RequestParam(value = "projectId") Long projectId,
                               @RequestParam(value = "jobType", required = false) String jobType,
-                              @RequestParam(value = "name", required = false) String name) {
-        List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobList(projectId, jobType, name);
-        return Message.ok().data("result", joblist);
+                              @RequestParam(value = "name", required = false) String name,
+                              @RequestParam(value = "current", required = false) int current,
+                              @RequestParam(value = "size", required = false) int size) {
+        List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobList(projectId, jobType, name, current, size);
+        int total = exchangisJobService.count(projectId, jobType, name);
+        //List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobList(projectId, jobType, name);
+        Message message = Message.ok();
+        message.data("total", total);
+        message.data("result", joblist);
+        return message;
+        //return Message.ok().data("result", joblist);
     }
 
     @RequestMapping( value = "/dss", method = RequestMethod.GET)
