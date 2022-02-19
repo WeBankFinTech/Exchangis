@@ -1,11 +1,15 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -79,7 +83,7 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
     }
 
     @Override
-    public List<ExchangisJobBasicInfoVO> getJobList(long projectId, String type, String name) {
+    public List<ExchangisJobBasicInfoVO> getJobList(long projectId, String type, String name, int current, int size) {
         LambdaQueryChainWrapper<ExchangisJobVO> query =
                 exchangisJobService.lambdaQuery().eq(ExchangisJobVO::getProjectId, projectId);
         if (StringUtils.isNotBlank(type)) {
@@ -92,7 +96,35 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
 
         Stream<ExchangisJobBasicInfoVO> returnlist = Optional.ofNullable(exchangisJobs).orElse(new ArrayList<>()).stream()
                 .map(job -> modelMapper.map(job, ExchangisJobBasicInfoVO.class));
-        return returnlist.collect(Collectors.toList());
+
+        if (current <= 0) {
+            current = 1;
+        }
+        if (size <= 0) {
+            size = 10;
+        }
+        int start = (current - 1) * size;
+        int last = 0;
+        if(current * size > exchangisJobs.size()) {
+            last = exchangisJobs.size();
+        }
+        else {
+            last = current * size;
+        }
+        return returnlist.collect(Collectors.toList()).subList(start, last);
+    }
+
+    @Override
+    public int count(long projectId, String type, String name) {
+        LambdaQueryChainWrapper<ExchangisJobVO> query =
+                exchangisJobService.lambdaQuery().eq(ExchangisJobVO::getProjectId, projectId);
+        if (StringUtils.isNotBlank(type)) {
+            query.eq(ExchangisJobVO::getJobType, type);
+        }
+        if (StringUtils.isNotBlank(name)) {
+            query.like(ExchangisJobVO::getJobName, name.trim());
+        }
+        return query.count();
     }
 
     @Override
@@ -129,6 +161,8 @@ public class ExchangisJobServiceImpl extends ServiceImpl<ExchangisJobMapper, Exc
         job.setJobName(exchangisJobBasicInfoDTO.getJobName());
         job.setJobLabels(exchangisJobBasicInfoDTO.getJobLabels());
         job.setJobDesc(exchangisJobBasicInfoDTO.getJobDesc());
+        job.setJobType(exchangisJobBasicInfoDTO.getJobType().toString());
+        job.setEngineType(exchangisJobBasicInfoDTO.getEngineType());
         exchangisJobService.updateById(job);
 
         return modelMapper.map(job, ExchangisJobBasicInfoVO.class);
