@@ -11,9 +11,11 @@ import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectRespons
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
 
 import com.webank.wedatasphere.exchangis.dss.appconn.config.ExchangisConfig;
+import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisEntityPostAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisPostAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.operation.AbstractExchangisOperation;
 import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisProjectResponseRef;
+import com.webank.wedatasphere.exchangis.dss.appconn.request.entity.ProjectReqEntity;
 import com.webank.wedatasphere.exchangis.dss.appconn.utils.AppConnUtils;
 import org.apache.http.HttpRequest;
 import org.apache.linkis.httpclient.request.HttpAction;
@@ -39,8 +41,12 @@ public class ExchangisProjectCreationOperation extends AbstractExchangisOperatio
 
     @Override
     public ProjectResponseRef createProject(ProjectRequestRef projectRequestRef) throws ExternalOperationFailedException {
-        LOG.info("create project=>projectId:{},name:{},createName:{},parameters:{},workspaceName:{}",projectRequestRef.getId(),projectRequestRef.getName(),projectRequestRef.getCreateBy(),projectRequestRef.getParameters().toString(),projectRequestRef.getWorkspace().getWorkspaceName());
-
+        LOG.info("create project=> dss_projectId:{}, name:{}, createUser:{}, parameters:{}, workspaceName:{}",
+                projectRequestRef.getId(), projectRequestRef.getName(), projectRequestRef.getCreateBy(), projectRequestRef.getParameters().toString(),
+                projectRequestRef.getWorkspace().getWorkspaceName());
+        // Build project post(add) action
+        ProjectReqEntity projectReqEntity = new ProjectReqEntity();
+        ExchangisEntityPostAction<ProjectReqEntity> projectAction = new ExchangisEntityPostAction<>();
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
         exchangisPostAction.setUser(projectRequestRef.getCreateBy());
         exchangisPostAction.addRequestPayload(ExchangisConfig.WORKSPACE_NAME,projectRequestRef.getWorkspace().getWorkspaceName());
