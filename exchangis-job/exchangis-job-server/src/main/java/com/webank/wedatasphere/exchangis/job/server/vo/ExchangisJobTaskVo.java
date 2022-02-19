@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.vo;
 import java.util.Date;
 
 /**
- * @author tikazhang
+ *
  * @Date 2022/1/12 22:34
  */
 

@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * @author tikazhang
+ *
  * @Date 2022/1/17 21:58
  */
 public interface LaunchableTaskDao {

@@ -156,7 +156,47 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     }
 
     @Override
-    public List<ExchangisProjectDTO> queryProjects(ProjectQueryRequest projectQueryRequest) {
+    public List<ExchangisProjectDTO> queryProjects(ProjectQueryRequest projectQueryRequest, int current, int size) {
+        QueryWrapper<ExchangisProject> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("create_by", projectQueryRequest.getUsername());
+
+        if (!Strings.isNullOrEmpty(projectQueryRequest.getName())) {
+            queryWrapper.like("name", projectQueryRequest.getName());
+        }
+
+        if (!StringUtils.isBlank(projectQueryRequest.getDomain())) {
+            queryWrapper.eq("domain", projectQueryRequest.getDomain());
+        }
+
+        if (current <= 0) {
+            current = 1;
+        }
+        if (size <= 0) {
+            size = 10;
+        }
+       /* Page<ExchangisProject> page = new Page<>(1, 10);
+        IPage<ExchangisProject> templateIPage = this.exchangisProjectMapper.selectPage(page, queryWrapper);
+        List<ExchangisProject> exchangisProjects = new ArrayList<>();
+        for(ExchangisProject item : templateIPage.getRecords()){
+            exchangisProjects.add(item);
+        }*/
+        List<ExchangisProject> exchangisProjects = this.exchangisProjectMapper.selectList(queryWrapper);
+
+        int start = (current - 1) * size;
+        int last = 0;
+        if(current * size > exchangisProjects.size()) {
+            last = exchangisProjects.size();
+        }
+        else {
+            last = current * size;
+        }
+
+        return exchangisProjects.stream().map(ExchangisProjectDTO::new).collect(Collectors.toList()).subList(start,last);
+
+    }
+
+    @Override
+    public int count(ProjectQueryRequest projectQueryRequest) {
         QueryWrapper<ExchangisProject> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("create_by", projectQueryRequest.getUsername());
 
@@ -169,9 +209,7 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
         }
 
         List<ExchangisProject> exchangisProjects = this.exchangisProjectMapper.selectList(queryWrapper);
-
-        return exchangisProjects.stream().map(ExchangisProjectDTO::new).collect(Collectors.toList());
-
+        return exchangisProjects.size();
     }
 
     @Transactional

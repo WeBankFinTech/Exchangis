@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.launcher.domain;
 import java.util.Date;
 
 /**
- * @author tikazhang
+ *
  * @Date 2022/1/25 14:36
  */
 public class LaunchedJobHistory {
