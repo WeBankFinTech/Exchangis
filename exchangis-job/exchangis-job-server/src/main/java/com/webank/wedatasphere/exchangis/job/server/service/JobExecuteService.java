@@ -47,21 +47,21 @@ public interface JobExecuteService {
      * @param jobExecutionId      the job ExecutionId
      * @return the job status
      */
-    ExchangisJobProgressVo getJobStatus(String jobExecutionId);
+    ExchangisJobProgressVo getJobStatus(String jobExecutionId) throws ExchangisJobServerException;
 
     /**
      * Gets Executed task list
      * @param jobExecutionId      the job ExecutionId
      * @return the launched taskList
      */
-    List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId);
+    List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) throws ExchangisJobServerException;
 
     /**
      * Gets Executed job list
      * @return the launched jobList
      */
     List<ExchangisLaunchedJobListVO> getExecutedJobList(String jobExecutionId, String jobName, String status,
-                                                        Long launchStartTime, Long launchEndTime, int  current, int size);
+                                                        Long launchStartTime, Long launchEndTime, int  current, int size) throws ExchangisJobServerException;
 
     /**
      * Count int.
@@ -87,7 +87,7 @@ public interface JobExecuteService {
      *
      * @param jobExecutionId      the job ExecutionId
      */
-    void killJob(String jobExecutionId);
+    void killJob(String jobExecutionId) throws ExchangisJobServerException;
 
     /**
      * @param jobExecutionId      the job ExecutionId

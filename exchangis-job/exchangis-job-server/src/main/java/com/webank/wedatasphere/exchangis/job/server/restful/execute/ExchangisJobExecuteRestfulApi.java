@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
- * @author tikazhang
+ *
  * @Date 2022/1/8 15:25
  */
 @RestController
@@ -74,10 +74,16 @@ public class ExchangisJobExecuteRestfulApi {
 
     @RequestMapping( value = "/execution/{jobExecutionId}/taskList", method = RequestMethod.GET)
     public Message getExecutedJobTaskList(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
-        List<ExchangisJobTaskVo> jobTaskList = executeService.getExecutedJobTaskList(jobExecutionId);
         Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/"+ jobExecutionId +"/taskList");
-        message.data("tasks", jobTaskList);
+        try {
+            List<ExchangisJobTaskVo> jobTaskList = executeService.getExecutedJobTaskList(jobExecutionId);
+            message.data("tasks", jobTaskList);
+        } catch (ExchangisJobServerException e) {
+            String errorMessage = "Error occur while get taskList: [jobExecutionId: " + jobExecutionId + "]";
+            LOG.error(errorMessage, e);
+            message = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
+        }
+        message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId + "/taskList");
         return message;
     }
 
@@ -98,12 +104,18 @@ public class ExchangisJobExecuteRestfulApi {
 
     @RequestMapping( value = "/execution/{jobExecutionId}/status", method = RequestMethod.GET)
     public Message getExecutedJobStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
-        ExchangisJobProgressVo jobStatus = executeService.getJobStatus(jobExecutionId);
         Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId +"/status");
-        message.data("status", jobStatus.getStatus());
-        message.data("progress", jobStatus.getProgress());
-        message.data("allTaskStatus", jobStatus.getAllTaskStatus());
+        try {
+            ExchangisJobProgressVo jobStatus = executeService.getJobStatus(jobExecutionId);
+            message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId + "/status");
+            message.data("status", jobStatus.getStatus());
+            message.data("progress", jobStatus.getProgress());
+            message.data("allTaskStatus", jobStatus.getAllTaskStatus());
+        } catch (ExchangisJobServerException e) {
+            String errorMessage = "Error occur while getting job status: [job_execution_id: " + jobExecutionId  +"]";
+            LOG.error(errorMessage, e);
+            message = Message.error(message + ", reason: " + e.getMessage());
+        }
         return message;
     }
 
@@ -133,8 +145,14 @@ public class ExchangisJobExecuteRestfulApi {
 
     @RequestMapping( value = "/execution/{jobExecutionId}/kill", method = RequestMethod.POST)
     public Message ExecutedJobKill(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
-        executeService.killJob(jobExecutionId);
         Message message = Message.ok("Kill succeed(停止成功)！");
+        try {
+            executeService.killJob(jobExecutionId);
+        } catch (ExchangisJobServerException e) {
+            String errorMessage = "Error occur while killing job: [job_execution_id: " + jobExecutionId  + "]";
+            LOG.error(errorMessage, e);
+            message = Message.error(message + ", reason: " + e.getMessage());
+        }
         message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId + "/kill");
         return message;
     }
@@ -147,13 +165,19 @@ public class ExchangisJobExecuteRestfulApi {
                              @RequestParam(value = "launchEndTime", required = false) Long launchEndTime,
                              @RequestParam(value = "current", required = false) int current,
                              @RequestParam(value = "size", required = false) int size) {
-        List<ExchangisLaunchedJobListVO> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
-                launchStartTime, launchEndTime, current, size);
-        int total = executeService.count(jobExecutionId, jobName, status, launchStartTime, launchEndTime);
         Message message = Message.ok("Submitted succeed(提交成功)！");
+        try {
+            List<ExchangisLaunchedJobListVO> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
+                    launchStartTime, launchEndTime, current, size);
+            int total = executeService.count(jobExecutionId, jobName, status, launchStartTime, launchEndTime);
+            message.data("jobList", jobList);
+            message.data("total", total);
+        } catch (ExchangisJobServerException e) {
+            String errorMessage = "Error occur while getting job list: [job_execution_id: " + jobExecutionId  + "jobName: " + jobName  + "status: " + status  + "]";
+            LOG.error(errorMessage, e);
+            message = Message.error(message + ", reason: " + e.getMessage());
+        }
         message.setMethod("/api/rest_j/v1/exchangis/job/execution/listJobs");
-        message.data("jobList", jobList);
-        message.data("total", total);
         return message;
     }
 
@@ -192,21 +216,33 @@ public class ExchangisJobExecuteRestfulApi {
     @RequestMapping( value = "/{jobExecutionId}/deleteJob", method = RequestMethod.POST)
     public Message ExecutedJobDelete(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobServerException {
         //ExchangisLaunchedJobEntity jobAndTaskStatus = exchangisExecutionService.getExecutedJobAndTaskStatus(jobExecutionId);
-        executeService.deleteJob(jobExecutionId);
         Message message = Message.ok("Kill succeed(停止成功)！");
+        try {
+            executeService.deleteJob(jobExecutionId);
+            message.data("jobExecutionId", jobExecutionId);
+        } catch (ExchangisJobServerException e){
+            String errorMessage = "Error occur while delete job: [job_execution_id: " + jobExecutionId + "]";
+            LOG.error(errorMessage, e);
+            message = Message.error(message + ", reason: " + e.getMessage());
+        }
         message.setMethod("/api/rest_j/v1/exchangis/job/" + jobExecutionId + "/deleteJob");
-        message.data("jobExecutionId", jobExecutionId);
         return message;
     }
 
     @RequestMapping( value = "/{jobExecutionId}/allTaskStatus", method = RequestMethod.GET)
     public Message allTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobServerException {
         //ExchangisLaunchedJobEntity jobAndTaskStatus = exchangisExecutionService.getExecutedJobAndTaskStatus(jobExecutionId);
-        List<String> allStatus = executeService.allTaskStatus(jobExecutionId);
         Message message = Message.ok("所有任务状态");
+        try {
+            List<String> allStatus = executeService.allTaskStatus(jobExecutionId);
+            message.data("allStatus", allStatus);
+            message.data("jobExecutionId", jobExecutionId);
+        } catch (ExchangisJobServerException e) {
+            String errorMessage = "Error occur while judge whether all task complete: [job_execution_id: " + jobExecutionId + "]";
+            LOG.error(errorMessage, e);
+            message = Message.error(message + ", reason: " + e.getMessage());
+        }
         message.setMethod("/api/rest_j/v1/exchangis/job/" + jobExecutionId + "/allTaskStatus");
-        message.data("allStatus", allStatus);
-        message.data("jobExecutionId", jobExecutionId);
         return message;
     }
 }

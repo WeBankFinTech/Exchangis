@@ -89,7 +89,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
     private MetricConverterFactory<ExchangisMetricsVo> metricConverterFactory;
 
     @Override
-    public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) {
+    public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) throws ExchangisJobServerException{
         List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId);
         List<ExchangisJobTaskVo> jobTaskList = new ArrayList<>();
         if(launchedExchangisTaskEntities != null) {
@@ -129,7 +129,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public ExchangisJobProgressVo getJobStatus(String jobExecutionId) {
+    public ExchangisJobProgressVo getJobStatus(String jobExecutionId) throws ExchangisJobServerException{
         LaunchedExchangisJobEntity launchedExchangisJobEntity = launchedJobDao.searchLaunchedJob(jobExecutionId);
         ExchangisJobProgressVo jobProgressVo = null;
         try {
@@ -150,7 +150,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public void killJob(String jobExecutionId) {
+    public void killJob(String jobExecutionId) throws ExchangisJobServerException{
         Calendar calendar = Calendar.getInstance();
         launchedJobDao.upgradeLaunchedJobStatus(jobExecutionId, TaskStatus.Cancelled.name(), calendar.getTime());
     }
@@ -237,7 +237,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
 
     @Override
     public List<ExchangisLaunchedJobListVO> getExecutedJobList(String jobExecutionId, String jobName, String status,
-                                                               Long launchStartTime, Long launchEndTime, int current, int size) {
+                                                               Long launchStartTime, Long launchEndTime, int current, int size) throws ExchangisJobServerException{
         if (current <= 0) {
             current = 1;
         }
@@ -249,7 +249,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
         List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, start, size);
-        LOG.info("ExecutedJobList information: " + jobExecutionId + jobName + status + launchStartTime + launchEndTime + current + size);
+        //LOG.info("ExecutedJobList information: " + jobExecutionId + jobName + status + launchStartTime + launchEndTime + current + size);
         if(jobEntitylist != null) {
             try {
                 for (int i = 0; i < jobEntitylist.size(); i++) {
