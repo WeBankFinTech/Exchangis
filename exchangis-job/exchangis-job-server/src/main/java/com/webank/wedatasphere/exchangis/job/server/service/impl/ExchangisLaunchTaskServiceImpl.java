@@ -28,7 +28,7 @@ public class ExchangisLaunchTaskServiceImpl extends ServiceImpl<ExchangisLaunchT
 
     @Override
     public List<ExchangisTaskInfoVO> listTasks(Long taskId, String taskName, String status, Long launchStartTime,
-                                               Long launchEndTime, int current, int size) {
+                                               Long launchEndTime, int current, int size) throws ExchangisJobServerException{
         if (current <= 0) {
             current = 1;
         }

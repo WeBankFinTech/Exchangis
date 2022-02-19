@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.domain;
 import java.util.Date;
 
 /**
- * @author tikazhang
+ *
  */
 public class ExchangisJobEntity extends ExchangisJobInfo{
 
