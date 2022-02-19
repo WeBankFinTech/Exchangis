@@ -83,10 +83,10 @@ export default {
     footer: "",
     multiTabs: false,
     menus: [
-      {
+      /*{
         name: "homePage",
         icon: 'home'
-      },
+      },*/
       {
         name: "projectManage",
         icon: 'project'

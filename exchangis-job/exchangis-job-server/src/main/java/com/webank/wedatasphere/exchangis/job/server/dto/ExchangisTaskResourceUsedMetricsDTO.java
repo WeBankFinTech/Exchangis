@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.dto;
 
 /**
- * @author tikazhang
+ *
  * @Date 2022/1/8 19:43
  */
 public class ExchangisTaskResourceUsedMetricsDTO {
