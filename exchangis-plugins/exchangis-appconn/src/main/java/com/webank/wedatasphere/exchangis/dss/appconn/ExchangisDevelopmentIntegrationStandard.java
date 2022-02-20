@@ -2,7 +2,6 @@ package com.webank.wedatasphere.exchangis.dss.appconn;
 
 import com.webank.wedatasphere.dss.standard.app.development.service.*;
 import com.webank.wedatasphere.dss.standard.app.development.standard.AbstractDevelopmentIntegrationStandard;
-import com.webank.wedatasphere.exchangis.appconn.service.*;
 import com.webank.wedatasphere.exchangis.dss.appconn.service.*;
 
 public class ExchangisDevelopmentIntegrationStandard  extends AbstractDevelopmentIntegrationStandard {

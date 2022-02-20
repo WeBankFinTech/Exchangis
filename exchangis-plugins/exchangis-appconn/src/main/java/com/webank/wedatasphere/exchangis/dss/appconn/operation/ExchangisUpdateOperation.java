@@ -8,7 +8,7 @@ import com.webank.wedatasphere.dss.standard.app.sso.builder.SSOUrlBuilderOperati
 import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.ResponseRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
-import com.webank.wedatasphere.exchangis.dss.appconn.config.ExchangisConfig;
+import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisPutAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisCommonResponseRef;
 import com.webank.wedatasphere.exchangis.dss.appconn.utils.AppConnUtils;
@@ -23,7 +23,7 @@ public class ExchangisUpdateOperation implements RefUpdateOperation<UpdateReques
     private SSORequestOperation ssoRequestOperation;
     public ExchangisUpdateOperation(DevelopmentService developmentService){
         this.developmentService = developmentService;
-        this.ssoRequestOperation = this.developmentService.getSSORequestService().createSSORequestOperation(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        this.ssoRequestOperation = this.developmentService.getSSORequestService().createSSORequestOperation(Constraints.EXCHANGIS_APPCONN_NAME);
     }
 
     @Override
@@ -31,10 +31,10 @@ public class ExchangisUpdateOperation implements RefUpdateOperation<UpdateReques
         NodeRequestRef exchangisupdateRequestRef = (NodeRequestRef) updateRequestRef;
         logger.info("update job=>projectId:{},jobName:{},nodeType:{}",exchangisupdateRequestRef.getProjectId(),exchangisupdateRequestRef.getName(),exchangisupdateRequestRef.getNodeType());
         ResponseRef responseRef = null;
-        if(ExchangisConfig.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisupdateRequestRef.getNodeType())){
-            responseRef = updateOffLineRequest(exchangisupdateRequestRef, ExchangisConfig.ENGINE_TYPE_SQOOP_NAME);
-        }else if(ExchangisConfig.NODE_TYPE_DATAX.equalsIgnoreCase(exchangisupdateRequestRef.getNodeType())){
-            responseRef = updateOffLineRequest(exchangisupdateRequestRef,ExchangisConfig.NODE_TYPE_DATAX);
+        if(Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisupdateRequestRef.getNodeType())){
+            responseRef = updateOffLineRequest(exchangisupdateRequestRef, Constraints.ENGINE_TYPE_SQOOP_NAME);
+        }else if(Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(exchangisupdateRequestRef.getNodeType())){
+            responseRef = updateOffLineRequest(exchangisupdateRequestRef, Constraints.NODE_TYPE_DATAX);
         }
         return responseRef;
     }
@@ -49,15 +49,15 @@ public class ExchangisUpdateOperation implements RefUpdateOperation<UpdateReques
         exchangisPutAction.setUser(exchangisupdateRequestRef.getUserName());
 
         exchangisPutAction.setUser(exchangisupdateRequestRef.getUserName());
-        exchangisPutAction.addRequestPayload(ExchangisConfig.NODE_NAME,exchangisupdateRequestRef.getName());
-        exchangisPutAction.addRequestPayload(ExchangisConfig.JOB_DESC,exchangisupdateRequestRef.getJobContent().get("desc").toString());
-        exchangisPutAction.addRequestPayload(ExchangisConfig.JOB_LABELS, AppConnUtils.changeDssLabelName(exchangisupdateRequestRef.getDSSLabels()));
-        exchangisPutAction.addRequestPayload(ExchangisConfig.JOB_NAME,exchangisupdateRequestRef.getName());
-        exchangisPutAction.addRequestPayload(ExchangisConfig.JOB_TYPE,ExchangisConfig.JOB_TYPE_OFFLINE);
-        exchangisPutAction.addRequestPayload(ExchangisConfig.ENGINE_TYPE,engineType);
+        exchangisPutAction.addRequestPayload(Constraints.NODE_NAME,exchangisupdateRequestRef.getName());
+        exchangisPutAction.addRequestPayload(Constraints.JOB_DESC,exchangisupdateRequestRef.getJobContent().get("desc").toString());
+        exchangisPutAction.addRequestPayload(Constraints.JOB_LABELS, AppConnUtils.serializeDssLabel(exchangisupdateRequestRef.getDSSLabels()));
+        exchangisPutAction.addRequestPayload(Constraints.JOB_NAME,exchangisupdateRequestRef.getName());
+        exchangisPutAction.addRequestPayload(Constraints.JOB_TYPE, Constraints.JOB_TYPE_OFFLINE);
+        exchangisPutAction.addRequestPayload(Constraints.ENGINE_TYPE,engineType);
 
         SSOUrlBuilderOperation ssoUrlBuilderOperation = exchangisupdateRequestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
-        ssoUrlBuilderOperation.setAppName(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        ssoUrlBuilderOperation.setAppName(Constraints.EXCHANGIS_APPCONN_NAME);
         ssoUrlBuilderOperation.setReqUrl(url);
         ssoUrlBuilderOperation.setWorkspace(exchangisupdateRequestRef.getWorkspace().getWorkspaceName());
         ExchangisCommonResponseRef responseRef;
@@ -74,7 +74,7 @@ public class ExchangisUpdateOperation implements RefUpdateOperation<UpdateReques
 
 
     private String getBaseUrl(){
-        return developmentService.getAppInstance().getBaseUrl() + ExchangisConfig.BASEURL;
+        return developmentService.getAppInstance().getBaseUrl() + Constraints.BASEURL;
     }
     @Override
     public void setDevelopmentService(DevelopmentService developmentService) {
