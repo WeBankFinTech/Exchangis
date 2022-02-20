@@ -8,6 +8,7 @@ import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalO
 import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
 import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisProjectResponseRef;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisEntityPutAction;
+import com.webank.wedatasphere.exchangis.dss.appconn.request.entity.ProjectReqEntity;
 import com.webank.wedatasphere.exchangis.dss.appconn.response.result.ExchangisEntityRespResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public class ExchangisProjectUpdateOperation extends AbstractExchangisProjectOpe
     private StructureService structureService;
 
     public ExchangisProjectUpdateOperation(StructureService structureService) {
-        this.structureService = structureService;
+        setStructureService(structureService);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class ExchangisProjectUpdateOperation extends AbstractExchangisProjectOpe
         ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, projectRequestRef.getWorkspace(), projectRequestRef,
                 (requestRef) -> {
                     // Build project put(update) action
-                    return new ExchangisEntityPutAction<>(getProjectEntity(requestRef));
+                    return new ExchangisEntityPutAction<>(getProjectEntity(requestRef), requestRef.getCreateBy());
                 }, Map.class);
         if (Objects.isNull(entity)){
             throw new ExternalOperationFailedException(31020, "The response entity cannot be empty", null);
@@ -63,13 +64,10 @@ public class ExchangisProjectUpdateOperation extends AbstractExchangisProjectOpe
 
     }
 
-    private String getBaseUrl(){
-        return structureService.getAppInstance().getBaseUrl() + Constraints.BASEURL;
-    }
     @Override
     public void setStructureService(StructureService structureService) {
         this.structureService = structureService;
-
+        setSSORequestService(this.structureService);
     }
 
     @Override

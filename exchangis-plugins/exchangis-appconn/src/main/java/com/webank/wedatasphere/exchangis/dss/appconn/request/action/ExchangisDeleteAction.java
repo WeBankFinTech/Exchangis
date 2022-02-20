@@ -16,6 +16,13 @@ public class ExchangisDeleteAction extends DeleteAction implements HttpExtAction
 
     String user;
 
+    public ExchangisDeleteAction(){
+
+    }
+
+    public ExchangisDeleteAction(String user){
+        this.user = user;
+    }
     @Override
     public String getURL() {
         return url;

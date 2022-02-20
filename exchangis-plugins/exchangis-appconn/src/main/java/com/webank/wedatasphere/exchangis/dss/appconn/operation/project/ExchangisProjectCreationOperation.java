@@ -46,7 +46,9 @@ public class ExchangisProjectCreationOperation extends AbstractExchangisProjectO
         ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(projectRequestRef.getWorkspace(), projectRequestRef,
                 (requestRef) -> {
                     // Build project post(add) action
-                    return new ExchangisEntityPostAction<>(getProjectEntity(requestRef));
+                    ExchangisEntityPostAction<ProjectReqEntity> postAction =  new ExchangisEntityPostAction<>(getProjectEntity(requestRef));
+                    postAction.setUser(requestRef.getCreateBy());
+                    return postAction;
                 }, Map.class);
         if (Objects.isNull(entity)){
             throw new ExternalOperationFailedException(31020, "The response entity cannot be empty", null);

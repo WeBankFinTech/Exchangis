@@ -13,6 +13,7 @@ import com.webank.wedatasphere.exchangis.dss.appconn.response.result.ExchangisEn
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.httpclient.request.HttpAction;
+import org.apache.linkis.httpclient.request.UserAction;
 import org.apache.linkis.httpclient.response.HttpResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

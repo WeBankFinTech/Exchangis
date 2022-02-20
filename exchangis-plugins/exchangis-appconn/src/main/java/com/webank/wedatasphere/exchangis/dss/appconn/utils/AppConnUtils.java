@@ -1,13 +1,15 @@
 package com.webank.wedatasphere.exchangis.dss.appconn.utils;
 
 import com.webank.wedatasphere.dss.common.label.DSSLabel;
-import com.webank.wedatasphere.dss.standard.app.development.ref.NodeRequestRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
+import com.webank.wedatasphere.exchangis.dss.appconn.response.result.ExchangisEntityRespResult;
 import org.apache.linkis.manager.label.entity.SerializableLabel;
-import org.apache.linkis.server.BDPJettyServerHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
  */
 public class AppConnUtils {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AppConnUtils.class);
     /**
      * Invoke the "getStringValue" method in label entity and then concat each one
      * @param list label list
@@ -28,26 +31,20 @@ public class AppConnUtils {
         return dssLabelStr;
     }
 
-
-
-    public static String getId(NodeRequestRef nodeRequestRef) throws Exception {
-        String externalContent = BDPJettyServerHelper.jacksonJson().writeValueAsString(nodeRequestRef.getJobContent());
-        return NumberUtils.parseDoubleString(getNodeId(externalContent));
-    }
-
-    public static String getJobContent(Map<String, Object> jobContent) throws Exception {
-        String externalContent = BDPJettyServerHelper.jacksonJson().writeValueAsString(jobContent);
-        return NumberUtils.parseDoubleString(getNodeId(externalContent));
-    }
-
-    private static String getNodeId(String responseBody) throws ExternalOperationFailedException {
-        String nodeId="";
+    @SuppressWarnings("unchecked")
+    public static <T>T resolveParam(Map<String, Object> responseMap, String key, Class<T> type){
         try {
-            Map responseMap = BDPJettyServerHelper.jacksonJson().readValue(responseBody, Map.class);
-            nodeId = ((Map<String, Object>) responseMap.get("payload")).get("id").toString();
-        }catch (Exception e){
-            throw new ExternalOperationFailedException(31022, "Get node Id failed!", e);
+            ExchangisEntityRespResult.BasicMessageEntity<Object> entity = JsonExtension.convert(responseMap, ExchangisEntityRespResult.BasicMessageEntity.class, Object.class);
+            Object data = entity.getData();
+            if (Objects.nonNull(data) && data instanceof Map){
+                Map<String, Object> dataMap = (Map<String, Object>)data;
+                // TODO convert different type
+                return (T)dataMap.get(key);
+            }
+        } catch (ExternalOperationFailedException e) {
+            LOG.warn("Exception in resolving params: " + key, e);
         }
-        return nodeId;
+        return null;
     }
+
 }
