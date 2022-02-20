@@ -7,7 +7,7 @@ import com.webank.wedatasphere.dss.standard.app.development.service.DevelopmentS
 import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.ResponseRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
-import com.webank.wedatasphere.exchangis.dss.appconn.config.ExchangisConfig;
+import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
 import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisOpenRequestRef;
 import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisOpenResponseRef;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class ExchangisQueryOperation implements RefQueryOperation<OpenRequestRef
 
     public ExchangisQueryOperation(DevelopmentService developmentService){
         this.developmentService = developmentService;
-        this.ssoRequestOperation = this.developmentService.getSSORequestService().createSSORequestOperation(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        this.ssoRequestOperation = this.developmentService.getSSORequestService().createSSORequestOperation(Constraints.EXCHANGIS_APPCONN_NAME);
     }
     @Override
     public ResponseRef query(OpenRequestRef openRequestRef) throws ExternalOperationFailedException {
@@ -34,10 +34,10 @@ public class ExchangisQueryOperation implements RefQueryOperation<OpenRequestRef
             String jobId = ((Map<String,Object>)((Map<String,Object>)exchangisOpenRequestRef.getJobContent().get("data")).get("result")).get("id").toString();
             String baseUrl = exchangisOpenRequestRef.getParameter("redirectUrl").toString() + "/";
             String jumpUrl = baseUrl;
-            if(ExchangisConfig.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisOpenRequestRef.getType())){
-                jumpUrl +=ExchangisConfig.SQOOP_JUMP_URL_FORMAT;
-            }else if(ExchangisConfig.NODE_TYPE_DATAX.equalsIgnoreCase(exchangisOpenRequestRef.getType())){
-                jumpUrl += ExchangisConfig.DATAX_JUMP_URL_FORMAT;
+            if(Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisOpenRequestRef.getType())){
+                jumpUrl += Constraints.SQOOP_JUMP_URL_FORMAT;
+            }else if(Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(exchangisOpenRequestRef.getType())){
+                jumpUrl += Constraints.DATAX_JUMP_URL_FORMAT;
             }
             jumpUrl +="?id="+jobId;
             Map<String,String> retMap = new HashMap<>();

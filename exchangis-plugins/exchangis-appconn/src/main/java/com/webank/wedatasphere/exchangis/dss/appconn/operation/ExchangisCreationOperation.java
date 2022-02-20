@@ -8,7 +8,7 @@ import com.webank.wedatasphere.dss.standard.app.sso.builder.SSOUrlBuilderOperati
 import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.ResponseRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
-import com.webank.wedatasphere.exchangis.dss.appconn.config.ExchangisConfig;
+import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisGetAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisPostAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisCommonResponseRef;
@@ -28,7 +28,7 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
     private SSORequestOperation ssoRequestOperation;
     public ExchangisCreationOperation(DevelopmentService developmentService){
         this.developmentService = developmentService;
-        this.ssoRequestOperation = this.developmentService.getSSORequestService().createSSORequestOperation(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        this.ssoRequestOperation = this.developmentService.getSSORequestService().createSSORequestOperation(Constraints.EXCHANGIS_APPCONN_NAME);
     }
 
     @Override
@@ -37,10 +37,10 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
         exchangisCreateRequestRef.getProjectName();
         ResponseRef responseRef = null;
         logger.info("create job=>projectId:{},jobName:{},nodeType:{}",exchangisCreateRequestRef.getProjectId(),exchangisCreateRequestRef.getName(),exchangisCreateRequestRef.getNodeType());
-        if(ExchangisConfig.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisCreateRequestRef.getNodeType())){
-             responseRef = sendOffLineRequest(exchangisCreateRequestRef, ExchangisConfig.ENGINE_TYPE_SQOOP_NAME);
-        }else if(ExchangisConfig.NODE_TYPE_DATAX.equalsIgnoreCase(exchangisCreateRequestRef.getNodeType())){
-            responseRef = sendOffLineRequest(exchangisCreateRequestRef,ExchangisConfig.ENGINE_TYPE_DATAX_NAME);
+        if(Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisCreateRequestRef.getNodeType())){
+             responseRef = sendOffLineRequest(exchangisCreateRequestRef, Constraints.ENGINE_TYPE_SQOOP_NAME);
+        }else if(Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(exchangisCreateRequestRef.getNodeType())){
+            responseRef = sendOffLineRequest(exchangisCreateRequestRef, Constraints.ENGINE_TYPE_DATAX_NAME);
         }
         return responseRef;
     }
@@ -62,19 +62,19 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
         }
         String projectId = this.queryProject(requestRef, projectName);
         exchangisPostAction.setUser(requestRef.getUserName());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.PROJECT_ID,projectId);
-        exchangisPostAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_ID,requestRef.getJobContent().get("projectId").toString());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_NAME,projectName);
-        exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_ID,requestRef.getJobContent().get("nodeId").toString());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.NODE_NAME,requestRef.getName());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_DESC,requestRef.getJobContent().get("desc").toString());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_LABELS, AppConnUtils.changeDssLabelName(requestRef.getDSSLabels()));
-        exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_NAME,requestRef.getName());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.JOB_TYPE,ExchangisConfig.JOB_TYPE_OFFLINE);
-        exchangisPostAction.addRequestPayload(ExchangisConfig.ENGINE_TYPE,engineType);
+        exchangisPostAction.addRequestPayload(Constraints.PROJECT_ID,projectId);
+        exchangisPostAction.addRequestPayload(Constraints.DSS_PROJECT_ID,requestRef.getJobContent().get("projectId").toString());
+        exchangisPostAction.addRequestPayload(Constraints.DSS_PROJECT_NAME,projectName);
+        exchangisPostAction.addRequestPayload(Constraints.NODE_ID,requestRef.getJobContent().get("nodeId").toString());
+        exchangisPostAction.addRequestPayload(Constraints.NODE_NAME,requestRef.getName());
+        exchangisPostAction.addRequestPayload(Constraints.JOB_DESC,requestRef.getJobContent().get("desc").toString());
+        exchangisPostAction.addRequestPayload(Constraints.JOB_LABELS, AppConnUtils.serializeDssLabel(requestRef.getDSSLabels()));
+        exchangisPostAction.addRequestPayload(Constraints.JOB_NAME,requestRef.getName());
+        exchangisPostAction.addRequestPayload(Constraints.JOB_TYPE, Constraints.JOB_TYPE_OFFLINE);
+        exchangisPostAction.addRequestPayload(Constraints.ENGINE_TYPE,engineType);
 
         SSOUrlBuilderOperation ssoUrlBuilderOperation = requestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
-        ssoUrlBuilderOperation.setAppName(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        ssoUrlBuilderOperation.setAppName(Constraints.EXCHANGIS_APPCONN_NAME);
         ssoUrlBuilderOperation.setReqUrl(url);
         ssoUrlBuilderOperation.setWorkspace(requestRef.getWorkspace().getWorkspaceName());
         ExchangisCommonResponseRef responseRef;
@@ -96,7 +96,7 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
         exchangisGetAction.setUser(requestRef.getUserName());
 
         SSOUrlBuilderOperation ssoUrlBuilderOperation = requestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
-        ssoUrlBuilderOperation.setAppName(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        ssoUrlBuilderOperation.setAppName(Constraints.EXCHANGIS_APPCONN_NAME);
         ssoUrlBuilderOperation.setReqUrl(url);
         ssoUrlBuilderOperation.setWorkspace(requestRef.getWorkspace().getWorkspaceName());
         String projectId ="";
@@ -122,7 +122,7 @@ public class ExchangisCreationOperation implements RefCreationOperation<CreateRe
     }
 
     private String getBaseUrl(){
-        return developmentService.getAppInstance().getBaseUrl() + ExchangisConfig.BASEURL;
+        return developmentService.getAppInstance().getBaseUrl() + Constraints.BASEURL;
     }
     @Override
     public void setDevelopmentService(DevelopmentService developmentService) {

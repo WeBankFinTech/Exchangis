@@ -9,9 +9,10 @@ import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectDeletio
 import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectRequestRef;
 import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectResponseRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
-import com.webank.wedatasphere.exchangis.dss.appconn.config.ExchangisConfig;
+import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisDeleteAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisProjectResponseRef;
+import com.webank.wedatasphere.exchangis.dss.appconn.response.result.ExchangisEntityRespResult;
 import org.apache.linkis.httpclient.request.HttpAction;
 import org.apache.linkis.httpclient.response.HttpResult;
 import org.apache.linkis.server.BDPJettyServerHelper;
@@ -19,66 +20,47 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Objects;
 
 
-public class ExchangisProjectDeletionOperation implements ProjectDeletionOperation {
-    private static Logger logger = LoggerFactory.getLogger(ExchangisProjectDeletionOperation.class);
+/**
+ * Project delete operation
+ */
+public class ExchangisProjectDeletionOperation extends AbstractExchangisProjectOperation implements ProjectDeletionOperation {
+    private static Logger LOG = LoggerFactory.getLogger(ExchangisProjectDeletionOperation.class);
 
     private SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation;
     private StructureService structureService;
 
-    public ExchangisProjectDeletionOperation(SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation, StructureService structureService) {
-        this.ssoRequestOperation = ssoRequestOperation;
+    public ExchangisProjectDeletionOperation(StructureService structureService) {
+        super(new String[]{""});
         this.structureService = structureService;
     }
 
-    private String getAppName() {
-        return ExchangisConfig.EXCHANGIS_APPCONN_NAME;
+    @Override
+    protected Logger getLogger() {
+        return LOG;
     }
+
     @Override
     public ProjectResponseRef deleteProject(ProjectRequestRef projectRequestRef) throws ExternalOperationFailedException {
-        Long projectId = projectRequestRef.getId();
-        logger.info("delete project=>projectId:{},name:{},createName:{}",projectRequestRef.getId(),projectRequestRef.getName(),projectRequestRef.getCreateBy());
-
-        String url = getBaseUrl() +"/projects/dss/"+projectRequestRef.getName();
-        ExchangisDeleteAction exchangisPostAction = new ExchangisDeleteAction();
-        exchangisPostAction.setUser(projectRequestRef.getCreateBy());
-
-        SSOUrlBuilderOperation ssoUrlBuilderOperation = projectRequestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
-        ssoUrlBuilderOperation.setAppName(getAppName());
-        ssoUrlBuilderOperation.setReqUrl(url);
-        ssoUrlBuilderOperation.setWorkspace(projectRequestRef.getWorkspace().getWorkspaceName());
-
-        String response = "";
-        Map<String, Object> resMap = Maps.newHashMap();
-        HttpResult httpResult = null;
-        try {
-            exchangisPostAction.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
-            httpResult = this.ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, exchangisPostAction);
-            response = httpResult.getResponseBody();
-            resMap = BDPJettyServerHelper.jacksonJson().readValue(response, new TypeReference<Map<String, Object>>() {});
-        }catch (Exception e){
-            logger.error("delete Exchangis Project Exception", e);
-            throw new ExternalOperationFailedException(31020,e.getMessage());
+        // TODO Get the project id
+        long projectId = 0l;
+        String url = requestURL("/project/" + projectId);
+        LOG.info("delete project request => dss_projectId:{}, name:{}, createName:{}", projectRequestRef.getId(),
+                projectRequestRef.getName(), projectRequestRef.getCreateBy());
+        // Build project delete action
+        ExchangisEntityRespResult.BasicMessageEntity<Map<String, String>> entity = requestToGetEntity(url, projectRequestRef.getWorkspace(), projectRequestRef,
+                (requestRef) -> new ExchangisDeleteAction(), Map.class);
+        if (Objects.isNull(entity)){
+            throw new ExternalOperationFailedException(31020, "The response entity cannot be empty", null);
         }
+        ExchangisEntityRespResult httpResult = entity.getResult();
+        LOG.info("delete project response => status {}, response {}", httpResult.getStatusCode(), httpResult.getResponseBody());
 
-        Map<String, Object> header = (Map<String, Object>) resMap.get("header");
-        int code = (int) header.get("code");
-        String errorMsg = "";
-        if (code != 200) {
-            errorMsg = header.toString();
-            throw new ExternalOperationFailedException(31020, errorMsg, null);
-        }
-        ExchangisProjectResponseRef exchangisProjectResponseRef = null;
-        try {
-            exchangisProjectResponseRef = new ExchangisProjectResponseRef(response, code);
-        } catch (Exception e) {
-            throw new ExternalOperationFailedException(31020, "failed to parse response json", e);
-        }
-        exchangisProjectResponseRef.setAppInstance(structureService.getAppInstance());
-        exchangisProjectResponseRef.setProjectRefId(projectId);
-        exchangisProjectResponseRef.setErrorMsg(errorMsg);
-        return exchangisProjectResponseRef;
+        ExchangisProjectResponseRef responseRef = new ExchangisProjectResponseRef(httpResult, null);
+        responseRef.setAppInstance(structureService.getAppInstance());
+        return responseRef;
     }
 
     @Override
@@ -87,7 +69,7 @@ public class ExchangisProjectDeletionOperation implements ProjectDeletionOperati
     }
 
     private String getBaseUrl(){
-        return structureService.getAppInstance().getBaseUrl() + ExchangisConfig.BASEURL;
+        return structureService.getAppInstance().getBaseUrl() + Constraints.BASEURL;
     }
     @Override
     public void setStructureService(StructureService structureService) {
