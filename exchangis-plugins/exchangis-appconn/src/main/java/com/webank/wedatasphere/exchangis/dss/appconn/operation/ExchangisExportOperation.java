@@ -7,7 +7,7 @@ import com.webank.wedatasphere.dss.standard.app.sso.builder.SSOUrlBuilderOperati
 import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.ResponseRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
-import com.webank.wedatasphere.exchangis.dss.appconn.config.ExchangisConfig;
+import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisGetAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisCommonResponseRef;
 import org.apache.linkis.httpclient.response.HttpResult;
@@ -22,7 +22,7 @@ public class ExchangisExportOperation implements RefExportOperation<ExportReques
 
     public ExchangisExportOperation(DevelopmentService developmentService){
         this.developmentService = developmentService;
-        this.ssoRequestOperation = this.developmentService.getSSORequestService().createSSORequestOperation(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        this.ssoRequestOperation = this.developmentService.getSSORequestService().createSSORequestOperation(Constraints.EXCHANGIS_APPCONN_NAME);
     }
 
 
@@ -36,7 +36,7 @@ public class ExchangisExportOperation implements RefExportOperation<ExportReques
         exchangisGetAction.setParameter("projectId",exportRequestRef.getParameter("projectId"));
 
         SSOUrlBuilderOperation ssoUrlBuilderOperation = exportRequestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
-        ssoUrlBuilderOperation.setAppName(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        ssoUrlBuilderOperation.setAppName(Constraints.EXCHANGIS_APPCONN_NAME);
         ssoUrlBuilderOperation.setReqUrl(url);
         ssoUrlBuilderOperation.setWorkspace(exportRequestRef.getWorkspace().getWorkspaceName());
         ResponseRef responseRef;
@@ -56,6 +56,6 @@ public class ExchangisExportOperation implements RefExportOperation<ExportReques
     }
 
     private String getBaseUrl(){
-        return developmentService.getAppInstance().getBaseUrl() + ExchangisConfig.BASEURL;
+        return developmentService.getAppInstance().getBaseUrl() + Constraints.BASEURL;
     }
 }
