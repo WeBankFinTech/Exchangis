@@ -8,7 +8,7 @@ import com.webank.wedatasphere.dss.standard.app.sso.builder.SSOUrlBuilderOperati
 import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.RequestRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
-import com.webank.wedatasphere.exchangis.dss.appconn.config.ExchangisConfig;
+import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisDeleteAction;
 import org.apache.linkis.httpclient.response.HttpResult;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class ExchangisDeletionOperation implements RefDeletionOperation {
     private SSORequestOperation ssoRequestOperation;
     public ExchangisDeletionOperation(DevelopmentService developmentService){
         this.developmentService = developmentService;
-        this.ssoRequestOperation = this.developmentService.getSSORequestService().createSSORequestOperation(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        this.ssoRequestOperation = this.developmentService.getSSORequestService().createSSORequestOperation(Constraints.EXCHANGIS_APPCONN_NAME);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ExchangisDeletionOperation implements RefDeletionOperation {
         ExchangisDeleteAction exchangisDeleteAction = new ExchangisDeleteAction();
         exchangisDeleteAction.setUser(deleteRequestRef.getUserName());
         SSOUrlBuilderOperation ssoUrlBuilderOperation = deleteRequestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
-        ssoUrlBuilderOperation.setAppName(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
+        ssoUrlBuilderOperation.setAppName(Constraints.EXCHANGIS_APPCONN_NAME);
         ssoUrlBuilderOperation.setReqUrl(url);
         logger.info("delete job=>url:{}", url);
         ssoUrlBuilderOperation.setWorkspace(deleteRequestRef.getWorkspace().getWorkspaceName());
@@ -71,6 +71,6 @@ public class ExchangisDeletionOperation implements RefDeletionOperation {
     }
 
     private String getBaseUrl(){
-        return developmentService.getAppInstance().getBaseUrl() + ExchangisConfig.BASEURL;
+        return developmentService.getAppInstance().getBaseUrl() + Constraints.BASEURL;
     }
 }

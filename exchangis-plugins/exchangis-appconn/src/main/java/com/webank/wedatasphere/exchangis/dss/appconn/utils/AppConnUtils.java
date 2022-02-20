@@ -10,14 +10,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Appconn utils for exchangis
+ */
 public class AppConnUtils {
-    public static String changeDssLabelName(List<DSSLabel> list){
-        String dssLabelStr="";
+
+    /**
+     * Invoke the "getStringValue" method in label entity and then concat each one
+     * @param list label list
+     * @return serialized string value
+     */
+    public static String serializeDssLabel(List<DSSLabel> list){
+        String dssLabelStr = "";
         if(list != null && !list.isEmpty()){
-            dssLabelStr=list.stream().map(SerializableLabel::getStringValue).collect(Collectors.joining(","));
+            dssLabelStr = list.stream().map(SerializableLabel::getStringValue).collect(Collectors.joining(","));
         }
         return dssLabelStr;
     }
+
+
 
     public static String getId(NodeRequestRef nodeRequestRef) throws Exception {
         String externalContent = BDPJettyServerHelper.jacksonJson().writeValueAsString(nodeRequestRef.getJobContent());

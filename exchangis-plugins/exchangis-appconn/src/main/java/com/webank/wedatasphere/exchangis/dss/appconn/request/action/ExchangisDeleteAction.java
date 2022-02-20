@@ -4,9 +4,16 @@ package com.webank.wedatasphere.exchangis.dss.appconn.request.action;
 import org.apache.linkis.httpclient.request.DeleteAction;
 import org.apache.linkis.httpclient.request.UserAction;
 
-public class ExchangisDeleteAction extends DeleteAction implements UserAction {
+/**
+ * Delete action
+ */
+public class ExchangisDeleteAction extends DeleteAction implements HttpExtAction, UserAction {
 
+    /**
+     * URL
+     */
     String url;
+
     String user;
 
     @Override
@@ -14,6 +21,7 @@ public class ExchangisDeleteAction extends DeleteAction implements UserAction {
         return url;
     }
 
+    @Override
     public void setUrl(String url) {
         this.url = url;
     }

@@ -1,10 +1,15 @@
-package com.webank.wedatasphere.exchangis.dss.appconn.config;
+package com.webank.wedatasphere.exchangis.dss.appconn.constraints;
 
 
 import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.server.conf.ServerConfiguration;
 
-public class ExchangisConfig {
+public class Constraints {
+
+     public final static String DOMAIN_NAME = CommonVars.apply("wds.dss.appconn.exchangis.domain.name", "DSS").getValue();
+
+     // Constraint in Project operation
+     public final static String PROJECT_ID = "projectId";
 
      public final static String BASEURL = "/api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/exchangis";
      public final static String SQOOP_JUMP_URL_FORMAT="dss/exchangis/#/childJobManagement";
@@ -31,7 +36,6 @@ public class ExchangisConfig {
 
      public final static String NODE_ID="nodeId";
      public final static String NODE_NAME="nodeName";
-     public final static String PROJECT_ID = "projectId";
      public final static String ENGINE_TYPE = "engineType";
      public final static String JOB_DESC = "jobDesc";
      public final static String JOB_LABELS = "jobLabels";
