@@ -2,11 +2,15 @@ package com.webank.wedatasphere.exchangis.dss.appconn.service;
 
 import com.webank.wedatasphere.dss.standard.app.development.operation.RefQueryOperation;
 import com.webank.wedatasphere.dss.standard.app.development.service.AbstractRefQueryService;
-import com.webank.wedatasphere.exchangis.dss.appconn.operation.ExchangisQueryOperation;
+import com.webank.wedatasphere.exchangis.dss.appconn.operation.ref.ExchangisRefQueryOperation;
 
-public class ExchangisQueryService extends AbstractRefQueryService {
+/**
+ * Ref query service
+ */
+public class ExchangisRefQueryService extends AbstractRefQueryService {
     @Override
+    @SuppressWarnings("rawtypes")
     protected RefQueryOperation createRefQueryOperation() {
-        return new ExchangisQueryOperation(this);
+        return new ExchangisRefQueryOperation(this);
     }
 }

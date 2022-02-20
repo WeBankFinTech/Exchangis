@@ -20,6 +20,9 @@ public class ExchangisEntityPutAction<T> extends PutAction implements HttpExtAct
     public ExchangisEntityPutAction(T entity){
         postAction = new ExchangisEntityPostAction<>(entity);
     }
+    public ExchangisEntityPutAction(T entity, String user){
+        postAction = new ExchangisEntityPostAction<>(entity, user);
+    }
     @Override
     public String getURL() {
         return postAction.getURL();
