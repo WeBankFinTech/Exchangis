@@ -31,7 +31,7 @@ public class ExchangisAppConn extends AbstractOnlySSOAppConn implements ThirdlyA
 
     @Override
     protected void initialize() {
-        exchangisStructureIntegrationStandard = new ExchangisStructureIntegrationStandard();
-        exchangisDevelopmentIntegrationStandard = new ExchangisDevelopmentIntegrationStandard();
+        exchangisStructureIntegrationStandard = ExchangisStructureIntegrationStandard.getInstance();
+        exchangisDevelopmentIntegrationStandard = ExchangisDevelopmentIntegrationStandard.getInstance();
     }
 }

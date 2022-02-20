@@ -36,6 +36,11 @@ public class ExchangisEntityPostAction<T> extends POSTAction implements HttpExtA
         this.postEntity = postEntity;
     }
 
+    public ExchangisEntityPostAction(T postEntity, String user){
+        this.postEntity = postEntity;
+        this.user = user;
+    }
+
     @Override
     public String getURL() {
         return url;
