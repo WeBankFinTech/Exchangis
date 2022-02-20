@@ -8,25 +8,6 @@ import com.webank.wedatasphere.exchangis.dss.appconn.operation.project.Exchangis
  */
 public class ExchangisProjectService extends ProjectService {
 
-    private static ExchangisProjectService instance;
-
-    static{
-        instance = new ExchangisProjectService();
-    }
-
-    /**
-     * Get the singleton instance
-     * @return project service
-     */
-    public static ExchangisProjectService getInstance(){
-        return instance;
-    }
-
-    private ExchangisProjectService(){
-
-    }
-
-
     @Override
     public boolean isCooperationSupported() {
         return true;

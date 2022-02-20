@@ -8,8 +8,22 @@ import com.webank.wedatasphere.exchangis.dss.appconn.service.ExchangisProjectSer
  * Structure(Project) service implement
  */
 public class ExchangisStructureIntegrationStandard extends AbstractStructureIntegrationStandard {
+
+    private static ExchangisStructureIntegrationStandard instance;
+
+    static{
+        instance = new ExchangisStructureIntegrationStandard();
+    }
+
+    /**
+     * Get the singleton instance
+     * @return structure integration
+     */
+    public static ExchangisStructureIntegrationStandard getInstance(){
+        return instance;
+    }
     @Override
     protected ProjectService createProjectService() {
-        return ExchangisProjectService.getInstance();
+        return new ExchangisProjectService();
     }
 }

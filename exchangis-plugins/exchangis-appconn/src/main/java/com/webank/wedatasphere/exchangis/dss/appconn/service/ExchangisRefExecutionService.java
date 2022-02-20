@@ -2,12 +2,12 @@ package com.webank.wedatasphere.exchangis.dss.appconn.service;
 
 import com.webank.wedatasphere.dss.standard.app.development.operation.RefExecutionOperation;
 import com.webank.wedatasphere.dss.standard.app.development.service.AbstractRefExecutionService;
-import com.webank.wedatasphere.exchangis.dss.appconn.operation.ExchangisExecutionOperation;
+import com.webank.wedatasphere.exchangis.dss.appconn.operation.ref.ExchangisRefExecutionOperation;
 
-public class ExchangisExecutionService extends AbstractRefExecutionService {
+public class ExchangisRefExecutionService extends AbstractRefExecutionService {
     @Override
     public RefExecutionOperation createRefExecutionOperation() {
-        ExchangisExecutionOperation exchangisExecutionOperation = new ExchangisExecutionOperation(this);
+        ExchangisRefExecutionOperation exchangisExecutionOperation = new ExchangisRefExecutionOperation(this);
         return exchangisExecutionOperation;
     }
 }

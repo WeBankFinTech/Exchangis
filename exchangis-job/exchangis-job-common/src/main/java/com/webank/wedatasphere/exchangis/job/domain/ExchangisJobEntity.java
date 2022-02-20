@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.domain;
 
-import java.util.Date;
 
 /**
  *
