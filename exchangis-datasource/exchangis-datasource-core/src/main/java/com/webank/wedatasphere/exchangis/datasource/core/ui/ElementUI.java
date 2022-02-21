@@ -1,9 +1,10 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui;
 
-public interface ElementUI {
+public interface ElementUI<T> {
     String TEXTAREA = "TEXTAREA";
     String INPUT = "INPUT";
     String OPTION = "OPTION";
+    String MAP = "MAP";
 
     String getField();
 
@@ -14,8 +15,8 @@ public interface ElementUI {
 
     Integer getSort();
 
-    String getValue();
+    T getValue();
 
-    String getDefaultValue();
+    T getDefaultValue();
 
 }

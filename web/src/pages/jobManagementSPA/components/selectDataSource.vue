@@ -110,6 +110,10 @@ export default defineComponent({
     PlusOutlined,
     MinusOutlined,
   },
+  components: {
+    PlusOutlined,
+    MinusOutlined,
+  },
   emits: ["updateDsInfo"],
   setup(props, context) {
     let SQLlist, treeData, originTreeData;
@@ -409,5 +413,6 @@ export default defineComponent({
   max-height: 400px;
   overflow-y: auto;
 }
+
 
 </style>

@@ -6,7 +6,11 @@ public class UpdateProjectRequest {
 
     private Long dssProjectId;
 
+    private String workspaceName;
+
     private String projectName;
+
+    private String dssProjectName;
 
     private String description;
 
@@ -30,6 +34,10 @@ public class UpdateProjectRequest {
 
     public void setDssProjectId(Long dssProjectId) { this.dssProjectId = dssProjectId; }
 
+    public String getWorkspaceName() { return workspaceName; }
+
+    public void setWorkspaceName(String workspaceName) { this.workspaceName = workspaceName; }
+
     public String getProjectName() {
         return projectName;
     }
@@ -37,6 +45,10 @@ public class UpdateProjectRequest {
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
+
+    public String getDssProjectName() { return dssProjectName; }
+
+    public void setDssProjectName(String dssProjectName) { this.dssProjectName = dssProjectName; }
 
     public String getDescription() {
         return description;

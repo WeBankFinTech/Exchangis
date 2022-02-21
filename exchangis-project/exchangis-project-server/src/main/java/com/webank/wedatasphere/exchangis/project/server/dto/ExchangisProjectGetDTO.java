@@ -25,6 +25,7 @@ public class ExchangisProjectGetDTO {
         this.setEditUsers(project.getEditUsers());
         this.setViewUsers(project.getViewUsers());
         this.setExecUsers(project.getExecUsers());
+        this.setDomain(project.getDomain());
     }
 
     private String id;
@@ -36,6 +37,7 @@ public class ExchangisProjectGetDTO {
     private String editUsers;
     private String viewUsers;
     private String execUsers;
+    private String domain;
 
     public String getId() {
         return id;
@@ -100,4 +102,8 @@ public class ExchangisProjectGetDTO {
     public void setExecUsers(String execUsers) {
         this.execUsers = execUsers;
     }
+
+    public String getDomain() { return domain; }
+
+    public void setDomain(String domain) { this.domain = domain; }
 }

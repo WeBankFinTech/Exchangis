@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui;
 
-public class InputElementUI implements ElementUI {
+public class InputElementUI implements ElementUI<String> {
     private String key;
     private String field;
     private String label;
@@ -12,6 +12,15 @@ public class InputElementUI implements ElementUI {
     private String validateType;
     private String validateRange;
     private String validateMsg;
+    private String source;
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public String getKey() {
         return key;
