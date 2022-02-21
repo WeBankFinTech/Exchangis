@@ -16,7 +16,9 @@
           :data-source="dataSourceList"
           :loading="loading"
           rowKey="id"
+          :pagination="pagination"
           class="data-source-manage-table"
+          @change="onChange"
         >
           <template #tags="{ text: tags }">
             <span>
@@ -76,9 +78,17 @@
                 $t("dataSource.table.list.columns.actions.testConnectButton")
               }}</a-button>
               <span style="color: #DEE4EC">|</span>
-              <a-button size="small" @click="handleDelete(row)" type="link">{{
-                $t("dataSource.table.list.columns.actions.deleteButton")
-              }}</a-button>
+              <a-popconfirm
+                title="是否删除?"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="handleDelete(row)"
+                @cancel="cancel"
+              >
+                <a-button size="small" type="link">{{
+                  $t("dataSource.table.list.columns.actions.deleteButton")
+                  }}</a-button>
+              </a-popconfirm>
             </a-space>
           </template>
           <template #version="{ text }">
@@ -91,6 +101,9 @@
           </template>
           <template #desc="{ text }">
             <div class="dsm-desc" :title="text.desc">{{ text.desc }}</div>
+          </template>
+          <template #name="{ text }">
+            <div class="dsm-name" :title="text.name">{{ text.name }}</div>
           </template>
           <template #modifyTime="{ text }">
             {{ text && dateFormat(text) }}
@@ -150,8 +163,8 @@ export default {
     let columns = computed(() => [
       {
         title: t("dataSource.table.list.columns.title.name"),
-        dataIndex: "name",
         align: "center",
+        slots: { customRender: "name" },
         width: 200
       },
       {
@@ -242,6 +255,14 @@ export default {
         rowInfo: {},
         visible: false
       },
+      pagination: {
+        total: 0,
+        current: 1,
+        pageSize: 10,
+        showQuickJumper: true,
+        showSizeChanger: true
+      },
+      searchData: {}
     };
   },
   methods: {
@@ -253,7 +274,10 @@ export default {
     },
     // 处理搜索
     handleSearch(data) {
-      this.getDataSourceList(data);
+      this.searchData = {
+        ...data
+      }
+      this.getDataSourceList();
     },
     // 打开版本弹框
     handleOpenVersionModal(text) {
@@ -305,8 +329,18 @@ export default {
     },
     // 获取列表数据
     async getDataSourceList(data) {
+      this.pagination = {
+        current: data?.page || 1,
+        pageSize: data?.pageSize || 10
+      }
+      const params = {
+        page: this.pagination.current,
+        pageSize: this.pagination.pageSize,
+        ...this.searchData
+      }
       this.loading = true;
-      let { list } = await getDataSourceList(data);
+      let { list, total } = await getDataSourceList(params);
+      this.pagination.total = total
       this.loading = false;
       this.dataSourceList = list;
     },
@@ -324,6 +358,14 @@ export default {
         visible: true,
         createSystem: rowInfo.createSystem
       };
+    },
+    cancel() {},
+    onChange(page) {
+      const { current, pageSize } = page
+      this.getDataSourceList({
+        page: current,
+        pageSize: pageSize,
+      })
     }
   },
   mounted() {
@@ -367,6 +409,12 @@ export default {
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 250px;
+  }
+  .dsm-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 200px;
   }
 }
 
