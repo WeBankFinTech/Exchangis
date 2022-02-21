@@ -58,7 +58,7 @@ export default {
       },
       {
         path: "/childJobManagement",
-        component: "@/pages/jobManagementItem",
+        component: "@/pages/jobManagementSPA",
         meta: {
           name: "synchronizationHistory",
           title: "globalMenu.synchronizationHistory",
