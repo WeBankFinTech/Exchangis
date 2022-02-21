@@ -3,9 +3,15 @@ package com.webank.wedatasphere.exchangis.project.server.entity;
 import java.util.Date;
 
 public class ExchangisProject {
+
+    public static enum Domain {
+        WORKSPACE, STANDALONE
+    }
+
     private Long id;
     private Long dssProjectId;
     private String name;
+    private String dssName;
     private String description;
     private String createBy;
     private Date createTime;
@@ -16,6 +22,7 @@ public class ExchangisProject {
     private String viewUsers;
     private String execUsers;
     private String workspaceName;
+    private String domain;
 
 //    public ExchangisProject(String name, String description, String workspaceName){
 //        this.name = name;
@@ -38,6 +45,10 @@ public class ExchangisProject {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getDssName() { return dssName; }
+
+    public void setDssName(String dssName) { this.dssName = dssName; }
 
     public String getDescription() {
         return description;
@@ -126,4 +137,8 @@ public class ExchangisProject {
     public void setExecUsers(String execUsers) {
         this.execUsers = execUsers;
     }
+
+    public String getDomain() { return domain; }
+
+    public void setDomain(String domain) { this.domain = domain; }
 }

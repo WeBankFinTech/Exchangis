@@ -8,10 +8,9 @@ import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.ResponseRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
 import com.webank.wedatasphere.exchangis.appconn.config.ExchangisConfig;
-import com.webank.wedatasphere.exchangis.appconn.model.ExchangisPostAction;
+import com.webank.wedatasphere.exchangis.appconn.model.ExchangisGetAction;
 import com.webank.wedatasphere.exchangis.appconn.ref.ExchangisCommonResponseRef;
-import com.webank.wedatasphere.linkis.httpclient.response.HttpResult;
-import com.webank.wedatasphere.linkis.server.BDPJettyServerHelper;
+import org.apache.linkis.httpclient.response.HttpResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,33 +29,23 @@ public class ExchangisExportOperation implements RefExportOperation<ExportReques
     @Override
     public ResponseRef exportRef(ExportRequestRef exportRequestRef) throws ExternalOperationFailedException {
         String url = getBaseUrl()  + "/export";
-        exportRequestRef.getParameters().forEach((k,v)->{
-            logger.info("importRef job=>k:{},v:{}",k,v.toString());
-        });
+        logger.info("importRef job=>parameter:{}",exportRequestRef.getParameters().toString());
 
-        ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
-        exchangisPostAction.setUser(exportRequestRef.getParameter("user").toString());
-        exchangisPostAction.addRequestPayload("projectId", exportRequestRef.getParameter("projectId"));
+        ExchangisGetAction exchangisGetAction = new ExchangisGetAction();
+        exchangisGetAction.setUser(exportRequestRef.getParameter("user").toString());
+        exchangisGetAction.setParameter("projectId",exportRequestRef.getParameter("projectId"));
 
-        String nodeType = exportRequestRef.getParameter("nodeType").toString();
-        String externalContent = null;
-        try {
-            externalContent = BDPJettyServerHelper.jacksonJson().writeValueAsString(exportRequestRef.getParameter("jobContent"));
-
-        } catch (Exception e) {
-            logger.error("Failed to create export request", e);
-        }
         SSOUrlBuilderOperation ssoUrlBuilderOperation = exportRequestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
         ssoUrlBuilderOperation.setAppName(ExchangisConfig.EXCHANGIS_APPCONN_NAME);
         ssoUrlBuilderOperation.setReqUrl(url);
         ssoUrlBuilderOperation.setWorkspace(exportRequestRef.getWorkspace().getWorkspaceName());
         ResponseRef responseRef;
         try{
-            exchangisPostAction.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
-            HttpResult httpResult = (HttpResult) this.ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, exchangisPostAction);
+            exchangisGetAction.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
+            HttpResult httpResult = (HttpResult) this.ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, exchangisGetAction);
             responseRef = new ExchangisCommonResponseRef(httpResult.getResponseBody());
         } catch (Exception e){
-            throw new ExternalOperationFailedException(31022, "update sqoop job Exception", e);
+            throw new ExternalOperationFailedException(31022, "export job Exception", e);
         }
         return responseRef;
     }
