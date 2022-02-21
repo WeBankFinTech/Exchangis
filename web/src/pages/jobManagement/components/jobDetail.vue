@@ -39,6 +39,8 @@
               </div>
               <a-input
                 @pressEnter="nameEditable = false"
+                @blur="nameEditable = false"
+                ref="currentInput"
                 v-model:value="item.subJobName"
                 v-if="activeIndex === idx && nameEditable"
               ></a-input>
@@ -61,7 +63,7 @@
                 <CopyOutlined class="copy-icon" />
               </a-popconfirm>
               <EditOutlined
-                @click="nameEditable = true"
+                @click="getEditableInput"
                 v-if="activeIndex === idx && !nameEditable"
                 class="rename-icon"
               />
@@ -1116,6 +1118,14 @@ export default {
       //clearInterval(this.jobStatusTimer)
       clearInterval(this.progressTimer)
       this.visibleLog = false;
+    },
+    getEditableInput() {
+      this.nameEditable = true
+      this.$nextTick(() => {
+        if (this.$refs.currentInput && this.$refs.currentInput.focus) {
+          this.$refs.currentInput.focus()
+        }
+      })
     }
   },
   beforeUnmount() {

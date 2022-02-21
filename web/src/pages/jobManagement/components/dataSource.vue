@@ -492,6 +492,10 @@ export default defineComponent({
       display: inline;
     }
   }
+  :deep(.ant-form-item-label) {
+    width: 100%;
+    text-align: left;
+  }
 }
 .data-source-warp-r {
   flex: 1;
