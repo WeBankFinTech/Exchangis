@@ -16,7 +16,9 @@
           :data-source="dataSourceList"
           :loading="loading"
           rowKey="id"
+          :pagination="pagination"
           class="data-source-manage-table"
+          @change="onChange"
         >
           <template #tags="{ text: tags }">
             <span>
@@ -253,6 +255,14 @@ export default {
         rowInfo: {},
         visible: false
       },
+      pagination: {
+        total: 0,
+        current: 1,
+        pageSize: 10,
+        showQuickJumper: true,
+        showSizeChanger: true
+      },
+      searchData: {}
     };
   },
   methods: {
@@ -264,7 +274,10 @@ export default {
     },
     // 处理搜索
     handleSearch(data) {
-      this.getDataSourceList(data);
+      this.searchData = {
+        ...data
+      }
+      this.getDataSourceList();
     },
     // 打开版本弹框
     handleOpenVersionModal(text) {
@@ -316,8 +329,18 @@ export default {
     },
     // 获取列表数据
     async getDataSourceList(data) {
+      this.pagination = {
+        current: data?.page || 1,
+        pageSize: data?.pageSize || 10
+      }
+      const params = {
+        page: this.pagination.current,
+        pageSize: this.pagination.pageSize,
+        ...this.searchData
+      }
       this.loading = true;
-      let { list } = await getDataSourceList(data);
+      let { list, total } = await getDataSourceList(params);
+      this.pagination.total = total
       this.loading = false;
       this.dataSourceList = list;
     },
@@ -336,7 +359,14 @@ export default {
         createSystem: rowInfo.createSystem
       };
     },
-    cancel() {}
+    cancel() {},
+    onChange(page) {
+      const { current, pageSize } = page
+      this.getDataSourceList({
+        page: current,
+        pageSize: pageSize,
+      })
+    }
   },
   mounted() {
     this.getDataSourceList();
