@@ -76,9 +76,17 @@
                 $t("dataSource.table.list.columns.actions.testConnectButton")
               }}</a-button>
               <span style="color: #DEE4EC">|</span>
-              <a-button size="small" @click="handleDelete(row)" type="link">{{
-                $t("dataSource.table.list.columns.actions.deleteButton")
-              }}</a-button>
+              <a-popconfirm
+                title="是否删除?"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="handleDelete(row)"
+                @cancel="cancel"
+              >
+                <a-button size="small" type="link">{{
+                  $t("dataSource.table.list.columns.actions.deleteButton")
+                  }}</a-button>
+              </a-popconfirm>
             </a-space>
           </template>
           <template #version="{ text }">
@@ -91,6 +99,9 @@
           </template>
           <template #desc="{ text }">
             <div class="dsm-desc" :title="text.desc">{{ text.desc }}</div>
+          </template>
+          <template #name="{ text }">
+            <div class="dsm-name" :title="text.name">{{ text.name }}</div>
           </template>
           <template #modifyTime="{ text }">
             {{ text && dateFormat(text) }}
@@ -150,8 +161,8 @@ export default {
     let columns = computed(() => [
       {
         title: t("dataSource.table.list.columns.title.name"),
-        dataIndex: "name",
         align: "center",
+        slots: { customRender: "name" },
         width: 200
       },
       {
@@ -324,7 +335,8 @@ export default {
         visible: true,
         createSystem: rowInfo.createSystem
       };
-    }
+    },
+    cancel() {}
   },
   mounted() {
     this.getDataSourceList();
@@ -367,6 +379,12 @@ export default {
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 250px;
+  }
+  .dsm-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 200px;
   }
 }
 
