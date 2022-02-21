@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * Expose the ui interface to front-end rendering
@@ -41,13 +42,20 @@ public class ExchangisDataSourceRenderRestfulApi {
         } catch (Exception e){
             return Message.error("Element type: [" + type +"] is not support (不兼容的元素类型)");
         }
+        Message result = Message.ok();
         try{
             ElementUI<?> elementUI = renderService.getPartitionAndRender(userName, dataSourceId, database, table, uiType);
-
+            result.data("type", uiType.name());
+            if (Objects.nonNull(elementUI)){
+                result.data("render", elementUI.getValue());
+            }
         }catch(Exception e){
-
+            String uiMessage = "Load to render partition info Failed (加载渲染分区信息失败)";
+            LOG.error(uiMessage + ", reason: " + e.getMessage(), e);
+            result = Message.error(uiMessage);
         }
-        return null;
+        result.setMethod("/api/rest_j/v1/exchangis/datasources/render/partition/element/" + type);
+        return result;
     }
 
 }
