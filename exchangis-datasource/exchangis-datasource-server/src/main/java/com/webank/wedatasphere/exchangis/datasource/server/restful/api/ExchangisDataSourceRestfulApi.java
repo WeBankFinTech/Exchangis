@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "exchangis", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "exchangis/datasources", produces = {"application/json;charset=utf-8"})
 public class ExchangisDataSourceRestfulApi {
 
     private final ExchangisDataSourceService exchangisDataSourceService;
@@ -25,19 +25,19 @@ public class ExchangisDataSourceRestfulApi {
     }
 
     // list all datasource types
-    @RequestMapping( value = "datasources/type", method = RequestMethod.GET)
+    @RequestMapping( value = "/type", method = RequestMethod.GET)
     public Message listDataSourceTypes(HttpServletRequest request) throws Exception {
         return this.exchangisDataSourceService.listDataSources(request);
     }
 
     // query paged datasource
-    @RequestMapping( value = "datasources/query", method = {RequestMethod.GET,RequestMethod.POST})
+    @RequestMapping( value = "/query", method = {RequestMethod.GET,RequestMethod.POST})
     public Message create(HttpServletRequest request, @RequestBody DataSourceQueryVO vo) throws Exception {
         return this.exchangisDataSourceService.queryDataSources(request, vo);
     }
 
     // list all datasources
-    @RequestMapping( value = "datasources", method = RequestMethod.GET)
+    @RequestMapping( value = "", method = RequestMethod.GET)
     @Deprecated
     public Message listAllDataSources(
             HttpServletRequest request,
@@ -50,7 +50,7 @@ public class ExchangisDataSourceRestfulApi {
     }
 
     // get datasource key define
-    @RequestMapping( value = "datasources/types/{dataSourceTypeId}/keydefines", method = RequestMethod.GET)
+    @RequestMapping( value = "/types/{dataSourceTypeId}/keydefines", method = RequestMethod.GET)
     public Message getDataSourceKeyDefine(
             HttpServletRequest request,
             @PathVariable("dataSourceTypeId") Long dataSourceTypeId
@@ -60,84 +60,84 @@ public class ExchangisDataSourceRestfulApi {
 
 
     // get datasource version list
-    @RequestMapping( value = "datasources/{id}/versions", method = RequestMethod.GET)
+    @RequestMapping( value = "/{id}/versions", method = RequestMethod.GET)
     public Message getDataSourceVersionsById(HttpServletRequest request, @PathVariable("id") Long id) throws Exception {
         return this.exchangisDataSourceService.getDataSourceVersionsById(request, id);
     }
 
     // create datasource
-    @RequestMapping( value = "datasources", method = RequestMethod.POST)
+    @RequestMapping( value = "", method = RequestMethod.POST)
     public Message create(HttpServletRequest request, /*@PathParam("type") String type, */@RequestBody Map<String, Object> json) throws Exception {
         return this.exchangisDataSourceService.create(request,/* type, */json);
     }
 
     // get datasource details
-    @RequestMapping( value = "datasources/{id}", method = RequestMethod.GET)
+    @RequestMapping( value = "/{id}", method = RequestMethod.GET)
     public Message getDataSourceInfoById(HttpServletRequest request, @PathVariable("id") Long id, @QueryParam(value = "versionId") String versionId) throws Exception {
         return this.exchangisDataSourceService.getDataSource(request, id, versionId);
     }
 
-    @RequestMapping( value = "datasources/{id}/connect_params", method = RequestMethod.GET)
+    @RequestMapping( value = "/{id}/connect_params", method = RequestMethod.GET)
     public Message getDataSourceConnectParamsById(HttpServletRequest request, @PathVariable("id") Long id) throws Exception {
         return this.exchangisDataSourceService.getDataSourceConnectParamsById(request, id);
     }
 
     // update datasource and parameters (insert new record in datasource_version table)
-    @RequestMapping( value = "datasources/{id}", method = RequestMethod.PUT)
+    @RequestMapping( value = "/{id}", method = RequestMethod.PUT)
     public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, @RequestBody Map<String, Object> json) throws Exception {
         return this.exchangisDataSourceService.updateDataSource(request, /*type, */id, json);
     }
 
     // publish datasource
-    @RequestMapping( value = "datasources/{id}/{version}/publish", method = RequestMethod.PUT)
+    @RequestMapping( value = "/{id}/{version}/publish", method = RequestMethod.PUT)
     public Message publishDataSource(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id,
                                      @PathVariable("version") Long version) throws Exception {
         return this.exchangisDataSourceService.publishDataSource(request, /*type, */id, version);
     }
 
     // expire datasource
-    @RequestMapping( value = "datasources/{id}/expire", method = RequestMethod.PUT)
+    @RequestMapping( value = "/{id}/expire", method = RequestMethod.PUT)
     public Message expireDataSource(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id) throws Exception {
         return this.exchangisDataSourceService.expireDataSource(request, /*type, */id);
     }
 
     // test datasource connect
-    @RequestMapping( value = "datasources/{id}/{version}/connect", method = RequestMethod.PUT)
+    @RequestMapping( value = "/{id}/{version}/connect", method = RequestMethod.PUT)
     public Message testConnect(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id,
                                @PathVariable("version") Long version) throws Exception {
        return this.exchangisDataSourceService.testConnect(request, /*type, */id, version);
     }
 
     // delete datasource (physical)
-    @RequestMapping( value = "datasources/{id}", method = RequestMethod.DELETE)
+    @RequestMapping( value = "/{id}", method = RequestMethod.DELETE)
     public Message delete(HttpServletRequest request, /*@PathParam("type") String type, */@PathVariable("id") Long id) throws Exception {
         return this.exchangisDataSourceService.deleteDataSource(request, /*type, */id);
     }
 
-    @RequestMapping( value = "datasources/{type}/{id}/dbs", method = RequestMethod.GET)
+    @RequestMapping( value = "/{type}/{id}/dbs", method = RequestMethod.GET)
     public Message queryDataSourceDBs(HttpServletRequest request, @PathVariable("type") String type, @PathVariable("id") Long id) throws Exception {
         return this.exchangisDataSourceService.queryDataSourceDBs(request, type, id);
     }
 
-    @RequestMapping( value = "datasources/{type}/{id}/dbs/{dbName}/tables", method = RequestMethod.GET)
+    @RequestMapping( value = "/{type}/{id}/dbs/{dbName}/tables", method = RequestMethod.GET)
     public Message queryDataSourceDBTables(HttpServletRequest request, @PathVariable("type") String type,
                                            @PathVariable("id") Long id, @PathVariable("dbName") String dbName) throws Exception {
         return this.exchangisDataSourceService.queryDataSourceDBTables(request, type, id, dbName);
     }
 
-    @RequestMapping( value = "datasources/{type}/{id}/dbs/{dbName}/tables/{tableName}/fields", method = RequestMethod.GET)
+    @RequestMapping( value = "/{type}/{id}/dbs/{dbName}/tables/{tableName}/fields", method = RequestMethod.GET)
     public Message queryDataSourceDBTableFields(HttpServletRequest request, @PathVariable("type") String type,
                                                 @PathVariable("id") Long id, @PathVariable("dbName") String dbName,
                                                 @PathVariable("tableName") String tableName) throws Exception {
         return this.exchangisDataSourceService.queryDataSourceDBTableFields(request, type, id, dbName, tableName);
     }
 
-    @RequestMapping( value = "datasources/fieldsmapping", method = RequestMethod.POST)
+    @RequestMapping( value = "/fieldsmapping", method = RequestMethod.POST)
     public Message queryDataSourceDBTableFieldsMapping(HttpServletRequest request, @RequestBody FieldMappingVO vo) throws Exception {
         return this.exchangisDataSourceService.queryDataSourceDBTableFieldsMapping(request, vo);
     }
 
-    @RequestMapping( value = "datasources/{engine}/{type}/params/ui", method = RequestMethod.GET)
+    @RequestMapping( value = "/{engine}/{type}/params/ui", method = RequestMethod.GET)
     public Message getParamsUI(
             HttpServletRequest request,
             @PathVariable("engine") String engine,
