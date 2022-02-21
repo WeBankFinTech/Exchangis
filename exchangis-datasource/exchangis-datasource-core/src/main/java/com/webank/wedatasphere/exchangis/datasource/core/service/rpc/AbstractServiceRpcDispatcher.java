@@ -24,6 +24,7 @@ public abstract class AbstractServiceRpcDispatcher<C extends ServiceRpcClient<?>
         try {
             return execute(remoteClient, operation);
         }catch(Exception e){
+
             if (e instanceof ExchangisServiceRpcException){
                 throw e;
             }

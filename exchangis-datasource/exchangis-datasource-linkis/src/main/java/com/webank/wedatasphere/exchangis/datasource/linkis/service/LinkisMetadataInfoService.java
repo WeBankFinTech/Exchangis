@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisData
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisServiceRpcException;
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
 import com.webank.wedatasphere.exchangis.datasource.core.service.rpc.ServiceRpcClient;
+import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
 import com.webank.wedatasphere.exchangis.datasource.linkis.request.MetadataGetPartitionPropsAction;
 import com.webank.wedatasphere.exchangis.datasource.linkis.response.MetadataGetPartitionPropsResult;
 import com.webank.wedatasphere.exchangis.datasource.linkis.service.rpc.LinkisDataSourceServiceOperation;
@@ -20,7 +21,17 @@ import static com.webank.wedatasphere.exchangis.datasource.core.exception.Exchan
  * Linkis to fetch metadata info
  */
 public class LinkisMetadataInfoService extends LinkisDataSourceServiceRpcDispatcher<LinkisMetaDataRemoteClient>
-        implements MetadataInfoService<LinkisMetaDataRemoteClient> {
+        implements MetadataInfoService {
+
+    @Override
+    public Class<?> getClientClass() {
+        return LinkisMetaDataRemoteClient.class;
+    }
+
+    @Override
+    public ServiceRpcClient<LinkisMetaDataRemoteClient> getDefaultRemoteClient() {
+        return ExchangisLinkisRemoteClient::getLinkisMetadataRemoteClient;
+    }
 
     @Override
     public Map<String, String> getPartitionProps(String userName, Long dataSourceId,
@@ -29,10 +40,11 @@ public class LinkisMetadataInfoService extends LinkisDataSourceServiceRpcDispatc
     }
 
     @Override
-    public Map<String, String> getPartitionProps(ServiceRpcClient<LinkisMetaDataRemoteClient> rpcClient,
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getPartitionProps(ServiceRpcClient<?> rpcClient,
                                                  String userName, Long dataSourceId,
                                                  String database, String table, String partition) throws ExchangisDataSourceException {
-        MetadataGetPartitionPropsResult result = dispatch(rpcClient, new LinkisDataSourceServiceOperation(() -> {
+        MetadataGetPartitionPropsResult result = dispatch((ServiceRpcClient<LinkisMetaDataRemoteClient>) rpcClient, new LinkisDataSourceServiceOperation(() -> {
             MetadataGetPartitionPropsAction action = new MetadataGetPartitionPropsAction(dataSourceId,
                     database, table, partition, LINKIS_RPC_CLIENT_SYSTEM.getValue());
             action.setUser(userName);
@@ -47,8 +59,8 @@ public class LinkisMetadataInfoService extends LinkisDataSourceServiceRpcDispatc
     }
 
     @Override
-    public Map<String, String> getTableProps(ServiceRpcClient<LinkisMetaDataRemoteClient> rpcClient, String userName, Long dataSourceId, String database, String table) throws ExchangisDataSourceException {
-        MetadataGetTablePropsResult result = dispatch(rpcClient, new LinkisDataSourceServiceOperation(() -> MetadataGetTablePropsAction.builder()
+    public Map<String, String> getTableProps(ServiceRpcClient<?> rpcClient, String userName, Long dataSourceId, String database, String table) throws ExchangisDataSourceException {
+        MetadataGetTablePropsResult result = dispatch((ServiceRpcClient<LinkisMetaDataRemoteClient>) rpcClient, new LinkisDataSourceServiceOperation(() -> MetadataGetTablePropsAction.builder()
                 .setDataSourceId(dataSourceId).setDatabase(database).setTable(table)
                 .setUser(userName).setSystem(LINKIS_RPC_CLIENT_SYSTEM.getValue()).build()), 0, "");
         return result.props();
