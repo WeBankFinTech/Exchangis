@@ -310,7 +310,7 @@
           </a-tab-pane>
           <a-tab-pane key="3" tab="执行历史" force-render>
             <a-table
-              style="margin: 0px 150px 0 24px;"
+              style="margin: 0 -24px 0 24px;"
               :columns="ehColumns"
               :data-source="ehTableData"
               :pagination="false"
@@ -538,14 +538,24 @@ export default {
         'Timeout': '超时'
       },
       activeKey: "1",
-      dateFormat
+      dateFormat,
+      curTab: {
+        id: ''
+      }
     };
   },
-  props: {
-    curTab: Object,
-  },
   created() {
+    this.curTab.id = this.$route.query.id
     this.init();
+  },
+  mounted() {
+    this.$nextTick(() => {
+      if (this.$route.path === '/childJobManagement') {
+        document.querySelector('.layout-sider-fixed-stuff').style.width = '0'
+        document.querySelector('.ant-layout-header.layout-header').style.display = 'none'
+
+      }
+    })
   },
   computed: {
     logParams(){
@@ -557,7 +567,6 @@ export default {
   },
   methods: {
     init() {
-      this.name = this.curTab.jobName;
       this.getInfo();
     },
     async getInfo() {
@@ -1267,6 +1276,7 @@ export default {
       }
     }
     .jd_right {
+      background: white;
       overflow-x: auto;
       float: right;
       width: calc(100% - 250px);
@@ -1275,13 +1285,13 @@ export default {
 
   .jd-bottom {
     overflow: auto;
-    width: calc(100% - 200px);
+    width: 100%;
     position: fixed;
     height: 30%;
     bottom: 0;
     background-color: white;
     .jd-bottom-top {
-      width: calc(100% - 200px);
+      width: 100%;
       height: 48px;
       position: fixed;
       bottom: 30%;
