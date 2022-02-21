@@ -266,25 +266,26 @@ export default {
       total: 0,
       pageSize: pageSize,
       showQuickJumper: true,
+      showSizeChanger: true,
       showTotal: total => `总计 ${total} 条`
     });
 
     // 根据 current 获取当前页的数据
-    const getTableFormCurrent = (current, type) => {
+    const getTableFormCurrent = (current, type, size) => {
       if (
         tableData.value.length == pagination.value.total &&
         pagination.value.total > 0 &&
         type !== "search"
       )
         return;
-      if (currentPage == current && type !== "search") return;
+      //if (currentPage == current && type !== "search") return;
 
       const formData = cloneDeep(state.formState);
       formData["launchStartTime"] = Date.parse(formData.time[0]) || "";
       formData["launchEndTime"] = Date.parse(formData.time[1]) || "";
       currentPage = current;
       formData["current"] = currentPage;
-      formData["size"] = pageSize;
+      formData["size"] = size || pageSize;
       delete formData.time;
 
       getSyncHistoryJobList(formData)
@@ -331,8 +332,8 @@ export default {
     };
 
     const onChange = (page) => {
-      const { current } = page;
-      getTableFormCurrent(current, "onChange");
+      const { current, pageSize } = page;
+      getTableFormCurrent(current, "onChange", pageSize);
     };
 
     const showInfoLog = (id) => {
