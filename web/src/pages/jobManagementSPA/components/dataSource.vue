@@ -62,6 +62,7 @@
                   v-bind:param="item"
                   @updateInfo="updateSourceParams"
                   :style="styleObject"
+                  :data="dataSource.dataSourceIds.source"
                 />
               </a-form-item>
             </a-form>
@@ -108,6 +109,7 @@
                   v-bind:param="item"
                   @updateInfo="updateSinkParams"
                   :style="styleObject"
+                  :data="dataSource.dataSourceIds.sink"
                 />
               </a-form-item>
             </a-form>
@@ -173,12 +175,12 @@ export default defineComponent({
 
     const dataSource = reactive({
       dataSourceIds: {
-        source: props.dsData.dataSourceIds.source || {},
-        sink: props.dsData.dataSourceIds.sink || {},
+        source: { ...props.dsData.dataSourceIds.source },
+        sink: { ...props.dsData.dataSourceIds.sink }
       },
       params: {
-        sources: props.dsData.params.sources || [],
-        sinks: props.dsData.params.sinks || [],
+        sources: [ ...props.dsData.params.sources ],
+        sinks: [ ...props.dsData.params.sinks ]
       },
     });
 
@@ -200,25 +202,44 @@ export default defineComponent({
       sinksHelpStatus[key] = "success";
     });
 
-    const newProps = computed(() => JSON.parse(JSON.stringify(props.dsData)));
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.dsData)))
     watch(newProps, (val, oldVal) => {
       const newVal = typeof val === "string" ? JSON.parse(val) : val;
       sourceTitle.value = objToTitle(newVal.dataSourceIds.source);
       sinkTitle.value = objToTitle(newVal.dataSourceIds.sink);
       dataSource.dataSourceIds = {
         source: newVal.dataSourceIds.source || {},
-        sink: newVal.dataSourceIds.sink || {},
+        sink: newVal.dataSourceIds.sink || {}
       };
       dataSource.params = {
         sources: newVal.params.sources || [],
-        sinks: newVal.params.sinks || [],
+        sinks: newVal.params.sinks || []
       };
     });
 
     const formRef = ref();
     const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
-      if (dataSource.dataSourceIds.sink.type === info[0] && props.engineType === 'SQOOP') {
+
+      // 修改来源数据源，清空目的数据源
+      dataSource.dataSourceIds.sink = {
+        type: '',
+        id: '',
+        db: '',
+        table: '',
+        ds: ''
+      }
+      sinkTitle.value = objToTitle({
+        type: '',
+        id: '',
+        db: '',
+        table: '',
+        ds: '',
+      })
+      dataSource.params.sinks = []
+      /*if ((dataSource.dataSourceIds.sink.type && dataSource.dataSourceIds.source.type !== 'HIVE')
+        && (info[0] && info[0] !== 'HIVE')
+        && props.engineType === 'SQOOP') {
         sourceTitle.value = objToTitle({
           type: info[0],
           id: "",
@@ -227,13 +248,12 @@ export default defineComponent({
           ds: "",
         });
         return message.error("SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择");
-      }
+      }*/
       dataSource.dataSourceIds.source.type = info[0];
       dataSource.dataSourceIds.source.ds = info[1];
       dataSource.dataSourceIds.source.db = info[2];
       dataSource.dataSourceIds.source.table = info[3];
       dataSource.dataSourceIds.source.id = id;
-
       getSourceParams(
         props.engineType,
         dataSource.dataSourceIds.source.type,
@@ -250,7 +270,9 @@ export default defineComponent({
     };
     const updateSinkInfo = (dsInfo, id) => {
       const info = dsInfo.split("-");
-      if (dataSource.dataSourceIds.source.type === info[0] && props.engineType === 'SQOOP') {
+      if ((info[0] && info[0] !== 'HIVE')
+        && (dataSource.dataSourceIds.source.type && dataSource.dataSourceIds.source.type !== 'HIVE')
+        && props.engineType === 'SQOOP') {
         sinkTitle.value = objToTitle({
           type: info[0],
           id: "",
@@ -469,6 +491,10 @@ export default defineComponent({
     > div {
       display: inline;
     }
+  }
+  :deep(.ant-form-item-label) {
+    width: 100%;
+    text-align: left;
   }
 }
 .data-source-warp-r {
