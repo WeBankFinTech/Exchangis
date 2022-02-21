@@ -53,15 +53,15 @@
             "
           ></a-select>
         </a-space>
-        <a-space size="middle" v-if="dataSource">
-          <span>搜索库表</span>
-          <a-input
-            placeholder="按回车搜库表"
-            style="width: 300px;margin-top: 10px;margin-left:0"
-            v-model:value="searchWord"
-            @keyup.enter="filterTree(dsId)"
-          ></a-input>
-        </a-space>
+        <!--<a-space size="middle" v-if="dataSource">-->
+          <!--<span>搜索库表</span>-->
+          <!--<a-input-->
+            <!--placeholder="按回车搜库表"-->
+            <!--style="width: 300px;margin-top: 10px;margin-left:0"-->
+            <!--v-model:value="searchWord"-->
+            <!--@keyup.enter="filterTree(dsId)"-->
+          <!--&gt;</a-input>-->
+        <!--</a-space>-->
       </div>
       <!-- bottom 类似tree组件 -->
       <div class="sds-wrap-b">
