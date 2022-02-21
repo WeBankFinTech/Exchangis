@@ -3,8 +3,6 @@ package com.webank.wedatasphere.exchangis.appconn.project;
 import com.webank.wedatasphere.dss.standard.app.sso.builder.SSOUrlBuilderOperation;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Maps;
-import com.webank.wedatasphere.dss.common.label.DSSLabel;
-import com.webank.wedatasphere.dss.standard.app.sso.builder.SSOUrlBuilderOperation;
 import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.app.structure.StructureService;
 import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectCreationOperation;
@@ -15,17 +13,14 @@ import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalO
 import com.webank.wedatasphere.exchangis.appconn.config.ExchangisConfig;
 import com.webank.wedatasphere.exchangis.appconn.model.ExchangisPostAction;
 import com.webank.wedatasphere.exchangis.appconn.ref.ExchangisProjectResponseRef;
-import com.webank.wedatasphere.exchangis.appconn.utils.AppconnUtils;
-import com.webank.wedatasphere.linkis.httpclient.request.HttpAction;
-import com.webank.wedatasphere.linkis.httpclient.response.HttpResult;
-import com.webank.wedatasphere.linkis.manager.label.entity.SerializableLabel;
-import com.webank.wedatasphere.linkis.server.BDPJettyServerHelper;
+import com.webank.wedatasphere.exchangis.appconn.utils.AppConnUtils;
+import org.apache.linkis.httpclient.request.HttpAction;
+import org.apache.linkis.httpclient.response.HttpResult;
+import org.apache.linkis.server.BDPJettyServerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ExchangisProjectCreationOperation implements ProjectCreationOperation {
     private static Logger logger = LoggerFactory.getLogger(ExchangisProjectCreationOperation.class);
@@ -44,18 +39,19 @@ public class ExchangisProjectCreationOperation implements ProjectCreationOperati
     @Override
     public ProjectResponseRef createProject(ProjectRequestRef projectRequestRef) throws ExternalOperationFailedException {
         String url = getBaseUrl() +"/createProject";
-        logger.info("create project=>projectId:{},name:{},createName:{}",projectRequestRef.getId(),projectRequestRef.getName(),projectRequestRef.getCreateBy());
+
+        logger.info("create project=>projectId:{},name:{},createName:{},parameters:{},workspaceName:{}",projectRequestRef.getId(),projectRequestRef.getName(),projectRequestRef.getCreateBy(),projectRequestRef.getParameters().toString(),projectRequestRef.getWorkspace().getWorkspaceName());
 
         ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
         exchangisPostAction.setUser(projectRequestRef.getCreateBy());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.WORKSPACE_NAME,projectRequestRef.getWorkspaceName());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_ID,projectRequestRef.getWorkspaceName());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.WORKSPACE_NAME,projectRequestRef.getWorkspace().getWorkspaceName());
         exchangisPostAction.addRequestPayload(ExchangisConfig.PROJECT_NAME,projectRequestRef.getName());
+        exchangisPostAction.addRequestPayload(ExchangisConfig.DSS_PROJECT_NAME,projectRequestRef.getName());
         exchangisPostAction.addRequestPayload(ExchangisConfig.DESCRIPTION,projectRequestRef.getDescription());
         exchangisPostAction.addRequestPayload(ExchangisConfig.EDIT_USERS,projectRequestRef.getCreateBy());
         exchangisPostAction.addRequestPayload(ExchangisConfig.EXEC_USERS,projectRequestRef.getCreateBy());
         exchangisPostAction.addRequestPayload(ExchangisConfig.VIEW_USERS,projectRequestRef.getCreateBy());
-        exchangisPostAction.addRequestPayload(ExchangisConfig.TAGS, AppconnUtils.changeDssLabelName(projectRequestRef.getDSSLabels()));
+        exchangisPostAction.addRequestPayload(ExchangisConfig.TAGS, AppConnUtils.changeDssLabelName(projectRequestRef.getDSSLabels()));
 
         SSOUrlBuilderOperation ssoUrlBuilderOperation = projectRequestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
         ssoUrlBuilderOperation.setAppName(getAppName());
@@ -74,6 +70,8 @@ public class ExchangisProjectCreationOperation implements ProjectCreationOperati
             logger.error("Create Exchangis Project Exception", e);
             throw new ExternalOperationFailedException(31020,e.getMessage());
         }
+
+        logger.info("create project=> status {},response {},resMap {}",httpResult.getStatusCode(),response,resMap.toString());
         Map<String, Object> header = (Map<String, Object>) resMap.get("header");
         int code = (int) header.get("code");
         String errorMsg = "";

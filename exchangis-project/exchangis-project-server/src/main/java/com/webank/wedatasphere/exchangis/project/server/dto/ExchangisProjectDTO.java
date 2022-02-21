@@ -21,6 +21,7 @@ public class ExchangisProjectDTO {
         this.setWorkspaceName(project.getWorkspaceName());
         this.setTags(project.getTags());
         this.setDescription(project.getDescription());
+        this.setDomain(project.getDomain());
     }
 
     private String id;
@@ -29,6 +30,7 @@ public class ExchangisProjectDTO {
     private String workspaceName;
     private String description;
     private String tags;
+    private String domain;
 
     public String getId() {
         return id;
@@ -69,4 +71,8 @@ public class ExchangisProjectDTO {
     public void setTags(String tags) {
         this.tags = tags;
     }
+
+    public String getDomain() { return domain; }
+
+    public void setDomain(String domain) { this.domain = domain; }
 }

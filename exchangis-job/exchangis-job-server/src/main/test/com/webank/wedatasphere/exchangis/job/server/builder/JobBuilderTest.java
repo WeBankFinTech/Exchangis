@@ -1,22 +1,19 @@
-package com.webank.wedatasphere.exchangis.job.server.builder.engine;
+package com.webank.wedatasphere.exchangis.job.server.builder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
-import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
-import com.webank.wedatasphere.exchangis.job.server.builder.SpringExchangisJobBuilderManager;
-import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
-import com.webank.wedatasphere.linkis.datasourcemanager.common.util.json.Json;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 
 import java.util.*;
 
-public class Test {
+public class JobBuilderTest {
 
     private static SpringExchangisJobBuilderManager jobBuilderManager = new SpringExchangisJobBuilderManager();
 
@@ -25,57 +22,107 @@ public class Test {
     }
 
     public static void main(String[] args) throws ExchangisJobException, JsonProcessingException {
-        ExchangisJob job = getJob();
-        System.out.println(job.getJobName());
+
+        String code = "{\n" +
+                "    \"job\": {\n" +
+                "        \"content\":[\n" +
+                "            {\n" +
+                "                \"reader\": {\n" +
+                "                    \"name\": \"txtfilereader\", \n" +
+                "                    \"parameter\": {\n" +
+                "                        \"path\":[\"/opt/install/datax/data/test1.csv\"],\n" +
+                "                        \"encoding\":\"gbk\",\n" +
+                "                        \"column\": [\n" +
+                "                            {\n" +
+                "                                \"index\":0,\n" +
+                "                                \"type\":\"string\"\n" +
+                "                            },\n" +
+                "                            {\n" +
+                "                                \"index\":1,\n" +
+                "                                \"type\":\"string\"\n" +
+                "                            }\n" +
+                "                        ], \n" +
+                "                        \"fileldDelimiter\":\",\"\n" +
+                "                    }\n" +
+                "                }, \n" +
+                "                \"writer\": {\n" +
+                "                    \"name\": \"mysqlwriter\", \n" +
+                "                    \"parameter\": {\n" +
+                "                        \"username\": \"root\",\n" +
+                "                        \"password\": \"MTIzNDU2\", \n" +
+                "                        \"column\": [\n" +
+                "                            \"i\",\n" +
+                "                            \"j\"\n" +
+                "                        ],\n" +
+                "                        \"preSql\": [], \n" +
+                "                        \"connection\": [\n" +
+                "                            {\n" +
+                "                                \"jdbcUrl\":\"jdbc:mysql://172.24.2.61:3306/test\", \n" +
+                "                                \"table\": [\"testtab\"]\n" +
+                "                            }\n" +
+                "                        ]\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            }\n" +
+                "        ], \n" +
+                "        \"setting\": {\n" +
+                "            \"speed\": {\n" +
+                "                \"channel\": \"4\"\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+//        System.out.println(code);
+
+        ExchangisJobInfo job = getSqoopJob();
+        System.out.println(job.getName());
         ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
         ctx.putEnv("USER_NAME", "xxxxyyyyzzzz");
         ctx.setOriginalJob(job);
-        ExchangisTransformJob transformJob = jobBuilderManager.doBuild(job, ExchangisTransformJob.class, ctx);
+        TransformExchangisJob transformJob = jobBuilderManager.doBuild(job, TransformExchangisJob.class, ctx);
         List<ExchangisEngineJob> engineJobs = new ArrayList<>();
 
 
         for (SubExchangisJob subExchangisJob : transformJob.getSubJobSet()) {
             String sourceDsId = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE).get("datasource").getValue().toString();
             String sinkDsId = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK).get("datasource").getValue().toString();
-            if (!ctx.containsDatasourceParam(sourceDsId)) {
-                Map<String, Object> sourceDsParam = getDsParam(sourceDsId);
-                ctx.putDatasourceParam(sourceDsId, sourceDsParam);
-            }
-            if (!ctx.containsDatasourceParam(sinkDsId)) {
-                Map<String, Object> sinkDsParam = getDsParam(sinkDsId);
-                ctx.putDatasourceParam(sinkDsId, sinkDsParam);
-            }
+//            if (!ctx.containsDatasourceParam(sourceDsId)) {
+//                Map<String, Object> sourceDsParam = getDsParam(sourceDsId);
+//                ctx.putDatasourceParam(sourceDsId, sourceDsParam);
+//            }
+//            if (!ctx.containsDatasourceParam(sinkDsId)) {
+//                Map<String, Object> sinkDsParam = getDsParam(sinkDsId);
+//                ctx.putDatasourceParam(sinkDsId, sinkDsParam);
+//            }
             // connectParams
             Optional.ofNullable(jobBuilderManager.doBuild(subExchangisJob,
                     SubExchangisJob.class, ExchangisEngineJob.class, ctx)).ifPresent(engineJobs::add);
         }
 
         //  List<ExchangisEngineJob> -> List<ExchangisLauncherJob>
-        List<ExchangisLauncherJob> launcherJobs = new ArrayList<>();
+        List<LaunchableExchangisTask> launchableTasks = new ArrayList<>();
         for (ExchangisEngineJob engineJob : engineJobs) {
             Optional.ofNullable(jobBuilderManager.doBuild(engineJob,
-                    ExchangisEngineJob.class, ExchangisLauncherJob.class, ctx)).ifPresent(launcherJobs::add);
+                    ExchangisEngineJob.class, LaunchableExchangisTask.class, ctx)).ifPresent(launchableTasks::add);
         }
-        if (launcherJobs.isEmpty()) {
-            throw new ExchangisJobException(ExchangisJobExceptionCode.JOB_BUILDER_ERROR.getCode(),
+        if (launchableTasks.isEmpty()) {
+            throw new ExchangisJobException(ExchangisJobExceptionCode.TASK_BUILDER_ERROR.getCode(),
                     "The result set of launcher job is empty, please examine your job entity, [ 生成LauncherJob为空 ]", null);
         }
 
-        for (ExchangisLauncherJob launcherJob : launcherJobs) {
-            String launchName = launcherJob.getLaunchName();
-            System.out.println(launcherJob.getJobName());
-            System.out.println(launchName);
+        for (LaunchableExchangisTask launchableTask : launchableTasks) {
+            System.out.println(launchableTask.getName());
         }
 
     }
 
-    public static ExchangisJob getJob() {
-        ExchangisJob job = new ExchangisJob();
+    public static ExchangisJobInfo getSqoopJob() {
+        ExchangisJobVO job = new ExchangisJobVO();
         job.setId(22L);
         job.setProjectId(1456173825011081218L);
         job.setJobName("T_SQOOP");
         job.setJobType("OFFLINE");
-        job.setEngineType("SQOOP");
+        job.setEngineType("DATAX");
         job.setJobLabels("");
         job.setJobDesc("");
         job.setContent("[{\n" +
@@ -150,7 +197,7 @@ public class Test {
         job.setProxyUser("hdfs");
         job.setSyncType("FULL");
         job.setJobParams("{}");
-        return job;
+        return new ExchangisJobInfo(job);
     }
 
     public static Map<String, Object> getDsParam(String id) {

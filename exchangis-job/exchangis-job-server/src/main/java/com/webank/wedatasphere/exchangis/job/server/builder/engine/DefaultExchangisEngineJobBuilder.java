@@ -10,6 +10,7 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Default implements
@@ -22,15 +23,18 @@ public class DefaultExchangisEngineJobBuilder extends AbstractExchangisJobBuilde
     }
 
     @Override
-    public ExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectJob, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+    public ExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         String paramsString = ctx.getOriginalJob().getJobParams();
         ExchangisEngineJob exchangisEngineJob = new ExchangisEngineJob();
         if (StringUtils.isNotBlank(paramsString)){
-            Map<String, Object> runtimeParams = Json.fromJson(paramsString, Map.class);
-            exchangisEngineJob.setRuntimeParams(runtimeParams);
+            Map<String, Object> jobParams = Json.fromJson(paramsString, Map.class);
+            if (Objects.nonNull(jobParams)){
+                exchangisEngineJob.getJobContent().putAll(jobParams);
+            }
         }
-        exchangisEngineJob.setEngine(ctx.getOriginalJob().getEngineType());
-        exchangisEngineJob.setJobName(inputJob.getJobName());
+        exchangisEngineJob.setEngineType(ctx.getOriginalJob().getEngineType());
+        exchangisEngineJob.setName(inputJob.getName());
+        exchangisEngineJob.setJobLabel(ctx.getOriginalJob().getJobLabel());
         return exchangisEngineJob;
     }
 }

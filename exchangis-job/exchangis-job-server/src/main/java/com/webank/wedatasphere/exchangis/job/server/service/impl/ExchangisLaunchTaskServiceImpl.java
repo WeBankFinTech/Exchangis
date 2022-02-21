@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLaunchTask;
+import com.webank.wedatasphere.exchangis.job.launcher.entity.ExchangisLaunchTask;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisLaunchTaskMapper;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisLaunchTaskService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskInfoVO;
@@ -28,7 +28,7 @@ public class ExchangisLaunchTaskServiceImpl extends ServiceImpl<ExchangisLaunchT
 
     @Override
     public List<ExchangisTaskInfoVO> listTasks(Long taskId, String taskName, String status, Long launchStartTime,
-                                               Long launchEndTime, int current, int size) {
+                                               Long launchEndTime, int current, int size) throws ExchangisJobServerException{
         if (current <= 0) {
             current = 1;
         }
@@ -59,12 +59,12 @@ public class ExchangisLaunchTaskServiceImpl extends ServiceImpl<ExchangisLaunchT
     public void delete(Long historyId) throws Exception {
         ExchangisLaunchTask task = this.baseMapper.selectById(historyId);
         if (null == task) {
-            throw new ExchangisJobErrorException(ExchangisDataSourceExceptionCode.DELETE_HISTORY_ERROR.getCode(), "Task " + historyId + " not exists.");
+            throw new ExchangisJobServerException(ExchangisDataSourceExceptionCode.DELETE_HISTORY_ERROR.getCode(), "Task " + historyId + " not exists.");
         }
         if (task.getStatus().equals("SUCCESS") || task.getStatus().equals("FAILED")) {
             this.baseMapper.deleteById(historyId);
         } else {
-            throw new ExchangisJobErrorException(ExchangisDataSourceExceptionCode.DELETE_HISTORY_ERROR.getCode(), "The status of task " + historyId + " is " + task.getStatus() + ", " +
+            throw new ExchangisJobServerException(ExchangisDataSourceExceptionCode.DELETE_HISTORY_ERROR.getCode(), "The status of task " + historyId + " is " + task.getStatus() + ", " +
                     "only 'SUCCESS' or 'FAILED' status can be deleted.");
         }
     }
