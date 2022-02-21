@@ -18,15 +18,17 @@ public interface ExchangisProjectService {
 
      ExchangisProject updateProject(String username, UpdateProjectRequest updateProjectRequest) throws ExchangisProjectErrorException;
 
-     List<ExchangisProjectDTO> queryProjects(ProjectQueryRequest projectQueryRequest);
+     List<ExchangisProjectDTO> queryProjects(ProjectQueryRequest projectQueryRequest, int current, int size);
+
+     int count(ProjectQueryRequest projectQueryRequest);
 
      void deleteProject(HttpServletRequest request, String id);
 
-     void deleteProjectByDss(HttpServletRequest request, String dssProjectId);
+     void deleteProjectByDss(HttpServletRequest request, String dssName);
 
      ExchangisProjectGetDTO getProjectById(String projectId);
 
-     ExchangisProjectGetDTO getProjectByDssId(String dssProjectId);
+     ExchangisProjectGetDTO getProjectByDssName(String dssName);
 
 //     ExchangisProject createProject(CreateStreamProjectRequest createStreamProjectRequest) throws ExchangisProjectErrorException;
 //

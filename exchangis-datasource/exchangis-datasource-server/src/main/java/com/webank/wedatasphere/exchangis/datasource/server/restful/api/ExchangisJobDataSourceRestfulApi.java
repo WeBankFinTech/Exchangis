@@ -3,22 +3,19 @@ package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
-import com.webank.wedatasphere.linkis.server.Message;
+import org.apache.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.List;
 
 // TODO 这里仅仅为了测试，JOB的接口在另外的 Controller 中
-@Component
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Path("exchangis")
+@RestController
+@RequestMapping(value = "exchangis", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobDataSourceRestfulApi {
 
     private final ExchangisDataSourceService exchangisDataSourceService;
@@ -29,45 +26,36 @@ public class ExchangisJobDataSourceRestfulApi {
     }
 
     // 根据 任务ID 获取该任务的数据源所有配置项 UI 数据
-    @GET
-    @Path("jobs/{jobId}/datasource/ui")
-    public Response getJobDataSourcesUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId) {
+    @RequestMapping( value = "jobs/{jobId}/datasource/ui", method = RequestMethod.GET)
+    public Message getJobDataSourcesUI(HttpServletRequest request, @PathVariable("jobId")Long jobId) {
 //        ExchangisDataSourceUIViewer jobDataSourceUI = this.exchangisDataSourceService.getJobDataSourceUIs(jobId);
         List<ExchangisDataSourceUIViewer> ui = this.exchangisDataSourceService.getJobDataSourceUIs(request, jobId);
-        Message message = Message.ok().data("ui", ui);
-        return Message.messageToResponse(message);
+        return Message.ok().data("ui", ui);
     }
 
     // 根据 任务引擎类型 获取该引擎的配置项 UI 数据
-    @GET
-    @Path("jobs/engine/{engineType}/settings/ui")
-    public Response getJobEngineSettingsUI(@Context HttpServletRequest request, @PathParam("engineType")String engineType) {
-        List<ElementUI> jobSettingsUI = this.exchangisDataSourceService.getJobEngineSettingsUI(engineType);
-        Message message = Message.ok().data("ui", jobSettingsUI);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "jobs/engine/{engineType}/settings/ui", method = RequestMethod.GET)
+    public Message getJobEngineSettingsUI(HttpServletRequest request, @PathVariable("engineType")String engineType) {
+        List<ElementUI<?>> jobSettingsUI = this.exchangisDataSourceService.getJobEngineSettingsUI(engineType);
+        return Message.ok().data("ui", jobSettingsUI);
     }
 
     // 根据 任务ID 获取该任务的数据源配置项 UI 数据
-    @GET
-    @Path("jobs/{jobId}/datasource/params/ui")
-    public Response getJobDataSourceParamsUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId) {
-        Message message = this.exchangisDataSourceService.getJobDataSourceParamsUI(jobId);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "jobs/{jobId}/datasource/params/ui", method = RequestMethod.GET)
+    public Message getJobDataSourceParamsUI(HttpServletRequest request, @PathVariable("jobId")Long jobId) {
+        return this.exchangisDataSourceService.getJobDataSourceParamsUI(jobId);
     }
 
     // 根据 任务ID 获取该任务的数据源字段映射 UI 数据
-    @GET
-    @Path("jobs/{jobId}/datasource/transforms/ui")
-    public Response getJobTransformsUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId) {
-        Message message = this.exchangisDataSourceService.getJobDataSourceTransformsUI(jobId);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "jobs/{jobId}/datasource/transforms/ui", method = RequestMethod.GET)
+    public Message getJobTransformsUI(HttpServletRequest request, @PathVariable("jobId")Long jobId) {
+        return this.exchangisDataSourceService.getJobDataSourceTransformsUI(jobId);
     }
 
     // 根据 任务ID 获取该任务的数据源引擎配置项 UI 数据
-    @GET
-    @Path("jobs/{jobId}/{jobName}/datasource/settings/ui")
-    public Response getJobSettingsUI(@Context HttpServletRequest request, @PathParam("jobId")Long jobId, @PathParam("jobName")String jobName) throws Exception {
-        Message message = this.exchangisDataSourceService.getJobDataSourceSettingsUI(jobId, jobName);
-        return Message.messageToResponse(message);
+    @RequestMapping( value = "jobs/{jobId}/{jobName}/datasource/settings/ui", method = RequestMethod.GET)
+    public Message getJobSettingsUI(HttpServletRequest request, @PathVariable("jobId")Long jobId,
+                                    @PathVariable("jobName")String jobName) throws Exception {
+        return this.exchangisDataSourceService.getJobDataSourceSettingsUI(jobId, jobName);
     }
 }

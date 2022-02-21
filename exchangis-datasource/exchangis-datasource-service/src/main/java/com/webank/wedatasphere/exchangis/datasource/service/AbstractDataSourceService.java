@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
@@ -19,11 +19,14 @@ import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoCont
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
 import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
-import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
-import com.webank.wedatasphere.linkis.datasource.client.request.GetInfoByDataSourceIdAction;
-import com.webank.wedatasphere.linkis.httpclient.response.Result;
-import com.webank.wedatasphere.linkis.metadatamanager.common.Json;
-import com.webank.wedatasphere.linkis.server.security.SecurityFilter;
+import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
+import org.apache.linkis.datasource.client.request.GetInfoByDataSourceIdAction;
+import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
+import org.apache.linkis.datasourcemanager.common.util.json.Json;
+import org.apache.linkis.httpclient.response.Result;
+import org.apache.linkis.server.security.SecurityFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -34,6 +37,9 @@ public class AbstractDataSourceService {
     protected final ExchangisDataSourceContext context;
     protected final ExchangisJobParamConfigMapper exchangisJobParamConfigMapper;
     protected final ExchangisJobInfoMapper exchangisJobInfoMapper;
+
+    private final static Logger LOG = LoggerFactory.getLogger(AbstractDataSourceService.class);
+
 
     public AbstractDataSourceService(ExchangisDataSourceContext context, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper, ExchangisJobInfoMapper exchangisJobInfoMapper) {
         this.context = context;
@@ -91,8 +97,13 @@ public class AbstractDataSourceService {
 
                     Result execute = dsClient.execute(action);
                     String responseBody = execute.getResponseBody();
-                    GetDataSourceInfoResultDTO dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
-                    source.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                    GetDataSourceInfoResultDTO dsInfo = null;
+                    try {
+                        dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+                        source.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                    } catch (JsonErrorException e) {
+                        //TODO throws Exception
+                    }
                 });
             });
             source.setDb(split[2]);
@@ -116,8 +127,13 @@ public class AbstractDataSourceService {
                             .build();
                     Result execute = dsClient.execute(action);
                     String responseBody = execute.getResponseBody();
-                    GetDataSourceInfoResultDTO dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
-                    sink.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                    GetDataSourceInfoResultDTO dsInfo = null;
+                    try {
+                        dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+                        sink.setDs(dsInfo.getData().getInfo().getDataSourceName());
+                    } catch (JsonErrorException e) {
+                        //TODO throw Exception
+                    }
                 });
             });
 
@@ -141,7 +157,8 @@ public class AbstractDataSourceService {
                 String type = source.getType();
                 ExchangisDataSource exchangisSourceDataSource = this.context.getExchangisDataSource(type);
                 if (null != exchangisSourceDataSource) {
-                    sourceParamConfigs = exchangisSourceDataSource.getDataSourceParamConfigs().stream().filter(i -> i.getConfigDirection().equals(content.getEngine() + "-SOURCE")).collect(Collectors.toList());
+                    sourceParamConfigs = exchangisSourceDataSource.getDataSourceParamConfigs().stream().filter(
+                            i -> i.getConfigDirection().equals(content.getEngine() + "-SOURCE") || "SOURCE".equalsIgnoreCase(i.getConfigDirection())).collect(Collectors.toList());
                 }
             }
 
@@ -150,7 +167,8 @@ public class AbstractDataSourceService {
                 String type = sink.getType();
                 ExchangisDataSource exchangisSinkDataSource = this.context.getExchangisDataSource(type);
                 if (null != exchangisSinkDataSource) {
-                    sinkParamConfigs = exchangisSinkDataSource.getDataSourceParamConfigs().stream().filter(i -> i.getConfigDirection().equals(content.getEngine() + "-SINK")).collect(Collectors.toList());
+                    sinkParamConfigs = exchangisSinkDataSource.getDataSourceParamConfigs().stream().filter(i ->
+                            i.getConfigDirection().equals(content.getEngine() + "-SINK") || "SINK".equalsIgnoreCase(i.getConfigDirection())).collect(Collectors.toList());
                 }
             }
         }
@@ -164,15 +182,15 @@ public class AbstractDataSourceService {
             sinkParamsItems = params.getSinks();
         }
 
-        List<ElementUI> jobDataSourceParamsUI1 = buildDataSourceParamsFilledValueUI(sourceParamConfigs, sourceParamsItems);
-        List<ElementUI> jobDataSourceParamsUI2 = buildDataSourceParamsFilledValueUI(sinkParamConfigs, sinkParamsItems);
+        List<ElementUI<?>> jobDataSourceParamsUI1 = buildDataSourceParamsFilledValueUI(sourceParamConfigs, sourceParamsItems);
+        List<ElementUI<?>> jobDataSourceParamsUI2 = buildDataSourceParamsFilledValueUI(sinkParamConfigs, sinkParamsItems);
         ExchangisDataSourceParamsUI paramsUI = new ExchangisDataSourceParamsUI();
         paramsUI.setSources(jobDataSourceParamsUI1);
         paramsUI.setSinks(jobDataSourceParamsUI2);
         return paramsUI;
     }
 
-    protected ExchangisDataSourceUIViewer buildAllUI(HttpServletRequest request, ExchangisJobInfo job, ExchangisJobInfoContent content) {
+    protected ExchangisDataSourceUIViewer buildAllUI(HttpServletRequest request, ExchangisJobEntity job, ExchangisJobInfoContent content) {
         // ----------- 构建 dataSourceIdsUI
         ExchangisDataSourceIdsUI dataSourceIdsUI = buildDataSourceIdsUI(request, content);
 
@@ -185,13 +203,13 @@ public class AbstractDataSourceService {
 
 //        ExchangisDataSourceTransformsUI dataSourceTransFormsUI = ExchangisDataSourceUIViewBuilder.getDataSourceTransFormsUI(transforms);
 
-        List<ElementUI> jobDataSourceSettingsUI = this.buildJobSettingsUI(job.getEngineType(), content);
+        List<ElementUI<?>> jobDataSourceSettingsUI = this.buildJobSettingsUI(job.getEngineType(), content);
 
         return new DefaultDataSourceUIViewer(content.getSubJobName(), dataSourceIdsUI, paramsUI, transforms, jobDataSourceSettingsUI);
     }
 
 
-    protected List<ElementUI> buildJobSettingsUI(String jobEngineType) {
+    protected List<ElementUI<?>> buildJobSettingsUI(String jobEngineType) {
         if (Strings.isNullOrEmpty(jobEngineType)) {
             return Collections.emptyList();
         }
@@ -203,7 +221,7 @@ public class AbstractDataSourceService {
         return buildDataSourceParamsFilledValueUI(settingParamConfigs, null);
     }
 
-    protected List<ElementUI> buildJobSettingsUI(String jobEngineType, ExchangisJobInfoContent content) {
+    protected List<ElementUI<?>> buildJobSettingsUI(String jobEngineType, ExchangisJobInfoContent content) {
         if (Strings.isNullOrEmpty(jobEngineType)) {
             return Collections.emptyList();
         }
@@ -216,19 +234,19 @@ public class AbstractDataSourceService {
         return buildDataSourceParamsFilledValueUI(settingParamConfigs, settings);
     }
 
-    protected List<ElementUI> buildDataSourceParamsUI(List<ExchangisJobParamConfig> paramConfigs) {
-        List<ElementUI> uis = new ArrayList<>();
+    protected List<ElementUI<?>> buildDataSourceParamsUI(List<ExchangisJobParamConfig> paramConfigs) {
+        List<ElementUI<?>> uis = new ArrayList<>();
         if (!Objects.isNull(paramConfigs) && !paramConfigs.isEmpty()) {
             for (ExchangisJobParamConfig cfg : paramConfigs) {
-                ElementUI ui = fillElementUIValue(cfg, "");
+                ElementUI<?> ui = fillElementUIValue(cfg, "");
                 uis.add(ui);
             }
         }
         return uis;
     }
 
-    protected List<ElementUI> buildDataSourceParamsFilledValueUI(List<ExchangisJobParamConfig> paramConfigs, List<ExchangisJobParamsContent.ExchangisJobParamsItem> paramsList) {
-        List<ElementUI> uis = new ArrayList<>();
+    protected List<ElementUI<?>> buildDataSourceParamsFilledValueUI(List<ExchangisJobParamConfig> paramConfigs, List<ExchangisJobParamsContent.ExchangisJobParamsItem> paramsList) {
+        List<ElementUI<?>> uis = new ArrayList<>();
         if (!Objects.isNull(paramConfigs) && !paramConfigs.isEmpty()) {
             for (ExchangisJobParamConfig cfg : paramConfigs) {
                 if (Objects.isNull(paramsList) || paramsList.isEmpty()) {
@@ -237,10 +255,10 @@ public class AbstractDataSourceService {
                 }
                 ExchangisJobParamsContent.ExchangisJobParamsItem selectedParamItem = getJobParamsItem(cfg.getConfigKey(), paramsList);
                 if (Objects.isNull(selectedParamItem)) {
-                    ElementUI ui = fillElementUIValue(cfg, "");
+                    ElementUI<?> ui = fillElementUIValue(cfg, "");
                     uis.add(ui);
                 } else {
-                    ElementUI ui = fillElementUIValue(cfg, selectedParamItem.getConfigValue());
+                    ElementUI<?> ui = fillElementUIValue(cfg, selectedParamItem.getConfigValue());
                     uis.add(ui);
                 }
             }
@@ -257,13 +275,21 @@ public class AbstractDataSourceService {
         return null;
     }
 
-    private ElementUI fillElementUIValue(ExchangisJobParamConfig config, String value) {
+    private ElementUI<?> fillElementUIValue(ExchangisJobParamConfig config, Object value) {
         String uiType = config.getUiType();
         switch (uiType) {
             case ElementUI.OPTION:
-                return fillOptionElementUIValue(config, value);
+                return fillOptionElementUIValue(config, String.valueOf(value));
             case ElementUI.INPUT:
-                return fillInputElementUIValue(config, value);
+                return fillInputElementUIValue(config, String.valueOf(value));
+            case ElementUI.MAP:
+                Map<String, Object> mapElement = null;
+                try {
+                    mapElement = Json.fromJson(String.valueOf(value), Map.class);
+                } catch (Exception e) {
+                    LOG.info("Exception happened while parse json"+ "Config value: " + value + "message: " + e.getMessage(), e);
+                }
+                return fillMapElementUIValue(config, mapElement);
             default:
                 return null;
         }
@@ -302,6 +328,24 @@ public class AbstractDataSourceService {
         ui.setSort(config.getSort());
         ui.setRequired(config.getRequired());
         ui.setUnit(config.getUnit());
+        ui.setSource(config.getSource());
+        ui.setValidateType(config.getValidateType());
+        ui.setValidateRange(config.getValidateRange());
+        ui.setValidateMsg(config.getValidateMsg());
+        return ui;
+    }
+
+    private MapElementUI fillMapElementUIValue(ExchangisJobParamConfig config, Map<String, Object> value) {
+        MapElementUI ui = new MapElementUI();
+        ui.setKey(config.getConfigKey());
+        ui.setField(config.getUiField());
+        ui.setLabel(config.getUiLabel());
+        ui.setValue(value);
+        //ui.setDefaultValue(config.getDefaultValue());
+        ui.setSort(config.getSort());
+        ui.setRequired(config.getRequired());
+        ui.setUnit(config.getUnit());
+        ui.setSource(config.getSource());
         ui.setValidateType(config.getValidateType());
         ui.setValidateRange(config.getValidateRange());
         ui.setValidateMsg(config.getValidateMsg());

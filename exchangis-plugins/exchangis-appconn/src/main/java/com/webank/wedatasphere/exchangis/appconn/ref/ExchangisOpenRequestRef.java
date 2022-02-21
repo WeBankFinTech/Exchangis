@@ -17,7 +17,7 @@ public class ExchangisOpenRequestRef extends CommonRequestRefImpl implements Ope
         return ((Map<String, Object>)this.getParameters().get("node")).get("nodeType").toString();
     }
 
-    public Object getJobContent() {
+    public Map<String, Object> getJobContent() {
         return ((Map<String, Object>)this.getParameters().get("params"));
     }
 

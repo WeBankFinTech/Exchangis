@@ -5,15 +5,11 @@ import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.hook.MapperHook;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
-import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
-import com.webank.wedatasphere.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
-import com.webank.wedatasphere.linkis.datasource.client.request.GetAllDataSourceTypesAction;
-import com.webank.wedatasphere.linkis.datasource.client.response.GetAllDataSourceTypesResult;
-import com.webank.wedatasphere.linkis.datasourcemanager.common.domain.DataSourceType;
+import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
+import org.apache.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
+import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public abstract class ExchangisBatchDataSource implements ExchangisDataSource {
 

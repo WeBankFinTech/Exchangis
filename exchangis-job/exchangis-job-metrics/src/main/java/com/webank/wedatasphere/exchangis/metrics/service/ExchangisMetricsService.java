@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.metrics.service;
 
-import com.webank.wedatasphere.linkis.server.Message;
+
+import org.apache.linkis.server.Message;
 
 import javax.servlet.http.HttpServletRequest;
 
