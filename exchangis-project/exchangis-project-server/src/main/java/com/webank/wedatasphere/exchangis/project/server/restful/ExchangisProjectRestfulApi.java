@@ -37,15 +37,16 @@ public class ExchangisProjectRestfulApi {
     public Message queryProjects(HttpServletRequest request,
                                  @Valid @RequestBody ProjectQueryRequest projectQueryRequest,
                                  @RequestParam(value = "current", required = false) int current,
-                                 @RequestParam(value = "size", required = false) int size) {
+                                 @RequestParam(value = "size", required = false) int size,
+                                 @RequestParam(value = "name", required = false) String name) {
         String username = SecurityFilter.getLoginUsername(request);
         if (null == projectQueryRequest) {
             projectQueryRequest = new ProjectQueryRequest();
         }
         projectQueryRequest.setUsername(username);
         try {
-            List<ExchangisProjectDTO> projects = projectService.queryProjects(projectQueryRequest, current, size);
-            int total = projectService.count(projectQueryRequest);
+            List<ExchangisProjectDTO> projects = projectService.queryProjects(projectQueryRequest, current, size, name);
+            int total = projectService.count(projectQueryRequest, name);
             Message message = Message.ok();
             message.data("total", total);
             message.data("list", projects);
@@ -88,14 +89,20 @@ public class ExchangisProjectRestfulApi {
     public Message createProject(HttpServletRequest request,
                                  @Valid @RequestBody CreateProjectRequest createProjectRequest) {
         String username = SecurityFilter.getLoginUsername(request);
-        try {
-            LOGGER.info("createProject createProjectRequest {}", createProjectRequest.toString());
-            ExchangisProject exchangisProject = projectService.createProject(username, createProjectRequest);
-            return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
-                    new Pair<>("projectName", exchangisProject.getName()), new Pair<>("projectId", exchangisProject.getId()));
-        } catch (final Throwable t) {
-            LOGGER.error("failed to create project for user {}", username, t);
-            return Message.error("创建工程失败,原因是:" + t.getMessage());
+        if (createProjectRequest.getProjectName().length() > 64) {
+            return Message.error("数据源名称输入过长");
+        }
+        else {
+            try {
+                LOGGER.info("createProject createProjectRequest {}", createProjectRequest.toString());
+                ExchangisProject exchangisProject = projectService.createProject(username, createProjectRequest);
+                return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
+                        new Pair<>("projectName", exchangisProject.getName()), new Pair<>("projectId", exchangisProject.getId()));
+            } catch (final Throwable t) {
+                LOGGER.error("failed to create project for user {}", username, t);
+                return Message.error("创建工程失败,存在同名项目");
+                //return Message.error("创建工程失败,原因是:" + t.getMessage());
+            }
         }
     }
 
