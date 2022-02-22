@@ -62,7 +62,7 @@ export const randomString = (len) => {
   return pwd;
 };
 
-export const moveUpDown = (targetSelector, wrapSelector, moveTopSelector, boundaryTop = 350, boundaryBottom = 350) => {
+export const moveUpDown = (targetSelector, wrapSelector, moveTopSelector, boundaryTop = 200, boundaryBottom = 500) => {
   let box = document.querySelector(targetSelector),
     top = moveTopSelector ? document.querySelector(moveTopSelector) : box,
     wrap = document.querySelector(wrapSelector)
@@ -84,6 +84,7 @@ export const moveUpDown = (targetSelector, wrapSelector, moveTopSelector, bounda
         topTop = boundaryTop - top.offsetHeight
       }
       // 底部限制默认为 350px
+      console.log(contentHeight, boxTop)
       if (contentHeight - boxTop < boundaryBottom) {
         boxTop = contentHeight - boundaryBottom
       }
