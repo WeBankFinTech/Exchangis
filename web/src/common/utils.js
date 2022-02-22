@@ -67,7 +67,6 @@ export const moveUpDown = (targetSelector, wrapSelector, moveTopSelector, bounda
     top = moveTopSelector ? document.querySelector(moveTopSelector) : box,
     wrap = document.querySelector(wrapSelector)
   top.onmousedown = (ev) => {
-    debugger
     let e = ev || window.event;
     //计算出鼠标按下的点到box的上侧边缘
     let restTop = e.clientY - box.offsetTop;
