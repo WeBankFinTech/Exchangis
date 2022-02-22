@@ -552,8 +552,7 @@ export default {
     this.$nextTick(() => {
       if (this.$route.path === '/childJobManagement') {
         document.querySelector('.layout-sider-fixed-stuff').style.width = '0'
-        document.querySelector('.ant-layout-header.layout-header').style.display = 'none'
-
+        //document.querySelector('.ant-layout-header.layout-header').style.display = 'none'
       }
     })
   },

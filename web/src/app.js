@@ -62,3 +62,9 @@ export const layout = {
 export function onAppCreated({ app }) {
   loadAllRegister(app);
 }
+
+const localStr = localStorage.getItem('fes_locale')
+if (localStr !== 'zh-CN') {
+  localStorage.setItem('fes_locale', 'zh-CN')
+  document.location = '/'
+}
