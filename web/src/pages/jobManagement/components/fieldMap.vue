@@ -191,6 +191,7 @@ export default defineComponent({
     const newProps = computed(() => JSON.parse(JSON.stringify(props.fmData)));
     watch(newProps, (val, oldVal) => {
       const newVal = typeof val === "string" ? JSON.parse(val) : val;
+      isFold.value = !!toRaw(newVal).mapping.length
       createDataSource(toRaw(newVal).mapping || []);
     });
 
@@ -199,6 +200,7 @@ export default defineComponent({
     );
     watch(deductionsArray, (val, oldVal) => {
       if (val)
+        isFold.value = !!toRaw(props.fmData.mapping).length
         createDataSource(toRaw(props.fmData.mapping) || []);
     });
 
@@ -452,7 +454,7 @@ export default defineComponent({
       );
       context.emit("updateFieldMap", transforms);
     };
-    let isFold = ref(true);
+    let isFold = ref(false);
     const showInfo = () => {
       isFold.value = !isFold.value;
     };
