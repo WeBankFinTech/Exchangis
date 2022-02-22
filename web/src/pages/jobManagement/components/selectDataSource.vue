@@ -53,15 +53,24 @@
             "
           ></a-select>
         </a-space>
-        <!--<a-space size="middle" v-if="dataSource">-->
-          <!--<span>搜索库表</span>-->
-          <!--<a-input-->
-            <!--placeholder="按回车搜库表"-->
-            <!--style="width: 300px;margin-top: 10px;margin-left:0"-->
-            <!--v-model:value="searchWord"-->
-            <!--@keyup.enter="filterTree(dsId)"-->
-          <!--&gt;</a-input>-->
-        <!--</a-space>-->
+        <a-space size="middle" v-if="dataSource">
+          <span>搜索库</span>
+          <a-input
+            placeholder="按回车搜库"
+            style="width: 300px;margin-top: 10px;margin-left:14px"
+            v-model:value="searchDB"
+            @keyup.enter="showTableSearch=false;createTree(dsId)"
+          ></a-input>
+        </a-space>
+        <a-space size="middle" v-if="dataSource && showTableSearch">
+          <span>搜索表</span>
+          <a-input
+            placeholder="按回车搜表"
+            style="width: 300px;margin-top: 10px;margin-left:14px"
+            v-model:value="searchWord"
+            @keyup.enter="filterTree(dsId)"
+          ></a-input>
+        </a-space>
       </div>
       <!-- bottom 类似tree组件 -->
       <div class="sds-wrap-b">
@@ -127,7 +136,8 @@ export default defineComponent({
       dataSource: "",
       dataSourceList: [],
       selectTable: "",
-      searchWord: ''
+      searchWord: '',
+      searchDB: ''
     });
     let spinning = ref(false)
     const newProps = computed(() => JSON.parse(JSON.stringify(props.title)));
@@ -171,6 +181,9 @@ export default defineComponent({
       }
       return res;
     };
+
+    let showTableSearch = ref(false)
+
     // 选择数据库触发
     const handleChangeSql = async (sql) => {
       state.curSql = sql;
@@ -182,13 +195,17 @@ export default defineComponent({
       state.dataSource = ''
       state.dsId = ''
       state.searchWord = ''
+      state.searchDB = ''
       state.treeData = []
       state.originTreeData = []
+      showTableSearch.value = false
     };
     // 选择数据源触发
     const handleChangeDS = async (ds) => {
       // 清空
       state.searchWord = ''
+      state.searchDB = ''
+      showTableSearch.value = false
       createTree(ds, () => {
         const cur = state.dataSourceList.filter((item) => {
           return item.value === ds;
@@ -206,7 +223,19 @@ export default defineComponent({
       const cur = state.dataSourceList.filter((item) => {
         return item.value === ds;
       })[0];
-      let dbs = (await getDBs(state.curSql, cur.value)).dbs;
+      let dbs
+      try {
+        dbs = (await getDBs(state.curSql, cur.value)).dbs;
+      } catch (e) {
+        dbs = []
+        console.log(e)
+      }
+      if (state.searchDB) {
+        dbs = dbs.filter((db) => {
+          return new RegExp(state.searchDB).test(db)
+        })
+        showTableSearch.value = true
+      }
       if (!dbs) return;
       dbs.forEach((db, index) => {
         const o = Object.create(null);
@@ -225,17 +254,27 @@ export default defineComponent({
     };
     // filter tree
     const filterTree = (ds) => {
+      if (!state.searchDB) {
+        return message.error('请确定搜索的库')
+      }
       // 直接从originTreeData对库和表进行过滤
       const tree = toRaw(state.originTreeData);
       if (state.searchWord) {
-        state.treeData = tree.filter(i => {
+        /*state.treeData = tree.filter(i => {
           return new RegExp(state.searchWord, "i").test(i.title) || i.children.find(c => new RegExp(state.searchWord, "i").test(c.title));
         }).map(i => {
           return {
             ...i,
             children: i.children.filter(c => new RegExp(state.searchWord, "i").test(c.title))
           }
-        });
+        });*/
+        state.treeData = tree.map(i => {
+          return {
+            ...i,
+            children: i.children.filter(c => new RegExp(state.searchWord, "i").test(c.title))
+          }
+        })
+
       } else {
         createTree(ds)
       }
@@ -334,7 +373,8 @@ export default defineComponent({
       expandedKeys,
       createTree,
       filterTree,
-      spinning
+      spinning,
+      showTableSearch
     };
   },
 });
