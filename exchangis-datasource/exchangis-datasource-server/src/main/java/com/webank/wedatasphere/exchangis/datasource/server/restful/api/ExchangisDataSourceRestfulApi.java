@@ -1,10 +1,13 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
 import org.apache.linkis.server.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +19,8 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "exchangis", produces = {"application/json;charset=utf-8"})
 public class ExchangisDataSourceRestfulApi {
+    private static final Logger LOG = LoggerFactory.getLogger(ExchangisDataSourceRestfulApi.class);
+
 
     private final ExchangisDataSourceService exchangisDataSourceService;
 
@@ -68,7 +73,16 @@ public class ExchangisDataSourceRestfulApi {
     // create datasource
     @RequestMapping( value = "datasources", method = RequestMethod.POST)
     public Message create(HttpServletRequest request, /*@PathParam("type") String type, */@RequestBody Map<String, Object> json) throws Exception {
-        return this.exchangisDataSourceService.create(request,/* type, */json);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.create(request, json);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while create datasource";
+            LOG.error(errorMessage, e);
+            message = Message.error("已存在同名任务");
+        }
+        return message;
+        //return this.exchangisDataSourceService.create(request,/* type, */json);
     }
 
     // get datasource details
@@ -105,18 +119,45 @@ public class ExchangisDataSourceRestfulApi {
     @RequestMapping( value = "datasources/{id}/{version}/connect", method = RequestMethod.PUT)
     public Message testConnect(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id,
                                @PathVariable("version") Long version) throws Exception {
-       return this.exchangisDataSourceService.testConnect(request, /*type, */id, version);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.testConnect(request, /*type, */id, version);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while connect datasource";
+            LOG.error(errorMessage, e);
+            message = Message.error("数据源连接失效，请检查配置");
+        }
+        return message;
+        //return this.exchangisDataSourceService.testConnect(request, /*type, */id, version);
     }
 
     // delete datasource (physical)
     @RequestMapping( value = "datasources/{id}", method = RequestMethod.DELETE)
     public Message delete(HttpServletRequest request, /*@PathParam("type") String type, */@PathVariable("id") Long id) throws Exception {
-        return this.exchangisDataSourceService.deleteDataSource(request, /*type, */id);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.deleteDataSource(request, /*type, */id);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while delete datasource";
+            LOG.error(errorMessage, e);
+            message = Message.error("删除数据源失败，存在引用依赖");
+        }
+        return message;
+        //return this.exchangisDataSourceService.deleteDataSource(request, /*type, */id);
     }
 
     @RequestMapping( value = "datasources/{type}/{id}/dbs", method = RequestMethod.GET)
     public Message queryDataSourceDBs(HttpServletRequest request, @PathVariable("type") String type, @PathVariable("id") Long id) throws Exception {
-        return this.exchangisDataSourceService.queryDataSourceDBs(request, type, id);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.queryDataSourceDBs(request, type, id);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while query datasource";
+            LOG.error(errorMessage, e);
+            message = Message.error("数据源未发布或参数为空");
+        }
+        return message;
+        //return this.exchangisDataSourceService.queryDataSourceDBs(request, type, id);
     }
 
     @RequestMapping( value = "datasources/{type}/{id}/dbs/{dbName}/tables", method = RequestMethod.GET)

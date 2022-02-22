@@ -634,7 +634,11 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             dataSources.add(item);
         });
 
-        return Message.ok().data("list", dataSources);
+        Message message = Message.ok();
+        message.data("list", dataSources);
+        message.data("total", dataSources.size());
+        return message;
+        //return Message.ok().data("list", dataSources);
     }
 
     public Message listAllDataSources(HttpServletRequest request, String typeName, Long typeId, Integer page, Integer pageSize) throws ExchangisDataSourceException {
