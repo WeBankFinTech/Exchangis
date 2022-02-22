@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.OptionElementUI;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -36,5 +37,13 @@ public class SpringElementUIFactory extends DefaultElementUIFactory{
     private <R extends ElementUI<?>>R setElementValue(R element, Map<String, Object> params){
         element.setValue(params);
         return element;
+    }
+
+    public static void main(String[] args){
+        SpringElementUIFactory elementUIFactory = new SpringElementUIFactory();
+        elementUIFactory.init();
+        Map<String, Object> map = new HashMap<>();
+        map.putIfAbsent("hello", "world");
+        System.out.println(elementUIFactory.createElement(ElementUI.Type.MAP.name(), map, Map.class).getValue());
     }
 }

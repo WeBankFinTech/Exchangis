@@ -27,5 +27,5 @@ public interface ElementUIFactory {
      * @param <R> element value type
      * @return element
      */
-    <R>ElementUI<R> createElement(String type, Object input);
+    <R>ElementUI<R> createElement(String type, Object input, Class<?> inputType);
 }

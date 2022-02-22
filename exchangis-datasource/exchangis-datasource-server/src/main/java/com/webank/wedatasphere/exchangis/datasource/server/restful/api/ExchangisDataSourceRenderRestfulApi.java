@@ -9,20 +9,18 @@ import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
  * Expose the ui interface to front-end rendering
  */
 @RestController
-@RequestMapping(value = "exchangis/datasources/render")
+@RequestMapping(value = "exchangis/datasources/render", produces = {"application/json;charset=utf-8"})
 public class ExchangisDataSourceRenderRestfulApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisDataSourceRenderRestfulApi.class);
@@ -30,7 +28,7 @@ public class ExchangisDataSourceRenderRestfulApi {
     @Resource
     private DataSourceRenderService renderService;
 
-    @RequestMapping(value = "/partition/element/{elementType:\\w+}/")
+    @RequestMapping(value = "/partition/element/{elementType:\\w+}", method = RequestMethod.GET)
     public Message partition(@PathVariable("elementType") String type,
                              @RequestParam("dataSourceId") Long dataSourceId,
                              @RequestParam("database") String database,
@@ -38,7 +36,7 @@ public class ExchangisDataSourceRenderRestfulApi {
         String userName = SecurityFilter.getLoginUsername(request);
         ElementUI.Type uiType;
         try {
-            uiType = ElementUI.Type.valueOf(type);
+            uiType = ElementUI.Type.valueOf(type.toUpperCase(Locale.ROOT));
         } catch (Exception e){
             return Message.error("Element type: [" + type +"] is not support (不兼容的元素类型)");
         }
@@ -58,4 +56,7 @@ public class ExchangisDataSourceRenderRestfulApi {
         return result;
     }
 
+    public static void main(String[] args){
+        ElementUI.Type.valueOf("map".toUpperCase(Locale.ROOT));
+    }
 }
