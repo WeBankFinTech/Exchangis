@@ -27,7 +27,11 @@
               <span class="job-progress-title">正在运行</span>
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="progress in jobProgress.tasks.Running" :key="progress.name">
-                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
@@ -53,7 +57,11 @@
               <span class="job-progress-title" style="color:#ff4d4f">失败</span>
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Failed">
-                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
@@ -63,7 +71,11 @@
               <span class="job-progress-title" style="color:#ff4d4f">终止</span>
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Cancelled">
-                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
@@ -73,7 +85,11 @@
               <span class="job-progress-title">成功</span>
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Success">
-                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
@@ -92,6 +108,8 @@ import { toRaw, h, defineAsyncComponent } from "vue";
 import {
   DatabaseFilled,
   CloseOutlined,
+  DownOutlined,
+  RightOutlined
 } from "@ant-design/icons-vue";
 import {
   getJobTasks,
@@ -108,6 +126,8 @@ export default {
   components: {
     DatabaseFilled,
     CloseOutlined,
+    DownOutlined,
+    RightOutlined,
     executionLog,
     metrics
   },
@@ -153,7 +173,7 @@ export default {
       this.tasklist = []
       this.visibleLog = true
       this.$nextTick(()=> {
-        moveUpDown('.jd-bottom-log', '.sync-history-wrap', '.jd-bottom-log-top', 350, 400)
+        moveUpDown('.jd-bottom-log', '.sync-history-wrap', '.jd-bottom-log-top')
       })
       this.getTasks()
       this.getJobProgressWithPoll()
@@ -288,6 +308,12 @@ export default {
     width: calc(100% - 100px);
   }
   .job-progress-percent {
+    .job-progress-expand-icon {
+      width:15px;
+      margin-left: -15px;
+      color: rgba(0, 0, 0, 0.45);
+      cursor: pointer;
+    }
     >span {
       display: inline-block;
       width: 100px;

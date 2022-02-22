@@ -419,6 +419,9 @@ export default {
   .pagination-line {
     width: 100%;
     text-align: right;
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
   }
 }
 
