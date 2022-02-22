@@ -20,7 +20,7 @@
       <span @click="executeHistory"><HistoryOutlined />执行历史</span>
     </div>
     <div class="jd-content" v-if="list.length !== 0">
-      <a-spin size="large" :spinning="loading">
+      <a-spin size="large" :spinning="loading" wrapperClassName="wrap-spin">
         <div class="jd_left">
           <div class="sub-title">
             <span>子任务列表</span>
@@ -39,6 +39,8 @@
               </div>
               <a-input
                 @pressEnter="nameEditable = false"
+                @blur="nameEditable = false"
+                ref="currentInput"
                 v-model:value="item.subJobName"
                 v-if="activeIndex === idx && nameEditable"
               ></a-input>
@@ -61,7 +63,7 @@
                 <CopyOutlined class="copy-icon" />
               </a-popconfirm>
               <EditOutlined
-                @click="nameEditable = true"
+                @click="getEditableInput"
                 v-if="activeIndex === idx && !nameEditable"
                 class="rename-icon"
               />
@@ -1116,6 +1118,14 @@ export default {
       //clearInterval(this.jobStatusTimer)
       clearInterval(this.progressTimer)
       this.visibleLog = false;
+    },
+    getEditableInput() {
+      this.nameEditable = true
+      this.$nextTick(() => {
+        if (this.$refs.currentInput && this.$refs.currentInput.focus) {
+          this.$refs.currentInput.focus()
+        }
+      })
     }
   },
   beforeUnmount() {
@@ -1155,6 +1165,9 @@ export default {
   .jd-content {
     overflow: hidden;
     width: 100%;
+    .wrap-spin {
+      height: calc(100vh - 130px)
+    }
     /*height: calc(100vh - 130px);*/
     .jd_left {
       float: left;

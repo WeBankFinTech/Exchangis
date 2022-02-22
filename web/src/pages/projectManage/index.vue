@@ -82,28 +82,33 @@
               <project-create-card @action="handleCreateCardAction" />
             </a-col> -->
               <!-- 视图卡片 -->
-              <a-col v-for="item in projectList" :key="item.id">
-                <project-view-card
-                  @delete="handleOnDelteProject"
-                  @edit="handleOnEditProject"
-                  :name="item.name"
-                  :describe="item.describe"
-                  :id="item.id"
-                  :tags="item.tags"
-                />
-              </a-col>
-              <!-- 分页行 -->
-              <a-col :span="24">
-                <div class="pagination-line">
-                  <a-pagination
-                    v-model:current="pageCfg.current"
-                    v-model:pageSize="pageCfg.size"
-                    @change="handleChangePage"
-                    :total="total"
-                    show-less-items
+              <template v-if="projectList.length">
+                <a-col v-for="item in projectList" :key="item.id">
+                  <project-view-card
+                    @delete="handleOnDelteProject"
+                    @edit="handleOnEditProject"
+                    :name="item.name"
+                    :describe="item.describe"
+                    :id="item.id"
+                    :tags="item.tags"
                   />
-                </div>
-              </a-col>
+                </a-col>
+                <!-- 分页行 -->
+                <a-col :span="24">
+                  <div class="pagination-line">
+                    <a-pagination
+                      v-model:current="pageCfg.current"
+                      v-model:pageSize="pageCfg.size"
+                      @change="handleChangePage"
+                      :total="total"
+                      show-less-items
+                    />
+                  </div>
+                </a-col>
+              </template>
+              <template v-else>
+                <a-empty style="width: 100%"/>
+              </template>
             </a-row>
           </a-spin>
         </div>

@@ -156,12 +156,12 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     }
 
     @Override
-    public List<ExchangisProjectDTO> queryProjects(ProjectQueryRequest projectQueryRequest, int current, int size) {
+    public List<ExchangisProjectDTO> queryProjects(ProjectQueryRequest projectQueryRequest, int current, int size, String name) {
         QueryWrapper<ExchangisProject> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("create_by", projectQueryRequest.getUsername());
 
-        if (!Strings.isNullOrEmpty(projectQueryRequest.getName())) {
-            queryWrapper.like("name", projectQueryRequest.getName());
+        if (!Strings.isNullOrEmpty(name)) {
+            queryWrapper.like("name", name);
         }
 
         if (!StringUtils.isBlank(projectQueryRequest.getDomain())) {
@@ -196,12 +196,12 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     }
 
     @Override
-    public int count(ProjectQueryRequest projectQueryRequest) {
+    public int count(ProjectQueryRequest projectQueryRequest, String name) {
         QueryWrapper<ExchangisProject> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("create_by", projectQueryRequest.getUsername());
 
-        if (!Strings.isNullOrEmpty(projectQueryRequest.getName())) {
-            queryWrapper.like("name", projectQueryRequest.getName());
+        if (!Strings.isNullOrEmpty(name)) {
+            queryWrapper.like("name", name);
         }
 
         if (!StringUtils.isBlank(projectQueryRequest.getDomain())) {
