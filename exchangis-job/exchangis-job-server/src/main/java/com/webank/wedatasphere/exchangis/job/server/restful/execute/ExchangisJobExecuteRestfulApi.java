@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.restful.execute;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
@@ -144,14 +145,23 @@ public class ExchangisJobExecuteRestfulApi {
     }
 
     @RequestMapping( value = "/execution/{jobExecutionId}/kill", method = RequestMethod.POST)
-    public Message ExecutedJobKill(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
-        Message message = Message.ok("Kill succeed(停止成功)！");
-        try {
-            executeService.killJob(jobExecutionId);
-        } catch (ExchangisJobServerException e) {
-            String errorMessage = "Error occur while killing job: [job_execution_id: " + jobExecutionId  + "]";
-            LOG.error(errorMessage, e);
-            message = Message.error(message + ", reason: " + e.getMessage());
+    public Message ExecutedJobKill(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobServerException {
+        ExchangisJobProgressVo jobStatus = executeService.getJobStatus(jobExecutionId);
+        String status = jobStatus.getStatus().toString();
+        Message message = null;
+        if (!TaskStatus.isCompleted(jobStatus.getStatus()))
+        {
+            message = Message.ok("Kill succeed(停止成功)！");
+            try {
+                executeService.killJob(jobExecutionId);
+            } catch (ExchangisJobServerException e) {
+                String errorMessage = "Error occur while killing job: [job_execution_id: " + jobExecutionId + "]";
+                LOG.error(errorMessage, e);
+                message = Message.error(message + ", reason: " + e.getMessage());
+            }
+        }
+        else {
+            message = Message.error("Kill failed(停止失败)！,job 已经到终态");
         }
         message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId + "/kill");
         return message;
@@ -182,7 +192,7 @@ public class ExchangisJobExecuteRestfulApi {
     }
 
     @RequestMapping(value = "/partitionInfo", method = RequestMethod.GET)
-    public Message listJobs(@RequestParam(value = "dataSourceType", required = false) String dataSourceTpe,
+    public Message partitionInfo(@RequestParam(value = "dataSourceType", required = false) String dataSourceTpe,
                             @RequestParam(value = "dbname", required = false) String dbname,
                             @RequestParam(value = "table", required = false) String table) {
         Map<String, Object> render = new HashMap<>();
