@@ -15,6 +15,9 @@
         <template v-slot:icon> <icon-searchOutlined /></template>
         {{ $t("dataSource.topLine.searchBar.searchButtonText") }}
       </a-button>
+      <a-button style="margin-left: 10px" :loading="loading" type="primary" @click="clearParams">
+        清空
+      </a-button>
     </span>
     <a-space>
       <a-button :loading="loading" type="primary" @click="$emit('create')">
@@ -44,9 +47,18 @@ export default {
       seartParams: {
         typeId: undefined,
         name: "",
-      },
+      }
     };
   },
+  methods: {
+    clearParams() {
+      this.seartParams = {
+        typeId: undefined,
+        name: ""
+      }
+      this.$emit('search', this.seartParams)
+    }
+  }
 };
 </script>
 
