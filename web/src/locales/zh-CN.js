@@ -9,7 +9,7 @@ export default {
   projectManage: {
     topLine: {
       searchBar: {
-        searchInputPlaceholder: "输入项目名搜索",
+        searchInputPlaceholder: "输入项目名,按回车搜索",
         searchButtonText: "搜索",
       },
       title: "项目列表",
@@ -140,7 +140,7 @@ export default {
       manage: "管理",
       fileUpSuccess: "文件上传成功",
       fileUpFailed: "文件上传失败",
-      jobSearch: "输入搜索任务",
+      jobSearch: "输入任务名称，按回车搜索",
     },
     jobDetail: {
       originJob: "原任务",
