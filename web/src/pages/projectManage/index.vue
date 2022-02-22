@@ -94,7 +94,7 @@
                   />
                 </a-col>
                 <!-- 分页行 -->
-                <a-col :span="24">
+                <a-col :span="24" style="position: fixed;right: 10px;bottom: 10px">
                   <div class="pagination-line">
                     <a-pagination
                       v-model:current="pageCfg.current"

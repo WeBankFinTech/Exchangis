@@ -246,7 +246,7 @@ export default {
 .content {
   box-sizing: border-box;
   background-color: #fff;
-  height: calc(100vh - 48px);
+  height: 100vh;
 }
 .projectNav {
   display: flex;
