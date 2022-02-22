@@ -20,7 +20,7 @@
       <span @click="executeHistory"><HistoryOutlined />执行历史</span>
     </div>
     <div class="jd-content" v-if="list.length !== 0">
-      <a-spin size="large" :spinning="loading">
+      <a-spin size="large" :spinning="loading" wrapperClassName="wrap-spin">
         <div class="jd_left">
           <div class="sub-title">
             <span>子任务列表</span>
@@ -1165,6 +1165,9 @@ export default {
   .jd-content {
     overflow: hidden;
     width: 100%;
+    .wrap-spin {
+      height: calc(100vh - 130px)
+    }
     /*height: calc(100vh - 130px);*/
     .jd_left {
       float: left;
