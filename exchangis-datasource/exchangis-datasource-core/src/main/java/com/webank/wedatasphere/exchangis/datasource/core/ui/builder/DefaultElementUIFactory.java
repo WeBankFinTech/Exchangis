@@ -29,8 +29,8 @@ public class DefaultElementUIFactory  implements ElementUIFactory{
 
     @Override
     @SuppressWarnings("unchecked")
-    public <R> ElementUI<R> createElement(String type, Object input) {
-        Identify identify = new Identify(type, input.getClass());
+    public <R> ElementUI<R> createElement(String type, Object input, Class<?> inputType) {
+        Identify identify = new Identify(type, inputType);
         AtomicReference<ElementUI<R>> elementUI = new AtomicReference<>();
         Optional.ofNullable(builders.get(identify)).ifPresent(builder -> {
             elementUI.set((ElementUI<R>) builder.apply(input));
