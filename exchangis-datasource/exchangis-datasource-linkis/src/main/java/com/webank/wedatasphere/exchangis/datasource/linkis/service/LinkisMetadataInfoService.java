@@ -75,7 +75,7 @@ public class LinkisMetadataInfoService extends LinkisDataSourceServiceRpcDispatc
         MetadataGetPartitionsResult result = dispatch(getDefaultRemoteClient(), new LinkisDataSourceServiceOperation(() -> MetadataGetPartitionsAction.builder()
                 .setDataSourceId(String.valueOf(dataSourceId)).setDatabase(database).setTable(table)
                 .setUser(userName).setSystem(LINKIS_RPC_CLIENT_SYSTEM.getValue()).build()), CLIENT_METADATA_GET_PARTITION.getCode(), "getPartitionKeys");
-        return result.props().getPartKeys();
+        return result.getPartitionInfo().getPartKeys();
     }
 
 
