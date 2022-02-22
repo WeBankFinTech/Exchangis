@@ -6,7 +6,7 @@
       <a-form :model="formState">
         <a-row :gutter="24">
           <a-col :span="8">
-            <a-form-item label="作业ID">
+            <a-form-item label="执行ID">
               <a-input v-model:value="formState.jobExecutionId" placeholder="请输入"/>
             </a-form-item>
           </a-col>
@@ -148,7 +148,7 @@ import {
   delSyncHistory,
   getSpeedLimit,
   saveSpeedLimit,
-  killJob,
+  killJob
 } from "@/common/service";
 import { message } from "ant-design-vue";
 import { dateFormat } from "@/common/utils";
@@ -465,7 +465,7 @@ export default {
 .sh-bottom {
   padding: 24px;
   background-color: #fff;
-  min-height: calc(100vh - 184px);
+  min-height: calc(100vh - 136px);
   :deep(.ant-form-item-label > label) {
     width: 80px;
     text-align: right;
@@ -494,6 +494,4 @@ export default {
     background: #52c41a;
   }
 }
-</style>
-<style lang="less">
 </style>
