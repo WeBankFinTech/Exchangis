@@ -82,7 +82,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
                 if(Objects.nonNull(content.getParams().getSources())) {
                     JobParamSet paramSet = setIntoParams(REALM_JOB_CONTENT_SOURCE, () -> {
                         List<ExchangisJobParamsContent.ExchangisJobParamsItem> items = content.getParams().getSources();
-                        return items.stream().filter(item -> StringUtils.isNotBlank(item.getConfigKey())).collect
+                        return items.stream().filter(item -> StringUtils.isNotBlank(item.getConfigKey()) && Objects.nonNull(item.getConfigValue())).collect
                                 (Collectors.toMap(ExchangisJobParamsContent.ExchangisJobParamsItem::getConfigKey,
                                         ExchangisJobParamsContent.ExchangisJobParamsItem::getConfigValue));
                     });
@@ -93,7 +93,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
                 if(Objects.nonNull(content.getParams().getSinks())) {
                     JobParamSet paramSet = setIntoParams(REALM_JOB_CONTENT_SINK, () -> {
                         List<ExchangisJobParamsContent.ExchangisJobParamsItem> items = content.getParams().getSinks();
-                        return items.stream().filter(item -> StringUtils.isNotBlank(item.getConfigKey())).collect
+                        return items.stream().filter(item -> StringUtils.isNotBlank(item.getConfigKey()) && Objects.nonNull(item.getConfigValue())).collect
                                 (Collectors.toMap(ExchangisJobParamsContent.ExchangisJobParamsItem::getConfigKey,
                                         ExchangisJobParamsContent.ExchangisJobParamsItem::getConfigValue));
                     });

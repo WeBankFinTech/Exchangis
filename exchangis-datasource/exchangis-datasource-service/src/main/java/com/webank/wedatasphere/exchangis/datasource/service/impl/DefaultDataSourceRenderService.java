@@ -5,7 +5,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoSer
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.builder.ElementUIFactory;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceRenderService;
-import org.jvnet.hk2.annotations.Service;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
@@ -44,6 +44,6 @@ public class DefaultDataSourceRenderService implements DataSourceRenderService {
         Map<String, Object> renderParams = new HashMap<>();
         List<String> placeHolder = Arrays.asList(DEFAULT_PLACEHOLDER);
         partitionKeys.forEach(partition -> renderParams.putIfAbsent(partition, placeHolder));
-        return elementUIFactory.createElement(uiType.name(), renderParams);
+        return elementUIFactory.createElement(uiType.name(), renderParams, Map.class);
     }
 }
