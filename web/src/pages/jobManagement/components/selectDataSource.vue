@@ -80,6 +80,7 @@
           height: 300px;
           padding-top: 150px;"/>
         <a-directory-tree
+          :height="400"
           :tree-data="treeData"
           :autoExpandParent="false"
           v-model:expandedKeys="expandedKeys"
