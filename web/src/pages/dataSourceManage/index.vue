@@ -57,7 +57,7 @@
             <a-space>
               <a-button
                 size="small"
-                @click="handleEdit(row.text.id, row.text.dataSourceTypeId, row.text.createSystem)"
+                @click="handleEdit(row.text)"
                 type="link"
                 >{{
                   $t("dataSource.table.list.columns.actions.editButton")
@@ -244,9 +244,10 @@ export default {
       sourceTypeList: [],
       // 编辑弹框
       modalCfg: {
-        mode: "",
-        id: "",
-        type: "",
+        mode: '',
+        id: '',
+        type: '',
+        versionId: '',
         visible: false,
       },
       // 版本弹窗
@@ -292,7 +293,8 @@ export default {
       this.selectTypeModalVisible = false;
       this.modalCfg = {
         mode: "create",
-        id: "",
+        id: '',
+        versionId: '',
         type: item.id,
         visible: true,
         createSystem: item.name
@@ -305,13 +307,14 @@ export default {
       this.getDataSourceList();
     },
     // 处理编辑
-    handleEdit(id, typeid, createSystem) {
+    handleEdit(item) {
       this.modalCfg = {
         mode: "edit",
-        id: id,
-        type: typeid,
+        id: item.id,
+        type: item.dataSourceTypeId,
         visible: true,
-        createSystem: createSystem
+        createSystem: item.createSystem,
+        versionId: item.versionId
       };
     },
     // 打开创建弹窗
