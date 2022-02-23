@@ -20,6 +20,7 @@
         <result column="error_msg" property="errorMessage"/>
         <result column="retry_num" property="retryNum"/>
         <result column="log_path" property="logPath"/>
+        <result column="create_user" property="createUser"/>
         <association property="exchangisJobEntity" javaType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity" >
             <result property="id" column="id" />
             <result property="source" column="source" />
@@ -32,7 +33,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, job_id, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path    </sql>
+        id, name, create_time, last_update_time, job_id, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, create_user    </sql>
 
     <insert id="insertLaunchedJob" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
         insert into
@@ -148,6 +149,7 @@
         l.status,
         l.progress,
         l.last_update_time,
+        l.create_user,
         c.source
         FROM
         `exchangis_launched_job_entity` l
@@ -159,6 +161,9 @@
             <!--如果name有值，则模糊匹配name-->
             <if test="jobName.trim() != '' and jobName != null">
                 and l.name like concat('%', #{jobName}, '%')
+            </if>
+            <if test="loginUser.trim() != '' and loginUser != null">
+                and l.create_user like concat('%', #{loginUser}, '%')
             </if>
             <if test="status.trim() != '' and status != null">
                 and l.status = #{status}
@@ -185,6 +190,9 @@
             <!--如果name有值，则模糊匹配name-->
             <if test="jobName.trim() != '' and jobName != null">
                 and name like concat('%', #{jobName}, '%')
+            </if>
+            <if test="loginUser.trim() != '' and loginUser != null">
+                and create_user like concat('%', #{loginUser}, '%')
             </if>
             <if test="status.trim() != '' and status != null">
                 and status = #{status}

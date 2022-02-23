@@ -17,6 +17,8 @@ public class ExchangisLaunchedJobListVO {
 
     private Long flow;
 
+    private String createUser;
+
     private String executeUser;
 
     private String status;
@@ -29,17 +31,26 @@ public class ExchangisLaunchedJobListVO {
 
     }
 
-    public ExchangisLaunchedJobListVO(String jobExecutionId, String executeNode, String name, Date createTime, Long flow, String executeUser, String status, double progress, Date lastUpdateTime){
+    public ExchangisLaunchedJobListVO(String jobExecutionId, String executeNode, String name, Date createTime, Long flow, String createUser, String executeUser, String status, double progress, Date lastUpdateTime){
         this.jobExecutionId = jobExecutionId;
         this.executeNode = executeNode;
         this.name = name;
         this.status = status;
         this.createTime = createTime;
         this.flow = flow;
+        this.createUser = createUser;
         this.lastUpdateTime = lastUpdateTime;
         this.progress = progress;
         this.lastUpdateTime = lastUpdateTime;
         this.executeUser = executeUser;
+    }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
     }
 
     public String getJobExecutionId() {
