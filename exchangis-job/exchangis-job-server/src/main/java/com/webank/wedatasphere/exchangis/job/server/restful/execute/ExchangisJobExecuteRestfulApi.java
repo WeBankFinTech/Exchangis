@@ -174,12 +174,13 @@ public class ExchangisJobExecuteRestfulApi {
                              @RequestParam(value = "launchStartTime", required = false) Long launchStartTime,
                              @RequestParam(value = "launchEndTime", required = false) Long launchEndTime,
                              @RequestParam(value = "current", required = false) int current,
-                             @RequestParam(value = "size", required = false) int size) {
+                             @RequestParam(value = "size", required = false) int size,
+                            HttpServletRequest request) {
         Message message = Message.ok("Submitted succeed(提交成功)！");
         try {
             List<ExchangisLaunchedJobListVO> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
-                    launchStartTime, launchEndTime, current, size);
-            int total = executeService.count(jobExecutionId, jobName, status, launchStartTime, launchEndTime);
+                    launchStartTime, launchEndTime, current, size, request);
+            int total = executeService.count(jobExecutionId, jobName, status, launchStartTime, launchEndTime, request);
             message.data("jobList", jobList);
             message.data("total", total);
         } catch (ExchangisJobServerException e) {

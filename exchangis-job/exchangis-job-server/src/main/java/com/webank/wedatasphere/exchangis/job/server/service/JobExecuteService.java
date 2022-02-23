@@ -9,6 +9,7 @@ import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServer
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.linkis.server.Message;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public interface JobExecuteService {
      * @return the launched jobList
      */
     List<ExchangisLaunchedJobListVO> getExecutedJobList(String jobExecutionId, String jobName, String status,
-                                                        Long launchStartTime, Long launchEndTime, int  current, int size) throws ExchangisJobServerException;
+                                                        Long launchStartTime, Long launchEndTime, int  current, int size, HttpServletRequest request) throws ExchangisJobServerException;
 
     /**
      * Count int.
@@ -73,7 +74,7 @@ public interface JobExecuteService {
      * @param launchEndTime   the launch end time
      * @return the int
      */
-    int count(String jobExecutionId, String jobName, String status, Long launchStartTime, Long launchEndTime);
+    int count(String jobExecutionId, String jobName, String status, Long launchStartTime, Long launchEndTime, HttpServletRequest request);
 
     /**
      * Execute job

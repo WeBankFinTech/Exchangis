@@ -64,10 +64,14 @@ export default defineComponent({
   setup(props, context) {
     let { type, field, value, unit, source} = props.param;
     value = ref(value)
+    type = ref(type)
     let tmlName = field.split(".").pop();
     const newProps = computed(() => JSON.parse(JSON.stringify(props.param)));
     watch(newProps, (val, oldVal) => {
       value.value = val.value;
+      if (type === 'MAP') {
+        _buildMap()
+      }
     });
     let checkOptions = []
     if (type === 'OPTION'){
@@ -79,7 +83,8 @@ export default defineComponent({
       })
     }
     let partitionArr = ref([])
-    if (type === 'MAP') {
+    const _buildMap = function () {
+      partitionArr.value = []
       let url = source.split('?')[0]
       getPartitionInfo({
         source: url,
@@ -115,6 +120,9 @@ export default defineComponent({
         .catch(err => {
           message.error("或许分区信息失败");
         })
+    }
+    if (type === 'MAP') {
+      _buildMap()
     }
     const emitData = (value) => {
       let res = toRaw(props.param)
@@ -160,57 +168,6 @@ export default defineComponent({
       partitionArr,
       handleChange
     }
-
-    /*if (type === "OPTION") {
-      // 下拉框
-      return () =>
-        h(
-          "select",
-          {
-            value: value,
-            class: "custom_select",
-            onChange: ($event) => {
-              let res = toRaw(props.param);
-              res.value = $event.target.value;
-              context.emit("updateInfo", res);
-            },
-          },
-          props.param.values.map((item) => {
-            return h(
-              "option",
-              {
-                value: item,
-              },
-              item
-            );
-          })
-        );
-    } else {
-      // 输入框
-      return () =>
-        h("div", {}, [
-          h(
-            "input",
-            {
-              value: value,
-              class: "custom_input",
-              onChange: ($event) => {
-                let res = toRaw(props.param);
-                res.value = $event.target.value;
-                context.emit("updateInfo", res);
-              },
-            },
-            ""
-          ),
-          h(
-            "span",
-            {
-              class: "custom_span_unit",
-            },
-            props.param.unit ? props.param.unit : ""
-          ),
-        ]);
-    }*/
   }
 });
 </script>
