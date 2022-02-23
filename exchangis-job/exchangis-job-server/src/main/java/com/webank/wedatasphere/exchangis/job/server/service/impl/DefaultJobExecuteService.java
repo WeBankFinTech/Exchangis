@@ -32,6 +32,7 @@ import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricsCon
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.server.security.SecurityFilter;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.*;
@@ -138,11 +140,17 @@ public class DefaultJobExecuteService implements JobExecuteService {
             LOG.error("Get job status happen execption, " +  "[jobExecutionId =" + jobExecutionId + "]（获取作业状态错误）", e);
         }
 
-        Boolean allTaskStatus = false;
-        List<String> taskStatusList = launchedTaskDao.getTaskStatusList(jobExecutionId);
-        if(!taskStatusList.isEmpty()) {
-            if (!taskStatusList.contains("Inited") || !taskStatusList.contains("Scheduled") || !taskStatusList.contains("Running") || !taskStatusList.contains("WaitForRetry")) {
+        boolean allTaskStatus = false;
+
+        assert jobProgressVo != null;
+        if(!"Inited".equals(jobProgressVo.getStatus().toString()) || !jobProgressVo.getStatus().toString().equals("Scheduled") || !jobProgressVo.getStatus().toString().equals("Running") || !jobProgressVo.getStatus().toString().equals("WaitForRetry")) {
+            List<String> taskStatusList = launchedTaskDao.getTaskStatusList(jobExecutionId);
+            if (taskStatusList.isEmpty() && this.launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId).isEmpty()) {
                 allTaskStatus = true;
+            } else if (!taskStatusList.isEmpty()) {
+                if (!taskStatusList.contains("Inited") || !taskStatusList.contains("Scheduled") || !taskStatusList.contains("Running") || !taskStatusList.contains("WaitForRetry")) {
+                    allTaskStatus = true;
+                }
             }
         }
         jobProgressVo.setAllTaskStatus(allTaskStatus);
@@ -237,7 +245,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
 
     @Override
     public List<ExchangisLaunchedJobListVO> getExecutedJobList(String jobExecutionId, String jobName, String status,
-                                                               Long launchStartTime, Long launchEndTime, int current, int size) throws ExchangisJobServerException{
+                                                               Long launchStartTime, Long launchEndTime, int current, int size, HttpServletRequest request) throws ExchangisJobServerException{
         if (current <= 0) {
             current = 1;
         }
@@ -248,32 +256,30 @@ public class DefaultJobExecuteService implements JobExecuteService {
         List<ExchangisLaunchedJobListVO> jobList = new ArrayList<>();
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
-        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, start, size);
+        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, start, size, SecurityFilter.getLoginUsername(request));
         //LOG.info("ExecutedJobList information: " + jobExecutionId + jobName + status + launchStartTime + launchEndTime + current + size);
         if(jobEntitylist != null) {
             try {
-                for (int i = 0; i < jobEntitylist.size(); i++) {
-                    ExchangisLaunchedJobListVO exchangisJobVo = modelMapper.map(jobEntitylist.get(i), ExchangisLaunchedJobListVO.class);
-                    if(jobEntitylist.get(i).getExchangisJobEntity() == null || jobEntitylist.get(i).getExchangisJobEntity().getSource() == null) {
+                for (LaunchedExchangisJobEntity launchedExchangisJobEntity : jobEntitylist) {
+                    ExchangisLaunchedJobListVO exchangisJobVo = modelMapper.map(launchedExchangisJobEntity, ExchangisLaunchedJobListVO.class);
+                    if (launchedExchangisJobEntity.getExchangisJobEntity() == null || launchedExchangisJobEntity.getExchangisJobEntity().getSource() == null) {
                         exchangisJobVo.setExecuteNode("-");
-                    }
-                    else {
-                        Map<String, Object> sourceObject = Json.fromJson(jobEntitylist.get(i).getExchangisJobEntity().getSource(), Map.class);
+                    } else {
+                        Map<String, Object> sourceObject = Json.fromJson(launchedExchangisJobEntity.getExchangisJobEntity().getSource(), Map.class);
                         exchangisJobVo.setExecuteNode(sourceObject.get("execute_node").toString());
                     }
-                    List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(jobEntitylist.get(i).getJobExecutionId());
-                    if(launchedExchangisTaskEntities == null){
+                    List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(launchedExchangisJobEntity.getJobExecutionId());
+                    if (launchedExchangisTaskEntities == null) {
                         exchangisJobVo.setFlow((long) 0);
-                    }
-                    else {
+                    } else {
                         int flows = 0;
                         int taskNum = launchedExchangisTaskEntities.size();
-                        for (int j = 0; j < taskNum; j++) {
-                            if(launchedExchangisTaskEntities.get(j).getMetricsMap() == null || launchedExchangisTaskEntities.get(j).getMetricsMap().get("traffic") == null){
+                        for (LaunchedExchangisTaskEntity launchedExchangisTaskEntity : launchedExchangisTaskEntities) {
+                            if (launchedExchangisTaskEntity.getMetricsMap() == null || launchedExchangisTaskEntity.getMetricsMap().get("traffic") == null) {
                                 flows += 0;
                                 continue;
                             }
-                            Map<String, Object> flowMap = Json.fromJson(launchedExchangisTaskEntities.get(j).getMetricsMap().get("traffic").toString(), Map.class);
+                            Map<String, Object> flowMap = Json.fromJson(launchedExchangisTaskEntity.getMetricsMap().get("traffic").toString(), Map.class);
                             flows += flowMap == null ? 0 : Integer.parseInt(flowMap.get("flow").toString());
                         }
                         exchangisJobVo.setFlow(taskNum == 0 ? 0 : (long) (flows / taskNum));
@@ -288,11 +294,11 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public int count(String jobExecutionId, String jobName, String status, Long launchStartTime, Long launchEndTime) {
+    public int count(String jobExecutionId, String jobName, String status, Long launchStartTime, Long launchEndTime, HttpServletRequest request) {
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
 
-        return launchedJobDao.count(jobExecutionId, jobName, status, startTime,endTime);
+        return launchedJobDao.count(jobExecutionId, jobName, status, startTime, endTime, SecurityFilter.getLoginUsername(request));
     }
 
     @Override

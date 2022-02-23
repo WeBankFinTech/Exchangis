@@ -80,12 +80,14 @@
           height: 300px;
           padding-top: 150px;"/>
         <a-directory-tree
+          :height="400"
           :tree-data="treeData"
           :autoExpandParent="false"
           v-model:expandedKeys="expandedKeys"
           @select="selectItem"
           @expand="handleExpandSql"
-        ></a-directory-tree>
+        >
+        </a-directory-tree>
       </div>
     </a-modal>
   </div>
