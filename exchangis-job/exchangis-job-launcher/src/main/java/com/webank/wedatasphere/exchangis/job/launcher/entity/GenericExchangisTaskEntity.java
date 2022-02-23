@@ -35,6 +35,8 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
 
     protected Integer retryNum = 0;
 
+    protected String createUser;
+
     @Override
     public Long getJobId() {
         return this.jobId;
@@ -163,5 +165,13 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
     @Override
     public void setLastUpdateTime(Date lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
     }
 }
