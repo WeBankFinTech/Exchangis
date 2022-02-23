@@ -1,9 +1,9 @@
 <template>
   <div class="content">
-    <div class="content-main">
+    <div class="content-main" @click="gotoDetail">
       <div><img class="img" :src="imageSrc" v-if="imageSrc" /></div>
       <div class="content-main-c">
-        <div class="content-main-c-header" @click="gotoDetail" :title="jobData.jobName">
+        <div class="content-main-c-header" :title="jobData.jobName">
           {{ jobData.jobName }}
         </div>
         <div class="content-main-c-desc">
@@ -151,6 +151,7 @@ export default defineComponent({
     flex: 1;
     padding: 16px;
     display: flex;
+    cursor: pointer;
     &-c {
       flex: 1;
       margin-left: 16px;
@@ -161,7 +162,6 @@ export default defineComponent({
         text-align: left;
         line-height: 22px;
         font-weight: 500;
-        cursor: pointer;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
