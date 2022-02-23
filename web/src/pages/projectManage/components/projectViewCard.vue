@@ -34,32 +34,30 @@
 
   <div class="card">
     <div class="card-main">
-      <div class="card-main-title">
-        <router-link :to="`/jobManagement?id=${id}&name=${name}`">
-          <div class="title" :title="name">
-            {{ name }}
-          </div>
-        </router-link>
-      </div>
-      <div class="card-main-description">
-        <p
-          :class="[
-            card_tages && card_tages.length > 0
-              ? 'card-main-desc-oneline'
-              : 'card-main-desc-2line',
-          ]"
-        >
-          {{ describe }}
-        </p>
-        <div>
-          <div v-if="card_tages && card_tages.length > 0">
-            <a-tag v-for="(tag, index) in card_tages" :key="index">
-              {{ tag ? tag : null }}
-            </a-tag>
-          </div>
-          <div v-else></div>
+      <router-link :to="`/jobManagement?id=${id}&name=${name}`">
+        <div class="card-main-title">
+          <div class="title" :title="name">{{ name }}</div>
         </div>
-      </div>
+        <div class="card-main-description">
+          <p
+            :class="[
+              card_tages && card_tages.length > 0
+                ? 'card-main-desc-oneline'
+                : 'card-main-desc-2line',
+            ]"
+          >
+            {{ describe }}
+          </p>
+          <div>
+            <div v-if="card_tages && card_tages.length > 0">
+              <a-tag v-for="(tag, index) in card_tages" :key="index">
+                {{ tag ? tag : null }}
+              </a-tag>
+            </div>
+            <div v-else></div>
+          </div>
+        </div>
+      </router-link>
     </div>
     <div class="card-buttton-group">
       <div @click="$emit('edit', id)">
