@@ -499,6 +499,10 @@ export default defineComponent({
 }
 .data-source-warp-r {
   flex: 1;
+  :deep(.ant-form-item-label) {
+    width: 100%;
+    text-align: left;
+  }
 }
 .data-source-warp-mid {
   width: 74px;
