@@ -58,7 +58,8 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
         LaunchedExchangisTask task = runningTasks.get(taskId);
         if (Objects.nonNull(task)){
             onEvent(new TaskStatusUpdateEvent(task, TaskStatus.Cancelled));
-            info(task, "Status of task: [{}] change {} => {}", task.getTaskId(), task.getStatus(), TaskStatus.Cancelled);
+            info(task, "Status of task: [name: {}, id: {}] change {} => {}",
+                    task.getName(), task.getTaskId(), task.getStatus(), TaskStatus.Cancelled);
             JobLogCacheUtils.flush(task.getJobExecutionId(), false);
             runningTasks.remove(taskId);
             JobWrapper wrapper = jobWrappers.get(task.getJobExecutionId());
@@ -73,7 +74,7 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
         task.setStatus(TaskStatus.Running);
         task.setRunningTime(Calendar.getInstance().getTime());
         onEvent(new TaskLaunchEvent(task));
-        info(task, "Status of task: [{}] change to {}, info: [{}]", task.getTaskId(), task.getStatus(), Json.toJson(task, null));
+        info(task, "Status of task: [name: {}, id: {}] change to {}, info: [{}]", task.getName(), task.getTaskId(), task.getStatus(), Json.toJson(task, null));
         if (Objects.isNull(runningTasks.putIfAbsent(task.getTaskId(), task))){
             jobWrappers.compute(task.getJobExecutionId(), (jobExecutionId, jobWrapper) -> {
                 if (Objects.nonNull(jobWrapper) && jobWrapper.addTask(task)){
@@ -109,7 +110,8 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
     public boolean refreshRunningTaskStatus(LaunchedExchangisTask task, TaskStatus status) {
         TaskStatus beforeStatus = task.getStatus();
         if (TaskStatus.isCompleted(status)){
-            info(task, "Status of task: [{}] change {} => {}", task.getTaskId(), beforeStatus, status);
+            info(task, "Status of task: [name: {}, id: {}] change {} => {}",
+                    task.getName(), task.getTaskId(), beforeStatus, status);
             onEvent(new TaskStatusUpdateEvent(task, status));
             removeRunningTaskInner(task.getTaskId(), false);
             return true;
@@ -118,7 +120,8 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
             if (Objects.nonNull(task) ) {
                 onEvent(new TaskStatusUpdateEvent(task, status));
                 if (isTransition(task, status)) {
-                    info(task, "Status of task: [{}] change {} => {}", task.getTaskId(), beforeStatus, status);
+                    info(task, "Status of task: [name: {}, id: {}] change {} => {}",
+                            task.getName(), task.getTaskId(), beforeStatus, status);
                 }
                 task.setStatus(status);
                 return true;
