@@ -44,7 +44,8 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
         launchableExchangisJob.setCreateTime(calendar.getTime());
         launchableExchangisJob.setLastUpdateTime(calendar.getTime());
         launchableExchangisJob.setId(jobInfo.getId());
-        launchableExchangisJob.setCreateUser(jobInfo.getExecuteUser());
+        launchableExchangisJob.setExecUser(jobInfo.getExecuteUser());
+        launchableExchangisJob.setCreateUser(jobInfo.getCreateUser());
         // Generate launchable exchangis job id to UUID
         launchableExchangisJob.setJobExecutionId(UUID.randomUUID().toString());
         LOG.info("Generate job execution id: [{}] for job: [{}]" , launchableExchangisJob.getJobExecutionId(), launchableExchangisJob.getExchangisJobInfo().getName());

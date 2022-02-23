@@ -21,6 +21,11 @@ public class LaunchableExchangisJob extends GenericExchangisJob {
      */
     private String jobExecutionId;
 
+    /**
+     * Execute user
+     */
+    private String execUser;
+
     private List<LaunchableExchangisTask> launchableExchangisTasks = new ArrayList<>();
 
     public ExchangisJobInfo getExchangisJobInfo() {
@@ -45,5 +50,13 @@ public class LaunchableExchangisJob extends GenericExchangisJob {
 
     public void setLaunchableExchangisTasks(List<LaunchableExchangisTask> launchableExchangisTasks) {
         this.launchableExchangisTasks = launchableExchangisTasks;
+    }
+
+    public String getExecUser() {
+        return execUser;
+    }
+
+    public void setExecUser(String execUser) {
+        this.execUser = execUser;
     }
 }
