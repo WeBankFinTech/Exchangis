@@ -12,7 +12,7 @@
         @confirm="killTask"
         @cancel="cancel"
       >
-        <span><StopFilled />停止</span>
+        <span><StopFilled style="color:#ff4d4f" />停止</span>
       </a-popconfirm>
       <div class="divider"></div>
       <span @click="saveAll()"><SaveOutlined />保存</span>
@@ -184,15 +184,6 @@
           </div>
         </div>
       </div>
-      <!--<div v-for="item in streamList" :key="item.id" class="card">-->
-        <!--<job-card-->
-          <!--:jobData="item"-->
-          <!--type="STREAM"-->
-          <!--@showJobDetail="showJobDetail"-->
-          <!--@handleJobCopy="handleJobCopy"-->
-          <!--@refreshList="getJobs"-->
-        <!--/>-->
-      <!--</div>-->
       </a-spin>
     </div>
     <!-- 执行历史  jd-bottom -->
@@ -252,7 +243,11 @@
               <span class="job-progress-title">正在运行</span>
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Running">
-                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
@@ -278,7 +273,11 @@
               <span class="job-progress-title" style="color:#ff4d4f">失败</span>
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Failed">
-                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
@@ -288,7 +287,11 @@
               <span class="job-progress-title" style="color:#ff4d4f">终止</span>
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Cancelled">
-                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
@@ -298,7 +301,11 @@
               <span class="job-progress-title">成功</span>
               <div class="job-progress-body">
                 <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Success">
-                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;text-decoration:underline" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer" @click="getTaskInfo(progress)">{{ progress.name }}</span>
                   <a-progress :percent="progress.progress * 100" />
                   <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
                 </div>
@@ -310,7 +317,7 @@
           </a-tab-pane>
           <a-tab-pane key="3" tab="执行历史" force-render>
             <a-table
-              style="margin: 0px 150px 0 24px;"
+              style="margin: 0 0 0 24px;"
               :columns="ehColumns"
               :data-source="ehTableData"
               :pagination="false"
@@ -363,7 +370,9 @@ import {
   MinusOutlined,
   PlusOutlined,
   CloseOutlined,
-  StopFilled
+  StopFilled,
+  DownOutlined,
+  RightOutlined
 } from "@ant-design/icons-vue";
 import {
   getJobInfo,
@@ -463,6 +472,8 @@ export default {
     CheckCircleOutlined,
     EditOutlined,
     PlusOutlined,
+    DownOutlined,
+    RightOutlined,
     "config-modal": defineAsyncComponent(() => import("./configModal.vue")),
     "copy-modal": defineAsyncComponent(() => import("./copyModal.vue")),
     DataSource: defineAsyncComponent(() => import("./dataSource.vue")),
@@ -704,7 +715,6 @@ export default {
       });
     },
     updateFieldMap(transforms) {
-      console.log("update field map", transforms);
       this.curTask.transforms = transforms;
     },
     updateProcessControl(settings) {
@@ -1273,6 +1283,7 @@ export default {
       overflow-x: auto;
       float: right;
       width: calc(100% - 250px);
+      background: white;
     }
   }
 
@@ -1297,7 +1308,6 @@ export default {
     }
     &.jd-bottom-log {
       height: 350px;
-      width: 100%;
      .jd-bottom-top {
        bottom: 350px;
      }
@@ -1336,6 +1346,12 @@ export default {
       width: calc(100% - 100px);
     }
     .job-progress-percent {
+      .job-progress-expand-icon {
+        width:15px;
+        margin-left: -15px;
+        color: rgba(0, 0, 0, 0.45);
+        cursor: pointer;
+      }
       >span {
         display: inline-block;
         width: 100px;
@@ -1345,7 +1361,7 @@ export default {
       }
       >div {
         display: inline-block;
-        width: calc(100% - 100px);
+        width: calc(100% - 120px);
       }
     }
   }
