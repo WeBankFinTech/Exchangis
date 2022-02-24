@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server;
 
+import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
 import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
@@ -63,8 +64,9 @@ public class ExchangisJobExecuteAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TaskGeneratorContext.class)
-    public TaskGeneratorContext taskGeneratorContext(JobLogListener jobLogListener){
-        return new DefaultTaskGeneratorContext(jobLogListener);
+    public TaskGeneratorContext taskGeneratorContext(JobLogListener jobLogListener,
+                                                     MetadataInfoService metadataInfoService){
+        return new DefaultTaskGeneratorContext(jobLogListener, metadataInfoService);
     }
 
     /**
