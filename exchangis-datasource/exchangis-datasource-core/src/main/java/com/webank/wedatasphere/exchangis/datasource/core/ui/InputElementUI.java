@@ -1,5 +1,9 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui;
 
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+
+import java.util.Map;
+
 public class InputElementUI implements ElementUI<String> {
     private String key;
     private String field;
@@ -50,7 +54,7 @@ public class InputElementUI implements ElementUI<String> {
 
     @Override
     public String getType() {
-        return ElementUI.INPUT;
+        return Type.INPUT.name();
     }
 
     @Override
@@ -73,6 +77,12 @@ public class InputElementUI implements ElementUI<String> {
 
     @Override
     public String getDefaultValue() { return defaultValue; }
+
+    @Override
+    public void setValue(Map<String, Object> params) {
+        // Convert to json string directly
+        this.value = Json.toJson(params, null);
+    }
 
     public void setDefaultValue(String defaultValue) { this.defaultValue = defaultValue; }
 

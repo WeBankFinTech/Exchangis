@@ -1,6 +1,9 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Map;
+import java.util.Objects;
 
 public class MapElementUI implements ElementUI<Map<String, Object>> {
     private String key;
@@ -52,7 +55,7 @@ public class MapElementUI implements ElementUI<Map<String, Object>> {
 
     @Override
     public String getType() {
-        return ElementUI.MAP;
+        return Type.MAP.name();
     }
 
     @Override
@@ -69,12 +72,14 @@ public class MapElementUI implements ElementUI<Map<String, Object>> {
         return value;
     }
 
+
     public void setValue(Map<String, Object> value) {
         this.value = value;
     }
 
     @Override
     public Map<String, Object> getDefaultValue() { return defaultValue; }
+
 
     public void setDefaultValue(Map<String, Object> defaultValue) { this.defaultValue = defaultValue; }
 
@@ -113,4 +118,8 @@ public class MapElementUI implements ElementUI<Map<String, Object>> {
     public String getValidateMsg() { return validateMsg; }
 
     public void setValidateMsg(String validateMsg) { this.validateMsg = validateMsg; }
+
+    private boolean isBasicType(Class<?> clz){
+        return false;
+    }
 }

@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.builder;
 
 
+import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 
@@ -25,6 +26,8 @@ public class ExchangisJobBuilderContext {
     private Map<String, Object> env = new HashMap<>();
 
     private Map<String, Map<String, Object>> datasourceParams = new HashMap<>();
+
+    private MetadataInfoService metadataInfoService;
 
     public ExchangisJobBuilderContext() {
 
@@ -70,4 +73,11 @@ public class ExchangisJobBuilderContext {
         return this.env.containsKey(name);
     }
 
+    public MetadataInfoService getMetadataInfoService() {
+        return metadataInfoService;
+    }
+
+    public void setMetadataInfoService(MetadataInfoService metadataInfoService) {
+        this.metadataInfoService = metadataInfoService;
+    }
 }
