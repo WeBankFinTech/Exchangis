@@ -276,6 +276,9 @@ export default defineComponent({
               source: '/api/rest_j/v1/exchangis/job/partitionInfo',
               type: 'MAP'
             }
+          }
+          if (ui.source) {
+          ui.source = ui.source + '?_=' + Math.random()
           }*/
           if (!ui.value && ui.defaultValue) {
             ui.value = ui.defaultValue;
