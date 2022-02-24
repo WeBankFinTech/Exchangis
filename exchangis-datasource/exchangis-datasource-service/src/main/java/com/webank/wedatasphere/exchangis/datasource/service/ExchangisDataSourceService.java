@@ -636,7 +636,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         Message message = Message.ok();
         message.data("list", dataSources);
-        message.data("total", result.getTotalPage() * pageSize);
+        message.data("total", result.getTotalPage());
         return message;
         //return Message.ok().data("list", dataSources);
     }
