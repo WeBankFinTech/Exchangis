@@ -214,7 +214,7 @@ export default {
             res.job.runningTasks = res.job.tasks.Running?.length || 0
             res.job.totalTasks = this.tasklist.length
             res.job.successPercent = res.job.successTasks * 100 / res.job.totalTasks
-            res.job.percent = (res.job.successTasks + res.job.runningTasks) * 100 / res.job.totalTasks
+            res.job.percent = res.job.progress * 100 //(res.job.successTasks + res.job.runningTasks) * 100 / res.job.totalTasks
             res.job.title = `${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.initedTasks}正在准备`
           }
           this.jobProgress = res.job
