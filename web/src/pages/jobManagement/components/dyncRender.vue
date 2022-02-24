@@ -64,11 +64,11 @@ export default defineComponent({
   setup(props, context) {
     let { type, field, value, unit, source} = props.param;
     value = ref(value)
-    let tmlName = field.split(".").pop();
-    const newProps = computed(() => JSON.parse(JSON.stringify(props.param)));
+    //let tmlName = field.split(".").pop();
+    const newProps = computed(() => JSON.parse(JSON.stringify(props.param)))
     watch(newProps, (val, oldVal) => {
       value.value = val.value
-      if (type === 'MAP') {
+      /*if (type === 'MAP') {
         value.value = value.value || {}
         if (val.source === oldVal.source) {
           partitionArr.value.forEach(partition => {
@@ -78,11 +78,17 @@ export default defineComponent({
               partition.value = value.value[partition.label] ? value.value[partition.label] : partition.defaultValue || ''
             }
           })
-        } else {
+        }
+      }*/
+    })
+    const newData = computed(() => JSON.parse(JSON.stringify(props.data || {})))
+    watch(newData, (val, oldVal) => {
+      if (type === 'MAP') {
+        if (val.id != oldVal.id || val.db !== oldVal.db || val.table !== oldVal.table) {
           _buildMap()
         }
       }
-    });
+    })
     let checkOptions = []
     if (type === 'OPTION'){
       props.param.values.map((item) => {
