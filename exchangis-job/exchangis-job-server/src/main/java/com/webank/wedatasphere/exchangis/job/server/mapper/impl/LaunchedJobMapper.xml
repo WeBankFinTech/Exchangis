@@ -38,7 +38,7 @@
     <insert id="insertLaunchedJob" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
         insert into
         <include refid="TableName"/>
-        (name, create_time, last_update_time, job_id, launchable_task_num, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path)
+        (name, create_time, last_update_time, job_id, launchable_task_num, job_execution_id, engine_type, execute_user, create_user, job_name, status, progress, error_code, error_msg, retry_num, log_path)
         values(
         #{name},
         #{createTime},
@@ -48,6 +48,7 @@
         #{jobExecutionId},
         #{engineType},
         #{executeUser},
+        #{createUser},
         #{jobName},
         #{status},
         #{progress},
