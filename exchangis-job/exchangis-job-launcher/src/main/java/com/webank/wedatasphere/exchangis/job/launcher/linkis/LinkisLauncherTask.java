@@ -251,6 +251,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
      * @param task task
      * @return once job
      */
+    @SuppressWarnings("unchecked")
     private SimpleOnceJob toSubmittableJob(LaunchableExchangisTask task){
         //TODO deal the start up params
         LinkisJobBuilder<SubmittableSimpleOnceJob> jobBuilder = LinkisJobClient.once().simple().builder().setCreateService(LAUNCHER_LINKIS_CREATOR.getValue())
@@ -261,7 +262,16 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 .addLabel(LabelKeyUtils.ENGINE_CONN_MODE_LABEL_KEY(), LAUNCHER_LINKIS_ENGINE_CONN_MODE.getValue())
                 .addExecuteUser(task.getExecuteUser());
         Optional.ofNullable(task.getLinkisContentMap()).ifPresent(params -> params.forEach(jobBuilder::addJobContent));
-        Optional.ofNullable(task.getLinkisParamsMap()).ifPresent(params -> params.forEach(jobBuilder::addRuntimeParam));
+        Optional.ofNullable(task.getLinkisParamsMap()).ifPresent(params -> {
+            Object runtimeParams = params.get(LAUNCHER_LINKIS_RUNTIME_PARAM_NAME);
+            if (Objects.nonNull(runtimeParams) && runtimeParams instanceof Map){
+                jobBuilder.setRuntimeParams((Map<String, Object>) runtimeParams);
+            }
+            Object startupParams = params.get(LAUNCHER_LINKIS_STARTUP_PARAM_NAME);
+            if (Objects.nonNull(startupParams) && startupParams instanceof Map){
+                jobBuilder.setStartupParams((Map<String, Object>) startupParams);
+            }
+        });
         return jobBuilder.build();
     }
 

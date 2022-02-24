@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
@@ -62,6 +63,12 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     private static final JobParamDefine<JobParamSet> MODE_HADOOP_PARAMS = JobParams.define("sqoop.mode.hadoop.params", (BiFunction<String, SubExchangisJob, JobParamSet>) (k, job) -> {
         MODE_TYPE modeParam = MODE_ENUM.getValue(job);
         return modeParam.equals(IMPORT)? job.getRealmParams(REALM_JOB_CONTENT_SINK) : job.getRealmParams(REALM_JOB_CONTENT_SOURCE);
+    });
+
+    private static final JobParamDefine<String> META_TABLE_TYPE = JobParams.define("sqoop.meta.table.type", (BiFunction<String, SubExchangisJob, String>) (k, job) ->{
+        ExchangisJobBuilderContext context = getCurrentBuilderContext();
+        ExchangisJobInfo jobInfo = context.getOriginalJob();
+        return null;
     });
     /**
      * //TODO Get the file type from service
@@ -480,7 +487,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     @Override
     public ExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         try {
-            SqoopExchangisEngineJob engineJob = new SqoopExchangisEngineJob();
+            SqoopExchangisEngineJob engineJob = new SqoopExchangisEngineJob(expectOut);
             engineJob.setId(inputJob.getId());
             JobParamDefine<?>[] definitions = getParamDefinitions();
             Map<String, Object> jobContent = engineJob.getJobContent();
@@ -490,13 +497,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
                     jobContent.put(definition.getKey(), String.valueOf(paramValue));
                 }
             }
-            engineJob.setRuntimeParams(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
             engineJob.setName(inputJob.getName());
-            if (Objects.nonNull(expectOut)) {
-                engineJob.setName(expectOut.getName());
-                engineJob.setEngineType(expectOut.getEngineType());
-                jobContent.putAll(expectOut.getJobContent());
-            }
             engineJob.setCreateUser(inputJob.getCreateUser());
             return engineJob;
         } catch (Exception e) {
