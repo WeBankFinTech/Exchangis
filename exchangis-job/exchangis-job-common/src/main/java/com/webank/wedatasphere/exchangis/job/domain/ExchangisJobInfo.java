@@ -9,17 +9,17 @@ public class ExchangisJobInfo extends GenericExchangisJob {
     /**
      * Job content (JSON)
      */
-    private String jobContent;
+    protected String jobContent;
 
     /**
      * Execute user
      */
-    private String executeUser;
+    protected String executeUser;
 
     /**
      *  Job params (JSON)
      */
-    private String jobParams;
+    protected String jobParams;
 
     /**
      * Convert from view object

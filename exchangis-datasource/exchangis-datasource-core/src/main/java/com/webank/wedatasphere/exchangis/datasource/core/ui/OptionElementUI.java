@@ -1,6 +1,9 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui;
 
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+
 import java.util.Collection;
+import java.util.Map;
 
 public class OptionElementUI implements ElementUI<String> {
     private String key;
@@ -27,7 +30,7 @@ public class OptionElementUI implements ElementUI<String> {
 
     @Override
     public String getType() {
-        return ElementUI.OPTION;
+        return Type.OPTION.name();
     }
 
     public void setField(String field) {
@@ -61,6 +64,11 @@ public class OptionElementUI implements ElementUI<String> {
 
     @Override
     public String getDefaultValue() { return defaultValue; }
+
+    @Override
+    public void setValue(Map<String, Object> params) {
+        this.value = Json.toJson(params.values(), null);
+    }
 
     public void setDefaultValue(String defaultValue) { this.defaultValue = defaultValue; }
 
