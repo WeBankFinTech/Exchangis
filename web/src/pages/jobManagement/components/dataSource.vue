@@ -259,7 +259,27 @@ export default defineComponent({
         dataSource.dataSourceIds.source.type,
         "source"
       ).then((res) => {
-        res.uis.forEach((ui) => {
+        res.uis.forEach((ui, index) => {
+          /*if (!ui) {
+            res.uis[index] = ui = {
+              key: 'partition.source',
+              field: 'partition',
+              label: '分区信息',
+              sort: 2,
+              value: null,
+              defaultValue: null,
+              unit: '',
+              required: false,
+              validateType: 'REGEX',
+              validateRange: '',
+              validateMsg: 'xxx',
+              source: '/api/rest_j/v1/exchangis/job/partitionInfo',
+              type: 'MAP'
+            }
+          }
+          if (ui.source) {
+          ui.source = ui.source + '?_=' + Math.random()
+          }*/
           if (!ui.value && ui.defaultValue) {
             ui.value = ui.defaultValue;
           }
