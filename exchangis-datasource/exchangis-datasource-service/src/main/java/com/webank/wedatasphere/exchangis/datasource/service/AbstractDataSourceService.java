@@ -19,6 +19,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoCont
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
 import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
+import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import org.apache.linkis.datasource.client.request.GetInfoByDataSourceIdAction;
 import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
@@ -277,12 +278,19 @@ public class AbstractDataSourceService {
 
     private ElementUI<?> fillElementUIValue(ExchangisJobParamConfig config, Object value) {
         String uiType = config.getUiType();
-        switch (uiType) {
-            case ElementUI.OPTION:
+        ElementUI.Type uiTypeEnum;
+        try {
+            uiTypeEnum = StringUtils.isNotBlank(uiType)?
+                    ElementUI.Type.valueOf(uiType.toUpperCase(Locale.ROOT)) : ElementUI.Type.NONE;
+        }catch (Exception e){
+            uiTypeEnum = ElementUI.Type.NONE;
+        }
+        switch (uiTypeEnum) {
+            case OPTION:
                 return fillOptionElementUIValue(config, String.valueOf(value));
-            case ElementUI.INPUT:
+            case INPUT:
                 return fillInputElementUIValue(config, String.valueOf(value));
-            case ElementUI.MAP:
+            case MAP:
                 Map<String, Object> mapElement = null;
                 try {
                     mapElement = Json.fromJson(String.valueOf(value), Map.class);

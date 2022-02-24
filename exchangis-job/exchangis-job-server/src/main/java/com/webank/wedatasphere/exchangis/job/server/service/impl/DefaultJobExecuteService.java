@@ -143,14 +143,12 @@ public class DefaultJobExecuteService implements JobExecuteService {
         boolean allTaskStatus = false;
 
         assert jobProgressVo != null;
-        if(!"Inited".equals(jobProgressVo.getStatus().toString()) || !jobProgressVo.getStatus().toString().equals("Scheduled") || !jobProgressVo.getStatus().toString().equals("Running") || !jobProgressVo.getStatus().toString().equals("WaitForRetry")) {
+        if(TaskStatus.isCompleted(jobProgressVo.getStatus())) {
             List<String> taskStatusList = launchedTaskDao.getTaskStatusList(jobExecutionId);
-            if (taskStatusList.isEmpty() && this.launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId).isEmpty()) {
-                allTaskStatus = true;
-            } else if (!taskStatusList.isEmpty()) {
-                if (!taskStatusList.contains("Inited") || !taskStatusList.contains("Scheduled") || !taskStatusList.contains("Running") || !taskStatusList.contains("WaitForRetry")) {
-                    allTaskStatus = true;
-                }
+            allTaskStatus = taskStatusList.isEmpty();
+            if (!allTaskStatus){
+                allTaskStatus = taskStatusList.stream().allMatch( status ->
+                        StringUtils.isNotBlank(status) && TaskStatus.isCompleted(TaskStatus.valueOf(status)));
             }
         }
         jobProgressVo.setAllTaskStatus(allTaskStatus);
