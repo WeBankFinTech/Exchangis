@@ -11,12 +11,14 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Default implements
  */
 public class DefaultExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<SubExchangisJob, ExchangisEngineJob> {
 
+    private static final String ENGINE_JOB_MEMORY_USED = "setting.max.memory";
     @Override
     public int priority() {
         return Integer.MIN_VALUE;
@@ -32,6 +34,9 @@ public class DefaultExchangisEngineJobBuilder extends AbstractExchangisJobBuilde
                 exchangisEngineJob.getJobContent().putAll(jobParams);
             }
         }
+        Map<String, Object> settings = inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false);
+        Optional.ofNullable(settings.get(ENGINE_JOB_MEMORY_USED)).ifPresent(memoryUsed -> exchangisEngineJob.setMemoryUsed(Long.valueOf(String.valueOf(memoryUsed))));
+        exchangisEngineJob.setRuntimeParams(settings);
         exchangisEngineJob.setEngineType(ctx.getOriginalJob().getEngineType());
         exchangisEngineJob.setName(inputJob.getName());
         exchangisEngineJob.setJobLabel(ctx.getOriginalJob().getJobLabel());
