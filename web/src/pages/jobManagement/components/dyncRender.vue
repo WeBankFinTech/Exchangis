@@ -70,13 +70,17 @@ export default defineComponent({
       value.value = val.value
       if (type === 'MAP') {
         value.value = value.value || {}
-        partitionArr.value.forEach(partition => {
-          if (partition.type === 'OPTION') {
-            partition.value = value.value[partition.label] ? [value.value[partition.label]] : []
-          } else {
-            partition.value = value.value[partition.label] ? value.value[partition.label] : partition.defaultValue || ''
-          }
-        })
+        if (val.source === oldVal.source) {
+          partitionArr.value.forEach(partition => {
+            if (partition.type === 'OPTION') {
+              partition.value = value.value[partition.label] ? [value.value[partition.label]] : []
+            } else {
+              partition.value = value.value[partition.label] ? value.value[partition.label] : partition.defaultValue || ''
+            }
+          })
+        } else {
+          _buildMap()
+        }
       }
     });
     let checkOptions = []
@@ -90,6 +94,7 @@ export default defineComponent({
     }
     let partitionArr = ref([])
     const _buildMap = function () {
+      partitionArr.value = []
       let url = source.split('?')[0]
       getPartitionInfo({
         source: url,
@@ -124,7 +129,7 @@ export default defineComponent({
           }
         })
         .catch(err => {
-          message.error("或许分区信息失败");
+          message.error("获取分区信息失败");
         })
     }
     if (type === 'MAP') {
