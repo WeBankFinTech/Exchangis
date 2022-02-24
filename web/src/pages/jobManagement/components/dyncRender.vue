@@ -19,7 +19,7 @@
         <a-input
           v-if="item.type === 'INPUT'"
           v-model:value="item.value"
-          @change="handleChange"
+          @change="handleChange(item.value, item)"
           style="margin-left: 5px;width: 60%"
         />
         <a-select
@@ -64,13 +64,23 @@ export default defineComponent({
   setup(props, context) {
     let { type, field, value, unit, source} = props.param;
     value = ref(value)
-    type = ref(type)
     let tmlName = field.split(".").pop();
     const newProps = computed(() => JSON.parse(JSON.stringify(props.param)));
     watch(newProps, (val, oldVal) => {
-      value.value = val.value;
+      value.value = val.value
       if (type === 'MAP') {
-        _buildMap()
+        value.value = value.value || {}
+        if (val.source === oldVal.source) {
+          partitionArr.value.forEach(partition => {
+            if (partition.type === 'OPTION') {
+              partition.value = value.value[partition.label] ? [value.value[partition.label]] : []
+            } else {
+              partition.value = value.value[partition.label] ? value.value[partition.label] : partition.defaultValue || ''
+            }
+          })
+        } else {
+          _buildMap()
+        }
       }
     });
     let checkOptions = []
@@ -98,7 +108,8 @@ export default defineComponent({
               partitionArr.value.push({
                 type: 'INPUT',
                 label: i,
-                value: value && value[i] ? value[i] : res.render[i]
+                value: value && value[i] ? value[i] : res.render[i],
+                defaultValue: res.render[i]
               })
             } else {
               let checkOptions = []
@@ -118,7 +129,7 @@ export default defineComponent({
           }
         })
         .catch(err => {
-          message.error("或许分区信息失败");
+          message.error("获取分区信息失败");
         })
     }
     if (type === 'MAP') {
