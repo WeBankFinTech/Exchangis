@@ -3,7 +3,7 @@
     <div class="tools-bar">
       <span @click="modalCfg.visible = true"><SettingOutlined />配置</span>
       <div class="divider"></div>
-      <span @click="executeTask" v-if="!spinning" ><CaretRightOutlined />执行</span>
+      <span @click="executeTask" v-if="!spinning"><CaretRightOutlined />执行</span>
       <a-popconfirm
         v-else
         title="是否终止?"
@@ -921,6 +921,9 @@ export default {
     },
     // 执行任务
     executeTask() {
+      if (!this.list.length) {
+        return message.error('没有子任务')
+      }
       this.saveAll(() => {
         const { id } = this.curTab;
         this.tasklist = []
