@@ -129,6 +129,7 @@
       :mode="modalCfg.mode"
       :modalCfg="modalCfg"
       @finish="handleModalFinish"
+      :zIndex="1002"
     />
   </div>
 </template>
