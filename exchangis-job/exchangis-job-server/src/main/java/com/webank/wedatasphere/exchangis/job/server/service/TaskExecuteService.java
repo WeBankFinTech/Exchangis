@@ -17,7 +17,7 @@ public interface TaskExecuteService extends TaskExecutionListener {
      * @param task task
      * @param status status
      */
-    void updateTaskStatus(LaunchedExchangisTask task, TaskStatus status) throws ExchangisOnEventException;
+    void updateTaskStatus(LaunchedExchangisTask task, TaskStatus status, boolean updateJob) throws ExchangisOnEventException;
 
     void updateTaskProgress(LaunchedExchangisTask task, float progress) throws ExchangisOnEventException;
 

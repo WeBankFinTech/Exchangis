@@ -75,6 +75,8 @@ public class DefaultTaskGenerator extends AbstractTaskGenerator{
         }
         ExchangisJobBuilderManager jobBuilderManager = getExchangisJobBuilderManager();
         ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext(jobInfo, generatorContext.getJobLogListener());
+        // Set the metadata service
+        ctx.setMetadataInfoService(generatorContext.getMetadataInfoService());
         ctx.putEnv("USER_NAME", tenancy);
         // ExchangisJobInfo -> TransformExchangisJob(SubExchangisJob)
         try {

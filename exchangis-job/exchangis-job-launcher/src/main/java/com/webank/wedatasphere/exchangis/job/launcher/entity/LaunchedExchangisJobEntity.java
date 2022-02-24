@@ -50,6 +50,7 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
         this.jobId = job.getId();
         this.jobName = job.getName();
         this.executeUser = job.getExecUser();
+        this.createUser = job.getCreateUser();
         this.createTime = job.getCreateTime();
         this.lastUpdateTime = job.getLastUpdateTime();
         this.jobExecutionId = job.getJobExecutionId();
