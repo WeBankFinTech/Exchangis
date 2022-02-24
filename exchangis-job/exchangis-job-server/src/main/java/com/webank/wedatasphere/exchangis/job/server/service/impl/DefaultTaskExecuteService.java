@@ -48,8 +48,9 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     public void onStatusUpdate(TaskStatusUpdateEvent statusUpdateEvent) throws ExchangisOnEventException {
         LaunchedExchangisTask task = statusUpdateEvent.getLaunchedExchangisTask();
         TaskStatus status = statusUpdateEvent.getUpdateStatus();
+        LaunchedExchangisJobEntity launchedJob = null;
         if (!TaskStatus.isCompleted(status)){
-            LaunchedExchangisJobEntity launchedJob = launchedJobDao.searchLaunchedJob(task.getJobExecutionId());
+            launchedJob = launchedJobDao.searchLaunchedJob(task.getJobExecutionId());
             TaskStatus jobStatus = launchedJob.getStatus();
             if (TaskStatus.isCompleted(jobStatus) && Objects.nonNull(task.getLauncherTask())){
                 // Kill the remote task
@@ -64,7 +65,9 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
         }
         // Have different status, then update
         if (!task.getStatus().equals(status)){
-            getSelfService().updateTaskStatus(task, status);
+            launchedJob = Objects.isNull(launchedJob) ?
+                    launchedJobDao.searchLaunchedJob(task.getJobExecutionId()) : launchedJob;
+            getSelfService().updateTaskStatus(task, status, !TaskStatus.isCompleted(launchedJob.getStatus()));
         }
     }
 
@@ -105,15 +108,17 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateTaskStatus(LaunchedExchangisTask task, TaskStatus status) throws ExchangisOnEventException {
+    public void updateTaskStatus(LaunchedExchangisTask task, TaskStatus status, boolean updateJob) throws ExchangisOnEventException {
         JobLogCacheUtils.flush(task.getJobExecutionId(), false);
         task.setLastUpdateTime(Calendar.getInstance().getTime());
         launchedTaskDao.upgradeLaunchedTaskStatus(task.getTaskId(), status.name(), task.getLastUpdateTime());
-        if (status == TaskStatus.Failed || status == TaskStatus.Cancelled){
-            // Update directly, no open another transaction
-            launchedJobDao.upgradeLaunchedJobStatus(task.getJobExecutionId(), status.name(), task.getLastUpdateTime());
-        } else if (status == TaskStatus.Success){
-            getSelfService().updateJobStatus(task.getJobExecutionId(), TaskStatus.Success, task.getLastUpdateTime());
+        if (updateJob) {
+            if (status == TaskStatus.Failed || status == TaskStatus.Cancelled) {
+                // Update directly, no open another transaction
+                launchedJobDao.upgradeLaunchedJobStatus(task.getJobExecutionId(), status.name(), task.getLastUpdateTime());
+            } else if (status == TaskStatus.Success) {
+                getSelfService().updateJobStatus(task.getJobExecutionId(), TaskStatus.Success, task.getLastUpdateTime());
+            }
         }
     }
 
