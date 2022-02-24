@@ -1176,9 +1176,8 @@ export default {
     overflow: hidden;
     width: 100%;
     .wrap-spin {
-      height: calc(100vh - 130px)
+      height: calc(100vh - 82px)
     }
-    /*height: calc(100vh - 130px);*/
     .jd_left {
       float: left;
       width: 250px;
@@ -1376,7 +1375,7 @@ export default {
   }
   .emptyTab {
     font-size: 16px;
-    height: calc(100vh - 130px);
+    height: calc(100vh - 82px);
     width: 100%;
     display: flex;
     justify-content: center;
