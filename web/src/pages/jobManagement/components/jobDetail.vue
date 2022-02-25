@@ -22,87 +22,89 @@
     <div class="jd-content" v-if="list.length !== 0">
       <a-spin size="large" :spinning="loading" wrapperClassName="wrap-spin">
         <div class="jd_left">
-          <div class="sub-title">
-            <span>子任务列表</span>
-          </div>
-          <div v-for="(item, idx) in list" :key="idx" :class="getClass(idx)">
-            <div class="task-title">
-              <div
-                class="subjobName"
-                v-if="
+          <div class="left-wrap">
+            <div class="sub-title">
+              <span>子任务列表</span>
+            </div>
+            <div v-for="(item, idx) in list" :key="idx" :class="getClass(idx)">
+              <div class="task-title">
+                <div
+                  class="subjobName"
+                  v-if="
                   activeIndex !== idx || (activeIndex === idx && !nameEditable)
                 "
-                @click="changeCurTask(idx)"
-                :title="item.subJobName"
-              >
-                {{ item.subJobName }}
+                  @click="changeCurTask(idx)"
+                  :title="item.subJobName"
+                >
+                  {{ item.subJobName }}
+                </div>
+                <a-input
+                  @pressEnter="nameEditable = false"
+                  @blur="nameEditable = false"
+                  ref="currentInput"
+                  v-model:value="item.subJobName"
+                  v-if="activeIndex === idx && nameEditable"
+                ></a-input>
+                <a-popconfirm
+                  title="是否删除子任务?"
+                  ok-text="确定"
+                  cancel-text="取消"
+                  @confirm="deleteSub(idx)"
+                  @cancel="cancel"
+                >
+                  <DeleteOutlined class="delete-icon" />
+                </a-popconfirm>
+                <a-popconfirm
+                  title="是否复制子任务?"
+                  ok-text="确定"
+                  cancel-text="取消"
+                  @confirm="copySub(item)"
+                  @cancel="cancel"
+                >
+                  <CopyOutlined class="copy-icon" />
+                </a-popconfirm>
+                <EditOutlined
+                  @click="getEditableInput"
+                  v-if="activeIndex === idx && !nameEditable"
+                  class="rename-icon"
+                />
               </div>
-              <a-input
-                @pressEnter="nameEditable = false"
-                @blur="nameEditable = false"
-                ref="currentInput"
-                v-model:value="item.subJobName"
-                v-if="activeIndex === idx && nameEditable"
-              ></a-input>
-              <a-popconfirm
-                title="是否删除子任务?"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="deleteSub(idx)"
-                @cancel="cancel"
-              >
-                <DeleteOutlined class="delete-icon" />
-              </a-popconfirm>
-              <a-popconfirm
-                title="是否复制子任务?"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="copySub(item)"
-                @cancel="cancel"
-              >
-                <CopyOutlined class="copy-icon" />
-              </a-popconfirm>
-              <EditOutlined
-                @click="getEditableInput"
-                v-if="activeIndex === idx && !nameEditable"
-                class="rename-icon"
-              />
-            </div>
-            <template
-              v-if="
+              <template
+                v-if="
                 item.dataSourceIds &&
                 item.dataSourceIds.source &&
                 item.dataSourceIds.source.db
               "
-            >
-              <div
-                class="sub-table"
-                @click="changeCurTask(idx)"
-                :title="
+              >
+                <div
+                  class="sub-table"
+                  @click="changeCurTask(idx)"
+                  :title="
                   item.dataSourceIds.source.db +
                   '.' +
                   item.dataSourceIds.source.table
                 "
-              >
-                {{
+                >
+                  {{
                   item.dataSourceIds.source.db +
                   "." +
                   item.dataSourceIds.source.table
-                }}
-              </div>
-              <div class="arrow-down-icon" @click="changeCurTask(idx)"><ArrowDownOutlined /></div>
-              <div
-                class="sub-table"
-                @click="changeCurTask(idx)"
-                :title="
+                  }}
+                </div>
+                <div class="arrow-down-icon" @click="changeCurTask(idx)"><ArrowDownOutlined /></div>
+                <div
+                  class="sub-table"
+                  @click="changeCurTask(idx)"
+                  :title="
                   item.dataSourceIds.sink.db + '.' + item.dataSourceIds.sink.table
                 "
-              >
-                {{
+                >
+                  {{
                   item.dataSourceIds.sink.db + "." + item.dataSourceIds.sink.table
-                }}
-              </div>
-            </template>
+                  }}
+                </div>
+              </template>
+            </div>
           </div>
           <a-button
             size="large"
@@ -113,6 +115,7 @@
               line-height: 22px;
               font-weight: 400;
               border: 1px dashed #dee4ec;
+              margin: 0 15px;
             "
             @click="addNewTask"
           >
@@ -1184,11 +1187,15 @@ export default {
     .jd_left {
       float: left;
       width: 250px;
-      padding: 0 15px;
       background-color: #f8f9fc;
       border-right: 1px solid #dee4ec;
       padding-bottom: 2000px;
       margin-bottom: -2000px;
+      .left-wrap {
+        max-height: calc(100vh - 82px);
+        overflow-y: scroll;
+        padding: 0 15px;
+      }
       .sub-title {
         font-size: 14px;
         margin-top: 16px;
