@@ -52,7 +52,7 @@
                   @confirm="deleteSub(idx)"
                   @cancel="cancel"
                 >
-                  <DeleteOutlined class="delete-icon" />
+                  <DeleteOutlined title="删除" class="delete-icon" />
                 </a-popconfirm>
                 <a-popconfirm
                   title="是否复制子任务?"
@@ -61,7 +61,7 @@
                   @confirm="copySub(item)"
                   @cancel="cancel"
                 >
-                  <CopyOutlined class="copy-icon" />
+                  <CopyOutlined title="复制" class="copy-icon" />
                 </a-popconfirm>
                 <EditOutlined
                   @click="getEditableInput"
