@@ -5,6 +5,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisServ
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
 import com.webank.wedatasphere.exchangis.datasource.core.service.rpc.ServiceRpcClient;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
+import com.webank.wedatasphere.exchangis.datasource.linkis.partition.MetadataGetPartitionsResult;
 import com.webank.wedatasphere.exchangis.datasource.linkis.request.MetadataGetPartitionPropsAction;
 import com.webank.wedatasphere.exchangis.datasource.linkis.response.MetadataGetPartitionPropsResult;
 import com.webank.wedatasphere.exchangis.datasource.linkis.service.rpc.LinkisDataSourceServiceOperation;
@@ -12,7 +13,7 @@ import com.webank.wedatasphere.exchangis.datasource.linkis.service.rpc.LinkisDat
 import org.apache.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
 import org.apache.linkis.datasource.client.request.MetadataGetPartitionsAction;
 import org.apache.linkis.datasource.client.request.MetadataGetTablePropsAction;
-import org.apache.linkis.datasource.client.response.MetadataGetPartitionsResult;
+//import org.apache.linkis.datasource.client.response.MetadataGetPartitionsResult;
 import org.apache.linkis.datasource.client.response.MetadataGetTablePropsResult;
 
 import java.util.List;
