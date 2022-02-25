@@ -10,7 +10,7 @@
     </a-select>
     <a-tabs type="card" default-active-key="all" size="small">
       <a-tab-pane key="all" tab="All" class="log-textarea">
-        <a-textarea id="t1" auto-size="{ minRows: 10, maxRows: 20 }" v-bind:value="curLog.all"></a-textarea>
+        <a-textarea id="t1" :auto-size="{ minRows: 10, maxRows: 20 }" v-bind:value="curLog.all"></a-textarea>
       </a-tab-pane>
       <a-tab-pane key="error" tab="Error" class="log-textarea">
         <a-textarea id="t2" :auto-size="{ minRows: 10, maxRows: 20 }" v-bind:value="curLog.error"></a-textarea>
