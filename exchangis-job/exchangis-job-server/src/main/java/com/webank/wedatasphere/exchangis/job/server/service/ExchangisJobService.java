@@ -3,13 +3,14 @@ package com.webank.wedatasphere.exchangis.job.server.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobErrorException;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
 import org.springframework.web.multipart.MultipartFile;
+import scala.Int;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
  * @author yuxin.yuan
  * @since 2021-08-10
  */
-public interface ExchangisJobService extends IService<ExchangisJob> {
+public interface ExchangisJobService extends IService<ExchangisJobVO> {
 
     /**
      * Create job.
@@ -38,7 +39,9 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      * @param name      the name
      * @return the job list
      */
-    public List<ExchangisJobBasicInfoVO> getJobList(long projectId, String type, String name);
+    public List<ExchangisJobBasicInfoVO> getJobList(long projectId, String type, String name, int current, int size);
+
+    int count(long projectId, String type, String name);
 
     public List<ExchangisJobBasicInfoVO> getJobListByDssProject(long dssProjectId, String type, String name);
 
@@ -61,17 +64,17 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
 
     public void deleteJobByDss(String nodeId);
 
-    public ExchangisJob getJob(Long id) throws ExchangisJobErrorException;
+    public ExchangisJobVO getJob(Long id) throws ExchangisJobServerException;
     /**
      * Get exchangis job by id.
      *
      * @param id the id
      * @return the job
-     * @throws ExchangisJobErrorException the exchangis job error exception
+     * @throws ExchangisJobServerException the exchangis job error exception
      */
-    public ExchangisJob getJob(HttpServletRequest request, Long id) throws ExchangisJobErrorException;
+    public ExchangisJobVO getJob(HttpServletRequest request, Long id) throws ExchangisJobServerException;
 
-    public ExchangisJob getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobErrorException;
+    public ExchangisJobVO getJobByDss(HttpServletRequest request, String nodeId) throws ExchangisJobServerException;
 
     /**
      * Update exchangis job config.
@@ -80,8 +83,8 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      * @param id                     the id
      * @return the exchangis job
      */
-    public ExchangisJob updateJobConfig(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
-            throws ExchangisJobErrorException;
+    public ExchangisJobVO updateJobConfig(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
+            throws ExchangisJobServerException;
 
     /**
      * Update exchangis job content.
@@ -90,10 +93,10 @@ public interface ExchangisJobService extends IService<ExchangisJob> {
      * @param id                     the id
      * @return the exchangis job
      */
-    public ExchangisJob updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
-            throws ExchangisJobErrorException, ExchangisDataSourceException;
+    public ExchangisJobVO updateJobContent(ExchangisJobContentDTO exchangisJobContentDTO, Long id)
+            throws ExchangisJobServerException, ExchangisDataSourceException;
 
-     public  List<ElementUI> getSpeedLimitSettings(Long id, String taskName);
+     public  List<ElementUI<?>> getSpeedLimitSettings(Long id, String taskName);
 
      public void setSpeedLimitSettings(Long id, String taskName, ExchangisTaskSpeedLimitVO settings);
 }

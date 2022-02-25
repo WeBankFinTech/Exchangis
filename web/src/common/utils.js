@@ -61,3 +61,50 @@ export const randomString = (len) => {
   }
   return pwd;
 };
+
+export const moveUpDown = (targetSelector, wrapSelector, moveTopSelector, boundaryTop = 200, boundaryBottom = 200) => {
+  let box = document.querySelector(targetSelector),
+    top = moveTopSelector ? document.querySelector(moveTopSelector) : box,
+    wrap = document.querySelector(wrapSelector)
+  top.onmousedown = (ev) => {
+    let e = ev || window.event;
+    //计算出鼠标按下的点到box的上侧边缘
+    let restTop = e.clientY - box.offsetTop;
+    let topRestTop = e.clientY - top.offsetTop;
+    document.onmousemove = function (ev) {
+      let e = ev || window.event;
+      let boxTop = e.clientY - restTop;
+      let topTop = e.clientY - topRestTop;
+      const contentHeight = document.body.offsetHeight - wrap.offsetTop
+      // 头部限制默认为 350px
+      if (boxTop - wrap.offsetTop < boundaryTop) {
+        boxTop = boundaryTop
+      }
+      if (topTop - wrap.offsetTop + top.offsetHeight < boundaryTop) {
+        topTop = boundaryTop - top.offsetHeight
+      }
+      // 底部限制默认为 350px
+      if (contentHeight - boxTop < boundaryBottom) {
+        boxTop = contentHeight - boundaryBottom
+      }
+      if (contentHeight - topTop -top.offsetHeight < boundaryBottom) {
+        topTop = contentHeight - boundaryBottom - top.offsetHeight
+      }
+
+      box.style.top = boxTop + "px"
+      box.style.height = contentHeight - boxTop + top.offsetHeight + "px"
+      top.style.top = topTop + "px"
+
+      // 设置textarea滚动
+      let area = document.querySelector('.ant-tabs-tabpane-active.log-textarea')
+      if (area) {
+        area.style.overflowY = 'auto'
+        area.style.height = contentHeight - boxTop - 45 + "px"
+      }
+    };
+    document.onmouseup = function () {
+      document.onmousemove = null;
+      document.onmouseup = null;
+    }
+  }
+}

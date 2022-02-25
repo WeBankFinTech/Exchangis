@@ -1,6 +1,10 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui;
 
-public class InputElementUI implements ElementUI {
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+
+import java.util.Map;
+
+public class InputElementUI implements ElementUI<String> {
     private String key;
     private String field;
     private String label;
@@ -12,6 +16,15 @@ public class InputElementUI implements ElementUI {
     private String validateType;
     private String validateRange;
     private String validateMsg;
+    private String source;
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public String getKey() {
         return key;
@@ -41,7 +54,7 @@ public class InputElementUI implements ElementUI {
 
     @Override
     public String getType() {
-        return ElementUI.INPUT;
+        return Type.INPUT.name();
     }
 
     @Override
@@ -64,6 +77,12 @@ public class InputElementUI implements ElementUI {
 
     @Override
     public String getDefaultValue() { return defaultValue; }
+
+    @Override
+    public void setValue(Map<String, Object> params) {
+        // Convert to json string directly
+        this.value = Json.toJson(params, null);
+    }
 
     public void setDefaultValue(String defaultValue) { this.defaultValue = defaultValue; }
 

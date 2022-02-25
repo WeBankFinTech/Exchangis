@@ -1,14 +1,18 @@
 <template>
   <div class="table-warp" style="padding-bottom: 32px;">
     <form-create :rule="rule" v-model:api="fApi" :option="options" v-model="formData"/>
-    <a-button type="primary" @click="submit" style="float: right;margin: 0 0 0 10px;">确定</a-button>
+    <a-button v-if="data.mode === 'edit'" @click="handleTestConnect(row)" type="primary">{{
+      $t("dataSource.table.list.columns.actions.testConnectButton")
+      }}</a-button>
+    <a-button type="primary" @click="submit" style="float: right;margin: 0 0 0 10px;" v-if="data.mode !== 'read'">确定</a-button>
     <a-button @click="$emit('cancel')" style="float: right">取消</a-button>
   </div>
 </template>
 <script>
 import _, { merge, mergeWith} from 'lodash-es';
-import {getKeyDefine, getDataSourceById} from "@/common/service";
+import {getKeyDefine, getDataSourceById, testDataSourceConnect} from "@/common/service";
 import { request } from "@fesjs/fes";
+import { message } from "ant-design-vue"
 
 const type = {
   TEXT: {type: 'input'},
@@ -104,6 +108,7 @@ export default {
       options: {
         submitBtn: false,
       },
+      originalDefine: [],
       rule: [],
       defaultRule: [
         {
@@ -118,6 +123,10 @@ export default {
             required: true,
             message: `${this.$t('message.linkis.datasource.pleaseInput')}${this.$t('message.linkis.datasource.sourceName')}`,
             trigger: 'blur'
+          },{
+            pattern: /^(.){0,240}$/,
+            message: '最多240字',
+            trigger: 'change'
           }],
         },
         {
@@ -127,7 +136,12 @@ export default {
           value: "",
           props: {
             "placeholder": this.$t('message.linkis.datasource.sourceDec'),
-          }
+          },
+          validate: [{
+            pattern: /^(.){0,240}$/,
+            message: '最多240字',
+            trigger: 'change'
+          }]
         },
         {
           type: "input",
@@ -136,7 +150,12 @@ export default {
           value: "",
           props: {
             "placeholder": this.$t('message.linkis.datasource.label'),
-          }
+          },
+          validate: [{
+            pattern: /^(.){0,240}$/,
+            message: '最多240字',
+            trigger: 'change'
+          }]
         }
       ],
 
@@ -149,6 +168,7 @@ export default {
     
     getKeyDefine(this.data.type).then((data)=>{
       this.loading = false;
+      this.originalDefine = data.list
       this.transformData(data.list);
     })
   },
@@ -156,6 +176,7 @@ export default {
     data: {
       handler (newV) {
         getKeyDefine(this.data.type).then((data)=>{
+          this.originalDefine = data.list
           this.transformData(data.list);
           this.getDataSource(newV);
         })
@@ -166,7 +187,7 @@ export default {
   methods: {
     getDataSource(newV){
       if(this.data.id){
-        getDataSourceById(newV.id).then(result=>{
+        getDataSourceById(newV.id, newV.versionId).then(result=>{
           const mConnect = result.info.connectParams;
           this.sourceConnectData = mConnect;
           delete result.info.connectParams;
@@ -259,8 +280,13 @@ export default {
     submit(){
       this.fApi.submit((formData, fApi)=>{
         console.log(JSON.stringify(formData))
-        this.$emit("submit", JSON.stringify(formData));
+        this.$emit("submit", JSON.stringify(formData), this.originalDefine);
       })
+    },
+    // 测试链接
+    async handleTestConnect() {
+      await testDataSourceConnect(this.data.id, this.data.versionId);
+      message.success("连接成功");
     }
   }
 }

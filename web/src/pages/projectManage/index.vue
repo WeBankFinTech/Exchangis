@@ -82,27 +82,33 @@
               <project-create-card @action="handleCreateCardAction" />
             </a-col> -->
               <!-- 视图卡片 -->
-              <a-col v-for="item in projectListData" :key="item.id">
-                <project-view-card
-                  @delete="handleOnDelteProject"
-                  @edit="handleOnEditProject"
-                  :name="item.name"
-                  :describe="item.describe"
-                  :id="item.id"
-                  :tags="item.tags"
-                />
-              </a-col>
-              <!-- 分页行 -->
-              <a-col :span="24">
-                <div class="pagination-line">
-                  <a-pagination
-                    v-model:current="pageCfg.current"
-                    v-model:pageSize="pageCfg.pageSize"
-                    :total="projectList.lenght"
-                    show-less-items
+              <template v-if="projectList.length">
+                <a-col v-for="item in projectList" :key="item.id">
+                  <project-view-card
+                    @delete="handleOnDelteProject"
+                    @edit="handleOnEditProject"
+                    :name="item.name"
+                    :describe="item.describe"
+                    :id="item.id"
+                    :tags="item.tags"
                   />
-                </div>
-              </a-col>
+                </a-col>
+                <!-- 分页行 -->
+                <a-col :span="24" style="position: fixed;right: 10px;bottom: 10px">
+                  <div class="pagination-line">
+                    <a-pagination
+                      v-model:current="pageCfg.current"
+                      v-model:pageSize="pageCfg.size"
+                      @change="handleChangePage"
+                      :total="total"
+                      show-less-items
+                    />
+                  </div>
+                </a-col>
+              </template>
+              <template v-else>
+                <a-empty style="width: 100%"/>
+              </template>
             </a-row>
           </a-spin>
         </div>
@@ -157,22 +163,19 @@ export default {
       // 分页配置
       pageCfg: {
         current: 1,
-        pageSize: 11,
+        size: 10,
       },
+      total : 0
     };
   },
   computed: {
-    projectListData() {
-      let strIndex =
-        Math.max(this.pageCfg.current - 1, 0) * this.pageCfg.pageSize;
-      return this.projectList.slice(strIndex, strIndex + this.pageCfg.pageSize);
-    },
   },
   methods: {
-    async getDataList(name) {
+    async getDataList(name='', current=1, size=10) {
       this.loading = true;
-      let { list } = await getProjectList(name);
+      let { list, total } = await getProjectList(name, current, size);
       this.loading = false;
+      this.total = total
       this.projectList = list
         .map((item) => ({
           id: item.id,
@@ -180,10 +183,10 @@ export default {
           describe: item.description,
           tags: item.tags.split(","),
         }))
-        .reverse();
     },
     // 模态框操作完成
     handleModalFinish() {
+      this.pageCfg.current = 1;
       this.getDataList();
     },
     // 新建卡片点击
@@ -202,6 +205,7 @@ export default {
     async handleOnDelteProject(id) {
       await deleteProject(id);
       message.success("删除成功");
+      this.pageCfg.current = 1;
       this.getDataList();
     },
     // 编辑项目
@@ -212,6 +216,10 @@ export default {
         id: id,
       };
     },
+    handleChangePage(current) {
+      this.pageCfg.current = current
+      this.getDataList(this.projectName, current)
+    }
   },
   async mounted() {
     this.getDataList();
