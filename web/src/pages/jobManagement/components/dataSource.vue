@@ -260,7 +260,7 @@ export default defineComponent({
         "source"
       ).then((res) => {
         res.uis.forEach((ui, index) => {
-          /*if (!ui) {
+          /*if (ui.type && ui.type === 'MAP') {
             res.uis[index] = ui = {
               key: 'partition.source',
               field: 'partition',
@@ -278,7 +278,7 @@ export default defineComponent({
             }
           }
           if (ui.source) {
-          ui.source = ui.source + '?_=' + Math.random()
+            ui.source = ui.source + '?_=' + Math.random()
           }*/
           if (!ui.value && ui.defaultValue) {
             ui.value = ui.defaultValue;
