@@ -47,6 +47,5 @@ public interface ExchangisJob extends ExchangisBase{
      */
     String getCreateUser();
 
-    @Override
     void setCreateUser(String createUser);
 }
