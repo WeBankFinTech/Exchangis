@@ -32,13 +32,33 @@ public class ExchangisDataSourceRestfulApi {
     // list all datasource types
     @RequestMapping( value = "/type", method = RequestMethod.GET)
     public Message listDataSourceTypes(HttpServletRequest request) throws Exception {
-        return this.exchangisDataSourceService.listDataSources(request);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.listDataSources(request);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while list datasource type";
+            LOG.error(errorMessage, e);
+            message = Message.error("获取数据源类型列表失败");
+        }
+        return message;
+
+        //return this.exchangisDataSourceService.listDataSources(request);
     }
 
     // query paged datasource
     @RequestMapping( value = "/query", method = {RequestMethod.GET,RequestMethod.POST})
     public Message create(HttpServletRequest request, @RequestBody DataSourceQueryVO vo) throws Exception {
-        return this.exchangisDataSourceService.queryDataSources(request, vo);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.queryDataSources(request, vo);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while query datasource";
+            LOG.error(errorMessage, e);
+            message = Message.error("查询数据源失败");
+        }
+        return message;
+
+        //return this.exchangisDataSourceService.queryDataSources(request, vo);
     }
 
     // list all datasources
@@ -51,7 +71,17 @@ public class ExchangisDataSourceRestfulApi {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size
     ) throws Exception {
-        return this.exchangisDataSourceService.listAllDataSources(request, typeName, typeId, page, size);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.listAllDataSources(request, typeName, typeId, page, size);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while getting datasource list";
+            LOG.error(errorMessage, e);
+            message = Message.error("获取数据源列表失败");
+        }
+        return message;
+
+        //return this.exchangisDataSourceService.listAllDataSources(request, typeName, typeId, page, size);
     }
 
     // get datasource key define
@@ -60,14 +90,34 @@ public class ExchangisDataSourceRestfulApi {
             HttpServletRequest request,
             @PathVariable("dataSourceTypeId") Long dataSourceTypeId
     ) throws Exception {
-        return this.exchangisDataSourceService.getDataSourceKeyDefine(request, dataSourceTypeId);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.getDataSourceKeyDefine(request, dataSourceTypeId);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while getting datasource key define";
+            LOG.error(errorMessage, e);
+            message = Message.error("获取数据源主键定义失败");
+        }
+        return message;
+
+        //return this.exchangisDataSourceService.getDataSourceKeyDefine(request, dataSourceTypeId);
     }
 
 
     // get datasource version list
     @RequestMapping( value = "/{id}/versions", method = RequestMethod.GET)
     public Message getDataSourceVersionsById(HttpServletRequest request, @PathVariable("id") Long id) throws Exception {
-        return this.exchangisDataSourceService.getDataSourceVersionsById(request, id);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.getDataSourceVersionsById(request, id);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while getting datasource version";
+            LOG.error(errorMessage, e);
+            message = Message.error("获取数据源版本失败");
+        }
+        return message;
+
+        //return this.exchangisDataSourceService.getDataSourceVersionsById(request, id);
     }
 
     // create datasource
@@ -79,7 +129,7 @@ public class ExchangisDataSourceRestfulApi {
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while create datasource";
             LOG.error(errorMessage, e);
-            message = Message.error("已存在同名任务");
+            message = Message.error("创建数据源失败");
         }
         return message;
         //return this.exchangisDataSourceService.create(request,/* type, */json);
@@ -88,31 +138,81 @@ public class ExchangisDataSourceRestfulApi {
     // get datasource details
     @RequestMapping( value = "/{id}", method = RequestMethod.GET)
     public Message getDataSourceInfoById(HttpServletRequest request, @PathVariable("id") Long id, @QueryParam(value = "versionId") String versionId) throws Exception {
-        return this.exchangisDataSourceService.getDataSource(request, id, versionId);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.getDataSource(request, id, versionId);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while getting datasource information";
+            LOG.error(errorMessage, e);
+            message = Message.error("获取数据源信息失败");
+        }
+        return message;
+
+        //return this.exchangisDataSourceService.getDataSource(request, id, versionId);
     }
 
     @RequestMapping( value = "/{id}/connect_params", method = RequestMethod.GET)
     public Message getDataSourceConnectParamsById(HttpServletRequest request, @PathVariable("id") Long id) throws Exception {
-        return this.exchangisDataSourceService.getDataSourceConnectParamsById(request, id);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.getDataSourceConnectParamsById(request, id);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while getting connect params";
+            LOG.error(errorMessage, e);
+            message = Message.error("获取数据源连接参数失败");
+        }
+        return message;
+
+        //return this.exchangisDataSourceService.getDataSourceConnectParamsById(request, id);
     }
 
     // update datasource and parameters (insert new record in datasource_version table)
     @RequestMapping( value = "/{id}", method = RequestMethod.PUT)
     public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, @RequestBody Map<String, Object> json) throws Exception {
-        return this.exchangisDataSourceService.updateDataSource(request, /*type, */id, json);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.updateDataSource(request, /*type, */id, json);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while update datasource";
+            LOG.error(errorMessage, e);
+            message = Message.error("更新数据源失败");
+        }
+        return message;
+
+        //return this.exchangisDataSourceService.updateDataSource(request, /*type, */id, json);
     }
 
     // publish datasource
     @RequestMapping( value = "/{id}/{version}/publish", method = RequestMethod.PUT)
     public Message publishDataSource(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id,
                                      @PathVariable("version") Long version) throws Exception {
-        return this.exchangisDataSourceService.publishDataSource(request, /*type, */id, version);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.publishDataSource(request, /*type, */id, version);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while publish datasource";
+            LOG.error(errorMessage, e);
+            message = Message.error("发布数据源失败");
+        }
+        return message;
+
+        //return this.exchangisDataSourceService.publishDataSource(request, /*type, */id, version);
     }
 
     // expire datasource
     @RequestMapping( value = "/{id}/expire", method = RequestMethod.PUT)
     public Message expireDataSource(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id) throws Exception {
-        return this.exchangisDataSourceService.expireDataSource(request, /*type, */id);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.expireDataSource(request, /*type, */id);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while expire datasource";
+            LOG.error(errorMessage, e);
+            message = Message.error("过期数据源失败");
+        }
+        return message;
+
+        //return this.exchangisDataSourceService.expireDataSource(request, /*type, */id);
     }
 
     // test datasource connect
@@ -163,19 +263,48 @@ public class ExchangisDataSourceRestfulApi {
     @RequestMapping( value = "/{type}/{id}/dbs/{dbName}/tables", method = RequestMethod.GET)
     public Message queryDataSourceDBTables(HttpServletRequest request, @PathVariable("type") String type,
                                            @PathVariable("id") Long id, @PathVariable("dbName") String dbName) throws Exception {
-        return this.exchangisDataSourceService.queryDataSourceDBTables(request, type, id, dbName);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.queryDataSourceDBTables(request, type, id, dbName);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while getting tables";
+            LOG.error(errorMessage, e);
+            message = Message.error("获取数据表失败");
+        }
+        return message;
+        //return this.exchangisDataSourceService.queryDataSourceDBTables(request, type, id, dbName);
     }
 
     @RequestMapping( value = "/{type}/{id}/dbs/{dbName}/tables/{tableName}/fields", method = RequestMethod.GET)
     public Message queryDataSourceDBTableFields(HttpServletRequest request, @PathVariable("type") String type,
                                                 @PathVariable("id") Long id, @PathVariable("dbName") String dbName,
                                                 @PathVariable("tableName") String tableName) throws Exception {
-        return this.exchangisDataSourceService.queryDataSourceDBTableFields(request, type, id, dbName, tableName);
+
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.queryDataSourceDBTableFields(request, type, id, dbName, tableName);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while getting table fields";
+            LOG.error(errorMessage, e);
+            message = Message.error("获取表字段失败");
+        }
+        return message;
+
+        //return this.exchangisDataSourceService.queryDataSourceDBTableFields(request, type, id, dbName, tableName);
     }
 
     @RequestMapping( value = "/fieldsmapping", method = RequestMethod.POST)
     public Message queryDataSourceDBTableFieldsMapping(HttpServletRequest request, @RequestBody FieldMappingVO vo) throws Exception {
-        return this.exchangisDataSourceService.queryDataSourceDBTableFieldsMapping(request, vo);
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.queryDataSourceDBTableFieldsMapping(request, vo);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while getting field List Information";
+            LOG.error(errorMessage, e);
+            message = Message.error("获取表字段列表信息失败，请检查数据源配置或更换数据源");
+        }
+        return message;
+        //return this.exchangisDataSourceService.queryDataSourceDBTableFieldsMapping(request, vo);
     }
 
     @RequestMapping( value = "/{engine}/{type}/params/ui", method = RequestMethod.GET)
