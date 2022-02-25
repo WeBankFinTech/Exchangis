@@ -2,11 +2,7 @@
   <div class="container">
     <a-modal
       :visible="visible"
-      :title="
-        !formState.originName
-          ? $t('job.action.createJob')
-          : $t('job.action.copyJob')
-      "
+      :title="actionMap[mode]"
       @ok="handleOk"
       @cancel="handleCancel"
     >
@@ -31,19 +27,19 @@
         :wrapper-col="wrapperCol"
       >
         <a-form-item
-          v-if="!!formState.originName"
+          v-if="mode === 'copy'"
           ref="originName"
           :label="$t('job.jobDetail.originJob')"
           name="originName"
         >
-          <a-input v-model:value="formState.originName" disabled />
+          <a-input v-model:value="formState.originName" disabled/>
         </a-form-item>
         <a-form-item
           ref="jobName"
           :label="$t('job.jobDetail.name')"
           name="jobName"
         >
-          <a-input v-model:value="formState.jobName" />
+          <a-input v-model:value="formState.jobName" :maxLength="100" />
         </a-form-item>
         <a-form-item :label="$t('job.jobDetail.label')" name="jobLabels">
           <a-tag
@@ -79,7 +75,7 @@
         >
           <a-select v-model:value="formState.jobType">
             <a-select-option value="OFFLINE">{{$t('job.type.offline')}}</a-select-option>
-            <a-select-option value="STREAM">{{$t('job.type.stream')}} </a-select-option>
+            <!--<a-select-option value="STREAM">{{$t('job.type.stream')}} </a-select-option>-->
           </a-select>
         </a-form-item>
         <a-form-item :label="$t('job.jobDetail.engine')" name="engineType">
@@ -91,7 +87,7 @@
           </a-select>
         </a-form-item>
         <a-form-item :label="$t('job.jobDetail.description')" name="jobDesc">
-          <a-textarea v-model:value="formState.jobDesc" />
+          <a-textarea v-model:value="formState.jobDesc" :maxLength="240" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -110,7 +106,7 @@ import {
 } from 'vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import { useI18n } from '@fesjs/fes';
-import { createJob, copyJob, getEngineType } from '@/common/service';
+import { createJob, copyJob, modifyJob, getEngineType } from '@/common/service';
 import { message } from 'ant-design-vue';
 export default defineComponent({
   components: {
@@ -120,12 +116,24 @@ export default defineComponent({
     visible: Boolean,
     editData: Object,
     projectId: String,
+    mode: String
   },
   emits: ['handleJobAction'], //需要声明emits
   setup(props, context) {
+    const actionMap = {
+      create: '创建任务',
+      copy: '复制任务',
+      modify: '编辑任务'
+    }
+    const successMap = {
+      create: '创建任务成功',
+      copy: '复制任务成功',
+      modify: '编辑任务成功'
+    }
     const { t } = useI18n({ useScope: 'global' });
     const formRef = ref();
     const formState = reactive({
+      id: '',
       originName: '',
       jobName: '',
       jobType: 'OFFLINE',
@@ -139,15 +147,23 @@ export default defineComponent({
       inputVisible: false,
       inputValue: '',
     });
+    const _setFormData = (editData) => {
+      formState.jobName = editData.jobName || ''
+      formState.jobType = editData.jobType || ''
+      formState.engineType = editData.engineType || ''
+      formState.jobLabels = editData.jobLabels || ''
+      formState.jobDesc = editData.jobDesc || ''
+      formState.id = editData.id || ''
+    }
     watchEffect(() => {
-      const editData = toRaw(props.editData);
-      if (editData.id) {
+      const { editData, mode } = props
+      _setFormData(editData)
+      if (mode === 'copy') {
         formState.originName = editData.jobName;
-        formState.engineType = editData.engineType;
-        state.tags = editData.jobLabels ? editData.jobLabels.split(',') : [];
-      } else {
-        formState.originName = '';
-        formState.engineType = '';
+        formState.jobName = ''
+        state.tags = editData.jobLabels ? editData.jobLabels.split(',') : []
+      } else if (mode === 'modify'){
+        state.tags = editData.jobLabels ? editData.jobLabels.split(',') : []
       }
     });
     const engines = reactive({
@@ -190,23 +206,30 @@ export default defineComponent({
           const tags = toRaw(state.tags);
           const { originName, ...rest } = data;
           const editData = toRaw(props.editData);
-          const isCopy = !!editData.id;
-          const params = isCopy
-            ? {
-                jobName: rest.jobName,
-                jobLabels: tags.join(','),
-                jobDesc: rest.jobDesc,
-              }
-            : {
-                ...rest,
-                projectId: props.projectId,
-                jobLabels: tags.join(','),
-              };
-          const res = isCopy
-            ? await copyJob(editData.id, params)
-            : await createJob(params);
+          let params, res
+          if (props.mode === 'copy') {
+            params = {
+              jobName: rest.jobName,
+              jobLabels: tags.join(','),
+              jobDesc: rest.jobDesc,
+            }
+            res = await copyJob(editData.id, params)
+          } else if (props.mode === 'create') {
+            params = {
+              ...rest,
+              projectId: props.projectId,
+              jobLabels: tags.join(','),
+            }
+            res = await createJob(params)
+          } else if (props.mode === 'modify') {
+            params = {
+              ...rest,
+              jobLabels: tags.join(','),
+            }
+            res = await modifyJob(editData.id, params)
+          }
           if (res && res.result) {
-            message.success(t(isCopy ? 'job.action.copyJobSuccess' : 'job.action.addJobSuccess'))
+            message.success(successMap[props.mode])
             context.emit('handleJobAction', { ...params, ...editData });
             formRef.value.resetFields();
             Object.assign(state, {
@@ -232,7 +255,6 @@ export default defineComponent({
 
     const handleClose = (removedTag) => {
       const tags = state.tags.filter((tag) => tag !== removedTag);
-      console.log(tags);
       state.tags = [...tags];
     };
 
@@ -249,7 +271,6 @@ export default defineComponent({
       if (inputValue && !tags.includes(inputValue.trim())) {
         tags = [...tags, inputValue.trim()];
       }
-      console.log(tags);
       Object.assign(state, {
         tags,
         inputVisible: false,
@@ -272,6 +293,7 @@ export default defineComponent({
       showInput,
       handleInputConfirm,
       inputRef,
+      actionMap
     };
   },
 });

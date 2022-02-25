@@ -34,32 +34,30 @@
 
   <div class="card">
     <div class="card-main">
-      <div class="card-main-title">
-        <router-link :to="`/jobManagement?id=${id}&name=${name}`">
-          <div class="title">
-            {{ name }}
-          </div>
-        </router-link>
-      </div>
-      <div class="card-main-description">
-        <p
-          :class="[
-            card_tages && card_tages.length > 0
-              ? 'card-main-desc-oneline'
-              : 'card-main-desc-2line',
-          ]"
-        >
-          {{ describe }}
-        </p>
-        <div>
-          <div v-if="card_tages && card_tages.length > 0">
-            <a-tag v-for="(tag, index) in card_tages" :key="index">
-              {{ tag ? tag : null }}
-            </a-tag>
-          </div>
-          <div v-else></div>
+      <router-link :to="`/jobManagement?id=${id}&name=${name}`">
+        <div class="card-main-title">
+          <div class="title" :title="name">{{ name }}</div>
         </div>
-      </div>
+        <div class="card-main-description">
+          <p
+            :class="[
+              card_tages && card_tages.length > 0
+                ? 'card-main-desc-oneline'
+                : 'card-main-desc-2line',
+            ]"
+          >
+            {{ describe }}
+          </p>
+          <div>
+            <div v-if="card_tages && card_tages.length > 0">
+              <a-tag v-for="(tag, index) in card_tages" :key="index">
+                {{ tag ? tag : null }}
+              </a-tag>
+            </div>
+            <div v-else></div>
+          </div>
+        </div>
+      </router-link>
     </div>
     <div class="card-buttton-group">
       <div @click="$emit('edit', id)">
@@ -82,7 +80,7 @@
 </template>
 
 <script>
-import { ApartmentOutlined } from "@ant-design/icons-vue";
+import { ApartmentOutlined, DeleteOutlined } from "@ant-design/icons-vue";
 import { useRouter } from "@fesjs/fes";
 import { toRefs } from "vue";
 const router = useRouter();
@@ -90,6 +88,7 @@ export default {
   name: "ProjectViewCard",
   components: {
     iconApartmentOutlined: ApartmentOutlined,
+    DeleteOutlined
   },
   props: {
     id: {
@@ -141,6 +140,9 @@ export default {
 
 .title {
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   &:hover {
     color: #1890ff;
   }
@@ -161,7 +163,6 @@ export default {
 }
 
 .card {
-  // min-width: 381px;
   min-height: 115px;
   border: 1px solid #dee4ec;
   background-color: #fff;
@@ -174,6 +175,7 @@ export default {
     padding-left: 24px;
     height: 115px;
     flex: 1;
+    width: calc(100% - 37px);
     &-title {
       font-family: PingFangSC-Medium;
       font-size: 16px;

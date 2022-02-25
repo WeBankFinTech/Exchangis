@@ -16,12 +16,16 @@
           :data-source="dataSourceList"
           :loading="loading"
           rowKey="id"
+          :pagination="pagination"
+          class="data-source-manage-table"
+          @change="onChange"
         >
           <template #tags="{ text: tags }">
             <span>
               <a-tag
                 v-if="tags"
                 v-for="tag in tags.split(',')"
+                :title="tag.toUpperCase()"
                 :key="tag"
                 :color="
                   tag === 'loser'
@@ -53,7 +57,7 @@
             <a-space>
               <a-button
                 size="small"
-                @click="handleEdit(row.text.id, row.text.dataSourceTypeId, row.text.createSystem)"
+                @click="handleEdit(row.text)"
                 type="link"
                 >{{
                   $t("dataSource.table.list.columns.actions.editButton")
@@ -74,18 +78,34 @@
                 $t("dataSource.table.list.columns.actions.testConnectButton")
               }}</a-button>
               <span style="color: #DEE4EC">|</span>
-              <a-button size="small" @click="handleDelete(row)" type="link">{{
-                $t("dataSource.table.list.columns.actions.deleteButton")
-              }}</a-button>
+              <a-popconfirm
+                title="是否删除?"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="handleDelete(row)"
+                @cancel="cancel"
+              >
+                <a-button size="small" type="link">{{
+                  $t("dataSource.table.list.columns.actions.deleteButton")
+                  }}</a-button>
+              </a-popconfirm>
             </a-space>
           </template>
           <template #version="{ text }">
-            <a-button
-              size="small"
-              @click="handleOpenVersionModal(text.id)"
-              type="link"
-              >{{ text.versionId }}</a-button
-            >
+            <a-tag style="cursor: pointer; color:#2e92f7" @click="handleOpenVersionModal(text)">
+              {{ text.versionId }}
+            </a-tag>
+            <!--<a-button-->
+              <!--size="small"-->
+              <!--@click="handleOpenVersionModal(text)"-->
+              <!--type="link"-->
+              <!--&gt;{{ text.versionId }}</a-button>-->
+          </template>
+          <template #desc="{ text }">
+            <div class="dsm-desc" :title="text.desc">{{ text.desc }}</div>
+          </template>
+          <template #name="{ text }">
+            <div class="dsm-name" :title="text.name">{{ text.name }}</div>
           </template>
           <template #modifyTime="{ text }">
             {{ text && dateFormat(text) }}
@@ -101,6 +121,8 @@
     <version-modal
       v-model:visible="versionModalCfg.visible"
       :id="versionModalCfg.id"
+      :rowInfo="versionModalCfg.rowInfo"
+      @openModal="openModal"
     />
     <edit-modal
       v-model:visible="modalCfg.visible"
@@ -109,6 +131,7 @@
       :mode="modalCfg.mode"
       :modalCfg="modalCfg"
       @finish="handleModalFinish"
+      :zIndex="1002"
     />
   </div>
 </template>
@@ -143,8 +166,8 @@ export default {
     let columns = computed(() => [
       {
         title: t("dataSource.table.list.columns.title.name"),
-        dataIndex: "name",
         align: "center",
+        slots: { customRender: "name" },
         width: 200
       },
       {
@@ -177,7 +200,8 @@ export default {
       {
         title: t("dataSource.table.list.columns.title.describe"),
         align: "center",
-        dataIndex: "desc"
+        slots: { customRender: "desc" },
+        width: 250
       },
       {
         title: t("dataSource.table.list.columns.title.updatetim"),
@@ -190,17 +214,17 @@ export default {
         title: t("dataSource.table.list.columns.title.creator"),
         align: "center",
         dataIndex: "createUser",
-        width: 80
+        width: 120
       },
       {
         title: t("dataSource.table.list.columns.title.updater"),
         align: "center",
         dataIndex: "modifyUser",
-        width: 80
+        width: 120
       },
       {
         title: t("dataSource.table.list.columns.title.action"),
-        align: "center",
+        align: "left",
         slots: { customRender: "action" },
       },
     ]);
@@ -223,16 +247,26 @@ export default {
       sourceTypeList: [],
       // 编辑弹框
       modalCfg: {
-        mode: "",
-        id: "",
-        type: "",
+        mode: '',
+        id: '',
+        type: '',
+        versionId: '',
         visible: false,
       },
       // 版本弹窗
       versionModalCfg: {
         id: "",
-        visible: false,
+        rowInfo: {},
+        visible: false
       },
+      pagination: {
+        total: 0,
+        current: 1,
+        pageSize: 10,
+        showQuickJumper: true,
+        showSizeChanger: true
+      },
+      searchData: {}
     };
   },
   methods: {
@@ -244,13 +278,17 @@ export default {
     },
     // 处理搜索
     handleSearch(data) {
-      this.getDataSourceList(data);
+      this.searchData = {
+        ...data
+      }
+      this.getDataSourceList();
     },
     // 打开版本弹框
-    handleOpenVersionModal(id) {
+    handleOpenVersionModal(text) {
       this.versionModalCfg = {
         visible: true,
-        id: id,
+        rowInfo: text,
+        id: text.id,
       };
     },
     // 处理选择类型
@@ -258,7 +296,8 @@ export default {
       this.selectTypeModalVisible = false;
       this.modalCfg = {
         mode: "create",
-        id: "",
+        id: '',
+        versionId: '',
         type: item.id,
         visible: true,
         createSystem: item.name
@@ -271,13 +310,14 @@ export default {
       this.getDataSourceList();
     },
     // 处理编辑
-    handleEdit(id, typeid, createSystem) {
+    handleEdit(item) {
       this.modalCfg = {
         mode: "edit",
-        id: id,
-        type: typeid,
+        id: item.id,
+        type: item.dataSourceTypeId,
         visible: true,
-        createSystem: createSystem
+        createSystem: item.createSystem,
+        versionId: item.versionId
       };
     },
     // 打开创建弹窗
@@ -295,8 +335,18 @@ export default {
     },
     // 获取列表数据
     async getDataSourceList(data) {
+      this.pagination = {
+        current: data?.page || 1,
+        pageSize: data?.pageSize || 10
+      }
+      const params = {
+        page: this.pagination.current,
+        pageSize: this.pagination.pageSize,
+        ...this.searchData
+      }
       this.loading = true;
-      let { list } = await getDataSourceList(data);
+      let { list, total } = await getDataSourceList(params);
+      this.pagination.total = total
       this.loading = false;
       this.dataSourceList = list;
     },
@@ -305,6 +355,24 @@ export default {
       let { list } = await getDataSourceTypes();
       this.sourceTypeList = list;
     },
+    openModal(info, rowInfo) {
+      this.modalCfg = {
+        mode: "read",
+        id: info.datasourceId,
+        versionId: info.versionId,
+        type: rowInfo.dataSourceTypeId,
+        visible: true,
+        createSystem: rowInfo.createSystem
+      };
+    },
+    cancel() {},
+    onChange(page) {
+      const { current, pageSize } = page
+      this.getDataSourceList({
+        page: current,
+        pageSize: pageSize,
+      })
+    }
   },
   mounted() {
     this.getDataSourceList();
@@ -335,4 +403,25 @@ export default {
 :deep(.ant-table-pagination.ant-pagination) {
   float: left;
 }
+.data-source-manage-table {
+  :deep(.ant-tag) {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 150px;
+  }
+  .dsm-desc {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 250px;
+  }
+  .dsm-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+}
+
 </style>

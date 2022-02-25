@@ -1,8 +1,9 @@
 // 服务端接口管理
 import { request } from "@fesjs/fes";
+import { BASE_URL } from "@/common/constants";
 ////////////////////////////////////////////////////////////////////
-export const getProjectList = (name) => {
-  return request("/projects", { name }, { method: "POST" });
+export const getProjectList = (name, current, size) => {
+  return request(`/projects?name=${name}&current=${current}&size=${size}`, {}, { method: "POST" });
 };
 
 export const createProject = (body) => {
@@ -102,8 +103,8 @@ export const testDataSourceConnect = (type, id) => {
   return request(`/datasources/${type}/${id}/connect`, {}, { method: "PUT" });
 };
 
-export const getDataSourceById = (id) => {
-  return request(`/datasources/${id}`, {}, { method: "GET" });
+export const getDataSourceById = (id, versionId) => {
+  return request(`/datasources/${id}`, {versionId}, { method: "GET" });
 };
 
 export const getJobInfo = (id) => {
@@ -148,6 +149,17 @@ export const copyJob = (id, params) => {
   );
 };
 
+//编辑任务
+export const modifyJob = (id, params) => {
+  return request(
+    `/job/${id}`,
+    { ...params },
+    {
+      method: "PUT",
+    }
+  );
+};
+
 //删除任务
 export const deleteJob = (id) => {
   return request(`/job/${id}`, null, {
@@ -173,8 +185,8 @@ export const executeTask = (id) => {
   });
 };
 
-export const getJobs = (id, jobType) => {
-  return request(`/job?projectId=${id}&jobType=${jobType}`, null, {
+export const getJobs = (id, jobType, name, current, size) => {
+  return request(`/job?projectId=${id}&jobType=${jobType}&name=${name}&current=${current}&size=${size}`, null, {
     method: "GET",
   });
 };
@@ -221,11 +233,11 @@ export const getSettingsParams = (engineType) => {
 };
 
 // job执行
-export const executeJob = (id) => {
+/*export const executeJob = (id) => {
   return request(`/job/${id}/action/execute`, {}, {
     method: "POST",
   });
-};
+};*/
 
 // 同步历史
 export const getSyncHistory = (body) => {
@@ -233,10 +245,16 @@ export const getSyncHistory = (body) => {
     method: "GET",
   });
 };
+// 新版同步历史-获取job列表
+export const getSyncHistoryJobList = (body) => {
+  return request("/job/listJobs", body, {
+    method: "GET",
+  });
+};
 // 删除同步历史
-export const delSyncHistory = (taskId) => {
-  return request(`/tasks/${taskId}`, null, {
-    method: "DELETE",
+export const delSyncHistory = (jobExecutionId) => {
+  return request(`/job/${jobExecutionId}/deleteJob`, {}, {
+    method: "POST",
   });
 };
 // 读取Task限速配置
@@ -300,3 +318,89 @@ export const getEngineriesSourceCpu = () => {
 export const getEngineriesSourceMem = () => {
   return request("/metrics/engineresourcemem", {}, { method: "GET" });
 };
+
+
+/* 作业执行模块接口 */
+export const executeJob = (id) => {
+  return request(`/job/${id}/execute`,undefined, {
+    method: "POST",
+  })
+}
+
+export const getJobStatus = (id) => {
+  return request(`/job/execution/${id}/status`, {}, {
+    method: "GET",
+  })
+}
+
+export const getJobTasks = (id) => {
+  return request(`/job/execution/${id}/taskList`, null, {
+    method: "GET",
+  })
+}
+
+export const getProgress = (id) => {
+  return request(`/job/execution/${id}/progress?_=${Math.random()}`, null, {
+    method: "GET",
+  })
+}
+
+export const getMetrics = (taskId, jobExecutionId) => {
+  return request(`/task/execution/${taskId}/metrics`, {jobExecutionId}, {
+    method: "POST",
+  })
+}
+
+export const killJob = (id) => {
+  return request(`/job/execution/${id}/kill`, null, {
+    method: "POST",
+  })
+}
+
+// 获取job运行日志
+export const getJobExecLog = (params) => {
+  return request(
+    `/job/execution/${params.id}/log?_=${Math.random()}`,
+    {
+      fromLine: params.fromLine || 0,
+      pageSize: params.pageSize || 50,
+      onlyKeywords: params.onlyKeywords,
+      ignoreKeywords: params.ignoreKeywords,
+      lastRows: params.lastRows
+    },
+    {
+      method: "GET",
+    }
+  );
+}
+
+// 获取task运行日志
+export const getTaskExecLog = (params) => {
+  return request(
+    `/task/execution/${params.taskId}/log?_=${Math.random()}`,
+    {
+      fromLine: params.fromLine || 0,
+      pageSize: params.pageSize || 50,
+      jobExecutionId: params.id,
+      onlyKeywords: params.onlyKeywords,
+      ignoreKeywords: params.ignoreKeywords,
+      lastRows: params.lastRows
+    },
+    {
+      method: "GET",
+    }
+  );
+}
+
+// 获取分区信息
+export const getPartitionInfo = (params) => {
+  if (!params.source) return
+  const url = params.source.split(BASE_URL)[1]
+  return request(
+    `${url}?dataSourceId=${params.dataSourceId}&database=${params.database}&table=${params.table}&_=${Math.random()}`,
+    {},
+    {
+      method: "GET",
+    }
+  );
+}

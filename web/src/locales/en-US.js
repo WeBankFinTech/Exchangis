@@ -97,6 +97,7 @@ export default {
       title: {
         create: "CreateDataSource",
         edit: "EditDataSource",
+        read: "DataSource"
       },
       form: {
         fields: {
@@ -132,6 +133,7 @@ export default {
     action: {
       createJob: "Create Job",
       copyJob: "Copy Job",
+      modifyJob: "Modify Job",
       import: "Import",
       export: "Export",
       save: "Save",

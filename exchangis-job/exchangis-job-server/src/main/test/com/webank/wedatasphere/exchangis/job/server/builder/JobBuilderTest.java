@@ -3,12 +3,13 @@ package com.webank.wedatasphere.exchangis.job.server.builder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
-import com.webank.wedatasphere.exchangis.job.launcher.builder.ExchangisLauncherJob;
-import com.webank.wedatasphere.exchangis.job.server.builder.transform.ExchangisTransformJob;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 
 import java.util.*;
 
@@ -73,52 +74,50 @@ public class JobBuilderTest {
                 "}";
 //        System.out.println(code);
 
-        ExchangisJob job = getSqoopJob();
-        System.out.println(job.getJobName());
+        ExchangisJobInfo job = getSqoopJob();
+        System.out.println(job.getName());
         ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext();
         ctx.putEnv("USER_NAME", "xxxxyyyyzzzz");
         ctx.setOriginalJob(job);
-        ExchangisTransformJob transformJob = jobBuilderManager.doBuild(job, ExchangisTransformJob.class, ctx);
+        TransformExchangisJob transformJob = jobBuilderManager.doBuild(job, TransformExchangisJob.class, ctx);
         List<ExchangisEngineJob> engineJobs = new ArrayList<>();
 
 
         for (SubExchangisJob subExchangisJob : transformJob.getSubJobSet()) {
             String sourceDsId = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE).get("datasource").getValue().toString();
             String sinkDsId = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK).get("datasource").getValue().toString();
-            if (!ctx.containsDatasourceParam(sourceDsId)) {
-                Map<String, Object> sourceDsParam = getDsParam(sourceDsId);
-                ctx.putDatasourceParam(sourceDsId, sourceDsParam);
-            }
-            if (!ctx.containsDatasourceParam(sinkDsId)) {
-                Map<String, Object> sinkDsParam = getDsParam(sinkDsId);
-                ctx.putDatasourceParam(sinkDsId, sinkDsParam);
-            }
+//            if (!ctx.containsDatasourceParam(sourceDsId)) {
+//                Map<String, Object> sourceDsParam = getDsParam(sourceDsId);
+//                ctx.putDatasourceParam(sourceDsId, sourceDsParam);
+//            }
+//            if (!ctx.containsDatasourceParam(sinkDsId)) {
+//                Map<String, Object> sinkDsParam = getDsParam(sinkDsId);
+//                ctx.putDatasourceParam(sinkDsId, sinkDsParam);
+//            }
             // connectParams
             Optional.ofNullable(jobBuilderManager.doBuild(subExchangisJob,
                     SubExchangisJob.class, ExchangisEngineJob.class, ctx)).ifPresent(engineJobs::add);
         }
 
         //  List<ExchangisEngineJob> -> List<ExchangisLauncherJob>
-        List<ExchangisLauncherJob> launcherJobs = new ArrayList<>();
+        List<LaunchableExchangisTask> launchableTasks = new ArrayList<>();
         for (ExchangisEngineJob engineJob : engineJobs) {
             Optional.ofNullable(jobBuilderManager.doBuild(engineJob,
-                    ExchangisEngineJob.class, ExchangisLauncherJob.class, ctx)).ifPresent(launcherJobs::add);
+                    ExchangisEngineJob.class, LaunchableExchangisTask.class, ctx)).ifPresent(launchableTasks::add);
         }
-        if (launcherJobs.isEmpty()) {
-            throw new ExchangisJobException(ExchangisJobExceptionCode.JOB_BUILDER_ERROR.getCode(),
+        if (launchableTasks.isEmpty()) {
+            throw new ExchangisJobException(ExchangisJobExceptionCode.TASK_BUILDER_ERROR.getCode(),
                     "The result set of launcher job is empty, please examine your job entity, [ 生成LauncherJob为空 ]", null);
         }
 
-        for (ExchangisLauncherJob launcherJob : launcherJobs) {
-            String launchName = launcherJob.getLaunchName();
-            System.out.println(launcherJob.getJobName());
-            System.out.println(launchName);
+        for (LaunchableExchangisTask launchableTask : launchableTasks) {
+            System.out.println(launchableTask.getName());
         }
 
     }
 
-    public static ExchangisJob getSqoopJob() {
-        ExchangisJob job = new ExchangisJob();
+    public static ExchangisJobInfo getSqoopJob() {
+        ExchangisJobVO job = new ExchangisJobVO();
         job.setId(22L);
         job.setProjectId(1456173825011081218L);
         job.setJobName("T_SQOOP");
@@ -198,7 +197,7 @@ public class JobBuilderTest {
         job.setProxyUser("hdfs");
         job.setSyncType("FULL");
         job.setJobParams("{}");
-        return job;
+        return new ExchangisJobInfo(job);
     }
 
     public static Map<String, Object> getDsParam(String id) {

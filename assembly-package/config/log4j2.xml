@@ -18,22 +18,28 @@
 
 <configuration status="error" monitorInterval="30">
     <appenders>
+        <RpcLog name="RpcLog" >
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level - %msg%xEx%n"/>
+        </RpcLog>
         <Console name="Console" target="SYSTEM_OUT">
             <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger{36} %L %M - %msg%xEx%n"/>
         </Console>
-        <RollingFile name="RollingFile" fileName="${sys:log.path}/${sys:serviceName}.log"
-                     filePattern="${sys:log.path}/$${date:yyyy-MM}/${sys:serviceName}/exchangis-log-%d{yyyy-MM-dd}-%i.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-40t] %c{1.} (%L) [%M] - %msg%xEx%n"/>
-            <SizeBasedTriggeringPolicy size="100MB"/>
-            <DefaultRolloverStrategy max="20"/>
-        </RollingFile>
+<!--        <RollingFile name="RollingFile" fileName="${sys:log.path}/${sys:serviceName}.log"-->
+<!--                     filePattern="${sys:log.path}/$${date:yyyy-MM}/${sys:serviceName}/exchangis-log-%d{yyyy-MM-dd}-%i.log">-->
+<!--            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-40t] %c{1.} (%L) [%M] - %msg%xEx%n"/>-->
+<!--            <SizeBasedTriggeringPolicy size="100MB"/>-->
+<!--            <DefaultRolloverStrategy max="20"/>-->
+<!--        </RollingFile>-->
     </appenders>
     <loggers>
-        <root level="INFO">
-            <appender-ref ref="RollingFile"/>
+        <root level="INFO" additivity="false">
+<!--            <appender-ref ref="RollingFile"/>-->
             <appender-ref ref="Console"/>
         </root>
+        <logger name="com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger$" level="INFO" additivity="true">
+            <appender-ref ref="RpcLog"/>
+        </logger>
     </loggers>
 </configuration>
 

@@ -1,5 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.domain.params;
 
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
+
 import java.util.Objects;
 import java.util.function.BiFunction;
 
@@ -40,7 +43,12 @@ public class DefaultJobParam<T> implements JobParam<T> {
             if (!Objects.equals(sourceReference, source) &&
                     Objects.nonNull(valueLoader) &&
                     sourceType.isAssignableFrom(source.getClass())) {
-                this.value = this.valueLoader.apply(key, source);
+                try {
+                    this.value = this.valueLoader.apply(key, source);
+                } catch (Exception e){
+                    throw new ExchangisJobException.Runtime(ExchangisJobExceptionCode.TASK_PARM_ERROR.getCode(),
+                            "Exception in loading param: [" + key + "]", e);
+                }
                 this.sourceReference = source;
             }
         }
@@ -52,7 +60,12 @@ public class DefaultJobParam<T> implements JobParam<T> {
         if(Objects.nonNull(source) &&
                 Objects.nonNull(valueLoader) &&
                 sourceType.isAssignableFrom(source.getClass())){
-            this.value = this.valueLoader.apply(key, source);
+            try {
+                this.value = this.valueLoader.apply(key, source);
+            } catch (Exception e){
+                throw new ExchangisJobException.Runtime(ExchangisJobExceptionCode.TASK_PARM_ERROR.getCode(),
+                        "Exception in loading param: [" + key + "]", e);
+            }
             this.sourceReference = source;
         }
         return this;

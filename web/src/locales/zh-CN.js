@@ -9,7 +9,7 @@ export default {
   projectManage: {
     topLine: {
       searchBar: {
-        searchInputPlaceholder: "输入项目名搜索",
+        searchInputPlaceholder: "输入项目名,按回车搜索",
         searchButtonText: "搜索",
       },
       title: "项目列表",
@@ -97,6 +97,7 @@ export default {
       title: {
         create: "创建数据源",
         edit: "修改数据源",
+        read: "查看数据源"
       },
       form: {
         fields: {
@@ -125,6 +126,7 @@ export default {
     action: {
       createJob: "创建任务",
       copyJob: "复制任务",
+      modifyJob: "编辑任务",
       import: "导入",
       export: "导出",
       save: "保存",
@@ -138,7 +140,7 @@ export default {
       manage: "管理",
       fileUpSuccess: "文件上传成功",
       fileUpFailed: "文件上传失败",
-      jobSearch: "输入搜索任务",
+      jobSearch: "输入任务名称，按回车搜索",
     },
     jobDetail: {
       originJob: "原任务",

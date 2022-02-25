@@ -1,9 +1,11 @@
 package com.webank.wedatasphere.exchangis.project.server.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
 import com.webank.wedatasphere.exchangis.project.server.dao.ExchangisProjectMapper;
@@ -15,6 +17,7 @@ import com.webank.wedatasphere.exchangis.project.server.request.CreateProjectReq
 import com.webank.wedatasphere.exchangis.project.server.request.ProjectQueryRequest;
 import com.webank.wedatasphere.exchangis.project.server.request.UpdateProjectRequest;
 import com.webank.wedatasphere.exchangis.project.server.service.ExchangisProjectService;
+import net.sf.cglib.core.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,12 +156,52 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
     }
 
     @Override
-    public List<ExchangisProjectDTO> queryProjects(ProjectQueryRequest projectQueryRequest) {
+    public List<ExchangisProjectDTO> queryProjects(ProjectQueryRequest projectQueryRequest, int current, int size, String name) {
         QueryWrapper<ExchangisProject> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("create_by", projectQueryRequest.getUsername());
 
-        if (!Strings.isNullOrEmpty(projectQueryRequest.getName())) {
-            queryWrapper.like("name", projectQueryRequest.getName());
+        if (!Strings.isNullOrEmpty(name)) {
+            queryWrapper.like("name", name);
+        }
+
+        if (!StringUtils.isBlank(projectQueryRequest.getDomain())) {
+            queryWrapper.eq("domain", projectQueryRequest.getDomain());
+        }
+
+        if (current <= 0) {
+            current = 1;
+        }
+        if (size <= 0) {
+            size = 10;
+        }
+       /* Page<ExchangisProject> page = new Page<>(1, 10);
+        IPage<ExchangisProject> templateIPage = this.exchangisProjectMapper.selectPage(page, queryWrapper);
+        List<ExchangisProject> exchangisProjects = new ArrayList<>();
+        for(ExchangisProject item : templateIPage.getRecords()){
+            exchangisProjects.add(item);
+        }*/
+        List<ExchangisProject> exchangisProjects = this.exchangisProjectMapper.selectList(queryWrapper);
+
+        int start = (current - 1) * size;
+        int last = 0;
+        if(current * size > exchangisProjects.size()) {
+            last = exchangisProjects.size();
+        }
+        else {
+            last = current * size;
+        }
+
+        return exchangisProjects.stream().map(ExchangisProjectDTO::new).collect(Collectors.toList()).subList(start,last);
+
+    }
+
+    @Override
+    public int count(ProjectQueryRequest projectQueryRequest, String name) {
+        QueryWrapper<ExchangisProject> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("create_by", projectQueryRequest.getUsername());
+
+        if (!Strings.isNullOrEmpty(name)) {
+            queryWrapper.like("name", name);
         }
 
         if (!StringUtils.isBlank(projectQueryRequest.getDomain())) {
@@ -166,25 +209,23 @@ public class ExchangisProjectServiceImpl implements ExchangisProjectService {
         }
 
         List<ExchangisProject> exchangisProjects = this.exchangisProjectMapper.selectList(queryWrapper);
-
-        return exchangisProjects.stream().map(ExchangisProjectDTO::new).collect(Collectors.toList());
-
+        return exchangisProjects.size();
     }
 
     @Transactional
     @Override
     public void deleteProject(HttpServletRequest request, String id) {
 
-        QueryWrapper<ExchangisJobInfo> jobquery = new QueryWrapper<>();
+        QueryWrapper<ExchangisJobEntity> jobquery = new QueryWrapper<>();
         jobquery.eq("project_id", id);
 
-        List<ExchangisJobInfo> jobs = this.exchangisJobInfoMapper.selectList(jobquery);
+        List<ExchangisJobEntity> jobs = this.exchangisJobInfoMapper.selectList(jobquery);
 
         if (null != jobs && jobs.size() > 0) {
             this.exchangisJobInfoMapper.delete(jobquery);
 
             QueryWrapper<ExchangisJobDsBind> dsBindQuery = new QueryWrapper<ExchangisJobDsBind>().in("job_id",
-                    jobs.stream().map(ExchangisJobInfo::getId).toArray()
+                    jobs.stream().map(ExchangisJobEntity::getId).toArray()
             );
             this.exchangisJobDsBindMapper.delete(dsBindQuery);
         }
