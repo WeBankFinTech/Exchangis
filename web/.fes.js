@@ -58,7 +58,7 @@ export default {
       },
       {
         path: "/childJobManagement",
-        component: "@/pages/jobManagementItem",
+        component: "@/pages/jobManagement/spaIndex",
         meta: {
           name: "synchronizationHistory",
           title: "globalMenu.synchronizationHistory",
@@ -83,10 +83,10 @@ export default {
     footer: "",
     multiTabs: false,
     menus: [
-      {
+      /*{
         name: "homePage",
         icon: 'home'
-      },
+      },*/
       {
         name: "projectManage",
         icon: 'project'

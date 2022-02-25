@@ -1,104 +1,110 @@
 <template>
-  <div class="container">
+  <div class="container jd-container">
     <div class="tools-bar">
       <span @click="modalCfg.visible = true"><SettingOutlined />配置</span>
       <div class="divider"></div>
-      <span @click="executeTask"><CaretRightOutlined v-if="!spinning" />
-        <a-spin :spinning="spinning"></a-spin> 执行</span>
+      <span @click="executeTask" v-if="!spinning"><CaretRightOutlined />执行</span>
+      <a-popconfirm
+        v-else
+        title="是否终止?"
+        ok-text="确定"
+        cancel-text="取消"
+        @confirm="killTask"
+        @cancel="cancel"
+      >
+        <span><StopFilled style="color:#ff4d4f" />停止</span>
+      </a-popconfirm>
       <div class="divider"></div>
       <span @click="saveAll()"><SaveOutlined />保存</span>
       <div class="divider"></div>
       <span @click="executeHistory"><HistoryOutlined />执行历史</span>
     </div>
     <div class="jd-content" v-if="list.length !== 0">
-      <div class="jd_left">
-          <div class="sub-title">
-            <!--<DatabaseFilled class="database-icon" />-->
-            <span>子任务列表</span>
-            <!--<a-popconfirm
-              title="是否新增子任务?"
-              ok-text="确定"
-              cancel-text="取消"
-              @confirm="addNewTask"
-              @cancel="cancel"
-            >
-              <PlusSquareOutlined class="ps-icon" />
-            </a-popconfirm>-->
-          </div>
-          <div v-for="(item, idx) in list" :key="idx" :class="getClass(idx)">
-            <div class="task-title">
-              <div
-                class="subjobName"
-                @click="changeCurTask(idx)"
-                v-if="
+      <a-spin size="large" :spinning="loading" wrapperClassName="wrap-spin">
+        <div class="jd_left">
+          <div class="left-wrap">
+            <div class="sub-title">
+              <span>子任务列表</span>
+            </div>
+            <div v-for="(item, idx) in list" :key="idx" :class="getClass(idx)">
+              <div class="task-title">
+                <div
+                  class="subjobName"
+                  v-if="
                   activeIndex !== idx || (activeIndex === idx && !nameEditable)
                 "
-                :title="item.subJobName"
-              >
-                {{ item.subJobName }}
+                  @click="changeCurTask(idx)"
+                  :title="item.subJobName"
+                >
+                  {{ item.subJobName }}
+                </div>
+                <a-input
+                  @pressEnter="nameEditable = false"
+                  @blur="nameEditable = false"
+                  ref="currentInput"
+                  v-model:value="item.subJobName"
+                  v-if="activeIndex === idx && nameEditable"
+                ></a-input>
+                <a-popconfirm
+                  title="是否删除子任务?"
+                  ok-text="确定"
+                  cancel-text="取消"
+                  @confirm="deleteSub(idx)"
+                  @cancel="cancel"
+                >
+                  <DeleteOutlined title="删除" class="delete-icon" />
+                </a-popconfirm>
+                <a-popconfirm
+                  title="是否复制子任务?"
+                  ok-text="确定"
+                  cancel-text="取消"
+                  @confirm="copySub(item)"
+                  @cancel="cancel"
+                >
+                  <CopyOutlined title="复制" class="copy-icon" />
+                </a-popconfirm>
+                <EditOutlined
+                  @click="getEditableInput"
+                  v-if="activeIndex === idx && !nameEditable"
+                  class="rename-icon"
+                />
               </div>
-              <a-input
-                @pressEnter="nameEditable = false"
-                v-model:value="item.subJobName"
-                v-if="activeIndex === idx && nameEditable"
-              ></a-input>
-              <a-popconfirm
-                title="是否删除子任务?"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="deleteSub(idx)"
-                @cancel="cancel"
-              >
-                <DeleteOutlined class="delete-icon" />
-              </a-popconfirm>
-              <a-popconfirm
-                title="是否复制子任务?"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="copySub(item)"
-                @cancel="cancel"
-              >
-                <CopyOutlined class="copy-icon" />
-              </a-popconfirm>
-              <EditOutlined
-                @click="nameEditable = true"
-                v-if="activeIndex === idx && !nameEditable"
-                class="rename-icon"
-              />
-            </div>
-            <template
-              v-if="
+              <template
+                v-if="
                 item.dataSourceIds &&
                 item.dataSourceIds.source &&
                 item.dataSourceIds.source.db
               "
-            >
-              <div
-                class="sub-table"
-                :title="
+              >
+                <div
+                  class="sub-table"
+                  @click="changeCurTask(idx)"
+                  :title="
                   item.dataSourceIds.source.db +
                   '.' +
                   item.dataSourceIds.source.table
                 "
-              >
-                {{
+                >
+                  {{
                   item.dataSourceIds.source.db +
                   "." +
                   item.dataSourceIds.source.table
-                }}
-              </div>
-              <div class="arrow-down-icon"><ArrowDownOutlined /></div>
-              <div
-                class="sub-table"
-                :title="
+                  }}
+                </div>
+                <div class="arrow-down-icon" @click="changeCurTask(idx)"><ArrowDownOutlined /></div>
+                <div
+                  class="sub-table"
+                  @click="changeCurTask(idx)"
+                  :title="
                   item.dataSourceIds.sink.db + '.' + item.dataSourceIds.sink.table
                 "
-              >
-                {{
+                >
+                  {{
                   item.dataSourceIds.sink.db + "." + item.dataSourceIds.sink.table
-                }}
-              </div>
-            </template>
+                  }}
+                </div>
+              </template>
+            </div>
           </div>
           <a-button
             size="large"
@@ -109,13 +115,14 @@
               line-height: 22px;
               font-weight: 400;
               border: 1px dashed #dee4ec;
+              margin: 0 15px;
             "
             @click="addNewTask"
           >
             <template #icon> <PlusOutlined /></template>添加子任务
           </a-button>
         </div>
-      <div class="jd_right">
+        <div class="jd_right">
         <div>
           <DataSource
             v-if="curTask"
@@ -148,9 +155,11 @@
           />
         </div>
       </div>
+      </a-spin>
     </div>
     <div class="cardWrap" v-if="list.length === 0">
-      <div class="emptyTab">
+      <a-spin :spinning="loading">
+        <div class="emptyTab">
         <div class="void-page-wrap">
           <div class="void-page-main">
             <div class="void-page-main-img">
@@ -178,15 +187,7 @@
           </div>
         </div>
       </div>
-      <div v-for="item in streamList" :key="item.id" class="card">
-        <job-card
-          :jobData="item"
-          type="STREAM"
-          @showJobDetail="showJobDetail"
-          @handleJobCopy="handleJobCopy"
-          @refreshList="getJobs"
-        />
-      </div>
+      </a-spin>
     </div>
     <!-- 执行历史  jd-bottom -->
     <div class="jd-bottom" v-show="visibleDrawer">
@@ -216,9 +217,9 @@
     </div>
 
     <!-- 执行日志  jd-bottom -->
-    <div class="jd-bottom" v-show="visibleLog">
-      <div class="jd-bottom-top" >
-        <span>执行日志</span>
+    <div class="jd-bottom jd-bottom-log" v-show="visibleLog">
+      <div class="jd-bottom-top jd-bottom-log-top" >
+        <!--<span>执行日志</span>-->
         <CloseOutlined
           style="
             color: rgba(0, 0, 0, 0.45);
@@ -232,7 +233,113 @@
         />
       </div>
       <div class="jd-bottom-content log-bottom-content">
-        <a-textarea :auto-size="{ minRows: 10, maxRows: 10 }" v-bind:value="logs.logs[3]"></a-textarea>
+        <a-tabs v-model:activeKey="activeKey" class="exec-info-tab">
+          <a-tab-pane key="1" tab="运行情况">
+            <div v-if="jobProgress.tasks" class="job-progress-percent job-progress-wrap">
+              <span>总进度<span style="font-size: 11px;color:rgba(0,0,0,0.5)">({{statusMap[jobStatus]}})</span></span>
+              <a-tooltip :title="jobProgress.title">
+                <a-progress v-if="jobProgress.failedTasks" :percent="jobProgress.percent" status="exception"/>
+                <a-progress v-else :percent="jobProgress.percent" :success-percent="jobProgress.successPercent"/>
+              </a-tooltip>
+            </div>
+            <div v-if="jobProgress.tasks && jobProgress.tasks.Running" class="job-progress-wrap">
+              <span class="job-progress-title">正在运行</span>
+              <div class="job-progress-body">
+                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Running">
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer;" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <a-progress :percent="progress.progress * 100" />
+                  <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
+                </div>
+              </div>
+            </div>
+            <div v-if="jobProgress.tasks && jobProgress.tasks.Scheduled" class="job-progress-wrap">
+              <span class="job-progress-title">准备中</span>
+              <div class="job-progress-body">
+                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Scheduled">
+                  <span :title="progress.name">{{ progress.name }}</span><a-progress :percent="0" />
+                </div>
+              </div>
+            </div>
+            <div v-if="jobProgress.tasks && jobProgress.tasks.Inited" class="job-progress-wrap">
+              <span class="job-progress-title">初始化</span>
+              <div class="job-progress-body">
+                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Inited">
+                  <span :title="progress.name">{{ progress.name }}</span><a-progress :percent="0" />
+                </div>
+              </div>
+            </div>
+            <div v-if="jobProgress.tasks && jobProgress.tasks.Failed" class="job-progress-wrap">
+              <span class="job-progress-title" style="color:#ff4d4f">失败</span>
+              <div class="job-progress-body">
+                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Failed">
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <a-progress :percent="progress.progress * 100" />
+                  <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
+                </div>
+              </div>
+            </div>
+            <div v-if="jobProgress.tasks && jobProgress.tasks.Cancelled" class="job-progress-wrap">
+              <span class="job-progress-title" style="color:#ff4d4f">终止</span>
+              <div class="job-progress-body">
+                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Cancelled">
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <a-progress :percent="progress.progress * 100" />
+                  <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
+                </div>
+              </div>
+            </div>
+            <div v-if="jobProgress.tasks && jobProgress.tasks.Success" class="job-progress-wrap">
+              <span class="job-progress-title">成功</span>
+              <div class="job-progress-body">
+                <div class="job-progress-percent" v-for="(progress, index) in jobProgress.tasks.Success">
+                  <span class="job-progress-expand-icon" @click="getTaskInfo(progress)">
+                    <RightOutlined v-if="openMetricsId !== progress.taskId" />
+                    <DownOutlined v-else/>
+                  </span>
+                  <span :title="progress.name" style="color:#2e92f7;cursor: pointer" @click="getTaskInfo(progress)">{{ progress.name }}</span>
+                  <a-progress :percent="progress.progress * 100" />
+                  <metrics :metricsInfo="metricsInfo" :progress="progress" v-if="openMetricsId === progress.taskId && metricsInfo[progress.taskId]" style="margin-left: 100px"></metrics>
+                </div>
+              </div>
+            </div>
+          </a-tab-pane>
+          <a-tab-pane key="2" tab="实时日志" force-render>
+            <execution-log :param="logParams" :isShow="visibleLog"></execution-log>
+          </a-tab-pane>
+          <a-tab-pane key="3" tab="执行历史" force-render>
+            <a-table
+              style="margin: 0 0 0 24px;"
+              :columns="ehColumns"
+              :data-source="ehTableData"
+              :pagination="false"
+              :scroll="{y:240}"
+            >
+              <template #jobExecutionId="{ record }">
+                <router-link :to="`/synchronizationHistory?jobExecutionId=${jobExecutionId}`">
+                  {{record.jobExecutionId}}
+                </router-link>
+              </template>
+              <template #status="{ record }">
+                <span>{{statusMap[record.status]}}</span>
+              </template>
+              <template #createTime="{ record }">
+                <span>{{dateFormat(record.createTime)}}</span>
+              </template>
+            </a-table>
+          </a-tab-pane>
+        </a-tabs>
       </div>
     </div>
 
@@ -266,6 +373,9 @@ import {
   MinusOutlined,
   PlusOutlined,
   CloseOutlined,
+  StopFilled,
+  DownOutlined,
+  RightOutlined
 } from "@ant-design/icons-vue";
 import {
   getJobInfo,
@@ -276,11 +386,18 @@ import {
   updateTaskConfiguration,
   getSyncHistory,
   executeJob,
-  getLogs
+  getLogs,
+  getJobStatus,
+  getJobTasks,
+  getProgress,
+  getMetrics,
+  killJob
 } from "@/common/service";
 import { message, notification } from "ant-design-vue";
-import { randomString } from "../../../common/utils";
+import { randomString, moveUpDown, dateFormat } from "../../../common/utils";
 import { useI18n } from "@fesjs/fes";
+import executionLog from './executionLog'
+import metrics from './metricsInfo'
 
 /**
  * 用于判断一个对象是否有空 value,如果有返回 true
@@ -314,36 +431,34 @@ const formatDate = (d) => {
 
 const ehColumns = [
   {
-    title: "ID",
-    dataIndex: "id",
+    title: "编号",
+    dataIndex: "key",
+    align: 'center'
   },
   {
-    title: "任务名称",
-    dataIndex: "taskName",
-  },
-  {
-    title: "触发时间",
-    dataIndex: "launchTime",
-  },
-  {
-    title: "创建用户",
-    dataIndex: "createUser",
+    title: "执行ID",
+    dataIndex: "jobExecutionId",
+    slots: {
+      customRender: "jobExecutionId",
+    },
+    align: 'center'
   },
   {
     title: "状态",
     dataIndex: "status",
+    slots: {
+      customRender: "status",
+    },
+    align: 'center'
   },
   {
-    title: "完成时间",
-    dataIndex: "completeTime",
-  },
-  // {
-  //   title: "操作",
-  //   dataIndex: "options",
-  //   slots: {
-  //     customRender: "operation",
-  //   },
-  // },
+    title: "创建时间",
+    dataIndex: "createTime",
+    slots: {
+      customRender: "createTime",
+    },
+    align: 'center'
+  }
 ];
 
 export default {
@@ -360,6 +475,8 @@ export default {
     CheckCircleOutlined,
     EditOutlined,
     PlusOutlined,
+    DownOutlined,
+    RightOutlined,
     "config-modal": defineAsyncComponent(() => import("./configModal.vue")),
     "copy-modal": defineAsyncComponent(() => import("./copyModal.vue")),
     DataSource: defineAsyncComponent(() => import("./dataSource.vue")),
@@ -367,10 +484,14 @@ export default {
     ProcessControl: defineAsyncComponent(() => import("./processControl.vue")),
     MinusOutlined,
     CloseOutlined,
+    StopFilled,
+    executionLog,
+    metrics
   },
   data() {
     const { t } = useI18n({ useScope: "global" });
     return {
+      loading: false,
       name: "",
       modalCfg: {
         id: "",
@@ -409,7 +530,29 @@ export default {
         logs: ['', '', '', '']
       },
       executeId: '',
-      showLogTimer: null
+      jobExecutionId: '',
+      jobStatus: '',
+      allTaskStatus: '',
+      jobStatusTimer: null,
+      tasklist: [],
+      progressTimer: null,
+      jobProgress: {},
+      metricsInfo: {},
+      openMetricsId: '',
+      statusMap: {
+        'Inited': '初始化',
+        'Scheduled': '准备',
+        'Running': '运行',
+        'WaitForRetry': '等待重试',
+        'Cancelled': '取消',
+        'Failed': '失败',
+        'Partial_Success': '部分成功',
+        'Success': '成功',
+        'Undefined': '未定义',
+        'Timeout': '超时'
+      },
+      activeKey: "1",
+      dateFormat
     };
   },
   props: {
@@ -418,6 +561,14 @@ export default {
   created() {
     this.init();
   },
+  computed: {
+    logParams(){
+      return {
+        list: this.tasklist,
+        id: this.jobExecutionId
+      }
+    }
+  },
   methods: {
     init() {
       this.name = this.curTab.jobName;
@@ -425,7 +576,9 @@ export default {
     },
     async getInfo() {
       try {
+        this.loading = true
         let data = (await getJobInfo(this.curTab.id)).result;
+        this.loading = false
         if (!data.content || data.content === "[]") {
           data.content = {
             subJobs: [],
@@ -445,17 +598,17 @@ export default {
         configData["jobParams"] = JSON.parse(data["jobParams"]);
         this.configModalData = configData;
 
-        console.log("configData", configData);
-
         this.list = this.jobData.content.subJobs;
         if (this.list.length) {
           this.activeIndex = 0;
           this.curTask = this.list[this.activeIndex];
           this.addEnable = this.curTask.transforms.addEnable
-          this.updateSourceInfo(this.curTask);
+          this.updateSourceInfo(this.curTask, true);
           // this.updateSinkInfo(this.curTask); 当sink和source都有值的时候,请求的结果是一致的,所以省去一次多余重复请求
         }
-      } catch (error) {}
+      } catch (error) {
+        this.loading = false
+      }
     },
     // 更新保存任务配置
     handleModalFinish(config) {
@@ -473,7 +626,6 @@ export default {
         });
         _config.jobParams = JSON.stringify(jobParams);
       }
-      console.log("_config", _config);
       updateTaskConfiguration(id, _config)
         .then((res) => {
           message.success("更新/保存成功");
@@ -566,7 +718,6 @@ export default {
       });
     },
     updateFieldMap(transforms) {
-      console.log("update field map", transforms);
       this.curTask.transforms = transforms;
     },
     updateProcessControl(settings) {
@@ -610,10 +761,7 @@ export default {
       });
       return mapping
     },
-    updateSourceInfo(dataSource) {
-      /*getFields(source.type, source.id, source.db, source.table).then((res) => {
-       this.fieldsSource = res.columns;
-       })*/
+    updateSourceInfo(dataSource, firstInit) {
       const data = this.getFieldsParams(dataSource);
       if (data) {
         getFields(data).then((res) => {
@@ -622,16 +770,20 @@ export default {
           this.deductions = res.deductions;
           this.addEnable = res.addEnable;
           // 不在使用deductions 直接将deductions作为值使用
-          if (!this.curTask.transforms.mapping || !this.curTask.transforms.mapping.length) {
+          if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
             this.curTask.transforms.mapping = this.convertDeductions(res.deductions)
           }
         });
+      } else {
+        // 没有数据源的情况下清空字段映射
+        this.fieldsSource = []
+        this.fieldsSink = []
+        this.deductions = []
+        this.addEnable = false
+        this.curTask.transforms.mapping = []
       }
     },
-    updateSinkInfo(dataSource) {
-      /*getFields(sink.type, sink.id, sink.db, sink.table).then((res) => {
-        this.fieldsSink = res.columns;
-      })*/
+    updateSinkInfo(dataSource, firstInit) {
       const data = this.getFieldsParams(dataSource);
       if (data) {
         getFields(data).then((res) => {
@@ -640,10 +792,17 @@ export default {
           this.deductions = res.deductions;
           this.addEnable = res.addEnable;
           // 不在使用deductions 直接将deductions作为值使用
-          if (!this.curTask.transforms.mapping || !this.curTask.transforms.mapping.length) {
+          if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
             this.curTask.transforms.mapping = this.convertDeductions(res.deductions)
           }
         });
+      } else {
+        // 没有数据源的情况下清空字段映射
+        this.fieldsSource = []
+        this.fieldsSink = []
+        this.deductions = []
+        this.addEnable = false
+        this.curTask.transforms.mapping = []
       }
     },
     updateSourceParams(dataSource) {
@@ -681,7 +840,7 @@ export default {
 
       return res;
     },
-    saveAll() {
+    saveAll(cb) {
       let saveContent = [],
         data = toRaw(this.jobData);
       const tips = this.checkPostData(data);
@@ -757,61 +916,171 @@ export default {
         saveContent.push(cur);
       }
       saveProject(this.jobData.id, {
-        content: JSON.stringify(saveContent),
+        content: JSON.stringify(saveContent)
       }).then((res) => {
+        cb && cb()
         message.success("保存成功");
       });
     },
-    showInfoLog() {
-      const pageSize = this.logs.endLine ?  this.logs.endLine + 10 : 10
-      if (this.logs.isEnd) {
-        clearInterval(this.showLogTimer)
-        return message.warning("已经在最后一页")
-      }
-      getLogs({
-        taskID: this.executeId || this.logs.id,
-        fromLine: 1,
-        pageSize: pageSize
-      })
-        .then((res) => {
-          this.logs.logs = res.logs
-          this.logs.endLine = res.endLine
-          this.logs.isEnd = res.isEnd
-          this.logs.id = res.execID
-          message.success("更新日志成功");
-          this.$nextTick(() => {
-            const textarea = document.querySelector('.log-bottom-content textarea');
-            textarea.scrollTop = textarea.scrollHeight;
-          })
-        })
-        .catch((err) => {
-          message.error("更新日志失败");
-        });
-    },
     // 执行任务
     executeTask() {
-      const { id } = this.curTab;
-      this.spinning = true
-      executeJob(id)
+      if (!this.list.length) {
+        return message.error('没有子任务')
+      }
+      this.saveAll(() => {
+        const { id } = this.curTab;
+        this.tasklist = []
+        this.spinning = true
+        executeJob(id)
+          .then((res) => {
+            this.jobExecutionId = res.jobExecutionId
+            this.visibleLog = true
+            moveUpDown('.jd-bottom-log', '.jd-container', '.jd-bottom-log-top')
+            this.getStatus(res.jobExecutionId)
+
+            // 新增执行历史
+            this.ehTableData.push({
+              jobExecutionId : this.jobExecutionId,
+              createTime: new Date().getTime(),
+              status: '',
+              key: this.ehTableData.length + 1
+            })
+          })
+          .catch((err) => {
+            console.log(err)
+            this.spinning = false
+            message.error("执行失败")
+          });
+      })
+    },
+    killTask() {
+      if (!this.jobStatus) {
+        return message.error("正在等待")
+      }
+      killJob(this.jobExecutionId)
         .then((res) => {
-          if (res.tasks && res.tasks.length > this.activeIndex) {
-            this.executeId = res.tasks[this.activeIndex].id
-          }
           this.spinning = false
-          message.success("开始执行");
-          this.visibleLog = true
-          this.showLogTimer = setInterval(() => {
-            this.showInfoLog()
-          }, 1000*10)
+          clearInterval(this.jobStatusTimer)
+          clearInterval(this.progressTimer)
+          //this.visibleLog = false
+
+          // 更新执行历史状态
+          for (let i = this.ehTableData.length; i > 0; i--) {
+            let cur = this.ehTableData[i - 1]
+            if (cur.jobExecutionId === this.jobExecutionId) {
+              cur.status = 'Cancelled'
+              break
+            }
+          }
         })
         .catch((err) => {
+          console.log(err)
           this.spinning = false
-          message.error("执行失败");
+          message.error("停止失败");
         });
     },
+    // 获取Job状态
+    getStatus(jobExecutionId) {
+      this.getStatusInvoke(jobExecutionId)
+      this.jobStatusTimer = setInterval(() => {
+        this.getStatusInvoke(jobExecutionId)
+      }, 1000*5)
+    },
+    getStatusInvoke(jobExecutionId) {
+      const unfinishedStatusList = ['Inited', 'Scheduled', 'Running', 'WaitForRetry']
+      getJobStatus(jobExecutionId)
+        .then(res => {
+          this.jobStatus = res.status
+          this.allTaskStatus = res.allTaskStatus
+
+          // 更新执行历史状态
+          for (let i = this.ehTableData.length; i > 0; i--) {
+            let cur = this.ehTableData[i - 1]
+            if (cur.jobExecutionId === jobExecutionId) {
+              cur.status = res.status
+              break
+            }
+          }
+
+          if (!this.tasklist.length) {
+            this.getTasks(jobExecutionId, true)
+          }
+          if (unfinishedStatusList.indexOf(this.jobStatus) === -1 && this.allTaskStatus) {
+            this.spinning = false
+            clearInterval(this.jobStatusTimer)
+            setTimeout(() => {
+              clearInterval(this.progressTimer)
+            }, 1000*5)
+          }
+        })
+        .catch(err => {
+          message.error("查询job状态失败");
+        })
+    },
+    // 获取tasklist
+    getTasks(jobExecutionId, shouldGetJobProgress) {
+      getJobTasks(jobExecutionId)
+        .then(res => {
+          this.tasklist = res.tasks
+          if (shouldGetJobProgress)
+            this.getJobProgress(jobExecutionId)
+        })
+        .catch(err => {
+          message.error("查询任务列表失败");
+        })
+    },
+    getJobProgress(jobExecutionId) {
+      this.getJobProgressInvoke(jobExecutionId)
+      clearInterval(this.progressTimer)
+      this.progressTimer = setInterval(() => {
+        this.getJobProgressInvoke(jobExecutionId)
+      }, 1000*5)
+    },
+    getJobProgressInvoke(jobExecutionId) {
+      getProgress(jobExecutionId)
+        .then(res => {
+          if (res.job && res.job.tasks) {
+            res.job.successTasks = res.job.tasks.Success?.length || 0
+            res.job.initedTasks = res.job.tasks.Inited?.length || 0
+            res.job.runningTasks = res.job.tasks.Running?.length || 0
+            res.job.failedTasks = res.job.tasks.Failed?.length || 0
+            res.job.cancelledTasks = res.job.tasks.Cancelled?.length || 0
+            res.job.scheduledTasks = res.job.tasks.Scheduled?.length || 0
+
+            res.job.totalTasks = this.tasklist.length
+            if (res.job.total && res.job.total !== this.tasklist.length) {
+              res.job.totalTasks = res.job.total
+              this.getTasks(jobExecutionId)
+            }
+            res.job.successPercent = res.job.successTasks * 100 / res.job.totalTasks
+            res.job.percent = res.job.progress * 100 //(res.job.successTasks + res.job.runningTasks) * 100 / res.job.totalTasks
+            res.job.title = res.job.failedTasks ? `${res.job.failedTasks}失败,${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.scheduledTasks}正在准备` : `${res.job.successTasks}成功,${res.job.runningTasks}正在运行,${res.job.scheduledTasks}正在准备`
+          }
+          this.jobProgress = res.job
+        })
+        .catch(err => {
+          message.error("查询进度失败");
+        })
+    },
+    getTaskInfo(progress) {
+      if (this.openMetricsId !== progress.taskId) {
+        this.openMetricsId = progress.taskId
+        getMetrics(progress.taskId, this.jobExecutionId)
+          .then(res => {
+            res.task.taskId = progress.taskId
+            this.metricsInfo[res.task.taskId] = res.task?.metrics
+          })
+          .catch(err => {
+            message.error("查询任务指标失败");
+          })
+      } else {
+        this.openMetricsId = ''
+      }
+    },
+
     executeHistory() {
-      this.visibleDrawer = true;
-      this.getTableFormCurrent(1, "search");
+      this.visibleLog = true;
+      this.activeKey = "3"
     },
     getTableFormCurrent(current, type) {
       let _this = this;
@@ -862,14 +1131,29 @@ export default {
       this.visibleDrawer = false;
     },
     onCloseLog() {
+      //clearInterval(this.jobStatusTimer)
+      clearInterval(this.progressTimer)
       this.visibleLog = false;
+    },
+    getEditableInput() {
+      this.nameEditable = true
+      this.$nextTick(() => {
+        if (this.$refs.currentInput && this.$refs.currentInput.focus) {
+          this.$refs.currentInput.focus()
+        }
+      })
     }
   },
+  beforeUnmount() {
+    clearInterval(this.jobStatusTimer)
+    clearInterval(this.progressTimer)
+  }
 };
 </script>
 <style scoped lang="less">
 @import "../../../common/content.less";
 .container {
+  position: relative;
   .tools-bar {
     width: 100%;
     border-bottom: 1px solid #dee4ec;
@@ -897,15 +1181,21 @@ export default {
   .jd-content {
     overflow: hidden;
     width: 100%;
-    /*height: calc(100vh - 130px);*/
+    .wrap-spin {
+      height: calc(100vh - 82px)
+    }
     .jd_left {
       float: left;
       width: 250px;
-      padding: 0 15px;
       background-color: #f8f9fc;
       border-right: 1px solid #dee4ec;
       padding-bottom: 2000px;
       margin-bottom: -2000px;
+      .left-wrap {
+        max-height: calc(100vh - 82px);
+        overflow-y: scroll;
+        padding: 0 15px;
+      }
       .sub-title {
         font-size: 14px;
         margin-top: 16px;
@@ -979,12 +1269,14 @@ export default {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
+          cursor: pointer;
         }
         .arrow-down-icon {
           text-align: center;
           font-weight: bolder;
           font-size: 16px;
           color: #677c99;
+          cursor: pointer;
         }
         .mask {
           width: 100%;
@@ -1000,6 +1292,7 @@ export default {
       overflow-x: auto;
       float: right;
       width: calc(100% - 250px);
+      background: white;
     }
   }
 
@@ -1022,9 +1315,63 @@ export default {
       color: rgba(0, 0, 0, 0.85);
       font-weight: 500;
     }
+    &.jd-bottom-log {
+      height: 350px;
+     .jd-bottom-top {
+       bottom: 350px;
+     }
+    }
+
 
     &-content {
       padding: 18px 24px;
+      .exec-info-tab {
+        >:deep(.ant-tabs-bar) {
+           position: fixed;
+           margin-top: -45px;
+         }
+        :deep(.ant-tabs-content) {
+          padding: 5px 10px;
+        }
+      }
+    }
+    .log-bottom-content {
+      padding: 0 24px;
+    }
+
+    .job-progress-wrap {
+      padding: 10px 0;
+      border-bottom: 1px dashed rgba(0,0,0,0.2);
+    }
+    .job-progress-title {
+      display: inline-block;
+      width: 100px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .job-progress-body {
+      display: inline-block;
+      width: calc(100% - 100px);
+    }
+    .job-progress-percent {
+      .job-progress-expand-icon {
+        width:15px;
+        margin-left: -15px;
+        color: rgba(0, 0, 0, 0.45);
+        cursor: pointer;
+      }
+      >span {
+        display: inline-block;
+        width: 100px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      >div {
+        display: inline-block;
+        width: calc(100% - 120px);
+      }
     }
   }
 }
@@ -1033,9 +1380,12 @@ export default {
   display: flex;
   flex-wrap: wrap;
   padding-bottom: 30px;
+  :deep(.ant-spin-nested-loading) {
+    width: 100%;
+  }
   .emptyTab {
     font-size: 16px;
-    height: calc(100vh - 130px);
+    height: calc(100vh - 82px);
     width: 100%;
     display: flex;
     justify-content: center;

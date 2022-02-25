@@ -18,7 +18,9 @@ public interface ExchangisProjectService {
 
      ExchangisProject updateProject(String username, UpdateProjectRequest updateProjectRequest) throws ExchangisProjectErrorException;
 
-     List<ExchangisProjectDTO> queryProjects(ProjectQueryRequest projectQueryRequest);
+     List<ExchangisProjectDTO> queryProjects(ProjectQueryRequest projectQueryRequest, int current, int size, String name);
+
+     int count(ProjectQueryRequest projectQueryRequest, String name);
 
      void deleteProject(HttpServletRequest request, String id);
 

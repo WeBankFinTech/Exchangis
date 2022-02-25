@@ -4,7 +4,7 @@ import java.io.IOException
 import java.lang.management.ManagementFactory
 import java.nio.file.{Files, Paths}
 
-import com.webank.wedatasphere.linkis.common.utils.Utils
+import org.apache.linkis.common.utils.Utils
 import org.slf4j.LoggerFactory
 
 /**

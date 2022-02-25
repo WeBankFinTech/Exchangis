@@ -6,7 +6,8 @@
            @cancel="$emit('update:visible', false)"
            :width="600">
     <a-spin :spinning="confirmLoading">
-      <DatasourceForm :data="modalCfg" ref="datasourceForm" @submit="handleOk" @cancel="$emit('update:visible', false)"/>
+    <DatasourceForm :data="modalCfg" ref="datasourceForm" @submit="handleOk" @cancel="$emit('update:visible', false)"/>
+    <div class="mark-layer" v-if="mode === 'read'"></div>
       <!--<a-form ref="formRef" :model="formState" :label-col="{ span: 6 }">-->
         <!--<a-form-item :label="$t(`dataSource.editModal.form.fields.dataSourceName.label`)" name="dataSourceName">-->
           <!--<a-input :maxLength="30" v-model:value="formState.dataSourceName" :placeholder="$t(`dataSource.editModal.form.fields.dataSourceName.placeholder`)" />-->
@@ -155,9 +156,12 @@ export default {
       };
     },*/
     // modal完成
-    async handleOk(formState) {
+    async handleOk(formState, originalDefine) {
       formState = JSON.parse(formState)
-      console.log(formState)
+      let connectParams = {}
+      originalDefine.forEach(item => {
+        connectParams[item.key] = formState[item.key]
+      })
       this.confirmLoading = true;
       try {
         if (this.mode === "create") {
@@ -168,9 +172,9 @@ export default {
             dataSourceName: formState.dataSourceName,
             dataSourceDesc: formState.dataSourceDesc || "",
             labels: formState.labels || "",
-            comment: formState.comment || "",
+            comment: formState.comment || "更新",
             connectParams: {
-              ...formState
+              ...connectParams
             }
           });
           message.success("创建成功");
@@ -183,9 +187,9 @@ export default {
             dataSourceName: formState.dataSourceName,
             dataSourceDesc: formState.dataSourceDesc || "",
             labels: formState.labels || "",
-            comment: formState.comment || "",
+            comment: formState.comment || "更新",
             connectParams: {
-              ...formState
+              ...connectParams
             }
           });
           message.success("修改成功");
@@ -199,4 +203,12 @@ export default {
 };
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+  .mark-layer {
+    position: absolute;
+    width: 100%;
+    top:0;
+    height: calc(100% - 40px);
+    background-color: rgba(255,255,255,0.5);
+  }
+</style>

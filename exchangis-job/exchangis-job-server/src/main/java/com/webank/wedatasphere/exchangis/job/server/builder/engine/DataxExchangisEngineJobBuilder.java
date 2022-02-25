@@ -12,6 +12,7 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
+import com.webank.wedatasphere.exchangis.job.server.utils.JsonEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.manager.label.utils.LabelUtils;
 import org.slf4j.Logger;
@@ -133,11 +134,11 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
 
     @Override
     public boolean canBuild(SubExchangisJob inputJob) {
-        return "datax".equalsIgnoreCase(inputJob.getEngine());
+        return "datax".equalsIgnoreCase(inputJob.getEngineType());
     }
 
     @Override
-    public DataxExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectJob, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+    public DataxExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
 
         try {
             DataxExchangisEngineJob engineJob = new DataxExchangisEngineJob();
@@ -151,16 +152,16 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
             } catch (JsonProcessingException e) {
                 //Ignore
             }
-            if (Objects.nonNull(expectJob)) {
-                engineJob.setJobName(expectJob.getJobName());
-                engineJob.setEngine(expectJob.getEngine());
+            if (Objects.nonNull(expectOut)) {
+                engineJob.setName(expectOut.getName());
+                engineJob.setEngineType(expectOut.getEngineType());
             }
 
             engineJob.setRuntimeParams(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
-            engineJob.setTaskName(inputJob.getTaskName());
-            if (Objects.nonNull(expectJob)) {
-                engineJob.setJobName(expectJob.getJobName());
-                engineJob.setEngine(expectJob.getEngine());
+            engineJob.setName(inputJob.getName());
+            if (Objects.nonNull(expectOut)) {
+                engineJob.setName(expectOut.getName());
+                engineJob.setEngineType(expectOut.getEngineType());
             }
             engineJob.setCreateUser(inputJob.getCreateUser());
             return engineJob;
@@ -235,7 +236,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
 
     private Map<String, Object> buildContentParam(JobParamSet paramSet, JobParamSet transformJobParamSet,
                                                   JobParamDefine<List<Map<String, Object>>> columnJobParamDefine) {
-        JsonConfiguration item = JsonConfiguration.from("{}");
+        JsonEntity item = JsonEntity.from("{}");
         //Ignore temp params
         paramSet.toList(false).forEach(param -> item.set(param.getStrKey(), param.getValue()));
         if (Objects.nonNull(transformJobParamSet)) {

@@ -1,9 +1,9 @@
 <template>
   <div class="content">
-    <div class="content-main">
+    <div class="content-main" @click="gotoDetail">
       <div><img class="img" :src="imageSrc" v-if="imageSrc" /></div>
       <div class="content-main-c">
-        <div class="content-main-c-header" @click="gotoDetail">
+        <div class="content-main-c-header" :title="jobData.jobName">
           {{ jobData.jobName }}
         </div>
         <div class="content-main-c-desc">
@@ -34,6 +34,10 @@
         <span class="iconfont icon-copy job_card_icon"></span>
       </div>
       <a-divider type="horizontal" style="width: 16px" />
+      <div @click="handleJobModify">
+        <span class="iconfont icon-need-fault-tolerance job_card_icon"></span>
+      </div>
+      <a-divider type="horizontal" style="width: 16px" />
       <div>
         <a-popconfirm
           :title="$t('job.action.confirmDelete')"
@@ -58,7 +62,7 @@ import { useI18n } from "@fesjs/fes";
 import { message } from "ant-design-vue";
 import { deleteJob } from "@/common/service";
 
-export default {
+export default defineComponent({
   components: {
     CopyOutlined,
     DeleteOutlined,
@@ -68,11 +72,10 @@ export default {
     jobData: Object,
     type: String,
   },
-  emits: ["showJobDetail", "handleJobCopy", "refreshList"],
+  emits: ["showJobDetail", "handleJobCopy", "refreshList", "handleJobModify"],
   setup(props, context) {
     const { t } = useI18n({ useScope: "global" });
     const jobData = toRaw(props.jobData);
-    console.log(jobData);
     const { engineType, id, projectId } = jobData;
     const imageText = engineType.toUpperCase();
     const imageName =
@@ -93,7 +96,7 @@ export default {
       console.log(result);
       if (result) {
         message.success(t("job.action.deleteJobSuccess"));
-        context.emit("refreshList", props.type, projectId);
+        context.emit("refreshList", props.type);
         changeManagement();
       }
     };
@@ -106,6 +109,10 @@ export default {
       context.emit("handleJobCopy", jobData);
     };
 
+    const handleJobModify = () => {
+      context.emit("handleJobModify", jobData);
+    }
+
     return {
       imageSrc: imageName ? require(`../../../images/${imageName}`) : "",
       imageText,
@@ -114,9 +121,10 @@ export default {
       confirmDelete,
       gotoDetail,
       handleJobCopy,
+      handleJobModify
     };
   },
-};
+});
 </script>
 <style scoped lang="less">
 .job_card_icon {
@@ -143,6 +151,7 @@ export default {
     flex: 1;
     padding: 16px;
     display: flex;
+    cursor: pointer;
     &-c {
       flex: 1;
       margin-left: 16px;
@@ -153,7 +162,10 @@ export default {
         text-align: left;
         line-height: 22px;
         font-weight: 500;
-        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 224px;
       }
       &-desc {
         font-family: PingFangSC-Regular;
@@ -196,6 +208,9 @@ export default {
     justify-content: space-around;
     border: 1px solid #dee4ec;
     border-top: none;
+    :deep(.ant-divider-horizontal) {
+      margin: 8px 0;
+    }
   }
 }
 .img {
