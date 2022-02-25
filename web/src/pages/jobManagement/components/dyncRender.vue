@@ -114,7 +114,7 @@ export default defineComponent({
               partitionArr.value.push({
                 type: 'INPUT',
                 label: i,
-                value: value && value[i] ? value[i] : res.render[i],
+                value: value.value && value.value[i] ? value.value[i] : res.render[i],
                 defaultValue: res.render[i]
               })
             } else {
@@ -129,7 +129,7 @@ export default defineComponent({
                 type: 'OPTION',
                 label: i,
                 options: checkOptions,
-                value: value && value[i] ? [value[i]] : []
+                value: value.value && value.value[i] ? [value.value[i]] : []
               })
             }
           }
