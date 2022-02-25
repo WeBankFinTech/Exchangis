@@ -31,6 +31,8 @@ import {
   Tooltip,
   Progress,
   Drawer,
+  Empty,
+  Icon
 } from "ant-design-vue";
 import formCreate from '@form-create/ant-design-vue'
 
@@ -72,6 +74,7 @@ export default function loadComponent(app) {
   app.use(Tooltip);
   app.use(Progress);
   app.use(Drawer);
-
+  app.use(Empty);
+  app.use(Icon)
   app.use(formCreate)
 }

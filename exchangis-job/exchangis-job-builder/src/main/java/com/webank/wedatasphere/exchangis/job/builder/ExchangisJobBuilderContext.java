@@ -1,7 +1,9 @@
 package com.webank.wedatasphere.exchangis.job.builder;
 
 
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
+import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,25 +16,41 @@ public class ExchangisJobBuilderContext {
     /**
      * Origin job
      */
-    private ExchangisJob originalJob;
+    private ExchangisJobInfo originalJob;
+
+    /**
+     * Listen the log event
+     */
+    private JobLogListener jobLogListener;
 
     private Map<String, Object> env = new HashMap<>();
 
     private Map<String, Map<String, Object>> datasourceParams = new HashMap<>();
 
+    private MetadataInfoService metadataInfoService;
+
     public ExchangisJobBuilderContext() {
 
     }
 
-    public ExchangisJobBuilderContext(ExchangisJob originalJob) {
+    public ExchangisJobBuilderContext(ExchangisJobInfo originalJob, JobLogListener jobLogListener){
         this.originalJob = originalJob;
+        this.jobLogListener = jobLogListener;
     }
 
-    public ExchangisJob getOriginalJob() {
+    public ExchangisJobBuilderContext(ExchangisJobInfo originalJob) {
+        this(originalJob, null);
+    }
+
+    public JobLogListener getJobLogListener() {
+        return jobLogListener;
+    }
+
+    public ExchangisJobInfo getOriginalJob() {
         return originalJob;
     }
 
-    public void setOriginalJob(ExchangisJob originalJob) {
+    public void setOriginalJob(ExchangisJobInfo originalJob) {
         this.originalJob = originalJob;
     }
 
@@ -41,10 +59,6 @@ public class ExchangisJobBuilderContext {
     }
     public Map<String, Object> getDatasourceParam(String datasourceId) {
         return this.datasourceParams.get(datasourceId);
-    }
-
-    public boolean containsDatasourceParam(String datasourceId) {
-        return this.datasourceParams.containsKey(datasourceId);
     }
 
     public void putEnv(String name, Object value) {
@@ -59,4 +73,11 @@ public class ExchangisJobBuilderContext {
         return this.env.containsKey(name);
     }
 
+    public MetadataInfoService getMetadataInfoService() {
+        return metadataInfoService;
+    }
+
+    public void setMetadataInfoService(MetadataInfoService metadataInfoService) {
+        this.metadataInfoService = metadataInfoService;
+    }
 }

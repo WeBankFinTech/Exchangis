@@ -57,9 +57,18 @@
           <span>搜索库</span>
           <a-input
             placeholder="按回车搜库"
-            style="width: 300px;margin-top: 10px;margin-left:10px"
+            style="width: 300px;margin-top: 10px;margin-left:14px"
+            v-model:value="searchDB"
+            @keyup.enter="showTableSearch=false;createTree(dsId)"
+          ></a-input>
+        </a-space>
+        <a-space size="middle" v-if="dataSource && showTableSearch">
+          <span>搜索表</span>
+          <a-input
+            placeholder="按回车搜表"
+            style="width: 300px;margin-top: 10px;margin-left:14px"
             v-model:value="searchWord"
-            @keyup.enter="createTree(dsId)"
+            @keyup.enter="filterTree(dsId)"
           ></a-input>
         </a-space>
       </div>
@@ -71,12 +80,14 @@
           height: 300px;
           padding-top: 150px;"/>
         <a-directory-tree
+          :height="400"
           :tree-data="treeData"
           :autoExpandParent="false"
           v-model:expandedKeys="expandedKeys"
           @select="selectItem"
           @expand="handleExpandSql"
-        ></a-directory-tree>
+        >
+        </a-directory-tree>
       </div>
     </a-modal>
   </div>
@@ -112,7 +123,7 @@ export default defineComponent({
   },
   emits: ["updateDsInfo"],
   setup(props, context) {
-    let SQLlist, treeData;
+    let SQLlist, treeData, originTreeData;
     const sqlList = [];
     const expandedKeys = ref([]);
     const state = reactive({
@@ -120,13 +131,15 @@ export default defineComponent({
       sqlList,
       defaultSelect: props.title,
       treeData,
+      originTreeData,
       sqlId: "",
       dsId: "",
       curSql: "",
       dataSource: "",
       dataSourceList: [],
       selectTable: "",
-      searchWord: ''
+      searchWord: '',
+      searchDB: ''
     });
     let spinning = ref(false)
     const newProps = computed(() => JSON.parse(JSON.stringify(props.title)));
@@ -170,6 +183,9 @@ export default defineComponent({
       }
       return res;
     };
+
+    let showTableSearch = ref(false)
+
     // 选择数据库触发
     const handleChangeSql = async (sql) => {
       state.curSql = sql;
@@ -181,12 +197,17 @@ export default defineComponent({
       state.dataSource = ''
       state.dsId = ''
       state.searchWord = ''
+      state.searchDB = ''
       state.treeData = []
+      state.originTreeData = []
+      showTableSearch.value = false
     };
     // 选择数据源触发
     const handleChangeDS = async (ds) => {
       // 清空
       state.searchWord = ''
+      state.searchDB = ''
+      showTableSearch.value = false
       createTree(ds, () => {
         const cur = state.dataSourceList.filter((item) => {
           return item.value === ds;
@@ -198,17 +219,24 @@ export default defineComponent({
     // 创建 db & tables tree
     const createTree = async (ds, cb) => {
       if (!ds) return;
-      spinning = true
+      spinning.value = true;
       const tree = [];
       // 这里 根据数据源请求 dbs
       const cur = state.dataSourceList.filter((item) => {
         return item.value === ds;
       })[0];
-      let dbs = (await getDBs(state.curSql, cur.value)).dbs;
-      if (state.searchWord) {
+      let dbs
+      try {
+        dbs = (await getDBs(state.curSql, cur.value)).dbs;
+      } catch (e) {
+        dbs = []
+        console.log(e)
+      }
+      if (state.searchDB) {
         dbs = dbs.filter((db) => {
-          return new RegExp(state.searchWord).test(db)
+          return new RegExp(state.searchDB).test(db)
         })
+        showTableSearch.value = true
       }
       if (!dbs) return;
       dbs.forEach((db, index) => {
@@ -217,13 +245,41 @@ export default defineComponent({
         o.title = db;
         o.key = db;
         o.children = [];
-        const oo = Object.create(null);
-        (oo.key = ""), (oo.title = ""), o.children.push(oo);
+        // const oo = Object.create(null);
+        // (oo.key = ""), (oo.title = ""), o.children.push(oo);
         tree.push(o);
       });
       state.treeData = tree;
-      spinning = false
-      cb();
+      state.originTreeData = [].concat(tree); // 必须保存一份原始数据，用于过滤库表
+      spinning.value = false;
+      cb && cb();
+    };
+    // filter tree
+    const filterTree = (ds) => {
+      if (!state.searchDB) {
+        return message.error('请确定搜索的库')
+      }
+      // 直接从originTreeData对库和表进行过滤
+      const tree = toRaw(state.originTreeData);
+      if (state.searchWord) {
+        /*state.treeData = tree.filter(i => {
+          return new RegExp(state.searchWord, "i").test(i.title) || i.children.find(c => new RegExp(state.searchWord, "i").test(c.title));
+        }).map(i => {
+          return {
+            ...i,
+            children: i.children.filter(c => new RegExp(state.searchWord, "i").test(c.title))
+          }
+        });*/
+        state.treeData = tree.map(i => {
+          return {
+            ...i,
+            children: i.children.filter(c => new RegExp(state.searchWord, "i").test(c.title))
+          }
+        })
+
+      } else {
+        createTree(ds)
+      }
     };
     const visible = ref(false);
     const showModal = () => {
@@ -253,6 +309,7 @@ export default defineComponent({
       state.dataSource = "";
       state.selectTable = "";
       state.treeData = [];
+      state.originTreeData = [];
       expandedKeys.value = [];
     };
     /**
@@ -273,18 +330,32 @@ export default defineComponent({
       return res;
     };
     // 展开数据库树获取表叶子
-    const handleExpandSql = (expandedKeys, { expanded, node }) => {
+    const handleExpandSql = async (expandedKeys, { expanded, node }) => {
       const dbName = node.title;
-      state.treeData.forEach(async (td) => {
-        if (td.title === dbName) {
-          if (td.children.length > 0 && td.children[0].title) return;
-          let tables = await asyncGetTables(state.curSql, state.dsId, dbName);
-          tables.forEach(tb => {
-            tb.isLeaf = true;
-          })
-          return (td.children = tables.slice());
-        }
-      });
+      const loaded = state.originTreeData.find(i => i.title == dbName && i.children.length > 0);
+      if (!loaded) {
+        let tables = await asyncGetTables(state.curSql, state.dsId, dbName);
+        state.treeData.forEach(async (td) => {
+          if (td.title === dbName) {
+            // 应该根据searchWord过滤，不然用户先搜索，然后在展开库，仍然会看到所有表，体验不好
+            if (state.searchWord) {
+              tables = tables.filter(i => new RegExp(state.searchWord, "i").test(i.title))
+            }
+            tables.forEach(tb => {
+              tb.isLeaf = true;
+            })
+            return (td.children = tables.slice());
+          }
+        });
+        state.originTreeData.forEach(async (td) => {
+          if (td.title === dbName) {
+            tables.forEach(tb => {
+              tb.isLeaf = true;
+            })
+            return (td.children = tables.slice());
+          }
+        });
+      }
     };
     const getBg = () => {
       let name = state.curSql || (typeof state.defaultSelect === 'string' ? state.defaultSelect.split('-')[0] : state.defaultSelect[0])
@@ -303,7 +374,9 @@ export default defineComponent({
       getBg,
       expandedKeys,
       createTree,
-      spinning
+      filterTree,
+      spinning,
+      showTableSearch
     };
   },
 });
@@ -375,7 +448,7 @@ export default defineComponent({
 }
 .sds-wrap-b {
   min-height: 300px;
-  max-height: 500px;
+  max-height: 400px;
   overflow-y: auto;
 }
 

@@ -63,6 +63,11 @@ public class ExchangisJobParamConfig {
     @TableField(value = "is_advanced")
     private Boolean advanced;
 
+    /**
+     * store url exa. http://127.0.0.1/api/v1/exchangis/xxx
+     */
+    private String source;
+
     private Integer level;
 
     private String treename;
@@ -72,6 +77,14 @@ public class ExchangisJobParamConfig {
     private String description;
 
     private Integer status;
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public Long getId() {
         return id;

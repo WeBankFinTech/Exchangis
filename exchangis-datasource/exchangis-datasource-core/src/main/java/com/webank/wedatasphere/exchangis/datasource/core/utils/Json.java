@@ -51,8 +51,9 @@ public class Json {
                 }
                 return writer.writeValueAsString(simpleObj);
             } catch (JsonProcessingException e) {
-                throw new RuntimeException("Fail to process method 'toJson(" + simpleObj + ": " + simpleObj.getClass() +
+                logger.warn("Fail to process method 'toJson(" + simpleObj + ": " + simpleObj.getClass() +
                         ", " + (viewModel != null ? viewModel.getSimpleName() : null) + ")'", e);
+                return null;
             }
         }
         return null;
@@ -81,9 +82,10 @@ public class Json {
             try{
                 return mapper.readValue(json, javaType);
             }catch (Exception e){
-                throw new RuntimeException("Fail to process method 'fromJson(" +
+                logger.warn("Fail to process method 'fromJson(" +
                         (json.length() > 5 ? json.substring(0, 5) + "..." : json) + ": " + json.getClass() +
                         ", " + javaType.getTypeName() + ": "+ JavaType.class + ")", e);
+                return null;
             }
         }
         return null;
@@ -104,8 +106,9 @@ public class Json {
             }
             return (T) mapper.convertValue(simpleObj, tClass);
         } catch (Exception e) {
-            throw new RuntimeException("Fail to process method 'convert(" + simpleObj + ": " + simpleObj.getClass().getSimpleName() +
+            logger.warn("Fail to process method 'convert(" + simpleObj + ": " + simpleObj.getClass().getSimpleName() +
                     ", " + tClass.getSimpleName() + ": "+ Class.class + ", ...: " + Class.class + ")", e);
+            return null;
         }
     }
 
@@ -113,8 +116,9 @@ public class Json {
         try {
             return mapper.convertValue(simpleObj, javaType);
         } catch (Exception e) {
-            throw new RuntimeException("Fail to process method 'convert(" + simpleObj + ": " + simpleObj.getClass().getSimpleName() +
+            logger.warn("Fail to process method 'convert(" + simpleObj + ": " + simpleObj.getClass().getSimpleName() +
                     ", " + javaType.getTypeName() + ": "+ JavaType.class + ")", e);
+            return null;
         }
     }
 }
