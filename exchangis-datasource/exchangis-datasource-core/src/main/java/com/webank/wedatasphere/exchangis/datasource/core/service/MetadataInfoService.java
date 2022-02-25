@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.core.service;
 
+import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.service.rpc.ServiceRpcClient;
 
@@ -45,4 +46,15 @@ public interface MetadataInfoService extends ServiceRpcInf {
      * @throws ExchangisDataSourceException
      */
     List<String> getPartitionKeys(String userName, Long dataSourceId, String database, String table) throws ExchangisDataSourceException;
+
+    /**
+     * Get columns
+     * @param userName userName
+     * @param dataSourceId data source id
+     * @param database database
+     * @param table table
+     * @return
+     * @throws ExchangisDataSourceException
+     */
+    List<MetaColumn> getColumns(String userName, Long dataSourceId, String database, String table) throws ExchangisDataSourceException;
 }
