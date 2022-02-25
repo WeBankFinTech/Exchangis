@@ -9,17 +9,17 @@
     >
     </a-select>
     <a-tabs type="card" default-active-key="all" size="small">
-      <a-tab-pane key="all" tab="All">
-        <a-textarea id="t1" :auto-size="{ minRows: 10, maxRows: 10 }" v-bind:value="curLog.all"></a-textarea>
+      <a-tab-pane key="all" tab="All" class="log-textarea">
+        <a-textarea id="t1" :auto-size="{ minRows: 10, maxRows: 20 }" v-bind:value="curLog.all"></a-textarea>
       </a-tab-pane>
-      <a-tab-pane key="error" tab="Error">
-        <a-textarea id="t2" :auto-size="{ minRows: 10, maxRows: 10 }" v-bind:value="curLog.error"></a-textarea>
+      <a-tab-pane key="error" tab="Error" class="log-textarea">
+        <a-textarea id="t2" :auto-size="{ minRows: 10, maxRows: 20 }" v-bind:value="curLog.error"></a-textarea>
       </a-tab-pane>
-      <a-tab-pane key="warn" tab="Warning">
-        <a-textarea id="t3" :auto-size="{ minRows: 10, maxRows: 10 }" v-bind:value="curLog.warn"></a-textarea>
+      <a-tab-pane key="warn" tab="Warning" class="log-textarea">
+        <a-textarea id="t3" :auto-size="{ minRows: 10, maxRows: 20 }" v-bind:value="curLog.warn"></a-textarea>
       </a-tab-pane>
-      <a-tab-pane key="info" tab="Info">
-        <a-textarea id="t4" :auto-size="{ minRows: 10, maxRows: 10 }" v-bind:value="curLog.info"></a-textarea>
+      <a-tab-pane key="info" tab="Info" class="log-textarea">
+        <a-textarea id="t4" :auto-size="{ minRows: 10, maxRows: 20 }" v-bind:value="curLog.info"></a-textarea>
       </a-tab-pane>
     </a-tabs>
     <a-input-search v-model:value="searchKeyword" placeholder="关键字" style="position: absolute;width: 120px;left:420px;z-index: 1;top: 5px" @search="onSearch"></a-input-search>
