@@ -42,7 +42,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-        //return this.exchangisDataSourceService.listDataSources(request);
     }
 
     // query paged datasource
@@ -58,7 +57,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-        //return this.exchangisDataSourceService.queryDataSources(request, vo);
     }
 
     // list all datasources
@@ -81,7 +79,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-        //return this.exchangisDataSourceService.listAllDataSources(request, typeName, typeId, page, size);
     }
 
     // get datasource key define
@@ -100,7 +97,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-        //return this.exchangisDataSourceService.getDataSourceKeyDefine(request, dataSourceTypeId);
     }
 
 
@@ -117,7 +113,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-        //return this.exchangisDataSourceService.getDataSourceVersionsById(request, id);
     }
 
     // create datasource
@@ -132,7 +127,6 @@ public class ExchangisDataSourceRestfulApi {
             message = Message.error("创建数据源失败");
         }
         return message;
-        //return this.exchangisDataSourceService.create(request,/* type, */json);
     }
 
     // get datasource details
@@ -148,7 +142,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-        //return this.exchangisDataSourceService.getDataSource(request, id, versionId);
     }
 
     @RequestMapping( value = "/{id}/connect_params", method = RequestMethod.GET)
@@ -163,7 +156,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-        //return this.exchangisDataSourceService.getDataSourceConnectParamsById(request, id);
     }
 
     // update datasource and parameters (insert new record in datasource_version table)
@@ -179,7 +171,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-        //return this.exchangisDataSourceService.updateDataSource(request, /*type, */id, json);
     }
 
     // publish datasource
@@ -196,7 +187,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-        //return this.exchangisDataSourceService.publishDataSource(request, /*type, */id, version);
     }
 
     // expire datasource
@@ -212,7 +202,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-        //return this.exchangisDataSourceService.expireDataSource(request, /*type, */id);
     }
 
     // test datasource connect
@@ -228,7 +217,6 @@ public class ExchangisDataSourceRestfulApi {
             message = Message.error("数据源连接失效，请检查配置");
         }
         return message;
-        //return this.exchangisDataSourceService.testConnect(request, /*type, */id, version);
     }
 
     // delete datasource (physical)
@@ -243,7 +231,6 @@ public class ExchangisDataSourceRestfulApi {
             message = Message.error("删除数据源失败，存在引用依赖");
         }
         return message;
-        //return this.exchangisDataSourceService.deleteDataSource(request, /*type, */id);
     }
 
     @RequestMapping( value = "/{type}/{id}/dbs", method = RequestMethod.GET)
@@ -257,7 +244,6 @@ public class ExchangisDataSourceRestfulApi {
             message = Message.error("数据源未发布或参数为空");
         }
         return message;
-        //return this.exchangisDataSourceService.queryDataSourceDBs(request, type, id);
     }
 
     @RequestMapping( value = "/{type}/{id}/dbs/{dbName}/tables", method = RequestMethod.GET)
@@ -272,7 +258,6 @@ public class ExchangisDataSourceRestfulApi {
             message = Message.error("获取数据表失败");
         }
         return message;
-        //return this.exchangisDataSourceService.queryDataSourceDBTables(request, type, id, dbName);
     }
 
     @RequestMapping( value = "/{type}/{id}/dbs/{dbName}/tables/{tableName}/fields", method = RequestMethod.GET)
@@ -290,7 +275,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-        //return this.exchangisDataSourceService.queryDataSourceDBTableFields(request, type, id, dbName, tableName);
     }
 
     @RequestMapping( value = "/fieldsmapping", method = RequestMethod.POST)
@@ -304,7 +288,6 @@ public class ExchangisDataSourceRestfulApi {
             message = Message.error("获取表字段列表信息失败，请检查数据源配置或更换数据源");
         }
         return message;
-        //return this.exchangisDataSourceService.queryDataSourceDBTableFieldsMapping(request, vo);
     }
 
     @RequestMapping( value = "/{engine}/{type}/params/ui", method = RequestMethod.GET)
