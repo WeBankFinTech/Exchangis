@@ -147,9 +147,10 @@ export default defineComponent({
       context.emit("updateInfo", res)
     }
 
+    // 处理map变化
     const handleChange = (value, item) => {
       if (item.type === 'OPTION') {
-        if (value) {
+        if (value && value.length) {
           item.value = [value.pop()]
         }
       }
