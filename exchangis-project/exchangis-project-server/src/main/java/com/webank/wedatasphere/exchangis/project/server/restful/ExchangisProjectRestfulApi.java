@@ -54,7 +54,7 @@ public class ExchangisProjectRestfulApi {
             //return Message.ok().data("list", projects);
         } catch (final Throwable t) {
             LOGGER.error("failed to create project for user {}", username, t);
-            return Message.error("获取工程列表失败,原因是:" + t.getMessage());
+            return Message.error("获取工程列表失败");
         }
     }
 
@@ -67,7 +67,7 @@ public class ExchangisProjectRestfulApi {
             return Message.ok().data("item", dto);
         } catch (final Throwable t) {
             LOGGER.error("failed to create project for user {}", username, t);
-            return Message.error("获取工程列表失败,原因是:" + t.getMessage());
+            return Message.error("获取工程列表失败");
         }
     }
 
@@ -81,7 +81,7 @@ public class ExchangisProjectRestfulApi {
             return Message.ok().data("item", dto);
         } catch (final Throwable t) {
             LOGGER.error("failed to create project for user {}", username, t);
-            return Message.error("获取工程列表失败,原因是:" + t.getMessage());
+            return Message.error("获取工程列表失败");
         }
     }
 
@@ -117,7 +117,7 @@ public class ExchangisProjectRestfulApi {
                     new Pair<>("projectName", exchangisProject.getName()), new Pair<>("projectId", exchangisProject.getId()));
         } catch (final Throwable t) {
             LOGGER.error("failed to update project for user {}", username, t);
-            return Message.error("更新工程失败,原因是:" + t.getMessage());
+            return Message.error("更新工程失败");
         }
     }
 
@@ -129,7 +129,7 @@ public class ExchangisProjectRestfulApi {
             return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
         } catch (final Throwable t) {
             LOGGER.error("failed to update project for user {}", username, t);
-            return Message.error("删除工程失败,原因是:" + t.getMessage());
+            return Message.error("删除工程失败");
         }
     }
 
@@ -142,7 +142,7 @@ public class ExchangisProjectRestfulApi {
             return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
         } catch (final Throwable t) {
             LOGGER.error("failed to update project for user {}", username, t);
-            return Message.error("删除工程失败,原因是:" + t.getMessage());
+            return Message.error("删除工程失败");
         }
     }
 }
