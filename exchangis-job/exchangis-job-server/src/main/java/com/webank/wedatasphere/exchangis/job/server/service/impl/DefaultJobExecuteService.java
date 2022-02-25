@@ -277,7 +277,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
                                 flows += 0;
                                 continue;
                             }
-                            Map<String, Object> flowMap = Json.fromJson(launchedExchangisTaskEntity.getMetricsMap().get("traffic").toString(), Map.class);
+                            Map<String, Object> flowMap = (Map<String, Object>) launchedExchangisTaskEntity.getMetricsMap().get("traffic");
                             flows += flowMap == null ? 0 : Integer.parseInt(flowMap.get("flow").toString());
                         }
                         exchangisJobVo.setFlow(taskNum == 0 ? 0 : (long) (flows / taskNum));
