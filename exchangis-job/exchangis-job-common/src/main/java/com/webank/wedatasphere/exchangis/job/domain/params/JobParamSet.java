@@ -1,9 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.domain.params;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -55,12 +52,13 @@ public class JobParamSet {
 
     @SuppressWarnings("unchecked")
     public <T>JobParam<T> load(JobParamDefine<T> jobParamDefine, Object source){
-        return (JobParam<T>) jobParamStore.compute(jobParamDefine.getKey(), (key, value) -> {
-            if (Objects.isNull(value)) {
-                value = prepare(jobParamDefine, source);
-            }
-            return value;
-        });
+        // Avoid the deadlock problem in nested call, we should not use compute/computeIfAbsent method
+        JobParam<?> jobParam = this.jobParamStore.get(jobParamDefine.getKey());
+        if (Objects.isNull(jobParam)){
+            jobParam = prepare(jobParamDefine, source);
+            this.jobParamStore.put(jobParamDefine.getKey(),jobParam);
+        }
+        return (JobParam<T>) jobParam;
     }
 
     public JobParamSet combine(JobParamSet paramSet){

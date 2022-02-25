@@ -1222,19 +1222,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             right = sourceFields;
             exchanged = !exchanged;
         }
-//        for (DataSourceDbTableColumnDTO l : left) {
-//            String lname = l.getName();
-//            for (DataSourceDbTableColumnDTO r : right) {
-//                String rname = r.getName();
-//                if (lname.equals(rname)) {
-//                    Map<String, Object> deduction = new HashMap<>();
-//                    deduction.put("source", exchanged ? r : l);
-//                    deduction.put("sink", exchanged ? l : r);
-//                    deduction.put("deleteEnable", !containHive);
-//                    deductions.add(deduction);
-//                }
-//            }
-//        }
         for (int i = 0; i < left.size(); i ++){
             DataSourceDbTableColumnDTO leftElement = left.get(i);
             DataSourceDbTableColumnDTO rightElement = right.get(i % right.size());
