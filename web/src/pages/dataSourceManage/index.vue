@@ -92,12 +92,14 @@
             </a-space>
           </template>
           <template #version="{ text }">
-            <a-button
-              size="small"
-              @click="handleOpenVersionModal(text)"
-              type="link"
-              >{{ text.versionId }}</a-button
-            >
+            <a-tag style="cursor: pointer; color:#2e92f7" @click="handleOpenVersionModal(text)">
+              {{ text.versionId }}
+            </a-tag>
+            <!--<a-button-->
+              <!--size="small"-->
+              <!--@click="handleOpenVersionModal(text)"-->
+              <!--type="link"-->
+              <!--&gt;{{ text.versionId }}</a-button>-->
           </template>
           <template #desc="{ text }">
             <div class="dsm-desc" :title="text.desc">{{ text.desc }}</div>
