@@ -113,7 +113,13 @@ export default defineComponent({
     let partitionArr = ref([])
     const _buildMap = function () {
       partitionArr.value = []
-      let url = source.split('?')[0]
+      let url
+      const source_reg = new RegExp('^http');
+      if (source_reg.test(source.value)) {
+        url = source.split('?')[0]
+      } else {
+        url = window.location.origin + source.split('?')[0]
+      }
       getPartitionInfo({
         source: url,
         dataSourceId: props.data.id,
