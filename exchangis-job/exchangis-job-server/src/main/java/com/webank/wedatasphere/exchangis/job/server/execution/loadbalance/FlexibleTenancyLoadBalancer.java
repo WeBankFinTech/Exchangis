@@ -212,33 +212,36 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                 int adjustSegmentNum = 0;
                 int coreSize = pool.getCorePoolSize();
                 // Must more than residentThreads
-                if (coreSize > residentThreads){
+//                if (TenancyParallelGroupFactory.DEFAULT_TENANCY.equals(tenancy) || coreSize > residentThreads){
                     int segments = loopCounter.segments.get();
-                    int restSize = coreSize - residentThreads;
-                    int activeThreads = pool.getActiveCount();
-                    if (activeThreads >= coreSize){
-                        // All threads is active, should reduce the number of segments
-                        adjustSegmentNum = Math.min((int) Math.floor((double)restSize * Constraints.SEGMENT_MIN_OCCUPY.getValue()), segments);
-                    } else {
-                        adjustSegmentNum = Math.max((int) Math.floor((double)restSize * Constraints.SEGMENT_MAX_OCCUPY.getValue()), segments);
-                    }
-                    adjustSegmentNum = adjustSegmentNum > segments ? segments + Math.min(adjustStep, adjustSegmentNum - segments)
-                            : segments - Math.min(adjustStep, segments - adjustSegmentNum);
-                    if (segments != adjustSegmentNum) {
-                        // Div the number of container
-                        int average = adjustSegmentNum / loopCounter.containers.get();
-                        LOG.info("Adjust total number of load balance scheduler task segments for tenancy: [{}] to [{}], average [{}]",
-                                tenancy, adjustSegmentNum, average);
-                        for (int i = 0; i < loopCounter.containers.get(); i++) {
-                            if (i == loopCounter.containers.get() - 1) {
-                                loopCounter.taskContainers.get(i).adjustSegment(adjustSegmentNum);
-                            } else {
-                                loopCounter.taskContainers.get(i).adjustSegment(average);
-                                adjustSegmentNum = adjustSegmentNum - average;
+                    // TODO fix the problem that the value of residentThreads always equal 1 for not default consumer
+                    int restSize = TenancyParallelGroupFactory.DEFAULT_TENANCY.equals(tenancy)? coreSize - residentThreads - 1: coreSize - 1;
+                    if (restSize > 0) {
+                        int activeThreads = pool.getActiveCount();
+                        if (activeThreads >= coreSize) {
+                            // All threads is active, should reduce the number of segments
+                            adjustSegmentNum = Math.min((int) Math.floor((double) restSize * Constraints.SEGMENT_MIN_OCCUPY.getValue()), segments);
+                        } else {
+                            adjustSegmentNum = Math.max((int) Math.floor((double) restSize * Constraints.SEGMENT_MAX_OCCUPY.getValue()), segments);
+                        }
+                        adjustSegmentNum = adjustSegmentNum > segments ? segments + Math.min(adjustStep, adjustSegmentNum - segments)
+                                : segments - Math.min(adjustStep, segments - adjustSegmentNum);
+                        if (segments != adjustSegmentNum) {
+                            // Div the number of container
+                            int average = adjustSegmentNum / loopCounter.containers.get();
+                            LOG.info("Adjust total number of load balance scheduler task segments for tenancy: [{}] from {} to {}, average {}",
+                                    tenancy, segments, adjustSegmentNum, average);
+                            for (int i = 0; i < loopCounter.containers.get(); i++) {
+                                if (i == loopCounter.containers.get() - 1) {
+                                    loopCounter.taskContainers.get(i).adjustSegment(adjustSegmentNum);
+                                } else {
+                                    loopCounter.taskContainers.get(i).adjustSegment(average);
+                                    adjustSegmentNum = adjustSegmentNum - average;
+                                }
                             }
                         }
                     }
-                }
+//                }
             }
         });
         LOG.trace("End to auto scale-in/out segments of load balance scheduler task");
@@ -329,8 +332,13 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
          * @param scaleOut
          */
         private void scaleOutSegment(int scaleOut){
-            LOG.info("Scale-out segments for tenancy: [{}]，decr_segment_size: [{}], scheduler task: [{}]", tenancy, scaleOut, taskName);
             int newSize = segments.length - scaleOut;
+            LOG.info("Scale-out segments for tenancy: [{}]，scaleOut: [{}], newSize: [{}], scheduler task: [{}]",
+                    tenancy, scaleOut, newSize, taskName);
+            if (newSize <= 0){
+                LOG.warn("Scale-out fail, the newSize cannot <= 0");
+                return;
+            }
             SchedulerTaskSegment[] newSegments = new SchedulerTaskSegment[newSize];
             System.arraycopy(segments, 0, newSegments, 0, newSize);
             int offset = 0;
@@ -355,7 +363,8 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
          * @param scaleIn
          */
         private void scaleInSegment(int scaleIn){
-            LOG.info("Scale-in segments for tenancy: [{}]，incr_segment_size: [{}], scheduler task: [{}]", tenancy, scaleIn, taskName);
+            LOG.info("Scale-in segments for tenancy: [{}]，scaleIn: [{}], newSize: [{}], scheduler task: [{}]",
+                    tenancy, scaleIn, segments.length + scaleIn, taskName);
             SchedulerTaskSegment[] newSegments = new SchedulerTaskSegment[segments.length + scaleIn];
             System.arraycopy(segments, 0, newSegments, 0, segments.length);
             for(int i = segments.length; i < segments.length + scaleIn; i ++){
