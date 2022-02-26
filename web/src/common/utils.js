@@ -46,6 +46,10 @@ export const genFileURL = (fileId, fileHash) =>
 
 export const dateFormat = (timestamp) => {
   return moment(timestamp).format("YYYY-MM-DD HH:mm");
+}
+
+export const dateFormatSeconds = (timestamp) => {
+  return moment(timestamp).format("YYYY-MM-DD HH:mm:ss");
 };
 
 /*
