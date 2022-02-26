@@ -236,13 +236,13 @@ export default defineComponent({
         clearInterval(showLogTimer)
       } else {
         lastRows.value = ''
-        if (!pauseLog.pauseIsEnd) {
+        //if (!pauseLog.pauseIsEnd) {
           /*resetData({
             endLine: pauseLog.pauseEndLine,
             isEnd: pauseLog.pauseIsEnd
           })*/
-          changeData(curLogId)
-        }
+        changeData(curLogId)
+        //}
       }
     }
 
