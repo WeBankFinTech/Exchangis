@@ -9,6 +9,7 @@ import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
+import com.webank.wedatasphere.exchangis.job.server.builder.ServiceInExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateErrorEvent;
@@ -74,9 +75,10 @@ public class DefaultTaskGenerator extends AbstractTaskGenerator{
             throw throwable;
         }
         ExchangisJobBuilderManager jobBuilderManager = getExchangisJobBuilderManager();
-        ExchangisJobBuilderContext ctx = new ExchangisJobBuilderContext(jobInfo, generatorContext.getJobLogListener());
+        ServiceInExchangisJobBuilderContext ctx = new ServiceInExchangisJobBuilderContext(jobInfo, generatorContext.getJobLogListener());
         // Set the metadata service
         ctx.setMetadataInfoService(generatorContext.getMetadataInfoService());
+        ctx.setJobExecutionId(launchableExchangisJob.getJobExecutionId());
         ctx.putEnv("USER_NAME", tenancy);
         // ExchangisJobInfo -> TransformExchangisJob(SubExchangisJob)
         try {

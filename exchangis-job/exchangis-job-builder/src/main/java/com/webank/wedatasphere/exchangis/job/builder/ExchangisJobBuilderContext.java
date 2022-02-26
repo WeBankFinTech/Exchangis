@@ -1,9 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.builder;
 
 
-import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
+import com.webank.wedatasphere.exchangis.job.builder.api.ExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
-import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,35 +15,25 @@ public class ExchangisJobBuilderContext {
     /**
      * Origin job
      */
-    private ExchangisJobInfo originalJob;
+    protected ExchangisJobInfo originalJob;
 
     /**
-     * Listen the log event
+     * Current builder
      */
-    private JobLogListener jobLogListener;
+    protected ExchangisJobBuilder<?, ?> currentBuilder;
 
     private Map<String, Object> env = new HashMap<>();
 
     private Map<String, Map<String, Object>> datasourceParams = new HashMap<>();
 
-    private MetadataInfoService metadataInfoService;
-
     public ExchangisJobBuilderContext() {
 
     }
 
-    public ExchangisJobBuilderContext(ExchangisJobInfo originalJob, JobLogListener jobLogListener){
+    public ExchangisJobBuilderContext(ExchangisJobInfo originalJob){
         this.originalJob = originalJob;
-        this.jobLogListener = jobLogListener;
     }
 
-    public ExchangisJobBuilderContext(ExchangisJobInfo originalJob) {
-        this(originalJob, null);
-    }
-
-    public JobLogListener getJobLogListener() {
-        return jobLogListener;
-    }
 
     public ExchangisJobInfo getOriginalJob() {
         return originalJob;
@@ -73,11 +62,11 @@ public class ExchangisJobBuilderContext {
         return this.env.containsKey(name);
     }
 
-    public MetadataInfoService getMetadataInfoService() {
-        return metadataInfoService;
+    public ExchangisJobBuilder<?, ?> getCurrentBuilder() {
+        return currentBuilder;
     }
 
-    public void setMetadataInfoService(MetadataInfoService metadataInfoService) {
-        this.metadataInfoService = metadataInfoService;
+    public void setCurrentBuilder(ExchangisJobBuilder<?, ?> currentBuilder) {
+        this.currentBuilder = currentBuilder;
     }
 }
