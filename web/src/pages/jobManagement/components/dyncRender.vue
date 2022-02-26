@@ -7,6 +7,7 @@
       :options="checkOptions"
       @change="emitData(value)"
       :style="style"
+      :placeholder="description"
     >
     </a-select>
     <template v-if="type === 'MAP'">
@@ -38,6 +39,7 @@
         v-model:value="value"
         @change="emitData(value)"
         :style="style"
+        :placeholder="description"
       />
       <span style="margin-left: 5px">{{unit}}</span>
     </template>
@@ -62,12 +64,21 @@ export default defineComponent({
   },
   emits: ["updateInfo"],
   setup(props, context) {
-    let { type, field, value, unit, source} = props.param;
+    let { type, field, value, unit, source, description} = props.param;
     value = ref(value)
     //let tmlName = field.split(".").pop();
     const newProps = computed(() => JSON.parse(JSON.stringify(props.param)))
     watch(newProps, (val, oldVal) => {
       value.value = val.value
+      if (type === 'OPTION'){
+        checkOptions.value = []
+        val.values.map((item) => {
+          checkOptions.value.push({
+            value: item,
+            label: item
+          })
+        })
+      }
       /*if (type === 'MAP') {
         value.value = value.value || {}
         if (val.source === oldVal.source) {
@@ -89,10 +100,11 @@ export default defineComponent({
         }
       }
     })
-    let checkOptions = []
+    let checkOptions = ref([])
     if (type === 'OPTION'){
+      checkOptions.value = []
       props.param.values.map((item) => {
-        checkOptions.push({
+        checkOptions.value.push({
           value: item,
           label: item
         })
@@ -177,13 +189,14 @@ export default defineComponent({
     }
 
     return {
-      checkOptions: ref(checkOptions),
+      checkOptions,
       type,
-      value: value,
+      value,
       emitData,
       unit,
       source,
       partitionArr,
+      description,
       handleChange
     }
   }

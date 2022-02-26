@@ -39,6 +39,7 @@
                   {{ item.subJobName }}
                 </div>
                 <a-input
+                  style="width: 115px"
                   @pressEnter="nameEditable = false"
                   @blur="nameEditable = false"
                   ref="currentInput"
@@ -239,7 +240,7 @@
               <span>总进度<span style="font-size: 11px;color:rgba(0,0,0,0.5)">({{statusMap[jobStatus]}})</span></span>
               <a-tooltip :title="jobProgress.title">
                 <a-progress v-if="jobProgress.failedTasks" :percent="jobProgress.percent" status="exception"/>
-                <a-progress v-else :percent="jobProgress.percent" :success-percent="jobProgress.successPercent"/>
+                <a-progress v-else :percent="jobProgress.percent"/>
               </a-tooltip>
             </div>
             <div v-if="jobProgress.tasks && jobProgress.tasks.Running" class="job-progress-wrap">
