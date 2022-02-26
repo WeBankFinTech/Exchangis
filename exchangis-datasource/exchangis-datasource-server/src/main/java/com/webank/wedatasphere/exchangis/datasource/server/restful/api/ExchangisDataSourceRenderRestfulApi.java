@@ -56,7 +56,4 @@ public class ExchangisDataSourceRenderRestfulApi {
         return result;
     }
 
-    public static void main(String[] args){
-        ElementUI.Type.valueOf("map".toUpperCase(Locale.ROOT));
-    }
 }
