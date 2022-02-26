@@ -50,7 +50,8 @@ const typesMap = {
   // dataSource: 'options',
   dataSource: (data, source, self)=>{
     const fApi = self.fApi;
-    if(/^https?:/.test(data.dataSource)){
+    if(typeof data.dataSource === 'string'){
+      ///^https?:/.test(data.dataSource)
       request(data.dataSource, {}, {
         method: "GET",
       }).then(result=>{
