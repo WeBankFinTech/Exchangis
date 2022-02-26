@@ -42,13 +42,16 @@ public abstract class AbstractExchangisJobBuilder<T extends ExchangisJob, E exte
 
     @Override
     public E build(T inputJob, E expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+        ExchangisJobBuilder<?, ?> beforeJoBuilder = ctx.getCurrentBuilder();
         JobParamDefine.defaultParam.set(new JobParamSet());
         contextThreadLocal.set(ctx);
+        ctx.setCurrentBuilder(this);
         try {
             return buildJob(inputJob, expectOut, ctx);
         } finally{
-            JobParamDefine.defaultParam.remove();
+            ctx.setCurrentBuilder(beforeJoBuilder);
             contextThreadLocal.remove();
+            JobParamDefine.defaultParam.remove();
         }
     }
 
