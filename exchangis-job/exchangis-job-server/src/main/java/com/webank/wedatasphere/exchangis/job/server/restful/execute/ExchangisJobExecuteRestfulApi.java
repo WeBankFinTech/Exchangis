@@ -52,7 +52,7 @@ public class ExchangisJobExecuteRestfulApi {
         if (Objects.isNull(jobVo)){
             return Message.error("Job related the id: [" + id + "] is Empty(关联的任务不存在)");
         }
-        // Convert to the job info
+        // Convert to the job info TODO cannot find the execute user
         ExchangisJobInfo jobInfo = new ExchangisJobInfo(jobVo);
         String loginUser = SecurityFilter.getLoginUsername(request);
         if (!hasAuthority(loginUser, jobInfo)){
