@@ -5,6 +5,7 @@ import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public interface JobServerLogging<T> {
@@ -14,7 +15,7 @@ public interface JobServerLogging<T> {
 
     default void trace(T entity, String message, Object... args) {
         Logger logger = getLogger();
-        if (logger.isTraceEnabled()){
+        if (Objects.nonNull(logger) && logger.isTraceEnabled()){
             logger.trace(message, args);
         }
         Optional.ofNullable(getJobLogListener()).ifPresent(listener ->
@@ -23,14 +24,14 @@ public interface JobServerLogging<T> {
 
     default void debug(T entity, String message){
         Logger logger = getLogger();
-        if (logger.isDebugEnabled()){
+        if (Objects.nonNull(logger) && logger.isDebugEnabled()){
             logger.debug(message);
         }
     }
 
     default void info(T entity, String message, Object... args){
         Logger logger = getLogger();
-        if (logger.isInfoEnabled()){
+        if (Objects.nonNull(logger) && logger.isInfoEnabled()){
             logger.info(message, args);
         }
         Optional.ofNullable(getJobLogListener()).ifPresent(listener ->
@@ -39,25 +40,25 @@ public interface JobServerLogging<T> {
 
     default void info(T entity, String message, Throwable t){
         Logger logger = getLogger();
-        if (logger.isInfoEnabled()){
+        if (Objects.nonNull(logger) && logger.isInfoEnabled()){
             logger.info(message, t);
         }
         Optional.ofNullable(getJobLogListener()).ifPresent(listener ->
                 listener.onAsyncEvent(getJobLogEvent(JobLogEvent.Level.INFO, entity, message, t)));
     }
 
-    default void warn(T entity, String message){
+    default void warn(T entity, String message, Object... args){
         Logger logger = getLogger();
-        if (logger.isWarnEnabled()){
-            logger.warn(message);
+        if (Objects.nonNull(logger) && logger.isWarnEnabled()){
+            logger.warn(message, args);
         }
         Optional.ofNullable(getJobLogListener()).ifPresent(listener ->
-                listener.onAsyncEvent(getJobLogEvent(JobLogEvent.Level.WARN, entity, message)));
+                listener.onAsyncEvent(getJobLogEvent(JobLogEvent.Level.WARN, entity, message, args)));
     }
 
     default void warn(T entity, String message, Throwable t){
         Logger logger = getLogger();
-        if (logger.isWarnEnabled()){
+        if (Objects.nonNull(logger) && logger.isWarnEnabled()){
             logger.warn(message, t);
         }
         Optional.ofNullable(getJobLogListener()).ifPresent(listener ->
@@ -65,7 +66,7 @@ public interface JobServerLogging<T> {
     }
 
     default void error(T entity, String message, Object... args){
-        getLogger().error(message, args);
+        Optional.ofNullable(getLogger()).ifPresent(logger -> logger.error(message, args));
         Optional.ofNullable(getJobLogListener()).ifPresent(listener ->
                 listener.onAsyncEvent(getJobLogEvent(JobLogEvent.Level.ERROR, entity, message, args)));
     }
