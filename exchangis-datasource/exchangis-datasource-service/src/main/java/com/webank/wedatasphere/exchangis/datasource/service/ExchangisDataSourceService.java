@@ -1184,6 +1184,14 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     }
 
+    /**
+     * TODO: the mapping function is defined by the rule of Hive directly, we should abstract to support all the types
+     * @param request
+     * @param vo
+     * @return
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
     public Message queryDataSourceDBTableFieldsMapping(HttpServletRequest request, FieldMappingVO vo) throws Exception {
 
         this.checkDSSupportDegree(vo.getEngine(), vo.getSourceTypeId(), vo.getSinkTypeId());
@@ -1209,18 +1217,15 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             field.setFieldEditable(!"HIVE".equals(vo.getSinkTypeId()));
         }
         message.data("sinkFields", sinkFields);
-
-
         // field mapping deduction
         List<Map<String, Object>> deductions = new ArrayList<>();
-//        boolean[] matchedIndex = new boolean[sinkFields.size()];
         List<DataSourceDbTableColumnDTO> left = sourceFields;
         List<DataSourceDbTableColumnDTO> right = sinkFields;
         boolean exchanged = false;
         if (containHive && "HIVE".equals(vo.getSinkTypeId())) {
             left = sinkFields;
             right = sourceFields;
-            exchanged = !exchanged;
+            exchanged = true;
         }
         for (int i = 0; i < left.size(); i ++){
             DataSourceDbTableColumnDTO leftElement = left.get(i);
@@ -1228,7 +1233,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             Map<String, Object> deduction = new HashMap<>();
             deduction.put("source", exchanged ? rightElement : leftElement);
             deduction.put("sink", exchanged ? leftElement : rightElement);
-            deduction.put("deleteEnable", !containHive);
+            deduction.put("deleteEnable", true);
             deductions.add(deduction);
         }
         message.data("deductions", deductions);

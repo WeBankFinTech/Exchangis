@@ -4,7 +4,6 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
-import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
@@ -15,6 +14,7 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
+import com.webank.wedatasphere.exchangis.job.server.builder.ServiceInExchangisJobBuilderContext;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.REALM
 import static com.webank.wedatasphere.exchangis.job.server.builder.engine.SqoopExchangisEngineJobBuilder.MODE_TYPE.EXPORT;
 import static com.webank.wedatasphere.exchangis.job.server.builder.engine.SqoopExchangisEngineJobBuilder.MODE_TYPE.IMPORT;
 
-public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<SubExchangisJob, ExchangisEngineJob> {
+public class SqoopExchangisEngineJobBuilder extends AbstractLoggingExchangisJobBuilder<SubExchangisJob, ExchangisEngineJob> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SqoopExchangisEngineJobBuilder.class);
 
@@ -112,10 +112,35 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     });
 
     /**
+     * Meta columns
+     */
+    private static final JobParamDefine<List<MetaColumn>> META_COLUMNS = JobParams.define("sqoop.meta.table.columns", (BiFunction<String, JobParamSet, List<MetaColumn>>) (k, paramSet) -> {
+        ServiceInExchangisJobBuilderContext context = getServiceInBuilderContext();
+        JobParam<String> dataSourceId = paramSet.get(JobParamConstraints.DATA_SOURCE_ID);
+        JobParam<String> database = paramSet.get(JobParamConstraints.DATABASE, String.class);
+        JobParam<String> table = paramSet.get(JobParamConstraints.TABLE, String.class);
+        try {
+            return context.getMetadataInfoService().getColumns(context.getOriginalJob().getCreateUser(),
+                            Long.valueOf(dataSourceId.getValue()), database.getValue(), table.getValue());
+        } catch (ExchangisDataSourceException e) {
+            throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());
+        }
+    });
+
+    /**
+     * Meta hadoop columns
+     */
+    private static final JobParamDefine<List<MetaColumn>> META_HADOOP_COLUMNS = JobParams.define("sqoop.meta.hadoop.table.columns", (BiFunction<String, SubExchangisJob, List<MetaColumn>>) (k, job) -> META_COLUMNS.newValue(MODE_HADOOP_PARAMS.getValue(job)));
+
+    /**
+     * Meta rdbms columns
+     */
+    private static final JobParamDefine<List<MetaColumn>> META_RDBMS_COLUMNS = JobParams.define("sqoop.meta.rdbms.table.columns", (BiFunction<String, SubExchangisJob, List<MetaColumn>>) (k, job) -> META_COLUMNS.newValue(MODE_RDBMS_PARAMS.getValue(job)));
+    /**
      * Meta table/partition props
      */
-    private static final JobParamDefine<Map<String, String>> META_TABLE_PROPS = JobParams.define("sqoop.meta.table.props", (BiFunction<String, SubExchangisJob, Map<String, String>>) (k, job) ->{
-        ExchangisJobBuilderContext context = getCurrentBuilderContext();
+    private static final JobParamDefine<Map<String, String>> META_HADOOP_TABLE_PROPS = JobParams.define("sqoop.meta.hadoop.table.props", (BiFunction<String, SubExchangisJob, Map<String, String>>) (k, job) ->{
+        ServiceInExchangisJobBuilderContext context = getServiceInBuilderContext();
         ExchangisJobInfo jobInfo = context.getOriginalJob();
         // Use the creator as userName
         String userName = jobInfo.getCreateUser();
@@ -142,7 +167,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     });
 
     private static final JobParamDefine<Boolean> IS_TEXT_FILE_TYPE = JobParams.define("sqoop.file.is.text", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) -> {
-        Map<String, String> tableProps = META_TABLE_PROPS.getValue(job);
+        Map<String, String> tableProps = META_HADOOP_TABLE_PROPS.getValue(job);
         return HADOOP_TEXT_INPUT_FORMAT.contains(tableProps.getOrDefault(META_INPUT_FORMAT, "")) ||
         HADOOP_TEXT_OUTPUT_FORMAT.contains(tableProps.getOrDefault(META_OUTPUT_FORMAT, ""));
     });
@@ -345,7 +370,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      * Import: Hive-delete-target-dir
      */
     private static final JobParamDefine<String> HIVE_DELETE_TARGET = JobParams.define("sqoop.args.delete.target.dir", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
-        if (Objects.nonNull(HIVE_IMPORT.getValue(job)) && Objects.isNull(HIVE_APPEND.getValue(job))){
+        if (Objects.nonNull(HIVE_IMPORT.getValue(job))){
             return "";
         }
        return null;
@@ -356,7 +381,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      */
     private static final JobParamDefine<String> HIVE_FIELDS_TERMINATED_BY = JobParams.define("sqoop.args.fields.terminated.by", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         if (MODE_ENUM.getValue(job) == IMPORT && "hive".equalsIgnoreCase(job.getSinkType())){
-            return META_TABLE_PROPS.getValue(job).getOrDefault(META_FIELD_DELIMITER, "\u0001");
+            return META_HADOOP_TABLE_PROPS.getValue(job).getOrDefault(META_FIELD_DELIMITER, "\u0001");
         }
         return null;
     });
@@ -401,19 +426,8 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         if (MODE_ENUM.getValue(job) == EXPORT ){
             JobParam<String> writeMode = MODE_RDBMS_PARAMS.getValue(job).get(JobParamConstraints.WRITE_MODE, String.class);
             if (Objects.nonNull(writeMode) && StringUtils.isNotBlank(writeMode.getValue()) && !"insert".equalsIgnoreCase(writeMode.getValue())){
-                ExchangisJobBuilderContext context = getCurrentBuilderContext();
-                JobParamSet paramSet = MODE_RDBMS_PARAMS.getValue(job);
-                JobParam<String> dataSourceId = paramSet.get(JobParamConstraints.DATA_SOURCE_ID);
-                JobParam<String> database = paramSet.get(JobParamConstraints.DATABASE, String.class);
-                JobParam<String> table = paramSet.get(JobParamConstraints.TABLE, String.class);
-                try {
-                   return context.getMetadataInfoService().getColumns(context.getOriginalJob().getCreateUser(),
-                            Long.valueOf(dataSourceId.getValue()), database.getValue(), table.getValue()).stream()
-                            .filter(MetaColumn::isPrimaryKey)
-                           .map(MetaColumn::getName).collect(Collectors.joining(","));
-                } catch (ExchangisDataSourceException e) {
-                    throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());
-                }
+                return META_RDBMS_COLUMNS.getValue(job).stream().filter(MetaColumn::isPrimaryKey)
+                        .map(MetaColumn::getName).collect(Collectors.joining(","));
             }
         }
         return null;
@@ -477,7 +491,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      */
     private static final JobParamDefine<String> HIVE_INPUT_FIELDS_TERMINATED_KEY = JobParams.define("sqoop.args.input.fields.terminated.by", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         if (MODE_ENUM.getValue(job) == EXPORT && "hive".equalsIgnoreCase(job.getSourceType())){
-            return META_TABLE_PROPS.getValue(job).getOrDefault(META_FIELD_DELIMITER, "\u0001");
+            return META_HADOOP_TABLE_PROPS.getValue(job).getOrDefault(META_FIELD_DELIMITER, "\u0001");
         }
         return null;
     });
@@ -534,6 +548,25 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         return StringUtils.join(columnSerial, ",");
     });
 
+    /**
+     * Inspection of the definitions above
+     */
+    private static final JobParamDefine<String> DEFINE_INSPECTION = JobParams.define("", (BiFunction<String, SubExchangisJob, String>) (key, job) -> {
+        List<String> rdbmsColumns = new ArrayList<>(Arrays.asList(COLUMN_SERIAL.getValue(job).split(",")));
+        List<String> hadoopColumns = META_HADOOP_COLUMNS.getValue(job).stream().map(MetaColumn::getName)
+                .collect(Collectors.toList());
+        if (IS_USE_HCATALOG.getValue(job)){
+            rdbmsColumns.removeAll(hadoopColumns);
+            if (!rdbmsColumns.isEmpty()){
+                warn("NOTE: task:[name:{}, id:{}] 在使用Hcatalog方式下，关系型数据库字段 [" + StringUtils.join(rdbmsColumns, ",") + "] 在hive/hbase表中未查询到对应字段",
+                        job.getName(), job.getId());
+            }
+        }else {
+            warn("NOTE: task:[name: {}, id:{}] 将使用非Hcatalog方式(原生)导数, 将顺序匹配关系型数据库字段和hive/hbase字段，否则请改变写入方式为APPEND追加",
+                    job.getName(), job.getId());
+        }
+        return null;
+    });
     @Override
     public int priority() {
         return 1;
@@ -579,7 +612,9 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
                 EXPORT_DIR, UPDATE_KEY, UPDATE_MODE,
                 HCATALOG_DATABASE, HCATALOG_TABLE, HCATALOG_PARTITION_KEY, HCATALOG_PARTITION_VALUE,
                 HIVE_INPUT_FIELDS_TERMINATED_KEY, HIVE_INPUT_NULL_STRING, HIVE_INPUT_NULL_NON_STRING,
-                COLUMN_SERIAL
+                COLUMN_SERIAL,DEFINE_INSPECTION
         };
     }
+
+
 }
