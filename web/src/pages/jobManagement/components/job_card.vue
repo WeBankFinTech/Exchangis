@@ -22,13 +22,13 @@
           class="content-main-c-tags"
           v-if="jobData.jobLabels && jobData.jobLabels.length > 0"
         >
-          <template v-for="(tag, index) in jobData.jobLabels.split(',').slice(0,5)">
-            <a-tooltip v-if="tag.length > 5" :key="index" :title="tag">
-              <a-tag :key="tag">
+          <template v-for="(tag, index) in jobData.jobLabels.split(',').slice(0,5)" :key="index">
+            <a-tooltip v-if="tag.length > 5" :title="tag">
+              <a-tag>
                 {{ `${tag.slice(0, 5)}...` }}
               </a-tag>
             </a-tooltip>
-            <a-tag v-else :key="index">
+            <a-tag v-else>
               {{ tag }}
             </a-tag>
           </template>
