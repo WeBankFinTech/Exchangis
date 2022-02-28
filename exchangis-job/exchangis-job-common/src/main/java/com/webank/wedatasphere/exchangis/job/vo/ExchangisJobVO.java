@@ -1,104 +1,80 @@
 package com.webank.wedatasphere.exchangis.job.vo;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
+ * <p>
+ * 任务表.
+ * </p>
  *
+ * @author yuxin.yuan
+ * @since 2021-08-10
  */
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@TableName("exchangis_job_info")
 public class ExchangisJobVO {
 
-    /**
-     * Job id
-     */
+
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    /**
-     * Project id
-     */
     private Long projectId;
 
-    /**
-     * Job type
-     */
+    private Long dssProjectId;
+
+    private String dssProjectName;
+
+    private String nodeId;
+
+    private String nodeName;
+
     private String jobType;
 
-    /**
-     * Engine type
-     */
     private String engineType;
 
-    /**
-     * Job labels
-     */
     private String jobLabels;
 
-    /**
-     * Job name
-     */
     private String jobName;
 
-    /**
-     * Job desc
-     */
     private String jobDesc;
 
-    /**
-     * Content
-     */
     private String content;
 
-    /**
-     * Execute user
-     */
-    @JsonProperty("proxyUser")
-    private String executeUser;
+    private String alarmUser;
 
-    /**
-     * Execute node
-     */
-    @Deprecated
+    private Integer alarmLevel;
+
+    private String proxyUser;
+
     private String executeNode;
 
-    /**
-     * Store in source
-     */
     private String syncType;
 
-    /**
-     * Job params
-     */
     private String jobParams;
 
-    /**
-     * Create time
-     */
     private Date createTime;
 
-    /**
-     * Create user
-     */
     private String createUser;
 
-    /**
-     * Modify time (last_update_time)
-     */
     private Date modifyTime;
 
-    /**
-     * Modify user
-     */
     private String modifyUser;
 
-    /**
-     * Source map
-     */
-    private Map<String, Object> source = new HashMap<String, Object>();
+    /*private Map<String, Object> source = new HashMap<>();
+
+    public Map<String, Object> getSource() {
+        return source;
+    }
+
+    public void setSource(Map<String, Object> source) {
+        this.source = source;
+    }*/
 
     public Long getId() { return id; }
 
@@ -146,6 +122,19 @@ public class ExchangisJobVO {
         this.projectId = projectId;
     }
 
+    public Long getDssProjectId() { return dssProjectId; }
+
+    public void setDssProjectId(Long dssProjectId) {
+        //source.put("dssProjectId", dssProjectId);
+        this.dssProjectId = dssProjectId; }
+
+
+    public String getNodeName() { return nodeName; }
+
+    public void setNodeName(String nodeName) {
+        //source.put("nodeName", nodeName);
+        this.nodeName = nodeName; }
+
     public String getJobType() {
         return jobType;
     }
@@ -179,22 +168,49 @@ public class ExchangisJobVO {
         this.content = content;
     }
 
+    public String getAlarmUser() {
+        return alarmUser;
+    }
+
+    public void setAlarmUser(String alarmUser) {
+        //source.put("alarmUser", alarmUser);
+        this.alarmUser = alarmUser;
+    }
+
+    public Integer getAlarmLevel() {
+        return alarmLevel;
+    }
+
+    public void setAlarmLevel(Integer alarmLevel) {
+        //source.put("alarmLevel", alarmLevel);
+        this.alarmLevel = alarmLevel;
+    }
+
+    public String getProxyUser() {
+        return proxyUser;
+    }
+
+    public void setProxyUser(String proxyUser) {
+        //source.put("proxyUser", proxyUser);
+        this.proxyUser = proxyUser;
+    }
+
     public String getExecuteNode() {
-       Object executeNode = source.get("executeNode");
-       return Objects.nonNull(executeNode)? String.valueOf(executeNode) : null;
+        return executeNode;
     }
 
     public void setExecuteNode(String executeNode) {
-        source.put("executeNode", executeNode);
+        //source.put("executeNode", executeNode);
+        this.executeNode = executeNode;
     }
 
     public String getSyncType() {
-        Object syncType = source.get("syncType");
-        return null;
+        return syncType;
     }
 
     public void setSyncType(String syncType) {
-        source.put("syncType", syncType);
+        //source.put("syncType", syncType);
+        this.syncType = syncType;
     }
 
     public String getJobParams() {
@@ -221,11 +237,32 @@ public class ExchangisJobVO {
         this.modifyUser = modifyUser;
     }
 
-    public String getExecuteUser() {
-        return executeUser;
+    public String getDssProjectName() {
+        return dssProjectName;
     }
 
-    public void setExecuteUser(String executeUser) {
-        this.executeUser = executeUser;
+    public void setDssProjectName(String dssProjectName) {
+        //source.put("dssProjectName", dssProjectName);
+        this.dssProjectName = dssProjectName;
+    }
+
+    public void setNodeId(String nodeId) {
+        //source.put("nodeId", nodeId);
+        this.nodeId = nodeId;
+    }
+
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    @Override
+    public String toString() {
+        return "ExchangisJob{" + "id=" + id + ", projectId=" + projectId + ", jobName=" + jobName + ", jobType="
+                + jobType
+                + ", engineType=" + engineType + ", jobLabels=" + jobLabels + ", jobDesc=" + jobDesc + ", content="
+                + content + ", alarmUser=" + alarmUser + ", alarmLevel=" + alarmLevel + ", proxyUser=" + proxyUser
+                + ", executeNode=" + executeNode + ", syncType=" + syncType + ", jobParams=" + jobParams + ", createTime="
+                + createTime + ", createUser=" + createUser + ", modifyTime=" + modifyTime + ", modifyUser=" + modifyUser
+                + "}";
     }
 }
