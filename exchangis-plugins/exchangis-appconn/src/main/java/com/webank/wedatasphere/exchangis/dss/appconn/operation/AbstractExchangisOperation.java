@@ -37,6 +37,8 @@ public abstract class AbstractExchangisOperation {
      */
     private String baseURL;
 
+    private String redirectUrl;
+
     public AbstractExchangisOperation(){
 
     }
@@ -61,6 +63,7 @@ public abstract class AbstractExchangisOperation {
             this.ssoRequestService = appIntegrationService.getSSORequestService();
             // Also upgrade the base url
             this.baseURL = appIntegrationService.getAppInstance().getBaseUrl();
+            this.redirectUrl = String.valueOf(appIntegrationService.getAppInstance().getConfig().get("redirectUrl"));
         }
     }
 
@@ -113,6 +116,11 @@ public abstract class AbstractExchangisOperation {
     public String requestURL(String customUri){
         return baseURL.endsWith(IOUtils.DIR_SEPARATOR_UNIX + "") ?
                 baseURL + customUri : baseURL + IOUtils.DIR_SEPARATOR_UNIX + customUri;
+    }
+
+    public String pageUrl(String customUri){
+        return redirectUrl.endsWith(IOUtils.DIR_SEPARATOR_UNIX + "") ?
+                redirectUrl + customUri : redirectUrl + IOUtils.DIR_SEPARATOR_UNIX + customUri;
     }
 
     /**
