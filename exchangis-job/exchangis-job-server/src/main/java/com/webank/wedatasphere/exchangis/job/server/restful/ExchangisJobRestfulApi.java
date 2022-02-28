@@ -1,7 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.restful;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
@@ -13,7 +11,6 @@ import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisLaunchTaskMapper;
 import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisLaunchTaskService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
 import org.apache.linkis.server.Message;
@@ -42,9 +39,6 @@ public class ExchangisJobRestfulApi {
 
     @Autowired
     private ExchangisDataSourceService exchangisDataSourceService;
-
-    @Autowired
-    private ExchangisLaunchTaskService exchangisLaunchTaskService;
 
     @Autowired
     private ExchangisLaunchTaskMapper launchTaskMapper;
