@@ -328,7 +328,7 @@
               :scroll="{y:240}"
             >
               <template #jobExecutionId="{ record }">
-                <router-link :to="`/synchronizationHistory?jobExecutionId=${jobExecutionId}`">
+                <router-link :to="`/synchronizationHistory?jobExecutionId=${record.jobExecutionId}`">
                   {{record.jobExecutionId}}
                 </router-link>
               </template>
@@ -670,6 +670,13 @@ export default {
       this.activeIndex = index;
       this.curTask = this.list[this.activeIndex];
       this.addEnable = this.curTask.transforms.addEnable
+      const data = this.getFieldsParams(this.curTask);
+      if (data) {
+        getFields(data).then((res) => {
+        }).catch((err) => {
+          console.log(err)
+        });
+      }
     },
     addNewTask() {
       let subJobName = randomString(12);
@@ -964,6 +971,7 @@ export default {
           clearInterval(this.jobStatusTimer)
           clearInterval(this.progressTimer)
           this.visibleLog = false
+          this.jobStatus = 'Cancelled'
 
           // 更新执行历史状态
           for (let i = this.ehTableData.length; i > 0; i--) {
