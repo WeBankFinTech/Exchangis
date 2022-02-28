@@ -964,6 +964,7 @@ export default {
           clearInterval(this.jobStatusTimer)
           clearInterval(this.progressTimer)
           this.visibleLog = false
+          this.jobStatus = 'Cancelled'
 
           // 更新执行历史状态
           for (let i = this.ehTableData.length; i > 0; i--) {
