@@ -3,15 +3,20 @@ package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
+import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
 import org.apache.linkis.server.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.ws.rs.QueryParam;
 import java.util.List;
 import java.util.Map;
@@ -117,14 +122,25 @@ public class ExchangisDataSourceRestfulApi {
 
     // create datasource
     @RequestMapping( value = "", method = RequestMethod.POST)
-    public Message create(HttpServletRequest request, /*@PathParam("type") String type, */@RequestBody Map<String, Object> json) throws Exception {
-        Message message = null;
-        try{
-            message = exchangisDataSourceService.create(request, json);
-        } catch (ExchangisDataSourceException e) {
-            String errorMessage = "Error occur while create datasource";
-            LOG.error(errorMessage, e);
-            message = Message.error("创建数据源失败");
+    public Message create(/*@PathParam("type") String type, */@Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult, HttpServletRequest request ) throws Exception {
+        Message message = new Message();
+
+        LOG.info("dataSourceName:   " + dataSourceCreateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceCreateVO.getDataSourceDesc() + "label:   " + dataSourceCreateVO.getLabels());
+        if(bindingResult.hasErrors()){
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for(int i=0;i<fieldErrors.size();i++){
+                message = Message.error(fieldErrors.get(i).getDefaultMessage());
+                LOG.error("error field is : {} ,message is : {}", fieldErrors.get(i).getField(), fieldErrors.get(i).getDefaultMessage());
+            }
+        }
+        else {
+            try {
+                message = exchangisDataSourceService.create(request, dataSourceCreateVO);
+            } catch (ExchangisDataSourceException e) {
+                String errorMessage = "Error occur while create datasource";
+                LOG.error(errorMessage, e);
+                message = Message.error("创建数据源失败，存在同名数据源");
+            }
         }
         return message;
     }
@@ -152,7 +168,7 @@ public class ExchangisDataSourceRestfulApi {
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while getting connect params";
             LOG.error(errorMessage, e);
-            message = Message.error("获取数据源连接参数失败");
+            message = Message.error("Exit same name dataSource(获取数据源连接参数失败)");
         }
         return message;
 
@@ -160,14 +176,25 @@ public class ExchangisDataSourceRestfulApi {
 
     // update datasource and parameters (insert new record in datasource_version table)
     @RequestMapping( value = "/{id}", method = RequestMethod.PUT)
-    public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, @RequestBody Map<String, Object> json) throws Exception {
-        Message message = null;
-        try{
-            message = exchangisDataSourceService.updateDataSource(request, /*type, */id, json);
-        } catch (ExchangisDataSourceException e) {
-            String errorMessage = "Error occur while update datasource";
-            LOG.error(errorMessage, e);
-            message = Message.error("更新数据源失败");
+    public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, @Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult) throws Exception {
+        Message message = new Message();
+
+        LOG.info("dataSourceName:   " + dataSourceCreateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceCreateVO.getDataSourceDesc() + "label:   " + dataSourceCreateVO.getLabels());
+        if(bindingResult.hasErrors()){
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for(int i=0;i<fieldErrors.size();i++){
+                message = Message.error(fieldErrors.get(i).getDefaultMessage());
+                LOG.error("error field is : {} ,message is : {}", fieldErrors.get(i).getField(), fieldErrors.get(i).getDefaultMessage());
+            }
+        }
+        else {
+            try{
+                message = exchangisDataSourceService.updateDataSource(request, /*type, */id, dataSourceCreateVO);
+            } catch (ExchangisDataSourceException e) {
+                String errorMessage = "Error occur while update datasource";
+                LOG.error(errorMessage, e);
+                message = Message.error("Exit same name dataSource(更新数据源失败，存在同名数据源)");
+            }
         }
         return message;
 
@@ -211,6 +238,19 @@ public class ExchangisDataSourceRestfulApi {
         Message message = null;
         try{
             message = exchangisDataSourceService.testConnect(request, /*type, */id, version);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while connect datasource";
+            LOG.error(errorMessage, e);
+            message = Message.error("数据源连接失效，请检查配置");
+        }
+        return message;
+    }
+
+    @RequestMapping( value = "/op/connect", method = RequestMethod.POST)
+    public Message testConnectByMap(HttpServletRequest request,/* @PathParam("type") String type, */@Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult) throws Exception {
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.testConnectByVo(request, /*type, */dataSourceCreateVO);
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while connect datasource";
             LOG.error(errorMessage, e);
