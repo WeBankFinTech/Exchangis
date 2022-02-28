@@ -45,6 +45,7 @@
                 ? 'card-main-desc-oneline'
                 : 'card-main-desc-2line',
             ]"
+            :title="describe"
           >
             {{ describe }}
           </p>
