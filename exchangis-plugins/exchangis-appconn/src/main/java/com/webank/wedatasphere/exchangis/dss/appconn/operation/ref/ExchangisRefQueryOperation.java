@@ -34,10 +34,10 @@ public class ExchangisRefQueryOperation extends AbstractExchangisRefOperation im
         ExchangisOpenRequestRef exchangisOpenRequestRef = (ExchangisOpenRequestRef) openRequestRef;
         try {
             Long id = AppConnUtils.resolveParam(exchangisOpenRequestRef.getJobContent(), Constraints.REF_JOB_ID, Long.class);
-            String jumpUrl = requestURL(Constraints.REF_JUMP_URL_FORMAT + "?id=" + id);
+            String jumpUrl = pageUrl(Constraints.REF_JUMP_URL_FORMAT + "?id=" + id);
             Map<String,String> retMap = new HashMap<>();
             LOG.info("ExchangisOpenResponseRef jump url: {}", jumpUrl);
-            retMap.put("jumpUrl",jumpUrl);
+            retMap.put("jumpUrl", jumpUrl);
             return new ExchangisOpenResponseRef(DSSCommonUtils.COMMON_GSON.toJson(retMap),0);
         } catch (Exception e) {
             throw new ExternalOperationFailedException(31022, "Failed to parse jobContent ", e);
