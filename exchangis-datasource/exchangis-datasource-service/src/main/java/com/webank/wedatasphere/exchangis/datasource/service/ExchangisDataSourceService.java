@@ -168,14 +168,14 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     }
 
     @Transactional
-    public Message create(HttpServletRequest request, /*String type, */Map<String, Object> json) throws Exception {
-        DataSourceCreateVO vo;
+    public Message create(HttpServletRequest request, /*String type, */DataSourceCreateVO vo) throws Exception {
+        //DataSourceCreateVO vo;
+        Map<String, Object> json;
         try {
-            vo = mapper.readValue(mapper.writeValueAsString(json), DataSourceCreateVO.class);
+            json = mapper.readValue(mapper.writeValueAsString(vo), Map.class);
         } catch (JsonProcessingException e) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }
-
         String comment = vo.getComment();
         String createSystem = vo.getCreateSystem();
         if (Objects.isNull(comment)) {
@@ -196,17 +196,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         }
 
         LinkisDataSourceRemoteClient client = exchangisDataSource.getDataSourceRemoteClient();
-//        Map<String, Object> connectParams = vo.getConnectParams();
-//        if (!Objects.isNull(connectParams)) {
-//            // 如果是 hive 类型，需要处理成连接字符串 TODO
-//            Object host = connectParams.get("host");
-//            Object port = connectParams.get("port");
-//            if (!Objects.isNull(host) && !Objects.isNull(port)) {
-//                String uris = "thrift://" + connectParams.get("host") + ":" + connectParams.get("port");
-//                connectParams.put("uris", uris);
-//            }
-//            json.put("parameter", mapper.writeValueAsString(connectParams));
-//        }
         LOGGER.info("create datasource json as follows");
         Set<Map.Entry<String, Object>> entries = json.entrySet();
         for (Map.Entry<String, Object> entry : entries) {
@@ -215,11 +204,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 //        CreateDataSourceResult result;
         String responseBody;
         try {
-//            result = client.createDataSource(CreateDataSourceAction.builder()
-//                    .setUser(user)
-//                    .addRequestPayloads(json)
-//                    .build()
-//            );
 
             Result execute = client.execute(CreateDataSourceAction.builder()
                     .setUser(user)
@@ -267,12 +251,13 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     }
 
     @Transactional
-    public Message updateDataSource(HttpServletRequest request,/* String type,*/ Long id, Map<String, Object> json) throws Exception {
-        DataSourceUpdateVO vo;
+    public Message updateDataSource(HttpServletRequest request,/* String type,*/ Long id, DataSourceCreateVO vo) throws Exception {
+
+        Map<String, Object> json;
         try {
-            vo = mapper.readValue(mapper.writeValueAsString(json), DataSourceUpdateVO.class);
+            json = mapper.readValue(mapper.writeValueAsString(vo), Map.class);
         } catch (JsonProcessingException e) {
-            throw new ExchangisDataSourceException(30401, e.getMessage());
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }
 
         String comment = vo.getComment();
@@ -293,28 +278,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(30401, "exchangis.datasource.null");
         }
 
-//        Map<String, Object> connectParams = vo.getConnectParams();
-//        if (!Objects.isNull(connectParams)) {
-//            // 如果是 hive 类型，需要处理成连接字符串 TODO
-//            Object host = connectParams.get("host");
-//            Object port = connectParams.get("port");
-//            if (!Objects.isNull(host) && !Objects.isNull(port)) {
-//                String uris = "thrift://" + connectParams.get("host") + ":" + connectParams.get("port");
-//                connectParams.put("uris", uris);
-//            }
-//            json.put("parameter", mapper.writeValueAsString(connectParams));
-//        }
-
         LinkisDataSourceRemoteClient client = exchangisDataSource.getDataSourceRemoteClient();
 //        UpdateDataSourceResult updateDataSourceResult;
         String responseBody;
         try {
-//            updateDataSourceResult = client.updateDataSource(UpdateDataSourceAction.builder()
-//                    .setUser(user)
-//                    .setDataSourceId(id+"")
-//                    .addRequestPayloads(json)
-//                    .build()
-//            );
             Result execute = client.execute(UpdateDataSourceAction.builder()
                     .setUser(user)
                     .setDataSourceId(id + "")
@@ -1006,6 +973,47 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             result = linkisDataSourceRemoteClient.getDataSourceTestConnect(
                     new DataSourceTestConnectAction.Builder().setUser(userName).setDataSourceId(id + "").setVersion(version + "").build()
             );
+        } catch (Exception e) {
+            if (e instanceof ErrorException) {
+                ErrorException ee = (ErrorException) e;
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_TEST_CONNECTION_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
+            } else {
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_TEST_CONNECTION_ERROR.getCode(), e.getMessage());
+            }
+        }
+
+        if (Objects.isNull(result)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_TEST_CONNECTION_ERROR.getCode(), "datasource test connection response body null or empty");
+        }
+
+        if (result.getStatus() != 0) {
+            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
+        }
+
+        return Message.ok();
+    }
+
+    public Message testConnectByVo(HttpServletRequest request, DataSourceCreateVO vo) throws ErrorException {
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        String userName = SecurityFilter.getLoginUsername(request);
+        LOGGER.info("testConnect userName:" + userName);
+
+        Map<String, Object> json;
+        try {
+            json = mapper.readValue(mapper.writeValueAsString(vo), Map.class);
+        } catch (JsonProcessingException e) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
+        }
+        DataSourceTestConnectResult result;
+        try {
+            result = linkisDataSourceRemoteClient.getDataSourceTestConnect(
+                    new DataSourceTestConnectAction.Builder().setUser(userName).setDataSourceId(123 + "").setVersion(123 + "").build()
+            );
+           /* result = (DataSourceTestConnectResult) linkisDataSourceRemoteClient.getDataSourceTestConnectByJson(UpdateDataSourceAction.builder()
+                    .setUser(userName)
+                    .addRequestPayloads(json)
+                    .build()
+            );*/
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
