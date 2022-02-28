@@ -175,8 +175,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractLoggingExchangisJobB
      *
      * Whether hcatalog
      */
-    private static final JobParamDefine<Boolean> IS_USE_HCATALOG = JobParams.define("sqoop.use.hcatalog", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) -> MODE_ENUM.getValue(job) == EXPORT
-            || !IS_TEXT_FILE_TYPE.getValue(job));
+    private static final JobParamDefine<Boolean> IS_USE_HCATALOG = JobParams.define("sqoop.use.hcatalog", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) -> MODE_ENUM.getValue(job) == EXPORT || !IS_TEXT_FILE_TYPE.getValue(job));
 
     /**
      * Driver default 'com.mysql.jdbc.Driver'
@@ -563,7 +562,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractLoggingExchangisJobB
                         job.getName(), job.getId());
             }
         }else {
-            warn("NOTE: task:[name: {}, id:{}] 将使用非Hcatalog方式(原生)导数, 将顺序匹配关系型数据库字段和hive/hbase字段，否则请改变下游表格式为ORC并将写入方式设为APPEND追加",
+            warn("NOTE: task:[name: {}, id:{}] 将使用非Hcatalog方式(原生)导数, 将顺序匹配关系型数据库字段和hive/hbase字段，否则请改变写入方式为APPEND追加",
                     job.getName(), job.getId());
         }
         return null;
