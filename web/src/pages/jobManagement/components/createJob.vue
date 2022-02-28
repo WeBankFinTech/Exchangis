@@ -59,6 +59,7 @@
             v-model:value="inputValue"
             @blur="handleInputConfirm"
             @keyup.enter="handleInputConfirm"
+            :maxLength="20"
           />
           <a-tag
             v-else
@@ -87,7 +88,7 @@
           </a-select>
         </a-form-item>
         <a-form-item :label="$t('job.jobDetail.description')" name="jobDesc">
-          <a-textarea v-model:value="formState.jobDesc" :maxLength="240" />
+          <a-textarea v-model:value="formState.jobDesc" :maxLength="200" />
         </a-form-item>
       </a-form>
     </a-modal>

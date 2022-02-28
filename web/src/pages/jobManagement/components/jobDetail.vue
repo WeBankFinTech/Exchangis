@@ -670,6 +670,13 @@ export default {
       this.activeIndex = index;
       this.curTask = this.list[this.activeIndex];
       this.addEnable = this.curTask.transforms.addEnable
+      const data = this.getFieldsParams(this.curTask);
+      if (data) {
+        getFields(data).then((res) => {
+        }).catch((err) => {
+          console.log(err)
+        });
+      }
     },
     addNewTask() {
       let subJobName = randomString(12);
