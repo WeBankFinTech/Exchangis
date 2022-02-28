@@ -33,7 +33,7 @@ public abstract class AbstractExchangisProjectOperation extends AbstractExchangi
         String owner = projectRequestRef.getCreateBy();
         ProjectReqEntity projectReqEntity = new ProjectReqEntity(owner,
                 projectRequestRef.getName(), projectRequestRef.getDescription(), source);
-        projectReqEntity.setTags(AppConnUtils.serializeDssLabel(projectRequestRef.getDSSLabels()));
+        projectReqEntity.setLabels(AppConnUtils.serializeDssLabel(projectRequestRef.getDSSLabels()));
         // Try to set the project request ref into the source map
         try {
             Map<String, Object> requestRefMap = JsonExtension.convert(projectReqEntity, Map.class, String.class, Object.class);
