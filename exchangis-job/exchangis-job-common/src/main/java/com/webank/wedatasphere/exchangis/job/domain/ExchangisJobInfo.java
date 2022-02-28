@@ -22,10 +22,6 @@ public class ExchangisJobInfo extends GenericExchangisJob {
     protected String jobParams;
 
     /**
-     * Job description
-     */
-    protected String jobDesc;
-    /**
      * Convert from view object
      * @param jobVo vo
      */
@@ -38,7 +34,7 @@ public class ExchangisJobInfo extends GenericExchangisJob {
         this.createUser = jobVo.getCreateUser();
         this.lastUpdateTime = jobVo.getModifyTime();
         this.jobContent = jobVo.getContent();
-        this.executeUser = jobVo.getExecuteUser();
+        this.executeUser = jobVo.getProxyUser();
         this.jobParams = jobVo.getJobParams();
     }
 
@@ -67,13 +63,5 @@ public class ExchangisJobInfo extends GenericExchangisJob {
 
     public void setJobParams(String jobParams) {
         this.jobParams = jobParams;
-    }
-
-    public String getJobDesc() {
-        return jobDesc;
-    }
-
-    public void setJobDesc(String jobDesc) {
-        this.jobDesc = jobDesc;
     }
 }
