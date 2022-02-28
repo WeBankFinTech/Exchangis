@@ -328,7 +328,7 @@
               :scroll="{y:240}"
             >
               <template #jobExecutionId="{ record }">
-                <router-link :to="`/synchronizationHistory?jobExecutionId=${jobExecutionId}`">
+                <router-link :to="`/synchronizationHistory?jobExecutionId=${record.jobExecutionId}`">
                   {{record.jobExecutionId}}
                 </router-link>
               </template>
