@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.groups.Default;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -128,7 +129,7 @@ public class ExchangisProjectRestfulApi {
      * @return
      */
     @RequestMapping( value = "updateProject", method = RequestMethod.PUT)
-    public Message updateProject(@Validated({UpdateGroup.class}) @RequestBody ExchangisProjectInfo projectVo
+    public Message updateProject(@Validated({UpdateGroup.class, Default.class}) @RequestBody ExchangisProjectInfo projectVo
             , BindingResult result, HttpServletRequest request) {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
