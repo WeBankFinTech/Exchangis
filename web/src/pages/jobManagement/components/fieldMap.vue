@@ -91,7 +91,7 @@
                 <div
                   style="
                     position: relative;
-                    height: 66px;
+                    height: 65px;
                     float: left;
                     width: 200px;
                   "

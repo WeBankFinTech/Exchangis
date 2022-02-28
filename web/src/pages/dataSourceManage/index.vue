@@ -108,7 +108,7 @@
             <div class="dsm-name" :title="text.name">{{ text.name }}</div>
           </template>
           <template #modifyTime="{ text }">
-            {{ text && dateFormat(text) }}
+            {{ text && dateFormatSeconds(text) }}
           </template>
         </a-table>
       </a-col>
@@ -151,7 +151,7 @@ import {
   testDataSourceConnect,
 } from "@/common/service";
 import { message } from "ant-design-vue";
-import { dateFormat } from "@/common/utils";
+import { dateFormat, dateFormatSeconds } from "@/common/utils";
 
 const data = [];
 export default {
@@ -237,6 +237,7 @@ export default {
     return {
       // 时间格式化
       dateFormat,
+      dateFormatSeconds,
       // 数据源列表
       dataSourceList: data,
       // 数据源类型选择弹窗
