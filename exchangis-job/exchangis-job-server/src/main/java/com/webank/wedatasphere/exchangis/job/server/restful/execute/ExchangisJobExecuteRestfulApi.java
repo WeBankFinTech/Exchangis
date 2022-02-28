@@ -192,28 +192,6 @@ public class ExchangisJobExecuteRestfulApi {
         return message;
     }
 
-    @RequestMapping(value = "/partitionInfo", method = RequestMethod.GET)
-    public Message partitionInfo(@RequestParam(value = "dataSourceType", required = false) String dataSourceTpe,
-                            @RequestParam(value = "dbname", required = false) String dbname,
-                            @RequestParam(value = "table", required = false) String table) {
-        Map<String, Object> render = new HashMap<>();
-        List<String> partitionList = new ArrayList<>();
-        List<String> partitionEmpty = new ArrayList<>();
-        partitionList.add("$yyyy-MM-dd");
-        partitionList.add("${run_date-1}");
-        partitionList.add("${run_date-7}");
-        partitionList.add("${run_month_begin-1}");
-        render.put("key1", "");
-        render.put("key2", "${yyyyMMdd}");
-        render.put("key3", partitionList);
-        render.put("key4", partitionEmpty);
-        Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/partionInfo/listJobs");
-        message.data("type", "Map");
-        message.data("render", render);
-        return message;
-    }
-
     /**
      * TODO complete the authority strategy
      * @param username username
