@@ -22,6 +22,8 @@ import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoCont
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
 import com.webank.wedatasphere.exchangis.datasource.dto.*;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
+import com.webank.wedatasphere.exchangis.datasource.linkis.request.ParamsTestConnectAction;
+import com.webank.wedatasphere.exchangis.datasource.linkis.response.ParamsTestConnectResult;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceUpdateVO;
@@ -1004,16 +1006,11 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         } catch (JsonProcessingException e) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }
-        DataSourceTestConnectResult result;
+        ParamsTestConnectResult result;
         try {
-            result = linkisDataSourceRemoteClient.getDataSourceTestConnect(
-                    new DataSourceTestConnectAction.Builder().setUser(userName).setDataSourceId(123 + "").setVersion(123 + "").build()
+            result = (ParamsTestConnectResult) linkisDataSourceRemoteClient.execute(
+                    new ParamsTestConnectAction(json, userName)
             );
-           /* result = (DataSourceTestConnectResult) linkisDataSourceRemoteClient.getDataSourceTestConnectByJson(UpdateDataSourceAction.builder()
-                    .setUser(userName)
-                    .addRequestPayloads(json)
-                    .build()
-            );*/
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
