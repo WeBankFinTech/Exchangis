@@ -38,9 +38,9 @@ public class ProjectReqEntity {
     private String execUsers;
 
     /**
-     * Tags
+     * labels
      */
-    private String tags;
+    private String labels;
 
     public ProjectReqEntity(){
 
@@ -102,11 +102,15 @@ public class ProjectReqEntity {
         this.execUsers = execUsers;
     }
 
-    public String getTags() {
-        return tags;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setTags(String tags) {
-        this.tags = tags;
+    public String getLabels() {
+        return labels;
+    }
+
+    public void setLabels(String labels) {
+        this.labels = labels;
     }
 }
