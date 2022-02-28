@@ -2,15 +2,21 @@ package com.webank.wedatasphere.exchangis.datasource.vo;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataSourceCreateVO {
+    @Size(min=0,max=100,message="Length of dataSource name should between 0 and 100(数据源名字的长度应该在0和100之间)")
     private String dataSourceName;
 
     private Long dataSourceTypeId;
 
+    @Size(min=0,max=200,message="Length of dataSource description should between 0 and 200(数据源描述的长度应该在0和200之间)")
     private String dataSourceDesc;
 
     private String createIdentify;
@@ -27,6 +33,7 @@ public class DataSourceCreateVO {
 
     private Long versionId;
 
+    @Size(min=0,max=100,message="Length of labels should between 0 and 100(标签的长度应该在0和100之间)")
     private String labels;
 
     private Long publishedVersionId;
