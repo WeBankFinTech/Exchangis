@@ -247,7 +247,8 @@ public class ExchangisDataSourceRestfulApi {
     }
 
     @RequestMapping( value = "/op/connect", method = RequestMethod.POST)
-    public Message testConnectByMap(HttpServletRequest request,/* @PathParam("type") String type, */@Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult) throws Exception {
+    public Message testConnectByMap(HttpServletRequest request,/* @PathParam("type") String type, */@Valid @RequestBody DataSourceCreateVO dataSourceCreateVO,
+                                    BindingResult bindingResult) throws Exception {
         Message message = null;
         try{
             message = exchangisDataSourceService.testConnectByVo(request, /*type, */dataSourceCreateVO);
