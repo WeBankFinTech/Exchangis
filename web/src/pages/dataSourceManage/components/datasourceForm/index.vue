@@ -1,7 +1,7 @@
 <template>
   <div class="table-warp" style="padding-bottom: 32px;">
     <form-create :rule="rule" v-model:api="fApi" :option="options" v-model="formData"/>
-    <a-button v-if="data.mode === 'edit'" @click="handleTestConnect(row)" type="primary">{{
+    <a-button v-if="data.mode !== 'read'" @click="handleTestConnect(row)" type="primary">{{
       $t("dataSource.table.list.columns.actions.testConnectButton")
       }}</a-button>
     <a-button type="primary" @click="submit" style="float: right;margin: 0 0 0 10px;" v-if="data.mode !== 'read'">确定</a-button>
@@ -10,9 +10,10 @@
 </template>
 <script>
 import _, { merge, mergeWith} from 'lodash-es';
-import {getKeyDefine, getDataSourceById, testDataSourceConnect} from "@/common/service";
+import {getKeyDefine, getDataSourceById} from "@/common/service";
 import { request } from "@fesjs/fes";
 import { message } from "ant-design-vue"
+import { toRaw } from "vue";
 
 const type = {
   TEXT: {type: 'input'},
@@ -280,14 +281,12 @@ export default {
     },
     submit(){
       this.fApi.submit((formData, fApi)=>{
-        console.log(JSON.stringify(formData))
         this.$emit("submit", JSON.stringify(formData), this.originalDefine);
       })
     },
     // 测试链接
-    async handleTestConnect() {
-      await testDataSourceConnect(this.data.id, this.data.versionId);
-      message.success("连接成功");
+    handleTestConnect() {
+      this.$emit('connect', JSON.stringify(toRaw(this.formData)), this.originalDefine)
     }
   }
 }

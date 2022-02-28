@@ -103,6 +103,10 @@ export const testDataSourceConnect = (type, id) => {
   return request(`/datasources/${type}/${id}/connect`, {}, { method: "PUT" });
 };
 
+export const testDataSourceNotSavedConnect = (params) => {
+  return request(`/datasources/op/connect`, { ...params }, { method: "POST" });
+};
+
 export const getDataSourceById = (id, versionId) => {
   return request(`/datasources/${id}`, {versionId}, { method: "GET" });
 };
