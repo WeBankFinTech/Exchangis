@@ -59,6 +59,14 @@ public class ExchangisJobRestfulApi {
         //return Message.ok().data("result", joblist);
     }
 
+    @RequestMapping( value = "/dss", method = RequestMethod.GET)
+    public Message getJobListByDss(@RequestParam(value = "dssProjectId") Long dssProjectId,
+                                   @RequestParam(value = "jobType", required = false) String jobType,
+                                   @RequestParam(value = "name", required = false) String name) {
+        List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobListByDssProject(dssProjectId, jobType, name);
+        return Message.ok().data("result", joblist);
+    }
+
     @RequestMapping( value = "/engineType", method = RequestMethod.GET)
     public Message getEngineList() {
         // TODO limit the engine type in exchangis
@@ -137,6 +145,19 @@ public class ExchangisJobRestfulApi {
                                @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobServerException, ExchangisDataSourceException {
         ExchangisJobVO exchangisJob = exchangisJobService.updateJobContent(exchangisJobContentDTO, id);
         return Message.ok().data("result", exchangisJob);
+    }
+
+    @RequestMapping( value = "{id}/speedlimit/{task_name}/params/ui", method = RequestMethod.GET)
+    public Message getSpeedLimitSettings(@PathVariable("id") Long id, @PathVariable("task_name") String taskName) {
+        List<ElementUI<?>> speedLimitSettings = this.exchangisJobService.getSpeedLimitSettings(id, taskName);
+        return Message.ok().data("ui", speedLimitSettings);
+    }
+
+    @RequestMapping( value = "{id}/speedlimit/{task_name}", method = RequestMethod.PUT)
+    public Message setSpeedLimitSettings(@PathVariable("id") Long id, @PathVariable("task_name") String taskName,
+                                         @RequestBody ExchangisTaskSpeedLimitVO settings) {
+        this.exchangisJobService.setSpeedLimitSettings(id, taskName, settings);
+        return Message.ok();
     }
 
 
