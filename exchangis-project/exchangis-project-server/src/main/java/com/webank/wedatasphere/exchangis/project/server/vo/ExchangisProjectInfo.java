@@ -6,6 +6,7 @@ import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ public class  ExchangisProjectInfo {
     /**
      * ID
      */
-    @NotBlank(message = "Project id cannot be null (工程ID不能为空)", groups = UpdateGroup.class)
+    @NotNull(message = "Project id cannot be null (工程ID不能为空)", groups = UpdateGroup.class)
     private Long id;
 
     /**
