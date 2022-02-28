@@ -206,7 +206,7 @@ export default {
       await deleteProject(id);
       message.success("删除成功");
       this.pageCfg.current = 1;
-      this.getDataList();
+      this.getDataList(this.projectName);
     },
     // 编辑项目
     handleOnEditProject(id) {

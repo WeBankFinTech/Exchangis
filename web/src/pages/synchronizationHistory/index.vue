@@ -99,6 +99,9 @@
           <template #jobExecutionId="{ record }">
             <a @click="showInfoLog(record.jobExecutionId)">{{record.jobExecutionId}}</a>
           </template>
+          <template #flow="{ record }">
+            <span>{{record.flow}} Records/S</span>
+          </template>
         </a-table>
         <!-- 分页 -->
         <!--<div class="sh-b-pagination"></div>-->
@@ -177,6 +180,9 @@ const columns = [
   {
     title: "速率",
     dataIndex: "flow",
+    slots: {
+      customRender: "flow",
+    }
   },
   {
     title: "创建用户",
@@ -191,7 +197,7 @@ const columns = [
     dataIndex: "status",
     slots: {
       customRender: "status",
-    },
+    }
   },
   {
     title: "最后更新时间",
