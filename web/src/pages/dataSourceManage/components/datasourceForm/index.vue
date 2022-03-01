@@ -13,7 +13,6 @@ import _, { merge, mergeWith} from 'lodash-es';
 import {getKeyDefine, getDataSourceById} from "@/common/service";
 import { request } from "@fesjs/fes";
 import { message } from "ant-design-vue"
-import { toRaw } from "vue";
 
 const type = {
   TEXT: {type: 'input'},
@@ -280,7 +279,7 @@ export default {
       
     },
     submit(){
-      this.fApi.submit((formData, fApi)=>{
+      this.fApi.submit((formData, fApi)=>{q
         this.$emit("submit", JSON.stringify(formData), this.originalDefine);
       })
     },
