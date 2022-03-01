@@ -104,7 +104,7 @@ export const testDataSourceConnect = (type, id) => {
 };
 
 export const testDataSourceNotSavedConnect = (params) => {
-  return request(`/datasources/op/connect`, { ...params }, { method: "POST" });
+  return request(`/datasources/op/connect?_=${Math.random()}`, { ...params }, { method: "POST" });
 };
 
 export const getDataSourceById = (id, versionId) => {
