@@ -70,7 +70,7 @@ public class Json {
             } catch (Exception e) {
                 logger.warn("Fail to process method 'fromJson(" +
                         (json.length() > 5 ? json.substring(0, 5) + "..." : json) + ": " + json.getClass() +
-                        ", " + tClass.getSimpleName() + ": "+ Class.class + ", ...: " + Class.class + ")");
+                        ", " + tClass.getSimpleName() + ": "+ Class.class + ", ...: " + Class.class + ")", e);
                 return null;
             }
         }
