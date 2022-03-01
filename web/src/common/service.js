@@ -100,7 +100,7 @@ export const getDataSourceVersionList = (id) => {
 };
 
 export const testDataSourceConnect = (type, id) => {
-  return request(`/datasources/${type}/${id}/connect`, {}, { method: "PUT" });
+  return request(`/datasources/${type}/${id}/connect?_=${Math.random()}`, {}, { method: "PUT" });
 };
 
 export const testDataSourceNotSavedConnect = (params) => {
