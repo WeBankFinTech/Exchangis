@@ -559,6 +559,13 @@ export default {
   props: {
     curTab: Object,
   },
+  watch: {
+    curTab(val, oldVal) {
+      if (val && oldVal && val.id !== oldVal.id) {
+        this.init()
+      }
+    }
+  },
   created() {
     this.init();
   },
