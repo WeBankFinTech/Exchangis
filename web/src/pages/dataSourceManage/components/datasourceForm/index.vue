@@ -279,7 +279,7 @@ export default {
       
     },
     submit(){
-      this.fApi.submit((formData, fApi)=>{q
+      this.fApi.submit((formData, fApi)=>{
         this.$emit("submit", JSON.stringify(formData), this.originalDefine);
       })
     },
