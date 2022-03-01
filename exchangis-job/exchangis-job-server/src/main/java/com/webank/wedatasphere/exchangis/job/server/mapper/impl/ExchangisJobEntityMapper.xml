@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.webank.wedatasphere.exchangis.job.server.dao.ExchangisJobEntityDao">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao">
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity">
         <result column="id" property="id"/>
-        <result column="name" property="jobName"/>
+        <result column="name" property="name"/>
         <result column="create_time" property="createTime"/>
         <result column="last_update_time" property="lastUpdateTime"/>
         <result column="engine_type" property="engineType"/>
@@ -14,6 +14,8 @@
         <result column="job_content" property="jobContent"/>
         <result column="execute_user" property="executeUser"/>
         <result column="job_params" property="jobParams"/>
+        <result column="job_desc" property="jobDesc"/>
+        <result column="job_type" property="jobType"/>
         <result column="project_id" property="projectId"/>
         <result column="source" property="source"/>
         <result column="modify_user" property="modifyUser"/>
@@ -23,18 +25,24 @@
         exchangis_job_entity
     </sql>
 
-    <!-- 通用查询结果列 -->
-    <sql id="BaseColumnList">
+    <sql id = "detail_column">
         id,
-        name, create_time, engine_type, job_labels, create_user, job_content, execute_user, job_params, project_id, source, modify_user
+        name, create_time, last_update_time, engine_type, job_labels, create_user, job_content, execute_user,
+        job_params, job_desc, job_type, project_id, source, modify_user
+    </sql>
+
+    <sql id = "basic_column">
+        id,
+        name, create_time, last_update_time, engine_type, job_labels, create_user, execute_user,
+        job_params, job_desc, job_type, project_id, source, modify_user
     </sql>
 
     <insert id="addJobEntity" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity">
         insert into
         <include refid="TableName"/>
-        (id, name, create_time, last_update_time, engine_type, job_labels, create_user, job_content, execute_user, job_params, project_id, source, modify_user)
+        (name, create_time, last_update_time, engine_type, job_labels, create_user, job_content, execute_user, job_params,
+        job_desc, job_type, project_id, source, modify_user)
         values(
-        #{id},
         #{name},
         #{createTime},
         #{lastUpdateTime},
@@ -44,6 +52,8 @@
         #{jobContent},
         #{executeUser},
         #{jobParams},
+        #{jobDesc},
+        #{jobType},
         #{projectId},
         #{source},
         #{modifyUser}
@@ -56,35 +66,74 @@
         where id = #{jobId}
     </delete>
 
-    <update id="upgradeJobEntity">
+    <update id="upgradeBasicInfo">
         UPDATE <include refid="TableName"/>
         SET
-        id = #{id},
         name = #{name},
-        create_time = #{createTime},
         last_update_time = #{lastUpdateTime},
         engine_type = #{engineType},
         job_labels = #{jobLabel},
-        create_user = #{createUser},
-        job_content = #{jobContent},
-        execute_user = #{executeUser},
-        job_params = #{jobParams},
-        project_id = #{projectId},
-        source = #{source},
+        job_type = #{jobType},
+        job_desc = #{jobDesc},
         modify_user = #{modifyUser}
+        WHERE id = #{id}
     </update>
 
-    <select id="getJobEntity" parameterType="java.lang.String" resultMap ="BaseResultMap">
+    <update id="upgradeConfig">
+        UPDATE <include refid="TableName"/>
+        SET
+        execute_user = #{executeUser},
+        job_params = #{jobParams},
+        source = #{source},
+        last_update_time = #{lastUpdateTime},
+        modify_user = #{modifyUser}
+        WHERE id = #{id}
+    </update>
+
+    <update id="upgradeContent">
+        UPDATE <include refid="TableName"/>
+        SET
+        job_content = #{jobContent},
+        last_update_time = #{lastUpdateTime},
+        modify_user = #{modifyUser}
+        WHERE id = #{id}
+    </update>
+    <select id="getDetail" parameterType="java.lang.Long" resultMap ="BaseResultMap">
         select
-        <include refid="BaseColumnList"/>
+        <include refid="detail_column"/>
         from
         <include refid="TableName" />
         where id = #{jobId}
     </select>
 
+    <select id="getBasicInfo" parameterType="java.lang.Long" resultMap ="BaseResultMap">
+        select
+        <include refid="basic_column"/>
+        from
+        <include refid="TableName" />
+        where id = #{jobId}
+    </select>
+
+    <select id="queryPageList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="basic_column"/>
+        from
+        <include refid="TableName" />
+        <where>
+            project_id = #{projectId}
+            <if test="jobType != null and jobType != ''">
+                AND job_type = #{jobType}
+            </if>
+            <if test="jobName != null and jobName != ''">
+                AND name like concat('%', #{jobName}, '%')
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
     <select id="getJobEntityByFactor" parameterType="java.lang.String" resultMap ="BaseResultMap">
         select
-        <include refid="BaseColumnList"/>
+        <include refid="detail_column"/>
         from
         <include refid="TableName" />
         where project_id = #{projectId}
@@ -95,7 +144,7 @@
 
     <select id="getJobEntityByName" parameterType="java.lang.String" resultMap ="BaseResultMap">
         select
-        <include refid="BaseColumnList"/>
+        <include refid="detail_column"/>
         from
         <include refid="TableName" />
         where
@@ -104,4 +153,12 @@
         </if>
     </select>
 
+    <delete id="deleteBatch">
+        DELETE FROM
+        <include refid="TableName"/>
+        WHERE id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>
