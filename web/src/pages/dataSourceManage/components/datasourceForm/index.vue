@@ -13,6 +13,7 @@ import _, { merge, mergeWith} from 'lodash-es';
 import {getKeyDefine, getDataSourceById} from "@/common/service";
 import { request } from "@fesjs/fes";
 import { message } from "ant-design-vue"
+import { toRaw } from "vue";
 
 const type = {
   TEXT: {type: 'input'},
