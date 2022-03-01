@@ -5,9 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
-import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
@@ -20,10 +18,10 @@ import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoCont
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
 import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import org.apache.linkis.datasource.client.request.GetInfoByDataSourceIdAction;
-import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
 import org.apache.linkis.httpclient.response.Result;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
@@ -37,15 +35,13 @@ public class AbstractDataSourceService {
     protected final ObjectMapper mapper = new ObjectMapper();
     protected final ExchangisDataSourceContext context;
     protected final ExchangisJobParamConfigMapper exchangisJobParamConfigMapper;
-    protected final ExchangisJobInfoMapper exchangisJobInfoMapper;
 
     private final static Logger LOG = LoggerFactory.getLogger(AbstractDataSourceService.class);
 
 
-    public AbstractDataSourceService(ExchangisDataSourceContext context, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper, ExchangisJobInfoMapper exchangisJobInfoMapper) {
+    public AbstractDataSourceService(ExchangisDataSourceContext context, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper) {
         this.context = context;
         this.exchangisJobParamConfigMapper = exchangisJobParamConfigMapper;
-        this.exchangisJobInfoMapper = exchangisJobInfoMapper;
     }
 
     protected List<ExchangisJobInfoContent> parseJobContent(String content) {

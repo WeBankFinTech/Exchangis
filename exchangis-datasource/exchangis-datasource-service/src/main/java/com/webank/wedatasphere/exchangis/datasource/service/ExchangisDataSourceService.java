@@ -5,10 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
-import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
 import com.webank.wedatasphere.exchangis.datasource.GetDataSourceInfoByIdAndVersionIdAction;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
@@ -26,8 +24,10 @@ import com.webank.wedatasphere.exchangis.datasource.linkis.request.ParamsTestCon
 import com.webank.wedatasphere.exchangis.datasource.linkis.response.ParamsTestConnectResult;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
-import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceUpdateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
+import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import org.apache.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
@@ -47,11 +47,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_COLUMNS_ERROR;
-import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_TABLES_ERROR;
+import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.*;
 
 @Service
 public class ExchangisDataSourceService extends AbstractDataSourceService implements DataSourceUIGetter{
@@ -60,26 +60,35 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
 
     @Autowired
-    public ExchangisDataSourceService(ExchangisDataSourceContext context, ExchangisJobInfoMapper exchangisJobInfoMapper, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper) {
-        super(context, exchangisJobParamConfigMapper, exchangisJobInfoMapper);
+    public ExchangisDataSourceService(ExchangisDataSourceContext context,
+                                      ExchangisJobParamConfigMapper exchangisJobParamConfigMapper) {
+        super(context, exchangisJobParamConfigMapper);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
+    @Resource
+    private ExchangisJobOpenService jobOpenService;
+
     @Autowired
     private ExchangisJobDsBindMapper exchangisJobDsBindMapper;
-
     @Override
     public List<ExchangisDataSourceUIViewer> getJobDataSourceUIs(HttpServletRequest request, Long jobId) {
         if (Objects.isNull(jobId)) {
             return null;
         }
 
-        ExchangisJobEntity job = this.exchangisJobInfoMapper.selectById(jobId);
+        ExchangisJobEntity job;
+        try {
+            job = this.jobOpenService.getJobById(jobId, false);
+        } catch (ExchangisJobException e) {
+            throw new ExchangisDataSourceException
+                    .Runtime(CONTEXT_GET_DATASOURCE_NULL.getCode(), "Fail to get job entity (获得任务信息失败)", e);
+        }
         if (Objects.isNull(job)) {
             return null;
         }
 
-        List<ExchangisJobInfoContent> jobInfoContents = this.parseJobContent(job.getContent());
+        List<ExchangisJobInfoContent> jobInfoContents = this.parseJobContent(job.getJobContent());
         List<ExchangisDataSourceUIViewer> uis = new ArrayList<>();
         for (ExchangisJobInfoContent cnt : jobInfoContents) {
             cnt.setEngine(job.getEngineType());
@@ -194,7 +203,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         ExchangisDataSource exchangisDataSource = context.getExchangisDataSource(vo.getDataSourceTypeId());
         if (Objects.isNull(exchangisDataSource)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CONTEXT_GET_DATASOURCE_NULL.getCode(), "exchangis context get datasource null");
+            throw new ExchangisDataSourceException(CONTEXT_GET_DATASOURCE_NULL.getCode(), "exchangis context get datasource null");
         }
 
         LinkisDataSourceRemoteClient client = exchangisDataSource.getDataSourceRemoteClient();
@@ -434,12 +443,19 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             return null;
         }
 
-        ExchangisJobEntity job = this.exchangisJobInfoMapper.selectById(jobId);
+        ExchangisJobEntity job;
+        try {
+            job = this.jobOpenService.getJobById(jobId, false);
+        } catch (ExchangisJobException e) {
+            throw new ExchangisDataSourceException
+                    .Runtime(CONTEXT_GET_DATASOURCE_NULL.getCode(), "Fail to get job entity (获得任务信息失败)", e);
+        }
+
         if (Objects.isNull(job)) {
             return null;
         }
 
-        List<ExchangisJobInfoContent> jobInfoContents = this.parseJobContent(job.getContent());
+        List<ExchangisJobInfoContent> jobInfoContents = this.parseJobContent(job.getJobContent());
         List<ExchangisDataSourceParamsUI> uis = new ArrayList<>();
         for (ExchangisJobInfoContent cnt : jobInfoContents) {
             uis.add(this.buildDataSourceParamsUI(cnt));
@@ -453,12 +469,18 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             return null;
         }
 
-        ExchangisJobEntity job = this.exchangisJobInfoMapper.selectById(jobId);
+        ExchangisJobEntity job;
+        try {
+            job = this.jobOpenService.getJobById(jobId, false);
+        } catch (ExchangisJobException e) {
+            throw new ExchangisDataSourceException
+                    .Runtime(CONTEXT_GET_DATASOURCE_NULL.getCode(), "Fail to get job entity (获得任务信息失败)", e);
+        }
         if (Objects.isNull(job)) {
             return null;
         }
 
-        String jobContent = job.getContent();
+        String jobContent = job.getJobContent();
         ExchangisJobInfoContent content;
         // 转换 content
         if (Strings.isNullOrEmpty(jobContent)) {
@@ -482,12 +504,18 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             return null;
         }
 
-        ExchangisJobEntity job = this.exchangisJobInfoMapper.selectById(jobId);
+        ExchangisJobEntity job;
+        try {
+            job = this.jobOpenService.getJobById(jobId, false);
+        } catch (ExchangisJobException e) {
+            throw new ExchangisDataSourceException
+                    .Runtime(CONTEXT_GET_DATASOURCE_NULL.getCode(), "Fail to get job entity (获得任务信息失败)", e);
+        }
         if (Objects.isNull(job)) {
             return null;
         }
 
-        List<ExchangisJobInfoContent> contents = this.parseJobContent(job.getContent());
+        List<ExchangisJobInfoContent> contents = this.parseJobContent(job.getJobContent());
 
         for (ExchangisJobInfoContent content : contents) {
             if (content.getSubJobName().equalsIgnoreCase(jobName)) {
