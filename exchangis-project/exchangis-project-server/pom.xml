@@ -40,6 +40,12 @@
             <version>1.0.0-RC1</version>
             <scope>compile</scope>
         </dependency>
+        <!--Job common module-->
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-job-common</artifactId>
+            <version>1.0.0-RC1</version>
+        </dependency>
     </dependencies>
 
     <build>
