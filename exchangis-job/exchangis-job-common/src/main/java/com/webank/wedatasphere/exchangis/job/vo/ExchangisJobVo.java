@@ -4,14 +4,19 @@ package com.webank.wedatasphere.exchangis.job.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.*;
 
 /**
  *
  */
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ExchangisJobVO {
+//@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public class ExchangisJobVo {
 
     /**
      * Job id
@@ -21,31 +26,40 @@ public class ExchangisJobVO {
     /**
      * Project id
      */
+    @NotNull(groups = InsertGroup.class, message = "Project id cannot be null (工程ID不能为空)")
     private Long projectId;
 
     /**
      * Job type
      */
+    @NotBlank(message = "Job type cannot be null (任务类型不能为空)")
+    @Size(max = 50, message= "Length of job type should be less than 50 (任务类型长度不超过50)")
     private String jobType;
 
     /**
      * Engine type
      */
+    @NotBlank(message = "Engine type cannot be null (引擎类型不能为空)")
+    @Size(max = 50, message = "Length of engine type should be less than 50 (引擎类型长度不超过50)")
     private String engineType;
 
     /**
      * Job labels
      */
+    @Size(max = 200, message = "Length of labels should be less than 200 (标签长度不能超过200)")
     private String jobLabels;
 
     /**
      * Job name
      */
+    @Size(max = 100, message = "Length of name should be less than 100 (名称长度不超过100)")
+    @NotBlank(message = "Job name cannot be null (任务名不能为空)")
     private String jobName;
 
     /**
      * Job desc
      */
+    @Size(max = 200, message = "Length of desc should be less than 200 (描述长度不超过200)")
     private String jobDesc;
 
     /**
@@ -64,11 +78,6 @@ public class ExchangisJobVO {
      */
     @Deprecated
     private String executeNode;
-
-    /**
-     * Store in source
-     */
-    private String syncType;
 
     /**
      * Job params
@@ -100,6 +109,25 @@ public class ExchangisJobVO {
      */
     private Map<String, Object> source = new HashMap<String, Object>();
 
+    public ExchangisJobVo(){
+
+    }
+
+    public ExchangisJobVo(ExchangisJobInfo jobInfo){
+        if (Objects.nonNull(jobInfo)) {
+            this.id = jobInfo.getId();
+            this.engineType = jobInfo.getEngineType();
+            this.jobDesc = jobInfo.getJobDesc();
+            this.jobLabels = jobInfo.getJobLabel();
+            this.jobName = jobInfo.getName();
+            this.jobType = jobInfo.getJobType();
+            this.createTime = jobInfo.getCreateTime();
+            this.createUser = jobInfo.getCreateUser();
+            this.modifyTime = jobInfo.getLastUpdateTime();
+            this.jobParams = jobInfo.getJobParams();
+            this.executeUser = jobInfo.getExecuteUser();
+        }
+    }
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
@@ -117,7 +145,6 @@ public class ExchangisJobVO {
     }
 
     public void setJobDesc(String jobDesc) {
-        //source.put("jobDesc", jobDesc);
         this.jobDesc = jobDesc;
     }
 
@@ -134,7 +161,6 @@ public class ExchangisJobVO {
     }
 
     public void setModifyTime(Date modifyTime) {
-        //source.put("modifyTime", modifyTime);
         this.modifyTime = modifyTime;
     }
 
@@ -151,7 +177,6 @@ public class ExchangisJobVO {
     }
 
     public void setJobType(String jobType) {
-        //source.put("jobType", jobType);
         this.jobType = jobType;
     }
 
@@ -184,13 +209,14 @@ public class ExchangisJobVO {
        return Objects.nonNull(executeNode)? String.valueOf(executeNode) : null;
     }
 
+
     public void setExecuteNode(String executeNode) {
         source.put("executeNode", executeNode);
     }
 
     public String getSyncType() {
         Object syncType = source.get("syncType");
-        return null;
+        return Objects.nonNull(syncType)? String.valueOf(syncType) : null;
     }
 
     public void setSyncType(String syncType) {
@@ -227,5 +253,13 @@ public class ExchangisJobVO {
 
     public void setExecuteUser(String executeUser) {
         this.executeUser = executeUser;
+    }
+
+    public Map<String, Object> getSource() {
+        return source;
+    }
+
+    public void setSource(Map<String, Object> source) {
+        this.source.putAll(source);
     }
 }

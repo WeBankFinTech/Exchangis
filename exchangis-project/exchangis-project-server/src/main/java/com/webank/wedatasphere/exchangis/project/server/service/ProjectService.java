@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.project.server.service;
 
 
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
 
@@ -45,7 +46,7 @@ public interface ProjectService {
       * Delete project
       * @param projectId project id
       */
-     void deleteProject(Long projectId);
+     void deleteProject(Long projectId) throws ExchangisJobException;
 
      /**
       * Query the project detail

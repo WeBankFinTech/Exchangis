@@ -1,25 +1,24 @@
 package com.webank.wedatasphere.exchangis.job.server.restful;
 
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
+import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
-import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
-import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
-import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobBasicInfoDTO;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisJobContentDTO;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
-import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisLaunchTaskMapper;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
-import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobBasicInfoVO;
-import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisTaskSpeedLimitVO;
+import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import org.apache.linkis.server.Message;
+import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.groups.Default;
 import java.util.*;
 
 
@@ -30,35 +29,50 @@ import java.util.*;
 @RestController
 @RequestMapping(value = "exchangis/job", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobRestfulApi {
+
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisJobRestfulApi.class);
-    @Autowired
-    private ExchangisJobService exchangisJobService;
 
-    @Autowired
-    private ExchangisJobBuilderManager jobBuilderManager;
+    /**
+     * Job service
+     */
+    @Resource
+    private JobInfoService jobInfoService;
 
-    @Autowired
-    private ExchangisDataSourceService exchangisDataSourceService;
-
-    @Autowired
-    private ExchangisLaunchTaskMapper launchTaskMapper;
-
+    /**
+     * Query job in page
+     * @param projectId project id
+     * @param jobType job type
+     * @param name name
+     * @param current current
+     * @param size size
+     * @param request request
+     * @return message
+     */
     @RequestMapping( value = "", method = RequestMethod.GET)
     public Message getJobList(@RequestParam(value = "projectId") Long projectId,
                               @RequestParam(value = "jobType", required = false) String jobType,
                               @RequestParam(value = "name", required = false) String name,
                               @RequestParam(value = "current", required = false) int current,
-                              @RequestParam(value = "size", required = false) int size) {
-        List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobList(projectId, jobType, name, current, size);
-        int total = exchangisJobService.count(projectId, jobType, name);
-        //List<ExchangisJobBasicInfoVO> joblist = exchangisJobService.getJobList(projectId, jobType, name);
-        Message message = Message.ok();
-        message.data("total", total);
-        message.data("result", joblist);
-        return message;
-        //return Message.ok().data("result", joblist);
+                              @RequestParam(value = "size", required = false) int size,
+                              HttpServletRequest request) {
+        ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo(
+                projectId, jobType, name, current, size
+        );
+        String userName = SecurityFilter.getLoginUsername(request);
+        queryVo.setCreateUser(userName);
+        try {
+            PageResult<ExchangisJobVo> pageResult = jobInfoService.queryJobList(queryVo);
+            return Message.ok().data("total", pageResult.getTotal()).data("result", pageResult.getList());
+        } catch (Exception e){
+            LOG.error("Fail to query job list for user {}", userName, e);
+            return Message.error("Failed to query job list (获取任务列表失败)");
+        }
     }
 
+    /**
+     * Engine list
+     * @return message
+     */
     @RequestMapping( value = "/engineType", method = RequestMethod.GET)
     public Message getEngineList() {
         // TODO limit the engine type in exchangis
@@ -66,78 +80,174 @@ public class ExchangisJobRestfulApi {
         return Message.ok().data("result", new EngineTypeEnum[]{EngineTypeEnum.SQOOP});
     }
 
+    /**
+     * Create job
+     * @param request http request
+     * @param exchangisJobVo exchangis job vo
+     * @return message
+     */
     @RequestMapping( value = "", method = RequestMethod.POST)
-    public Message createJob(HttpServletRequest request, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
-        ExchangisJobBasicInfoVO job = exchangisJobService.createJob(request, exchangisJobBasicInfoDTO);
-        return Message.ok().data("result", job);
+    public Message createJob(
+            @Validated({InsertGroup.class, Default.class}) @RequestBody ExchangisJobVo exchangisJobVo,
+                             BindingResult result,
+                             HttpServletRequest request) {
+        if (result.hasErrors()){
+            return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
+        }
+        String userName = SecurityFilter.getLoginUsername(request);
+        exchangisJobVo.setCreateUser(userName);
+        Message response = Message.ok();
+        try{
+            response.data("result", jobInfoService.createJob(exchangisJobVo));
+        } catch (Exception e){
+            String message = "Fail to create job: " + exchangisJobVo.getJobName() +" (创建任务失败)";
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
     }
 
-    @RequestMapping( value = "/{sourceJobId}/copy", method = RequestMethod.POST)
+    /**
+     * Copy job
+     * @param sourceJobId source job id
+     * @param exchangisJobVo job vo
+     * @return message
+     */
+    @RequestMapping( value = "/{sourceJobId:\\d+}/copy", method = RequestMethod.POST)
     public Message copyJob(@PathVariable("sourceJobId") Long sourceJobId,
-                           @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
-        ExchangisJobBasicInfoVO job = exchangisJobService.copyJob(exchangisJobBasicInfoDTO, sourceJobId);
-        return Message.ok().data("result", job);
+                           @RequestBody ExchangisJobVo exchangisJobVo) {
+        return Message.error("Function will be supported in next version (该功能将在下版本支持)");
     }
 
-    @RequestMapping( value = "/{id}", method = RequestMethod.PUT)
-    public Message updateJob(@PathVariable("id") Long id, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
-        ExchangisJobBasicInfoVO job = exchangisJobService.updateJob(exchangisJobBasicInfoDTO, id);
-        return Message.ok().data("result", job);
+    /**
+     * Update job
+     * @param id job id
+     * @param exchangisJobVo job vo
+     * @return message
+     */
+    @RequestMapping( value = "/{id:\\d+}", method = RequestMethod.PUT)
+    public Message updateJob(@PathVariable("id") Long id,
+                             @Validated @RequestBody ExchangisJobVo exchangisJobVo,
+                             BindingResult result, HttpServletRequest request) {
+        if (result.hasErrors()){
+            return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
+        }
+        String userName = SecurityFilter.getLoginUsername(request);
+        exchangisJobVo.setId(id);
+        exchangisJobVo.setModifyUser(userName);
+        Message response = Message.ok();
+        try{
+            if (!hasAuthority(userName, jobInfoService.getJob(id , true))){
+                return Message.error("You have no permission to update (没有更新权限)");
+            }
+            response.data("result", jobInfoService.updateJob(exchangisJobVo));
+        } catch (Exception e){
+            String message = "Fail to update job: " + exchangisJobVo.getJobName() +" (更新任务失败)";
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
     }
 
-//    @RequestMapping( value = "/dss/{nodeId}", method = RequestMethod.PUT)
-//    public Message updateJobByDss(@PathVariable("nodeId") String nodeId, @RequestBody ExchangisJobBasicInfoDTO exchangisJobBasicInfoDTO) {
-//        LOGGER.info("updateJobByDss nodeId {},ExchangisJobBasicInfoDTO {}", nodeId,exchangisJobBasicInfoDTO.toString());
-//        ExchangisJobBasicInfoVO job = exchangisJobService.updateJobByDss(exchangisJobBasicInfoDTO, nodeId);
-//        return Message.ok().data("result", job);
-//    }
-
-//    @RequestMapping( value = "/import", method = RequestMethod.POST, headers = {"content-type=multipart/form-data"})
-//    public Message importSingleJob(@RequestPart("multipartFile") MultipartFile multipartFile) {
-//        ExchangisJobBasicInfoVO job = exchangisJobService.importSingleJob(multipartFile);
-//        return Message.ok().data("result", job);
-//    }
-
+    /**
+     * Delete job
+     * @param id id
+     * @param request http request
+     * @return message
+     */
     @RequestMapping( value = "/{id}", method = RequestMethod.DELETE)
-    public Message deleteJob(@PathVariable("id") Long id) {
-        exchangisJobService.deleteJob(id);
-        return Message.ok("job deleted");
+    public Message deleteJob(@PathVariable("id") Long id, HttpServletRequest request) {
+        String userName = SecurityFilter.getLoginUsername(request);
+        Message response = Message.ok("job deleted");
+        try {
+            if (!hasAuthority(userName, jobInfoService.getJob(id, true))){
+                return Message.error("You have no permission to update (没有删除权限)");
+            }
+            jobInfoService.deleteJob(id);
+        } catch (Exception e){
+            String message = "Fail to delete job [ id: " + id + "] (删除任务失败)";
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
     }
 
-//    @RequestMapping( value = "/dss/{nodeId}", method = RequestMethod.DELETE)
-//    public Message deleteJobByDss(@PathVariable("nodeId") String nodeId) {
-//        LOGGER.info("deleteJobByDss nodeId {}", nodeId);
-//        return Message.ok("job deleted");
-//    }
 
+    /**
+     * Get job
+     * @param request http request
+     * @param id id
+     * @return message
+     */
     @RequestMapping( value = "/{id}", method = RequestMethod.GET)
-    public Message getJob(HttpServletRequest request, @PathVariable("id") Long id) throws ExchangisJobServerException {
-        ExchangisJobVO job = exchangisJobService.getJob(request, id);
-        return Message.ok().data("result", job);
+    public Message getJob(HttpServletRequest request, @PathVariable("id") Long id) {
+        Message response = Message.ok();
+        try {
+            ExchangisJobVo job = jobInfoService.getDecoratedJob(request, id);
+            response.data("result", job);
+        } catch (Exception e){
+            String message = "Fail to get job detail (查询任务失败)";
+            if (e.getCause() instanceof ExchangisJobServerException){
+                message += ", reason: " + e.getCause().getMessage();
+            }
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
     }
 
-//    @RequestMapping( value = "/dss/{nodeId}", method = RequestMethod.GET)
-//    public Message getJobByDssProject(HttpServletRequest request, @PathVariable("nodeId") String nodeId) throws ExchangisJobServerException {
-//        LOGGER.info("getJobByDssProject nodeId {}", nodeId);
-//        ExchangisJobVO job = exchangisJobService.getJobByDss(request, nodeId);
-//        return Message.ok().data("result", job);
-//    }
-
-
-
+    /**
+     * Save the job configuration
+     * @param id id
+     * @param jobVo job vo
+     * @return message
+     */
     @RequestMapping( value = "/{id}/config", method = RequestMethod.PUT)
     public Message saveJobConfig(@PathVariable("id") Long id,
-                                 @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobServerException {
-        ExchangisJobVO exchangisJob = exchangisJobService.updateJobConfig(exchangisJobContentDTO, id);
-        return Message.ok().data("result", exchangisJob);
+                                 @RequestBody ExchangisJobVo jobVo, HttpServletRequest request) {
+        jobVo.setId(id);
+        jobVo.setModifyUser(SecurityFilter.getLoginUsername(request));
+        Message response = Message.ok();
+        try{
+            ExchangisJobVo exchangisJob = jobInfoService.updateJobConfig(jobVo);
+            response.data("id", exchangisJob.getId());
+        } catch (Exception e){
+            String message = "Fail to save the job configuration (保存任务配置失败)";
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
     }
 
     @RequestMapping( value = "/{id}/content", method = RequestMethod.PUT)
-    public Message saveSubjobs(@PathVariable("id") Long id,
-                               @RequestBody ExchangisJobContentDTO exchangisJobContentDTO) throws ExchangisJobServerException, ExchangisDataSourceException {
-        ExchangisJobVO exchangisJob = exchangisJobService.updateJobContent(exchangisJobContentDTO, id);
-        return Message.ok().data("result", exchangisJob);
+    public Message saveSubJobs(@PathVariable("id") Long id,
+                               @RequestBody ExchangisJobVo jobVo, HttpServletRequest request) {
+        jobVo.setId(id);
+        jobVo.setModifyUser(SecurityFilter.getLoginUsername(request));
+        Message response = Message.ok();
+        try{
+            ExchangisJobVo exchangisJob = jobInfoService.updateJobContent(jobVo);
+            response.data("id", exchangisJob.getId());
+        } catch (Exception e){
+            String message = "Fail to save the job content (保存任务内容失败)";
+            if (e.getCause() instanceof ExchangisJobServerException
+             || e.getCause() instanceof ExchangisDataSourceException){
+                message += ", reason: " + e.getCause().getMessage();
+            }
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
     }
 
+    /**
+     * TODO complete the authority strategy
+     * @param username username
+     * @param job job
+     * @return
+     */
+    private boolean hasAuthority(String username, ExchangisJobVo job){
+        return Objects.nonNull(job) && username.equals(job.getCreateUser());
+    }
 
 }
