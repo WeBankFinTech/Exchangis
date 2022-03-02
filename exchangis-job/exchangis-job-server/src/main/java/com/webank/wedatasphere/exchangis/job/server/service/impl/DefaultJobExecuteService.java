@@ -1,7 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
@@ -15,9 +14,9 @@ import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTa
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.log.LogResult;
-import com.webank.wedatasphere.exchangis.job.server.dao.LaunchableTaskDao;
-import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
-import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchableTaskDao;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
@@ -162,12 +161,12 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskId, String jobExecutionId, String userName) throws ExchangisJobServerException {
+    public ExchangisLaunchedTaskMetricsVo getLaunchedTaskMetrics(String taskId, String jobExecutionId, String userName) throws ExchangisJobServerException {
         LaunchedExchangisTaskEntity launchedExchangisTaskEntity = launchedTaskDao.getLaunchedTaskMetrics(jobExecutionId, taskId);
         if (Objects.isNull(launchedExchangisTaskEntity) || !hasExecuteJobAuthority(jobExecutionId, userName)) {
             throw new ExchangisJobServerException(METRICS_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
         }
-        ExchangisLaunchedTaskMetricsVO exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVO();
+        ExchangisLaunchedTaskMetricsVo exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVo();
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
         exchangisLaunchedTaskVo.setStatus(launchedExchangisTaskEntity.getStatus().name());
@@ -242,7 +241,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public List<ExchangisLaunchedJobListVO> getExecutedJobList(String jobExecutionId, String jobName, String status,
+    public List<ExchangisLaunchedJobListVo> getExecutedJobList(String jobExecutionId, String jobName, String status,
                                                                Long launchStartTime, Long launchEndTime, int current, int size, HttpServletRequest request) throws ExchangisJobServerException{
         if (current <= 0) {
             current = 1;
@@ -251,7 +250,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
             size = 10;
         }
         int start = (current - 1) * size;
-        List<ExchangisLaunchedJobListVO> jobList = new ArrayList<>();
+        List<ExchangisLaunchedJobListVo> jobList = new ArrayList<>();
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
         List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, start, size, SecurityFilter.getLoginUsername(request));
@@ -259,12 +258,15 @@ public class DefaultJobExecuteService implements JobExecuteService {
         if(jobEntitylist != null) {
             try {
                 for (LaunchedExchangisJobEntity launchedExchangisJobEntity : jobEntitylist) {
-                    ExchangisLaunchedJobListVO exchangisJobVo = modelMapper.map(launchedExchangisJobEntity, ExchangisLaunchedJobListVO.class);
+                    ExchangisLaunchedJobListVo exchangisJobVo = modelMapper.map(launchedExchangisJobEntity, ExchangisLaunchedJobListVo.class);
                     if (launchedExchangisJobEntity.getExchangisJobEntity() == null || launchedExchangisJobEntity.getExchangisJobEntity().getSource() == null) {
                         exchangisJobVo.setExecuteNode("-");
                     } else {
                         Map<String, Object> sourceObject = Json.fromJson(launchedExchangisJobEntity.getExchangisJobEntity().getSource(), Map.class);
-                        exchangisJobVo.setExecuteNode(sourceObject.get("execute_node").toString());
+                        if (Objects.nonNull(sourceObject)){
+                            exchangisJobVo.setExecuteNode(String.valueOf(sourceObject
+                                    .getOrDefault("executeNode", "-")));
+                        }
                     }
                     List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(launchedExchangisJobEntity.getJobExecutionId());
                     if (launchedExchangisTaskEntities == null) {

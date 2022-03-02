@@ -4,7 +4,7 @@ import com.google.common.cache.*;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.log.LogResult;
-import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
@@ -17,7 +17,6 @@ import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.common.utils.Utils;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.queue.JobInfo;
-import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

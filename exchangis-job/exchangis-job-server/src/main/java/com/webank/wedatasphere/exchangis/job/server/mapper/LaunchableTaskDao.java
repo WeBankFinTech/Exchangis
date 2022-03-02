@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.dao;
+package com.webank.wedatasphere.exchangis.job.server.mapper;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import org.apache.ibatis.annotations.Param;
