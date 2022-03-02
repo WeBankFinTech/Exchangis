@@ -3,10 +3,12 @@ package com.webank.wedatasphere.exchangis.project.server.restful;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
+import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.linkis.common.utils.JsonUtils;
 import org.apache.linkis.server.Message;
@@ -140,6 +142,11 @@ public class ExchangisProjectRestfulApi {
             if (!hasAuthority(username, projectStored)){
                 return Message.error("You have no permission to update (没有项目的更新权限)");
             }
+            String domain = projectStored.getDomain();
+            if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
+                    .equalsIgnoreCase(domain)){
+                return Message.error("Cannot update the outer project (无法更新来自 " + domain + " 的外部项目)");
+            }
             LOG.info("UpdateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             projectService.updateProject(projectVo, username);
             return ExchangisProjectRestfulUtils.dealOk("更新工程成功",
@@ -164,6 +171,11 @@ public class ExchangisProjectRestfulApi {
             ExchangisProjectInfo projectInfo = projectService.getProjectById(id);
             if (!hasAuthority(username, projectInfo)){
                 return Message.error("You have no permission to delete (删除工程失败)");
+            }
+            String domain = projectInfo.getDomain();
+            if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
+                    .equalsIgnoreCase(domain)){
+                return Message.error("Cannot delete the outer project (无法删除来自 " + domain + " 的外部项目)");
             }
             projectService.deleteProject(id);
             return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
