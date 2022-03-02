@@ -6,7 +6,7 @@ import com.webank.wedatasphere.exchangis.job.server.metrics.ExchangisMetricsVo;
  *
  * @Date 2022/1/12 23:00
  */
-public class ExchangisLaunchedTaskMetricsVO {
+public class ExchangisLaunchedTaskMetricsVo {
     private String taskId;
 
     private String name;
@@ -16,11 +16,11 @@ public class ExchangisLaunchedTaskMetricsVO {
     private ExchangisMetricsVo metrics;
     //private Map<String, Object> metrics;
 
-    public ExchangisLaunchedTaskMetricsVO(){
+    public ExchangisLaunchedTaskMetricsVo(){
 
     }
 
-    public ExchangisLaunchedTaskMetricsVO(String taskId, String name, String status, ExchangisMetricsVo metrics){
+    public ExchangisLaunchedTaskMetricsVo(String taskId, String name, String status, ExchangisMetricsVo metrics){
         this.taskId = taskId;
         this.name = name;
         this.status = status;

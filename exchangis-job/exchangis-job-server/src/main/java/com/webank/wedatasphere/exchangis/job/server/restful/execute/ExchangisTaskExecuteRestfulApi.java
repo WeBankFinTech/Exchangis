@@ -3,10 +3,10 @@ package com.webank.wedatasphere.exchangis.job.server.restful.execute;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
+import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
-import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedTaskMetricsVO;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedTaskMetricsVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
@@ -29,7 +29,7 @@ import java.util.Map;
 public class ExchangisTaskExecuteRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisTaskExecuteRestfulApi.class);
     @Autowired
-    private ExchangisJobService exchangisJobService;
+    private JobInfoService jobInfoService;
 
     @Resource
     private JobExecuteService jobExecuteService;
@@ -43,7 +43,7 @@ public class ExchangisTaskExecuteRestfulApi {
             return Message.error("Required params 'jobExecutionId' is missing");
         }
         try{
-            ExchangisLaunchedTaskMetricsVO taskMetrics = this.jobExecuteService
+            ExchangisLaunchedTaskMetricsVo taskMetrics = this.jobExecuteService
                     .getLaunchedTaskMetrics(taskId, jobExecutionId, SecurityFilter.getLoginUsername(request));
             result.data("task", taskMetrics);
         }catch(Exception e){

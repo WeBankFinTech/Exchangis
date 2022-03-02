@@ -5,9 +5,11 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
-import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
+import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectMapper;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
@@ -19,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,8 +33,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectMapper projectMapper;
 
-    @Autowired
-    private ExchangisJobInfoMapper jobInfoMapper;
+    @Resource
+    private ExchangisJobOpenService jobServiceOpenApi;
 
     @Autowired
     private ExchangisJobDsBindMapper jobDataSourceBindMapper;
@@ -97,16 +99,16 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteProject(Long projectId) {
+    public void deleteProject(Long projectId) throws ExchangisJobException {
         // First to delete the project to lock the record
         this.projectMapper.deleteOne(projectId);
         // Query the related job
-        QueryWrapper<ExchangisJobEntity> jobQuery = new QueryWrapper<>();
-        jobQuery.eq("project_id", projectId);
-        List<ExchangisJobEntity> jobEntities = this.jobInfoMapper.selectList(jobQuery);
+        ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo();
+        queryVo.setProjectId(projectId);
+        List<ExchangisJobEntity> jobEntities = this.jobServiceOpenApi.queryJobs(queryVo, false);
         if (!jobEntities.isEmpty()){
             List<Long> ids = jobEntities.stream().map(ExchangisJobEntity::getId).collect(Collectors.toList());
-            this.jobInfoMapper.deleteBatchIds(ids);
+            this.jobServiceOpenApi.deleteJobBatch(ids);
             QueryWrapper<ExchangisJobDsBind> dsBindQuery = new QueryWrapper<ExchangisJobDsBind>().in("job_id", ids);
             this.jobDataSourceBindMapper.delete(dsBindQuery);
         }
