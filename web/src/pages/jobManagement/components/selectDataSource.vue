@@ -301,7 +301,7 @@ export default defineComponent({
       if (!state.selectTable) {
         return message.error("未正确选择库表");
       }
-      state.defaultSelect = `${state.curSql}-${state.dataSource}-${state.selectTable}`;
+      state.defaultSelect = `${state.curSql}.${state.dataSource}.${state.selectTable}`;
       visible.value = false;
       context.emit("updateDsInfo", state.defaultSelect, state.dsId);
       // 选择完 初始化数据
@@ -324,7 +324,7 @@ export default defineComponent({
       tables.forEach((table) => {
         const o = Object.create(null);
         o.title = table;
-        o.key = `${dbName}-${table}`;
+        o.key = `${dbName}.${table}`;
         res.push(o);
       });
       return res;
@@ -358,7 +358,7 @@ export default defineComponent({
       }
     };
     const getBg = () => {
-      let name = state.curSql || (typeof state.defaultSelect === 'string' ? state.defaultSelect.split('-')[0] : state.defaultSelect[0])
+      let name = state.curSql || (typeof state.defaultSelect === 'string' ? state.defaultSelect.split('.')[0] : state.defaultSelect[0])
       return `background-image: url(${require('@/images/dataSourceTypeIcon/' + name + '.png')})`
     }
     return {
