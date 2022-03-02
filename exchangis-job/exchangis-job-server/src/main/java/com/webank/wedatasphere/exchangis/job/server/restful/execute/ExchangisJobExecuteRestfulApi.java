@@ -5,13 +5,13 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
+import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobProgressVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobTaskVo;
-import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedJobListVO;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedJobListVo;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
@@ -33,7 +33,7 @@ import java.util.*;
 public class ExchangisJobExecuteRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisJobExecuteRestfulApi.class);
     @Autowired
-    private ExchangisJobService exchangisJobService;
+    private JobInfoService jobInfoService;
 
     @Resource
     private DefaultJobExecuteService executeService;
@@ -47,27 +47,34 @@ public class ExchangisJobExecuteRestfulApi {
     @RequestMapping( value = "/{id}/execute", method = RequestMethod.POST)
     public Message executeJob(@RequestBody(required = false) Map<String, Boolean> permitPartialFailures,
                               @PathVariable("id") Long id, HttpServletRequest request) {
-        // First to find the job from the old table. TODO use the job entity
-        ExchangisJobVO jobVo = exchangisJobService.getById(id);
-        if (Objects.isNull(jobVo)){
-            return Message.error("Job related the id: [" + id + "] is Empty(关联的任务不存在)");
-        }
-        // Convert to the job info TODO cannot find the execute user
-        ExchangisJobInfo jobInfo = new ExchangisJobInfo(jobVo);
         String loginUser = SecurityFilter.getLoginUsername(request);
-        if (!hasAuthority(loginUser, jobInfo)){
-            return Message.error("You have no permission to execute job (没有执行任务权限)");
-        }
         Message result = Message.ok("Submitted succeed(提交成功)！");
+        ExchangisJobInfo jobInfo = null;
         try {
+            // First to find the job from the old table.
+            ExchangisJobVo jobVo = jobInfoService.getJob(id, false);
+            if (Objects.isNull(jobVo)){
+                return Message.error("Job related the id: [" + id + "] is Empty(关联的任务不存在)");
+            }
+            // Convert to the job info
+            jobInfo = new ExchangisJobInfo(jobVo);
+            if (!hasAuthority(loginUser, jobInfo)){
+                return Message.error("You have no permission to execute job (没有执行任务权限)");
+            }
             // Send to execute service
             String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
                     jobInfo.getExecuteUser() : loginUser);
             result.data("jobExecutionId", jobExecutionId);
-        } catch (ExchangisJobServerException e) {
-            String message = "Error occur while executing job: [id: " + jobInfo.getId() + " name: " + jobInfo.getName() +"]";
+        } catch (Exception e) {
+            String message;
+            if (Objects.nonNull(jobInfo)) {
+                message = "Error occur while executing job: [id: " + jobInfo.getId() + " name: " + jobInfo.getName() + "]";
+                result = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
+            } else {
+                message = "Error to get the job detail (获取任务信息出错)";
+                result = Message.error(message);
+            }
             LOG.error(message, e);
-            result = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
         }
         result.setMethod("/api/rest_j/v1/exchangis/job/{id}/execute");
         return result;
@@ -178,7 +185,7 @@ public class ExchangisJobExecuteRestfulApi {
                             HttpServletRequest request) {
         Message message = Message.ok("Submitted succeed(提交成功)！");
         try {
-            List<ExchangisLaunchedJobListVO> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
+            List<ExchangisLaunchedJobListVo> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
                     launchStartTime, launchEndTime, current, size, request);
             int total = executeService.count(jobExecutionId, jobName, status, launchStartTime, launchEndTime, request);
             message.data("jobList", jobList);

@@ -6,7 +6,7 @@ import java.util.Date;
  *
  * @Date 2022/1/16 10:21
  */
-public class ExchangisLaunchedJobListVO {
+public class ExchangisLaunchedJobListVo {
     private String jobExecutionId;
 
     private String executeNode;
@@ -27,11 +27,11 @@ public class ExchangisLaunchedJobListVO {
 
     private Date lastUpdateTime;
 
-    public ExchangisLaunchedJobListVO(){
+    public ExchangisLaunchedJobListVo(){
 
     }
 
-    public ExchangisLaunchedJobListVO(String jobExecutionId, String executeNode, String name, Date createTime, Long flow, String createUser, String executeUser, String status, double progress, Date lastUpdateTime){
+    public ExchangisLaunchedJobListVo(String jobExecutionId, String executeNode, String name, Date createTime, Long flow, String createUser, String executeUser, String status, double progress, Date lastUpdateTime){
         this.jobExecutionId = jobExecutionId;
         this.executeNode = executeNode;
         this.name = name;
