@@ -54,7 +54,8 @@ public class ProjectServiceImpl implements ProjectService {
         project.setExecUsers(projectVo.getExecUsers());
         project.setCreateUser(userName);
         project.setCreateTime(Calendar.getInstance().getTime());
-        return this.projectMapper.insertOne(project);
+        this.projectMapper.insertOne(project);
+        return project.getId();
     }
 
     @Override
