@@ -12,7 +12,7 @@ public class ProjectPageQuery extends PageQuery {
      */
     protected String name;
 
-    protected String domain = ExchangisProject.Domain.STANDALONE.name();
+    protected String domain;
 
     protected String createUser;
 
