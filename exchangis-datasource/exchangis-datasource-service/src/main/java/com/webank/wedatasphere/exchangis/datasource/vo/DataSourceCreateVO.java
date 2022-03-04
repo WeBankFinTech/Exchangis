@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.vo;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;

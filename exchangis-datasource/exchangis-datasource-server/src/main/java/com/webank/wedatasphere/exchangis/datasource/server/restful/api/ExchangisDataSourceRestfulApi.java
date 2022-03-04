@@ -20,6 +20,8 @@ import javax.validation.Valid;
 import javax.ws.rs.QueryParam;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping(value = "exchangis/datasources", produces = {"application/json;charset=utf-8"})
@@ -28,6 +30,8 @@ public class ExchangisDataSourceRestfulApi {
 
 
     private final ExchangisDataSourceService exchangisDataSourceService;
+
+    private static Pattern p = Pattern.compile("(?<=\\[)[^]]+");
 
     @Autowired
     public ExchangisDataSourceRestfulApi(ExchangisDataSourceService exchangisDataSourceService) {
@@ -43,7 +47,15 @@ public class ExchangisDataSourceRestfulApi {
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while list datasource type";
             LOG.error(errorMessage, e);
-            message = Message.error("获取数据源类型列表失败");
+
+            String errorNote = e.getMessage();
+            Matcher matcher = p.matcher(errorNote);
+            if (matcher.find()) {
+                message = Message.error(matcher.group());
+            }
+            else{
+                message = Message.error("Getting datasource type list fail (获取数据源类型列表失败)");
+            }
         }
         return message;
 
@@ -80,7 +92,15 @@ public class ExchangisDataSourceRestfulApi {
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while getting datasource list";
             LOG.error(errorMessage, e);
-            message = Message.error("获取数据源列表失败");
+
+            String errorNote = e.getMessage();
+            Matcher matcher = p.matcher(errorNote);
+            if (matcher.find()) {
+                message = Message.error(matcher.group());
+            }
+            else{
+                message = Message.error("Getting datasource list fail (获取数据源列表失败)");
+            }
         }
         return message;
 
@@ -114,7 +134,15 @@ public class ExchangisDataSourceRestfulApi {
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while getting datasource version";
             LOG.error(errorMessage, e);
-            message = Message.error("获取数据源版本失败");
+
+            String errorNote = e.getMessage();
+            Matcher matcher = p.matcher(errorNote);
+            if (matcher.find()) {
+                message = Message.error(matcher.group());
+            }
+            else{
+                message = Message.error("Getting datasource version fail (获取数据源版本失败)");
+            }
         }
         return message;
 
@@ -124,7 +152,6 @@ public class ExchangisDataSourceRestfulApi {
     @RequestMapping( value = "", method = RequestMethod.POST)
     public Message create(/*@PathParam("type") String type, */@Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult, HttpServletRequest request ) throws Exception {
         Message message = new Message();
-
         LOG.info("dataSourceName:   " + dataSourceCreateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceCreateVO.getDataSourceDesc() + "label:   " + dataSourceCreateVO.getLabels());
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
@@ -139,7 +166,14 @@ public class ExchangisDataSourceRestfulApi {
             } catch (ExchangisDataSourceException e) {
                 String errorMessage = "Error occur while create datasource";
                 LOG.error(errorMessage, e);
-                message = Message.error("创建数据源失败，存在同名数据源");
+                String errorNote = e.getMessage();
+                Matcher matcher = p.matcher(errorNote);
+                if (matcher.find()) {
+                    message = Message.error(matcher.group());
+                }
+                else{
+                    message = Message.error("创建数据源失败");
+                }
             }
         }
         return message;
@@ -154,7 +188,15 @@ public class ExchangisDataSourceRestfulApi {
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while getting datasource information";
             LOG.error(errorMessage, e);
-            message = Message.error("获取数据源信息失败");
+
+            String errorNote = e.getMessage();
+            Matcher matcher = p.matcher(errorNote);
+            if (matcher.find()) {
+                message = Message.error(matcher.group());
+            }
+            else{
+                message = Message.error("Getting datasource information fail (获取数据源信息失败)");
+            }
         }
         return message;
 
@@ -193,7 +235,15 @@ public class ExchangisDataSourceRestfulApi {
             } catch (ExchangisDataSourceException e) {
                 String errorMessage = "Error occur while update datasource";
                 LOG.error(errorMessage, e);
-                message = Message.error("Exit same name dataSource(更新数据源失败，存在同名数据源)");
+
+                String errorNote = e.getMessage();
+                Matcher matcher = p.matcher(errorNote);
+                if (matcher.find()) {
+                    message = Message.error(matcher.group());
+                }
+                else{
+                    message = Message.error("Exit same name dataSource(更新数据源失败)");
+                }
             }
         }
         return message;
@@ -210,7 +260,15 @@ public class ExchangisDataSourceRestfulApi {
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while publish datasource";
             LOG.error(errorMessage, e);
-            message = Message.error("发布数据源失败");
+
+            String errorNote = e.getMessage();
+            Matcher matcher = p.matcher(errorNote);
+            if (matcher.find()) {
+                message = Message.error(matcher.group());
+            }
+            else{
+                message = Message.error("Publish datasource failed (发布数据源失败)");
+            }
         }
         return message;
 
@@ -241,7 +299,15 @@ public class ExchangisDataSourceRestfulApi {
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while connect datasource";
             LOG.error(errorMessage, e);
-            message = Message.error("数据源连接失效，请检查配置");
+
+            String errorNote = e.getMessage();
+            Matcher matcher = p.matcher(errorNote);
+            if (matcher.find()) {
+                message = Message.error(matcher.group());
+            }
+            else{
+                message = Message.error("Connect datasource failed (数据源连接失效，请检查配置)");
+            }
         }
         return message;
     }
@@ -255,7 +321,15 @@ public class ExchangisDataSourceRestfulApi {
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while connect datasource";
             LOG.error(errorMessage, e);
-            message = Message.error("数据源连接失效，请检查配置");
+
+            String errorNote = e.getMessage();
+            Matcher matcher = p.matcher(errorNote);
+            if (matcher.find()) {
+                message = Message.error(matcher.group());
+            }
+            else{
+                message = Message.error("Connect datasource failed (数据源连接失效，请检查配置)");
+            }
         }
         return message;
     }
