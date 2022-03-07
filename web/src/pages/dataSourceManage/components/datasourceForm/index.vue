@@ -55,7 +55,9 @@ const typesMap = {
       if (!/^https?:/.test(data.dataSource)) {
         data.dataSource = window.location.origin + data.dataSource
       }
-      request(data.dataSource, {}, {
+      request(data.dataSource, {
+        labels: 'dev'
+      }, {
         method: "GET",
       }).then(result=>{
         delete source.options;
