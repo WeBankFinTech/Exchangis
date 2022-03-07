@@ -52,7 +52,9 @@ const typesMap = {
   dataSource: (data, source, self)=>{
     const fApi = self.fApi;
     if(typeof data.dataSource === 'string'){
-      ///^https?:/.test(data.dataSource)
+      if (!/^https?:/.test(data.dataSource)) {
+        data.dataSource = window.location.origin + data.dataSource
+      }
       request(data.dataSource, {}, {
         method: "GET",
       }).then(result=>{

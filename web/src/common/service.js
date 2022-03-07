@@ -3,15 +3,28 @@ import { request } from "@fesjs/fes";
 import { BASE_URL } from "@/common/constants";
 ////////////////////////////////////////////////////////////////////
 export const getProjectList = (name, current, size) => {
-  return request(`/projects?name=${name}&current=${current}&size=${size}`, {}, { method: "POST" });
+  return request(`/projects?name=${name}&current=${current}&size=${size}`, {
+    labels: {
+      route: 'dev'
+    }
+  }, { method: "POST" });
 };
 
 export const createProject = (body) => {
-  return request("/createProject", body);
+  return request("/createProject", {
+    ...body,
+    labels: {
+      route: 'dev'
+    }
+  });
 };
 
 export const deleteProject = (id) => {
-  return request("/projects/" + id, null, {
+  return request("/projects/" + id, {
+    labels: {
+      route: 'dev'
+    }
+  }, {
     method: "DELETE",
   });
 };
@@ -23,13 +36,23 @@ export const getProjectById = (id) => {
 };
 
 export const updateProject = (body) => {
-  return request("/updateProject", body, {
+  return request("/updateProject", {
+    ...body,
+    labels: {
+      route: 'dev'
+    }
+  }, {
     method: "PUT",
   });
 };
 
 export const getDataSourceList = (params) => {
-  return request("/datasources/query", { ...params }, { method: "POST" });
+  return request("/datasources/query", {
+    ...params,
+    labels: {
+      route: 'dev'
+    }
+  }, { method: "POST" });
 };
 
 // 数据源管理 获取数据源
@@ -52,7 +75,12 @@ export const getKeyDefine = (dataSourceTypeId) => {
 
 // 查询数据源
 export const getDataSource = (body) => {
-  return request("/datasources/query", body, { method: "POST" });
+  return request("/datasources/query", {
+    ...body,
+    labels: {
+      route: 'dev'
+    }
+  }, { method: "POST" });
 };
 
 export const getDBs = (type, id) => {
@@ -78,21 +106,40 @@ export const getTables = (type, id, dbName) => {
 export const getFields = (params) => {
   return request(
     `/datasources/fieldsmapping`,
-    { ...params },
+    {
+      ...params,
+      labels: {
+        route: 'dev'
+      }
+    },
     { method: "POST" }
   );
 };
 
 export const createDataSource = (params) => {
-  return request("/datasources", { ...params }, { method: "POST" });
+  return request("/datasources", {
+    ...params,
+    labels: {
+      route: 'dev'
+    }
+  }, { method: "POST" });
 };
 
 export const updateDataSource = (id, params) => {
-  return request("/datasources/" + id, { ...params }, { method: "PUT" });
+  return request("/datasources/" + id, {
+    ...params,
+    labels: {
+      route: 'dev'
+    }
+  }, { method: "PUT" });
 };
 
 export const deleteDataSource = (id) => {
-  return request(`/datasources/${id}`, {}, { method: "DELETE" });
+  return request(`/datasources/${id}`, {
+    labels: {
+      route: 'dev'
+    }
+  }, { method: "DELETE" });
 };
 
 export const getDataSourceVersionList = (id) => {
@@ -100,11 +147,20 @@ export const getDataSourceVersionList = (id) => {
 };
 
 export const testDataSourceConnect = (type, id) => {
-  return request(`/datasources/${type}/${id}/connect?_=${Math.random()}`, {}, { method: "PUT" });
+  return request(`/datasources/${type}/${id}/connect?_=${Math.random()}`, {
+    labels: {
+      route: 'dev'
+    }
+  }, { method: "PUT" });
 };
 
 export const testDataSourceNotSavedConnect = (params) => {
-  return request(`/datasources/op/connect?_=${Math.random()}`, { ...params }, { method: "POST" });
+  return request(`/datasources/op/connect?_=${Math.random()}`, {
+    ...params,
+    labels: {
+      route: 'dev'
+    }
+  }, { method: "POST" });
 };
 
 export const getDataSourceById = (id, versionId) => {
@@ -135,7 +191,12 @@ export const getEngineType = () => {
 export const createJob = (params) => {
   return request(
     `/job`,
-    { ...params },
+    {
+      ...params,
+      labels: {
+        route: 'dev'
+      }
+    },
     {
       method: "POST",
     }
@@ -146,7 +207,12 @@ export const createJob = (params) => {
 export const copyJob = (id, params) => {
   return request(
     `/job/${id}/copy`,
-    { ...params },
+    {
+      ...params,
+      labels: {
+        route: 'dev'
+      }
+    },
     {
       method: "POST",
     }
@@ -157,7 +223,12 @@ export const copyJob = (id, params) => {
 export const modifyJob = (id, params) => {
   return request(
     `/job/${id}`,
-    { ...params },
+    {
+      ...params,
+      labels: {
+        route: 'dev'
+      }
+    },
     {
       method: "PUT",
     }
@@ -166,7 +237,11 @@ export const modifyJob = (id, params) => {
 
 //删除任务
 export const deleteJob = (id) => {
-  return request(`/job/${id}`, null, {
+  return request(`/job/${id}`, {
+    labels: {
+      route: 'dev'
+    }
+  }, {
     method: "DELETE",
   });
 };
@@ -175,7 +250,12 @@ export const deleteJob = (id) => {
 export const importJob = (id, params) => {
   return request(
     `/job/import`,
-    { ...params },
+    {
+      ...params,
+      labels: {
+        route: 'dev'
+      }
+    },
     {
       method: "POST",
     }
@@ -184,7 +264,11 @@ export const importJob = (id, params) => {
 
 //执行任务
 export const executeTask = (id) => {
-  return request(`/job/${id}/action/execute`, null, {
+  return request(`/job/${id}/action/execute`, {
+    labels: {
+      route: 'dev'
+    }
+  }, {
     method: "POST",
   });
 };
@@ -196,26 +280,44 @@ export const getJobs = (id, jobType, name, current, size) => {
 };
 
 export const saveProject = (id, body) => {
-  return request(`/job/${id}/content`, body, {
+  return request(`/job/${id}/content`, {
+    ...body,
+    labels: {
+      route: 'dev'
+    }
+  }, {
     method: "PUT",
   });
 };
 
 // 保存/更新任务配置
 export const updateTaskConfiguration = (id, body) => {
-  return request(`/job/${id}/config`, body, {
+  return request(`/job/${id}/config`, {
+    ...body,
+    labels: {
+      route: 'dev'
+    }
+  }, {
     method: "PUT",
   });
 };
 
 export const expireDataSource = (id) => {
-  return request(`/datasources/${id}/expire`, {}, { method: "PUT" });
+  return request(`/datasources/${id}/expire`, {
+    labels: {
+      route: 'dev'
+    }
+  }, { method: "PUT" });
 };
 
 export const publishDataSource = (id, versionId) => {
   return request(
     `/datasources/${id}/${versionId}/publish`,
-    {},
+    {
+      labels: {
+        route: 'dev'
+      }
+    },
     { method: "PUT" }
   );
 };
@@ -257,7 +359,11 @@ export const getSyncHistoryJobList = (body) => {
 };
 // 删除同步历史
 export const delSyncHistory = (jobExecutionId) => {
-  return request(`/job/${jobExecutionId}/deleteJob`, {}, {
+  return request(`/job/${jobExecutionId}/deleteJob`, {
+    labels: {
+      route: 'dev'
+    }
+  }, {
     method: "POST",
   });
 };
@@ -273,7 +379,12 @@ export const getSpeedLimit = (params) => {
 };
 // 保存Task限速配置
 export const saveSpeedLimit = (params, body) => {
-  return request(`/job/${params.jobId}/speedlimit/${params.taskName}`, body, {
+  return request(`/job/${params.jobId}/speedlimit/${params.taskName}`, {
+    ...body,
+    labels: {
+      route: 'dev'
+    }
+  }, {
     method: "PUT",
   });
 };
@@ -326,7 +437,11 @@ export const getEngineriesSourceMem = () => {
 
 /* 作业执行模块接口 */
 export const executeJob = (id) => {
-  return request(`/job/${id}/execute`,undefined, {
+  return request(`/job/${id}/execute`,{
+    labels: {
+      route: 'dev'
+    }
+  }, {
     method: "POST",
   })
 }
@@ -350,13 +465,22 @@ export const getProgress = (id) => {
 }
 
 export const getMetrics = (taskId, jobExecutionId) => {
-  return request(`/task/execution/${taskId}/metrics`, {jobExecutionId}, {
+  return request(`/task/execution/${taskId}/metrics`, {
+    jobExecutionId,
+    labels: {
+      route: 'dev'
+    }
+  }, {
     method: "POST",
   })
 }
 
 export const killJob = (id) => {
-  return request(`/job/execution/${id}/kill`, null, {
+  return request(`/job/execution/${id}/kill`, {
+    labels: {
+      route: 'dev'
+    }
+  }, {
     method: "POST",
   })
 }
