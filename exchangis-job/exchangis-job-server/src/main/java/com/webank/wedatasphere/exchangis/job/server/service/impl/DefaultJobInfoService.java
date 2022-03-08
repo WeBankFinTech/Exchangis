@@ -168,6 +168,7 @@ public class DefaultJobInfoService implements JobInfoService {
     public ExchangisJobVo updateJobContent(ExchangisJobVo jobVo) throws ExchangisJobServerException, ExchangisDataSourceException {
         Long jobId = jobVo.getId();
         ExchangisJobEntity exchangisJob = this.jobEntityDao.getDetail(jobId);
+        exchangisJob.setJobContent(jobVo.getContent());
         final String engine = exchangisJob.getEngineType();
         // 校验是否有重复子任务名
         List<ExchangisJobInfoContent> content = LabelUtils.Jackson.fromJson(exchangisJob.getJobContent(),
@@ -193,7 +194,6 @@ public class DefaultJobInfoService implements JobInfoService {
         exchangisJob.setModifyUser(jobVo.getModifyUser());
         exchangisJob.setLastUpdateTime(jobVo.getModifyTime());
         this.exchangisJobDsBindService.updateJobDsBind(jobId, dsBinds);
-        exchangisJob.setJobContent(jobVo.getContent());
         this.jobEntityDao.upgradeContent(exchangisJob);
         return jobVo;
     }
