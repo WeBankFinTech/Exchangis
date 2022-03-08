@@ -23,6 +23,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints.API_REQUEST_PREFIX;
+
 /**
  * Abstract implement, contains the method to create sso request
  */
@@ -63,6 +65,9 @@ public abstract class AbstractExchangisOperation {
             this.ssoRequestService = appIntegrationService.getSSORequestService();
             // Also upgrade the base url
             this.baseURL = appIntegrationService.getAppInstance().getBaseUrl();
+            // Append the api prefix
+            this.baseURL = this.baseURL.endsWith(IOUtils.DIR_SEPARATOR_UNIX + "")?
+                    baseURL + API_REQUEST_PREFIX: baseURL + IOUtils.DIR_SEPARATOR_UNIX + API_REQUEST_PREFIX;
             this.redirectUrl = String.valueOf(appIntegrationService.getAppInstance().getConfig().get("redirectUrl"));
         }
     }
