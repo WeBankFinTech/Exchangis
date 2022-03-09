@@ -36,10 +36,6 @@
       </div>
     </div>
     <div class="content-sidebar">
-      <div @click="handleJobCopy">
-        <span class="iconfont icon-copy job_card_icon"></span>
-      </div>
-      <a-divider type="horizontal" style="width: 16px" />
       <div @click="handleJobModify">
         <span class="iconfont icon-need-fault-tolerance job_card_icon"></span>
       </div>
