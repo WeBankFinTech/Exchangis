@@ -1,11 +1,22 @@
 package com.webank.wedatasphere.exchangis.datasource.vo;
 
+import java.util.Map;
+
 public class DataSourceQueryVO {
     private Integer page;
     private Integer pageSize;
     private Long typeId;
     private String typeName;
     private String name;
+    private Map<String, Object> labels;
+
+    public Map<String, Object> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<String, Object> labels) {
+        this.labels = labels;
+    }
 
     public String getName() {
         return name;

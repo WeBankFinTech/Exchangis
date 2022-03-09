@@ -1,5 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.vo;
 
+import java.util.Map;
+
 public class FieldMappingVO {
 
     private String engine;
@@ -13,6 +15,15 @@ public class FieldMappingVO {
     private Long sinkDataSourceId;
     private String sinkDataBase;
     private String sinkTable;
+    private Map<String, Object> labels;
+
+    public Map<String, Object> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<String, Object> labels) {
+        this.labels = labels;
+    }
 
     public String getEngine() {
         return engine;
