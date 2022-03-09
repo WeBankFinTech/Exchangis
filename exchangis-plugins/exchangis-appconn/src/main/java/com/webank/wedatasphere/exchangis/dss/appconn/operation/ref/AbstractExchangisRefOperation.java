@@ -18,7 +18,7 @@ public abstract class AbstractExchangisRefOperation extends AbstractExchangisOpe
     }
 
     public AbstractExchangisRefOperation(String[] uriParts) {
-        super(uriParts);
+          super(uriParts);
     }
 
     /**
