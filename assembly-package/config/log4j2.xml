@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2022 WeBank
+  ~ Copyright 2019 WeBank
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~  you may not use this file except in compliance with the License.
@@ -33,13 +33,12 @@
         </RollingFile>
     </appenders>
     <loggers>
-        <root level="INFO">
+        <root level="INFO" additivity="false">
             <appender-ref ref="RollingFile"/>
             <appender-ref ref="Console"/>
         </root>
-        <logger name="com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger$" level="TRACE" additivity="false">
+        <logger name="com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger$" level="INFO" additivity="true">
             <appender-ref ref="RpcLog"/>
         </logger>
     </loggers>
 </configuration>
-
