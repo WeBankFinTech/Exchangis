@@ -56,7 +56,7 @@ public class ExchangisJobDssAppConnRestfulApi {
         exchangisJobVo.setCreateUser(userName);
         Message response = Message.ok();
         try{
-            response.data("result", jobInfoService.createJob(exchangisJobVo));
+            response.data("id", jobInfoService.createJob(exchangisJobVo).getId());
         } catch (Exception e){
             String message = "Fail to create dss job: " + exchangisJobVo.getJobName() +" (创建DSS任务失败)";
             LOG.error(message, e);
@@ -109,7 +109,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             if (!hasAuthority(userName, jobInfoService.getJob(id , true))){
                 return Message.error("You have no permission to update (没有更新权限)");
             }
-            response.data("result", jobInfoService.updateJob(exchangisJobVo));
+            response.data("id", jobInfoService.updateJob(exchangisJobVo).getId());
         } catch (Exception e){
             String message = "Fail to update dss job: " + exchangisJobVo.getJobName() +" (更新DSS任务失败)";
             LOG.error(message, e);
