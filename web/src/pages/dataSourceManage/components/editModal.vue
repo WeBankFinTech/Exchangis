@@ -95,7 +95,7 @@ export default {
           username: "",
           password: "",
         },
-        labels: '',
+        label: '',
         comment: "",
       },
 
@@ -167,7 +167,7 @@ export default {
         createIdentify: "",
         dataSourceName: formState.dataSourceName,
         dataSourceDesc: formState.dataSourceDesc || "",
-        labels: formState.labels || "",
+        label: formState.label || "",
         comment: formState.comment || "更新",
         connectParams: {
           ...connectParams
@@ -191,7 +191,7 @@ export default {
             createIdentify: "",
             dataSourceName: formState.dataSourceName,
             dataSourceDesc: formState.dataSourceDesc || "",
-            labels: formState.labels || "",
+            label: formState.label || "",
             comment: formState.comment || "更新",
             connectParams: {
               ...connectParams
@@ -206,7 +206,7 @@ export default {
             createIdentify: "",
             dataSourceName: formState.dataSourceName,
             dataSourceDesc: formState.dataSourceDesc || "",
-            labels: formState.labels || "",
+            label: formState.label || "",
             comment: formState.comment || "更新",
             connectParams: {
               ...connectParams
