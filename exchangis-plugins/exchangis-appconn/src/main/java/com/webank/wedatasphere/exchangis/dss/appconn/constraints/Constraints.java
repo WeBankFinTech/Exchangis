@@ -11,6 +11,8 @@ public class Constraints {
      // AppConn name
      public final static String EXCHANGIS_APPCONN_NAME = CommonVars.apply("wds.dss.appconn.exchangis.name", "Exchangis").getValue();
 
+     public final static String API_REQUEST_PREFIX = CommonVars.apply("wds.dss.appconn.exchangis.api.request-prefix", "/api/rest_j/v1/exchangis/dss").getValue();
+
      public final static String DOMAIN_NAME = CommonVars.apply("wds.dss.appconn.exchangis.domain.name", "DSS").getValue();
 
      // Constraint in Project operation
@@ -30,7 +32,7 @@ public class Constraints {
      // Constraint in Ref operation
      public final static String REF_JOB_DESC = "desc";
      public final static String REF_JOB_ID = "id";
-     public final static String REF_JUMP_URL_FORMAT = "dss/exchangis/#/childJobManagement";
+     public final static String REF_JUMP_URL_FORMAT = CommonVars.apply("wds.dss.appconn.exchangis.ref.jump","#/childJobManagement").getValue();
 
 
 }
