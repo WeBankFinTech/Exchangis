@@ -61,9 +61,8 @@
     </insert>
 
     <delete id="deleteJobEntity">
-        delete * from
-        <include refid="TableName"/>
-        where id = #{jobId}
+        DELETE FROM <include refid="TableName"/> WHERE
+        id = #{jobId}
     </delete>
 
     <update id="upgradeBasicInfo">

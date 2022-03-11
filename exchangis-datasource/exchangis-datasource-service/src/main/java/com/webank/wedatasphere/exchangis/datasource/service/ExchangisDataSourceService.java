@@ -184,6 +184,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         Map<String, Object> json;
         try {
             json = mapper.readValue(mapper.writeValueAsString(vo), Map.class);
+            json.put("labels",json.get("label"));
         } catch (JsonProcessingException e) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }
@@ -267,10 +268,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         Map<String, Object> json;
         try {
             json = mapper.readValue(mapper.writeValueAsString(vo), Map.class);
+            json.put("labels",json.get("label"));
         } catch (JsonProcessingException e) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }
-
         String comment = vo.getComment();
         String createSystem = vo.getCreateSystem();
         if (Objects.isNull(comment)) {
@@ -1031,6 +1032,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         Map<String, Object> json;
         try {
             json = mapper.readValue(mapper.writeValueAsString(vo), Map.class);
+            json.put("labels",json.get("label"));
         } catch (JsonProcessingException e) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }
