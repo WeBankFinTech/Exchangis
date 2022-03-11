@@ -109,6 +109,8 @@ public class ExchangisJobVo {
      */
     private Map<String, Object> source = new HashMap<String, Object>();
 
+    private Map<String, Object> labels;
+
     public ExchangisJobVo(){
 
     }
@@ -261,5 +263,13 @@ public class ExchangisJobVo {
 
     public void setSource(Map<String, Object> source) {
         this.source.putAll(source);
+    }
+
+    public Map<String, Object> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<String, Object> labels) {
+        this.labels = labels;
     }
 }
