@@ -47,7 +47,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setName(projectVo.getName());
         project.setDescription(projectVo.getDescription());
         project.setDomain(Optional.ofNullable(projectVo.getDomain()).orElse(ExchangisProject.Domain.STANDALONE.name()));
-        project.setLabels(projectVo.getLabels());
+        project.setLabels(projectVo.getLabel());
         project.setSourceMap(projectVo.getSource());
         project.setViewUsers(projectVo.getViewUsers());
         project.setEditUsers(projectVo.getEditUsers());
@@ -71,7 +71,7 @@ public class ProjectServiceImpl implements ProjectService {
         updatedProject.setId(Long.valueOf(projectVo.getId()));
         updatedProject.setName(projectVo.getName());
         updatedProject.setDescription(projectVo.getDescription());
-        updatedProject.setLabels(projectVo.getLabels());
+        updatedProject.setLabels(projectVo.getLabel());
         updatedProject.setViewUsers(projectVo.getViewUsers());
         updatedProject.setEditUsers(projectVo.getEditUsers());
         updatedProject.setExecUsers(projectVo.getExecUsers());
