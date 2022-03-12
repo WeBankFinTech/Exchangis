@@ -109,6 +109,46 @@ public class ExchangisEntityRespResult implements HttpResult {
          */
         private T data;
 
+        private String title;
+
+        private String desc;
+
+        private String labels;
+
+        private Object workspace;
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+
+        public void setDesc(String desc) {
+            this.desc = desc;
+        }
+
+        public String getLabels() {
+            return labels;
+        }
+
+        public void setLabels(String labels) {
+            this.labels = labels;
+        }
+
+        public Object getWorkspace() {
+            return workspace;
+        }
+
+        public void setWorkspace(Object workspace) {
+            this.workspace = workspace;
+        }
+
         private ExchangisEntityRespResult result;
 
         public ExchangisEntityRespResult getResult() {

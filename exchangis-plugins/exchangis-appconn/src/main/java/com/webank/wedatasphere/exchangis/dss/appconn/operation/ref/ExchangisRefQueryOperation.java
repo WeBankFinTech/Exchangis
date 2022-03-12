@@ -33,7 +33,8 @@ public class ExchangisRefQueryOperation extends AbstractExchangisRefOperation im
         // Note: dss will scan the AppConn package to new the ExchangisOpenRequestRef
         ExchangisOpenRequestRef exchangisOpenRequestRef = (ExchangisOpenRequestRef) openRequestRef;
         try {
-            Long id = AppConnUtils.resolveParam(exchangisOpenRequestRef.getJobContent(), Constraints.REF_JOB_ID, Long.class);
+            LOG.info("ExchangisOpenRequestRef getJobContent: {}", exchangisOpenRequestRef.getJobContent());
+            Integer id = AppConnUtils.resolveParam(exchangisOpenRequestRef.getJobContent(), Constraints.REF_JOB_ID, Integer.class);
             String jumpUrl = pageUrl(Constraints.REF_JUMP_URL_FORMAT + "?id=" + id);
             Map<String,String> retMap = new HashMap<>();
             LOG.info("ExchangisOpenResponseRef jump url: {}", jumpUrl);
