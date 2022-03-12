@@ -1,12 +1,12 @@
 server:
-  port: 9321
+  port: 9500
 spring:
   application:
     name: exchangis-server
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://127.0.0.1:20303/eureka/
+      defaultZone: http://127.0.0.1:20503/eureka/
   instance:
     metadata-map:
       test: wedatasphere
