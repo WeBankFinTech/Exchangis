@@ -7,6 +7,7 @@
         <groupId>com.webank.wedatasphere.exchangis</groupId>
         <version>1.0.0-RC1</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>exchangis-executor-engine-datax</artifactId>
@@ -24,6 +25,10 @@
         <commons-configuration-version>1.10</commons-configuration-version>
         <commons-cli-version>1.2</commons-cli-version>
         <commons-beanutils>1.9.4</commons-beanutils>
+        <hadoop.version>2.7.2</hadoop.version>
+        <hive.version>1.2.1</hive.version>
+        <es.version>6.7.1</es.version>
+        <commons-codec>1.11</commons-codec>
         <datax.engine.version>3.0.0-Plus-2</datax.engine.version>
     </properties>
     <modules>
