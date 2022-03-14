@@ -2,11 +2,16 @@ package com.webank.wedatasphere.exchangis.dss.appconn.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
+import com.webank.wedatasphere.exchangis.dss.appconn.operation.ref.ExchangisRefQueryOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Extends the function from the mapper "BDPJettyServerHelper.jacksonJson()"
  */
 public class JsonExtension {
+
+    private final static Logger LOG = LoggerFactory.getLogger(JsonExtension.class);
 
     /**
      * Convert object using serialization and deserialization
