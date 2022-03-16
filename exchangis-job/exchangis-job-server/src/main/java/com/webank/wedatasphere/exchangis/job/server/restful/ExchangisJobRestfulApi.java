@@ -203,6 +203,53 @@ public class ExchangisJobRestfulApi {
     }
 
     /**
+     * Get all sub job list
+     * @param request
+     * @param projectId
+     * @return
+     */
+    @RequestMapping(value = "/subJob/list", method = RequestMethod.GET)
+    public Message getSubJobList(HttpServletRequest request, @RequestParam(value = "projectId") Long projectId) {
+        Message response = Message.ok();
+        try {
+            List<ExchangisJobVo> jobList = jobInfoService.getSubJobList(request, projectId);
+            response.data("result", jobList);
+        } catch (Exception e) {
+            String message = "Fail to get job detail (查询所有子任务列表失败)";
+            if (e.getCause() instanceof ExchangisJobServerException) {
+                message += ", reason: " + e.getCause().getMessage();
+            }
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
+    }
+
+    /**
+     * Get job list
+     * @param projectId
+     * @param jobName
+     * @return
+     */
+    @RequestMapping(value = "/getJob/list", method = RequestMethod.GET)
+    public Message getByNameWithProjectId(@RequestParam(value = "projectId") Long projectId,
+                                          @RequestParam(value = "jobName", required = false) String jobName) {
+        Message response = Message.ok();
+        try {
+            List<ExchangisJobVo> jobs = jobInfoService.getByNameWithProjectId(jobName, projectId);
+            response.data("result", jobs);
+        } catch (Exception e) {
+            String message = "Fail to get job detail (查询任务失败)";
+            if (e.getCause() instanceof ExchangisJobServerException) {
+                message += ", reason: " + e.getCause().getMessage();
+            }
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
+    }
+
+    /**
      * Save the job configuration
      *
      * @param id    id
