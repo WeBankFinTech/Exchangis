@@ -25,29 +25,29 @@ public class ExchangisNodeUtils {
 
 
     public static String getSqoopId(String responseBody) throws ExternalOperationFailedException {
-        String displayId = null;
+        String sqoopId = null;
         try {
             Map responseMap = BDPJettyServerHelper.jacksonJson().readValue(responseBody, Map.class);
-            displayId = ((Map<String, Object>) responseMap.get("payload")).get("id").toString();
+            sqoopId = ((Map<String, Object>) responseMap.get("data")).get("id").toString();
         } catch (JsonMappingException e) {
             throw new ExternalOperationFailedException(1000054, "Get sqoop Id failed!", e);
         } catch (JsonProcessingException e) {
             throw new ExternalOperationFailedException(1000054, "Get sqoop Id failed!", e);
         }
 
-        return displayId;
+        return sqoopId;
     }
 
     public static String getDataxId(String responseBody) throws ExternalOperationFailedException {
-        String widgetId = null;
+        String dataxId = null;
         try {
             Map responseMap = BDPJettyServerHelper.jacksonJson().readValue(responseBody, Map.class);
-            widgetId = ((Map<String, Object>) responseMap.get("data")).get("dataxId").toString();
+            dataxId = ((Map<String, Object>) responseMap.get("data")).get("dataxId").toString();
         } catch (JsonMappingException e) {
             throw new ExternalOperationFailedException(1000055, "Get datax Id failed!", e);
         } catch (JsonProcessingException e) {
             throw new ExternalOperationFailedException(1000055, "Get datax Id failed!", e);
         }
-        return widgetId;
+        return dataxId;
     }
 }

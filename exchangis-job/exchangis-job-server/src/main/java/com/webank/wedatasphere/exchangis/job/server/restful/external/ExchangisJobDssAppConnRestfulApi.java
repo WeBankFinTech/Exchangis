@@ -2,8 +2,11 @@ package com.webank.wedatasphere.exchangis.job.server.restful.external;
 
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.server.service.IProjectImportService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
+import com.webank.wedatasphere.exchangis.job.server.service.impl.ProjectImportServerImpl;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
@@ -17,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
+import javax.ws.rs.core.Context;
+import java.rmi.ServerException;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -38,6 +44,9 @@ public class ExchangisJobDssAppConnRestfulApi {
      */
     @Resource
     private DefaultJobExecuteService executeService;
+
+    @Resource
+    private ProjectImportServerImpl projectImportServer;
     /**
      * Create job
      * @param request http request
@@ -157,12 +166,38 @@ public class ExchangisJobDssAppConnRestfulApi {
         return result;
     }
 
-    public Message importJob(){
-        return null;
+    @RequestMapping( value = "/import", method = RequestMethod.POST)
+    public Message importJob(@Context HttpServletRequest request, @RequestBody Map<String, String> params) throws ServerException, ExchangisJobServerException{
+
+        Message response = null;
+        try {
+            response = projectImportServer.importProject(request, params);
+        } catch (Exception e){
+            String message = "Fail import job [ id: " + params + "] (导入任务失败)";
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
+
     }
 
-    public Message exportJob(){
-        return null;
+    @RequestMapping( value = "/export", method = RequestMethod.POST)
+    public Message exportJob(@Context HttpServletRequest request, @RequestBody Map<String, String> params) throws ServerException, ExchangisJobServerException {
+        String userName = SecurityFilter.getLoginUsername(request);
+
+        LOG.info("export function params: {}", params);
+        Message response = null;
+        try {
+            response = jobInfoService.exportProject(params, userName, request);
+        } catch (Exception e){
+            String message = "Fail Export job [ id: " + params + "] (导出任务失败)";
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
+
+        //return jobInfoService.exportProject(params, userName, request);
+
     }
     /**
      * TODO complete the authority strategy
