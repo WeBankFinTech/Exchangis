@@ -8,6 +8,7 @@ import com.webank.wedatasphere.dss.standard.common.app.AppIntegrationService;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.RequestRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
 import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
+import com.webank.wedatasphere.exchangis.dss.appconn.operation.ref.ExchangisRefExecutionOperation;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.HttpExtAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.response.result.ExchangisEntityRespResult;
 import org.apache.commons.io.IOUtils;
@@ -29,6 +30,8 @@ import static com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constrai
  * Abstract implement, contains the method to create sso request
  */
 public abstract class AbstractExchangisOperation {
+
+    private final static Logger LOG = LoggerFactory.getLogger(AbstractExchangisOperation.class);
 
     private SSORequestService ssoRequestService;
 
@@ -144,6 +147,7 @@ public abstract class AbstractExchangisOperation {
     protected <R, T extends RequestRef>ExchangisEntityRespResult.BasicMessageEntity<R> requestToGetEntity(String url,
                                                                                                           Workspace workspace,
                                                                                                           T requestRef, HttpActionBuilder<T> httpActionBuilder, Class<?> entityClass, Class<?>... entityParameters) throws ExternalOperationFailedException {
+        LOG.info("Create job url{}: ", url);
         HttpExtAction action = httpActionBuilder.build(requestRef);
         if (Objects.nonNull(action)){
             SSOUrlBuilderOperation ssoUrlBuilderOperation = getSSOUrlBuilderOperation(workspace, getAppName(), url);
