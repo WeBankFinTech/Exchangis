@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.dss.appconn.operation.ref;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.webank.wedatasphere.dss.standard.app.development.operation.RefExportOperation;
 import com.webank.wedatasphere.dss.standard.app.development.ref.ExportRequestRef;
 import com.webank.wedatasphere.dss.standard.app.development.service.DevelopmentService;
@@ -36,18 +37,29 @@ public class ExchangisExportOperation extends AbstractExchangisRefOperation impl
 
     @Override
     public ResponseRef exportRef(ExportRequestRef exportRequestRef) throws ExternalOperationFailedException {
-        String url = developmentService.getAppInstance().getBaseUrl() + "/api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/exchangis/project" + "/export";
+        String url = developmentService.getAppInstance().getBaseUrl() + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/exchangis/dss/job" + "/export";
         ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
         exchangisEntityPostAction.setUser(exportRequestRef.getParameter("user").toString());
         exchangisEntityPostAction.addRequestPayload("projectId", exportRequestRef.getParameter("projectId"));
         exchangisEntityPostAction.addRequestPayload("partial", true);
         String nodeType = exportRequestRef.getParameter("nodeType").toString();
         String externalContent = null;
+
+        String exporrtContent = null;
         try {
+            exporrtContent = BDPJettyServerHelper.jacksonJson().writeValueAsString(exportRequestRef);
+        } catch (JsonProcessingException e) {
+            LOG.error("Occur error while tranform class", e.getMessage());
+        }
+        LOG.info("url: {}", url);
+        LOG.info("exportRequestRef: {}", exporrtContent);
+        try {
+            LOG.info("jobContent: {}", exportRequestRef.getParameter("jobContent"));
             externalContent = BDPJettyServerHelper.jacksonJson().writeValueAsString(exportRequestRef.getParameter("jobContent"));
             if(Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase(nodeType)) {
                 ExchangisOpenResponseRef exchangisOpenResponseRef = new ExchangisOpenResponseRef(externalContent, 0);
                 exchangisEntityPostAction.addRequestPayload("sqoopIds", ((Double) Double.parseDouble(exchangisOpenResponseRef.getSqoopId())).longValue());
+                LOG.info("sqoopIds: {}", exchangisEntityPostAction.getRequestPayload());
             } else if(Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(nodeType)) {
                 ExchangisOpenResponseRef exchangisOpenResponseRef = new ExchangisOpenResponseRef(externalContent, 0);
                 exchangisEntityPostAction.addRequestPayload("dataXIds", ((Double) Double.parseDouble(exchangisOpenResponseRef.getSqoopId())).longValue());
@@ -63,9 +75,13 @@ public class ExchangisExportOperation extends AbstractExchangisRefOperation impl
         ssoUrlBuilderOperation.setWorkspace(exportRequestRef.getWorkspace().getWorkspaceName());
         ResponseRef responseRef;
         try{
+            LOG.info("getBuiltUrl: {}", ssoUrlBuilderOperation.getBuiltUrl());
+            LOG.info("postAction: {}", exchangisEntityPostAction);
             exchangisEntityPostAction.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
             HttpResult httpResult = this.ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, exchangisEntityPostAction);
+            LOG.info("httpResult: {}", httpResult.getResponseBody());
             responseRef = new ExchangisExportResponseRef(httpResult.getResponseBody());
+            LOG.info("responseRef: {}", responseRef.getResponseBody());
         } catch (Exception e){
             throw new ExternalOperationFailedException(90176, "Export Exchangis Exception", e);
         }
