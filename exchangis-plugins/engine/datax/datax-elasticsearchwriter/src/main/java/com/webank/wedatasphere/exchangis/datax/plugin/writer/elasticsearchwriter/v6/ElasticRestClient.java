@@ -351,7 +351,7 @@ public class ElasticRestClient {
         );
         restClientBuilder.setRequestConfigCallback(
                 requestConfigBuilder -> requestConfigBuilder
-                        .setContentCompressionEnabled(true)
+//                        .setContentCompressionEnabled(true)
                         .setConnectTimeout(Integer.parseInt(
                                 String.valueOf(finalClientConfig.getOrDefault(ElasticKey.CLIENT_CONFIG_CONN_TIMEOUT,
                                         CONN_TIMEOUT_IN_MILLISECONDS))))
