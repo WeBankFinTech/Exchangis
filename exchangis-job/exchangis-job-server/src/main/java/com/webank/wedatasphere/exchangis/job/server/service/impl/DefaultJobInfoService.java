@@ -121,6 +121,22 @@ public class DefaultJobInfoService implements JobInfoService {
     }
 
     @Override
+    public  List<ExchangisJobVo> getByNameWithProjectId(String jobName, Long projectId) {
+        List<ExchangisJobEntity> exchangisJobs = this.jobEntityDao.getByNameWithProjectId(jobName, projectId);
+        List<ExchangisJobVo> exchangisJobVos = new ArrayList<>();
+        for(ExchangisJobEntity exchangisJob : exchangisJobs){
+            ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
+            if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
+                jobVo.setContent(exchangisJob.getJobContent());
+                jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
+                        Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
+            }
+            exchangisJobVos.add(jobVo);
+        }
+
+        return exchangisJobVos;
+    }
+    @Override
     public ExchangisJobVo getDecoratedJob(HttpServletRequest request, Long id) throws ExchangisJobServerException {
         ExchangisJobEntity exchangisJob = this.jobEntityDao.getDetail(id);
         ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
@@ -142,6 +158,35 @@ public class DefaultJobInfoService implements JobInfoService {
             }
         }
         return jobVo;
+    }
+
+    @Override
+    public List<ExchangisJobVo> getSubJobList(HttpServletRequest request, Long projectId)  throws ExchangisJobServerException{
+        List<ExchangisJobEntity> exchangisJobList = this.jobEntityDao.getDetailList(projectId);
+        List<ExchangisJobVo> exchangisJobVos = new ArrayList<>();
+        if(!exchangisJobList.isEmpty()) {
+            for(ExchangisJobEntity exchangisJob : exchangisJobList){
+                ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
+                if(StringUtils.isNotBlank(exchangisJob.getJobContent())){
+                    List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(request, exchangisJob.getId());
+                    ObjectMapper objectMapper = JsonUtils.jackson();
+                    try {
+                        String content = objectMapper.writeValueAsString(jobDataSourceUIs);
+                        JsonNode contentJsonNode = objectMapper.readTree(content);
+                        ObjectNode objectNode = objectMapper.createObjectNode();
+                        objectNode.set("subJobs", contentJsonNode);
+                        jobVo.setContent(objectNode.toString());
+                        jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
+                                Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
+                    } catch (JsonProcessingException e) {
+                        throw new ExchangisJobServerException(31100,
+                                "Fail to rebuild the job content with ui (渲染任务内容失败)", e);
+                    }
+                }
+                exchangisJobVos.add(jobVo);
+            }
+        }
+       return exchangisJobVos;
     }
 
     @Override
