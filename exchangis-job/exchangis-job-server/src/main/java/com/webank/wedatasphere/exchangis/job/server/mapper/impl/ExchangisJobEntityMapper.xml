@@ -105,12 +105,28 @@
         where id = #{jobId}
     </select>
 
+    <select id="getDetailList" parameterType="java.lang.Long" resultMap ="BaseResultMap">
+        select
+        <include refid="detail_column"/>
+        from
+        <include refid="TableName" />
+        where project_id = #{projectId}
+    </select>
+
     <select id="getBasicInfo" parameterType="java.lang.Long" resultMap ="BaseResultMap">
         select
         <include refid="basic_column"/>
         from
         <include refid="TableName" />
         where id = #{jobId}
+    </select>
+
+    <select id="getBasicList" parameterType="java.lang.Long" resultMap ="BaseResultMap">
+        select
+        <include refid="basic_column"/>
+        from
+        <include refid="TableName" />
+        where project_id = #{projectId}
     </select>
 
     <select id="queryPageList" resultMap="BaseResultMap">
@@ -149,6 +165,18 @@
         where
         <if test="name != null and name = ''">
             and name like '%#{name}%'
+        </if>
+    </select>
+
+
+    <select id="getByNameWithProjectId"  resultMap ="BaseResultMap">
+        select
+        <include refid="detail_column"/>
+        from
+        <include refid="TableName" />
+        where project_id = #{projectId}
+        <if test="jobName != null and jobName.trim() != ''">
+            AND name like concat('%', #{jobName}, '%')
         </if>
     </select>
 
