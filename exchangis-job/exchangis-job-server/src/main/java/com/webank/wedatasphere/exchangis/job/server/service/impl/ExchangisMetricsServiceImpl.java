@@ -43,7 +43,7 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
         Optional.ofNullable(unlock).ifPresent(metrices::add);
 
         Message message = Message.ok();
-        message.setMethod("/exchangis/metrics/taskstate");
+        message.setMethod("/dss/exchangis/metrics/taskstate");
         message.data("metrices", metrices);
         return message;
     }
@@ -94,7 +94,7 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
         list.add(fps);
 
         Message message = Message.ok();
-        message.setMethod("/exchangis/metrics/taskprocess");
+        message.setMethod("/dss/exchangis/metrics/taskprocess");
         message.data("list", list);
         return message;
     }
@@ -174,7 +174,7 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
 //        dataset.add(ds2Data);
 //        dataset.add(ds3Data);
         Message message = Message.ok();
-        message.setMethod("/exchangis/metrics/datasourceflow");
+        message.setMethod("/dss/exchangis/metrics/datasourceflow");
         message.data("dataset", dataset);
         return message;
     }
@@ -233,7 +233,7 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
 //        dataset.add(ds3Data);
 //        dataset.add(realData);
         Message message = Message.ok();
-        message.setMethod("/exchangis/metrics/engineresourcecpu");
+        message.setMethod("/dss/exchangis/metrics/engineresourcecpu");
         message.data("dataset", dataset);
         return message;
 
@@ -312,7 +312,7 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
 //        dataset.add(ds2Data);
 //        dataset.add(ds3Data);
         Message message = Message.ok();
-        message.setMethod("/exchangis/metrics/engineresourcemem");
+        message.setMethod("/dss/exchangis/metrics/engineresourcemem");
         message.data("dataset", dataset);
         return message;
     }
@@ -339,7 +339,7 @@ public class ExchangisMetricsServiceImpl implements ExchangisMetricsService {
         list.add(linkis);
 
         Message message = Message.ok();
-        message.setMethod("/exchangis/metrics/engineresource");
+        message.setMethod("/dss/exchangis/metrics/engineresource");
         message.data("list", list);
         return message;
     }
