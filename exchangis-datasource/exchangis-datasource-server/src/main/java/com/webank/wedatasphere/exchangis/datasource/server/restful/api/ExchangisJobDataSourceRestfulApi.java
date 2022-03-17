@@ -5,17 +5,14 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisData
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import org.apache.linkis.server.Message;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 // TODO 这里仅仅为了测试，JOB的接口在另外的 Controller 中
 @RestController
-@RequestMapping(value = "exchangis", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobDataSourceRestfulApi {
 
     private final ExchangisDataSourceService exchangisDataSourceService;
@@ -35,7 +32,7 @@ public class ExchangisJobDataSourceRestfulApi {
 
     // 根据 任务引擎类型 获取该引擎的配置项 UI 数据
     @RequestMapping( value = "jobs/engine/{engineType}/settings/ui", method = RequestMethod.GET)
-    public Message getJobEngineSettingsUI(HttpServletRequest request, @PathVariable("engineType")String engineType) {
+    public Message getJobEngineSettingsUI(HttpServletRequest request, @PathVariable("engineType")String engineType, @RequestParam(required = false)String labels) {
         List<ElementUI<?>> jobSettingsUI = this.exchangisDataSourceService.getJobEngineSettingsUI(engineType);
         return Message.ok().data("ui", jobSettingsUI);
     }

@@ -30,7 +30,7 @@ import java.util.Optional;
  * This is the restful class for exchangis project
  */
 @RestController
-@RequestMapping(value = "/exchangis", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "/dss/exchangis", produces = {"application/json;charset=utf-8"})
 public class ExchangisProjectRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisProjectRestfulApi.class);
 
