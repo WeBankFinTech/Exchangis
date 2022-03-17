@@ -47,6 +47,13 @@ public interface ExchangisJobEntityDao {
      */
     ExchangisJobEntity getDetail(@Param("jobId") Long jobId);
 
+    /**
+     * Get jobEntity list
+     * @param projectId
+     * @return
+     */
+    List<ExchangisJobEntity> getDetailList(@Param("projectId") Long projectId);
+
     ExchangisJobEntity getBasicInfo(@Param("jobId") Long jobId);
 
     /**
@@ -61,4 +68,6 @@ public interface ExchangisJobEntityDao {
      * @param ids id list
      */
     void deleteBatch(@Param("ids") List<Long> ids);
+
+    List<ExchangisJobEntity> getByNameWithProjectId(@Param("jobName") String jobName, @Param("projectId") Long projectId);
 }
