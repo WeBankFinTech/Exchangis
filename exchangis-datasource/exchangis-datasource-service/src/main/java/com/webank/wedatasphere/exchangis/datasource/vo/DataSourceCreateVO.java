@@ -34,7 +34,9 @@ public class DataSourceCreateVO {
     private Long versionId;
 
     @Size(min=0,max=100,message="Length of labels should between 0 and 100(标签的长度应该在0和100之间)")
-    private String labels;
+    private String label;
+
+    private Map<String, Object> labels;
 
     private Long publishedVersionId;
 
@@ -134,12 +136,12 @@ public class DataSourceCreateVO {
         this.versionId = versionId;
     }
 
-    public String getLabels() {
-        return labels;
+    public String getLabel() {
+        return label;
     }
 
-    public void setLabels(String labels) {
-        this.labels = labels;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public Long getPublishedVersionId() {
@@ -174,5 +176,13 @@ public class DataSourceCreateVO {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Map<String, Object> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<String, Object> labels) {
+        this.labels = labels;
     }
 }

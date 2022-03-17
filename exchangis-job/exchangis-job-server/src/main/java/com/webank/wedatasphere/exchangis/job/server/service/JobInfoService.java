@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * The interface Exchangis job service.
@@ -54,7 +55,25 @@ public interface JobInfoService {
      */
     ExchangisJobVo getJob(Long id, boolean basic);
 
+    /**
+     * Get job by name and projectId
+     * @param jobName
+     * @param projectId
+     * @return
+     */
+    List<ExchangisJobVo> getByNameWithProjectId(String jobName, Long projectId);
+
     ExchangisJobVo getDecoratedJob(HttpServletRequest request, Long id)  throws ExchangisJobServerException;
+
+    /**
+     * Get all subJob list
+     * @param request
+     * @param projectId
+     * @return
+     * @throws ExchangisJobServerException
+     */
+    List<ExchangisJobVo> getSubJobList(HttpServletRequest request, Long projectId)  throws ExchangisJobServerException;
+
     /**
      * Update exchangis job config.
      *
