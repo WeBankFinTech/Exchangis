@@ -184,6 +184,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         Map<String, Object> json;
         try {
             json = mapper.readValue(mapper.writeValueAsString(vo), Map.class);
+            json.put("labels",json.get("label"));
         } catch (JsonProcessingException e) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }
@@ -267,10 +268,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         Map<String, Object> json;
         try {
             json = mapper.readValue(mapper.writeValueAsString(vo), Map.class);
+            json.put("labels",json.get("label"));
         } catch (JsonProcessingException e) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }
-
         String comment = vo.getComment();
         String createSystem = vo.getCreateSystem();
         if (Objects.isNull(comment)) {
@@ -855,8 +856,8 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                 throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
             }
         } catch (JsonErrorException e) {
-           throw new ExchangisDataSourceException(CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(),
-                   "Fail to deserialize the columns resultSet", e);
+            throw new ExchangisDataSourceException(CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(),
+                    "Fail to deserialize the columns resultSet", e);
         }
 
         return result;
@@ -1031,6 +1032,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         Map<String, Object> json;
         try {
             json = mapper.readValue(mapper.writeValueAsString(vo), Map.class);
+            json.put("labels",json.get("label"));
         } catch (JsonProcessingException e) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }

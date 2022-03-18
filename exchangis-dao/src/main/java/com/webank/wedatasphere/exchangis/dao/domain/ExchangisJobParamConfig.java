@@ -64,7 +64,7 @@ public class ExchangisJobParamConfig {
     private Boolean advanced;
 
     /**
-     * store url exa. http://127.0.0.1/api/v1/exchangis/xxx
+     * store url exa. http://127.0.0.1/api/v1/dss/exchangis/xxx
      */
     private String source;
 

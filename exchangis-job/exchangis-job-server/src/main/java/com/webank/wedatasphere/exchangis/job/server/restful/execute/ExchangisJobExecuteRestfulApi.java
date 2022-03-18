@@ -29,7 +29,7 @@ import java.util.*;
  * @Date 2022/1/8 15:25
  */
 @RestController
-@RequestMapping(value = "exchangis/job", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis/job", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobExecuteRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisJobExecuteRestfulApi.class);
     @Autowired
@@ -45,7 +45,7 @@ public class ExchangisJobExecuteRestfulApi {
      * @return message
      */
     @RequestMapping( value = "/{id}/execute", method = RequestMethod.POST)
-    public Message executeJob(@RequestBody(required = false) Map<String, Boolean> permitPartialFailures,
+    public Message executeJob(@RequestBody(required = false) Map<String, Object> permitPartialFailures,
                               @PathVariable("id") Long id, HttpServletRequest request) {
         String loginUser = SecurityFilter.getLoginUsername(request);
         Message result = Message.ok("Submitted succeed(提交成功)！");
@@ -76,7 +76,7 @@ public class ExchangisJobExecuteRestfulApi {
             }
             LOG.error(message, e);
         }
-        result.setMethod("/api/rest_j/v1/exchangis/job/{id}/execute");
+        result.setMethod("/api/rest_j/v1/dss/exchangis/job/{id}/execute");
         return result;
     }
 
@@ -91,7 +91,7 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(errorMessage, e);
             message = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
         }
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId + "/taskList");
+        message.setMethod("/api/rest_j/v1/dss/exchangis/job/execution/" + jobExecutionId + "/taskList");
         return message;
     }
 
@@ -105,7 +105,7 @@ public class ExchangisJobExecuteRestfulApi {
             return Message.error("Fail to get progress info (获取任务执行状态失败), reason: [" + e.getMessage() + "]");
         }
         Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/" +jobExecutionId +"/progress");
+        message.setMethod("/api/rest_j/v1/dss/exchangis/job/execution/" +jobExecutionId +"/progress");
         message.data("job", jobAndTaskStatus);
         return message;
     }
@@ -115,7 +115,7 @@ public class ExchangisJobExecuteRestfulApi {
         Message message = Message.ok("Submitted succeed(提交成功)！");
         try {
             ExchangisJobProgressVo jobStatus = executeService.getJobStatus(jobExecutionId);
-            message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId + "/status");
+            message.setMethod("/api/rest_j/v1/dss/exchangis/job/execution/" + jobExecutionId + "/status");
             message.data("status", jobStatus.getStatus());
             message.data("progress", jobStatus.getProgress());
             message.data("allTaskStatus", jobStatus.getAllTaskStatus());
@@ -147,7 +147,7 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(message, e);
             result = Message.error(message + ", reason: " + e.getMessage());
         }
-        result.setMethod("/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/log");
+        result.setMethod("/api/rest_j/v1/dss/exchangis/job/execution/{jobExecutionId}/log");
         return result;
     }
 
@@ -170,7 +170,7 @@ public class ExchangisJobExecuteRestfulApi {
         else {
             message = Message.error("Kill failed(停止失败)！,job 已经到终态");
         }
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId + "/kill");
+        message.setMethod("/api/rest_j/v1/dss/exchangis/job/execution/" + jobExecutionId + "/kill");
         return message;
     }
 
@@ -195,7 +195,7 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(errorMessage, e);
             message = Message.error(message + ", reason: " + e.getMessage());
         }
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/listJobs");
+        message.setMethod("/api/rest_j/v1/dss/exchangis/job/execution/listJobs");
         return message;
     }
 
@@ -221,7 +221,7 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(errorMessage, e);
             message = Message.error(message + ", reason: " + e.getMessage());
         }
-        message.setMethod("/api/rest_j/v1/exchangis/job/" + jobExecutionId + "/deleteJob");
+        message.setMethod("/api/rest_j/v1/dss/exchangis/job/" + jobExecutionId + "/deleteJob");
         return message;
     }
 
@@ -238,7 +238,7 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(errorMessage, e);
             message = Message.error(message + ", reason: " + e.getMessage());
         }
-        message.setMethod("/api/rest_j/v1/exchangis/job/" + jobExecutionId + "/allTaskStatus");
+        message.setMethod("/api/rest_j/v1/dss/exchangis/job/" + jobExecutionId + "/allTaskStatus");
         return message;
     }
 }
