@@ -68,7 +68,7 @@ public class  ExchangisProjectInfo {
      * labels
      */
     @JsonAlias("tags")
-    private String labels;
+    private String label;
 
     /**
      * Create user
@@ -80,6 +80,8 @@ public class  ExchangisProjectInfo {
      */
     private Date createTime;
 
+    private Map<String, Object> labels;
+
     public ExchangisProjectInfo(){
 
     }
@@ -89,7 +91,7 @@ public class  ExchangisProjectInfo {
         this.setName(project.getName());
         this.setDescription(project.getDescription());
         this.setDomain(project.getDomain());
-        this.setLabels(project.getLabels());
+        this.setLabel(project.getLabels());
         this.setCreateUser(project.getCreateUser());
         this.setCreateTime(project.getCreateTime());
     }
@@ -157,12 +159,12 @@ public class  ExchangisProjectInfo {
         this.execUsers = execUsers;
     }
 
-    public String getLabels() {
-        return labels;
+    public String getLabel() {
+        return label;
     }
 
-    public void setLabels(String labels) {
-        this.labels = labels;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getCreateUser() {
@@ -183,6 +185,14 @@ public class  ExchangisProjectInfo {
 
     @Deprecated
     public String getTags(){
-        return Objects.nonNull(labels)? labels : "";
+        return Objects.nonNull(label)? label : "";
+    }
+
+    public Map<String, Object> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<String, Object> labels) {
+        this.labels = labels;
     }
 }

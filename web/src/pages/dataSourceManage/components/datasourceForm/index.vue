@@ -152,7 +152,7 @@ export default {
         {
           type: "input",
           title: this.$t('message.linkis.datasource.label'),
-          field: "labels",
+          field: "label",
           value: "",
           props: {
             "placeholder": this.$t('message.linkis.datasource.label'),
@@ -207,7 +207,7 @@ export default {
           ...newV,
           dataSourceDesc: '',
           dataSourceName: '',
-          labels: '',
+          label: '',
           ...connectParams
         };
         //this.dataSrc = {...newV, ...connectParams};
