@@ -25,7 +25,7 @@ import java.util.Map;
  */
 
 @RestController
-@RequestMapping(value = "exchangis/task", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis/task", produces = {"application/json;charset=utf-8"})
 public class ExchangisTaskExecuteRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisTaskExecuteRestfulApi.class);
     @Autowired
@@ -36,9 +36,13 @@ public class ExchangisTaskExecuteRestfulApi {
 
     @RequestMapping( value = "/execution/{taskId}/metrics", method = RequestMethod.POST)
     public Message getTaskMetrics(@PathVariable("taskId") String taskId,
-                                  @RequestBody Map<String, String> json, HttpServletRequest request) throws ExchangisJobServerException {
+                                  @RequestBody Map<String, Object> json, HttpServletRequest request) throws ExchangisJobServerException {
         Message result = Message.ok("Submitted succeed(提交成功)！");
-        String jobExecutionId = json.get("jobExecutionId");
+        String jobExecutionId = null;
+
+        if(null!=json.get("jobExecutionId")){
+            jobExecutionId = (String) json.get("jobExecutionId");
+        }
         if (StringUtils.isBlank(jobExecutionId)){
             return Message.error("Required params 'jobExecutionId' is missing");
         }
@@ -51,7 +55,7 @@ public class ExchangisTaskExecuteRestfulApi {
             LOG.error(message, e);
             result = Message.error(message + ", reason: " + e.getMessage());
         }
-        result.setMethod("/api/rest_j/v1/exchangis/task/execution/{taskId}/metrics");
+        result.setMethod("/api/rest_j/v1/dss/exchangis/task/execution/{taskId}/metrics");
         return result;
     }
 
@@ -74,7 +78,7 @@ public class ExchangisTaskExecuteRestfulApi {
             LOG.error(message, e);
             result = Message.error(message + ", reason: " + e.getMessage());
         }
-        result.setMethod("/api/rest_j/v1/exchangis/job/execution/{taskId}/log");
+        result.setMethod("/api/rest_j/v1/dss/exchangis/job/execution/{taskId}/log");
         return result;
     }
 }

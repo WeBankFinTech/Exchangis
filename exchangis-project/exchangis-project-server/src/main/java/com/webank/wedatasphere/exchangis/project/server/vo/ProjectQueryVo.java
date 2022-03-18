@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.project.server.vo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.webank.wedatasphere.exchangis.project.server.domain.ProjectPageQuery;
 
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -13,6 +14,15 @@ import java.util.Optional;
 public class ProjectQueryVo extends ProjectPageQuery {
 
     public ProjectQueryVo(){
+    }
+    private Map<String, Object> labels;
+
+    public Map<String, Object> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<String, Object> labels) {
+        this.labels = labels;
     }
 
     public ProjectQueryVo(String name, Integer current, Integer size){

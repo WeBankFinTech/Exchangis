@@ -59,25 +59,29 @@
                 size="small"
                 @click="handleEdit(row.text)"
                 type="link"
+                v-show="row.text.versionId"
                 >{{
                   $t("dataSource.table.list.columns.actions.editButton")
-                }}</a-button
-              >
-              <span style="color: #DEE4EC">|</span>
+                }}</a-button>
+              <span style="color: #DEE4EC" v-show="row.text.versionId">|</span>
               <a-button
                 size="small"
-                v-show="!row.text.expire"
+                v-show="!row.text.expire && row.text.versionId"
                 type="link"
                 @click="handleExpire(row.text.id)"
                 >{{
                   $t("dataSource.table.list.columns.actions.expireButton")
-                }}</a-button
-              >
-              <span v-show="!row.text.expire" style="color: #DEE4EC">|</span>
-              <a-button size="small" @click="handleTestConnect(row)" type="link">{{
+                }}</a-button>
+              <span v-show="!row.text.expire && row.text.versionId" style="color: #DEE4EC">|</span>
+              <a-button
+                size="small"
+                @click="handleTestConnect(row)"
+                type="link"
+                v-show="row.text.versionId"
+              >{{
                 $t("dataSource.table.list.columns.actions.testConnectButton")
               }}</a-button>
-              <span style="color: #DEE4EC">|</span>
+              <span style="color: #DEE4EC" v-show="row.text.versionId">|</span>
               <a-popconfirm
                 title="是否删除?"
                 ok-text="确定"
@@ -187,7 +191,6 @@ export default {
       {
         title: t("dataSource.table.list.columns.title.tags"),
         align: "center",
-        dataIndex: "labels",
         slots: { customRender: "tags" },
         width: 150
       },
