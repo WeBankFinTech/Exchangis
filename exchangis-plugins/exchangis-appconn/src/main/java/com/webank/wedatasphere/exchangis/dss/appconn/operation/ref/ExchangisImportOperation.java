@@ -38,7 +38,7 @@ public class ExchangisImportOperation extends AbstractExchangisRefOperation impl
 
     @Override
     public ResponseRef importRef(ImportRequestRef importRequestRef) throws ExternalOperationFailedException {
-        String url = developmentService.getAppInstance().getBaseUrl() + "/api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/exchangis/project" + "/import";
+        String url = developmentService.getAppInstance().getBaseUrl() + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/exchangis/dss/job" + "/import";
         ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
         exchangisEntityPostAction.setUser(importRequestRef.getParameter("user").toString());
         exchangisEntityPostAction.addRequestPayload("projectId", importRequestRef.getParameter("projectId"));
