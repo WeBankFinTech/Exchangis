@@ -1,6 +1,9 @@
 package com.webank.wedatasphere.exchangis.dss.appconn.ref;
 
 import com.webank.wedatasphere.dss.standard.common.entity.ref.CommonResponseRef;
+import com.webank.wedatasphere.exchangis.dss.appconn.operation.ref.ExchangisExportOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -10,10 +13,14 @@ import java.util.Map;
  */
 public class ExchangisExportResponseRef extends CommonResponseRef {
 
+    private final static Logger LOG = LoggerFactory.getLogger(ExchangisExportResponseRef.class);
+
     Map<String, Object> bmlResource;
 
     public ExchangisExportResponseRef(String responseBody) throws Exception {
         super(responseBody, 0);
+        LOG.info("responseBody123: {}", responseBody);
+        LOG.info("responseMap123: {}", responseMap.toString());
         bmlResource = ((Map<String, Object>) responseMap.get("data"));
     }
 
