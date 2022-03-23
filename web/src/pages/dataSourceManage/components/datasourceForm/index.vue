@@ -56,12 +56,12 @@ const typesMap = {
         data.dataSource = window.location.origin + data.dataSource
       }
       request(data.dataSource, {
-        labels: 'dev'
+        labels: ''
       }, {
         method: "GET",
       }).then(result=>{
         delete source.options;
-        source.options = result.env_list.map(item=>{
+        source.options = result.envList.map(item=>{
           return {label: item.envName, value: ''+item.id}
         });
         // console.log('self.rule',self.rule)
