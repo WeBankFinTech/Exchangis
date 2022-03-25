@@ -132,7 +132,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         List<ExchangisDataSourceDTO> dtos = new ArrayList<>();
 
         String userName = SecurityFilter.getLoginUsername(request);
-        LOGGER.info("listDataSources userName:" + userName);
+        LOGGER.info("listDataSources userName: {}" + userName);
         // 通过 datasourcemanager 获取的数据源类型和context中的数据源通过 type 和 name 比较
         // 以 exchangis 中注册了的数据源集合为准
 
