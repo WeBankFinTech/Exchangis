@@ -39,10 +39,11 @@ public class ExchangisRefDeletionOperation extends AbstractExchangisRefOperation
     }
 
     private void deleteJob(NodeRequestRef nodeRequestRef) throws ExternalOperationFailedException{
-        Long id = AppConnUtils.resolveParam(nodeRequestRef.getJobContent(), Constraints.REF_JOB_ID, Long.class);
+        Integer id = AppConnUtils.resolveParam(nodeRequestRef.getJobContent(), Constraints.REF_JOB_ID, Integer.class);
         LOG.info("delete job request => id: {}, jobContext:{}",
                 id, nodeRequestRef.getJobContent().toString());
-        String url = requestURL("/job/" + id);
+        //TODO delete job have bug while get id.
+        String url = requestURL("job/" + id);
         ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, nodeRequestRef.getWorkspace(), nodeRequestRef,
                 (requestRef) ->{
                     // Build ref delete action

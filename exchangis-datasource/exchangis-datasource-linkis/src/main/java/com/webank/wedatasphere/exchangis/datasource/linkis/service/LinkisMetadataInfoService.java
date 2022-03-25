@@ -80,7 +80,7 @@ public class LinkisMetadataInfoService extends LinkisDataSourceServiceRpcDispatc
     @Override
     public List<String> getPartitionKeys(String userName, Long dataSourceId, String database, String table) throws ExchangisDataSourceException {
         MetadataGetPartitionsResult result = dispatch(getDefaultRemoteClient(), new LinkisDataSourceServiceOperation(() -> MetadataGetPartitionsAction.builder()
-                .setDataSourceId(Long.parseLong(String.valueOf(dataSourceId))).setDatabase(database).setTable(table)
+                .setDataSourceId(dataSourceId).setDatabase(database).setTable(table)
                 .setUser(userName).setSystem(LINKIS_RPC_CLIENT_SYSTEM.getValue()).build()), CLIENT_METADATA_GET_PARTITION.getCode(), "getPartitionKeys");
         return result.getPartitionInfo().getPartKeys();
     }

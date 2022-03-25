@@ -34,6 +34,11 @@ public class ExchangisProjectService extends ProjectService {
     }
 
     @Override
+    protected ProjectGetOperation createProjectGetOperation() {
+        return null;
+    }
+
+    @Override
     protected ProjectUrlOperation createProjectUrlOperation() {
         return null;
     }
