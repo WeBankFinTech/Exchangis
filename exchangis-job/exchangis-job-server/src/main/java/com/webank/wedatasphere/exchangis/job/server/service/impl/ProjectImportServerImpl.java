@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.rmi.ServerException;
 import java.util.List;
 import java.util.Map;
@@ -55,12 +56,14 @@ public class ProjectImportServerImpl implements IProjectImportService {
         String versionSuffix = projectVersion + "_" + flowVersion;
         BmlClient bmlClient = BmlClientFactory.createBmlClient(userName);
         BmlDownloadResponse bmlDownloadResponse = bmlClient.downloadShareResource(userName, resourceId, version);
+        LOG.info("bmlDownloadResponse: {}", bmlDownloadResponse);
         Message message = null;
         if (bmlDownloadResponse == null || !bmlDownloadResponse.isSuccess()) {
             throw new ServerException("cannot download exported data from BML");
         }
         try {
-            String projectJson = IOUtils.toString(bmlDownloadResponse.inputStream(), "");
+            String projectJson = IOUtils.toString(bmlDownloadResponse.inputStream(), StandardCharsets.UTF_8);
+            LOG.info("projectJson: {}", projectJson);
             IdCatalog idCatalog = importOpt(projectJson, projectId, versionSuffix);
             message = Message.ok("import Job ok")
                     .data("sqoop", idCatalog.getSqoop())
@@ -98,11 +101,21 @@ public class ProjectImportServerImpl implements IProjectImportService {
             Long oldId = sqoop.getId();
             sqoop.setProjectId(projectId);
             sqoop.setJobName(updateName(sqoop.getJobName(), versionSuffix));
-            Long existingId = (long) 55;
+            //Long existingId = (long) 55;
+            LOG.info("oldId: {}, projectid: {}, jobName: {}", sqoop.getId(), sqoop.getProjectId(), sqoop.getJobName());
+            LOG.info("jobByNameWithProjectId: {}", jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId));
+            Long existingId;
+            if(jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId) == null || jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId).size() == 0){
+                existingId = null;
+            }
+            else {
+                existingId = jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId).get(0).getId();
+            }
             //Long existingId = jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId);
             if (existingId != null) {
                 idCatalog.getSqoop().put(oldId, existingId);
             } else {
+                sqoop.setJobName("hahaha");
                 jobInfoService.createJob(sqoop);
                 idCatalog.getSqoop().put(oldId, sqoop.getId());
             }
@@ -118,7 +131,8 @@ public class ProjectImportServerImpl implements IProjectImportService {
             Long oldId = datax.getId();
             datax.setProjectId(projectId);
             datax.setJobName(updateName(datax.getJobName(), versionSuffix));
-            Long existingId = (long) 66;
+            //Long existingId = (long) 66;
+            Long existingId = jobInfoService.getByNameWithProjectId(datax.getJobName(), projectId).get(0).getId();
             //Long existingId = jobInfoService.getByNameWithProjectId(datax.getJobName(), projectId);
             if (existingId != null) {
                 idCatalog.getSqoop().put(oldId, existingId);

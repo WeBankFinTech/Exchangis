@@ -80,7 +80,7 @@ public class  ExchangisProjectInfo {
      */
     private Date createTime;
 
-    private Map<String, Object> labels;
+    private String labels;
 
     public ExchangisProjectInfo(){
 
@@ -188,11 +188,11 @@ public class  ExchangisProjectInfo {
         return Objects.nonNull(label)? label : "";
     }
 
-    public Map<String, Object> getLabels() {
+    public String getLabels() {
         return labels;
     }
 
-    public void setLabels(Map<String, Object> labels) {
+    public void setLabels(String labels) {
         this.labels = labels;
     }
 }

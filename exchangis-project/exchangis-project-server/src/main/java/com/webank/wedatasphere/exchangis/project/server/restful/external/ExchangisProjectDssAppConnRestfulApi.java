@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
  * Restful class for dss project
  */
 @RestController
-@RequestMapping(value = "/dss/exchangis/project", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "/exchangis/dss/project", produces = {"application/json;charset=utf-8"})
 public class ExchangisProjectDssAppConnRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisProjectDssAppConnRestfulApi.class);
 
