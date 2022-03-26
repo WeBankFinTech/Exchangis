@@ -53,18 +53,17 @@ const typesMap = {
     const fApi = self.fApi;
     if(typeof data.dataSource === 'string'){
       if (!/^https?:/.test(data.dataSource)) {
-        data.dataSource = window.location.origin + data.dataSource
+        data.dataSource = window.location.origin + '/api/rest_j/v1' + data.dataSource
       }
       request(data.dataSource, {
-        labels: 'dev'
+        labels: ''
       }, {
         method: "GET",
       }).then(result=>{
         delete source.options;
-        source.options = result.env_list.map(item=>{
+        source.options = result.envList.map(item=>{
           return {label: item.envName, value: ''+item.id}
         });
-        // console.log('self.rule',self.rule)
         fApi.refreshOptions();
       })
       return {options: []}
