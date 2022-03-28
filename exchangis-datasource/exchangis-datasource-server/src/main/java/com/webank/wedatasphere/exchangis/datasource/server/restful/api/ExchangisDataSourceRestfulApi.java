@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping(value = "dss/exchangis/datasources", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis/main/datasources", produces = {"application/json;charset=utf-8"})
 public class ExchangisDataSourceRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisDataSourceRestfulApi.class);
 
