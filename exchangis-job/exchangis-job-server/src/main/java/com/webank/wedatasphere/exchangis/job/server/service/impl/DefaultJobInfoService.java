@@ -327,7 +327,16 @@ public class DefaultJobInfoService implements JobInfoService {
             if (longs.size() > 0) {
                 for (Long id : longs) {
                     LOG.info("id: {}", id);
-                    ExchangisJobVo job = jobInfoService.getJob(id, false);
+                    ExchangisJobVo job = jobInfoService.getDecoratedJob(request, id);
+
+                    String sqoopStr = null;
+                    try {
+                        sqoopStr = BDPJettyServerHelper.jacksonJson().writeValueAsString(job);
+                    } catch (JsonProcessingException e) {
+                        LOG.error("Occur error while tranform class", e.getMessage());
+                    }
+
+                    LOG.info("sqoopStr99999:{}", sqoopStr);
                     LOG.info("ExchangisJobVo sqoop: {}", job.getContent());
                     LOG.info("getCreateTimep: {}", job.getId());
                     sqoops.add(job);

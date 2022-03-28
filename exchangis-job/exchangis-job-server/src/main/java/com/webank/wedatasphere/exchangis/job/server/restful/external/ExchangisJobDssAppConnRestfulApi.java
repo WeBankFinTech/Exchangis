@@ -174,8 +174,9 @@ public class ExchangisJobDssAppConnRestfulApi {
 
         Message response = null;
         try {
+            LOG.info("param6666: {}", params);
             response = projectImportServer.importProject(request, params);
-            LOG.info("export job success");
+            LOG.info("import job success");
         } catch (Exception e){
             String message = "Fail import job [ id: " + params + "] (导入任务失败)";
             LOG.error(message, e);
