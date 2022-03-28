@@ -29,7 +29,7 @@ import java.util.Objects;
  * Define to support the app conn, in order to distinguish from the inner api
  */
 @RestController
-@RequestMapping(value = "/dss/exchangis//job", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "/exchangis/dss/job", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobDssAppConnRestfulApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisJobDssAppConnRestfulApi.class);
@@ -53,7 +53,7 @@ public class ExchangisJobDssAppConnRestfulApi {
      * @param exchangisJobVo exchangis job vo
      * @return message
      */
-    @RequestMapping( value = "", method = RequestMethod.POST)
+    @RequestMapping( value = "/create", method = RequestMethod.POST)
     public Message createJob(
             @Validated({InsertGroup.class, Default.class}) @RequestBody ExchangisJobVo exchangisJobVo,
             BindingResult result,
@@ -65,7 +65,10 @@ public class ExchangisJobDssAppConnRestfulApi {
         exchangisJobVo.setCreateUser(userName);
         Message response = Message.ok();
         try{
-            response.data("id", jobInfoService.createJob(exchangisJobVo).getId());
+            Long id = null;
+            id = jobInfoService.createJob(exchangisJobVo).getId();
+            response.data("id", id);
+            LOG.info("id6666: {}", id);
         } catch (Exception e){
             String message = "Fail to create dss job: " + exchangisJobVo.getJobName() +" (创建DSS任务失败)";
             LOG.error(message, e);
@@ -171,7 +174,9 @@ public class ExchangisJobDssAppConnRestfulApi {
 
         Message response = null;
         try {
+            LOG.info("param6666: {}", params);
             response = projectImportServer.importProject(request, params);
+            LOG.info("import job success");
         } catch (Exception e){
             String message = "Fail import job [ id: " + params + "] (导入任务失败)";
             LOG.error(message, e);
@@ -189,6 +194,7 @@ public class ExchangisJobDssAppConnRestfulApi {
         Message response = null;
         try {
             response = jobInfoService.exportProject(params, userName, request);
+            LOG.info("export job success");
         } catch (Exception e){
             String message = "Fail Export job [ id: " + params + "] (导出任务失败)";
             LOG.error(message, e);

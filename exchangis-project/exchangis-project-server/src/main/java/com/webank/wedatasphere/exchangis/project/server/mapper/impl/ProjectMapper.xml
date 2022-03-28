@@ -112,4 +112,13 @@
     <delete id="deleteOne">
         <![CDATA[DELETE FROM `exchangis_project_info` WHERE id = #{id};]]>
     </delete>
+
+    <select id="getDetailByName" resultMap="projectResult">
+        <![CDATA[ SELECT * FROM `exchangis_project_info`]]>
+        <where>
+            <if test="projectName != null and projectName != ''">
+                name = #{projectName}
+            </if>
+        </where>
+    </select>
 </mapper>
