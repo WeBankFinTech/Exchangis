@@ -20,11 +20,11 @@
           class="data-source-manage-table"
           @change="onChange"
         >
-          <template #tags="{ text: tags }">
+          <template #tags="{ text: labels }">
             <span>
               <a-tag
-                v-if="tags"
-                v-for="tag in tags.split(',')"
+                v-if="labels"
+                v-for="tag in labels.split(',')"
                 :title="tag.toUpperCase()"
                 :key="tag"
                 :color="
