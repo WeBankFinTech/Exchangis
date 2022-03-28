@@ -50,7 +50,7 @@ public class LocalSimpleJobLogService implements JobLogService {
     private volatile boolean cleanerOn;
 
     private static class Constraints{
-        public static final CommonVars<String> LOG_LOCAL_PATH = CommonVars.apply("wds.exchangis.job.log.local.path", "/data/bdp/dss/exchangis/logs");
+        public static final CommonVars<String> LOG_LOCAL_PATH = CommonVars.apply("wds.exchangis.job.log.local.path", "/data/bdp/dss/exchangis/main/logs");
 
         public static final CommonVars<Integer> lOG_CACHE_SIZE = CommonVars.apply("wds.exchangis.job.log.cache.size", 15);
 
