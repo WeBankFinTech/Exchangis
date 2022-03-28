@@ -25,7 +25,7 @@ import java.util.Map;
  */
 
 @RestController
-@RequestMapping(value = "dss/exchangis/task", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis/main/task", produces = {"application/json;charset=utf-8"})
 public class ExchangisTaskExecuteRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisTaskExecuteRestfulApi.class);
     @Autowired
@@ -55,7 +55,7 @@ public class ExchangisTaskExecuteRestfulApi {
             LOG.error(message, e);
             result = Message.error(message + ", reason: " + e.getMessage());
         }
-        result.setMethod("/api/rest_j/v1/dss/exchangis/task/execution/{taskId}/metrics");
+        result.setMethod("/api/rest_j/v1/dss/exchangis/main/task/execution/{taskId}/metrics");
         return result;
     }
 
@@ -78,7 +78,7 @@ public class ExchangisTaskExecuteRestfulApi {
             LOG.error(message, e);
             result = Message.error(message + ", reason: " + e.getMessage());
         }
-        result.setMethod("/api/rest_j/v1/dss/exchangis/job/execution/{taskId}/log");
+        result.setMethod("/api/rest_j/v1/dss/exchangis/main/job/execution/{taskId}/log");
         return result;
     }
 }
