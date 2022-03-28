@@ -320,13 +320,25 @@ public class DefaultJobInfoService implements JobInfoService {
     }
 
     private void setSqoop(Long projectId, Map<String, Set<Long>> moduleIdsMap, boolean partial, ExportedProject exportedProject, HttpServletRequest request) throws ExchangisJobServerException {
+        List<ExchangisJobVo> sqoops = new ArrayList<>();
+        LOG.info("Request: {}", request);
         if (partial) {
             Set<Long> longs = moduleIdsMap.get(ModuleEnum.SQOOP_IDS.getName());
             if (longs.size() > 0) {
-                List<ExchangisJobVo> sqoops = new ArrayList<>();
                 for (Long id : longs) {
+                    LOG.info("id: {}", id);
                     ExchangisJobVo job = jobInfoService.getDecoratedJob(request, id);
+
+                    String sqoopStr = null;
+                    try {
+                        sqoopStr = BDPJettyServerHelper.jacksonJson().writeValueAsString(job);
+                    } catch (JsonProcessingException e) {
+                        LOG.error("Occur error while tranform class", e.getMessage());
+                    }
+
+                    LOG.info("sqoopStr99999:{}", sqoopStr);
                     LOG.info("ExchangisJobVo sqoop: {}", job.getContent());
+                    LOG.info("getCreateTimep: {}", job.getId());
                     sqoops.add(job);
                 }
                 exportedProject.setSqoops(sqoops);
@@ -334,16 +346,18 @@ public class DefaultJobInfoService implements JobInfoService {
 
         } else {
             LOG.info("Through request {} and projectId {} get Sqoopjob", request, projectId);
+            sqoops = jobInfoService.getSubJobList(request, projectId);
+            exportedProject.setSqoops(sqoops);
             //exportedProject.setSqoops(jobInfoService.getByProject(request, projectId));
         }
         LOG.info("exporting project, export sqoopJob: {}", exportedProject);
     }
 
     private void setDatax(Long projectId, Map<String, Set<Long>> moduleIdsMap, boolean partial, ExportedProject exportedProject, HttpServletRequest request) throws ExchangisJobServerException {
+        List<ExchangisJobVo> datax = new ArrayList<>();
         if (partial) {
             Set<Long> longs = moduleIdsMap.get(ModuleEnum.DATAX_IDS.getName());
             if (longs.size() > 0) {
-                List<ExchangisJobVo> datax = new ArrayList<>();
                 for (Long id : longs) {
                     ExchangisJobVo job = jobInfoService.getDecoratedJob(request, id);
                     datax.add(job);
@@ -353,6 +367,8 @@ public class DefaultJobInfoService implements JobInfoService {
 
         } else {
             LOG.info("Through request {} and projectId {} get datax", request, projectId);
+            datax = jobInfoService.getSubJobList(request, projectId);
+            exportedProject.setSqoops(datax);
             //exportedProject.setDataxes(jobInfoService.getByProject(request, projectId));
         }
         LOG.info("exporting project, export datax: {}", exportedProject);

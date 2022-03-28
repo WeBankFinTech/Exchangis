@@ -1,7 +1,10 @@
 package com.webank.wedatasphere.exchangis.project.server.restful.external;
 
+import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
+import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
+import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
 import org.apache.commons.math3.util.Pair;
 import org.apache.linkis.common.utils.JsonUtils;
@@ -23,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
  * Restful class for dss project
  */
 @RestController
-@RequestMapping(value = "/dss/exchangis/project", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "/exchangis/dss/project", produces = {"application/json;charset=utf-8"})
 public class ExchangisProjectDssAppConnRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisProjectDssAppConnRestfulApi.class);
 
@@ -34,14 +37,18 @@ public class ExchangisProjectDssAppConnRestfulApi {
     private ProjectService projectService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public Message createProject(@Validated @RequestBody ExchangisProjectInfo projectVo,
+    public Message createProject(@Validated @RequestBody ExchangisProjectAppVo project,
                                  BindingResult result, HttpServletRequest request){
+        ExchangisProjectInfo projectVo = new ExchangisProjectInfo(project);
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
         String username = SecurityFilter.getLoginUsername(request);
         try {
             LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
+            if (projectService.existsProject(null, projectVo.getName())){
+                return Message.error("Have the same name project (存在同名工程)");
+            }
             long projectId = projectService.createProject(projectVo, username);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
                     new Pair<>("projectName", projectVo.getName()),
