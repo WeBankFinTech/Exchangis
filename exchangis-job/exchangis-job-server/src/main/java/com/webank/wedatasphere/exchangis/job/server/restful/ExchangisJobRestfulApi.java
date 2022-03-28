@@ -189,6 +189,7 @@ public class ExchangisJobRestfulApi {
     public Message getJob(HttpServletRequest request, @PathVariable("id") Long id) {
         Message response = Message.ok();
         try {
+            LOG.info("Request88888: {}", request);
             ExchangisJobVo job = jobInfoService.getDecoratedJob(request, id);
             response.data("result", job);
         } catch (Exception e) {

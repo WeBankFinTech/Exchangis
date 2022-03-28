@@ -1,7 +1,6 @@
 package com.webank.wedatasphere.exchangis.project.server.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 
@@ -14,11 +13,10 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * View object
- * TODO @JsonInclude(JsonInclude.Include.NON_EMPTY)
+ * @author tikazhang
+ * @Date 2022/3/26 15:36
  */
-//@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class  ExchangisProjectInfo {
+public class ExchangisProjectAppVo {
     /**
      * ID
      */
@@ -80,13 +78,13 @@ public class  ExchangisProjectInfo {
      */
     private Date createTime;
 
-    private Map<String, Object> labels;
+    private String labels;
 
-    public ExchangisProjectInfo(){
+    public ExchangisProjectAppVo(){
 
     }
 
-    public ExchangisProjectInfo(ExchangisProject project){
+    public ExchangisProjectAppVo(ExchangisProject project){
         this.setId(project.getId());
         this.setName(project.getName());
         this.setDescription(project.getDescription());
@@ -94,22 +92,6 @@ public class  ExchangisProjectInfo {
         this.setLabel(project.getLabels());
         this.setCreateUser(project.getCreateUser());
         this.setCreateTime(project.getCreateTime());
-    }
-
-    public ExchangisProjectInfo(ExchangisProjectAppVo project){
-        Map<String, Object> labels = new HashMap<>();
-        labels.put("route", project.getLabels());
-        this.setName(project.getName());
-        this.setDescription(project.getDescription());
-        this.setDomain(project.getDomain());
-        this.setSource(project.getSource());
-        this.setEditUsers(project.getEditUsers());
-        this.setViewUsers(project.getViewUsers());
-        this.setExecUsers(project.getExecUsers());
-        this.setLabel(project.getLabel());
-        this.setCreateUser(project.getCreateUser());
-        this.setCreateTime(project.getCreateTime());
-        this.setLabels(labels);
     }
     public String getId() {
         return id + "";
@@ -204,11 +186,11 @@ public class  ExchangisProjectInfo {
         return Objects.nonNull(label)? label : "";
     }
 
-    public Map<String, Object> getLabels() {
-            return labels;
-        }
+    public String getLabels() {
+        return labels;
+    }
 
-    public void setLabels(Map<String, Object> labels) {
+    public void setLabels(String labels) {
         this.labels = labels;
     }
 }

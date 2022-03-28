@@ -26,7 +26,7 @@ public class ExchangisRefCreationOperation extends AbstractExchangisRefOperation
     DevelopmentService developmentService;
 
     public ExchangisRefCreationOperation(DevelopmentService developmentService){
-        super(new String[]{"job"});
+        super(new String[]{"job/create"});
         this.developmentService = developmentService;
         setSSORequestService(developmentService);
     }
@@ -38,6 +38,7 @@ public class ExchangisRefCreationOperation extends AbstractExchangisRefOperation
         ResponseRef responseRef = null;
         if(Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase(exchangisCreateRequestRef.getNodeType())){
              responseRef = sendOffLineRequest(exchangisCreateRequestRef, Constraints.ENGINE_TYPE_SQOOP_NAME);
+            LOG.info("responseRef: {}", responseRef.toMap());
         }else if(Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(exchangisCreateRequestRef.getNodeType())){
             responseRef = sendOffLineRequest(exchangisCreateRequestRef, Constraints.ENGINE_TYPE_DATAX_NAME);
         }

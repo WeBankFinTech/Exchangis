@@ -42,9 +42,12 @@ public class ExchangisImportOperation extends AbstractExchangisRefOperation impl
         ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
         exchangisEntityPostAction.setUser(importRequestRef.getParameter("user").toString());
         exchangisEntityPostAction.addRequestPayload("projectId", importRequestRef.getParameter("projectId"));
-        exchangisEntityPostAction.addRequestPayload("projectVersion", "v1");
-        exchangisEntityPostAction.addRequestPayload("flowVersion", importRequestRef.getParameter("orcVersion"));
-        exchangisEntityPostAction.addRequestPayload("resourceId", importRequestRef.getParameter("version"));
+        exchangisEntityPostAction.addRequestPayload("projectVersion", importRequestRef.getParameter("version"));
+        exchangisEntityPostAction.addRequestPayload("flowVersion", importRequestRef.getParameter("version"));
+        exchangisEntityPostAction.addRequestPayload("resourceId", importRequestRef.getParameter("resourceId").toString());
+        exchangisEntityPostAction.addRequestPayload("version", importRequestRef.getParameter("version").toString());
+        LOG.info("resourceId: {}", importRequestRef.getParameter("resourceId"));
+        LOG.info("exchangisEntityPostAction: {}", exchangisEntityPostAction.getRequestPayload());
         SSOUrlBuilderOperation ssoUrlBuilderOperation = importRequestRef.getWorkspace().getSSOUrlBuilderOperation().copy();
         ssoUrlBuilderOperation.setAppName(getAppName());
         ssoUrlBuilderOperation.setReqUrl(url);
