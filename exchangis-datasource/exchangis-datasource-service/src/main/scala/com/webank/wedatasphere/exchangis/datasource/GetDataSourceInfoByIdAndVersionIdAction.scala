@@ -9,7 +9,7 @@ import org.apache.linkis.httpclient.request.GetAction
 class GetDataSourceInfoByIdAndVersionIdAction extends GetAction with DataSourceAction {
   private var user: String = _
   private var dataSourceId: Long = _
-  private var versionId: String = _
+  private var versionId: Long = _
 
   override def setUser(user: String): Unit = this.user = user
 
@@ -24,7 +24,7 @@ object GetDataSourceInfoByIdAndVersionIdAction {
 
   class Builder private[GetDataSourceInfoByIdAndVersionIdAction]() {
     private var dataSourceId: Long = _
-    private var versionId: String = _
+    private var versionId: Long = _
     private var system:String = _
     private var user: String = _
 
@@ -43,7 +43,7 @@ object GetDataSourceInfoByIdAndVersionIdAction {
       this
     }
 
-    def setVersionId(versionId: String): Builder = {
+    def setVersionId(versionId: Long): Builder = {
       this.versionId = versionId
       this
     }

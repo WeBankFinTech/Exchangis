@@ -29,7 +29,7 @@ import java.util.Objects;
  * Define to support the app conn, in order to distinguish from the inner api
  */
 @RestController
-@RequestMapping(value = "/dss/exchangis/main/job", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "/exchangis/dss/job", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobDssAppConnRestfulApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisJobDssAppConnRestfulApi.class);
