@@ -191,7 +191,7 @@ export default {
       {
         title: t("dataSource.table.list.columns.title.tags"),
         align: "center",
-        slots: { customRender: "tags" },
+        slots: { customRender: "labels" },
         width: 150
       },
       {

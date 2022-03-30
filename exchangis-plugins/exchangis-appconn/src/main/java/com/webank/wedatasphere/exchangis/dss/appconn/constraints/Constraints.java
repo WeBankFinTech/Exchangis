@@ -11,7 +11,7 @@ public class Constraints {
      // AppConn name
      public final static String EXCHANGIS_APPCONN_NAME = CommonVars.apply("wds.dss.appconn.exchangis.name", "Exchangis").getValue();
 
-     public final static String API_REQUEST_PREFIX = CommonVars.apply("wds.dss.appconn.exchangis.api.request-prefix", "api/rest_j/v1/exchangis/dss").getValue();
+     public final static String API_REQUEST_PREFIX = CommonVars.apply("wds.dss.appconn.exchangis.api.request-prefix", "/api/rest_j/v1/exchangis/dss").getValue();
 
      public final static String DOMAIN_NAME = CommonVars.apply("wds.dss.appconn.exchangis.domain.name", "DSS").getValue();
 
