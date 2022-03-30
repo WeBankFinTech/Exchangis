@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2021/10/13
  */
 @RestController
-@RequestMapping(value = "dss/exchangis/tasks", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis/main/tasks", produces = {"application/json;charset=utf-8"})
 public class ExchangisTaskRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisTaskRestfulApi.class);
 

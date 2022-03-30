@@ -26,7 +26,7 @@ import java.util.*;
  * The basic controller of Exchangis job
  */
 @RestController
-@RequestMapping(value = "dss/exchangis/job", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis/main/job", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobRestfulApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisJobRestfulApi.class);

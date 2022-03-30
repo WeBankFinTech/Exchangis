@@ -104,6 +104,7 @@ public class DefaultJobInfoService implements JobInfoService {
         jobEntity.setEngineType(jobVo.getEngineType());
         jobEntity.setJobLabel(jobVo.getJobLabels());
         jobEntity.setName(jobVo.getJobName());
+        jobEntity.setJobLabels(jobVo.getJobLabels());
         jobEntity.setJobDesc(jobVo.getJobDesc());
         jobEntity.setLastUpdateTime(Calendar.getInstance().getTime());
         jobEntity.setModifyUser(jobVo.getModifyUser());
