@@ -19,6 +19,8 @@ import org.apache.linkis.server.conf.ServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+
 /**
  * Ref export operation
  */
@@ -37,11 +39,14 @@ public class ExchangisExportOperation extends AbstractExchangisRefOperation impl
 
     @Override
     public ResponseRef exportRef(ExportRequestRef exportRequestRef) throws ExternalOperationFailedException {
-        String url = developmentService.getAppInstance().getBaseUrl() + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/exchangis/dss/job" + "/export";
+        String url = developmentService.getAppInstance().getBaseUrl() + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/appJob" + "/export";
         ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
         exchangisEntityPostAction.setUser(exportRequestRef.getParameter("user").toString());
         exchangisEntityPostAction.addRequestPayload("projectId", exportRequestRef.getParameter("projectId"));
         exchangisEntityPostAction.addRequestPayload("partial", true);
+        HashMap<String, String> labels = new HashMap<>();
+        labels.put("route", "dev");
+        exchangisEntityPostAction.addRequestPayload("labels", labels);
         String nodeType = exportRequestRef.getParameter("nodeType").toString();
         String externalContent = null;
 

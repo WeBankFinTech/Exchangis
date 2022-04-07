@@ -7,6 +7,7 @@ import org.apache.linkis.server.BDPJettyServerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -23,6 +24,8 @@ public class ExchangisEntityPostAction<T> extends POSTAction implements HttpExtA
     private String url;
 
     private String user;
+
+    private HashMap<String, String> queryParams;
     /**
      * Entity to post request
      */
@@ -39,6 +42,14 @@ public class ExchangisEntityPostAction<T> extends POSTAction implements HttpExtA
     public ExchangisEntityPostAction(T postEntity, String user){
         this.postEntity = postEntity;
         this.user = user;
+    }
+
+    public HashMap<String, String> getQueryParams() {
+        return queryParams;
+    }
+
+    public void setQueryParams(HashMap<String, String> queryParams) {
+        this.queryParams = queryParams;
     }
 
     @Override
