@@ -26,7 +26,7 @@ public class ExchangisRefCreationOperation extends AbstractExchangisRefOperation
     DevelopmentService developmentService;
 
     public ExchangisRefCreationOperation(DevelopmentService developmentService){
-        super(new String[]{"job/create"});
+        super(new String[]{"appJob/create"});
         this.developmentService = developmentService;
         setSSORequestService(developmentService);
     }

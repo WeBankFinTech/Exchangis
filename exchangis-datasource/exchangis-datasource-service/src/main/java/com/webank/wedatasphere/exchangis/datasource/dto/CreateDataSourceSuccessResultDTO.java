@@ -15,15 +15,15 @@ public class CreateDataSourceSuccessResultDTO extends ResultDTO {
     }
 
     public static class InsertIdDTO {
-        @JsonProperty(value = "insert_id")
-        private Long id;
+        @JsonProperty(value = "insertId")
+        private Long insertId;
 
         public Long getId() {
-            return id;
+            return insertId;
         }
 
-        public void setId(Long id) {
-            this.id = id;
+        public void setId(Long insertId) {
+            this.insertId = insertId;
         }
     }
 }
