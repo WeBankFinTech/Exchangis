@@ -714,7 +714,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         try {
             Result execute = linkisDataSourceRemoteClient.execute(
-                    GetDataSourceInfoByIdAndVersionIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).setVersionId(Long.valueOf(versionId)).build()
+                    GetDataSourceInfoByIdAndVersionIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).setVersionId(versionId).build()
             );
             String responseBody = execute.getResponseBody();
             GetDataSourceInfoResultDTO result = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
@@ -1069,7 +1069,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         PublishDataSourceVersionResult result;
         try {
             result = linkisDataSourceRemoteClient.publishDataSourceVersion(
-                    new PublishDataSourceVersionAction.Builder().setUser(userName).setDataSourceId(Long.parseLong(id + "")).setVersion(version).build()
+                    new PublishDataSourceVersionAction.Builder().setUser(userName).setDataSourceId(Long.parseLong(id + "")).setVersion(Long.parseLong(version + "")).build()
             );
         } catch (Exception e) {
             if (e instanceof ErrorException) {
