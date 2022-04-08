@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.restful.external;
 
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.IProjectImportService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
@@ -29,7 +30,7 @@ import java.util.Objects;
  * Define to support the app conn, in order to distinguish from the inner api
  */
 @RestController
-@RequestMapping(value = "/exchangis/dss/job", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "/dss/exchangis/main/appJob", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobDssAppConnRestfulApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisJobDssAppConnRestfulApi.class);
@@ -83,7 +84,7 @@ public class ExchangisJobDssAppConnRestfulApi {
      * @param request http request
      * @return message
      */
-    @RequestMapping( value = "/{id:\\d+}", method = RequestMethod.DELETE)
+    @RequestMapping( value = "/{id:\\d+}", method = RequestMethod.POST)
     public Message deleteJob(@PathVariable("id") Long id, HttpServletRequest request) {
         String userName = SecurityFilter.getLoginUsername(request);
         Message response = Message.ok("dss job deleted");
@@ -155,6 +156,19 @@ public class ExchangisJobDssAppConnRestfulApi {
             String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
                     jobInfo.getExecuteUser() : loginUser);
             result.data("jobExecutionId", jobExecutionId);
+
+            while (true) {
+                TaskStatus jobStatus = executeService.getJobStatus(jobExecutionId).getStatus();
+                if ("Success".equals(jobStatus) ) {
+                    result.data("jobStatus", jobStatus);
+                    LOG.info("Execute task success");
+                    break;
+                } else if ("Cancelled".equals(jobStatus) || "Failed".equals(jobStatus) || "Undefined".equals(jobStatus) || "Timeout".equals(jobStatus)) {
+                    result.data("jobStatus", jobStatus);
+                    LOG.info("Execute task faild");
+                    throw new Exception();
+                }
+            }
         } catch (Exception e) {
             String message;
             if (Objects.nonNull(jobInfo)) {
@@ -170,11 +184,11 @@ public class ExchangisJobDssAppConnRestfulApi {
     }
 
     @RequestMapping( value = "/import", method = RequestMethod.POST)
-    public Message importJob(@Context HttpServletRequest request, @RequestBody Map<String, String> params) throws ServerException, ExchangisJobServerException{
+    public Message importJob(@Context HttpServletRequest request, @RequestBody Map<String, Object> params) throws ServerException, ExchangisJobServerException{
 
         Message response = null;
         try {
-            LOG.info("param6666: {}", params);
+            LOG.info("param: {}", params);
             response = projectImportServer.importProject(request, params);
             LOG.info("import job success");
         } catch (Exception e){
@@ -187,7 +201,7 @@ public class ExchangisJobDssAppConnRestfulApi {
     }
 
     @RequestMapping( value = "/export", method = RequestMethod.POST)
-    public Message exportJob(@Context HttpServletRequest request, @RequestBody Map<String, String> params) throws ServerException, ExchangisJobServerException {
+    public Message exportJob(@Context HttpServletRequest request, @RequestBody Map<String, Object> params) throws ServerException, ExchangisJobServerException {
         String userName = SecurityFilter.getLoginUsername(request);
 
         LOG.info("export function params: {}", params);

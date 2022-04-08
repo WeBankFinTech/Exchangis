@@ -54,16 +54,16 @@ public class ProjectImportServerImpl implements IProjectImportService {
     private ProjectMapper projectMapper;
 
     @Override
-    public Message importProject(HttpServletRequest req, Map<String, String> params) throws ExchangisJobServerException, ServerException {
+    public Message importProject(HttpServletRequest req, Map<String, Object> params) throws ExchangisJobServerException, ServerException {
         String userName = SecurityFilter.getLoginUsername(req);
-        String resourceId = "99763d27-a35e-43f2-829b-100830bca538";
-        //String resourceId = params.get("resourceId");
-        String version = params.get("flowVersion");
-        Long projectId = Long.parseLong("1497870871035973669");
-        //Long projectId = Long.parseLong(params.get("projectId"));
-        String projectVersion = params.get("projectVersion");
-        String flowVersion = params.get("flowVersion");
-        String versionSuffix = projectVersion + "_" + flowVersion;
+        //String resourceId = "99763d27-a35e-43f2-829b-100830bca538";
+        String resourceId = (String) params.get("resourceId");
+        String version = (String) params.get("flowVersion");
+        //Long projectId = Long.parseLong("1497870871035973669");
+        Long projectId = Long.parseLong("111111");
+        String projectVersion = (String) params.get("projectVersion");
+        String flowVersion = (String) params.get("flowVersion");
+        String versionSuffix = projectVersion;
         LOG.info("resourceId: {}, projectId: {}, versionSuffix: {}, version: {}, userName: {}", resourceId, projectId, versionSuffix, version, userName);
         BmlClient bmlClient = BmlClientFactory.createBmlClient(userName);
         BmlDownloadResponse bmlDownloadResponse = bmlClient.downloadShareResource(userName, resourceId, version);
@@ -132,6 +132,7 @@ public class ProjectImportServerImpl implements IProjectImportService {
                     throw new ExchangisJobServerException(31101, "Already exits duplicated job name(存在重复任务名称) jobName is:" + "[" + sqoop.getJobName() + "]");
                 } else {
                     //sqoop.setJobName("hahaha");
+                    LOG.info("Sqoop job content is: {}, Modify user is: {}, jobType is: {}", sqoop.getContent(), sqoop.getExecuteUser(), sqoop.getJobType());
                     jobInfoService.createJob(sqoop);
                     idCatalog.getSqoop().put(oldId, sqoop.getId());
                 }

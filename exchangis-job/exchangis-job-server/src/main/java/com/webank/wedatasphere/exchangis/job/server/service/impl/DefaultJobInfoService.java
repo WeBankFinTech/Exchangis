@@ -25,6 +25,7 @@ import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.bml.client.BmlClient;
 import org.apache.linkis.bml.client.BmlClientFactory;
@@ -77,7 +78,7 @@ public class DefaultJobInfoService implements JobInfoService {
     @Transactional(rollbackFor = Exception.class)
     public ExchangisJobVo createJob(ExchangisJobVo jobVo) {
         // Define the entity
-        ExchangisJobEntity jobEntity = new ExchangisJobEntity();
+        /*ExchangisJobEntity jobEntity = new ExchangisJobEntity();
         jobEntity.setProjectId(jobVo.getProjectId());
         jobEntity.setJobType(jobVo.getJobType());
         jobEntity.setEngineType(jobVo.getEngineType());
@@ -89,6 +90,31 @@ public class DefaultJobInfoService implements JobInfoService {
         jobEntity.setCreateUser(jobVo.getCreateUser());
         jobEntity.setCreateTime(Calendar.getInstance().getTime());
         jobEntity.setSource(Json.toJson(jobVo.getSource(), null));
+        jobEntityDao.addJobEntity(jobEntity);
+        jobVo.setId(jobEntity.getId());
+        jobVo.setCreateTime(jobEntity.getCreateTime());
+        return jobVo;*/
+
+        ExchangisJobEntity jobEntity = new ExchangisJobEntity();
+        jobEntity.setProjectId(jobVo.getProjectId());
+        jobEntity.setJobType(jobVo.getJobType());
+        jobEntity.setEngineType(jobVo.getEngineType());
+        jobEntity.setJobLabels(jobVo.getJobLabels());
+        jobEntity.setName(jobVo.getJobName());
+        jobEntity.setJobDesc(jobVo.getJobDesc());
+        jobEntity.setExecuteUser(jobVo.getProxyUser());
+        jobEntity.setJobParams(jobVo.getJobParams());
+        jobEntity.setCreateUser(jobVo.getCreateUser());
+        jobEntity.setCreateTime(Calendar.getInstance().getTime());
+        jobEntity.setSource(Json.toJson(jobVo.getSource(), null));
+        //jobEntity.setJobContent(jobVo.getContent());
+        jobEntity.setModifyUser(jobVo.getModifyUser());
+        //Map<String, Object> contentVo = BDPJettyServerHelper.gson().fromJson(jobVo.getContent(), Map.class);
+        LOG.info("888888Sqoop job content is: {}, Modify user is: {}, jobType is: {}", jobVo.getContent(), jobEntity.getExecuteUser(), jobEntity.getJobType());
+        if(jobVo.getContent() != null) {
+            jobEntity.setJobContent(jobVo.getContent());
+            LOG.info("55555Sqoop job content is: {}, executor: {}", jobEntity.getJobContent(), jobEntity.getExecuteUser());
+        }
         jobEntityDao.addJobEntity(jobEntity);
         jobVo.setId(jobEntity.getId());
         jobVo.setCreateTime(jobEntity.getCreateTime());
@@ -223,7 +249,7 @@ public class DefaultJobInfoService implements JobInfoService {
         ExchangisJobEntity jobEntity = this.jobEntityDao.getBasicInfo(jobVo.getId());
         Map<String, Object> sourceMap = StringUtils.isNotBlank(jobEntity.getSource())?
                 Json.fromJson(jobEntity.getSource(), Map.class, String.class, Object.class) : null;
-        jobEntity.setExecuteUser(jobVo.getExecuteUser());
+        jobEntity.setExecuteUser(jobVo.getProxyUser());
         jobEntity.setJobParams(jobVo.getJobParams());
         if (Objects.isNull(sourceMap)){
             sourceMap = new HashMap<>();
@@ -272,10 +298,10 @@ public class DefaultJobInfoService implements JobInfoService {
     }
 
     @Override
-    public Message exportProject(Map<String, String> params, String userName, HttpServletRequest request) throws ExchangisJobServerException, ServerException {
+    public Message exportProject(Map<String, Object> params, String userName, HttpServletRequest request) throws ExchangisJobServerException, ServerException {
         ExportedProject exportedProject = null;
-        Long projectId = Long.parseLong(params.get("projectId"));
-        Boolean partial = Boolean.parseBoolean(params.get("partial"));
+        Long projectId = (Long) params.get("projectId");
+        Boolean partial = (Boolean) params.get("partial");
         Map<String, Set<Long>> moduleIdsMap = getModuleIdsMap(params);
 
         LOG.info("export project, user: {}, project: {}, partial:{}", userName, projectId, partial);
@@ -328,7 +354,7 @@ public class DefaultJobInfoService implements JobInfoService {
             if (longs.size() > 0) {
                 for (Long id : longs) {
                     LOG.info("id: {}", id);
-                    ExchangisJobVo job = jobInfoService.getDecoratedJob(request, id);
+                    ExchangisJobVo job = jobInfoService.getJob(id, false);
 
                     String sqoopStr = null;
                     try {
@@ -340,6 +366,7 @@ public class DefaultJobInfoService implements JobInfoService {
                     LOG.info("sqoopStr99999:{}", sqoopStr);
                     LOG.info("ExchangisJobVo sqoop: {}", job.getContent());
                     LOG.info("getCreateTimep: {}", job.getId());
+                    LOG.info("executorUser999: {}", job.getExecuteUser());
                     sqoops.add(job);
                 }
                 exportedProject.setSqoops(sqoops);
@@ -382,11 +409,17 @@ public class DefaultJobInfoService implements JobInfoService {
      * @return
      */
     @Override
-    public Map<String, Set<Long>> getModuleIdsMap(Map<String, String> params) {
+    public Map<String, Set<Long>> getModuleIdsMap(Map<String, Object> params) {
 
         Map<String, Set<Long>> map = Maps.newHashMap();
-        String sqoopIdsStr = params.get("sqoopIds");
-        String dataxIdsStr = params.get("dataxIds");
+        String sqoopIdsStr = null;
+        if(params.get("sqoopIds") != null) {
+            sqoopIdsStr = params.get("sqoopIds").toString();
+        }
+        String dataxIdsStr = null;
+        if(params.get("dataxIds") != null) {
+            dataxIdsStr = params.get("dataxIds").toString();
+        }
 
         Set<Long> sqoopIds = Sets.newHashSet();
         Set<Long> dataxIds = Sets.newHashSet();
