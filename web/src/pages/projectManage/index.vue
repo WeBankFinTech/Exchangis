@@ -32,12 +32,6 @@
             <a-row :gutter="[24, 24]">
               <a-col :span="24">
                 <div class="title-line">
-                  <!-- <span class="title">
-                  <a-typography-title :level="5" style="margin-bottom: 0">{{
-                    $t("projectManage.topLine.title")
-                  }}</a-typography-title>
-                </span> -->
-
                   <a-input
                     :loading="loading"
                     :placeholder="$t('projectManage.topLine.searchBar.searchInputPlaceholder')"
@@ -199,6 +193,9 @@ export default {
     // 处理搜索
     handleOnSearch() {
       this.pageCfg.current = 1;
+      if (/\%/.test(this.projectName)) {
+        return message.error("项目名搜索不支持通配符%");
+      }
       this.getDataList(this.projectName);
     },
     // 删除项目
