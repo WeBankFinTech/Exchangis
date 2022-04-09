@@ -113,6 +113,16 @@
         <![CDATA[DELETE FROM `exchangis_project_info` WHERE id = #{id};]]>
     </delete>
 
+    <delete id="deleteByName">
+        DELETE FROM exchangis_project_info WHERE name = #{name}
+    </delete>
+
+
+    <select id="selectByName" resultMap="projectResult">
+        select * from exchangis_project_info WHERE name = #{name}
+    </select>
+
+
     <select id="getDetailByName" resultMap="projectResult">
         <![CDATA[ SELECT * FROM `exchangis_project_info`]]>
         <where>
