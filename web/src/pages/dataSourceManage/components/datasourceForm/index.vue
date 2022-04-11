@@ -11,6 +11,7 @@
 <script>
 import _, { merge, mergeWith} from 'lodash-es';
 import {getKeyDefine, getDataSourceById} from "@/common/service";
+import { getEnvironment } from "@/common/utils";
 import { request } from "@fesjs/fes";
 import { message } from "ant-design-vue"
 import { toRaw } from "vue";
@@ -53,10 +54,11 @@ const typesMap = {
     const fApi = self.fApi;
     if(typeof data.dataSource === 'string'){
       if (!/^https?:/.test(data.dataSource)) {
-        data.dataSource = window.location.origin + '/api/rest_j/v1' + data.dataSource
+        //data.dataSource = window.location.origin + '/api/rest_j/v1' + data.dataSource
+        data.dataSource = window.location.origin + data.dataSource
       }
       request(data.dataSource, {
-        labels: ''
+        labels: getEnvironment()
       }, {
         method: "GET",
       }).then(result=>{

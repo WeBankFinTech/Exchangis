@@ -1,11 +1,14 @@
 // 服务端接口管理
 import { request } from "@fesjs/fes";
 import { BASE_URL } from "@/common/constants";
+
+import { getEnvironment } from "@/common/utils";
+
 ////////////////////////////////////////////////////////////////////
 export const getProjectList = (name, current, size) => {
   return request(`/projects?name=${name}&current=${current}&size=${size}`, {
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, { method: "POST" });
 };
@@ -14,7 +17,7 @@ export const createProject = (body) => {
   return request("/createProject", {
     ...body,
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   });
 };
@@ -22,7 +25,7 @@ export const createProject = (body) => {
 export const deleteProject = (id) => {
   return request("/projects/" + id, {
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, {
     method: "DELETE",
@@ -30,7 +33,7 @@ export const deleteProject = (id) => {
 };
 
 export const getProjectById = (id) => {
-  return request("/projects/" + id + '?labels=', null, {
+  return request("/projects/" + id + '?labels=' + getEnvironment(), null, {
     method: "GET",
   });
 };
@@ -39,7 +42,7 @@ export const updateProject = (body) => {
   return request("/updateProject", {
     ...body,
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, {
     method: "PUT",
@@ -50,7 +53,7 @@ export const getDataSourceList = (params) => {
   return request("/datasources/query", {
     ...params,
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, { method: "POST" });
 };
@@ -58,7 +61,7 @@ export const getDataSourceList = (params) => {
 // 数据源管理 获取数据源
 export const getDataSourceTypes = () => {
   return request(
-    `/datasources/type?labels=&t=_${new Date().getTime()}`,
+    `/datasources/type?labels=${getEnvironment()}&t=_${new Date().getTime()}`,
     {},
     { method: "GET" }
   );
@@ -67,7 +70,7 @@ export const getDataSourceTypes = () => {
 // 数据源管理 获取动态参数
 export const getKeyDefine = (dataSourceTypeId) => {
   return request(
-    `/datasources/types/${dataSourceTypeId}/keydefines?labels=&t=_${new Date().getTime()}`,
+    `/datasources/types/${dataSourceTypeId}/keydefines?labels=${getEnvironment()}&t=_${new Date().getTime()}`,
     {},
     { method: "GET" }
   );
@@ -78,18 +81,18 @@ export const getDataSource = (body) => {
   return request("/datasources/query", {
     ...body,
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, { method: "POST" });
 };
 
 export const getDBs = (type, id) => {
-  return request(`/datasources/${type}/${id}/dbs?labels=`, {}, { method: "GET" });
+  return request(`/datasources/${type}/${id}/dbs?labels=${getEnvironment()}`, {}, { method: "GET" });
 };
 
 export const getTables = (type, id, dbName) => {
   return request(
-    `/datasources/${type}/${id}/dbs/${dbName}/tables?labels=`,
+    `/datasources/${type}/${id}/dbs/${dbName}/tables?labels=${getEnvironment()}`,
     {},
     { method: "GET" }
   );
@@ -109,7 +112,7 @@ export const getFields = (params) => {
     {
       ...params,
       labels: {
-        route: ''
+        route: getEnvironment()
       }
     },
     { method: "POST" }
@@ -120,7 +123,7 @@ export const createDataSource = (params) => {
   return request("/datasources", {
     ...params,
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, { method: "POST" });
 };
@@ -129,7 +132,7 @@ export const updateDataSource = (id, params) => {
   return request("/datasources/" + id, {
     ...params,
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, { method: "PUT" });
 };
@@ -137,19 +140,19 @@ export const updateDataSource = (id, params) => {
 export const deleteDataSource = (id) => {
   return request(`/datasources/${id}`, {
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, { method: "DELETE" });
 };
 
 export const getDataSourceVersionList = (id) => {
-  return request(`/datasources/${id}/versions?labels=`, {}, { method: "GET" });
+  return request(`/datasources/${id}/versions?labels=${getEnvironment()}`, {}, { method: "GET" });
 };
 
 export const testDataSourceConnect = (type, id) => {
   return request(`/datasources/${type}/${id}/connect?_=${Math.random()}`, {
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, { method: "PUT" });
 };
@@ -158,31 +161,31 @@ export const testDataSourceNotSavedConnect = (params) => {
   return request(`/datasources/op/connect?_=${Math.random()}`, {
     ...params,
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, { method: "POST" });
 };
 
 export const getDataSourceById = (id, versionId) => {
-  return request(`/datasources/${id}`, {versionId}, { method: "GET" });
+  return request(`/datasources/${id}?labels=${getEnvironment()}`, {versionId}, { method: "GET" });
 };
 
 export const getJobInfo = (id) => {
-  return request(`/job/${id}?labels=`, null, {
+  return request(`/job/${id}?labels=${getEnvironment()}`, null, {
     method: "GET",
   });
 };
 
 //获取任务列表
 export const getJobList = (query) => {
-  return request(`/job?labels=&${query}`, null, {
+  return request(`/job?labels=${getEnvironment()}&${query}`, null, {
     method: "GET",
   });
 };
 
 //获取执行引擎列表
 export const getEngineType = () => {
-  return request(`/job/engineType?labels=`, null, {
+  return request(`/job/engineType?labels=${getEnvironment()}`, null, {
     method: "GET",
   });
 };
@@ -194,7 +197,7 @@ export const createJob = (params) => {
     {
       ...params,
       labels: {
-        route: ''
+        route: getEnvironment()
       }
     },
     {
@@ -210,7 +213,7 @@ export const copyJob = (id, params) => {
     {
       ...params,
       labels: {
-        route: ''
+        route: getEnvironment()
       }
     },
     {
@@ -226,7 +229,7 @@ export const modifyJob = (id, params) => {
     {
       ...params,
       labels: {
-        route: ''
+        route: getEnvironment()
       }
     },
     {
@@ -239,7 +242,7 @@ export const modifyJob = (id, params) => {
 export const deleteJob = (id) => {
   return request(`/job/${id}`, {
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, {
     method: "DELETE",
@@ -253,7 +256,7 @@ export const importJob = (id, params) => {
     {
       ...params,
       labels: {
-        route: ''
+        route: getEnvironment()
       }
     },
     {
@@ -266,7 +269,7 @@ export const importJob = (id, params) => {
 export const executeTask = (id) => {
   return request(`/job/${id}/action/execute`, {
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, {
     method: "POST",
@@ -274,7 +277,7 @@ export const executeTask = (id) => {
 };
 
 export const getJobs = (id, jobType, name, current, size) => {
-  return request(`/job?labels=&projectId=${id}&jobType=${jobType}&name=${name}&current=${current}&size=${size}`, null, {
+  return request(`/job?labels=${getEnvironment()}&projectId=${id}&jobType=${jobType}&name=${name}&current=${current}&size=${size}`, null, {
     method: "GET",
   });
 };
@@ -283,7 +286,7 @@ export const saveProject = (id, body) => {
   return request(`/job/${id}/content`, {
     ...body,
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, {
     method: "PUT",
@@ -295,7 +298,7 @@ export const updateTaskConfiguration = (id, body) => {
   return request(`/job/${id}/config`, {
     ...body,
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, {
     method: "PUT",
@@ -305,7 +308,7 @@ export const updateTaskConfiguration = (id, body) => {
 export const expireDataSource = (id) => {
   return request(`/datasources/${id}/expire`, {
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, { method: "PUT" });
 };
@@ -315,7 +318,7 @@ export const publishDataSource = (id, versionId) => {
     `/datasources/${id}/${versionId}/publish`,
     {
       labels: {
-        route: ''
+        route: getEnvironment()
       }
     },
     { method: "PUT" }
@@ -324,7 +327,7 @@ export const publishDataSource = (id, versionId) => {
 
 export const getSourceParams = (engineType, type, ds) => {
   return request(
-    `/datasources/${engineType}/${type}/params/ui?labels=&dir=${ds}`,
+    `/datasources/${engineType}/${type}/params/ui?labels=${getEnvironment()}&dir=${ds}`,
     {},
     { method: "GET" }
   );
@@ -332,7 +335,7 @@ export const getSourceParams = (engineType, type, ds) => {
 
 export const getSettingsParams = (engineType) => {
   return request(
-    `/jobs/engine/${engineType}/settings/ui?labels=`,
+    `/jobs/engine/${engineType}/settings/ui?labels=${getEnvironment()}`,
     {},
     { method: "GET" }
   );
@@ -347,13 +350,13 @@ export const getSettingsParams = (engineType) => {
 
 // 同步历史
 export const getSyncHistory = (body) => {
-  return request("/tasks?labels=", body, {
+  return request("/tasks?labels=" + getEnvironment(), body, {
     method: "GET",
   });
 };
 // 新版同步历史-获取job列表
 export const getSyncHistoryJobList = (body) => {
-  return request("/job/listJobs?labels=", body, {
+  return request("/job/listJobs?labels=" + getEnvironment(), body, {
     method: "GET",
   });
 };
@@ -361,7 +364,7 @@ export const getSyncHistoryJobList = (body) => {
 export const delSyncHistory = (jobExecutionId) => {
   return request(`/job/${jobExecutionId}/deleteJob`, {
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, {
     method: "POST",
@@ -370,7 +373,7 @@ export const delSyncHistory = (jobExecutionId) => {
 // 读取Task限速配置
 export const getSpeedLimit = (params) => {
   return request(
-    `/job/${params.jobId}/speedlimit/${params.taskName}/params/ui?labels=`,
+    `/job/${params.jobId}/speedlimit/${params.taskName}/params/ui?labels=${getEnvironment()}`,
     {},
     {
       method: "GET",
@@ -382,7 +385,7 @@ export const saveSpeedLimit = (params, body) => {
   return request(`/job/${params.jobId}/speedlimit/${params.taskName}`, {
     ...body,
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, {
     method: "PUT",
@@ -392,7 +395,7 @@ export const saveSpeedLimit = (params, body) => {
 // 获取运行日志
 export const getLogs = (params) => {
   return request(
-    `/execution/tasks/${params.taskID}/logs?labels=`,
+    `/execution/tasks/${params.taskID}/logs?labels=${getEnvironment()}`,
     {
       fromLine: params.fromLine || 1,
       pageSize: params.pageSize || 10
@@ -408,30 +411,30 @@ export const getLogs = (params) => {
 
 // 任务状态
 export const getTaskState = () => {
-  return request("/metrics/taskstate?labels=", {}, { method: "GET" });
+  return request("/metrics/taskstate?labels=" + getEnvironment(), {}, { method: "GET" });
 };
 
 // 任务进度
 export const getTaskProcess = () => {
-  return request("/metrics/taskprocess?labels=", {}, { method: "GET" });
+  return request("/metrics/taskprocess?labels=" + getEnvironment(), {}, { method: "GET" });
 };
 
 // 流量监控
 export const getDataSourceFlow = () => {
-  return request("/metrics/datasourceflow?labels=", {}, { method: "GET" });
+  return request("/metrics/datasourceflow?labels=" + getEnvironment(), {}, { method: "GET" });
 };
 
 // 资源使用
 export const getEngineriesSource = () => {
-  return request("/metrics/engineresource?labels=", {}, { method: "GET" });
+  return request("/metrics/engineresource?labels=" + getEnvironment(), {}, { method: "GET" });
 };
 
 export const getEngineriesSourceCpu = () => {
-  return request("/metrics/engineresourcecpu?labels=", {}, { method: "GET" });
+  return request("/metrics/engineresourcecpu?labels=" + getEnvironment(), {}, { method: "GET" });
 };
 
 export const getEngineriesSourceMem = () => {
-  return request("/metrics/engineresourcemem?labels=", {}, { method: "GET" });
+  return request("/metrics/engineresourcemem?labels=" + getEnvironment(), {}, { method: "GET" });
 };
 
 
@@ -439,7 +442,7 @@ export const getEngineriesSourceMem = () => {
 export const executeJob = (id) => {
   return request(`/job/${id}/execute`,{
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, {
     method: "POST",
@@ -447,19 +450,19 @@ export const executeJob = (id) => {
 }
 
 export const getJobStatus = (id) => {
-  return request(`/job/execution/${id}/status?labels=`, {}, {
+  return request(`/job/execution/${id}/status?labels=${getEnvironment()}`, {}, {
     method: "GET",
   })
 }
 
 export const getJobTasks = (id) => {
-  return request(`/job/execution/${id}/taskList?labels=`, null, {
+  return request(`/job/execution/${id}/taskList?labels=${getEnvironment()}`, null, {
     method: "GET",
   })
 }
 
 export const getProgress = (id) => {
-  return request(`/job/execution/${id}/progress?labels=&_=${Math.random()}`, null, {
+  return request(`/job/execution/${id}/progress?labels=${getEnvironment()}&_=${Math.random()}`, null, {
     method: "GET",
   })
 }
@@ -468,7 +471,7 @@ export const getMetrics = (taskId, jobExecutionId) => {
   return request(`/task/execution/${taskId}/metrics`, {
     jobExecutionId,
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, {
     method: "POST",
@@ -478,7 +481,7 @@ export const getMetrics = (taskId, jobExecutionId) => {
 export const killJob = (id) => {
   return request(`/job/execution/${id}/kill`, {
     labels: {
-      route: ''
+      route: getEnvironment()
     }
   }, {
     method: "POST",
@@ -488,7 +491,7 @@ export const killJob = (id) => {
 // 获取job运行日志
 export const getJobExecLog = (params) => {
   return request(
-    `/job/execution/${params.id}/log?labels=&_=${Math.random()}`,
+    `/job/execution/${params.id}/log?labels=${getEnvironment()}&_=${Math.random()}`,
     {
       fromLine: params.fromLine || 0,
       pageSize: params.pageSize || 50,
@@ -505,7 +508,7 @@ export const getJobExecLog = (params) => {
 // 获取task运行日志
 export const getTaskExecLog = (params) => {
   return request(
-    `/task/execution/${params.taskId}/log?labels=&_=${Math.random()}`,
+    `/task/execution/${params.taskId}/log?labels=${getEnvironment()}&_=${Math.random()}`,
     {
       fromLine: params.fromLine || 0,
       pageSize: params.pageSize || 50,
@@ -525,7 +528,7 @@ export const getPartitionInfo = (params) => {
   if (!params.source) return
   const url = params.source.split(BASE_URL)[1]
   return request(
-    `${url}?labels=&dataSourceId=${params.dataSourceId}&database=${params.database}&table=${params.table}&_=${Math.random()}`,
+    `${url}?labels=${getEnvironment()}&dataSourceId=${params.dataSourceId}&database=${params.database}&table=${params.table}&_=${Math.random()}`,
     {},
     {
       method: "GET",
