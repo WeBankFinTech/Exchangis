@@ -128,6 +128,11 @@ export default {
       active: -1,
     };
   },
+  mounted() {
+    if (this.$route.query.labels) {
+      localStorage.setItem('exchangis_environment', this.$route.query.labels)
+    }
+  },
   methods: {
     async getJobs(type = "OFFLINE") {
       this.tabs = (await getJobs(this.$route.query.id, type)).result;
