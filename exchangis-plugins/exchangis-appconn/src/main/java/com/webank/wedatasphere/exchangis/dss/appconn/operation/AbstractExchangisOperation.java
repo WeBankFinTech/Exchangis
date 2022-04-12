@@ -19,6 +19,7 @@ import org.apache.linkis.httpclient.response.HttpResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -97,7 +98,8 @@ public abstract class AbstractExchangisOperation {
      */
     protected SSOUrlBuilderOperation getSSOUrlBuilderOperation(Workspace workspace,
                                                                String appName, String url){
-        return workspace.getSSOUrlBuilderOperation().copy().setAppName(appName).setReqUrl(requestURL())
+        LOG.info("requestURL555555: {}", requestURL());
+        return workspace.getSSOUrlBuilderOperation().copy().setAppName(appName).setReqUrl(url)
                 .setWorkspace(workspace.getWorkspaceName());
     }
 
@@ -149,10 +151,12 @@ public abstract class AbstractExchangisOperation {
                                                                                                           T requestRef, HttpActionBuilder<T> httpActionBuilder, Class<?> entityClass, Class<?>... entityParameters) throws ExternalOperationFailedException {
         LOG.info("Create job url{}: ", url);
         HttpExtAction action = httpActionBuilder.build(requestRef);
+        LOG.info("Action123456{}: ", action.getRequestBody());
         if (Objects.nonNull(action)){
             SSOUrlBuilderOperation ssoUrlBuilderOperation = getSSOUrlBuilderOperation(workspace, getAppName(), url);
             ExchangisEntityRespResult.BasicMessageEntity<R> entity;
             try {
+                LOG.info("ssoUrlBuilderOperation666: {}", ssoUrlBuilderOperation.getBuiltUrl());
                 action.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
                 SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation = getOrCreateSSORequestOperation();
                 ExchangisEntityRespResult httpResult = new ExchangisEntityRespResult(ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, action));

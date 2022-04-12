@@ -70,7 +70,7 @@ public class ExchangisJobVo {
     /**
      * Execute user
      */
-    @JsonProperty("proxyUser")
+    //@JsonProperty("proxyUser")
     private String executeUser;
 
     /**
@@ -111,6 +111,8 @@ public class ExchangisJobVo {
 
     private Map<String, Object> labels;
 
+    private String proxyUser;
+
     public ExchangisJobVo(){
 
     }
@@ -128,8 +130,18 @@ public class ExchangisJobVo {
             this.modifyTime = jobInfo.getLastUpdateTime();
             this.jobParams = jobInfo.getJobParams();
             this.executeUser = jobInfo.getExecuteUser();
+            this.proxyUser = jobInfo.getExecuteUser();
         }
     }
+
+    public String getProxyUser() {
+        return proxyUser;
+    }
+
+    public void setProxyUser(String proxyUser) {
+        this.proxyUser = proxyUser;
+    }
+
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
