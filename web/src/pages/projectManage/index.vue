@@ -159,7 +159,8 @@ export default {
         current: 1,
         size: 10,
       },
-      total : 0
+      total : 0,
+      name: this.$route.query.name
     };
   },
   computed: {
@@ -219,6 +220,7 @@ export default {
     }
   },
   async mounted() {
+    localStorage.setItem('exchangis_environment', this.$route.query.labels || '')
     this.getDataList();
   },
 };
