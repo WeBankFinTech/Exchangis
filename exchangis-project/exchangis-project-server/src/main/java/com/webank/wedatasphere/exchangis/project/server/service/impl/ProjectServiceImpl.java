@@ -75,6 +75,7 @@ public class ProjectServiceImpl implements ProjectService {
         updatedProject.setViewUsers(projectVo.getViewUsers());
         updatedProject.setEditUsers(projectVo.getEditUsers());
         updatedProject.setExecUsers(projectVo.getExecUsers());
+        updatedProject.setDescription(projectVo.getDescription());
         // Set the updated properties
         updatedProject.setLastUpdateUser(userName);
         updatedProject.setLastUpdateTime(Calendar.getInstance().getTime());
@@ -115,7 +116,13 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteProjectByName(String name) throws ExchangisJobException {
+        // First to delete the project to lock the record
+        ExchangisProject project = this.projectMapper.selectByName(name);
+        this.projectMapper.deleteByName(name);
+    }
     @Override
     public ExchangisProjectInfo getProjectDetailById(Long projectId) {
         ExchangisProject project = this.projectMapper.getDetailById(projectId);
@@ -144,5 +151,12 @@ public class ProjectServiceImpl implements ProjectService {
         return null;
     }
 
-
+    @Override
+    public ExchangisProjectInfo selectByName(String name){
+        ExchangisProject project = this.projectMapper.selectByName(name);
+        if (Objects.nonNull(project)){
+            return new ExchangisProjectInfo(project);
+        }
+        return null;
+    }
 }

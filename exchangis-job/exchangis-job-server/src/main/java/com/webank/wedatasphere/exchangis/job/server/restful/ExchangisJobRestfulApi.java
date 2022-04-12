@@ -26,7 +26,7 @@ import java.util.*;
  * The basic controller of Exchangis job
  */
 @RestController
-@RequestMapping(value = "dss/exchangis/job", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis/main/job", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobRestfulApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisJobRestfulApi.class);
@@ -189,6 +189,7 @@ public class ExchangisJobRestfulApi {
     public Message getJob(HttpServletRequest request, @PathVariable("id") Long id) {
         Message response = Message.ok();
         try {
+            LOG.info("Request88888: {}", request);
             ExchangisJobVo job = jobInfoService.getDecoratedJob(request, id);
             response.data("result", job);
         } catch (Exception e) {

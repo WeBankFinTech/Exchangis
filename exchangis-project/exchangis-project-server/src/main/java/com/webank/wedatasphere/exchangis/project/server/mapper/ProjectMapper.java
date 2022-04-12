@@ -57,4 +57,19 @@ public interface ProjectMapper {
      * @param projectId
      */
     void deleteOne(Long projectId);
+
+    /**
+     * Delete project by name
+     * @param name
+     */
+    void deleteByName(String name);
+
+    /**
+     * get projects by name
+     * @param projectName
+     * @return List
+     */
+    List<ExchangisProject> getDetailByName(@Param("projectName") String projectName);
+
+    ExchangisProject selectByName(String name);
 }

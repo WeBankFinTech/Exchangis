@@ -21,7 +21,7 @@ import java.util.Map;
  * @author tikazhang
  * @Date 2022/3/13 16:45
  */
-public class ExchangisImportOperation implements ImportRequestRef {
+public class ExchangisImportRequestRef implements ImportRequestRef {
 
     Map<String, Object> parameters = Maps.newHashMap();
     Workspace workspace;
