@@ -21,9 +21,8 @@
           @change="onChange"
         >
           <template #tags="{ text: labels }">
-            <span>
+            <span v-if="labels">
               <a-tag
-                v-if="labels"
                 v-for="tag in labels.split(',')"
                 :title="tag.toUpperCase()"
                 :key="tag"

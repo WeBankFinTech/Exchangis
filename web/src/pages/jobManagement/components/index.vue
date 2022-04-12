@@ -544,6 +544,10 @@ export default {
     this.init();
   },
   mounted() {
+    if (this.$route.query.labels) {
+      localStorage.setItem('exchangis_environment', this.$route.query.labels)
+    }
+
     this.$nextTick(() => {
       if (this.$route.path === '/childJobManagement') {
         document.querySelector('.layout-sider-fixed-stuff').style.width = '0'
