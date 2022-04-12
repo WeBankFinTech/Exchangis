@@ -34,7 +34,7 @@ public class ExchangisProjectCreationOperation extends AbstractExchangisProjectO
     private StructureService structureService;
 
     public ExchangisProjectCreationOperation(StructureService structureService) {
-        super(new String[]{"project"});
+        super(new String[]{"appProject"});
         setStructureService(structureService);
     }
 

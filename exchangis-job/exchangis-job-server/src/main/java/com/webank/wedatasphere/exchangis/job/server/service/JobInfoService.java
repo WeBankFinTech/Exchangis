@@ -104,10 +104,10 @@ public interface JobInfoService {
      * @param username params
      * @return
      */
-    Message exportProject(Map<String, String> params, String username, HttpServletRequest request) throws ExchangisJobServerException, ServerException;
+    Message exportProject(Map<String, Object> params, String username, HttpServletRequest request) throws ExchangisJobServerException, ServerException;
 
     ExportedProject export(Long projectId, Map<String, Set<Long>> moduleIdsMap, boolean partial, HttpServletRequest request) throws ExchangisJobServerException;
 
-    Map<String, Set<Long>> getModuleIdsMap(Map<String, String> params);
+    Map<String, Set<Long>> getModuleIdsMap(Map<String, Object> params);
 
 }
