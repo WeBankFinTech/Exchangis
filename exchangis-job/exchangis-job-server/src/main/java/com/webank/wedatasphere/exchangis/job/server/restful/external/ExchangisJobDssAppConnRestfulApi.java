@@ -89,7 +89,11 @@ public class ExchangisJobDssAppConnRestfulApi {
         String userName = SecurityFilter.getLoginUsername(request);
         Message response = Message.ok("dss job deleted");
         try {
-            if (!hasAuthority(userName, jobInfoService.getJob(id, true))){
+            LOG.info("delete job bean: {}, jobid: {}", jobInfoService.getJob(id, true), jobInfoService.getJob(id, true).getId());
+            if (Objects.isNull(jobInfoService.getJob(id, true)) || jobInfoService.getJob(id, true).getId() == null){
+                return response;
+            }
+            else if (!hasAuthority(userName, jobInfoService.getJob(id, true))){
                 return Message.error("You have no permission to update (没有删除权限)");
             }
             jobInfoService.deleteJob(id);
@@ -119,8 +123,12 @@ public class ExchangisJobDssAppConnRestfulApi {
         exchangisJobVo.setModifyUser(userName);
         Message response = Message.ok();
         try{
-            if (!hasAuthority(userName, jobInfoService.getJob(id , true))){
-                return Message.error("You have no permission to update (没有更新权限)");
+            LOG.info("update job bean: {}, jobid: {}", jobInfoService.getJob(id, true), jobInfoService.getJob(id, true).getId());
+            if (Objects.isNull(jobInfoService.getJob(id, true)) || jobInfoService.getJob(id, true).getId() == null){
+                return Message.error("You have no job in exchangis,please delete this job (该节点在exchangis端不存在，请删除该节点)");
+            }
+            else if (!hasAuthority(userName, jobInfoService.getJob(id , true))){
+                return Message.error("You have no permission to update (没有更新权限666)");
             }
             response.data("id", jobInfoService.updateJob(exchangisJobVo).getId());
         } catch (Exception e){
@@ -150,21 +158,23 @@ public class ExchangisJobDssAppConnRestfulApi {
             // Convert to the job info
             jobInfo = new ExchangisJobInfo(jobVo);
             if (!hasAuthority(loginUser, jobVo)){
-                return Message.error("You have no permission to execute job (没有执行DSS任务权限)");
+                return Message.error("You have no permission to execute job (没有执行DSS任务权限888) [" + loginUser +"]" + "[" + jobVo.getCreateUser() + "]");
             }
             // Send to execute service
             String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
                     jobInfo.getExecuteUser() : loginUser);
             result.data("jobExecutionId", jobExecutionId);
 
+            LOG.info("Prepare to get job status");
             while (true) {
                 TaskStatus jobStatus = executeService.getJobStatus(jobExecutionId).getStatus();
-                if ("Success".equals(jobStatus) ) {
-                    result.data("jobStatus", jobStatus);
+                LOG.info("Taskstatus is: {}", jobStatus.name());
+                if (jobStatus == TaskStatus.Success ) {
+                    result.data("jobStatus", jobStatus.name());
                     LOG.info("Execute task success");
                     break;
-                } else if ("Cancelled".equals(jobStatus) || "Failed".equals(jobStatus) || "Undefined".equals(jobStatus) || "Timeout".equals(jobStatus)) {
-                    result.data("jobStatus", jobStatus);
+                } else if (jobStatus == TaskStatus.Cancelled || jobStatus == TaskStatus.Failed || jobStatus == TaskStatus.Undefined || jobStatus == TaskStatus.Timeout) {
+                    result.data("jobStatus", jobStatus.name());
                     LOG.info("Execute task faild");
                     throw new Exception();
                 }
@@ -191,7 +201,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.info("param: {}", params);
             response = projectImportServer.importProject(request, params);
             LOG.info("import job success");
-        } catch (Exception e){
+        } catch (ExchangisJobServerException e){
             String message = "Fail import job [ id: " + params + "] (导入任务失败)";
             LOG.error(message, e);
             response = Message.error(message);
