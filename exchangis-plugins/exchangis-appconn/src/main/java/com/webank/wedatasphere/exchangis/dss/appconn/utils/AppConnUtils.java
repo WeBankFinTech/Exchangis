@@ -3,7 +3,9 @@ package com.webank.wedatasphere.exchangis.dss.appconn.utils;
 import com.webank.wedatasphere.dss.common.label.DSSLabel;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
 import com.webank.wedatasphere.exchangis.dss.appconn.response.result.ExchangisEntityRespResult;
+import org.apache.linkis.httpclient.response.HttpResult;
 import org.apache.linkis.manager.label.entity.SerializableLabel;
+import org.apache.linkis.server.BDPJettyServerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,14 @@ public class AppConnUtils {
             LOG.warn("Exception in resolving params: " + key, e);
         }
         return null;
+    }
+
+    public static Map getResponseMap(HttpResult httpResult) throws ExternalOperationFailedException {
+        try {
+            return BDPJettyServerHelper.jacksonJson().readValue(httpResult.getResponseBody(), Map.class);
+        } catch (Exception e) {
+            throw new ExternalOperationFailedException(90176, "search visualis project exception", e);
+        }
     }
 
 }
