@@ -52,7 +52,7 @@ public class ExchangisRefExecutionOperation extends AbstractExchangisRefOperatio
             nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString();
             LOG.info("getExecutionRequestRefContext User: {}", nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
         } catch (Exception e) {
-            LOG.error("parsar request error", e);
+            LOG.error("parser request error", e);
         }
         Long id = AppConnUtils.resolveParam(nodeRequestRef.getJobContent(), Constraints.REF_JOB_ID, Double.class).longValue();
         LOG.info("execute job request =>  id: {}, name: {}, user: {}, jobContent: {}",

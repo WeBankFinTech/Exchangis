@@ -166,7 +166,7 @@ public class ExchangisJobRestfulApi {
         Message response = Message.ok("job deleted");
         try {
             if (!hasAuthority(userName, jobInfoService.getJob(id, true))) {
-                return Message.error("You have no permission to update (没有删除权限)");
+                return Message.error("You have no permission to update ()");
             }
             jobInfoService.deleteJob(id);
         } catch (Exception e) {
