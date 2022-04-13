@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.rmi.ServerException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -75,7 +76,7 @@ public class ProjectImportServerImpl implements IProjectImportService {
         try {
             String projectJson = IOUtils.toString(bmlDownloadResponse.inputStream(), StandardCharsets.UTF_8);
             LOG.info("projectJson: {}", projectJson);
-            IdCatalog idCatalog = importOpt(projectJson, projectId, versionSuffix);
+            IdCatalog idCatalog = importOpt(projectJson, projectId, versionSuffix, userName);
             message = Message.ok("import Job ok")
                     .data("sqoop", idCatalog.getSqoop())
                     .data("datax", idCatalog.getDatax());
@@ -94,56 +95,41 @@ public class ProjectImportServerImpl implements IProjectImportService {
     }
 
     @Override
-    public IdCatalog importOpt(String projectJson, Long projectId, String versionSuffix) throws ExchangisJobServerException {
+    public IdCatalog importOpt(String projectJson, Long projectId, String versionSuffix, String userName) throws ExchangisJobServerException {
         ExportedProject exportedProject = BDPJettyServerHelper.gson().fromJson(projectJson, ExportedProject.class);
         IdCatalog idCatalog = new IdCatalog();
 
-        importSqoop(projectId, versionSuffix, exportedProject, idCatalog);
+        importSqoop(projectId, versionSuffix, exportedProject, idCatalog, userName);
 
-        importDatax(projectId, versionSuffix, exportedProject, idCatalog);
+        importDatax(projectId, versionSuffix, exportedProject, idCatalog, userName);
 
         return idCatalog;
     }
 
-    private void importSqoop(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog) throws ExchangisJobServerException {
+    private void importSqoop(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog, String userName) throws ExchangisJobServerException {
         List<ExchangisJobVo> sqoops = exportedProject.getSqoops();
         if (sqoops == null) {
             return;
         }
         List<ExchangisProject> projects = projectMapper.getDetailByName(exportedProject.getName());
-        if (projects.size() == 1) {
-            for (ExchangisJobVo sqoop : sqoops) {
-                Long projectIdProd = projects.get(0).getId();
-                Long oldId = sqoop.getId();
-                sqoop.setProjectId(projectIdProd);
-                sqoop.setJobName(updateName(sqoop.getJobName(), versionSuffix));
-                //Long existingId = (long) 55;
-                LOG.info("oldId: {}, projectid: {}, jobName: {}", sqoop.getId(), sqoop.getProjectId(), sqoop.getJobName());
-                LOG.info("jobByNameWithProjectId: {}", jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectIdProd));
-                Long existingId;
-                if (jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectIdProd) == null || jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId).size() == 0) {
-                    existingId = null;
-                } else {
-                    existingId = jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectIdProd).get(0).getId();
-                }
-                //Long existingId = jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId);
-                if (existingId != null) {
-                    idCatalog.getSqoop().put(oldId, existingId);
-                    throw new ExchangisJobServerException(31101, "Already exits duplicated job name(存在重复任务名称) jobName is:" + "[" + sqoop.getJobName() + "]");
-                } else {
-                    //sqoop.setJobName("hahaha");
-                    LOG.info("Sqoop job content is: {}, Modify user is: {}, jobType is: {}", sqoop.getContent(), sqoop.getExecuteUser(), sqoop.getJobType());
-                    jobInfoService.createJob(sqoop);
-                    idCatalog.getSqoop().put(oldId, sqoop.getId());
-                }
-            }
+        if (projects.size() == 0) {
+            ExchangisProject project = new ExchangisProject();
+            project.setName(exportedProject.getName());
+            project.setCreateTime(Calendar.getInstance().getTime());
+            project.setCreateUser(userName);
+            Long newProjectId = projectMapper.insertOne(project);
+            List<ExchangisProject> newProjects = projectMapper.getDetailByName(exportedProject.getName());
+            addSqoopTask (sqoops, newProjects, versionSuffix, idCatalog, projectId);
+        }
+        else if (projects.size() == 1) {
+            addSqoopTask (sqoops, projects, versionSuffix, idCatalog, projectId);
         }
         else {
             throw new ExchangisJobServerException(31101, "Already exits duplicated project name(存在重复项目名称) projectName is:" + "[" + exportedProject.getName() + "]");
         }
     }
 
-    private void importDatax(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog) {
+    private void importDatax(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog, String userName) {
         List<ExchangisJobVo> dataxes = exportedProject.getDataxes();
         if (dataxes == null) {
             return;
@@ -160,6 +146,34 @@ public class ProjectImportServerImpl implements IProjectImportService {
             } else {
                 jobInfoService.createJob(datax);
                 idCatalog.getSqoop().put(oldId, datax.getId());
+            }
+        }
+    }
+
+    public void addSqoopTask (List<ExchangisJobVo> sqoops, List<ExchangisProject> projects, String versionSuffix, IdCatalog idCatalog, Long projectId) throws ExchangisJobServerException {
+        for (ExchangisJobVo sqoop : sqoops) {
+            Long projectIdProd = projects.get(0).getId();
+            Long oldId = sqoop.getId();
+            sqoop.setProjectId(projectIdProd);
+            sqoop.setJobName(updateName(sqoop.getJobName(), versionSuffix));
+            //Long existingId = (long) 55;
+            LOG.info("oldId: {}, projectid: {}, jobName: {}", sqoop.getId(), sqoop.getProjectId(), sqoop.getJobName());
+            LOG.info("jobByNameWithProjectId: {}", jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectIdProd));
+            Long existingId;
+            if (jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectIdProd) == null || jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId).size() == 0) {
+                existingId = null;
+            } else {
+                existingId = jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectIdProd).get(0).getId();
+            }
+            //Long existingId = jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId);
+            if (existingId != null) {
+                idCatalog.getSqoop().put(oldId, existingId);
+                throw new ExchangisJobServerException(31101, "Already exits duplicated job name(存在重复任务名称) jobName is:" + "[" + sqoop.getJobName() + "]");
+            } else {
+                //sqoop.setJobName("hahaha");
+                LOG.info("Sqoop job content is: {}, Modify user is: {}, jobType is: {}", sqoop.getContent(), sqoop.getExecuteUser(), sqoop.getJobType());
+                jobInfoService.createJob(sqoop);
+                idCatalog.getSqoop().put(oldId, sqoop.getId());
             }
         }
     }

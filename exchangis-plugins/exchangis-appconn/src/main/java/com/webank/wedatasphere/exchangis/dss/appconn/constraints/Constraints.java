@@ -32,6 +32,7 @@ public class Constraints {
      // Constraint in Ref operation
      public final static String REF_JOB_DESC = "desc";
      public final static String REF_JOB_ID = "id";
+     public final static String REF_JOB_LABELS = "labels";
      public final static String REF_JUMP_URL_FORMAT = CommonVars.apply("wds.dss.appconn.exchangis.ref.jump","#/childJobManagement").getValue();
 
 

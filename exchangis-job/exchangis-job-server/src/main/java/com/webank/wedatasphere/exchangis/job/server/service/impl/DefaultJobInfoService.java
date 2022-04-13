@@ -94,11 +94,12 @@ public class DefaultJobInfoService implements JobInfoService {
         jobVo.setId(jobEntity.getId());
         jobVo.setCreateTime(jobEntity.getCreateTime());
         return jobVo;*/
-
+        LOG.info("00005Sqoop job labels is: {}", jobVo.getJobLabels());
         ExchangisJobEntity jobEntity = new ExchangisJobEntity();
         jobEntity.setProjectId(jobVo.getProjectId());
         jobEntity.setJobType(jobVo.getJobType());
         jobEntity.setEngineType(jobVo.getEngineType());
+        jobEntity.setJobLabel(jobVo.getJobLabels());
         jobEntity.setJobLabels(jobVo.getJobLabels());
         jobEntity.setName(jobVo.getJobName());
         jobEntity.setJobDesc(jobVo.getJobDesc());
@@ -109,6 +110,7 @@ public class DefaultJobInfoService implements JobInfoService {
         jobEntity.setSource(Json.toJson(jobVo.getSource(), null));
         //jobEntity.setJobContent(jobVo.getContent());
         jobEntity.setModifyUser(jobVo.getModifyUser());
+        LOG.info("00005Sqoop job Entity labels is: {}", jobEntity.getJobLabel());
         //Map<String, Object> contentVo = BDPJettyServerHelper.gson().fromJson(jobVo.getContent(), Map.class);
         LOG.info("888888Sqoop job content is: {}, Modify user is: {}, jobType is: {}", jobVo.getContent(), jobEntity.getExecuteUser(), jobEntity.getJobType());
         if(jobVo.getContent() != null) {
