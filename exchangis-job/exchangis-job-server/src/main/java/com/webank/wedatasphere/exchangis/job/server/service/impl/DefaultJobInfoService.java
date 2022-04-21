@@ -302,7 +302,7 @@ public class DefaultJobInfoService implements JobInfoService {
     @Override
     public Message exportProject(Map<String, Object> params, String userName, HttpServletRequest request) throws ExchangisJobServerException, ServerException {
         ExportedProject exportedProject = null;
-        Long projectId = (Long) params.get("projectId");
+        Long projectId = Long.parseLong(params.get("projectId").toString());
         Boolean partial = (Boolean) params.get("partial");
         Map<String, Set<Long>> moduleIdsMap = getModuleIdsMap(params);
 
