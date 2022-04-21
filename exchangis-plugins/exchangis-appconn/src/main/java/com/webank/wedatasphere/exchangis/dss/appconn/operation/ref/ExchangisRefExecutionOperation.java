@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.dss.appconn.operation.ref;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.webank.wedatasphere.dss.standard.app.development.listener.common.AsyncExecutionRequestRef;
+import com.webank.wedatasphere.dss.standard.app.development.listener.common.*;
 import com.webank.wedatasphere.dss.standard.app.development.operation.RefExecutionOperation;
 import com.webank.wedatasphere.dss.standard.app.development.ref.ExecutionRequestRef;
 import com.webank.wedatasphere.dss.standard.app.development.service.DevelopmentService;
@@ -32,7 +32,7 @@ import java.util.Objects;
 /**
  * Ref execute operation
  */
-public class ExchangisRefExecutionOperation extends AbstractExchangisRefOperation implements RefExecutionOperation {
+public class ExchangisRefExecutionOperation extends ExchangisLongTermRefExecutionOperation implements RefExecutionOperation {
 
     private final static Logger LOG = LoggerFactory.getLogger(ExchangisRefExecutionOperation.class);
 
@@ -43,7 +43,7 @@ public class ExchangisRefExecutionOperation extends AbstractExchangisRefOperatio
         setSSORequestService(service);
     }
     @Override
-    public ResponseRef execute(ExecutionRequestRef executionRequestRef) throws ExternalOperationFailedException {
+    public ResponseRef execute(ExecutionRequestRef executionRequestRef) {
         AsyncExecutionRequestRef nodeRequestRef = (AsyncExecutionRequestRef) executionRequestRef;
 
         LOG.info("execute job request =>  jobcontent: {}", nodeRequestRef.getJobContent());
@@ -52,25 +52,28 @@ public class ExchangisRefExecutionOperation extends AbstractExchangisRefOperatio
             nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString();
             LOG.info("getExecutionRequestRefContext User: {}", nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
         } catch (Exception e) {
-            LOG.error("parsar request error", e);
+            LOG.error("parsar r equest error", e);
         }
         Long id = AppConnUtils.resolveParam(nodeRequestRef.getJobContent(), Constraints.REF_JOB_ID, Double.class).longValue();
         LOG.info("execute job request =>  id: {}, name: {}, user: {}, jobContent: {}",
                 id, nodeRequestRef.getName(), nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString(),
                 nodeRequestRef.getJobContent().toString());
         String url = requestURL("/appJob/execute/" + id);
-        ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, nodeRequestRef.getWorkspace(), nodeRequestRef,
-                (requestRef) -> {
-                    // Build ref execution action
-                    return new ExchangisEntityPostAction<>(null,
-                            nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
-                }, Map.class);
-        if (Objects.isNull(entity)){
-            throw new ExternalOperationFailedException(31020, "The response entity cannot be empty", null);
+        ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = null;
+        try {
+            entity = requestToGetEntity(url, nodeRequestRef.getWorkspace(), nodeRequestRef,
+                    (requestRef) -> {
+                        // Build ref execution action
+                        return new ExchangisEntityPostAction<>(null,
+                                nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
+                    }, Map.class);
+        } catch (ExternalOperationFailedException e) {
+            e.printStackTrace();
         }
         ExchangisEntityRespResult httpResult = entity.getResult();
         LOG.info("execute job response => status: {}, response: {}", httpResult.getStatusCode(), httpResult.getResponseBody());
-        return new ExchangisCommonResponseDef(httpResult);
+        AsyncExecutionResponseRef response = createAsyncResponseRef(executionRequestRef, (RefExecutionAction) executionRequestRef);
+        return response;
     }
 
     @Override
@@ -82,4 +85,25 @@ public class ExchangisRefExecutionOperation extends AbstractExchangisRefOperatio
     protected Logger getLogger() {
         return LOG;
     }
+
+
+
+    @Override
+    protected RefExecutionAction submit(ExecutionRequestRef executionRequestRef) {
+        LOG.info("submit 998.....");
+        return null;
+    }
+
+    @Override
+    public RefExecutionState state(RefExecutionAction refExecutionAction) {
+        LOG.info("execute set state 111112");
+        return null;
+    }
+
+    @Override
+    public CompletedExecutionResponseRef result(RefExecutionAction refExecutionAction) {
+        return null;
+    }
+
+
 }
