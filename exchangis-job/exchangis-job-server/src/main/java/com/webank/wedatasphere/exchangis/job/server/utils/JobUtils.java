@@ -87,6 +87,7 @@ public class JobUtils {
                 boolean spec = false;
                 if (null != symbol) {
                     String startTime = null;
+                    String tempTime = null;
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     if ("run_date".equals(symbol)) {
                         int n = 1;
@@ -96,28 +97,33 @@ public class JobUtils {
                         }
                         calendar.setTime(date);
                         calendar.add(Calendar.DAY_OF_MONTH, -n);
-                        startTime = format.format(calendar.getTime()).substring(0, 10) + " 00:00:00";
+                        tempTime = format.format(calendar.getTime()).substring(0, 10) + " 00:00:00";
+                        startTime = template.replace(m, tempTime);
                         return startTime;
                     }
 
                     for(String specSymbol : DateTool.HOUR_SPEC_SYMBOLS){
                         if(specSymbol.equals(symbol)){
-                            startTime = dataTool.format(specSymbol);
+                            tempTime = dataTool.format(specSymbol);
+                            startTime = template.replace(m, tempTime);
                             return startTime;
                         }
                     }
                     if (DateTool.MONTH_BEGIN_SYMBOL.equals(symbol)) {
                             dataTool.getMonthBegin(0);
-                            startTime = dataTool.format("yyyy-MM-dd HH:mm:ss");
+                            tempTime = dataTool.format("yyyy-MM-dd HH:mm:ss");
+                            startTime = template.replace(m, tempTime);
                             return startTime;
                         } else if (DateTool.MONTH_BEGIN_LAST_SYMBOL.equals(symbol)) {
                             dataTool.getMonthBeginLastDay(0);
-                            startTime = dataTool.format("yyyy-MM-dd HH:mm:ss");
+                            tempTime = dataTool.format("yyyy-MM-dd HH:mm:ss");
+                            startTime = template.replace(m, tempTime);
                             return startTime;
                         } else if (DateTool.TIME_PLACEHOLDER_SYMBOL.equals(symbol)){
                         calendar.setTime(date);
                         calendar.add(Calendar.DAY_OF_MONTH, -1);
-                        startTime = String.valueOf(calendar.getTimeInMillis());
+                        tempTime = String.valueOf(calendar.getTimeInMillis());
+                        startTime = template.replace(m, tempTime);
                         return startTime;
                         }
                 }
