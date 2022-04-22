@@ -163,13 +163,22 @@ public class TransformExchangisJob extends GenericExchangisJob {
 
         private void timePlaceHolderConvert(List<ExchangisJobParamsContent.ExchangisJobParamsItem> items) {
             for (ExchangisJobParamsContent.ExchangisJobParamsItem exchangisJobParamsItem : items) {
-                if ("partition".equals(exchangisJobParamsItem.getConfigKey()) && exchangisJobParamsItem.getConfigValue() != null) {
+                if (("partition".equals(exchangisJobParamsItem.getConfigKey()) ) && exchangisJobParamsItem.getConfigValue() != null) {
                     Map<String, String> partitionValue = (Map<String, String>) exchangisJobParamsItem.getConfigValue();
                     assert partitionValue != null;
                     Calendar calendar = Calendar.getInstance();
                     if (!partitionValue.get("ds").isEmpty()) {
                         partitionValue.put("ds", JobUtils.renderDt(partitionValue.get("ds"), calendar));
                     }
+                    LOG.info("Time placeholder transform value: {}", partitionValue.get("ds"));
+                    exchangisJobParamsItem.setConfigValue(partitionValue);
+                }
+                else if ("where".equals(exchangisJobParamsItem.getConfigKey())) {
+                    String partitionValue = exchangisJobParamsItem.getConfigValue().toString();
+                    assert partitionValue != null;
+                    Calendar calendar = Calendar.getInstance();
+                    partitionValue = JobUtils.renderDt(partitionValue, calendar);
+                    LOG.info("Time placeholder transform value: {}", partitionValue);
                     exchangisJobParamsItem.setConfigValue(partitionValue);
                 }
             }
