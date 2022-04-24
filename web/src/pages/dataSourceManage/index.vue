@@ -38,32 +38,32 @@
                     <template #action="row">
                         <a-space>
                             <a-button
-                                v-show="row.text.versionId"
+                                :disabled="!row.text.versionId"
                                 size="small"
                                 type="link"
                                 @click="handleEdit(row.text)"
                             >
                                 {{$t("dataSource.table.list.columns.actions.editButton")}}
                             </a-button>
-                            <span v-show="row.text.versionId" style="color: #DEE4EC">|</span>
+                            <span style="color: #DEE4EC">|</span>
                             <a-button
-                                v-show="!row.text.expire && row.text.versionId"
+                                :disabled="!(!row.text.expire && row.text.versionId)"
                                 size="small"
                                 type="link"
                                 @click="handleExpire(row.text.id)"
                             >
                                 {{$t("dataSource.table.list.columns.actions.expireButton")}}
                             </a-button>
-                            <span v-show="!row.text.expire && row.text.versionId" style="color: #DEE4EC">|</span>
+                            <span style="color: #DEE4EC">|</span>
                             <a-button
-                                v-show="row.text.versionId"
+                                :disabled="!row.text.versionId"
                                 size="small"
                                 type="link"
                                 @click="handleTestConnect(row)"
                             >
                                 {{$t("dataSource.table.list.columns.actions.testConnectButton")}}
                             </a-button>
-                            <span v-show="row.text.versionId" style="color: #DEE4EC">|</span>
+                            <span style="color: #DEE4EC">|</span>
                             <a-popconfirm
                                 title="是否删除?"
                                 ok-text="确定"
@@ -209,7 +209,7 @@ export default {
             },
             {
                 title: t('dataSource.table.list.columns.title.action'),
-                align: 'left',
+                align: 'center',
                 slots: { customRender: 'action' }
             }
         ]);
