@@ -44,26 +44,30 @@ public class ExchangisProjectGetOperation extends AbstractExchangisProjectOperat
 
     @Override
     public DSSProject getProject(ProjectRequestRef projectRequestRef) throws ExternalOperationFailedException {
-        LOG.info("delete project request => dss_projectId:{}, name:{}, createName:{}", projectRequestRef.getId(),
+        LOG.info("get project request => dss_projectId:{}, name:{}, createName:{}", projectRequestRef.getId(),
                 projectRequestRef.getName(), projectRequestRef.getCreateBy());
-        String url = requestURL("appProject/check");
-        ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url,projectRequestRef.getWorkspace(), projectRequestRef,
-                (requestRef) ->{
-                    ExchangisGetAction exchangisGetAction = new ExchangisGetAction();
-                    exchangisGetAction.setUser(requestRef.getCreateBy());
-                    exchangisGetAction.setParameter("keywords", projectRequestRef.getName());
-                    return (HttpExtAction) exchangisGetAction;
+        String url = requestURL("appProject/check/" + projectRequestRef.getName() + "/");
+        ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, projectRequestRef.getWorkspace(), projectRequestRef,
+                (requestRef) -> {
+                    ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
+                    exchangisEntityPostAction.setUser(requestRef.getCreateBy());
+                    return exchangisEntityPostAction;
                 }, Map.class);
-        if (Objects.isNull(entity)){
+        if (Objects.isNull(entity)) {
             throw new ExternalOperationFailedException(31020, "The response entity cannot be empty", null);
         }
         try {
             ExchangisEntityRespResult httpResult = entity.getResult();
+            httpResult.getResponseBody();
             Map resMap = AppConnUtils.getResponseMap(httpResult);
-            ExchangisProjectResponseRef responseRef = new ExchangisProjectResponseRef(httpResult, null);
             DSSProject dssProject = new DSSProject();
-            Map<String, Object> payloadMap = (Map<String, Object>) resMap.get("payload");
-            dssProject.setId(Long.parseLong(payloadMap.get("id").toString()));
+            Map<String, Object> dataMap = (Map<String, Object>) resMap.get("data");
+            Map<String, Object> projectInfo = (Map<String, Object>) dataMap.get("projectInfo");
+            //如果查询不到project，则无重复项目可以直接返回
+            if (projectInfo == null) {
+                return null;
+            }
+            dssProject.setId(Long.parseLong(projectInfo.get("id").toString()));
             return dssProject;
         } catch (AppStandardErrorException e) {
             throw new ExternalOperationFailedException(90176, "search Exchangis Project failed when get HttpResult", e);
