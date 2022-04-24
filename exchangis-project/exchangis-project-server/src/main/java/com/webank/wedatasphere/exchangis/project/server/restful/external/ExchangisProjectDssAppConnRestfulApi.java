@@ -125,6 +125,28 @@ public class ExchangisProjectDssAppConnRestfulApi {
 
 
     /**
+     * check project name
+     * @param request http request
+     * @param name project name
+     * @return
+     */
+    @RequestMapping( value = "/check/{name}", method = RequestMethod.POST)
+    public Message getProjectByName(HttpServletRequest request, @PathVariable("name") String name) {
+        String username = SecurityFilter.getLoginUsername(request);
+        try {
+            ExchangisProjectInfo projectInfo = projectService.selectByName(name);
+            return ExchangisProjectRestfulUtils.dealOk("根据名字获取工程成功",
+                    new Pair<>("projectInfo",projectInfo));
+        } catch (Exception t) {
+            LOG.error("Failed to delete project for user {}", username, t);
+            return Message.error("Failed to delete project (根据名字获取工程失败)");
+        }
+
+
+    }
+
+
+    /**
      * @param username username
      * @param project project
      * @return
