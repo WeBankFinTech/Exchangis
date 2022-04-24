@@ -69,7 +69,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             Long id = null;
             id = jobInfoService.createJob(exchangisJobVo).getId();
             response.data("id", id);
-            LOG.info("id6666: {}", id);
+            LOG.info("id: {}", id);
         } catch (Exception e){
             String message = "Fail to create dss job: " + exchangisJobVo.getJobName() +" (创建DSS任务失败)";
             LOG.error(message, e);
@@ -128,7 +128,7 @@ public class ExchangisJobDssAppConnRestfulApi {
                 return Message.error("You have no job in exchangis,please delete this job (该节点在exchangis端不存在，请删除该节点)");
             }
             else if (!hasAuthority(userName, jobInfoService.getJob(id , true))){
-                return Message.error("You have no permission to update (没有更新权限666)");
+                return Message.error("You have no permission to update (没有更新权限)");
             }
             response.data("id", jobInfoService.updateJob(exchangisJobVo).getId());
         } catch (Exception e){
@@ -158,7 +158,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             // Convert to the job info
             jobInfo = new ExchangisJobInfo(jobVo);
             if (!hasAuthority(loginUser, jobVo)){
-                return Message.error("You have no permission to execute job (没有执行DSS任务权限888) [" + loginUser +"]" + "[" + jobVo.getCreateUser() + "]");
+                return Message.error("You have no permission to execute job (没有执行DSS任务权限) [" + loginUser +"]" + "[" + jobVo.getCreateUser() + "]");
             }
             // Send to execute service
             String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
