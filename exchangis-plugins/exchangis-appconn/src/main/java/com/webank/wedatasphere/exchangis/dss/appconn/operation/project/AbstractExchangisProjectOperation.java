@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisEnt
 import com.webank.wedatasphere.exchangis.dss.appconn.request.entity.ProjectReqEntity;
 import com.webank.wedatasphere.exchangis.dss.appconn.utils.AppConnUtils;
 import com.webank.wedatasphere.exchangis.dss.appconn.utils.JsonExtension;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +31,10 @@ public abstract class AbstractExchangisProjectOperation extends AbstractExchangi
     protected ProjectReqEntity getProjectEntity(ProjectRequestRef projectRequestRef){
             // Build project request entity
         Map<String, Object> source = new HashMap<>();
-        String owner = projectRequestRef.getCreateBy();
-        ProjectReqEntity projectReqEntity = new ProjectReqEntity(owner,
+        String editUsers= StringUtils.join( projectRequestRef.getEditUsers(),",");
+        String viewUsers = StringUtils.join( projectRequestRef.getAccessUsers(),",");
+        String execUsers = StringUtils.join( projectRequestRef.getReleaseUsers(),",");
+                ProjectReqEntity projectReqEntity = new ProjectReqEntity(editUsers,viewUsers,execUsers,
                 projectRequestRef.getName(), projectRequestRef.getDescription(), source);
         projectReqEntity.setLabels(AppConnUtils.serializeDssLabel(projectRequestRef.getDSSLabels()));
         // Try to set the project request ref into the source map
