@@ -54,6 +54,16 @@ public class ProjectReqEntity {
         setViewUsers(owner);
         setExecUsers(owner);
     }
+
+    public ProjectReqEntity(String editUsers, String viewUsers, String execUsers, String projectName, String description, Map<String, Object> source){
+        this.projectName = projectName;
+        this.description = description;
+        this.source = source;
+        setEditUsers(editUsers);
+        setViewUsers(viewUsers);
+        setExecUsers(execUsers);
+    }
+
     public String getProjectName() {
         return projectName;
     }
