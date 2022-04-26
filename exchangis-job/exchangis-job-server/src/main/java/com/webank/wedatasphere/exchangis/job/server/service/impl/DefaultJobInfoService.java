@@ -94,11 +94,12 @@ public class DefaultJobInfoService implements JobInfoService {
         jobVo.setId(jobEntity.getId());
         jobVo.setCreateTime(jobEntity.getCreateTime());
         return jobVo;*/
-
+        LOG.info("00005Sqoop job labels is: {}", jobVo.getJobLabels());
         ExchangisJobEntity jobEntity = new ExchangisJobEntity();
         jobEntity.setProjectId(jobVo.getProjectId());
         jobEntity.setJobType(jobVo.getJobType());
         jobEntity.setEngineType(jobVo.getEngineType());
+        jobEntity.setJobLabel(jobVo.getJobLabels());
         jobEntity.setJobLabels(jobVo.getJobLabels());
         jobEntity.setName(jobVo.getJobName());
         jobEntity.setJobDesc(jobVo.getJobDesc());
@@ -109,11 +110,12 @@ public class DefaultJobInfoService implements JobInfoService {
         jobEntity.setSource(Json.toJson(jobVo.getSource(), null));
         //jobEntity.setJobContent(jobVo.getContent());
         jobEntity.setModifyUser(jobVo.getModifyUser());
+        LOG.info("Sqoop job Entity labels is: {}", jobEntity.getJobLabel());
         //Map<String, Object> contentVo = BDPJettyServerHelper.gson().fromJson(jobVo.getContent(), Map.class);
-        LOG.info("888888Sqoop job content is: {}, Modify user is: {}, jobType is: {}", jobVo.getContent(), jobEntity.getExecuteUser(), jobEntity.getJobType());
+        LOG.info("Sqoop job content is: {}, Modify user is: {}, jobType is: {}", jobVo.getContent(), jobEntity.getExecuteUser(), jobEntity.getJobType());
         if(jobVo.getContent() != null) {
             jobEntity.setJobContent(jobVo.getContent());
-            LOG.info("55555Sqoop job content is: {}, executor: {}", jobEntity.getJobContent(), jobEntity.getExecuteUser());
+            LOG.info("Sqoop job content is: {}, executor: {}", jobEntity.getJobContent(), jobEntity.getExecuteUser());
         }
         jobEntityDao.addJobEntity(jobEntity);
         jobVo.setId(jobEntity.getId());
@@ -166,6 +168,7 @@ public class DefaultJobInfoService implements JobInfoService {
     public ExchangisJobVo getJob(Long id, boolean basic) {
         ExchangisJobEntity exchangisJob = basic ? this.jobEntityDao.getBasicInfo(id) : this.jobEntityDao.getDetail(id);
         ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
+        jobVo.setProjectId(exchangisJob.getProjectId());
         if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
             jobVo.setContent(exchangisJob.getJobContent());
             jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
@@ -300,7 +303,7 @@ public class DefaultJobInfoService implements JobInfoService {
     @Override
     public Message exportProject(Map<String, Object> params, String userName, HttpServletRequest request) throws ExchangisJobServerException, ServerException {
         ExportedProject exportedProject = null;
-        Long projectId = (Long) params.get("projectId");
+        Long projectId = Long.parseLong(params.get("projectId").toString());
         Boolean partial = (Boolean) params.get("partial");
         Map<String, Set<Long>> moduleIdsMap = getModuleIdsMap(params);
 

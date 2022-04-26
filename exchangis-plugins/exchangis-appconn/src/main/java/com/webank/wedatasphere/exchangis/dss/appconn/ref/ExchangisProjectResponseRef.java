@@ -23,6 +23,11 @@ public class ExchangisProjectResponseRef extends AbstractExchangisResponseRef im
         this.projectRefId = projectId;
     }
 
+    public ExchangisProjectResponseRef(String responseBody,
+                                       int status){
+        super(responseBody, status);
+    }
+
     @Override
     public Long getProjectRefId() {
         return projectRefId;
