@@ -9,11 +9,14 @@ import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.ProjectImportServerImpl;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
+import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +51,10 @@ public class ExchangisJobDssAppConnRestfulApi {
 
     @Resource
     private ProjectImportServerImpl projectImportServer;
+
+    @Autowired
+    private ProjectMapper projectMapper;
+
     /**
      * Create job
      * @param request http request
@@ -145,7 +152,8 @@ public class ExchangisJobDssAppConnRestfulApi {
      * @return message
      */
     @RequestMapping( value = "/execute/{id}", method = RequestMethod.POST)
-    public Message executeJob(@PathVariable("id") Long id, HttpServletRequest request) {
+    public Message executeJob(@PathVariable("id") Long id, HttpServletRequest request, @RequestBody Map<String, Object> params) {
+        String submitUser = params.get("submitUser").toString();
         String loginUser = SecurityFilter.getLoginUsername(request);
         Message result = Message.ok();
         ExchangisJobInfo jobInfo = null;
@@ -157,15 +165,22 @@ public class ExchangisJobDssAppConnRestfulApi {
             }
             // Convert to the job info
             jobInfo = new ExchangisJobInfo(jobVo);
-            if (!hasAuthority(loginUser, jobVo)){
-                return Message.error("You have no permission to execute job (没有执行DSS任务权限) [" + loginUser +"]" + "[" + jobVo.getCreateUser() + "]");
+            jobInfo.setName(jobVo.getJobName());
+            jobInfo.setId(jobVo.getId());
+            LOG.info("jobInfo: name{},executerUser{},createUser{},id{}",jobInfo.getName(),jobInfo.getExecuteUser(),jobInfo.getCreateUser(),jobInfo.getId());
+            LOG.info("loginUser: {}, jobVo:{}",loginUser,jobVo);
+            //find project info
+            ExchangisProject project = projectMapper.getDetailById(jobVo.getProjectId());
+            LOG.info("project: {}, getProjectId:{}",project,jobVo.getProjectId());
+            //find project user authority
+            if (!hasExecuteAuthority(submitUser, project)){
+                return Message.error("You have no permission to execute job (没有执行DSS任务权限)");
             }
             // Send to execute service
             String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
                     jobInfo.getExecuteUser() : loginUser);
             result.data("jobExecutionId", jobExecutionId);
 
-            LOG.info("Prepare to get job status");
             while (true) {
                 TaskStatus jobStatus = executeService.getJobStatus(jobExecutionId).getStatus();
                 LOG.info("Taskstatus is: {}", jobStatus.name());
@@ -229,6 +244,7 @@ public class ExchangisJobDssAppConnRestfulApi {
         //return jobInfoService.exportProject(params, userName, request);
 
     }
+
     /**
      * TODO complete the authority strategy
      * @param username username
@@ -237,5 +253,17 @@ public class ExchangisJobDssAppConnRestfulApi {
      */
     private boolean hasAuthority(String username, ExchangisJobVo job){
         return Objects.nonNull(job) && username.equals(job.getCreateUser());
+    }
+
+    /**
+     * @param username username
+     * @param project project
+     * @return
+     */
+    private boolean hasExecuteAuthority(String username, ExchangisProject project){
+        if(project.getEditUsers().contains(username)||project.getExecUsers().contains(username)){
+            return true;
+        }
+        return false;
     }
 }
