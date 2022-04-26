@@ -16,5 +16,5 @@ import java.util.Map;
 public interface IProjectImportService {
     Message importProject(HttpServletRequest req, Map<String, Object> params) throws ExchangisJobServerException, ServerException;
 
-    IdCatalog importOpt(String projectJson, Long projectId, String versionSuffix) throws ExchangisJobServerException;
+    IdCatalog importOpt(String projectJson, Long projectId, String versionSuffix, String userName) throws ExchangisJobServerException;
 }
