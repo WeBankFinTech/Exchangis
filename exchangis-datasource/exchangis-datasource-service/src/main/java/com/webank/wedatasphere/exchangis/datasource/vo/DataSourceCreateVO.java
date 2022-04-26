@@ -33,7 +33,7 @@ public class DataSourceCreateVO {
 
     private Long versionId;
 
-    @Size(min=0,max=100,message="Length of labels should between 0 and 100(标签的长度应该在0和100之间)")
+    @Size(min=0,max=200,message="Length of labels should between 0 and 200(标签的长度应该在0和200之间)")
     private String label;
 
     private Map<String, Object> labels;
