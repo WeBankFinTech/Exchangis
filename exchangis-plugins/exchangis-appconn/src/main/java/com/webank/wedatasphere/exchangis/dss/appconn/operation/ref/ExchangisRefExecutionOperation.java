@@ -45,25 +45,16 @@ public class ExchangisRefExecutionOperation extends AbstractExchangisRefOperatio
     @Override
     public ResponseRef execute(ExecutionRequestRef executionRequestRef) throws ExternalOperationFailedException {
         AsyncExecutionRequestRef nodeRequestRef = (AsyncExecutionRequestRef) executionRequestRef;
-
         LOG.info("execute job request =>  jobcontent: {}", nodeRequestRef.getJobContent());
-        LOG.info("executionRequestRef =>  executionRequestRef: {}", executionRequestRef);
-        try {
-            nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString();
-            LOG.info("getExecutionRequestRefContext User: {}", nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
-        } catch (Exception e) {
-            LOG.error("parser request error", e);
-        }
         Long id = AppConnUtils.resolveParam(nodeRequestRef.getJobContent(), Constraints.REF_JOB_ID, Double.class).longValue();
-        LOG.info("execute job request =>  id: {}, name: {}, user: {}, jobContent: {}",
-                id, nodeRequestRef.getName(), nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString(),
-                nodeRequestRef.getJobContent().toString());
         String url = requestURL("/appJob/execute/" + id);
+        String submitUser = nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString();
         ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, nodeRequestRef.getWorkspace(), nodeRequestRef,
                 (requestRef) -> {
                     // Build ref execution action
-                    return new ExchangisEntityPostAction<>(null,
-                            nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
+                    ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
+                    exchangisEntityPostAction.addRequestPayload("submitUser",submitUser);
+                    return exchangisEntityPostAction;
                 }, Map.class);
         if (Objects.isNull(entity)){
             throw new ExternalOperationFailedException(31020, "The response entity cannot be empty", null);
