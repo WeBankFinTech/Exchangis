@@ -48,9 +48,6 @@ public class ExchangisProjectDeletionOperation extends AbstractExchangisProjectO
                 (requestRef) ->{
                     ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
                     exchangisEntityPostAction.setUser(requestRef.getCreateBy());
-                    HashMap<String, String> labels = new HashMap<>();
-                    labels.put("route", "dev");
-                    exchangisEntityPostAction.addRequestPayload("labels", labels);
                     return exchangisEntityPostAction;
                 }, Map.class);
         if (Objects.isNull(entity)){

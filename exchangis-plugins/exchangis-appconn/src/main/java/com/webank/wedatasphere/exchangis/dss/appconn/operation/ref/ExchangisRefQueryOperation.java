@@ -35,7 +35,9 @@ public class ExchangisRefQueryOperation extends AbstractExchangisRefOperation im
         try {
             LOG.info("ExchangisOpenRequestRef getJobContent: {}", exchangisOpenRequestRef.getJobContent());
             Integer id = AppConnUtils.resolveParam(exchangisOpenRequestRef.getJobContent(), Constraints.REF_JOB_ID, Integer.class);
-            String jumpUrl = pageUrl(Constraints.REF_JUMP_URL_FORMAT + "?id=" + id);
+            String labels = (String) exchangisOpenRequestRef.getJobContent().get(Constraints.REF_JOB_LABELS);
+            LOG.info("Job labels is : {}", labels);
+            String jumpUrl = pageUrl(Constraints.REF_JUMP_URL_FORMAT + "?id=" + id + "&labels=" + labels);
             Map<String,String> retMap = new HashMap<>();
             LOG.info("ExchangisOpenResponseRef jump url: {}", jumpUrl);
             retMap.put("jumpUrl", jumpUrl);
