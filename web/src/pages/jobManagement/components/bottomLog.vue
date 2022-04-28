@@ -20,7 +20,7 @@
             <div v-if="jobProgress.tasks" class="job-progress-percent job-progress-wrap">
               <span>总进度<span style="font-size: 11px;color:rgba(0,0,0,0.5)">({{statusMap[jobStatus]}})</span></span>
               <a-tooltip :title="jobProgress.title">
-                <a-progress :percent="jobProgress.percent" :success-percent="jobProgress.successPercent"/>
+                <a-progress :percent="jobProgress.percent" />
               </a-tooltip>
             </div>
             <div v-if="jobProgress.tasks && jobProgress.tasks.Running" class="job-progress-wrap">

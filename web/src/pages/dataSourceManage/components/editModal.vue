@@ -6,7 +6,7 @@
            @cancel="$emit('update:visible', false)"
            :width="600">
     <a-spin :spinning="confirmLoading">
-    <DatasourceForm :data="modalCfg" ref="datasourceForm" @submit="handleOk" @cancel="$emit('update:visible', false)"/>
+    <DatasourceForm :data="modalCfg" ref="datasourceForm" @connect="handleConnect" @submit="handleOk" @cancel="$emit('update:visible', false)"/>
     <div class="mark-layer" v-if="mode === 'read'"></div>
       <!--<a-form ref="formRef" :model="formState" :label-col="{ span: 6 }">-->
         <!--<a-form-item :label="$t(`dataSource.editModal.form.fields.dataSourceName.label`)" name="dataSourceName">-->
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { createDataSource, updateDataSource } from "@/common/service";
+import { createDataSource, updateDataSource, testDataSourceNotSavedConnect } from "@/common/service";
 import { toRaw } from "vue";
 import { message } from "ant-design-vue";
 import DatasourceForm from './datasourceForm/index';
@@ -95,7 +95,7 @@ export default {
           username: "",
           password: "",
         },
-        labels: '',
+        label: '',
         comment: "",
       },
 
@@ -155,6 +155,26 @@ export default {
         comment: info.comment || "",
       };
     },*/
+    async handleConnect(formState, originalDefine) {
+      formState = JSON.parse(formState)
+      let connectParams = {}
+      originalDefine.forEach(item => {
+        connectParams[item.key] = formState[item.key]
+      })
+      await testDataSourceNotSavedConnect({
+        dataSourceTypeId: this.type,
+        createSystem: this.modalCfg.createSystem,
+        createIdentify: "",
+        dataSourceName: formState.dataSourceName,
+        dataSourceDesc: formState.dataSourceDesc || "",
+        label: formState.label || "",
+        comment: formState.comment || "更新",
+        connectParams: {
+          ...connectParams
+        }
+      });
+      message.success("连接成功")
+    },
     // modal完成
     async handleOk(formState, originalDefine) {
       formState = JSON.parse(formState)
@@ -171,7 +191,7 @@ export default {
             createIdentify: "",
             dataSourceName: formState.dataSourceName,
             dataSourceDesc: formState.dataSourceDesc || "",
-            labels: formState.labels || "",
+            label: formState.label || "",
             comment: formState.comment || "更新",
             connectParams: {
               ...connectParams
@@ -186,7 +206,7 @@ export default {
             createIdentify: "",
             dataSourceName: formState.dataSourceName,
             dataSourceDesc: formState.dataSourceDesc || "",
-            labels: formState.labels || "",
+            label: formState.label || "",
             comment: formState.comment || "更新",
             connectParams: {
               ...connectParams

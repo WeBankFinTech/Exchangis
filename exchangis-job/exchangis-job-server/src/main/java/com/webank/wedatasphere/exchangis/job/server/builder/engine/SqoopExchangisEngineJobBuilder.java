@@ -1,9 +1,11 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.engine;
 
+import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
-import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
@@ -12,6 +14,7 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
+import com.webank.wedatasphere.exchangis.job.server.builder.ServiceInExchangisJobBuilderContext;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +32,27 @@ import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.REALM
 import static com.webank.wedatasphere.exchangis.job.server.builder.engine.SqoopExchangisEngineJobBuilder.MODE_TYPE.EXPORT;
 import static com.webank.wedatasphere.exchangis.job.server.builder.engine.SqoopExchangisEngineJobBuilder.MODE_TYPE.IMPORT;
 
-public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<SubExchangisJob, ExchangisEngineJob> {
+public class SqoopExchangisEngineJobBuilder extends AbstractLoggingExchangisJobBuilder<SubExchangisJob, ExchangisEngineJob> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SqoopExchangisEngineJobBuilder.class);
 
     private static final List<String> SUPPORT_BIG_DATA_TYPES = Arrays.asList("HIVE", "HBASE");
 
     private static final List<String> SUPPORT_RDBMS_TYPES = Arrays.asList("MYSQL", "ORACLE");
+
+    private static final String META_INPUT_FORMAT = "file.inputformat";
+
+    private static final String META_OUTPUT_FORMAT = "file.outputformat";
+
+    private static final String META_FIELD_DELIMITER = "field.delim";
+
+    /**
+     * //TODO To support different hadoop version
+     */
+    private static final List<String> HADOOP_TEXT_INPUT_FORMAT = Collections.singletonList("org.apache.hadoop.mapred.TextInputFormat");
+
+    private static final List<String> HADOOP_TEXT_OUTPUT_FORMAT = Arrays.asList("org.apache.hadoop.hive.ql.io.IgnoreKeyTextOutputFormat",
+            "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat");
 
     public enum MODE_TYPE { IMPORT, EXPORT}
     /**
@@ -63,14 +80,102 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         MODE_TYPE modeParam = MODE_ENUM.getValue(job);
         return modeParam.equals(IMPORT)? job.getRealmParams(REALM_JOB_CONTENT_SINK) : job.getRealmParams(REALM_JOB_CONTENT_SOURCE);
     });
+
     /**
-     * //TODO Get the file type from service
+     * Hive-partition-map
+     */
+    @SuppressWarnings("unchecked")
+    private static final JobParamDefine<Map<String, String>> PARTITION_MAP = JobParams.define("sqoop.partition.map", (BiFunction<String, SubExchangisJob, Map<String, String>>) (k, job) -> {
+        if ("hive".equalsIgnoreCase(job.getSinkType()) || "hive".equalsIgnoreCase(job.getSourceType())){
+            JobParam<?> partitionParam = MODE_HADOOP_PARAMS.getValue(job).get(JobParamConstraints.PARTITION);
+            if (Objects.nonNull(partitionParam)) {
+                Object partition = partitionParam.getValue();
+                if (partition instanceof Map) {
+                    return (Map<String, String>) partition;
+                } else {
+                    String partitionStr = String.valueOf(partition);
+                    if (StringUtils.isNotBlank(partitionStr)){
+                        Map<String, String> partitionMap = new HashMap<>();
+                        String[] partValues = partitionStr.split(",");
+                        for (String partValue : partValues){
+                            String[] parts = partValue.split("=");
+                            if (parts.length == 2){
+                                partitionMap.put(parts[0], parts[1]);
+                            }
+                        }
+                        return partitionMap;
+                    }
+                }
+            }
+        }
+        return null;
+    });
+
+    /**
+     * Meta columns
+     */
+    private static final JobParamDefine<List<MetaColumn>> META_COLUMNS = JobParams.define("sqoop.meta.table.columns", (BiFunction<String, JobParamSet, List<MetaColumn>>) (k, paramSet) -> {
+        ServiceInExchangisJobBuilderContext context = getServiceInBuilderContext();
+        JobParam<String> dataSourceId = paramSet.get(JobParamConstraints.DATA_SOURCE_ID);
+        JobParam<String> database = paramSet.get(JobParamConstraints.DATABASE, String.class);
+        JobParam<String> table = paramSet.get(JobParamConstraints.TABLE, String.class);
+        try {
+            return context.getMetadataInfoService().getColumns(context.getOriginalJob().getCreateUser(),
+                            Long.valueOf(dataSourceId.getValue()), database.getValue(), table.getValue());
+        } catch (ExchangisDataSourceException e) {
+            throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());
+        }
+    });
+
+    /**
+     * Meta hadoop columns
+     */
+    private static final JobParamDefine<List<MetaColumn>> META_HADOOP_COLUMNS = JobParams.define("sqoop.meta.hadoop.table.columns", (BiFunction<String, SubExchangisJob, List<MetaColumn>>) (k, job) -> META_COLUMNS.newValue(MODE_HADOOP_PARAMS.getValue(job)));
+
+    /**
+     * Meta rdbms columns
+     */
+    private static final JobParamDefine<List<MetaColumn>> META_RDBMS_COLUMNS = JobParams.define("sqoop.meta.rdbms.table.columns", (BiFunction<String, SubExchangisJob, List<MetaColumn>>) (k, job) -> META_COLUMNS.newValue(MODE_RDBMS_PARAMS.getValue(job)));
+    /**
+     * Meta table/partition props
+     */
+    private static final JobParamDefine<Map<String, String>> META_HADOOP_TABLE_PROPS = JobParams.define("sqoop.meta.hadoop.table.props", (BiFunction<String, SubExchangisJob, Map<String, String>>) (k, job) ->{
+        ServiceInExchangisJobBuilderContext context = getServiceInBuilderContext();
+        ExchangisJobInfo jobInfo = context.getOriginalJob();
+        // Use the creator as userName
+        String userName = jobInfo.getCreateUser();
+        JobParamSet hadoopParamSet = MODE_HADOOP_PARAMS.getValue(job);
+        JobParam<String> dataSourceId = hadoopParamSet.get(JobParamConstraints.DATA_SOURCE_ID);
+        JobParam<String> database = hadoopParamSet.get(JobParamConstraints.DATABASE, String.class);
+        JobParam<String> table = hadoopParamSet.get(JobParamConstraints.TABLE, String.class);
+        Map<String, String> partition = PARTITION_MAP.getValue(job);
+        try {
+            if (Objects.isNull(partition)) {
+                return context.getMetadataInfoService().getTableProps(userName, Long.valueOf(dataSourceId.getValue()),
+                        database.getValue(), table.getValue());
+            } else {
+                return context.getMetadataInfoService().getPartitionProps(userName, Long.valueOf(dataSourceId.getValue()),
+                        database.getValue(), table.getValue(), URLEncoder.encode(partition.entrySet().stream().map(entry ->
+                                entry.getKey() + "=" + entry.getValue()
+                        ).collect(Collectors.joining(",")), "UTF-8"));
+            }
+        } catch (ExchangisDataSourceException e) {
+            throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());
+        } catch (UnsupportedEncodingException e) {
+            throw new ExchangisJobException.Runtime(-1, e.getMessage(), e);
+        }
+    });
+
+    private static final JobParamDefine<Boolean> IS_TEXT_FILE_TYPE = JobParams.define("sqoop.file.is.text", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) -> {
+        Map<String, String> tableProps = META_HADOOP_TABLE_PROPS.getValue(job);
+        return HADOOP_TEXT_INPUT_FORMAT.contains(tableProps.getOrDefault(META_INPUT_FORMAT, "")) ||
+        HADOOP_TEXT_OUTPUT_FORMAT.contains(tableProps.getOrDefault(META_OUTPUT_FORMAT, ""));
+    });
+    /**
+     *
      * Whether hcatalog
      */
-    private static final JobParamDefine<Boolean> IS_USE_HCATALOG = JobParams.define("sqoop.use.hcatalog", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) ->{
-//        getCurrentBuilderContext().getMetadataInfoService().getTableProps()
-        return true;
-    });
+    private static final JobParamDefine<Boolean> IS_USE_HCATALOG = JobParams.define("sqoop.use.hcatalog", (BiFunction<String, SubExchangisJob, Boolean>)(k, job) -> MODE_ENUM.getValue(job) == EXPORT || !IS_TEXT_FILE_TYPE.getValue(job));
 
     /**
      * Driver default 'com.mysql.jdbc.Driver'
@@ -189,42 +294,14 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     private static final JobParamDefine<String> HIVE_OVERWRITE = JobParams.define("sqoop.args.hive.overwrite", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         if (Objects.nonNull(HIVE_IMPORT.getValue(job))){
             JobParam<String> writeMode = MODE_HADOOP_PARAMS.getValue(job).get(JobParamConstraints.WRITE_MODE);
-            if (Objects.nonNull(writeMode) && "overwrite".equals(writeMode.getValue())){
+            if (Objects.nonNull(writeMode) && "overwrite".equalsIgnoreCase(writeMode.getValue())){
                 return "";
             }
         }
         return null;
     });
 
-    /**
-     * Hive-partition-map
-     */
-    @SuppressWarnings("unchecked")
-    private static final JobParamDefine<Map<String, String>> PARTITION_MAP = JobParams.define("sqoop.partition.map", (BiFunction<String, SubExchangisJob, Map<String, String>>) (k, job) -> {
-        if ("hive".equalsIgnoreCase(job.getSinkType()) || "hive".equalsIgnoreCase(job.getSourceType())){
-            JobParam<?> partitionParam = MODE_HADOOP_PARAMS.getValue(job).get(JobParamConstraints.PARTITION);
-            if (Objects.nonNull(partitionParam)) {
-                Object partition = partitionParam.getValue();
-                if (partition instanceof Map) {
-                    return (Map<String, String>) partition;
-                } else {
-                    String partitionStr = String.valueOf(partition);
-                    if (StringUtils.isNotBlank(partitionStr)){
-                        Map<String, String> partitionMap = new HashMap<>();
-                        String[] partValues = partitionStr.split(",");
-                        for (String partValue : partValues){
-                            String[] parts = partValue.split("=");
-                            if (parts.length == 2){
-                                partitionMap.put(parts[0], parts[1]);
-                            }
-                        }
-                        return partitionMap;
-                    }
-                }
-            }
-        }
-        return null;
-    });
+
 
     /**
      * Import: Hive-database
@@ -271,16 +348,16 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      * Import: Hive-append
      */
     private static final JobParamDefine<String> HIVE_APPEND = JobParams.define("sqoop.args.append", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
-        if (Objects.nonNull(HIVE_IMPORT.getValue(job))){
-            JobParam<String> writeMode = MODE_HADOOP_PARAMS.getValue(job).get(JobParamConstraints.WRITE_MODE);
-            if (Objects.nonNull(writeMode) && "append".equalsIgnoreCase(writeMode.getValue())){
-                return "";
-            }
-        }
+//        if (Objects.nonNull(HIVE_IMPORT.getValue(job))){
+//            JobParam<String> writeMode = MODE_HADOOP_PARAMS.getValue(job).get(JobParamConstraints.WRITE_MODE);
+//            if (Objects.nonNull(writeMode) && "append".equalsIgnoreCase(writeMode.getValue())){
+//                return "";
+//            }
+//        }
        return null;
     });
     /**
-     * Import: Hive-target-dir
+     * Import: Hive-target-dir\]
      */
     private static final JobParamDefine<String> HIVE_TARGET_DIR = JobParams.define("sqoop.args.target.dir", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         if (Objects.nonNull(HIVE_IMPORT.getValue(job)) && Objects.nonNull(QUERY_STRING.getValue(job))){
@@ -293,19 +370,18 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      * Import: Hive-delete-target-dir
      */
     private static final JobParamDefine<String> HIVE_DELETE_TARGET = JobParams.define("sqoop.args.delete.target.dir", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
-        if (Objects.nonNull(HIVE_IMPORT.getValue(job)) && Objects.isNull(HIVE_APPEND.getValue(job))){
+        if (Objects.nonNull(HIVE_IMPORT.getValue(job))){
             return "";
         }
        return null;
     });
 
     /**
-     * TODO get the properties from hive
      * Import: Hive-fields-terminated-by
      */
     private static final JobParamDefine<String> HIVE_FIELDS_TERMINATED_BY = JobParams.define("sqoop.args.fields.terminated.by", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         if (MODE_ENUM.getValue(job) == IMPORT && "hive".equalsIgnoreCase(job.getSinkType())){
-            return "\u0001";
+            return META_HADOOP_TABLE_PROPS.getValue(job).getOrDefault(META_FIELD_DELIMITER, "\u0001");
         }
         return null;
     });
@@ -344,14 +420,14 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     });
 
     /**
-     * TODO get the primary keys from RDBMS
      * Export: Update-key
      */
     private static final JobParamDefine<String> UPDATE_KEY = JobParams.define("sqoop.args.update.key", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         if (MODE_ENUM.getValue(job) == EXPORT ){
-            JobParam<String> writeMode = MODE_HADOOP_PARAMS.getValue(job).get(JobParamConstraints.WRITE_MODE, String.class);
+            JobParam<String> writeMode = MODE_RDBMS_PARAMS.getValue(job).get(JobParamConstraints.WRITE_MODE, String.class);
             if (Objects.nonNull(writeMode) && StringUtils.isNotBlank(writeMode.getValue()) && !"insert".equalsIgnoreCase(writeMode.getValue())){
-
+                return META_RDBMS_COLUMNS.getValue(job).stream().filter(MetaColumn::isPrimaryKey)
+                        .map(MetaColumn::getName).collect(Collectors.joining(","));
             }
         }
         return null;
@@ -361,8 +437,8 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      * Export: Update mode
      */
     private static final JobParamDefine<String> UPDATE_MODE = JobParams.define("sqoop.args.update.mode", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
-        if (Objects.nonNull(UPDATE_KEY.getValue(job))){
-            JobParam<String> writeMode = MODE_HADOOP_PARAMS.getValue(job).get(JobParamConstraints.WRITE_MODE, String.class);
+        if (StringUtils.isNotBlank(UPDATE_KEY.getValue(job))){
+            JobParam<String> writeMode = MODE_RDBMS_PARAMS.getValue(job).get(JobParamConstraints.WRITE_MODE, String.class);
             return "update".equals(writeMode.getValue())? "allowinsert" : "updateonly";
         }
         return null;
@@ -415,7 +491,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
      */
     private static final JobParamDefine<String> HIVE_INPUT_FIELDS_TERMINATED_KEY = JobParams.define("sqoop.args.input.fields.terminated.by", (BiFunction<String, SubExchangisJob, String>) (k, job) -> {
         if (MODE_ENUM.getValue(job) == EXPORT && "hive".equalsIgnoreCase(job.getSourceType())){
-            return "\u0001";
+            return META_HADOOP_TABLE_PROPS.getValue(job).getOrDefault(META_FIELD_DELIMITER, "\u0001");
         }
         return null;
     });
@@ -472,6 +548,25 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
         return StringUtils.join(columnSerial, ",");
     });
 
+    /**
+     * Inspection of the definitions above
+     */
+    private static final JobParamDefine<String> DEFINE_INSPECTION = JobParams.define("", (BiFunction<String, SubExchangisJob, String>) (key, job) -> {
+        List<String> rdbmsColumns = new ArrayList<>(Arrays.asList(COLUMN_SERIAL.getValue(job).split(",")));
+        List<String> hadoopColumns = META_HADOOP_COLUMNS.getValue(job).stream().map(MetaColumn::getName)
+                .collect(Collectors.toList());
+        if (IS_USE_HCATALOG.getValue(job)){
+            rdbmsColumns.removeAll(hadoopColumns);
+            if (!rdbmsColumns.isEmpty()){
+                warn("NOTE: task:[name:{}, id:{}] 在使用Hcatalog方式下，关系型数据库字段 [" + StringUtils.join(rdbmsColumns, ",") + "] 在hive/hbase表中未查询到对应字段",
+                        job.getName(), job.getId());
+            }
+        }else {
+            warn("NOTE: task:[name: {}, id:{}] 将使用非Hcatalog方式(原生)导数, 将顺序匹配关系型数据库字段和hive/hbase字段，否则请改变写入方式为APPEND追加",
+                    job.getName(), job.getId());
+        }
+        return null;
+    });
     @Override
     public int priority() {
         return 1;
@@ -480,7 +575,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     @Override
     public ExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
         try {
-            SqoopExchangisEngineJob engineJob = new SqoopExchangisEngineJob();
+            SqoopExchangisEngineJob engineJob = new SqoopExchangisEngineJob(expectOut);
             engineJob.setId(inputJob.getId());
             JobParamDefine<?>[] definitions = getParamDefinitions();
             Map<String, Object> jobContent = engineJob.getJobContent();
@@ -490,13 +585,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
                     jobContent.put(definition.getKey(), String.valueOf(paramValue));
                 }
             }
-            engineJob.setRuntimeParams(inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false));
             engineJob.setName(inputJob.getName());
-            if (Objects.nonNull(expectOut)) {
-                engineJob.setName(expectOut.getName());
-                engineJob.setEngineType(expectOut.getEngineType());
-                jobContent.putAll(expectOut.getJobContent());
-            }
             engineJob.setCreateUser(inputJob.getCreateUser());
             return engineJob;
         } catch (Exception e) {
@@ -523,7 +612,9 @@ public class SqoopExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
                 EXPORT_DIR, UPDATE_KEY, UPDATE_MODE,
                 HCATALOG_DATABASE, HCATALOG_TABLE, HCATALOG_PARTITION_KEY, HCATALOG_PARTITION_VALUE,
                 HIVE_INPUT_FIELDS_TERMINATED_KEY, HIVE_INPUT_NULL_STRING, HIVE_INPUT_NULL_NON_STRING,
-                COLUMN_SERIAL
+                COLUMN_SERIAL,DEFINE_INSPECTION
         };
     }
+
+
 }

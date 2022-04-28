@@ -2,8 +2,8 @@ package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
-import com.webank.wedatasphere.exchangis.job.server.dao.LaunchableTaskDao;
-import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchableTaskDao;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

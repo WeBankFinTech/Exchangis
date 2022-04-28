@@ -2,15 +2,12 @@ package com.webank.wedatasphere.exchangis.job.server.service;
 
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
-import org.apache.linkis.server.Message;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.List;
 
 public interface JobExecuteService {
@@ -34,7 +31,7 @@ public interface JobExecuteService {
      * @param jobExecutionId      the job ExecutionId
      * @return the task launched metrics
      */
-    ExchangisLaunchedTaskMetricsVO getLaunchedTaskMetrics(String taskid, String jobExecutionId, String userName) throws ExchangisJobServerException;
+    ExchangisLaunchedTaskMetricsVo getLaunchedTaskMetrics(String taskid, String jobExecutionId, String userName) throws ExchangisJobServerException;
 
     /**
      * Gets job progress info
@@ -61,7 +58,7 @@ public interface JobExecuteService {
      * Gets Executed job list
      * @return the launched jobList
      */
-    List<ExchangisLaunchedJobListVO> getExecutedJobList(String jobExecutionId, String jobName, String status,
+    List<ExchangisLaunchedJobListVo> getExecutedJobList(String jobExecutionId, String jobName, String status,
                                                         Long launchStartTime, Long launchEndTime, int  current, int size, HttpServletRequest request) throws ExchangisJobServerException;
 
     /**

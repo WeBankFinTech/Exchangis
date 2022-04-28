@@ -5,13 +5,13 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
+import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobProgressVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobTaskVo;
-import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedJobListVO;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVO;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedJobListVo;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
@@ -29,11 +29,11 @@ import java.util.*;
  * @Date 2022/1/8 15:25
  */
 @RestController
-@RequestMapping(value = "exchangis/job", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis/main/job", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobExecuteRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisJobExecuteRestfulApi.class);
     @Autowired
-    private ExchangisJobService exchangisJobService;
+    private JobInfoService jobInfoService;
 
     @Resource
     private DefaultJobExecuteService executeService;
@@ -45,31 +45,38 @@ public class ExchangisJobExecuteRestfulApi {
      * @return message
      */
     @RequestMapping( value = "/{id}/execute", method = RequestMethod.POST)
-    public Message executeJob(@RequestBody(required = false) Map<String, Boolean> permitPartialFailures,
+    public Message executeJob(@RequestBody(required = false) Map<String, Object> permitPartialFailures,
                               @PathVariable("id") Long id, HttpServletRequest request) {
-        // First to find the job from the old table. TODO use the job entity
-        ExchangisJobVO jobVo = exchangisJobService.getById(id);
-        if (Objects.isNull(jobVo)){
-            return Message.error("Job related the id: [" + id + "] is Empty(关联的任务不存在)");
-        }
-        // Convert to the job info
-        ExchangisJobInfo jobInfo = new ExchangisJobInfo(jobVo);
         String loginUser = SecurityFilter.getLoginUsername(request);
-        if (!hasAuthority(loginUser, jobInfo)){
-            return Message.error("You have no permission to execute job (没有执行任务权限)");
-        }
         Message result = Message.ok("Submitted succeed(提交成功)！");
+        ExchangisJobInfo jobInfo = null;
         try {
+            // First to find the job from the old table.
+            ExchangisJobVo jobVo = jobInfoService.getJob(id, false);
+            if (Objects.isNull(jobVo)){
+                return Message.error("Job related the id: [" + id + "] is Empty(关联的任务不存在)");
+            }
+            // Convert to the job info
+            jobInfo = new ExchangisJobInfo(jobVo);
+            if (!hasAuthority(loginUser, jobInfo)){
+                return Message.error("You have no permission to execute job (没有执行任务权限)");
+            }
             // Send to execute service
             String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
                     jobInfo.getExecuteUser() : loginUser);
             result.data("jobExecutionId", jobExecutionId);
-        } catch (ExchangisJobServerException e) {
-            String message = "Error occur while executing job: [id: " + jobInfo.getId() + " name: " + jobInfo.getName() +"]";
+        } catch (Exception e) {
+            String message;
+            if (Objects.nonNull(jobInfo)) {
+                message = "Error occur while executing job: [id: " + jobInfo.getId() + " name: " + jobInfo.getName() + "]";
+                result = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
+            } else {
+                message = "Error to get the job detail (获取任务信息出错)";
+                result = Message.error(message);
+            }
             LOG.error(message, e);
-            result = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
         }
-        result.setMethod("/api/rest_j/v1/exchangis/job/{id}/execute");
+        result.setMethod("/api/rest_j/v1/dss/exchangis/main/job/{id}/execute");
         return result;
     }
 
@@ -84,7 +91,7 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(errorMessage, e);
             message = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
         }
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId + "/taskList");
+        message.setMethod("/api/rest_j/v1/dss/exchangis/main/job/execution/" + jobExecutionId + "/taskList");
         return message;
     }
 
@@ -98,7 +105,7 @@ public class ExchangisJobExecuteRestfulApi {
             return Message.error("Fail to get progress info (获取任务执行状态失败), reason: [" + e.getMessage() + "]");
         }
         Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/" +jobExecutionId +"/progress");
+        message.setMethod("/api/rest_j/v1/dss/exchangis/main/job/execution/" +jobExecutionId +"/progress");
         message.data("job", jobAndTaskStatus);
         return message;
     }
@@ -108,7 +115,7 @@ public class ExchangisJobExecuteRestfulApi {
         Message message = Message.ok("Submitted succeed(提交成功)！");
         try {
             ExchangisJobProgressVo jobStatus = executeService.getJobStatus(jobExecutionId);
-            message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId + "/status");
+            message.setMethod("/api/rest_j/v1/dss/exchangis/main/job/execution/" + jobExecutionId + "/status");
             message.data("status", jobStatus.getStatus());
             message.data("progress", jobStatus.getProgress());
             message.data("allTaskStatus", jobStatus.getAllTaskStatus());
@@ -140,7 +147,7 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(message, e);
             result = Message.error(message + ", reason: " + e.getMessage());
         }
-        result.setMethod("/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/log");
+        result.setMethod("/api/rest_j/v1/dss/exchangis/main/job/execution/{jobExecutionId}/log");
         return result;
     }
 
@@ -163,7 +170,7 @@ public class ExchangisJobExecuteRestfulApi {
         else {
             message = Message.error("Kill failed(停止失败)！,job 已经到终态");
         }
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/" + jobExecutionId + "/kill");
+        message.setMethod("/api/rest_j/v1/dss/exchangis/main/job/execution/" + jobExecutionId + "/kill");
         return message;
     }
 
@@ -178,7 +185,7 @@ public class ExchangisJobExecuteRestfulApi {
                             HttpServletRequest request) {
         Message message = Message.ok("Submitted succeed(提交成功)！");
         try {
-            List<ExchangisLaunchedJobListVO> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
+            List<ExchangisLaunchedJobListVo> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
                     launchStartTime, launchEndTime, current, size, request);
             int total = executeService.count(jobExecutionId, jobName, status, launchStartTime, launchEndTime, request);
             message.data("jobList", jobList);
@@ -188,29 +195,7 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(errorMessage, e);
             message = Message.error(message + ", reason: " + e.getMessage());
         }
-        message.setMethod("/api/rest_j/v1/exchangis/job/execution/listJobs");
-        return message;
-    }
-
-    @RequestMapping(value = "/partitionInfo", method = RequestMethod.GET)
-    public Message partitionInfo(@RequestParam(value = "dataSourceType", required = false) String dataSourceTpe,
-                            @RequestParam(value = "dbname", required = false) String dbname,
-                            @RequestParam(value = "table", required = false) String table) {
-        Map<String, Object> render = new HashMap<>();
-        List<String> partitionList = new ArrayList<>();
-        List<String> partitionEmpty = new ArrayList<>();
-        partitionList.add("$yyyy-MM-dd");
-        partitionList.add("${run_date-1}");
-        partitionList.add("${run_date-7}");
-        partitionList.add("${run_month_begin-1}");
-        render.put("key1", "");
-        render.put("key2", "${yyyyMMdd}");
-        render.put("key3", partitionList);
-        render.put("key4", partitionEmpty);
-        Message message = Message.ok("Submitted succeed(提交成功)！");
-        message.setMethod("/api/rest_j/v1/exchangis/job/partionInfo/listJobs");
-        message.data("type", "Map");
-        message.data("render", render);
+        message.setMethod("/api/rest_j/v1/dss/exchangis/main/job/execution/listJobs");
         return message;
     }
 
@@ -236,7 +221,7 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(errorMessage, e);
             message = Message.error(message + ", reason: " + e.getMessage());
         }
-        message.setMethod("/api/rest_j/v1/exchangis/job/" + jobExecutionId + "/deleteJob");
+        message.setMethod("/api/rest_j/v1/dss/exchangis/main/job/" + jobExecutionId + "/deleteJob");
         return message;
     }
 
@@ -253,7 +238,7 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(errorMessage, e);
             message = Message.error(message + ", reason: " + e.getMessage());
         }
-        message.setMethod("/api/rest_j/v1/exchangis/job/" + jobExecutionId + "/allTaskStatus");
+        message.setMethod("/api/rest_j/v1/dss/exchangis/main/job/" + jobExecutionId + "/allTaskStatus");
         return message;
     }
 }

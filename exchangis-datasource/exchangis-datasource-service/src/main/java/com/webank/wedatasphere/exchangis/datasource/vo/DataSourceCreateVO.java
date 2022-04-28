@@ -1,16 +1,22 @@
 package com.webank.wedatasphere.exchangis.datasource.vo;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataSourceCreateVO {
+    @Size(min=0,max=100,message="Length of dataSource name should between 0 and 100(数据源名字的长度应该在0和100之间)")
     private String dataSourceName;
 
     private Long dataSourceTypeId;
 
+    @Size(min=0,max=200,message="Length of dataSource description should between 0 and 200(数据源描述的长度应该在0和200之间)")
     private String dataSourceDesc;
 
     private String createIdentify;
@@ -27,7 +33,10 @@ public class DataSourceCreateVO {
 
     private Long versionId;
 
-    private String labels;
+    @Size(min=0,max=200,message="Length of labels should between 0 and 200(标签的长度应该在0和200之间)")
+    private String label;
+
+    private Map<String, Object> labels;
 
     private Long publishedVersionId;
 
@@ -127,12 +136,12 @@ public class DataSourceCreateVO {
         this.versionId = versionId;
     }
 
-    public String getLabels() {
-        return labels;
+    public String getLabel() {
+        return label;
     }
 
-    public void setLabels(String labels) {
-        this.labels = labels;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public Long getPublishedVersionId() {
@@ -167,5 +176,13 @@ public class DataSourceCreateVO {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Map<String, Object> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Map<String, Object> labels) {
+        this.labels = labels;
     }
 }

@@ -5,25 +5,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
-import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobInfoMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.*;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.DefaultDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobDataSourcesContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
 import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import org.apache.linkis.datasource.client.request.GetInfoByDataSourceIdAction;
-import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
-import org.apache.linkis.datasourcemanager.common.util.json.Json;
 import org.apache.linkis.httpclient.response.Result;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
@@ -37,15 +35,13 @@ public class AbstractDataSourceService {
     protected final ObjectMapper mapper = new ObjectMapper();
     protected final ExchangisDataSourceContext context;
     protected final ExchangisJobParamConfigMapper exchangisJobParamConfigMapper;
-    protected final ExchangisJobInfoMapper exchangisJobInfoMapper;
 
     private final static Logger LOG = LoggerFactory.getLogger(AbstractDataSourceService.class);
 
 
-    public AbstractDataSourceService(ExchangisDataSourceContext context, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper, ExchangisJobInfoMapper exchangisJobInfoMapper) {
+    public AbstractDataSourceService(ExchangisDataSourceContext context, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper) {
         this.context = context;
         this.exchangisJobParamConfigMapper = exchangisJobParamConfigMapper;
-        this.exchangisJobInfoMapper = exchangisJobInfoMapper;
     }
 
     protected List<ExchangisJobInfoContent> parseJobContent(String content) {
@@ -99,12 +95,9 @@ public class AbstractDataSourceService {
                     Result execute = dsClient.execute(action);
                     String responseBody = execute.getResponseBody();
                     GetDataSourceInfoResultDTO dsInfo = null;
-                    try {
-                        dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
-                        source.setDs(dsInfo.getData().getInfo().getDataSourceName());
-                    } catch (JsonErrorException e) {
-                        //TODO throws Exception
-                    }
+                    dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+                    assert dsInfo != null;
+                    source.setDs(dsInfo.getData().getInfo().getDataSourceName());
                 });
             });
             source.setDb(split[2]);
@@ -129,12 +122,9 @@ public class AbstractDataSourceService {
                     Result execute = dsClient.execute(action);
                     String responseBody = execute.getResponseBody();
                     GetDataSourceInfoResultDTO dsInfo = null;
-                    try {
-                        dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
-                        sink.setDs(dsInfo.getData().getInfo().getDataSourceName());
-                    } catch (JsonErrorException e) {
-                        //TODO throw Exception
-                    }
+                    dsInfo = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
+                    assert dsInfo != null;
+                    sink.setDs(dsInfo.getData().getInfo().getDataSourceName());
                 });
             });
 
@@ -293,7 +283,8 @@ public class AbstractDataSourceService {
             case MAP:
                 Map<String, Object> mapElement = null;
                 try {
-                    mapElement = Json.fromJson(String.valueOf(value), Map.class);
+                    mapElement = Json.fromJson(Json.toJson(value, null),
+                            Map.class, String.class, Object.class);
                 } catch (Exception e) {
                     LOG.info("Exception happened while parse json"+ "Config value: " + value + "message: " + e.getMessage(), e);
                 }
@@ -359,4 +350,5 @@ public class AbstractDataSourceService {
         ui.setValidateMsg(config.getValidateMsg());
         return ui;
     }
+
 }

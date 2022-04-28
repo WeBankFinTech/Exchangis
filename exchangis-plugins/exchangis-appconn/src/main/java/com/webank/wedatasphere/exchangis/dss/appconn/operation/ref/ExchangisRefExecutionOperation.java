@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.dss.appconn.operation.ref;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.webank.wedatasphere.dss.standard.app.development.listener.common.AsyncExecutionRequestRef;
 import com.webank.wedatasphere.dss.standard.app.development.operation.RefExecutionOperation;
 import com.webank.wedatasphere.dss.standard.app.development.ref.ExecutionRequestRef;
@@ -15,11 +16,16 @@ import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisPos
 import com.webank.wedatasphere.exchangis.dss.appconn.ref.AbstractExchangisResponseRef;
 import com.webank.wedatasphere.exchangis.dss.appconn.response.result.ExchangisEntityRespResult;
 import com.webank.wedatasphere.exchangis.dss.appconn.utils.AppConnUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.linkis.httpclient.request.HttpAction;
 import org.apache.linkis.httpclient.response.HttpResult;
+import org.apache.linkis.server.BDPJettyServerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 
@@ -39,16 +45,16 @@ public class ExchangisRefExecutionOperation extends AbstractExchangisRefOperatio
     @Override
     public ResponseRef execute(ExecutionRequestRef executionRequestRef) throws ExternalOperationFailedException {
         AsyncExecutionRequestRef nodeRequestRef = (AsyncExecutionRequestRef) executionRequestRef;
-        Long id = AppConnUtils.resolveParam(nodeRequestRef.getJobContent(), Constraints.REF_JOB_ID, Long.class);
-        LOG.info("execute job request =>  id: {}, name: {}, user: {}, jobContent: {}",
-                id, nodeRequestRef.getName(), nodeRequestRef.getExecutionRequestRefContext().getUser(),
-                nodeRequestRef.getJobContent().toString());
-        String url = requestURL("/job/execute/" + id);
-        ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(nodeRequestRef.getWorkspace(), nodeRequestRef,
+        LOG.info("execute job request =>  jobcontent: {}", nodeRequestRef.getJobContent());
+        Long id = AppConnUtils.resolveParam(nodeRequestRef.getJobContent(), Constraints.REF_JOB_ID, Double.class).longValue();
+        String url = requestURL("/appJob/execute/" + id);
+        String submitUser = nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString();
+        ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, nodeRequestRef.getWorkspace(), nodeRequestRef,
                 (requestRef) -> {
                     // Build ref execution action
-                    return new ExchangisEntityPostAction<>(null,
-                            requestRef.getExecutionRequestRefContext().getUser());
+                    ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
+                    exchangisEntityPostAction.addRequestPayload("submitUser",submitUser);
+                    return exchangisEntityPostAction;
                 }, Map.class);
         if (Objects.isNull(entity)){
             throw new ExternalOperationFailedException(31020, "The response entity cannot be empty", null);

@@ -171,7 +171,7 @@ public class ExchangisJobExecuteAutoConfiguration {
         ConsumerManager consumerManager = scheduler.getSchedulerContext().getOrCreateConsumerManager();
         if (consumerManager instanceof TenancyParallelConsumerManager){
             ((TenancyParallelConsumerManager) consumerManager).setInitResidentThreads(observers.size() +
-                    (Objects.nonNull(loadBalancer)? 1: 0) + 1);
+                    (Objects.nonNull(loadBalancer)? 1: 0));
         }
         Optional.ofNullable(executionListeners).ifPresent(listeners -> listeners.forEach(taskExecution::addListener));
         return taskExecution;
