@@ -13,6 +13,7 @@
                 ? 'content-main-c-desc-oneline'
                 : 'content-main-c-desc-2line',
             ]"
+            :title="jobData.jobDesc"
           >
             {{ jobData.jobDesc }}
           </p>
@@ -21,19 +22,20 @@
           class="content-main-c-tags"
           v-if="jobData.jobLabels && jobData.jobLabels.length > 0"
         >
-          <a-tag
-            v-for="(tag, index) in jobData.jobLabels.split(',')"
-            :key="index"
-            >{{ tag }}
-          </a-tag>
+          <template v-for="(tag, index) in jobData.jobLabels.split(',').slice(0,5)" :key="index">
+            <a-tooltip v-if="tag.length > 5" :title="tag">
+              <a-tag>
+                {{ `${tag.slice(0, 5)}...` }}
+              </a-tag>
+            </a-tooltip>
+            <a-tag v-else>
+              {{ tag }}
+            </a-tag>
+          </template>
         </div>
       </div>
     </div>
     <div class="content-sidebar">
-      <div @click="handleJobCopy">
-        <span class="iconfont icon-copy job_card_icon"></span>
-      </div>
-      <a-divider type="horizontal" style="width: 16px" />
       <div @click="handleJobModify">
         <span class="iconfont icon-need-fault-tolerance job_card_icon"></span>
       </div>

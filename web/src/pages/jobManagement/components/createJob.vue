@@ -43,7 +43,7 @@
         </a-form-item>
         <a-form-item :label="$t('job.jobDetail.label')" name="jobLabels">
           <a-tag
-            v-for="tag in tags"
+            v-for="tag in state.tags"
             :key="tag"
             closable
             @close="handleClose(tag)"
@@ -51,14 +51,15 @@
             {{ tag }}
           </a-tag>
           <a-input
-            v-if="inputVisible"
+            v-if="state.inputVisible"
             ref="inputRef"
             type="text"
             size="small"
             :style="{ width: '100px' }"
-            v-model:value="inputValue"
+            v-model:value="state.inputValue"
             @blur="handleInputConfirm"
             @keyup.enter="handleInputConfirm"
+            :maxLength="20"
           />
           <a-tag
             v-else
@@ -87,7 +88,7 @@
           </a-select>
         </a-form-item>
         <a-form-item :label="$t('job.jobDetail.description')" name="jobDesc">
-          <a-textarea v-model:value="formState.jobDesc" :maxLength="240" />
+          <a-textarea v-model:value="formState.jobDesc" :maxLength="200" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -232,11 +233,9 @@ export default defineComponent({
             message.success(successMap[props.mode])
             context.emit('handleJobAction', { ...params, ...editData });
             formRef.value.resetFields();
-            Object.assign(state, {
-              tags: [],
-              inputVisible: false,
-              inputValue: '',
-            });
+            state.tags = []
+            state.inputVisible = false
+            state.inputValue = ''
           }
         })
         .catch((e) => {
@@ -246,11 +245,9 @@ export default defineComponent({
     const handleCancel = () => {
       context.emit('handleJobAction');
       formRef.value.resetFields();
-      Object.assign(state, {
-        tags: [],
-        inputVisible: false,
-        inputValue: '',
-      });
+      state.tags = []
+      state.inputVisible = false
+      state.inputValue = ''
     };
 
     const handleClose = (removedTag) => {
@@ -271,11 +268,9 @@ export default defineComponent({
       if (inputValue && !tags.includes(inputValue.trim())) {
         tags = [...tags, inputValue.trim()];
       }
-      Object.assign(state, {
-        tags,
-        inputVisible: false,
-        inputValue: '',
-      });
+      state.tags = tags
+      state.inputVisible = false
+      state.inputValue = ''
     };
 
     return {
@@ -287,7 +282,7 @@ export default defineComponent({
       rules,
       handleOk,
       handleCancel,
-      ...toRefs(state),
+      state,
       ...toRefs(engines),
       handleClose,
       showInput,

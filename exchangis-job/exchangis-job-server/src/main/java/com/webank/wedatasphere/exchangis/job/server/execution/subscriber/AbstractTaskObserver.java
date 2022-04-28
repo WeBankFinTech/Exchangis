@@ -147,7 +147,7 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     private void sleepOrWaitIfNeed(List<T> publishedTasks){
         long observerWait = this.lastPublishTime + publishInterval - System.currentTimeMillis();
         if (publishedTasks.isEmpty() || observerWait > 0) {
-            observerWait = observerWait > 0? observerWait : publishBatch;
+            observerWait = observerWait > 0? observerWait : publishInterval;
             boolean hasLock = observerLock.tryLock();
             if (hasLock) {
                 try {

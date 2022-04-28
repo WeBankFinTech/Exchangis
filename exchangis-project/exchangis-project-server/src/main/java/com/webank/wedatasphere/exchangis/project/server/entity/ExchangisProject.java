@@ -1,34 +1,88 @@
 package com.webank.wedatasphere.exchangis.project.server.entity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.linkis.common.utils.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class ExchangisProject {
 
-    public static enum Domain {
-        WORKSPACE, STANDALONE
+    private static final Logger LOG = LoggerFactory.getLogger(ExchangisProject.class);
+
+    public enum Domain {
+        DSS, STANDALONE
     }
 
+    /**
+     * Id (Long value)
+     */
     private Long id;
-    private Long dssProjectId;
+    /**
+     * Project name
+     */
     private String name;
-    private String dssName;
+    /**
+     * Description
+     */
     private String description;
-    private String createBy;
+
+    /**
+     * Create user
+     */
+    private String createUser;
+
+    /**
+     * Create time
+     */
     private Date createTime;
-    private String lastUpdateBy;
+
+    /**
+     * Last update user
+     */
+    private String lastUpdateUser;
+
+    /**
+     * Last update time
+     */
     private Date lastUpdateTime;
-    private String tags;
+
+    /**
+     * Labels
+     */
+    private String labels;
+
+    /**
+     * User has editing permission
+     */
     private String editUsers;
+
+    /**
+     * User has viewing permission
+     */
     private String viewUsers;
+
+    /**
+     * User has executing permission
+     */
     private String execUsers;
-    private String workspaceName;
+
+    /**
+     * Domain
+     */
     private String domain;
 
-//    public ExchangisProject(String name, String description, String workspaceName){
-//        this.name = name;
-//        this.description = description;
-//        this.workspaceName = workspaceName;
-//    }
+    /**
+     * Source map
+     */
+    private Map<String, Object> sourceMap = new HashMap<>();
+
+    private String source;
 
     public Long getId() {
         return id;
@@ -46,24 +100,12 @@ public class ExchangisProject {
         this.name = name;
     }
 
-    public String getDssName() { return dssName; }
-
-    public void setDssName(String dssName) { this.dssName = dssName; }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
     }
 
     public Date getCreateTime() {
@@ -74,44 +116,12 @@ public class ExchangisProject {
         this.createTime = createTime;
     }
 
-    public String getLastUpdateBy() {
-        return lastUpdateBy;
-    }
-
-    public void setLastUpdateBy(String lastUpdateBy) {
-        this.lastUpdateBy = lastUpdateBy;
-    }
-
     public Date getLastUpdateTime() {
         return lastUpdateTime;
     }
 
     public void setLastUpdateTime(Date lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
-    public String getWorkspaceName() {
-        return workspaceName;
-    }
-
-    public void setWorkspaceName(String workspaceName) {
-        this.workspaceName = workspaceName;
-    }
-
-    public Long getDssProjectId() {
-        return dssProjectId;
-    }
-
-    public void setDssProjectId(Long dssProjectId) {
-        this.dssProjectId = dssProjectId;
     }
 
     public String getEditUsers() {
@@ -141,4 +151,60 @@ public class ExchangisProject {
     public String getDomain() { return domain; }
 
     public void setDomain(String domain) { this.domain = domain; }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
+    public String getLastUpdateUser() {
+        return lastUpdateUser;
+    }
+
+    public void setLastUpdateUser(String lastUpdateUser) {
+        this.lastUpdateUser = lastUpdateUser;
+    }
+
+    public String getLabels() {
+        return labels;
+    }
+
+    public void setLabels(String labels) {
+        this.labels = labels;
+    }
+
+    // TODO use the common Json util
+    public Map<String, Object> getSourceMap() {
+        if (Objects.isNull(this.sourceMap) && Objects.nonNull(this.source)){
+            try {
+                ObjectMapper mapper = JsonUtils.jackson();
+                this.sourceMap = mapper.readValue(this.source, mapper.getTypeFactory()
+                        .constructParametricType(Map.class, String.class, Object.class));
+            } catch (JsonProcessingException e) {
+                //Ignore
+                LOG.warn("Cannot deserialize the source string: {}", this.source, e);
+            }
+        }
+        return sourceMap;
+    }
+
+    public void setSourceMap(Map<String, Object> sourceMap) {
+        this.sourceMap = sourceMap;
+    }
+
+    // TODO use the common Json util
+    public String getSource() {
+        if (Objects.isNull(this.source) && Objects.nonNull(this.sourceMap)){
+            try {
+                this.source = JsonUtils.jackson().writeValueAsString(this.sourceMap);
+            } catch (JsonProcessingException e) {
+                // Ignore
+                LOG.warn("Cannot serialize the source map", e);
+            }
+        }
+        return source;
+    }
 }

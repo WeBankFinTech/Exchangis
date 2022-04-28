@@ -32,12 +32,6 @@
             <a-row :gutter="[24, 24]">
               <a-col :span="24">
                 <div class="title-line">
-                  <!-- <span class="title">
-                  <a-typography-title :level="5" style="margin-bottom: 0">{{
-                    $t("projectManage.topLine.title")
-                  }}</a-typography-title>
-                </span> -->
-
                   <a-input
                     :loading="loading"
                     :placeholder="$t('projectManage.topLine.searchBar.searchInputPlaceholder')"
@@ -165,7 +159,8 @@ export default {
         current: 1,
         size: 10,
       },
-      total : 0
+      total : 0,
+      name: this.$route.query.name
     };
   },
   computed: {
@@ -199,6 +194,9 @@ export default {
     // 处理搜索
     handleOnSearch() {
       this.pageCfg.current = 1;
+      if (/\%/.test(this.projectName)) {
+        return message.error("项目名搜索不支持通配符%");
+      }
       this.getDataList(this.projectName);
     },
     // 删除项目
@@ -206,7 +204,7 @@ export default {
       await deleteProject(id);
       message.success("删除成功");
       this.pageCfg.current = 1;
-      this.getDataList();
+      this.getDataList(this.projectName);
     },
     // 编辑项目
     handleOnEditProject(id) {
@@ -222,6 +220,7 @@ export default {
     }
   },
   async mounted() {
+    localStorage.setItem('exchangis_environment', this.$route.query.labels || '')
     this.getDataList();
   },
 };

@@ -3,8 +3,11 @@ package com.webank.wedatasphere.exchangis.job.launcher.entity;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
+import org.apache.commons.io.IOUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Entity to persist the launched job
@@ -54,7 +57,9 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
         this.createTime = job.getCreateTime();
         this.lastUpdateTime = job.getLastUpdateTime();
         this.jobExecutionId = job.getJobExecutionId();
-        this.logPath = this.executeUser + "/" + this.jobExecutionId;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        this.logPath = this.executeUser + IOUtils.DIR_SEPARATOR_UNIX +
+                simpleDateFormat.format(new Date()) + IOUtils.DIR_SEPARATOR_UNIX + this.jobExecutionId;
     }
     public String getJobExecutionId() {
         return jobExecutionId;

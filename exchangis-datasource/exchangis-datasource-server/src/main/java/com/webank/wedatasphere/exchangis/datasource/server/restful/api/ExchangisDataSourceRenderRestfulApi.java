@@ -20,7 +20,7 @@ import java.util.Objects;
  * Expose the ui interface to front-end rendering
  */
 @RestController
-@RequestMapping(value = "exchangis/datasources/render", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis/main/datasources/render", produces = {"application/json;charset=utf-8"})
 public class ExchangisDataSourceRenderRestfulApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisDataSourceRenderRestfulApi.class);
@@ -52,11 +52,8 @@ public class ExchangisDataSourceRenderRestfulApi {
             LOG.error(uiMessage + ", reason: " + e.getMessage(), e);
             result = Message.error(uiMessage);
         }
-        result.setMethod("/api/rest_j/v1/exchangis/datasources/render/partition/element/" + type);
+        result.setMethod("/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/" + type);
         return result;
     }
 
-    public static void main(String[] args){
-        ElementUI.Type.valueOf("map".toUpperCase(Locale.ROOT));
-    }
 }

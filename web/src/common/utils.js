@@ -46,6 +46,10 @@ export const genFileURL = (fileId, fileHash) =>
 
 export const dateFormat = (timestamp) => {
   return moment(timestamp).format("YYYY-MM-DD HH:mm");
+}
+
+export const dateFormatSeconds = (timestamp) => {
+  return moment(timestamp).format("YYYY-MM-DD HH:mm:ss");
 };
 
 /*
@@ -76,14 +80,14 @@ export const moveUpDown = (targetSelector, wrapSelector, moveTopSelector, bounda
       let boxTop = e.clientY - restTop;
       let topTop = e.clientY - topRestTop;
       const contentHeight = document.body.offsetHeight - wrap.offsetTop
-      // 头部限制默认为 350px
+      // 头部限制
       if (boxTop - wrap.offsetTop < boundaryTop) {
         boxTop = boundaryTop
       }
       if (topTop - wrap.offsetTop + top.offsetHeight < boundaryTop) {
         topTop = boundaryTop - top.offsetHeight
       }
-      // 底部限制默认为 350px
+      // 底部限制
       if (contentHeight - boxTop < boundaryBottom) {
         boxTop = contentHeight - boundaryBottom
       }
@@ -107,4 +111,8 @@ export const moveUpDown = (targetSelector, wrapSelector, moveTopSelector, bounda
       document.onmouseup = null;
     }
   }
+}
+
+export const getEnvironment = () => {
+  return localStorage.getItem('exchangis_environment') || ''
 }

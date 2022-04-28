@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="create_time" property="createTime"/>
+        <result column="last_update_time" property="lastUpdateTime"/>
+        <result column="engine_type" property="engineType"/>
+        <result column="job_labels" property="jobLabel"/>
+        <result column="create_user" property="createUser"/>
+        <result column="job_content" property="jobContent"/>
+        <result column="execute_user" property="executeUser"/>
+        <result column="job_params" property="jobParams"/>
+        <result column="job_desc" property="jobDesc"/>
+        <result column="job_type" property="jobType"/>
+        <result column="project_id" property="projectId"/>
+        <result column="source" property="source"/>
+        <result column="modify_user" property="modifyUser"/>
+    </resultMap>
+
+    <sql id="TableName">
+        exchangis_job_entity
+    </sql>
+
+    <sql id = "detail_column">
+        id,
+        name, create_time, last_update_time, engine_type, job_labels, create_user, job_content, execute_user,
+        job_params, job_desc, job_type, project_id, source, modify_user
+    </sql>
+
+    <sql id = "basic_column">
+        id,
+        name, create_time, last_update_time, engine_type, job_labels, create_user, execute_user,
+        job_params, job_desc, job_type, project_id, source, modify_user
+    </sql>
+
+    <insert id="addJobEntity" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity">
+        insert into
+        <include refid="TableName"/>
+        (name, create_time, last_update_time, engine_type, job_labels, create_user, job_content, execute_user, job_params,
+        job_desc, job_type, project_id, source, modify_user)
+        values(
+        #{name},
+        #{createTime},
+        #{lastUpdateTime},
+        #{engineType},
+        #{jobLabel},
+        #{createUser},
+        #{jobContent},
+        #{executeUser},
+        #{jobParams},
+        #{jobDesc},
+        #{jobType},
+        #{projectId},
+        #{source},
+        #{modifyUser}
+        );
+    </insert>
+
+    <delete id="deleteJobEntity">
+        DELETE FROM <include refid="TableName"/> WHERE
+        id = #{jobId}
+    </delete>
+
+    <update id="upgradeBasicInfo">
+        UPDATE <include refid="TableName"/>
+        SET
+        name = #{name},
+        last_update_time = #{lastUpdateTime},
+        engine_type = #{engineType},
+        job_labels = #{jobLabel},
+        job_type = #{jobType},
+        job_desc = #{jobDesc},
+        modify_user = #{modifyUser}
+        WHERE id = #{id}
+    </update>
+
+    <update id="upgradeConfig">
+        UPDATE <include refid="TableName"/>
+        SET
+        execute_user = #{executeUser},
+        job_params = #{jobParams},
+        source = #{source},
+        last_update_time = #{lastUpdateTime},
+        modify_user = #{modifyUser}
+        WHERE id = #{id}
+    </update>
+
+    <update id="upgradeContent">
+        UPDATE <include refid="TableName"/>
+        SET
+        job_content = #{jobContent},
+        last_update_time = #{lastUpdateTime},
+        modify_user = #{modifyUser}
+        WHERE id = #{id}
+    </update>
+    <select id="getDetail" parameterType="java.lang.Long" resultMap ="BaseResultMap">
+        select
+        <include refid="detail_column"/>
+        from
+        <include refid="TableName" />
+        where id = #{jobId}
+    </select>
+
+    <select id="getDetailList" parameterType="java.lang.Long" resultMap ="BaseResultMap">
+        select
+        <include refid="detail_column"/>
+        from
+        <include refid="TableName" />
+        where project_id = #{projectId}
+    </select>
+
+    <select id="getBasicInfo" parameterType="java.lang.Long" resultMap ="BaseResultMap">
+        select
+        <include refid="basic_column"/>
+        from
+        <include refid="TableName" />
+        where id = #{jobId}
+    </select>
+
+    <select id="getBasicList" parameterType="java.lang.Long" resultMap ="BaseResultMap">
+        select
+        <include refid="basic_column"/>
+        from
+        <include refid="TableName" />
+        where project_id = #{projectId}
+    </select>
+
+    <select id="queryPageList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="basic_column"/>
+        from
+        <include refid="TableName" />
+        <where>
+            project_id = #{projectId}
+            <if test="jobType != null and jobType != ''">
+                AND job_type = #{jobType}
+            </if>
+            <if test="jobName != null and jobName != ''">
+                AND name like concat('%', #{jobName}, '%')
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="getJobEntityByFactor" parameterType="java.lang.String" resultMap ="BaseResultMap">
+        select
+        <include refid="detail_column"/>
+        from
+        <include refid="TableName" />
+        where project_id = #{projectId}
+        <if test="name != null and name = ''">
+            and name like '%#{name}%'
+        </if>
+    </select>
+
+    <select id="getJobEntityByName" parameterType="java.lang.String" resultMap ="BaseResultMap">
+        select
+        <include refid="detail_column"/>
+        from
+        <include refid="TableName" />
+        where
+        <if test="name != null and name = ''">
+            and name like '%#{name}%'
+        </if>
+    </select>
+
+
+    <select id="getByNameWithProjectId"  resultMap ="BaseResultMap">
+        select
+        <include refid="detail_column"/>
+        from
+        <include refid="TableName" />
+        where project_id = #{projectId}
+        <if test="jobName != null and jobName.trim() != ''">
+            AND name like concat('%', #{jobName}, '%')
+        </if>
+    </select>
+
+    <delete id="deleteBatch">
+        DELETE FROM
+        <include refid="TableName"/>
+        WHERE id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

@@ -24,7 +24,8 @@
     <formats>
         <format>zip</format>
     </formats>
-
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>exchangis</baseDirectory>
     <dependencySets>
         <dependencySet>
             <!-- Enable access to all projects in the current multimodule build! <useAllReactorProjects>true</useAllReactorProjects> -->
@@ -57,6 +58,15 @@
             </includes>
             <fileMode>0777</fileMode>
             <outputDirectory>conf</outputDirectory>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/src/main/resources</directory>
+            <includes>
+                <include>init.sql</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <outputDirectory>db</outputDirectory>
             <lineEnding>unix</lineEnding>
         </fileSet>
 

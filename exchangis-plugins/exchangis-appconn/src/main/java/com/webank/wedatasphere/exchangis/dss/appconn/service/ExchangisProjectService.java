@@ -2,6 +2,9 @@ package com.webank.wedatasphere.exchangis.dss.appconn.service;
 
 import com.webank.wedatasphere.dss.standard.app.structure.project.*;
 import com.webank.wedatasphere.exchangis.dss.appconn.operation.project.ExchangisProjectCreationOperation;
+import com.webank.wedatasphere.exchangis.dss.appconn.operation.project.ExchangisProjectDeletionOperation;
+import com.webank.wedatasphere.exchangis.dss.appconn.operation.project.ExchangisProjectGetOperation;
+import com.webank.wedatasphere.exchangis.dss.appconn.operation.project.ExchangisProjectUpdateOperation;
 
 /**
  * Project service implement
@@ -25,12 +28,18 @@ public class ExchangisProjectService extends ProjectService {
 
     @Override
     protected ProjectUpdateOperation createProjectUpdateOperation() {
-        return null;
+        return new ExchangisProjectUpdateOperation(this);
     }
 
     @Override
     protected ProjectDeletionOperation createProjectDeletionOperation() {
+        return new ExchangisProjectDeletionOperation(this);
+    }
+
+    @Override
+    protected ProjectGetOperation createProjectGetOperation() {
         return null;
+        //return new ExchangisProjectGetOperation(this);
     }
 
     @Override

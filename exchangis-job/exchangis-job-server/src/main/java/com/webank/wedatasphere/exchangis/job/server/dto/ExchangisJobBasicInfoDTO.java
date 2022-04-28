@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.dto;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import com.webank.wedatasphere.exchangis.job.enums.JobTypeEnum;
 
