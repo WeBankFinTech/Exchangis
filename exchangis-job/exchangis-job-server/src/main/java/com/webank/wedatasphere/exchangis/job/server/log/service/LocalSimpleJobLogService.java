@@ -4,7 +4,7 @@ import com.google.common.cache.*;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.log.LogResult;
-import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
@@ -17,7 +17,6 @@ import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.common.utils.Utils;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.queue.JobInfo;
-import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +50,7 @@ public class LocalSimpleJobLogService implements JobLogService {
     private volatile boolean cleanerOn;
 
     private static class Constraints{
-        public static final CommonVars<String> LOG_LOCAL_PATH = CommonVars.apply("wds.exchangis.job.log.local.path", "/data/bdp/exchangis/logs");
+        public static final CommonVars<String> LOG_LOCAL_PATH = CommonVars.apply("wds.exchangis.job.log.local.path", "/data/bdp/dss/exchangis/main/logs");
 
         public static final CommonVars<Integer> lOG_CACHE_SIZE = CommonVars.apply("wds.exchangis.job.log.cache.size", 15);
 

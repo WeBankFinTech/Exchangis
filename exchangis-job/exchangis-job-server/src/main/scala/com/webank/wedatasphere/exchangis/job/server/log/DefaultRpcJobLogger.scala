@@ -22,6 +22,7 @@ class DefaultRpcJobLogger extends JobLogListener{
     event.getLevel match {
       case Level.INFO => getLogger.info(message, event.getArgs: _*)
       case Level.ERROR => getLogger.error(message, event.getArgs: _*)
+      case Level.WARN => getLogger.warn(message, event.getArgs: _*)
       case _ => getLogger.trace(message, event.getArgs)
     }
   }

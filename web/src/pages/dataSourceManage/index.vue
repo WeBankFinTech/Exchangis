@@ -20,11 +20,10 @@
           class="data-source-manage-table"
           @change="onChange"
         >
-          <template #tags="{ text: tags }">
-            <span>
+          <template #tags="{ text: labels }">
+            <span v-if="labels">
               <a-tag
-                v-if="tags"
-                v-for="tag in tags.split(',')"
+                v-for="tag in labels.split(',')"
                 :title="tag.toUpperCase()"
                 :key="tag"
                 :color="
@@ -59,25 +58,29 @@
                 size="small"
                 @click="handleEdit(row.text)"
                 type="link"
+                v-show="row.text.versionId"
                 >{{
                   $t("dataSource.table.list.columns.actions.editButton")
-                }}</a-button
-              >
-              <span style="color: #DEE4EC">|</span>
+                }}</a-button>
+              <span style="color: #DEE4EC" v-show="row.text.versionId">|</span>
               <a-button
                 size="small"
-                v-show="!row.text.expire"
+                v-show="!row.text.expire && row.text.versionId"
                 type="link"
                 @click="handleExpire(row.text.id)"
                 >{{
                   $t("dataSource.table.list.columns.actions.expireButton")
-                }}</a-button
-              >
-              <span v-show="!row.text.expire" style="color: #DEE4EC">|</span>
-              <a-button size="small" @click="handleTestConnect(row)" type="link">{{
+                }}</a-button>
+              <span v-show="!row.text.expire && row.text.versionId" style="color: #DEE4EC">|</span>
+              <a-button
+                size="small"
+                @click="handleTestConnect(row)"
+                type="link"
+                v-show="row.text.versionId"
+              >{{
                 $t("dataSource.table.list.columns.actions.testConnectButton")
               }}</a-button>
-              <span style="color: #DEE4EC">|</span>
+              <span style="color: #DEE4EC" v-show="row.text.versionId">|</span>
               <a-popconfirm
                 title="是否删除?"
                 ok-text="确定"
@@ -108,7 +111,7 @@
             <div class="dsm-name" :title="text.name">{{ text.name }}</div>
           </template>
           <template #modifyTime="{ text }">
-            {{ text && dateFormat(text) }}
+            {{ text && dateFormatSeconds(text) }}
           </template>
         </a-table>
       </a-col>
@@ -151,7 +154,7 @@ import {
   testDataSourceConnect,
 } from "@/common/service";
 import { message } from "ant-design-vue";
-import { dateFormat } from "@/common/utils";
+import { dateFormat, dateFormatSeconds } from "@/common/utils";
 
 const data = [];
 export default {
@@ -187,8 +190,7 @@ export default {
       {
         title: t("dataSource.table.list.columns.title.tags"),
         align: "center",
-        dataIndex: "labels",
-        slots: { customRender: "tags" },
+        slots: { customRender: "labels" },
         width: 150
       },
       {
@@ -237,6 +239,7 @@ export default {
     return {
       // 时间格式化
       dateFormat,
+      dateFormatSeconds,
       // 数据源列表
       dataSourceList: data,
       // 数据源类型选择弹窗

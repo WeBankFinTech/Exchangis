@@ -237,6 +237,9 @@ export default defineComponent({
       } else {
         lastRows.value = ''
         if (!pauseLog.pauseIsEnd) {
+          logs.logs = {}
+          logs.endLine = 0
+          logs.isEnd = false
           /*resetData({
             endLine: pauseLog.pauseEndLine,
             isEnd: pauseLog.pauseIsEnd

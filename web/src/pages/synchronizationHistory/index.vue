@@ -99,6 +99,9 @@
           <template #jobExecutionId="{ record }">
             <a @click="showInfoLog(record.jobExecutionId)">{{record.jobExecutionId}}</a>
           </template>
+          <template #flow="{ record }">
+            <span>{{record.flow}} Records/S</span>
+          </template>
         </a-table>
         <!-- 分页 -->
         <!--<div class="sh-b-pagination"></div>-->
@@ -151,7 +154,7 @@ import {
   killJob
 } from "@/common/service";
 import { message } from "ant-design-vue";
-import { dateFormat } from "@/common/utils";
+import { dateFormat, dateFormatSeconds } from "@/common/utils";
 import bottomLog from '../jobManagement/components/bottomLog';
 
 const columns = [
@@ -177,6 +180,9 @@ const columns = [
   {
     title: "速率",
     dataIndex: "flow",
+    slots: {
+      customRender: "flow",
+    }
   },
   {
     title: "创建用户",
@@ -191,7 +197,7 @@ const columns = [
     dataIndex: "status",
     slots: {
       customRender: "status",
-    },
+    }
   },
   {
     title: "最后更新时间",
@@ -292,8 +298,8 @@ export default {
         .then((res) => {
           const { jobList } = res;
           jobList.forEach((item) => {
-            item["createTime"] = item["createTime"] ? dateFormat(item["createTime"]) : '';
-            item["lastUpdateTime"] = item["lastUpdateTime"] ? dateFormat(item["lastUpdateTime"]): '';
+            item["createTime"] = item["createTime"] ? dateFormatSeconds(item["createTime"]) : '';
+            item["lastUpdateTime"] = item["lastUpdateTime"] ? dateFormatSeconds(item["lastUpdateTime"]): '';
             /*switch (item["status"]) {
               case "SUCCESS":
                 item["status"] = "执行成功";

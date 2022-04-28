@@ -8,11 +8,14 @@ import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -26,11 +29,14 @@ public class MaxUsageTaskChooseRuler implements TaskChooseRuler<LaunchableExchan
         if (consumerManager instanceof TenancyParallelConsumerManager){
             TenancyParallelConsumerManager tenancyConsumerManager = (TenancyParallelConsumerManager)consumerManager;
             Map<String, ExecutorService> tenancyExecutorServices = tenancyConsumerManager.getTenancyExecutorServices();
-            int batchSize = candidates.size();
+            Map<String, AtomicInteger> candidateCounter = new HashMap<>();
             return candidates.stream().filter( task -> {
-                ExecutorService executorService = tenancyExecutorServices.get(StringUtils.isNotBlank(task.getExecuteUser())?
-                        task.getExecuteUser(): TenancyParallelGroupFactory.DEFAULT_TENANCY);
-                return Objects.isNull(executorService) || ((ThreadPoolExecutor)executorService).getQueue().remainingCapacity() > batchSize;
+                String tenancy = StringUtils.isNotBlank(task.getExecuteUser())?
+                        task.getExecuteUser(): TenancyParallelGroupFactory.DEFAULT_TENANCY;
+                ExecutorService executorService = tenancyExecutorServices.get(tenancy);
+                AtomicInteger counter = candidateCounter.computeIfAbsent(tenancy, (key) -> new AtomicInteger(0));
+                // TODO complete the choose rule
+                return Objects.isNull(executorService) || ((ThreadPoolExecutor)executorService).getQueue().remainingCapacity() >= counter.incrementAndGet();
             }).collect(Collectors.toList());
         }
         return candidates;

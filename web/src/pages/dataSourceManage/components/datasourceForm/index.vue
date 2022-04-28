@@ -1,7 +1,7 @@
 <template>
   <div class="table-warp" style="padding-bottom: 32px;">
     <form-create :rule="rule" v-model:api="fApi" :option="options" v-model="formData"/>
-    <a-button v-if="data.mode === 'edit'" @click="handleTestConnect(row)" type="primary">{{
+    <a-button v-if="data.mode !== 'read'" @click="handleTestConnect(row)" type="primary">{{
       $t("dataSource.table.list.columns.actions.testConnectButton")
       }}</a-button>
     <a-button type="primary" @click="submit" style="float: right;margin: 0 0 0 10px;" v-if="data.mode !== 'read'">确定</a-button>
@@ -10,9 +10,11 @@
 </template>
 <script>
 import _, { merge, mergeWith} from 'lodash-es';
-import {getKeyDefine, getDataSourceById, testDataSourceConnect} from "@/common/service";
+import {getKeyDefine, getDataSourceById} from "@/common/service";
+import { getEnvironment } from "@/common/utils";
 import { request } from "@fesjs/fes";
 import { message } from "ant-design-vue"
+import { toRaw } from "vue";
 
 const type = {
   TEXT: {type: 'input'},
@@ -50,15 +52,20 @@ const typesMap = {
   // dataSource: 'options',
   dataSource: (data, source, self)=>{
     const fApi = self.fApi;
-    if(/^https?:/.test(data.dataSource)){
-      request(data.dataSource, {}, {
+    if(typeof data.dataSource === 'string'){
+      if (!/^https?:/.test(data.dataSource)) {
+        //data.dataSource = window.location.origin + '/api/rest_j/v1' + data.dataSource
+        data.dataSource = window.location.origin + data.dataSource
+      }
+      request(data.dataSource, {
+        labels: getEnvironment()
+      }, {
         method: "GET",
       }).then(result=>{
         delete source.options;
-        source.options = result.env_list.map(item=>{
+        source.options = result.envList.map(item=>{
           return {label: item.envName, value: ''+item.id}
         });
-        // console.log('self.rule',self.rule)
         fApi.refreshOptions();
       })
       return {options: []}
@@ -124,8 +131,8 @@ export default {
             message: `${this.$t('message.linkis.datasource.pleaseInput')}${this.$t('message.linkis.datasource.sourceName')}`,
             trigger: 'blur'
           },{
-            pattern: /^(.){0,240}$/,
-            message: '最多240字',
+            pattern: /^(.){0,200}$/,
+            message: '最多200字',
             trigger: 'change'
           }],
         },
@@ -138,22 +145,22 @@ export default {
             "placeholder": this.$t('message.linkis.datasource.sourceDec'),
           },
           validate: [{
-            pattern: /^(.){0,240}$/,
-            message: '最多240字',
+            pattern: /^(.){0,200}$/,
+            message: '最多200字',
             trigger: 'change'
           }]
         },
         {
           type: "input",
           title: this.$t('message.linkis.datasource.label'),
-          field: "labels",
+          field: "label",
           value: "",
           props: {
             "placeholder": this.$t('message.linkis.datasource.label'),
           },
           validate: [{
-            pattern: /^(.){0,240}$/,
-            message: '最多240字',
+            pattern: /^(.){0,200}$/,
+            message: '最多200字',
             trigger: 'change'
           }]
         }
@@ -201,7 +208,7 @@ export default {
           ...newV,
           dataSourceDesc: '',
           dataSourceName: '',
-          labels: '',
+          label: '',
           ...connectParams
         };
         //this.dataSrc = {...newV, ...connectParams};
@@ -279,14 +286,12 @@ export default {
     },
     submit(){
       this.fApi.submit((formData, fApi)=>{
-        console.log(JSON.stringify(formData))
         this.$emit("submit", JSON.stringify(formData), this.originalDefine);
       })
     },
     // 测试链接
-    async handleTestConnect() {
-      await testDataSourceConnect(this.data.id, this.data.versionId);
-      message.success("连接成功");
+    handleTestConnect() {
+      this.$emit('connect', JSON.stringify(toRaw(this.formData)), this.originalDefine)
     }
   }
 }

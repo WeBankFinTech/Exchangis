@@ -1,22 +1,29 @@
 package com.webank.wedatasphere.exchangis.datasource.linkis.service;
 
+import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisServiceRpcException;
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
 import com.webank.wedatasphere.exchangis.datasource.core.service.rpc.ServiceRpcClient;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
+//import com.webank.wedatasphere.exchangis.datasource.linkis.partition.MetadataGetPartitionsResult;
 import com.webank.wedatasphere.exchangis.datasource.linkis.request.MetadataGetPartitionPropsAction;
 import com.webank.wedatasphere.exchangis.datasource.linkis.response.MetadataGetPartitionPropsResult;
 import com.webank.wedatasphere.exchangis.datasource.linkis.service.rpc.LinkisDataSourceServiceOperation;
 import com.webank.wedatasphere.exchangis.datasource.linkis.service.rpc.LinkisDataSourceServiceRpcDispatcher;
 import org.apache.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
+import org.apache.linkis.datasource.client.request.MetadataGetColumnsAction;
 import org.apache.linkis.datasource.client.request.MetadataGetPartitionsAction;
 import org.apache.linkis.datasource.client.request.MetadataGetTablePropsAction;
+import org.apache.linkis.datasource.client.response.MetadataGetColumnsResult;
 import org.apache.linkis.datasource.client.response.MetadataGetPartitionsResult;
 import org.apache.linkis.datasource.client.response.MetadataGetTablePropsResult;
+import org.apache.linkis.metadatamanager.common.domain.MetaColumnInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.*;
 
@@ -73,9 +80,22 @@ public class LinkisMetadataInfoService extends LinkisDataSourceServiceRpcDispatc
     @Override
     public List<String> getPartitionKeys(String userName, Long dataSourceId, String database, String table) throws ExchangisDataSourceException {
         MetadataGetPartitionsResult result = dispatch(getDefaultRemoteClient(), new LinkisDataSourceServiceOperation(() -> MetadataGetPartitionsAction.builder()
-                .setDataSourceId(String.valueOf(dataSourceId)).setDatabase(database).setTable(table)
+                .setDataSourceId(dataSourceId).setDatabase(database).setTable(table)
                 .setUser(userName).setSystem(LINKIS_RPC_CLIENT_SYSTEM.getValue()).build()), CLIENT_METADATA_GET_PARTITION.getCode(), "getPartitionKeys");
         return result.getPartitionInfo().getPartKeys();
+    }
+
+    @Override
+    public List<MetaColumn> getColumns(String userName, Long dataSourceId, String database, String table) throws ExchangisDataSourceException {
+        MetadataGetColumnsResult result = dispatch(getDefaultRemoteClient(), new LinkisDataSourceServiceOperation(() -> MetadataGetColumnsAction.builder()
+                .setSystem(LINKIS_RPC_CLIENT_SYSTEM.getValue())
+                .setDataSourceId(dataSourceId).setDatabase(database).setTable(table)
+                .setUser(userName).build()),CLIENT_METADATA_GET_PARTITION.getCode(), "getColumns");
+        List<MetaColumnInfo> columnInfoList = result.getAllColumns();
+        List<MetaColumn> columns = new ArrayList<>();
+        Optional.ofNullable(columnInfoList).ifPresent(infoList -> infoList.forEach(info ->
+                columns.add(new MetaColumn(info.getIndex(), info.getName(), info.getType(), info.isPrimaryKey()))));
+        return columns;
     }
 
 
