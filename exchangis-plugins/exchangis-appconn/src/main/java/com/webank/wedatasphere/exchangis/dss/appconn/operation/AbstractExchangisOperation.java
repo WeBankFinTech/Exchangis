@@ -8,6 +8,7 @@ import com.webank.wedatasphere.dss.standard.common.app.AppIntegrationService;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.RequestRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
 import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
+import com.webank.wedatasphere.exchangis.dss.appconn.operation.ref.ExchangisRefExecutionOperation;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.HttpExtAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.response.result.ExchangisEntityRespResult;
 import org.apache.commons.io.IOUtils;
@@ -18,15 +19,20 @@ import org.apache.linkis.httpclient.response.HttpResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints.API_REQUEST_PREFIX;
+
 /**
  * Abstract implement, contains the method to create sso request
  */
 public abstract class AbstractExchangisOperation {
+
+    private final static Logger LOG = LoggerFactory.getLogger(AbstractExchangisOperation.class);
 
     private SSORequestService ssoRequestService;
 
@@ -36,6 +42,8 @@ public abstract class AbstractExchangisOperation {
      * Refer to the url in table 'dss_appconn_instance'
      */
     private String baseURL;
+
+    private String redirectUrl;
 
     public AbstractExchangisOperation(){
 
@@ -61,6 +69,10 @@ public abstract class AbstractExchangisOperation {
             this.ssoRequestService = appIntegrationService.getSSORequestService();
             // Also upgrade the base url
             this.baseURL = appIntegrationService.getAppInstance().getBaseUrl();
+            // Append the api prefix
+            this.baseURL = this.baseURL.endsWith(IOUtils.DIR_SEPARATOR_UNIX + "")?
+                    baseURL + API_REQUEST_PREFIX: baseURL + IOUtils.DIR_SEPARATOR_UNIX + API_REQUEST_PREFIX;
+            this.redirectUrl = String.valueOf(appIntegrationService.getAppInstance().getConfig().get("redirectUrl"));
         }
     }
 
@@ -86,7 +98,8 @@ public abstract class AbstractExchangisOperation {
      */
     protected SSOUrlBuilderOperation getSSOUrlBuilderOperation(Workspace workspace,
                                                                String appName, String url){
-        return workspace.getSSOUrlBuilderOperation().copy().setAppName(appName).setReqUrl(requestURL())
+        LOG.info("requestURL555555: {}", requestURL());
+        return workspace.getSSOUrlBuilderOperation().copy().setAppName(appName).setReqUrl(url)
                 .setWorkspace(workspace.getWorkspaceName());
     }
 
@@ -115,6 +128,11 @@ public abstract class AbstractExchangisOperation {
                 baseURL + customUri : baseURL + IOUtils.DIR_SEPARATOR_UNIX + customUri;
     }
 
+    public String pageUrl(String customUri){
+        return redirectUrl.endsWith(IOUtils.DIR_SEPARATOR_UNIX + "") ?
+                redirectUrl + customUri : redirectUrl + IOUtils.DIR_SEPARATOR_UNIX + customUri;
+    }
+
     /**
      * Send request and get response entity
      * @param url url
@@ -131,11 +149,14 @@ public abstract class AbstractExchangisOperation {
     protected <R, T extends RequestRef>ExchangisEntityRespResult.BasicMessageEntity<R> requestToGetEntity(String url,
                                                                                                           Workspace workspace,
                                                                                                           T requestRef, HttpActionBuilder<T> httpActionBuilder, Class<?> entityClass, Class<?>... entityParameters) throws ExternalOperationFailedException {
+        LOG.info("Create job url{}: ", url);
         HttpExtAction action = httpActionBuilder.build(requestRef);
+        LOG.info("Action123456{}: ", action.getRequestBody());
         if (Objects.nonNull(action)){
             SSOUrlBuilderOperation ssoUrlBuilderOperation = getSSOUrlBuilderOperation(workspace, getAppName(), url);
             ExchangisEntityRespResult.BasicMessageEntity<R> entity;
             try {
+                LOG.info("ssoUrlBuilderOperation666: {}", ssoUrlBuilderOperation.getBuiltUrl());
                 action.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
                 SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation = getOrCreateSSORequestOperation();
                 ExchangisEntityRespResult httpResult = new ExchangisEntityRespResult(ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, action));

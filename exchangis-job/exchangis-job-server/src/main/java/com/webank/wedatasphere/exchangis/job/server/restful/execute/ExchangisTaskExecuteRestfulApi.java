@@ -3,10 +3,10 @@ package com.webank.wedatasphere.exchangis.job.server.restful.execute;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
-import com.webank.wedatasphere.exchangis.job.server.service.ExchangisJobService;
+import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
-import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedTaskMetricsVO;
+import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedTaskMetricsVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
@@ -25,25 +25,29 @@ import java.util.Map;
  */
 
 @RestController
-@RequestMapping(value = "exchangis/task", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis/main/task", produces = {"application/json;charset=utf-8"})
 public class ExchangisTaskExecuteRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisTaskExecuteRestfulApi.class);
     @Autowired
-    private ExchangisJobService exchangisJobService;
+    private JobInfoService jobInfoService;
 
     @Resource
     private JobExecuteService jobExecuteService;
 
     @RequestMapping( value = "/execution/{taskId}/metrics", method = RequestMethod.POST)
     public Message getTaskMetrics(@PathVariable("taskId") String taskId,
-                                  @RequestBody Map<String, String> json, HttpServletRequest request) throws ExchangisJobServerException {
+                                  @RequestBody Map<String, Object> json, HttpServletRequest request) throws ExchangisJobServerException {
         Message result = Message.ok("Submitted succeed(提交成功)！");
-        String jobExecutionId = json.get("jobExecutionId");
+        String jobExecutionId = null;
+
+        if(null!=json.get("jobExecutionId")){
+            jobExecutionId = (String) json.get("jobExecutionId");
+        }
         if (StringUtils.isBlank(jobExecutionId)){
             return Message.error("Required params 'jobExecutionId' is missing");
         }
         try{
-            ExchangisLaunchedTaskMetricsVO taskMetrics = this.jobExecuteService
+            ExchangisLaunchedTaskMetricsVo taskMetrics = this.jobExecuteService
                     .getLaunchedTaskMetrics(taskId, jobExecutionId, SecurityFilter.getLoginUsername(request));
             result.data("task", taskMetrics);
         }catch(Exception e){
@@ -51,7 +55,7 @@ public class ExchangisTaskExecuteRestfulApi {
             LOG.error(message, e);
             result = Message.error(message + ", reason: " + e.getMessage());
         }
-        result.setMethod("/api/rest_j/v1/exchangis/task/execution/{taskId}/metrics");
+        result.setMethod("/api/rest_j/v1/dss/exchangis/main/task/execution/{taskId}/metrics");
         return result;
     }
 
@@ -74,7 +78,7 @@ public class ExchangisTaskExecuteRestfulApi {
             LOG.error(message, e);
             result = Message.error(message + ", reason: " + e.getMessage());
         }
-        result.setMethod("/api/rest_j/v1/exchangis/job/execution/{taskId}/log");
+        result.setMethod("/api/rest_j/v1/dss/exchangis/main/job/execution/{taskId}/log");
         return result;
     }
 }

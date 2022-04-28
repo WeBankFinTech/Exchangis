@@ -27,17 +27,15 @@ public class ExchangisProjectUpdateOperation extends AbstractExchangisProjectOpe
     private StructureService structureService;
 
     public ExchangisProjectUpdateOperation(StructureService structureService) {
+        super(new String[]{"appProject"});
         setStructureService(structureService);
     }
 
     @Override
     public ProjectResponseRef updateProject(ProjectRequestRef projectRequestRef) throws ExternalOperationFailedException {
-        // TODO Get the project id
-        long projectId = 0l;
-        String url = requestURL("/project/" + projectId);
         LOG.info("update project request => dss_projectId:{}, name:{}, createName:{}",
                 projectRequestRef.getId(), projectRequestRef.getName(),projectRequestRef.getCreateBy());
-        ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, projectRequestRef.getWorkspace(), projectRequestRef,
+        ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(projectRequestRef.getWorkspace(), projectRequestRef,
                 (requestRef) -> {
                     // Build project put(update) action
                     return new ExchangisEntityPutAction<>(getProjectEntity(requestRef), requestRef.getCreateBy());
@@ -47,7 +45,7 @@ public class ExchangisProjectUpdateOperation extends AbstractExchangisProjectOpe
         }
         ExchangisEntityRespResult httpResult = entity.getResult();
         LOG.info("update project response => status {}, response {}", httpResult.getStatusCode(), httpResult.getResponseBody());
-        AtomicLong newProjectId = new AtomicLong(projectId);
+        AtomicLong newProjectId = new AtomicLong(projectRequestRef.getId());
         try {
             Optional.ofNullable(entity.getData()).ifPresent( data -> newProjectId
                     .set(Long.parseLong(String.valueOf(data.getOrDefault(Constraints.PROJECT_ID, newProjectId.get())))));

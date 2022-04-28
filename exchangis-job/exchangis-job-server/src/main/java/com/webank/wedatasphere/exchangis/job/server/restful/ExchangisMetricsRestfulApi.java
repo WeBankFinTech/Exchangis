@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping(value = "exchangis", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "dss/exchangis/main", produces = {"application/json;charset=utf-8"})
 public class ExchangisMetricsRestfulApi {
 
     private final ExchangisMetricsService exchangisMetricsService;

@@ -5,6 +5,9 @@ import org.apache.linkis.server.Message;
 
 import java.util.Arrays;
 
+/**
+ * Utils for restful
+ */
 public class ExchangisProjectRestfulUtils {
 
 

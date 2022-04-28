@@ -219,7 +219,7 @@ export default defineComponent({
 
     const formRef = ref();
     const updateSourceInfo = (dsInfo, id) => {
-      const info = dsInfo.split("-");
+      const info = dsInfo.split(".");
 
       // 修改来源数据源，清空目的数据源
       dataSource.dataSourceIds.sink = {
@@ -289,7 +289,7 @@ export default defineComponent({
       });
     };
     const updateSinkInfo = (dsInfo, id) => {
-      const info = dsInfo.split("-");
+      const info = dsInfo.split(".");
       if ((info[0] && info[0] !== 'HIVE')
         && (dataSource.dataSourceIds.source.type && dataSource.dataSourceIds.source.type !== 'HIVE')
         && props.engineType === 'SQOOP') {

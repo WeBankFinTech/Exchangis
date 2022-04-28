@@ -4,6 +4,7 @@ import com.webank.wedatasphere.dss.appconn.core.ext.ThirdlyAppConn;
 import com.webank.wedatasphere.dss.appconn.core.impl.AbstractOnlySSOAppConn;
 import com.webank.wedatasphere.dss.standard.app.development.standard.DevelopmentIntegrationStandard;
 import com.webank.wedatasphere.dss.standard.app.structure.StructureIntegrationStandard;
+import org.apache.linkis.common.conf.CommonVars;
 
 /**
  * Exchangis AppConn top implement

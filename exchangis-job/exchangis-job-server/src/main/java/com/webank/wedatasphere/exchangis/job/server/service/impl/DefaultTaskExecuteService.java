@@ -6,8 +6,8 @@ import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLau
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
-import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedJobDao;
-import com.webank.wedatasphere.exchangis.job.server.dao.LaunchedTaskDao;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.*;
 import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCacheUtils;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskExecuteService;
@@ -15,7 +15,6 @@ import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;

@@ -49,14 +49,14 @@ public class ExchangisRefUpdateOperation extends AbstractExchangisRefOperation i
     }
 
     private ResponseRef updateOffLineRequest(NodeRequestRef nodeRequestRef, String engineType) throws ExternalOperationFailedException{
-        Long id = AppConnUtils.resolveParam(nodeRequestRef.getJobContent(), Constraints.REF_JOB_ID, Long.class);
+        Integer id = AppConnUtils.resolveParam(nodeRequestRef.getJobContent(), Constraints.REF_JOB_ID, Integer.class);
         LOG.info("update {} job request => id: {}, jobContent:{}", id, engineType, nodeRequestRef.getJobContent());
-        String url = requestURL("/job/" + id);
+        String url = requestURL("/appJob/" + id);
         ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, nodeRequestRef.getWorkspace(), nodeRequestRef,
                 (requestRef) -> {
                     // Build ref update action
                     RefJobReqEntity jobReqEntity = getRefJobReqEntity(requestRef, engineType);
-                    jobReqEntity.setId(id);
+                    jobReqEntity.setId(Long.valueOf(id));
                     return new ExchangisEntityPutAction<>(jobReqEntity, requestRef.getUserName());
                 }, Map.class);
         if (Objects.isNull(entity)){

@@ -1,148 +1,217 @@
 package com.webank.wedatasphere.exchangis.project.server.restful;
 
 
-import com.webank.wedatasphere.exchangis.project.server.dto.ExchangisProjectDTO;
-import com.webank.wedatasphere.exchangis.project.server.dto.ExchangisProjectGetDTO;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
+import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
-import com.webank.wedatasphere.exchangis.project.server.request.CreateProjectRequest;
-import com.webank.wedatasphere.exchangis.project.server.request.ProjectQueryRequest;
-import com.webank.wedatasphere.exchangis.project.server.request.UpdateProjectRequest;
-import com.webank.wedatasphere.exchangis.project.server.service.ExchangisProjectService;
+import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
+import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.Pair;
+import org.apache.linkis.common.utils.JsonUtils;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.List;
+import javax.validation.groups.Default;
+import java.util.Objects;
+import java.util.Optional;
 
 
 /**
- * this is the restful class for exchangis project
+ * This is the restful class for exchangis project
  */
 @RestController
-@RequestMapping(value = "/exchangis", produces = {"application/json;charset=utf-8"})
+@RequestMapping(value = "/dss/exchangis/main", produces = {"application/json;charset=utf-8"})
 public class ExchangisProjectRestfulApi {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisProjectRestfulApi.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExchangisProjectRestfulApi.class);
 
-    @Autowired
-    private ExchangisProjectService projectService;
+    /**
+     * Project service
+     */
+    @Resource
+    private ProjectService projectService;
 
-    @RequestMapping( value = "projects", method = RequestMethod.POST)
+    /**
+     * Project query
+     * @param request http request
+     * @param queryVo query vo
+     * @param current current page
+     * @param size size
+     * @param name name
+     * @return message
+     */
+    @RequestMapping( value = "projects", method = {RequestMethod.POST, RequestMethod.GET})
     public Message queryProjects(HttpServletRequest request,
-                                 @Valid @RequestBody ProjectQueryRequest projectQueryRequest,
-                                 @RequestParam(value = "current", required = false) int current,
-                                 @RequestParam(value = "size", required = false) int size,
+                                 @RequestBody ProjectQueryVo queryVo,
+                                 @RequestParam(value = "current", required = false) Integer current,
+                                 @RequestParam(value = "size", required = false) Integer size,
                                  @RequestParam(value = "name", required = false) String name) {
         String username = SecurityFilter.getLoginUsername(request);
-        if (null == projectQueryRequest) {
-            projectQueryRequest = new ProjectQueryRequest();
-        }
-        projectQueryRequest.setUsername(username);
+        Optional.ofNullable(current).ifPresent(queryVo::setCurrent);
+        Optional.ofNullable(size).ifPresent(queryVo::setSize);
+        Optional.ofNullable(name).ifPresent(queryVo::setName);
+        queryVo.setCreateUser(username);
         try {
-            List<ExchangisProjectDTO> projects = projectService.queryProjects(projectQueryRequest, current, size, name);
-            int total = projectService.count(projectQueryRequest, name);
-            Message message = Message.ok();
-            message.data("total", total);
-            message.data("list", projects);
-            return message;
-            //return Message.ok().data("list", projects);
-        } catch (final Throwable t) {
-            LOGGER.error("failed to create project for user {}", username, t);
-            return Message.error("获取工程列表失败,原因是:" + t.getMessage());
+            PageResult<ExchangisProjectInfo> pageResult = projectService.queryProjects(queryVo);
+            return pageResult.toMessage();
+        } catch (Exception t) {
+            LOG.error("Failed to query project list for user {}", username, t);
+            return Message.error("Failed to query project list (获取工程列表失败)");
         }
     }
 
-    @RequestMapping( value = "projects/{projectId}", method = RequestMethod.GET)
-    public Message queryProjects(HttpServletRequest request,
-                                 @PathVariable("projectId") String projectId) {
+    /**
+     * Project query detail by id
+     * @param request http request
+     * @param projectId project id
+     * @return
+     */
+    @RequestMapping( value = "projects/{projectId:\\d+}", method = RequestMethod.GET)
+    public Message queryProjectDetail(HttpServletRequest request,
+                                 @PathVariable("projectId") Long projectId) {
         String username = SecurityFilter.getLoginUsername(request);
         try {
-            ExchangisProjectGetDTO dto = projectService.getProjectById(projectId);
-            return Message.ok().data("item", dto);
-        } catch (final Throwable t) {
-            LOGGER.error("failed to create project for user {}", username, t);
-            return Message.error("获取工程列表失败,原因是:" + t.getMessage());
-        }
-    }
-
-    @RequestMapping(value = "projects/dss/{dssName}", method = RequestMethod.GET)
-    public Message queryProjectsByDss(HttpServletRequest request,
-                                      @PathVariable("dssName") String dssName) {
-        String username = SecurityFilter.getLoginUsername(request);
-        try {
-            LOGGER.info("queryProjectsByDss workspaceName {}", dssName);
-            ExchangisProjectGetDTO dto = projectService.getProjectByDssName(dssName);
-            return Message.ok().data("item", dto);
-        } catch (final Throwable t) {
-            LOGGER.error("failed to create project for user {}", username, t);
-            return Message.error("获取工程列表失败,原因是:" + t.getMessage());
-        }
-    }
-
-    @RequestMapping(value = "createProject", method = RequestMethod.POST)
-    public Message createProject(HttpServletRequest request,
-                                 @Valid @RequestBody CreateProjectRequest createProjectRequest) {
-        String username = SecurityFilter.getLoginUsername(request);
-        if (createProjectRequest.getProjectName().length() > 64) {
-            return Message.error("数据源名称输入过长");
-        }
-        else {
-            try {
-                LOGGER.info("createProject createProjectRequest {}", createProjectRequest.toString());
-                ExchangisProject exchangisProject = projectService.createProject(username, createProjectRequest);
-                return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
-                        new Pair<>("projectName", exchangisProject.getName()), new Pair<>("projectId", exchangisProject.getId()));
-            } catch (final Throwable t) {
-                LOGGER.error("failed to create project for user {}", username, t);
-                return Message.error("创建工程失败,存在同名项目");
-                //return Message.error("创建工程失败,原因是:" + t.getMessage());
+            ExchangisProjectInfo project = projectService.getProjectDetailById(projectId);
+            if (Objects.isNull(project)){
+                return Message.error("Not found the project (找不到对应工程)");
             }
+            if (!hasAuthority(username, project)){
+                return Message.error("You have no permission to query (没有工程查看权限)");
+            }
+            return Message.ok().data("item", project);
+        } catch (Exception t) {
+            LOG.error("failed to get project detail for user {}", username, t);
+            return Message.error("Fail to get project detail (获取工程详情失败)");
         }
     }
 
+    /**
+     * Create project
+     * @param request request
+     * @param projectVo project vo
+     * @param result result
+     * @return
+     */
+    @RequestMapping(value = "createProject", method = RequestMethod.POST)
+    public Message createProject(@Validated @RequestBody ExchangisProjectInfo projectVo,
+                                 BindingResult result, HttpServletRequest request) {
+        if (result.hasErrors()){
+            return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
+        }
+        String username = SecurityFilter.getLoginUsername(request);
+        try {
+            if (projectService.existsProject(null, projectVo.getName())){
+                return Message.error("Have the same name project (存在同名工程)");
+            }
+            LOG.info("CreateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
+            long projectId = projectService.createProject(projectVo, username);
+            return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
+                    new Pair<>("projectName", projectVo.getName()),
+                    new Pair<>("projectId", projectId));
+        } catch (Exception t) {
+            LOG.error("Failed to create project for user {}", username, t);
+            return Message.error("Fail to create project (创建工程失败)");
+        }
+    }
+    /**
+     * check project name
+     * @param request http request
+     * @param name project name
+     * @return
+     */
+    @RequestMapping( value = "/check/{name}", method = RequestMethod.POST)
+    public Message getProjectByName(HttpServletRequest request, @PathVariable("name") String name) {
+        String username = SecurityFilter.getLoginUsername(request);
+        try {
+            ExchangisProjectInfo projectInfo = projectService.selectByName(name);
+            return ExchangisProjectRestfulUtils.dealOk("根据名字获取工程成功",
+                    new Pair<>("projectInfo",projectInfo));
+        } catch (Exception t) {
+            LOG.error("Failed to delete project for user {}", username, t);
+            return Message.error("Failed to delete project (根据名字获取工程失败)");
+        }
+
+
+    }
+
+
+    /**
+     * Update project
+     * @param request request
+     * @param projectVo project vo
+     * @return
+     */
     @RequestMapping( value = "updateProject", method = RequestMethod.PUT)
-    public Message updateProject(HttpServletRequest request,
-                                 @Valid @RequestBody UpdateProjectRequest updateProjectRequest) {
+    public Message updateProject(@Validated({UpdateGroup.class, Default.class}) @RequestBody ExchangisProjectInfo projectVo
+            , BindingResult result, HttpServletRequest request) {
+        if (result.hasErrors()){
+            return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
+        }
         String username = SecurityFilter.getLoginUsername(request);
         try {
-            LOGGER.info("updateProject updateProjectRequest {}", updateProjectRequest.toString());
-            ExchangisProject exchangisProject = projectService.updateProject(username, updateProjectRequest);
+            ExchangisProjectInfo projectStored = projectService.getProjectById(Long.valueOf(projectVo.getId()));
+            if (!hasAuthority(username, projectStored)){
+                return Message.error("You have no permission to update (没有项目的更新权限)");
+            }
+            String domain = projectStored.getDomain();
+            if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
+                    .equalsIgnoreCase(domain)){
+                return Message.error("Cannot update the outer project (无法更新来自 " + domain + " 的外部项目)");
+            }
+            LOG.info("UpdateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
+            projectService.updateProject(projectVo, username);
             return ExchangisProjectRestfulUtils.dealOk("更新工程成功",
-                    new Pair<>("projectName", exchangisProject.getName()), new Pair<>("projectId", exchangisProject.getId()));
-        } catch (final Throwable t) {
-            LOGGER.error("failed to update project for user {}", username, t);
-            return Message.error("更新工程失败,原因是:" + t.getMessage());
+                    new Pair<>("projectName", projectVo.getName()),
+                    new Pair<>("projectId", projectVo.getId()));
+        } catch (Exception t) {
+            LOG.error("Failed to update project for user {}", username, t);
+            return Message.error("Fail to update project (更新工程失败)");
         }
     }
 
-    @RequestMapping( value = "/projects/{id}", method = RequestMethod.DELETE)
-    public Message deleteProject(HttpServletRequest request, @PathVariable("id") String id) {
+    /**
+     * Delete project
+     * @param request http request
+     * @param id project id
+     * @return
+     */
+    @RequestMapping( value = "/projects/{id:\\d+}", method = RequestMethod.DELETE)
+    public Message deleteProject(HttpServletRequest request, @PathVariable("id") Long id) {
         String username = SecurityFilter.getLoginUsername(request);
         try {
-            projectService.deleteProject(request, id);
+            ExchangisProjectInfo projectInfo = projectService.getProjectById(id);
+            if (!hasAuthority(username, projectInfo)){
+                return Message.error("You have no permission to delete (删除工程失败)");
+            }
+            String domain = projectInfo.getDomain();
+            if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
+                    .equalsIgnoreCase(domain)){
+                return Message.error("Cannot delete the outer project (无法删除来自 " + domain + " 的外部项目)");
+            }
+            projectService.deleteProject(id);
             return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
-        } catch (final Throwable t) {
-            LOGGER.error("failed to update project for user {}", username, t);
-            return Message.error("删除工程失败,原因是:" + t.getMessage());
+        } catch (Exception t) {
+            LOG.error("Failed to delete project for user {}", username, t);
+            return Message.error("Failed to delete project (删除工程失败)");
         }
     }
 
-    @RequestMapping( value = "/projects/dss/{dssName}", method = RequestMethod.DELETE)
-    public Message deleteProjectByDss(HttpServletRequest request, @PathVariable("dssName") String dssName) {
-        String username = SecurityFilter.getLoginUsername(request);
-        try {
-            LOGGER.info("deleteProjectByDss dssName {}", dssName);
-            projectService.deleteProjectByDss(request, dssName);
-            return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
-        } catch (final Throwable t) {
-            LOGGER.error("failed to update project for user {}", username, t);
-            return Message.error("删除工程失败,原因是:" + t.getMessage());
-        }
+    /**
+     * TODO complete the authority strategy
+     * @param username username
+     * @param project project
+     * @return
+     */
+    private boolean hasAuthority(String username, ExchangisProjectInfo project){
+        return Objects.nonNull(project) && username.equals(project.getCreateUser());
     }
 }
