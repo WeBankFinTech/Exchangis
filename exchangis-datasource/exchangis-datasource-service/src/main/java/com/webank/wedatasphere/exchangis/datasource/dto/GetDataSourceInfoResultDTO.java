@@ -38,6 +38,7 @@ public class GetDataSourceInfoResultDTO extends ResultDTO {
         private Long modifyTime;
         private String modifyUser;
         private String labels;
+        private String label;
         private Long versionId;
         private Integer publishedVersionId;
         private Boolean expire;
@@ -121,6 +122,15 @@ public class GetDataSourceInfoResultDTO extends ResultDTO {
 
         public void setLabels(String labels) {
             this.labels = labels;
+            this.label = labels;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
         }
 
         public Integer getPublishedVersionId() {

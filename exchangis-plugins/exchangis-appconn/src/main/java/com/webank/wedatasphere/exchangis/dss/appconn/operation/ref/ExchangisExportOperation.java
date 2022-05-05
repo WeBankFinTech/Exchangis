@@ -50,14 +50,14 @@ public class ExchangisExportOperation extends AbstractExchangisRefOperation impl
         String nodeType = exportRequestRef.getParameter("nodeType").toString();
         String externalContent = null;
 
-        String exporrtContent = null;
+        String exportContent = null;
         try {
-            exporrtContent = BDPJettyServerHelper.jacksonJson().writeValueAsString(exportRequestRef);
+            exportContent = BDPJettyServerHelper.jacksonJson().writeValueAsString(exportRequestRef);
         } catch (JsonProcessingException e) {
             LOG.error("Occur error while tranform class", e.getMessage());
         }
         LOG.info("url: {}", url);
-        LOG.info("exportRequestRef: {}", exporrtContent);
+        LOG.info("exportRequestRef: {}", exportContent);
         try {
             LOG.info("jobContent: {}", exportRequestRef.getParameter("jobContent"));
             externalContent = BDPJettyServerHelper.jacksonJson().writeValueAsString(exportRequestRef.getParameter("jobContent"));

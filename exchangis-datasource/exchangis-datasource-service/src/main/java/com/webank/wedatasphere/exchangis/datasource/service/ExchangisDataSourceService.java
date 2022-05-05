@@ -623,6 +623,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             item.setCreateSystem(ds.getCreateSystem());
             item.setDataSourceTypeId(ds.getDataSourceTypeId());
             item.setLabels(ds.getLabels());
+            item.setLabel(ds.getLabels());
             item.setDesc(ds.getDataSourceDesc());
             item.setCreateUser(ds.getCreateUser());
             item.setModifyUser(ds.getModifyUser());

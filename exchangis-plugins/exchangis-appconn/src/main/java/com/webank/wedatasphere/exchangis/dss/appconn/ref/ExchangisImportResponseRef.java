@@ -20,6 +20,18 @@ public class ExchangisImportResponseRef extends CommonResponseRef {
         if (!Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase(nodeType) && !Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(nodeType)) {
             throw new ExternalOperationFailedException(90177, "Unknown task type" + nodeType, null);
         }
+        Map<String, Object> data = (Map<String, Object>)responseMap.get("data");
+        Map<String, Object> realNode = (Map<String, Object>)data.get("sqoop");
+        double newId = 0;
+        for (Map.Entry<String, Object> entry : realNode.entrySet()) {
+            newId = Double.parseDouble(entry.getValue().toString());
+            if (newId != 0) {
+                break;
+            }
+        }
+        Map<String, Object> jobContentData = (Map<String, Object>)jobContent.get("data");
+        jobContentData.put("id", newId);
+        jobContent.put("data", jobContentData);
         this.newJobContent = jobContent;
     }
 

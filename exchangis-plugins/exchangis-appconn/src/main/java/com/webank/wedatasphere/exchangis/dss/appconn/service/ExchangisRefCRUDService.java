@@ -9,6 +9,7 @@ import com.webank.wedatasphere.dss.standard.app.development.ref.CreateRequestRef
 import com.webank.wedatasphere.dss.standard.app.development.ref.DeleteRequestRef;
 import com.webank.wedatasphere.dss.standard.app.development.service.AbstractRefCRUDService;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.RequestRef;
+import com.webank.wedatasphere.exchangis.dss.appconn.operation.ref.ExchangisRefCopyOperation;
 import com.webank.wedatasphere.exchangis.dss.appconn.operation.ref.ExchangisRefCreationOperation;
 import com.webank.wedatasphere.exchangis.dss.appconn.operation.ref.ExchangisRefDeletionOperation;
 import com.webank.wedatasphere.exchangis.dss.appconn.operation.ref.ExchangisRefUpdateOperation;
@@ -26,7 +27,7 @@ public class ExchangisRefCRUDService extends AbstractRefCRUDService {
 
     @Override
     protected <K extends CopyRequestRef> RefCopyOperation<K> createRefCopyOperation() {
-        return null;
+        return (RefCopyOperation<K>) new ExchangisRefCopyOperation(this);
     }
 
     @Override
