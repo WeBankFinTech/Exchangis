@@ -243,7 +243,7 @@ public class DefaultJobInfoService implements JobInfoService {
                 exchangisJobVos.add(jobVo);
             }
         }
-       return exchangisJobVos;
+        return exchangisJobVos;
     }
 
     @Override
@@ -368,7 +368,7 @@ public class DefaultJobInfoService implements JobInfoService {
 
                     LOG.info("sqoopStr99999:{}", sqoopStr);
                     LOG.info("ExchangisJobVo sqoop: {}", job.getContent());
-                    LOG.info("getCreateTimep: {}", job.getId());
+                    LOG.info("getCreateTime: {}", job.getId());
                     LOG.info("executorUser999: {}", job.getExecuteUser());
                     sqoops.add(job);
                 }
@@ -439,5 +439,13 @@ public class DefaultJobInfoService implements JobInfoService {
         map.put("dataxIds", dataxIds);
         LOG.info("The objects to be exported are: {}", map);
         return map;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ExchangisJobVo copyJob(ExchangisJobVo jobVo) {
+        ExchangisJobVo job = jobInfoService.getJob(jobVo.getId(), false);
+        ExchangisJobVo newJob = jobInfoService.createJob(job);
+        return newJob;
     }
 }

@@ -13,6 +13,7 @@ public class DataSourceDTO {
     private String desc;
     private String createUser;
     private String labels;
+    private String label;
     private Long versionId;
     private String modifyUser;
     private Date modifyTime;
@@ -88,6 +89,14 @@ public class DataSourceDTO {
 
     public void setLabels(String labels) {
         this.labels = labels;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public Long getVersionId() {

@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.server.service.IProjectCopyService;
 import com.webank.wedatasphere.exchangis.job.server.service.IProjectImportService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
@@ -52,6 +53,9 @@ public class ExchangisJobDssAppConnRestfulApi {
     @Resource
     private ProjectImportServerImpl projectImportServer;
 
+    @Resource
+    private IProjectCopyService projectCopyService;
+
     @Autowired
     private ProjectMapper projectMapper;
 
@@ -76,7 +80,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             Long id = null;
             id = jobInfoService.createJob(exchangisJobVo).getId();
             response.data("id", id);
-            LOG.info("id: {}", id);
+            LOG.info("id6666: {}", id);
         } catch (Exception e){
             String message = "Fail to create dss job: " + exchangisJobVo.getJobName() +" (创建DSS任务失败)";
             LOG.error(message, e);
@@ -135,7 +139,7 @@ public class ExchangisJobDssAppConnRestfulApi {
                 return Message.error("You have no job in exchangis,please delete this job (该节点在exchangis端不存在，请删除该节点)");
             }
             else if (!hasAuthority(userName, jobInfoService.getJob(id , true))){
-                return Message.error("You have no permission to update (没有更新权限)");
+                return Message.error("You have no permission to update (没有更新权限666)");
             }
             response.data("id", jobInfoService.updateJob(exchangisJobVo).getId());
         } catch (Exception e){
@@ -157,6 +161,7 @@ public class ExchangisJobDssAppConnRestfulApi {
         String loginUser = SecurityFilter.getLoginUsername(request);
         Message result = Message.ok();
         ExchangisJobInfo jobInfo = null;
+        LOG.info("wds execute user: {}", loginUser);
         try {
             // First to find the job from the old table.
             ExchangisJobVo jobVo = jobInfoService.getJob(id, false);
@@ -181,6 +186,7 @@ public class ExchangisJobDssAppConnRestfulApi {
                     jobInfo.getExecuteUser() : loginUser);
             result.data("jobExecutionId", jobExecutionId);
 
+            LOG.info("Prepare to get job status");
             while (true) {
                 TaskStatus jobStatus = executeService.getJobStatus(jobExecutionId).getStatus();
                 LOG.info("Taskstatus is: {}", jobStatus.name());
@@ -236,6 +242,26 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.info("export job success");
         } catch (Exception e){
             String message = "Fail Export job [ id: " + params + "] (导出任务失败)";
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
+
+        //return jobInfoService.exportProject(params, userName, request);
+
+    }
+
+    @RequestMapping( value = "/copy", method = RequestMethod.POST)
+    public Message copy(@Context HttpServletRequest request, @RequestBody Map<String, Object> params) throws ServerException {
+        String userName = SecurityFilter.getLoginUsername(request);
+
+        LOG.info("copy function params: {}", params);
+        Message response = null;
+        try {
+            response = projectCopyService.copy(params, userName, request);
+            LOG.info("copy node success");
+        } catch (Exception e){
+            String message = "Fail Copy project [ id: " + params + "] (导出任务失败)";
             LOG.error(message, e);
             response = Message.error(message);
         }
