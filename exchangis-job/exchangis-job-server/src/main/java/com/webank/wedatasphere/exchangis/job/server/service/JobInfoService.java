@@ -110,4 +110,12 @@ public interface JobInfoService {
 
     Map<String, Set<Long>> getModuleIdsMap(Map<String, Object> params);
 
+    /**
+     * Copy job exchangis job basic info.
+     *
+     * @param jobVo the exchangis job basic info dto
+     * @return the exchangis job basic info vo
+     */
+    ExchangisJobVo copyJob(ExchangisJobVo jobVo);
+
 }

@@ -34,7 +34,7 @@ public class DateTool {
             TIME_PLACEHOLDER_DATE_0, TIME_PLACEHOLDER_DATE_1, TIME_PLACEHOLDER_DATE_TIME, TIME_PLACEHOLDER_TIMESTAMP,
             TIME_PLACEHOLDER_DATE_HOUR_0, TIME_PLACEHOLDER_DATE_HOUR_1, TIME_PLACEHOLDER_DATE_HOUR_2};
 
-    private static final String TIME_REGULAR_EXPRESSION = "\\$\\{(run_date|run_month_begin|run_month_end|HH|yyyyMMddHH|yyyy-MM-dd-HH)(_std)?\\s*([+-])?\\s*([0-9])?\\}";
+    private static final String TIME_REGULAR_EXPRESSION = "\\$\\{(run_date|run_month_begin|run_month_end|HH|yyyyMMdd|yyyy-MM-dd|timestamp)(_std)?\\s*([+-])?\\s*([0-9])?\\}";
     public static final Pattern TIME_REGULAR_PATTERN = Pattern.compile(TIME_REGULAR_EXPRESSION);
 
     private static Logger log = LoggerFactory.getLogger(DateTool.class);
