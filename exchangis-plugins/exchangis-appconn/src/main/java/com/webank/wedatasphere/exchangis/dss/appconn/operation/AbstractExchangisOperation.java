@@ -98,7 +98,7 @@ public abstract class AbstractExchangisOperation {
      */
     protected SSOUrlBuilderOperation getSSOUrlBuilderOperation(Workspace workspace,
                                                                String appName, String url){
-        LOG.info("requestURL555555: {}", requestURL());
+        //LOG.info("requestURL555555: {}", requestURL());
         return workspace.getSSOUrlBuilderOperation().copy().setAppName(appName).setReqUrl(url)
                 .setWorkspace(workspace.getWorkspaceName());
     }

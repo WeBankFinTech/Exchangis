@@ -187,7 +187,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             result.data("jobExecutionId", jobExecutionId);
 
             LOG.info("Prepare to get job status");
-            while (true) {
+            /*while (true) {
                 TaskStatus jobStatus = executeService.getJobStatus(jobExecutionId).getStatus();
                 LOG.info("Taskstatus is: {}", jobStatus.name());
                 if (jobStatus == TaskStatus.Success ) {
@@ -199,7 +199,7 @@ public class ExchangisJobDssAppConnRestfulApi {
                     LOG.info("Execute task faild");
                     throw new Exception();
                 }
-            }
+            }*/
         } catch (Exception e) {
             String message;
             if (Objects.nonNull(jobInfo)) {
