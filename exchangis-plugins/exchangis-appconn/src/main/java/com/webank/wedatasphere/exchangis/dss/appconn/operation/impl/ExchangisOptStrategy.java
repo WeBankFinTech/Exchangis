@@ -13,6 +13,7 @@ import com.webank.wedatasphere.dss.standard.app.development.listener.common.RefE
 import com.webank.wedatasphere.dss.standard.app.development.ref.NodeRequestRef;
 import com.webank.wedatasphere.dss.standard.app.development.service.DevelopmentService;
 import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
+import com.webank.wedatasphere.dss.standard.app.structure.StructureService;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.ResponseRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
 import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
@@ -139,21 +140,23 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
     }
 
     @Override
-    public String submit(AsyncExecutionRequestRef ref, String baseUrl, SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation) throws ExternalOperationFailedException {
+    public String submit(AsyncExecutionRequestRef ref, String baseUrl, SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation, DevelopmentService developmentService) throws ExternalOperationFailedException {
         String url = baseUrl + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/appJob" + "/execute/" + getId(ref);
         ref.getExecutionRequestRefContext().appendLog("dss execute sqoop node,ready to submit from " + url);
         ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
         exchangisEntityPostAction.setUser(ref.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
         String originLabels = ref.getExecutionRequestRefContext().getRuntimeMap().get("labels").toString();
-        String realLabels = "";
+        setSSORequestService(developmentService);
+        /*String realLabels = "";
         try {
+            logger.info("originLabels: {}", originLabels);
             Map responseMap = BDPJettyServerHelper.jacksonJson().readValue(originLabels, Map.class);
             realLabels = responseMap.get("route").toString();
         } catch (JsonProcessingException e) {
             logger.error("parser request error", e);
-        }
+        }*/
         HashMap<String, String> labels = new HashMap<>();
-        labels.put("route", realLabels);
+        labels.put("route", originLabels);
         exchangisEntityPostAction.addRequestPayload("labels", labels);
 
         ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, ref.getWorkspace(), ref,
@@ -227,15 +230,15 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
         ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
         exchangisEntityPostAction.setUser(ref.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
         String originLabels = ref.getExecutionRequestRefContext().getRuntimeMap().get("labels").toString();
-        String realLabels = "";
+        /*String realLabels = "";
         try {
             Map responseMap = BDPJettyServerHelper.jacksonJson().readValue(originLabels, Map.class);
             realLabels = responseMap.get("route").toString();
         } catch (JsonProcessingException e) {
             logger.error("parser request error", e);
-        }
+        }*/
         HashMap<String, String> labels = new HashMap<>();
-        labels.put("route", realLabels);
+        labels.put("route", originLabels);
         exchangisEntityPostAction.addRequestPayload("labels", labels);
 
         try {
