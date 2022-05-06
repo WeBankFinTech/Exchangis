@@ -6,6 +6,7 @@ import com.webank.wedatasphere.dss.standard.app.development.listener.common.RefE
 import com.webank.wedatasphere.dss.standard.app.development.listener.common.RefExecutionState;
 import com.webank.wedatasphere.dss.standard.app.development.listener.core.Procedure;
 import com.webank.wedatasphere.dss.standard.app.development.ref.ExecutionRequestRef;
+import com.webank.wedatasphere.dss.standard.app.development.service.DevelopmentService;
 import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
 import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
@@ -23,10 +24,10 @@ public class ExchangisAsyncRefExecutionOperation implements Procedure{
 
     private static final Logger logger = LoggerFactory.getLogger(ExchangisAsyncRefExecutionOperation.class);
 
-    public ExchangisExecutionAction execute(ExecutionRequestRef requestRef, String baseUrl, SSORequestOperation ssoRequestOperation) throws ExternalOperationFailedException {
+    public ExchangisExecutionAction execute(ExecutionRequestRef requestRef, String baseUrl, SSORequestOperation ssoRequestOperation, DevelopmentService developmentService) throws ExternalOperationFailedException {
         AsyncExecutionRequestRef asyncExecutionRequestRef = (AsyncExecutionRequestRef) requestRef;
         ExchangisOptStrategy exchangisOpt = (ExchangisOptStrategy) ModuleFactory.getInstance().crateModule(Constraints.ENGINE_TYPE_SQOOP_NAME);
-        String execId = exchangisOpt.submit(asyncExecutionRequestRef, baseUrl, ssoRequestOperation);
+        String execId = exchangisOpt.submit(asyncExecutionRequestRef, baseUrl, ssoRequestOperation, developmentService);
         ExchangisExecutionAction exchangisExecutionAction = new ExchangisExecutionAction();
         exchangisExecutionAction.set_execId(execId);
         exchangisExecutionAction.setRequestRef(requestRef);

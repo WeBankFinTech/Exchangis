@@ -57,7 +57,7 @@ public class ExchangisRefExecutionOperation extends LongTermRefExecutionOperatio
     @Override
     protected RefExecutionAction submit(ExecutionRequestRef executionRequestRef) {
         try {
-            return new ExchangisAsyncRefExecutionOperation().execute(executionRequestRef, developmentService.getAppInstance().getBaseUrl(), ssoRequestOperation);
+            return new ExchangisAsyncRefExecutionOperation().execute(executionRequestRef, developmentService.getAppInstance().getBaseUrl(), ssoRequestOperation, developmentService);
         } catch (ExternalOperationFailedException e) {
             LOG.info("submit execute job failed");
         }
@@ -88,9 +88,10 @@ public class ExchangisRefExecutionOperation extends LongTermRefExecutionOperatio
     public ResponseRef execute(ExecutionRequestRef executionRequestRef) {
         AsyncExecutionRequestRef asyncExecutionRequestRef = (AsyncExecutionRequestRef) executionRequestRef;
         String nodeType = asyncExecutionRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("nodeType").toString().toLowerCase().trim();
-        String nodeName = Constraints.ENGINE_TYPE_DATAX_NAME;
+        LOG.info("nodeType:{}", nodeType);
+        String nodeName = Constraints.ENGINE_TYPE_SQOOP_NAME;
         LOG.info("nodeName:{}", nodeName);
-        if (Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase(nodeType)) {
+        if (Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase("linkis.appconn." + nodeType)) {
             try {
                 return executeAsyncOpt(asyncExecutionRequestRef);
             } catch (ExternalOperationFailedException e) {
