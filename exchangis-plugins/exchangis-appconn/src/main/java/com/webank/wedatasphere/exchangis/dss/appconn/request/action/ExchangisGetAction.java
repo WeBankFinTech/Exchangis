@@ -4,7 +4,7 @@ package com.webank.wedatasphere.exchangis.dss.appconn.request.action;
 import org.apache.linkis.httpclient.request.GetAction;
 import org.apache.linkis.httpclient.request.UserAction;
 
-public class ExchangisGetAction extends GetAction implements UserAction {
+public class ExchangisGetAction extends GetAction implements HttpExtAction, UserAction {
     String url;
     String user;
 
@@ -13,6 +13,7 @@ public class ExchangisGetAction extends GetAction implements UserAction {
         return url;
     }
 
+    @Override
     public void setUrl(String url) {
         this.url = url;
     }
