@@ -59,7 +59,7 @@ public class ExchangisRefExecutionOperation extends LongTermRefExecutionOperatio
         try {
             return new ExchangisAsyncRefExecutionOperation().execute(executionRequestRef, developmentService.getAppInstance().getBaseUrl(), ssoRequestOperation, developmentService);
         } catch (ExternalOperationFailedException e) {
-            LOG.info("submit execute job failed");
+            LOG.error("submit execute job failed: {}", e.getMessage());
         }
         return null;
     }
@@ -69,7 +69,7 @@ public class ExchangisRefExecutionOperation extends LongTermRefExecutionOperatio
         try {
             return new ExchangisAsyncRefExecutionOperation().state(refExecutionAction, developmentService.getAppInstance().getBaseUrl(), ssoRequestOperation);
         } catch (ExternalOperationFailedException e) {
-            LOG.info("getting execute job state failed");
+            LOG.error("getting execute job state failed: {}", e.getMessage());
         }
         return null;
     }
@@ -79,7 +79,7 @@ public class ExchangisRefExecutionOperation extends LongTermRefExecutionOperatio
         try {
             return new ExchangisAsyncRefExecutionOperation().result(refExecutionAction, developmentService.getAppInstance().getBaseUrl(), ssoRequestOperation);
         } catch (ExternalOperationFailedException e) {
-            LOG.info("getting execute job resulted failed");
+            LOG.error("getting execute job resulted failed: {}", e.getMessage());
         }
         return null;
     }
@@ -126,6 +126,7 @@ public class ExchangisRefExecutionOperation extends LongTermRefExecutionOperatio
         }
         //获取任务状态
         RefExecutionState state = state(sqoopAction);
+        LOG.info("Now state is: {}", state.getStatus());
         if (state != null && state.isCompleted()) {
             //获取结果集
             CompletedExecutionResponseRef response = result(sqoopAction);
@@ -167,6 +168,5 @@ public class ExchangisRefExecutionOperation extends LongTermRefExecutionOperatio
     @Override
     public boolean kill(RefExecutionAction refExecutionAction) {
         return new ExchangisAsyncRefExecutionOperation().kill(developmentService.getAppInstance().getBaseUrl(), ssoRequestOperation, refExecutionAction);
-        //return false;
     }
 }

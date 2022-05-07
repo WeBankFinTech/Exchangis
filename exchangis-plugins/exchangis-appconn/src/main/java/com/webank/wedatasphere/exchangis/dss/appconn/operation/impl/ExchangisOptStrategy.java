@@ -24,6 +24,7 @@ import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisCommonResponse
 import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisCompletedExecutionResponseRef;
 import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisOpenResponseRef;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisEntityPostAction;
+import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisGetAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisPostAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.request.action.HttpExtAction;
 import com.webank.wedatasphere.exchangis.dss.appconn.response.result.ExchangisEntityRespResult;
@@ -84,7 +85,7 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
         }
 
         logger.info("executionRequestRef =>  executionRequestRef: {}", nodeRequestRef);
-        logger.info("executionRequestRefJson =>  executionRequestRefJson323432: {}", executionRequestRefJson);
+        logger.info("executionRequestRefJson =>  executionRequestRefJson: {}", executionRequestRefJson);
         try {
             nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString();
             logger.info("getExecutionRequestRefContext User: {}", nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
@@ -155,9 +156,11 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
         } catch (JsonProcessingException e) {
             logger.error("parser request error", e);
         }*/
+        String submitUser = ref.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString();
         HashMap<String, String> labels = new HashMap<>();
         labels.put("route", originLabels);
         exchangisEntityPostAction.addRequestPayload("labels", labels);
+        exchangisEntityPostAction.addRequestPayload("submitUser",submitUser);
 
         ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, ref.getWorkspace(), ref,
                 (requestRef) -> {
@@ -182,17 +185,17 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
             ref.getExecutionRequestRefContext().appendLog("dss execute sqoop error for execId is null when get state!");
             throw new ExternalOperationFailedException(90176, "dss execute sqoop error when get state");
         }
-        String url = baseUrl + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/job" + "/execution/" + getId(ref) +"/state";
+        String url = baseUrl + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/job" + "/execution/" + execId +"/status";
         ref.getExecutionRequestRefContext().appendLog("dss execute sqoop node,ready to submit from " + url);
 
-        ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
-        exchangisPostAction.setUrl(ref.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
+        ExchangisGetAction exchangisGetAction = new ExchangisGetAction();
+        exchangisGetAction.setUrl(ref.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
 
         try {
             ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, ref.getWorkspace(), ref,
                     (requestRef) -> {
                         // Build ref execution action
-                        return (HttpExtAction) exchangisPostAction;
+                        return exchangisGetAction;
                     /*return new ExchangisEntityPostAction<>(null,
                             nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());*/
                     }, Map.class);
@@ -209,34 +212,29 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
             switch (ExchangisStatusEnum.getEnum(status)) {
                 case Failed:
                     return RefExecutionState.Failed;
-                case Succeed:
+                case Success:
                     return RefExecutionState.Success;
-                case Cannelled:
+                case Cancelled:
                     return RefExecutionState.Killed;
                 default:
                     return RefExecutionState.Running;
             }
         } catch (Exception e) {
-            ref.getExecutionRequestRefContext().appendLog("dss execute view error for get state failed，url：" + url);
+            ref.getExecutionRequestRefContext().appendLog("dss execute sqoop error for get state failed，url：" + url);
             ref.getExecutionRequestRefContext().appendLog(e.getMessage());
-            throw new ExternalOperationFailedException(90176, "dss execute view error for get state failed", e);
+            throw new ExternalOperationFailedException(90176, "dss execute sqoop error for get state failed", e);
         }
     }
 
     @Override
     public ResponseRef getAsyncResult(AsyncExecutionRequestRef ref, String baseUrl, SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation, String execId) throws ExternalOperationFailedException {
-        String url = baseUrl + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/appJob" + "/execute/" + getId(ref);
+        /*String url = baseUrl + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/appJob" + "/execute/" + getId(ref);
         ref.getExecutionRequestRefContext().appendLog("dss execute sqoop node,ready to submit from " + url);
         ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
         exchangisEntityPostAction.setUser(ref.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
         String originLabels = ref.getExecutionRequestRefContext().getRuntimeMap().get("labels").toString();
-        /*String realLabels = "";
-        try {
-            Map responseMap = BDPJettyServerHelper.jacksonJson().readValue(originLabels, Map.class);
-            realLabels = responseMap.get("route").toString();
-        } catch (JsonProcessingException e) {
-            logger.error("parser request error", e);
-        }*/
+        String submitUser = ref.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString();
+        exchangisEntityPostAction.addRequestPayload("submitUser",submitUser);
         HashMap<String, String> labels = new HashMap<>();
         labels.put("route", originLabels);
         exchangisEntityPostAction.addRequestPayload("labels", labels);
@@ -246,8 +244,6 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
                     (requestRef) -> {
                         // Build ref execution action
                         return exchangisEntityPostAction;
-                    /*return new ExchangisEntityPostAction<>(null,
-                            nodeRequestRef.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());*/
                     }, Map.class);
             if (Objects.isNull(entity)) {
                 throw new ExternalOperationFailedException(31020, "The response entity cannot be empty", null);
@@ -266,7 +262,7 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
             ref.getExecutionRequestRefContext().appendLog("dss execute sqoop node failed，url：" + url);
             ref.getExecutionRequestRefContext().appendLog(e.getMessage());
             throw new ExternalOperationFailedException(90176, "dss execute sqoop node failed", e);
-        }
+        }*/
         return new ExchangisCompletedExecutionResponseRef(200);
     }
 
@@ -276,16 +272,16 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
             ref.getExecutionRequestRefContext().appendLog("dss execute sqoop error for execId is null when kill job!");
             throw new ExternalOperationFailedException(90176, "dss execute sqoop error when kill job");
         }
-        String url = baseUrl + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/job" + "/execution/" + getId(ref) + "/kill";
+        String url = baseUrl + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/job" + "/execution/" + execId + "/kill";
         ref.getExecutionRequestRefContext().appendLog("dss execute sqoop node,ready to submit from " + url);
 
-        ExchangisPostAction exchangisPostAction = new ExchangisPostAction();
+        ExchangisEntityPostAction exchangisPostAction = new ExchangisEntityPostAction();
         exchangisPostAction.setUrl(ref.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
 
         ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(url, ref.getWorkspace(), ref,
                 (requestRef) -> {
                     // Build ref execution action
-                    return (HttpExtAction) exchangisPostAction;
+                    return  exchangisPostAction;
                 }, Map.class);
 
         if (Objects.isNull(entity)) {
