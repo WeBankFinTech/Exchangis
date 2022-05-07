@@ -9,9 +9,9 @@ import java.util.Arrays;
 public enum ExchangisStatusEnum {
     Scheduled(0, "Scheduled"),
     Running(1, "Running"),
-    Succeed(2, "Succeed"),
+    Success(2, "Success"),
     Failed(3,"Failed"),
-    Cannelled(4, "Cancelled"),
+    Cancelled(4, "Cancelled"),
     Inited(5, "Inited"),
     Timeout(6, "Timeout");
 
