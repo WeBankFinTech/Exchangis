@@ -18,32 +18,26 @@ public class ExchangisProjectService extends ProjectService {
 
     @Override
     public boolean isProjectNameUnique() {
-        return false;
+        return true;
     }
 
     @Override
     protected ProjectCreationOperation createProjectCreationOperation() {
-        return new ExchangisProjectCreationOperation(this);
+        return new ExchangisProjectCreationOperation();
     }
 
     @Override
     protected ProjectUpdateOperation createProjectUpdateOperation() {
-        return new ExchangisProjectUpdateOperation(this);
+        return new ExchangisProjectUpdateOperation();
     }
 
     @Override
     protected ProjectDeletionOperation createProjectDeletionOperation() {
-        return new ExchangisProjectDeletionOperation(this);
+        return new ExchangisProjectDeletionOperation();
     }
 
     @Override
-    protected ProjectGetOperation createProjectGetOperation() {
-        return null;
-        //return new ExchangisProjectGetOperation(this);
-    }
-
-    @Override
-    protected ProjectUrlOperation createProjectUrlOperation() {
-        return null;
+    protected ProjectSearchOperation createProjectSearchOperation() {
+        return new ExchangisProjectGetOperation();
     }
 }
