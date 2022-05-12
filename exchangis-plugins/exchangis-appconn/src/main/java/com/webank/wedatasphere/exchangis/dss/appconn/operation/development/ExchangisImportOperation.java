@@ -41,10 +41,10 @@ public class ExchangisImportOperation extends AbstractDevelopmentOperation<Third
     public RefJobContentResponseRef importRef(ThirdlyRequestRef.ImportRequestRefImpl importRequestRef) throws ExternalOperationFailedException {
         logger.info("User {} try to import Exchangis job {} with jobContent: {}, refProjectId: {}, projectName: {}, nodeType: {}.",
                 importRequestRef.getUserName(), importRequestRef.getName(), importRequestRef.getRefJobContent(),
-                importRequestRef.getProjectRefId(), importRequestRef.getProjectName(), importRequestRef.getType());
+                importRequestRef.getRefProjectId(), importRequestRef.getProjectName(), importRequestRef.getType());
         DSSPostAction postAction = new DSSPostAction();
         postAction.setUser(importRequestRef.getUserName());
-        postAction.addRequestPayload("projectId", importRequestRef.getProjectRefId());
+        postAction.addRequestPayload("projectId", importRequestRef.getRefProjectId());
         postAction.addRequestPayload("projectVersion", "v1");
         postAction.addRequestPayload("flowVersion", importRequestRef.getNewVersion());
         postAction.addRequestPayload("resourceId", importRequestRef.getResourceMap().get(ImportRequestRef.RESOURCE_ID_KEY));

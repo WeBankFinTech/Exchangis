@@ -77,24 +77,7 @@ public class DefaultJobInfoService implements JobInfoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ExchangisJobVo createJob(ExchangisJobVo jobVo) {
-        // Define the entity
-        /*ExchangisJobEntity jobEntity = new ExchangisJobEntity();
-        jobEntity.setProjectId(jobVo.getProjectId());
-        jobEntity.setJobType(jobVo.getJobType());
-        jobEntity.setEngineType(jobVo.getEngineType());
-        jobEntity.setJobLabels(jobVo.getJobLabels());
-        jobEntity.setName(jobVo.getJobName());
-        jobEntity.setJobDesc(jobVo.getJobDesc());
-        jobEntity.setExecuteUser(jobVo.getExecuteUser());
-        jobEntity.setJobParams(jobVo.getJobParams());
-        jobEntity.setCreateUser(jobVo.getCreateUser());
-        jobEntity.setCreateTime(Calendar.getInstance().getTime());
-        jobEntity.setSource(Json.toJson(jobVo.getSource(), null));
-        jobEntityDao.addJobEntity(jobEntity);
-        jobVo.setId(jobEntity.getId());
-        jobVo.setCreateTime(jobEntity.getCreateTime());
-        return jobVo;*/
-        LOG.info("00005Sqoop job labels is: {}", jobVo.getJobLabels());
+        LOG.info("Sqoop job labels is: {}", jobVo.getJobLabels());
         ExchangisJobEntity jobEntity = new ExchangisJobEntity();
         jobEntity.setProjectId(jobVo.getProjectId());
         jobEntity.setJobType(jobVo.getJobType());

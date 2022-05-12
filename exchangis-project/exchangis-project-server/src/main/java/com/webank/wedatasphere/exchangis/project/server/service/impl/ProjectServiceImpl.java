@@ -10,8 +10,10 @@ import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
+import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProjectUser;
 import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectMapper;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
+import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectUserMapper;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
@@ -39,6 +41,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ExchangisJobDsBindMapper jobDataSourceBindMapper;
 
+    @Autowired
+    private ProjectUserMapper projectUserMapper;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long createProject(ExchangisProjectInfo projectVo, String userName) {
@@ -55,6 +60,45 @@ public class ProjectServiceImpl implements ProjectService {
         project.setCreateUser(userName);
         project.setCreateTime(Calendar.getInstance().getTime());
         this.projectMapper.insertOne(project);
+
+        List<ExchangisProjectUser> projectUsers = new ArrayList<>();
+        if (project.getViewUsers() != null && project.getViewUsers().length()!=0) {
+            for (String view : project.getViewUsers().split(",")) {
+                ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                projectUser.setProjectId(project.getId());
+                projectUser.setPrivUser(view);
+                projectUser.setPriv(1);
+                projectUser.setUpdateTime(project.getLastUpdateTime());
+                projectUsers.add(projectUser);
+            }
+        }
+        if (project.getEditUsers() != null && project.getEditUsers().length()!=0) {
+            for (String edit : project.getEditUsers().split(",")) {
+                ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                projectUser.setProjectId(project.getId());
+                projectUser.setPrivUser(edit);
+                projectUser.setPriv(3);
+                projectUser.setUpdateTime(project.getLastUpdateTime());
+                projectUsers.add(projectUser);
+            }
+        }
+        if (project.getExecUsers() != null && project.getExecUsers().length()!=0) {
+            for (String exec : project.getExecUsers().split(",")) {
+                ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                projectUser.setProjectId(project.getId());
+                projectUser.setPrivUser(exec);
+                projectUser.setPriv(2);
+                projectUser.setUpdateTime(project.getLastUpdateTime());
+                projectUsers.add(projectUser);
+            }
+        }
+        ExchangisProjectUser projectUser = new ExchangisProjectUser();
+        projectUser.setProjectId(project.getId());
+        projectUser.setPrivUser(project.getCreateUser());
+        projectUser.setPriv(0);
+        projectUser.setUpdateTime(project.getLastUpdateTime());
+        projectUsers.add(projectUser);
+        this.projectUserMapper.addProjectUser(projectUsers);
         return project.getId();
     }
 
@@ -80,6 +124,45 @@ public class ProjectServiceImpl implements ProjectService {
         updatedProject.setLastUpdateUser(userName);
         updatedProject.setLastUpdateTime(Calendar.getInstance().getTime());
         this.projectMapper.updateOne(updatedProject);
+
+        List<ExchangisProjectUser> projectUsers = new ArrayList<>();
+        if (updatedProject.getViewUsers() != null && updatedProject.getViewUsers().length()!=0) {
+            for (String view : updatedProject.getViewUsers().split(",")) {
+                ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                projectUser.setProjectId(updatedProject.getId());
+                projectUser.setPrivUser(view);
+                projectUser.setPriv(1);
+                projectUser.setUpdateTime(updatedProject.getLastUpdateTime());
+                projectUsers.add(projectUser);
+            }
+        }
+        if (updatedProject.getEditUsers() != null && updatedProject.getEditUsers().length()!=0) {
+            for (String edit : updatedProject.getEditUsers().split(",")) {
+                ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                projectUser.setProjectId(updatedProject.getId());
+                projectUser.setPrivUser(edit);
+                projectUser.setPriv(3);
+                projectUser.setUpdateTime(updatedProject.getLastUpdateTime());
+                projectUsers.add(projectUser);
+            }
+        }
+        if (updatedProject.getExecUsers() != null && updatedProject.getExecUsers().length()!=0) {
+            for (String exec : updatedProject.getExecUsers().split(",")) {
+                ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                projectUser.setProjectId(updatedProject.getId());
+                projectUser.setPrivUser(exec);
+                projectUser.setPriv(2);
+                projectUser.setUpdateTime(updatedProject.getLastUpdateTime());
+                projectUsers.add(projectUser);
+            }
+        }
+        ExchangisProjectUser projectUser = new ExchangisProjectUser();
+        projectUser.setProjectId(updatedProject.getId());
+        projectUser.setPrivUser(updatedProject.getCreateUser());
+        projectUser.setPriv(0);
+        projectUser.setUpdateTime(updatedProject.getLastUpdateTime());
+        projectUsers.add(projectUser);
+        this.projectUserMapper.updateProjectUser(projectUsers);
     }
 
     @Override
