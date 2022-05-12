@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.project.server.restful.external;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
+import com.webank.wedatasphere.exchangis.project.server.utils.AuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
@@ -76,8 +77,8 @@ public class ExchangisProjectDssAppConnRestfulApi {
         String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectStored = projectService.getProjectById(Long.valueOf(projectVo.getId()));
-            if (!hasAuthority(username, projectStored)){
-                return Message.error("You have no permission to update (没有项目的更新权限)");
+            if (!AuthorityUtils.hasOwnAuthority(Long.parseLong(projectVo.getId()), username) && !AuthorityUtils.hasEditAuthority(Long.parseLong(projectVo.getId()), username)) {
+                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
             }
             String domain = projectStored.getDomain();
             if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
