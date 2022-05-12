@@ -36,10 +36,10 @@ public class ExchangisExportOperation
     public ExportResponseRef exportRef(ThirdlyRequestRef.RefJobContentRequestRefImpl exportRequestRef) throws ExternalOperationFailedException {
         logger.info("User {} try to export Exchangis job {} with jobContent: {}, refProjectId: {}, projectName: {}, nodeType: {}.",
                 exportRequestRef.getUserName(), exportRequestRef.getName(), exportRequestRef.getRefJobContent(),
-                exportRequestRef.getProjectRefId(), exportRequestRef.getProjectName(), exportRequestRef.getType());
+                exportRequestRef.getRefProjectId(), exportRequestRef.getProjectName(), exportRequestRef.getType());
         DSSPostAction postAction = new DSSPostAction();
         postAction.setUser(exportRequestRef.getUserName());
-        postAction.addRequestPayload("projectId", exportRequestRef.getProjectRefId());
+        postAction.addRequestPayload("projectId", exportRequestRef.getRefProjectId());
         postAction.addRequestPayload("partial", true);
         String nodeType = exportRequestRef.getParameter("nodeType").toString();
         Long id = (Long) exportRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID);

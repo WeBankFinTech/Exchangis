@@ -38,10 +38,10 @@ public class ExchangisRefCopyOperation extends
     public RefJobContentResponseRef copyRef(ThirdlyRequestRef.CopyRequestRefImpl copyRequestRef) throws ExternalOperationFailedException {
         logger.info("User {} try to copy Exchangis job {} with jobContent: {}, refProjectId: {}, projectName: {}, nodeType: {}.",
                 copyRequestRef.getUserName(), copyRequestRef.getName(), copyRequestRef.getRefJobContent(),
-                copyRequestRef.getProjectRefId(), copyRequestRef.getProjectName(), copyRequestRef.getType());
+                copyRequestRef.getRefProjectId(), copyRequestRef.getProjectName(), copyRequestRef.getType());
         DSSPostAction postAction = new DSSPostAction();
         postAction.setUser(copyRequestRef.getUserName());
-        postAction.addRequestPayload("projectId", copyRequestRef.getProjectRefId());
+        postAction.addRequestPayload("projectId", copyRequestRef.getRefProjectId());
         postAction.addRequestPayload("partial", true);
         postAction.addRequestPayload("projectVersion", "v1");
         postAction.addRequestPayload("flowVersion", copyRequestRef.getNewVersion());

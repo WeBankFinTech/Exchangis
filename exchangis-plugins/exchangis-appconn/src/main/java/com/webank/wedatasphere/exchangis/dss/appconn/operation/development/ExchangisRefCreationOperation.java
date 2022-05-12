@@ -41,10 +41,10 @@ public class ExchangisRefCreationOperation
     public RefJobContentResponseRef createRef(ThirdlyRequestRef.DSSJobContentRequestRefImpl createRequestRef) throws ExternalOperationFailedException {
         logger.info("User {} try to create Exchangis job {} with jobContent: {}, refProjectId: {}, projectName: {}, nodeType:{}.",
                 createRequestRef.getUserName(), createRequestRef.getName(), createRequestRef.getDSSJobContent(),
-                createRequestRef.getProjectRefId(), createRequestRef.getProjectName(), createRequestRef.getType());
+                createRequestRef.getRefProjectId(), createRequestRef.getProjectName(), createRequestRef.getType());
         DSSPostAction postAction = new DSSPostAction();
         postAction.setUser(createRequestRef.getUserName());
-        addExchangisJobInfo(postAction, createRequestRef, createRequestRef.getProjectRefId());
+        addExchangisJobInfo(postAction, createRequestRef, createRequestRef.getRefProjectId());
         InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(createRequestRef, createUrl, postAction, ssoRequestOperation);
         return RefJobContentResponseRef.newBuilder().setRefJobContent(responseRef.getData()).success();
     }

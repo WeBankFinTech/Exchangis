@@ -23,12 +23,12 @@ public class ExchangisRefUpdateOperation extends AbstractDevelopmentOperation<Th
     public ResponseRef updateRef(ThirdlyRequestRef.UpdateRequestRefImpl updateRequestRef) throws ExternalOperationFailedException {
         logger.info("User {} try to update Exchangis job {} with jobContent: {}, refProjectId: {}, projectName: {}, nodeType: {}.",
                 updateRequestRef.getUserName(), updateRequestRef.getName(), updateRequestRef.getDSSJobContent(),
-                updateRequestRef.getProjectRefId(), updateRequestRef.getProjectName(), updateRequestRef.getType());
+                updateRequestRef.getRefProjectId(), updateRequestRef.getProjectName(), updateRequestRef.getType());
         Integer id = (Integer) updateRequestRef.getDSSJobContent().get(Constraints.REF_JOB_ID);
         String url = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "/appJob/" + id));
         DSSPutAction postAction = new DSSPutAction();
         postAction.setUser(updateRequestRef.getUserName());
-        ExchangisRefCreationOperation.addExchangisJobInfo(postAction, updateRequestRef, updateRequestRef.getProjectRefId());
+        ExchangisRefCreationOperation.addExchangisJobInfo(postAction, updateRequestRef, updateRequestRef.getRefProjectId());
         postAction.addRequestPayload("id", id);
         InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(updateRequestRef, url, postAction, ssoRequestOperation);
         return RefJobContentResponseRef.newBuilder().setRefJobContent(responseRef.getData()).success();
