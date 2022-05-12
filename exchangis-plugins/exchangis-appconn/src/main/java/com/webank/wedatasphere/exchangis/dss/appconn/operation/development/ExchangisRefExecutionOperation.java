@@ -31,7 +31,7 @@ public class ExchangisRefExecutionOperation
         String user = executionRequestRef.getExecutionRequestRefContext().getUser();
         logger.info("User {} try to execute Exchangis job {} with jobContent: {}, refProjectId: {}, projectName: {}, nodeType:{}.",
                 user, executionRequestRef.getName(), executionRequestRef.getRefJobContent(),
-                executionRequestRef.getProjectRefId(), executionRequestRef.getProjectName(), executionRequestRef.getType());
+                executionRequestRef.getRefProjectId(), executionRequestRef.getProjectName(), executionRequestRef.getType());
         Long id = (Long) executionRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID);
         String url = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "appJob/execute/" + id));
         executionRequestRef.getExecutionRequestRefContext().appendLog("try to execute " + executionRequestRef.getType() + " node, ready to request to " + url);

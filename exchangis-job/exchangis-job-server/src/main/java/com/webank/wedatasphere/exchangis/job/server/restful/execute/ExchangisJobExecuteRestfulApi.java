@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
+import com.webank.wedatasphere.exchangis.job.server.utils.AuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobProgressVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobTaskVo;
@@ -58,7 +59,8 @@ public class ExchangisJobExecuteRestfulApi {
             }
             // Convert to the job info
             jobInfo = new ExchangisJobInfo(jobVo);
-            if (!hasAuthority(loginUser, jobInfo)){
+
+            if (!AuthorityUtils.hasOwnAuthority(jobVo.getProjectId(), loginUser) && !AuthorityUtils.hasExecAuthority(jobVo.getProjectId(), loginUser)) {
                 return Message.error("You have no permission to execute job (没有执行任务权限)");
             }
             // Send to execute service
