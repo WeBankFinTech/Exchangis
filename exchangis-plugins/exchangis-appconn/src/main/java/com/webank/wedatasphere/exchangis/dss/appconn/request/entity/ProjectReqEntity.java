@@ -9,6 +9,9 @@ import java.util.Map;
  * Request entity of project
  */
 public class ProjectReqEntity {
+
+    private Long id;
+
     private String projectName;
 
     private String description;
@@ -55,7 +58,8 @@ public class ProjectReqEntity {
         setExecUsers(owner);
     }
 
-    public ProjectReqEntity(String editUsers, String viewUsers, String execUsers, String projectName, String description, Map<String, Object> source){
+    public ProjectReqEntity(Long id, String editUsers, String viewUsers, String execUsers, String projectName, String description, Map<String, Object> source){
+        this.id = id;
         this.projectName = projectName;
         this.description = description;
         this.source = source;
@@ -122,5 +126,13 @@ public class ProjectReqEntity {
 
     public void setLabels(String labels) {
         this.labels = labels;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

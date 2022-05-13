@@ -34,7 +34,7 @@ public abstract class AbstractExchangisProjectOperation extends AbstractExchangi
         String editUsers= StringUtils.join( projectRequestRef.getEditUsers(),",");
         String viewUsers = StringUtils.join( projectRequestRef.getAccessUsers(),",");
         String execUsers = StringUtils.join( projectRequestRef.getReleaseUsers(),",");
-                ProjectReqEntity projectReqEntity = new ProjectReqEntity(editUsers,viewUsers,execUsers,
+                ProjectReqEntity projectReqEntity = new ProjectReqEntity(projectRequestRef.getId(), editUsers,viewUsers,execUsers,
                 projectRequestRef.getName(), projectRequestRef.getDescription(), source);
         projectReqEntity.setLabels(AppConnUtils.serializeDssLabel(projectRequestRef.getDSSLabels()));
         // Try to set the project request ref into the source map
