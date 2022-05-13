@@ -23,7 +23,8 @@ public class ExchangisProjectGetOperation extends AbstractStructureOperation<Ref
 
     @Override
     public ProjectResponseRef searchProject(RefProjectContentRequestRef.RefProjectContentRequestRefImpl projectRequestRef) throws ExternalOperationFailedException {
-        String url = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "appProject/check/" + projectRequestRef.getName()));
+
+        String url = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "appProject/check/" + projectRequestRef.getProjectName()));
         logger.info("User {} try to search Exchangis project with name: {}, the url is {}.", projectRequestRef.getUserName(),
                 projectRequestRef.getProjectName(), url);
         DSSPostAction postAction = new DSSPostAction();
