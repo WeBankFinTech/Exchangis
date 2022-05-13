@@ -33,6 +33,7 @@ public class ExchangisHttpUtils {
     public static InternalResponseRef getResponseRef(WorkspaceRequestRef requestRef, String url,
                                                      DSSHttpAction httpAction,
                                                      SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation) {
+
         SSOUrlBuilderOperation ssoUrlBuilderOperation = SSOHelper.createSSOUrlBuilderOperation(requestRef.getWorkspace());
         ssoUrlBuilderOperation.setAppName(Constraints.EXCHANGIS_APPCONN_NAME);
         ssoUrlBuilderOperation.setReqUrl(url);

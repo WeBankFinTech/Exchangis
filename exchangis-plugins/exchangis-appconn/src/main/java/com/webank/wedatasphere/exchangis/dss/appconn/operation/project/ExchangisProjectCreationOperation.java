@@ -42,7 +42,7 @@ public class ExchangisProjectCreationOperation extends AbstractStructureOperatio
         logger.info("User {} created a Exchangis project {} with response {}.", projectRequestRef.getUserName(), projectRequestRef.getDSSProject().getName(), responseRef.getResponseBody());
         long projectId;
         try {
-            projectId = Long.parseLong(String.valueOf(responseRef.getData().get(Constraints.PROJECT_ID)));
+            projectId = new Double(responseRef.getData().get(Constraints.PROJECT_ID).toString()).longValue();
         } catch (Exception e){
             throw new ExternalOperationFailedException(31020, "Fail to resolve the project id from response entity", e);
         }
