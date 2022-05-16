@@ -1,0 +1,13 @@
+server:
+  port: 9322
+spring:
+  application:
+    name: exchangis-server
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh,info
+logging:
+  config: classpath:log4j2.xml

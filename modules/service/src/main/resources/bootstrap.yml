@@ -1,7 +1,0 @@
-spring:
-  jackson:
-    parser:
-      allow_unquoted_control_chars: true
-      allow_single_quotes: true
-    generator:
-      escape_non_ascii: false

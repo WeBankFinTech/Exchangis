@@ -1,0 +1,76 @@
+{
+  "dataSources": {
+    "source_id": "HIVE.10001.test_db.test_table",
+    "sink_id": "MYSQL.10002.mask_db.mask_table"
+  },
+  "params": {
+    "sources": [
+      {
+        "config_key": "exchangis.job.ds.params.hive.transform_type",
+        "config_name": "传输方式",
+        "config_value": "二进制",
+        "sort": 1
+      },
+      {
+        "config_key": "exchangis.job.ds.params.hive.partitioned_by",
+        "config_name": "分区信息",
+        "config_value": "2021-07-30",
+        "sort": 2
+      },
+      {
+        "config_key": "exchangis.job.ds.params.hive.empty_string",
+        "config_name": "空值字符",
+        "config_value": "",
+        "sort": 3
+      }
+    ],
+    "sinks": [
+      {
+        "config_key": "exchangis.job.ds.params.mysql.write_type",
+        "config_name": "写入方式",
+        "config_value": "insert",
+        "sort": 1
+      },
+      {
+        "config_key": "exchangis.job.ds.params.mysql.batch_size",
+        "config_name": "批量大小",
+        "config_value": 1000,
+        "sort": 2
+      }
+    ]
+  },
+  "transforms": [
+    {
+      "source_field_name": "name",
+      "source_field_type": "VARCHAR",
+      "sink_field_name": "c_name",
+      "sink_field_type": "VARCHAR"
+    },
+    {
+      "source_field_name": "year",
+      "source_field_type": "VARCHAR",
+      "sink_field_name": "d_year",
+      "sink_field_type": "VARCHAR"
+    }
+  ],
+  "settings": [
+    {
+      "config_key": "rate_limit",
+      "config_name": "作业速率限制",
+      "config_value": 102400,
+      "sort": 1
+    },
+    {
+      "config_key": "record_limit",
+      "config_name": "作业记录数限制",
+      "config_value": 10000,
+      "sort": 2
+    },
+    {
+      "config_key": "max_errors",
+      "config_name": "最多错误记录数",
+      "config_value": 100,
+      "sort": 3
+    }
+  ]
+}

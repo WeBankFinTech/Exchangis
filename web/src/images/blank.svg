@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="203px" height="137px" viewBox="0 0 203 137" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组 5</title>
+    <defs>
+        <rect id="path-1" x="0.55026455" y="6.14173228" width="160.322751" height="112.598425" rx="3.07086614"></rect>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="160.322751" height="112.598425" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+        <rect id="path-3" x="6.67724868" y="0" width="160.322751" height="112.598425" rx="3.07086614"></rect>
+        <filter x="-4.7%" y="-6.7%" width="109.4%" height="113.3%" filterUnits="objectBoundingBox" id="filter-4">
+            <feMorphology radius="1" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="0" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.850980392   0 0 0 0 0.850980392   0 0 0 0 0.850980392  0 0 0 1 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-5" x="13.3148148" y="7.16535433" width="146.537037" height="85.4724409"></rect>
+        <mask id="mask-6" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="146.537037" height="85.4724409" fill="white">
+            <use xlink:href="#path-5"></use>
+        </mask>
+        <rect id="path-7" x="17.9100529" y="10.2362205" width="145.005291" height="78.3070866"></rect>
+        <filter x="-3.1%" y="-5.7%" width="106.2%" height="111.5%" filterUnits="objectBoundingBox" id="filter-8">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.850980392   0 0 0 0 0.850980392   0 0 0 0 0.850980392  0 0 0 1 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="数据交换Exchangis" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="数据交换-具体项目-任务列表" transform="translate(-720.000000, -357.000000)">
+            <g id="编组-6" transform="translate(673.000000, 362.000000)">
+                <g id="编组-5" transform="translate(47.000000, 0.000000)">
+                    <g id="image">
+                        <path d="M68.8156116,112.870821 C68.8156116,112.870821 68.0432798,124.467571 66.7974775,126.62496 C65.5516751,128.782348 60.2883598,129.563231 60.2883598,129.563231 L113.646348,129.563231 C113.646348,129.563231 108.153277,128.494663 106.498649,126.62496 C104.844022,124.755256 104.844021,112.598425 104.844021,112.598425 L68.8156115,112.598425" id="Path-636" fill="#EFEFEF"></path>
+                        <use id="Rectangle-353" stroke="#D9D9D9" mask="url(#mask-2)" stroke-width="1.625" fill="#FFFFFF" stroke-dasharray="1.023622009643289" xlink:href="#path-1"></use>
+                        <g id="Rectangle-353">
+                            <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-3"></use>
+                        </g>
+                        <use id="Rectangle-354" stroke="#D9D9D9" mask="url(#mask-6)" stroke-width="1.625" fill="#EFEFEF" stroke-dasharray="1.023622009643289" xlink:href="#path-5"></use>
+                        <ellipse id="Oval-188" fill="#01C457" cx="86.8386243" cy="3.58267717" rx="1.02116402" ry="1.02362205"></ellipse>
+                        <g id="Rectangle-365">
+                            <use fill="black" fill-opacity="1" filter="url(#filter-8)" xlink:href="#path-7"></use>
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-7"></use>
+                        </g>
+                        <path d="M63.8624339,56.8110236 L63.8624339,74.2125984 L33.2275132,74.2125984 L33.2275132,56.8110236 L63.8624339,56.8110236 Z M105.730159,56.8110236 L105.730159,74.2125984 L75.0952381,74.2125984 L75.0952381,56.8110236 L105.730159,56.8110236 Z M147.597884,56.8110236 L147.597884,74.2125984 L116.962963,74.2125984 L116.962963,56.8110236 L147.597884,56.8110236 Z M46.5026455,53.7401575 L46.5026455,54.7637795 L33.2275132,54.7637795 L33.2275132,53.7401575 L46.5026455,53.7401575 Z M63.8624339,28.1496063 L63.8624339,45.5511811 L33.2275132,45.5511811 L33.2275132,28.1496063 L63.8624339,28.1496063 Z M105.730159,28.1496063 L105.730159,45.5511811 L75.0952381,45.5511811 L75.0952381,28.1496063 L105.730159,28.1496063 Z M46.5026455,25.0787402 L46.5026455,26.1023622 L33.2275132,26.1023622 L33.2275132,25.0787402 L46.5026455,25.0787402 Z" id="Combined-Shape" fill="#EFEFEF"></path>
+                    </g>
+                    <g id="编组-4" transform="translate(110.000000, 39.000000)">
+                        <path d="M90.0242533,85.2863706 L69.2083227,64.4757529 C82.2182793,49.0535988 81.4748532,25.9203675 66.9780444,11.4272588 C51.6448813,-3.80908627 26.8330355,-3.80908627 11.4998724,11.4272588 C-3.83329078,26.7565084 -3.83329078,51.5620214 11.4998724,66.8912711 C25.9966811,81.3843798 49.1358182,82.1276161 64.5619096,69.1209801 L85.2849119,90.0245023 C86.5859076,91.3251659 88.7232576,91.3251659 90.0242533,90.0245023 C91.3252489,88.7238387 91.3252489,86.5870342 90.0242533,85.2863706 Z" id="形状" stroke="#EBEBEB" stroke-width="3" fill="#FFFFFF" fill-rule="nonzero"></path>
+                        <path d="M17.2277263,61.7722737 C4.92409123,49.4686386 4.92409123,29.5313614 17.2277263,17.2277263 C29.5313614,4.92409123 49.4686386,4.92409123 61.7722737,17.2277263 C74.0759088,29.5313614 74.0759088,49.4686386 61.7722737,61.7722737 C49.4686386,74.0759088 29.4415538,74.0759088 17.2277263,61.7722737 Z" id="路径" stroke="#EBEBEB" stroke-width="2" fill="#FFFFFF"></path>
+                        <path d="M33.32,43 C33.66,43 33.96,42.88 34.2,42.66 C34.42,42.44 34.54,42.16 34.54,41.8 C34.54,41.46 34.42,41.18 34.2,40.96 C33.96,40.72 33.68,40.62 33.32,40.62 C32.98,40.62 32.7,40.72 32.48,40.96 C32.24,41.18 32.12,41.46 32.12,41.8 C32.12,42.14 32.24,42.42 32.48,42.66 C32.7,42.88 32.98,43 33.32,43 Z M40,43 C40.34,43 40.64,42.88 40.88,42.66 C41.1,42.44 41.22,42.16 41.22,41.8 C41.22,41.46 41.1,41.18 40.88,40.96 C40.64,40.72 40.34,40.62 40,40.62 C39.66,40.62 39.38,40.72 39.14,40.96 C38.9,41.18 38.8,41.46 38.8,41.8 C38.8,42.14 38.9,42.42 39.14,42.66 C39.38,42.88 39.66,43 40,43 Z M46.66,43 C47,43 47.28,42.88 47.52,42.66 C47.76,42.44 47.88,42.16 47.88,41.8 C47.88,41.46 47.76,41.18 47.52,40.96 C47.28,40.72 47,40.62 46.66,40.62 C46.32,40.62 46.04,40.72 45.8,40.96 C45.56,41.18 45.46,41.46 45.46,41.8 C45.46,42.14 45.56,42.42 45.8,42.66 C46.04,42.88 46.32,43 46.66,43 Z" id="…" fill="#D9D9D9" fill-rule="nonzero"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
