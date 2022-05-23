@@ -3,8 +3,7 @@
 - MySQL (5.5+) 必选，对应客户端可以选装, Linux服务上若安装mysql的客户端可以通过部署脚本快速初始化数据库
 - JDK (1.8.0_141) 必选
 - Maven (3.6.1+) 必选
-- SQOOP (1.4.6) 可选，如果想要SQOOP做传输引擎，可以安装SQOOP，SQOOP安装依赖Hive,Hadoop环境，这里就不展开来讲
-- Python (2.x) 可选，主要用于调度执行底层DataX的启动脚本，默认的方式是以Java子进程方式执行DataX，用户可以选择以Python方式来做自定义的改造
+- SQOOP (1.4.6) 必选，如果想要SQOOP做传输引擎，可以安装SQOOP，SQOOP安装依赖Hive,Hadoop环境，这里就不展开来讲
 - DSS1.0.1必选，确保安装部署环境下有DSS服务，以便进行APPCONN接入
 - Linkis1.1.0必选，请求的路由规则，执行引擎等均需要linkis
 
@@ -30,15 +29,21 @@ target/wedatasphere-exchangis-{VERSION}.tar.gz
 ```
 tar -zxvf wedatasphere-exchangis-{VERSION}.tar.gz
 ```
-在解压出来的目录结构为： 
+在解压出来的目录结构为：
+```
 config
+
 db
+
 exchangis-extds
+
 packages
+
 sbin
+```
 其中，config为项目相关配置文件，db为数据库表sql文件夹，sbin为各种自动化脚本存放的文件夹。
 #### 2）执行一键安装脚本
-进入解压后的目录，找到bin目录下面的install.sh文件，如果选择交互式的安装，则直接执行
+进入解压后的目录，找到sbin目录下面的install.sh文件，如果选择交互式的安装，则直接执行
 ```
 ./sbin/install.sh
 ```
@@ -95,7 +100,10 @@ Please input the linkis server url(default: ""): （linkis服务url，必配）
 ```
 ./sbin/daemon.sh restart server
 ```
+出现以下提示，说明exchangis服务启动成功
+![企业微信截图_16532930262583](https://user-images.githubusercontent.com/27387830/169773764-1c5ed6fb-35e9-48cb-bac8-6fa7f738368a.png)
 
+```
 #### 5）查看服务
 Exchangis1.0通过EUREKA查看启动的服务，其端口号在配置文件application-exchangis.yml。通过服务端口在网页上查看。
 可根据需要修改服务IP及端口号，配置文件为application-exchangis.yml
