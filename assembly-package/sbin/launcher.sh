@@ -176,7 +176,7 @@ wait_for_startup(){
             return 0
         fi
         sleep ${SLEEP_TIMEREVAL_S}
-        now_s=`date '+%s'`
+        now_s=`date '+%s'`  #计算当前时间时间戳
     done
     return 1
 }
