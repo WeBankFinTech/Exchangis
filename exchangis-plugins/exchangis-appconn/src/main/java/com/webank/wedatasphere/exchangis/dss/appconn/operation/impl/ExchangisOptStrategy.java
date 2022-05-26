@@ -147,6 +147,15 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
         ExchangisEntityPostAction exchangisEntityPostAction = new ExchangisEntityPostAction();
         exchangisEntityPostAction.setUser(ref.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString());
         String originLabels = ref.getExecutionRequestRefContext().getRuntimeMap().get("labels").toString();
+        String realLabels = null;
+        if (originLabels.contains("route")) {
+            Map<String, String> changeData = BDPJettyServerHelper.gson().fromJson(originLabels, Map.class);
+            realLabels = changeData.get("route");
+        } else {
+            realLabels = originLabels;
+        }
+        logger.info("realLables7777: {}", realLabels);
+        logger.info("originLables988888: {}", originLabels);
         setSSORequestService(developmentService);
         /*String realLabels = "";
         try {
@@ -158,7 +167,7 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
         }*/
         String submitUser = ref.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString();
         HashMap<String, String> labels = new HashMap<>();
-        labels.put("route", originLabels);
+        labels.put("route", realLabels);
         exchangisEntityPostAction.addRequestPayload("labels", labels);
         exchangisEntityPostAction.addRequestPayload("submitUser",submitUser);
 
