@@ -14,7 +14,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <hibernate.validator>6.0.15.Final</hibernate.validator>
+        <hibernate.validator>5.1.1.Final</hibernate.validator>
     </properties>
 
     <dependencies>
