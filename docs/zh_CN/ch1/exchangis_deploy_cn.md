@@ -90,7 +90,9 @@ Please input the linkis server url(default: ""): （linkis服务url，必配）
 以上参数均可自行在exchangis-server.properties文件中自行配置
 
 配置datasource及launcher的token
+
 为了能够访问数据源服务及通过linkis服务认证，您需要在exchangis-server.properties配置以下几个token相关参数，该字段可在linkis表linkis_mg_gateway_auth_token的token_name字段获取，注意，需根据您实际安装linkis的数据库表内容做变动，此值不唯一
+
 wds.exchangis.datasource.client.authtoken.key=
 wds.exchangis.datasource.client.authtoken.value=
 wds.exchangis.client.linkis.token.value=
