@@ -90,12 +90,15 @@ Please input the linkis server url(default: ""): （linkis服务url，必配）
 以上参数均可自行在exchangis-server.properties文件中自行配置
 
 配置datasource及launcher的token
-为了能够访问数据源服务及通过linkis服务认证，您需要在exchangis-server.properties配置以下几个token相关参数，该字段可在linkis表linkis_mg_gateway_auth_token的token_name字段获取，需根据您实际安装linkis的数据库地址做变动。
+
+为了能够访问数据源服务及通过linkis服务认证，您需要在exchangis-server.properties配置以下几个token相关参数，该字段可在linkis表linkis_mg_gateway_auth_token的token_name字段获取，注意，需根据您实际安装linkis的数据库表内容做变动，此值不唯一
+
 wds.exchangis.datasource.client.authtoken.key=
 wds.exchangis.datasource.client.authtoken.value=
 wds.exchangis.client.linkis.token.value=
 
 ![image](https://user-images.githubusercontent.com/27387830/170611761-1ba315d8-04e3-4b6d-b85d-0b095ef17dce.png)
+
 
 #### 4）启动服务
 一键启动所有服务
@@ -113,7 +116,7 @@ wds.exchangis.client.linkis.token.value=
 
 #### 5）查看服务
 Exchangis1.0通过EUREKA查看启动的服务，其端口号在配置文件application-exchangis.yml。通过服务端口在网页上查看。
-需要根据实际eureka地址修改服务IP及端口号，配置文件为application-exchangis.yml
+可根据需要修改服务IP及端口号，配置文件为application-exchangis.yml
 ```
 port: XXXX
 defaultZone: http://127.0.0.1:3306/eureka/
