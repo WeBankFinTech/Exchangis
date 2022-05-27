@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.restful.external;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
@@ -13,6 +14,7 @@ import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectMapper;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.server.BDPJettyServerHelper;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
@@ -157,6 +159,13 @@ public class ExchangisJobDssAppConnRestfulApi {
      */
     @RequestMapping( value = "/execute/{id}", method = RequestMethod.POST)
     public Message executeJob(@PathVariable("id") Long id, HttpServletRequest request, @RequestBody Map<String, Object> params) {
+        try {
+            LOG.info("start to parse params8909");
+            String paramString = BDPJettyServerHelper.jacksonJson().writeValueAsString(params);
+            LOG.error("paramString999879: {}", paramString);
+        } catch (JsonProcessingException e) {
+            LOG.error("parse execute content error: {}", e.getMessage());
+        }
         String submitUser = params.get("submitUser").toString();
         String loginUser = SecurityFilter.getLoginUsername(request);
         Message result = Message.ok();
