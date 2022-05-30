@@ -187,9 +187,9 @@ public class ExchangisJobDssAppConnRestfulApi {
             ExchangisProject project = projectMapper.getDetailById(jobVo.getProjectId());
             LOG.info("project: {}, getProjectId:{}",project,jobVo.getProjectId());
             //find project user authority
-            if (!hasExecuteAuthority(submitUser, project)){
+            /*if (!hasAuthority(submitUser, jobVo)){
                 return Message.error("You have no permission to execute job (没有执行DSS任务权限)");
-            }
+            }*/
             // Send to execute service
             String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
                     jobInfo.getExecuteUser() : loginUser);
