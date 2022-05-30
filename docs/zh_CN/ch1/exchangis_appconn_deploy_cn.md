@@ -67,27 +67,43 @@ sql语句如下（在init.sql文件中）：
 ![image](https://user-images.githubusercontent.com/27387830/169786065-1391cf24-f88c-4f47-9a26-3d810fbafa22.png)
 
 #### 3）执行脚本进行自动化安装
-进入已经安装好的Exchangis目录，找到sbin目录下面的install-appconn.sh文件，目前安装采用默认安装的方式，将打包出来的exchangis-appconn.zip包和install-appconn.sh文件拷贝到{EXCHANGIS_INSTALL_HOME}/dss-appconns目录下。直接执行以下命令：
+进入DSS安装目录下，将exchangis.zip文件(APPCONN安装包)放入{DSS_INSTALL_HOME}/dss-appconns目录下并解压。
+
+在解压出来的{DSS_INSTALL_HOME}/dss-appconns/exchangis/db目录下找到安装部署脚本appconn-install.sh，并使用如下命令执行安装部署脚本
 
 ```
-./sbin/install-appconn.sh
+sh appconn-install.sh
 ```
+
 该脚本为交互式安装，安装步骤依次分为以下几步：
-1.	解压缩lib包
+1.	判断已安装好的exchangis是以域名访问还是ip加port形式访问。
 
-当出现该提醒时：Do you want to decompress this package: [exchangis-appconn.zip]
+当出现该提醒时：Whether your exchangis appconn is accessed with a domain name？(Y/N)
 
-输入y确认解压，就会将项目的实际zip包解压到dss项目的APPCONN目录{DSS_INSTALL_HOME}/dss-appconns下。
+输入Y，说明您的exchangis使用域名进行访问，需要按照第二章第五点在init.sql中提前配置相应参数，再执行脚本接下来的数据库初始化步骤。否则为使用ip和端口的形式访问exchangis，为脚本交互式配置参数。
+
+输入N，会出现以下提示
+
+```
+Please enter the ip of appconn: （输入访问excahngis的IP）
+Please enter the port of appconn: （输入访问exchangis的端口）
+```
+
 2.	exchangis-appconn数据库初始化。
 
 
 #### 4）exchangis-appconn数据库初始化
 如果你的服务上安装有mysql命令，在执行安装脚本的过程中则会出现以下提醒：
 ```
-Scan out mysql command, so begin to initalize the dss-appconn database
-Do you want to initalize database with sql: [{INSTALL_PATH}/db/init.sql]? (Y/N)y
+Scan out mysql command, so begin to initalize the database
+Do you want to initalize database with sql: [{INSTALL_PATH}/bin/exchangis-init.sql]? (Y/N)y
+Please input the db host(default: 127.0.0.1): 
+Please input the db port(default: 3306): 
+Please input the db username(default: root): 
+Please input the db password(default: ): 
+Please input the db name(default: exchangis)
 ```
-依据init.sql中的数据库配置，大部分情况下即可快速完成初始化。
+按照提示输入数据库地址，端口号，用户名，密码以及数据库名称，大部分情况下即可快速完成初始化。
 
 如果服务上并没有安装mysql命令，则可以取用目录下/db/init.sql脚本去手动执行。（需提前知道您的DSS数据库地址）
 
