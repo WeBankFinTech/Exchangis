@@ -1070,7 +1070,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         PublishDataSourceVersionResult result;
         try {
             result = linkisDataSourceRemoteClient.publishDataSourceVersion(
-                    new PublishDataSourceVersionAction.Builder().setUser(userName).setDataSourceId(Long.parseLong(id + "")).setVersion(Long.parseLong(version + "")).build()
+                    new PublishDataSourceVersionAction.Builder().setUser(userName).setDataSourceId(Long.parseLong(id + "")).setVersion(String.valueOf(Long.parseLong(version + ""))).build()
             );
         } catch (Exception e) {
             if (e instanceof ErrorException) {
