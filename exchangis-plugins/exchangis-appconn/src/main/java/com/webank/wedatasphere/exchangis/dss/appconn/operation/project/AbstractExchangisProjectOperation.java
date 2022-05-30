@@ -31,9 +31,12 @@ public abstract class AbstractExchangisProjectOperation extends AbstractExchangi
     protected ProjectReqEntity getProjectEntity(ProjectRequestRef projectRequestRef){
             // Build project request entity
         Map<String, Object> source = new HashMap<>();
-        String editUsers= StringUtils.join( projectRequestRef.getEditUsers(),",");
+        /*String editUsers= StringUtils.join( projectRequestRef.getEditUsers(),",");
         String viewUsers = StringUtils.join( projectRequestRef.getAccessUsers(),",");
-        String execUsers = StringUtils.join( projectRequestRef.getReleaseUsers(),",");
+        String execUsers = StringUtils.join( projectRequestRef.getReleaseUsers(),",");*/
+        String editUsers= projectRequestRef.getName();
+        String viewUsers = projectRequestRef.getName();
+        String execUsers = projectRequestRef.getName();
                 ProjectReqEntity projectReqEntity = new ProjectReqEntity(projectRequestRef.getId(), editUsers,viewUsers,execUsers,
                 projectRequestRef.getName(), projectRequestRef.getDescription(), source);
         projectReqEntity.setLabels(AppConnUtils.serializeDssLabel(projectRequestRef.getDSSLabels()));

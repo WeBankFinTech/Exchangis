@@ -1,3 +1,4 @@
+/*
 package com.webank.wedatasphere.exchangis.dss.appconn.operation.project;
 
 import com.webank.wedatasphere.dss.common.entity.project.DSSProject;
@@ -23,10 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+*/
 /**
  * @author tikazhang
  * @Date 2022/3/22 0:48
- */
+ *//*
+
 public class ExchangisProjectGetOperation extends AbstractExchangisProjectOperation implements ProjectGetOperation {
     private static Logger LOG = LoggerFactory.getLogger(ExchangisProjectDeletionOperation.class);
 
@@ -86,4 +89,4 @@ public class ExchangisProjectGetOperation extends AbstractExchangisProjectOperat
         this.structureService = structureService;
         setSSORequestService(this.structureService);
     }
-}
+}*/
