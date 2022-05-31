@@ -1,5 +1,5 @@
 ### 环境准备
-您在部署ExchangisAppConn之前，请按照Exchangis1.0.0安装部署文档安装完成Exchangis1.0.0及其他相关组件的安装，并确保工程基本功能可用。
+您在部署ExchangisAppConn之前，请按照[Exchangis1.0.0安装部署文档](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)安装完成Exchangis1.0.0及其他相关组件的安装，并确保工程基本功能可用。
 
 ### 安装包准备
 #### 1）下载二进制包
