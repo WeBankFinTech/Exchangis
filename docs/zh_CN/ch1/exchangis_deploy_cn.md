@@ -1,19 +1,37 @@
-### 环境准备
-#### 1）基础软件安装
-- MySQL (5.5+) 必选，对应客户端可以选装, Linux服务上若安装mysql的客户端可以通过部署脚本快速初始化数据库
-- JDK (1.8.0_141) 必选
-- Maven (3.6.1+) 必选
+### 1.Exchangis环境准备
+#### 1.1）基础软件安装
+- MySQL (5.5+) 必选，对应客户端可以选装, Linux服务上若安装mysql的客户端可以通过部署脚本快速初始化数据库 [如何安装mysql](https://www.runoob.com/mysql/mysql-install.html)
+- JDK (1.8.0_141) 必选[如何安装JDK](https://www.runoob.com/java/java-environment-setup.html)
+- Maven (3.6.1+) 必选[如何安装MAVEN](https://m.runoob.com/maven/maven-setup.html)
 - SQOOP (1.4.6) 必选，如果想要SQOOP做传输引擎，要安装SQOOP，SQOOP安装依赖Hive,Hadoop环境
-- DSS1.0.1必选，确保安装部署环境下有DSS服务，以便进行APPCONN接入
-- Linkis1.1.0必选，请求的路由规则，执行引擎等均需要linkis
+- DSS1.0.1必选，确保安装部署环境下有DSS服务，以便进行APPCONN接入[如何安装DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/DSS%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3.md)
+- Linkis1.1.0必选，请求的路由规则，执行引擎等均需要linkis[如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy)
+- SQOOP引擎 必选，用户执行数据同步任务。[如何安装sqoop引擎](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy)
+- Nginx
+- Hadoop(2.7.2，Hadoop其他版本需自行编译Linkis)，单机部署Hadoop可参考：[Hadoop单机部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) ；分布式部署Hadoop可参考：[Hadoop分布式部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy)。
+- Hive(2.3.3，Hive其他版本需自行编译Linkis) [Hive快速安装](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy)
 
-#### 2）选择用户
-如果选择有sudo权限的用户来执行安装部署脚本，并启动服务，对于不同的数据交换作业，服务将会切换用户来执行，否则将以当前服务所属用户来执行。
+#### 1.2）创建用户
+1.2.1.部署用户与部署linkis的用户保持一致，例如：部署用户是hadoop账号
 
-### 安装包准备
-#### 1）下载二进制包
-[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
-#### 2） 编译打包（二进制包跳过）
+在部署机器上创建部署用户，用于安装
+```
+    sudo useradd hadoop  
+```
+1.2.2.底层依赖及组件检查
+
+执行相应的命令，查看当前环境是否支持相关依赖及组件
+```
+hdfs  version
+hive --version
+curl 127.0.0.1:3306 | grep LINKIS  #通过eureka地址查看是否部署LINKIS服务
+curl 127.0.0.1:3306 | grep DSS     #通过eureka地址查看是否部署DSS服务
+```
+
+### 2.安装包准备
+#### 2.3）下载二进制包
+从Exchangis已发布的release中[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)，下载最新的安装包
+#### 2.4） 编译打包（二进制包跳过）
 直接从Git上面获得源代码，在项目的根目录下执行如下命令
 ```
 mvn clean install 
@@ -23,9 +41,9 @@ mvn clean install
 target/wedatasphere-exchangis-{VERSION}.tar.gz
 ```
 
-### 开始部署
-#### 1）解压安装包
-在选定的安装目录，解压安装包
+
+#### 2.3）解压安装包
+先解压安装包到安装目录，并对解压后的文件进行配置修改。
 ```
 tar -zxvf wedatasphere-exchangis-{VERSION}.tar.gz
 ```
@@ -42,68 +60,55 @@ packages
 sbin
 ```
 其中，config为项目相关配置文件，db为数据库表sql文件夹，sbin为各种自动化脚本存放的文件夹。
-#### 2）执行一键安装脚本
+
+#### 2.4）依赖LINKIS及MYBATIS的基础配置修改
+```
+vi config/config.sh
+```
+```
+LINKIS_GATEWAY_HOST=          #LINKIS_GATEWAY服务地址IP，用于查找linkis-mg-gateway服务
+LINKIS_GATEWAY_PORT=          #LINKIS_GATEWAY服务地址端口，用于查找linkis-mg-gateway服务
+LINKIS_GATEWAY_URL=           #LINKIS_GATEWAY服务地址URL
+EXCHANGIS_DATASOURCE_URL=     #LINKIS_DATASOURCE服务地址URL。
+LINKIS_SERVER_URL=            #LINKIS_CLINT服务地址URL
+DATASOURCE_TOKEN=             #用于请求校验数据源的token,该字段可在linkis表linkis_mg_gateway_auth_token的token_name字段获取
+LINKIS_TOKEN=                 #用于请求校验linkis服务的token
+```
+
+#### 2.5）修改数据库配置
+```
+# 设置数据库的连接信息
+# 包括IP地址、数据库名称、用户名、端口
+MYSQL_HOST=
+MYSQL_PORT=
+MYSQL_USERNAME=
+MYSQL_PASSWORD=
+DATABASE=
+```
+
+###3.安装和启动
+#### 3.1）执行一键安装脚本
 进入解压后的目录，找到sbin目录下面的install.sh文件，如果选择交互式的安装，则直接执行
 ```
 ./sbin/install.sh
 ```
-该脚本为交互式安装，安装步骤依次分为以下几步：
+
+#### 3.2）安装步骤
+该脚本为交互式安装，开始执行install.sh脚本后，安装步骤依次分为以下几步：
 1.	解压缩lib包
 当出现该提醒时：Do you want to decompress this package: [exchangis-server_1.0.0-RC1.tar.gz]
 输入y确认解压，就会将项目的实际jar包解压到项目的根目录文件下lib下。
 2.	安装部署数据库
+当出现该提醒时：Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?
+输入y确认，就会开始部署数据库
 3.	配置exchangis-server.properties中基本的配置参数
+当出现该提醒时候：Do you want to initalize exchangis-server.properties?
+输入y确认，就会开始配置exchangis-server.properties中的相关参数
 
-
-#### 3）数据库初始化
-如果你的服务上安装有mysql命令，在执行安装脚本的过程中则会出现以下提醒：
-```
-Scan out mysql command, so begin to initalize the database
-Do you want to initalize database with sql: [{INSTALL_PATH}/bin/exchangis-init.sql]? (Y/N)y
-Please input the db host(default: 127.0.0.1): 
-Please input the db port(default: 3306): 
-Please input the db username(default: root): 
-Please input the db password(default: ): 
-Please input the db name(default: exchangis)
-```
-按照提示输入数据库地址，端口号，用户名，密码以及数据库名称，大部分情况下即可快速完成初始化。
-同时，会自动配置exchangis-server.properties中的下列参数：
-```
-#wds.linkis.server.mybatis.datasource.url= jdbc:mysql://localhost:3306/database?useSSL=false&characterEncoding=UTF-8&allowMultiQueries=true
-#wds.linkis.server.mybatis.datasource.username=
-#wds.linkis.server.mybatis.datasource.password=
-```
-如果服务上并没有安装mysql命令，则可以取用目录下/db/exchangis-ddl.sql脚本去手动执行，完成后修改exchangis-server.properties相关数据库配置参数。
-注意，初始化数据库可能碰到的问题有：数据库访问权限不够，已存在同名数据库，防火墙未关闭等，视具体情况解决。
-
-也可选择手动安装数据库，数据库表ddl和dml在db文件夹中，分别为exchangis_ddl.sql和exchangis_dml.sql。执行上述两个sql文件即刻完成库表创建。
-
-#### 4）配置exchangis-server.properties中基本的配置参数
-在执行脚本过初中，出现以下提示，既说明需要配置除数据库参数外其他必须参数：
-```
-Do you want to initalize exchangis-server.properties? (Y/N)y
-Please input the linkis gateway ip(default: 127.0.0.1):（linkis gateway服务ip，必配）
-Please input the linkis gateway port(default: 3306): （linkis gateway端口，必配）
-Please input the exchangis datasource client serverurl(default: http://127.0.0.1:3306):（数据源服务url，用于执行数据同步任务，必配）
-Please input the linkis server url(default: ""): （linkis服务url，必配）
-```
-以上参数均可自行在exchangis-server.properties文件中自行配置
-
-配置datasource及launcher的token
-
-为了能够访问数据源服务及通过linkis服务认证，您需要在exchangis-server.properties配置以下几个token相关参数，该字段可在linkis表linkis_mg_gateway_auth_token的token_name字段获取，注意，需根据您实际安装linkis的数据库表内容做变动，此值不唯一
-
-wds.exchangis.datasource.client.authtoken.key=
-wds.exchangis.datasource.client.authtoken.value=
-wds.exchangis.client.linkis.token.value=
-
-![image](https://user-images.githubusercontent.com/27387830/170611761-1ba315d8-04e3-4b6d-b85d-0b095ef17dce.png)
-
-
-#### 4）启动服务
+#### 3.3）启动服务
 一键启动所有服务
 ```
-./sbin/start.sh或者./sbin/daemon.sh start
+./sbin/daemon.sh start
 ```
 中途可能发生启动失败或者卡住，可以退出重复执行
 
@@ -111,20 +116,35 @@ wds.exchangis.client.linkis.token.value=
 ```
 ./sbin/daemon.sh restart server
 ```
-出现以下提示，说明exchangis服务启动成功
+执行完成启动脚本后，会出现以下提示
 ![企业微信截图_16532930262583](https://user-images.githubusercontent.com/27387830/169773764-1c5ed6fb-35e9-48cb-bac8-6fa7f738368a.png)
 
-#### 5）查看服务
-Exchangis1.0通过EUREKA查看启动的服务，其端口号在配置文件application-exchangis.yml。通过服务端口在网页上查看。
+#### 3.4）查看服务是否启动成功
+可以在Eureka界面查看服务启动成功情况，查看方法：
+
+使用http://${EUREKA_INSTALL_IP}:${EUREKA_PORT}, 在浏览器中打开，查看服务是否注册成功。
+
+如果您没有在config.sh指定EUREKA_INSTALL_IP和EUREKA_INSTALL_IP，则HTTP地址为：http://127.0.0.1:20303
+
+默认启动的服务名称如下：
+```
+exchangis-server
+```
+
+Exchangis1.0通过EUREKA查看启动的服务，其端口号在配置文件application-exchangis.yml。
 可根据需要修改服务IP及端口号，配置文件为application-exchangis.yml
 ```
 port: XXXX
 defaultZone: http://127.0.0.1:3306/eureka/
 ```
 
-#### 6）前端安装部署
-如果您想要通过前端界面访问Exchangis1.0，就要进行以下几步对前端进行安装配置操作：
-1.	获取前端安装包
+#### 3.5）查看服务是否正常
+您也可以通过exchangis用户手册来测试exchangis是否能正常运行任务[点击跳转用户手册](https://github.com/WeBankFinTech/Exchangis/releases)
+
+#### 3.6）前端安装部署
+web端是使用nginx作为静态资源服务器的，如果您想要通过前端界面访问Exchangis1.0，就要进行以下几步对前端进行安装配置操作：
+
+3.6.1.	获取前端安装包
 这里提供Exchangis1.0前端包，您可以自行下载使用：
 [点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
 
@@ -135,110 +155,55 @@ npm i
 npm run build
 ```
 通过上面的编译步骤，即可在${EXCHANGIS_PROJECT_HOME}/web/路径下生成编译好的dist.zip包，既为我们需要使用的前端包。
-获取到的前端包，您可以放在服务器上的任意位置，这里建议您与后端安装地址${EXCHANGIS_INSTALL_HOME}目录保持一致，在同一目录下放置并解压。
+获取到的前端包，您可以放在服务器上的任意位置，这里建议您与后端安装地址目录保持一致，在同一目录下放置并解压。
 
-2.	配置nginx
-为了正确找到前端资源，需要在服务器上配置nginx的conf文件，这里提供一个exchangis.conf示例配置，您可根据实际需要进行修改：
-```
-#map $http_origin $cors_list {
-#       default https://www.oszone.space/wdsent/exchangis/;
-#       "~ https//sandbox.webank.com/*"  https://sandbox.webank.com/wdsent/exchangis/;
-#}
+3.6.2.前端安装部署
 
-map $upstream_http_Location $location{
-  # 这种方案是把所有到 9098 端口的重定向都改成 80 端口
-  # ~http://(?<domains>.*):9098/(?<param>.*) http://$domains/$param;
-
-  # 这种方案是针对特定域名 9098 端口的重定向，范围可控，写法冗长
-  ~https://www.open.source:9098/(?<param>.*) https://www.open.source/$param;
-
-  # 默认情况，保持原状
-  default $upstream_http_Location;
-}
-
-#以前端域名是https://www.open.source/origin/exchangis/为例
-server {
-        listen 9098;# 访问端口
-        server_name  localhost;
-        gzip on;
-        location /{
-			root   /Install/exchangisPath/; # 静态文件目录，即为您的前端dist所在目录
-			index  index.html index.htm ;
-			autoindex on;
-        }
-		
-		location /api {
-			proxy_pass http://127.0.0.1:9001; #后端Linkis的地址
-			proxy_set_header Host $host;
-			proxy_set_header X-Real-IP $remote_addr;
-			proxy_set_header x_real_ipP $remote_addr;
-			proxy_set_header remote_addr $remote_addr;
-			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-			proxy_http_version 1.1;
-			proxy_connect_timeout 4s;
-			proxy_read_timeout 600s;
-			proxy_send_timeout 12s;
-			proxy_set_header Upgrade $http_upgrade;
-			proxy_set_header Connection upgrade;
-        }
-		error_page   500 502 503 504  /50x.html;
-
-        location = /50x.html {
-
-			root   /usr/share/nginx/html;
-
-        }
-}
-}
-
-server {
-listen 80;  #前端实际监听端口
-server_name  localhost;
-location /origin/exchangis {
-        proxy_pass http://192.168.241.42:9098;
-        more_set_headers -s '301 302' 'Location $location';
-}
-location /api {
-      proxy_pass http://192.168.241.42:9098/api;
-      more_set_headers -s '301 302' 'Location $location';
-}
-location /origin/exchangis/api {
-        proxy_pass http://127.0.0.1:9098/api; #反向代理地址，即为前面的9098地址
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header x_real_ipP $remote_addr;
-        proxy_set_header remote_addr $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_http_version 1.1;
-        proxy_connect_timeout 4s;
-        proxy_read_timeout 600s;
-        proxy_send_timeout 12s;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection upgrade;
-        more_clear_headers 'Access-Control-Allow-Credentials';
-        more_clear_headers 'Access-Control-Allow-Headers';
-        more_clear_headers 'Access-Control-Allow-Origin';
-        more_clear_headers 'Access-Control-Allow-Methods';
-        add_header 'Access-Control-Allow-Credentials' 'true';
-        add_header 'Access-Control-Allow-Headers' 'authorization,Content-Type';
-        add_header 'Access-Control-Allow-Origin' 'https://www.open.source/origin/exchangis/'; #您的前端域名，也可以是ip加端口的形式，例如https://127.0.0.1:9999
-        add_header 'Access-Control-Allow-Methods' 'POST, GET, OPTIONS, PUT, HEAD, DELETE';
-
-        more_set_headers -s '301 302' 'Location $location';
-}
-location / {
-        return 403;
-}
-     error_page   500 502 503 504  /50x.html;
-
-        location = /50x.html {
-
-			root   /usr/share/nginx/html;
-
-        }
-}
+exchangis的nginx配置文件默认是在/etc/nginx/conf.d/linkis.conf nginx的日志文件在 /var/log/nginx/access.log 和/var/log/nginx/error.log。为了正确找到前端资源，需要在服务器上配置nginx的conf文件，这里提供一个exchangis.conf示例配置，您可根据实际需要进行修改：
 ```
 
+        server {
+            listen       8090;# 访问端口 如果端口被占用，则需要修改
+            server_name  localhost;
+            #charset koi8-r;
+            #access_log  /var/log/nginx/host.access.log  main;
+            location /linkis/visualis {
+            root   /appcom/Install/exchangis/web; # 静态文件目录，需要修改
+            autoindex on;
+            }
+            location / {
+            proxy_pass http://127.0.0.1:9020;#后端Linkis的地址，需要修改
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection upgrade;
+            }
+
+            location /api {
+            proxy_pass http://127.0.0.1:9020; #后端Linkis的地址，需要修改
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header x_real_ipP $remote_addr;
+            proxy_set_header remote_addr $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_http_version 1.1;
+            proxy_connect_timeout 4s;
+            proxy_read_timeout 600s;
+            proxy_send_timeout 12s;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection upgrade;
+            }
+
+            #error_page  404              /404.html;
+            # redirect server error pages to the static page /50x.html
+            #
+            error_page   500 502 503 504  /50x.html;
+            location = /50x.html {
+            root   /usr/share/nginx/html;
+            }
+        }
+```
+
+3.6.3.启动nginx及访问前端页面
 配置完成之后，使用以下命令重新启动nginx:
 ```
 nginx -s reload

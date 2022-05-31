@@ -15,6 +15,14 @@
 # limitations under the License.
 #
 
+source ~/.bashrc
+shellDir=`dirname $0`
+workDir=`cd ${shellDir}/..;pwd`
+
+SOURCE_ROOT=${workDir}
+#load config
+source ${SOURCE_ROOT}/conf/config.sh
+source ${SOURCE_ROOT}/conf/db.sh
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SHELL_LOG="${DIR}/console.out"   #console.out是什么文件？
 export SQL_SOURCE_PATH="${DIR}/../db/exchangis_ddl.sql"
@@ -124,37 +132,13 @@ if [ "x${SQL_SOURCE_PATH}" != "x" ] && [ -f "${SQL_SOURCE_PATH}" ]; then
       LOG INFO "\033[1m Scan out mysql command, so begin to initalize the database\033[0m"
       interact_echo "Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?"
       if [ $? == 0 ]; then
-        read -p "Please input the db host(default: 127.0.0.1): " HOST
-        if [ "x${HOST}" == "x" ]; then
-          HOST="127.0.0.1"
-        fi
-        while [ 1 ]; do
-          read -p "Please input the db port(default: 3306): " PORT
-          if [ "x${PORT}" == "x" ]; then
-            PORT=3306
-            break
-          elif [ ${PORT} -gt 0 ] 2>/dev/null; then
-            break
-          else
-            echo "${PORT} is not a number, please input again"
-          fi
-        done
-        read -p "Please input the db username(default: root): " USERNAME
-        if [ "x${USERNAME}" == "x" ]; then
-          USERNAME="root"
-        fi
-        read -p "Please input the db password(default: ""): " PASSWORD
-        read -p "Please input the db name(default: exchangis)" DATABASE
-        if [ "x${DATABASE}" == "x" ]; then
-          DATABASE="exchangis"
-        fi
-        DATASOURCE_URL="jdbc:mysql:\/\/${HOST}:${PORT}\/${DATABASE}\?useSSL=false\&characterEncoding=UTF-8\&allowMultiQueries=true"
-        mysql -h ${HOST} -P ${PORT} -u ${USERNAME} -p${PASSWORD}  --default-character-set=utf8 -e \
+        DATASOURCE_URL="jdbc:mysql:\/\/${MYSQL_HOST}:${MYSQL_PORT}\/${DATABASE}\?useSSL=false\&characterEncoding=UTF-8\&allowMultiQueries=true"
+        mysql -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USERNAME} -p${MYSQL_PASSWORD}  --default-character-set=utf8 -e \
         "CREATE DATABASE IF NOT EXISTS ${DATABASE}; USE ${DATABASE}; source ${SQL_SOURCE_PATH};"
         #sed -ri "s![#]?(DB_HOST=)\S*!\1${HOST}!g" ${BOOTSTRAP_PROP_FILE}
         #sed -ri "s![#]?(DB_PORT=)\S*!\1${PORT}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.username=)\S*!\1${USERNAME}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.password=)\S*!\1${PASSWORD}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.username=)\S*!\1${MYSQL_USERNAME}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.password=)\S*!\1${MYSQL_PASSWORD}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.url=)\S*!\1${DATASOURCE_URL}!g" ${BOOTSTRAP_PROP_FILE}
       fi
    fi
@@ -166,38 +150,23 @@ BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
 # Start to initalize propertis
       interact_echo "Do you want to initalize exchangis-server.properties?"
       if [ $? == 0 ]; then
-        read -p "Please input the linkis gateway ip(default: 127.0.0.1): " HOST
-        if [ "x${HOST}" == "x" ]; then
-          HOST="127.0.0.1"
-        fi
-        while [ 1 ]; do
-          read -p "Please input the linkis gateway port(default: 3306): " PORT
-          if [ "x${PORT}" == "x" ]; then
-            PORT=3306
-            break
-          elif [ ${PORT} -gt 0 ] 2>/dev/null; then
-            break
-          else
-            echo "${PORT} is not a number, please input again"
-          fi
-        done
 
-        LINKIS_GATEWAY_URL="http:\/\/${HOST}:${PORT}\/"
+        LINKIS_GATEWAY_URL="http:\/\/${LINKIS_GATEWAY_HOST}:${LINKIS_GATEWAY_PORT}\/"
 
-        read -p "Please input the exchangis datasource client serverurl(default: http://127.0.0.1:3306): " EXCHANGIS_DATASOURCE_URL
         if [ "x${EXCHANGIS_DATASOURCE_URL}" == "x" ]; then
           EXCHANGIS_DATASOURCE_URL="http://127.0.0.1:3306"
         fi
-        read -p "Please input the linkis server url(default: ""): " LINKIS_SERVER_URL
         if [ "x${LINKIS_SERVER_URL}" == "x" ]; then
           LINKIS_SERVER_URL="http://127.0.0.1:3306"
         fi
 
-        sed -ri "s![#]?(wds.linkis.gateway.ip=)\S*!\1${HOST}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${PORT}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.linkis.gateway.ip=)\S*!\1${LINKIS_GATEWAY_HOST}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_GATEWAY_PORT}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.gateway.url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.datasource.client.serverurl=)\S*!\1${EXCHANGIS_DATASOURCE_URL}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.client.linkis.server-url=)\S*!\1${LINKIS_SERVER_URL}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.key=)\S*!\1${DATASOURCE_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
       fi
 }
 
