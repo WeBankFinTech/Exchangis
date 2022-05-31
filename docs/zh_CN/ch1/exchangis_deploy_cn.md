@@ -16,7 +16,7 @@
 
 在部署机器上创建部署用户，用于安装
 ```
-    sudo useradd hadoop  
+sudo useradd hadoop  
 ```
 1.2.2.底层依赖及组件检查
 
@@ -68,9 +68,6 @@ vi config/config.sh
 ```
 LINKIS_GATEWAY_HOST=          #LINKIS_GATEWAY服务地址IP，用于查找linkis-mg-gateway服务
 LINKIS_GATEWAY_PORT=          #LINKIS_GATEWAY服务地址端口，用于查找linkis-mg-gateway服务
-LINKIS_GATEWAY_URL=           #LINKIS_GATEWAY服务地址URL
-EXCHANGIS_DATASOURCE_URL=     #LINKIS_DATASOURCE服务地址URL。
-LINKIS_SERVER_URL=            #LINKIS_CLINT服务地址URL
 DATASOURCE_TOKEN=             #用于请求校验数据源的token,该字段可在linkis表linkis_mg_gateway_auth_token的token_name字段获取
 LINKIS_TOKEN=                 #用于请求校验linkis服务的token
 ```
@@ -96,13 +93,19 @@ DATABASE=
 #### 3.2）安装步骤
 该脚本为交互式安装，开始执行install.sh脚本后，安装步骤依次分为以下几步：
 1.	解压缩lib包
+
 当出现该提醒时：Do you want to decompress this package: [exchangis-server_1.0.0-RC1.tar.gz]
+
 输入y确认解压，就会将项目的实际jar包解压到项目的根目录文件下lib下。
 2.	安装部署数据库
+
 当出现该提醒时：Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?
+
 输入y确认，就会开始部署数据库
 3.	配置exchangis-server.properties中基本的配置参数
+
 当出现该提醒时候：Do you want to initalize exchangis-server.properties?
+
 输入y确认，就会开始配置exchangis-server.properties中的相关参数
 
 #### 3.3）启动服务
@@ -124,7 +127,7 @@ DATABASE=
 
 使用http://${EUREKA_INSTALL_IP}:${EUREKA_PORT}, 在浏览器中打开，查看服务是否注册成功。
 
-如果您没有在config.sh指定EUREKA_INSTALL_IP和EUREKA_INSTALL_IP，则HTTP地址为：http://127.0.0.1:20303
+如果您没有在application-eureka.yml指定EUREKA_INSTALL_IP和EUREKA_INSTALL_IP，则HTTP地址为：http://127.0.0.1:20303
 
 默认启动的服务名称如下：
 ```
