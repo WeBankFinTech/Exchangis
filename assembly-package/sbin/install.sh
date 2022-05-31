@@ -153,8 +153,8 @@ BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
 
         LINKIS_GATEWAY_URL="http:\/\/${LINKIS_GATEWAY_HOST}:${LINKIS_GATEWAY_PORT}\/"
 
-        if [ "x${EXCHANGIS_DATASOURCE_URL}" == "x" ]; then
-          EXCHANGIS_DATASOURCE_URL="http://127.0.0.1:3306"
+        if [ "x${LINKIS_SERVER_URL}" == "x" ]; then
+          LINKIS_SERVER_URL="http://127.0.0.1:3306"
         fi
         if [ "x${LINKIS_SERVER_URL}" == "x" ]; then
           LINKIS_SERVER_URL="http://127.0.0.1:3306"
@@ -163,7 +163,7 @@ BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
         sed -ri "s![#]?(wds.linkis.gateway.ip=)\S*!\1${LINKIS_GATEWAY_HOST}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_GATEWAY_PORT}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.gateway.url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.exchangis.datasource.client.serverurl=)\S*!\1${EXCHANGIS_DATASOURCE_URL}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.exchangis.datasource.client.serverurl=)\S*!\1${LINKIS_SERVER_URL}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.client.linkis.server-url=)\S*!\1${LINKIS_SERVER_URL}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.key=)\S*!\1${DATASOURCE_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
