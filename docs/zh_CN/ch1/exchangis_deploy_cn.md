@@ -83,7 +83,8 @@ MYSQL_PASSWORD=
 DATABASE=
 ```
 
-###3.安装和启动
+### 3.安装和启动
+
 #### 3.1）执行一键安装脚本
 进入解压后的目录，找到sbin目录下面的install.sh文件，如果选择交互式的安装，则直接执行
 ```
@@ -109,15 +110,18 @@ DATABASE=
 输入y确认，就会开始配置exchangis-server.properties中的相关参数
 
 #### 3.3）启动服务
-一键启动所有服务
+
+进入到sbin文件夹下，一键启动所有服务
+
 ```
-./sbin/daemon.sh start
+cd sbin
+./daemon.sh start server
 ```
 中途可能发生启动失败或者卡住，可以退出重复执行
 
 使用以下命令执行脚本，可一键完成服务的停止和重启
 ```
-./sbin/daemon.sh restart server
+./daemon.sh restart server
 ```
 执行完成启动脚本后，会出现以下提示
 ![企业微信截图_16532930262583](https://user-images.githubusercontent.com/27387830/169773764-1c5ed6fb-35e9-48cb-bac8-6fa7f738368a.png)
