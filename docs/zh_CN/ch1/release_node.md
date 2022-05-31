@@ -89,5 +89,4 @@ EXAPP:Exchangis Appconn
 
 ## 贡献者：
 
-EXCHANGIS 1.0.0-RC发布离不开EXCHANGIS社区的贡献者，感谢所有的社区贡献者！包括但不仅限于以下Contributors：wushengyeyouya、Dlimeng、Davidhua1996、mingfengwang、yuxin-No1、ryanqin01、
-lucaszhu2zgf、FinalTarget、Liveipool 刚哥，杰哥，龙哥，嘉颖，坚哥chin
+EXCHANGIS 1.0.0-RC发布离不开EXCHANGIS社区的贡献者，感谢所有的社区贡献者！包括但不仅限于以下Contributors：
