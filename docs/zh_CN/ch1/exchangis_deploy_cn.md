@@ -170,7 +170,7 @@ exchangis的nginx配置文件默认是在/etc/nginx/conf.d/linkis.conf nginx的�
             server_name  localhost;
             #charset koi8-r;
             #access_log  /var/log/nginx/host.access.log  main;
-            location /linkis/visualis {
+            location /dist {
             root   /appcom/Install/exchangis/web; # 静态文件目录，需要修改
             autoindex on;
             }
