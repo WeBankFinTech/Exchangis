@@ -133,7 +133,7 @@ DATABASE=
 执行以下命令，启动 Exchangis Server：
 
 ```shell script
-  sh sbin/daemon.sh start
+  sh sbin/daemon.sh start server
 ```
 
 您也可以使用以下命令完成 Exchangis Server 的重启：
@@ -154,7 +154,7 @@ DATABASE=
 
 如下图所示：
 
-![补充Eureka截图]()
+![补充Eureka截图](../../../images/zh_CN/ch1/eureka_exchangis.png)
 
 ### 2.7 前端安装部署
 
