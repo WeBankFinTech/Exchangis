@@ -21,8 +21,8 @@ workDir=`cd ${shellDir}/..;pwd`
 
 SOURCE_ROOT=${workDir}
 #load config
-source ${SOURCE_ROOT}/conf/config.sh
-source ${SOURCE_ROOT}/conf/db.sh
+source ${SOURCE_ROOT}/config/config.sh
+source ${SOURCE_ROOT}/config/db.sh
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SHELL_LOG="${DIR}/console.out"   #console.out是什么文件？
 export SQL_SOURCE_PATH="${DIR}/../db/exchangis_ddl.sql"
@@ -86,20 +86,20 @@ uncompress_packages(){
     if [ ${uncompress} == true ]; then
       if [[ ${pack} =~ tar\.gz$ ]]; then
         local do_uncompress=0
-        if [ ${FORCE_INSTALL} == false ]; then
-          interact_echo "Do you want to decompress this package: [${pack}]?"
-          do_uncompress=$?
-        fi
+        #if [ ${FORCE_INSTALL} == false ]; then
+        #  interact_echo "Do you want to decompress this package: [${pack}]?"
+        #  do_uncompress=$?
+        #fi
         if [ ${do_uncompress} == 0 ]; then
           LOG INFO "\033[1m Uncompress package: [${pack}] to modules directory\033[0m"
           tar --skip-old-files -zxf ${PACKAGE_DIR}/${pack} -C ../
         fi
       elif [[ ${pack} =~ zip$ ]]; then
         local do_uncompress=0
-        if [ ${FORCE_INSTALL} == false ]; then
-          interact_echo "Do you want to decompress this package: [${pack}]?"
-          do_uncompress=$?
-        fi
+        #if [ ${FORCE_INSTALL} == false ]; then
+        #  interact_echo "Do you want to decompress this package: [${pack}]?"
+        #  do_uncompress=$?
+        #fi
         if [ ${do_uncompress} == 0 ]; then
           LOG INFO "\033[1m Uncompress package: [${pack}] to modules directory\033[0m"
           unzip -nq ${PACKAGE_DIR}/${pack} -d   #  n 解压缩时不要覆盖原有的文件
@@ -130,8 +130,8 @@ if [ "x${SQL_SOURCE_PATH}" != "x" ] && [ -f "${SQL_SOURCE_PATH}" ]; then
    `mysql --version >/dev/null 2>&1`
    if [ $? == 0 ]; then
       LOG INFO "\033[1m Scan out mysql command, so begin to initalize the database\033[0m"
-      interact_echo "Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?"
-      if [ $? == 0 ]; then
+      #interact_echo "Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?"
+      #if [ $? == 0 ]; then
         DATASOURCE_URL="jdbc:mysql:\/\/${MYSQL_HOST}:${MYSQL_PORT}\/${DATABASE}\?useSSL=false\&characterEncoding=UTF-8\&allowMultiQueries=true"
         mysql -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USERNAME} -p${MYSQL_PASSWORD}  --default-character-set=utf8 -e \
         "CREATE DATABASE IF NOT EXISTS ${DATABASE}; USE ${DATABASE}; source ${SQL_SOURCE_PATH};"
@@ -140,7 +140,7 @@ if [ "x${SQL_SOURCE_PATH}" != "x" ] && [ -f "${SQL_SOURCE_PATH}" ]; then
         sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.username=)\S*!\1${MYSQL_USERNAME}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.password=)\S*!\1${MYSQL_PASSWORD}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.url=)\S*!\1${DATASOURCE_URL}!g" ${BOOTSTRAP_PROP_FILE}
-      fi
+      #fi
    fi
 fi
 }
@@ -148,8 +148,8 @@ fi
 init_properties(){
 BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
 # Start to initalize propertis
-      interact_echo "Do you want to initalize exchangis-server.properties?"
-      if [ $? == 0 ]; then
+      #interact_echo "Do you want to initalize exchangis-server.properties?"
+      #if [ $? == 0 ]; then
 
         LINKIS_GATEWAY_URL="http:\/\/${LINKIS_GATEWAY_HOST}:${LINKIS_GATEWAY_PORT}\/"
 
@@ -165,9 +165,9 @@ BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
         sed -ri "s![#]?(wds.linkis.gateway.url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.datasource.client.serverurl=)\S*!\1${LINKIS_SERVER_URL}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.client.linkis.server-url=)\S*!\1${LINKIS_SERVER_URL}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.key=)\S*!\1${DATASOURCE_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.key=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
-      fi
+      #fi
 }
 
 install_modules(){
