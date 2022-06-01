@@ -1,79 +1,104 @@
-### 1.Exchangis环境准备
-#### 1.1）基础软件安装
-- MySQL (5.5+) 必选，对应客户端可以选装, Linux服务上若安装mysql的客户端可以通过部署脚本快速初始化数据库 [如何安装mysql](https://www.runoob.com/mysql/mysql-install.html)
-- JDK (1.8.0_141) 必选[如何安装JDK](https://www.runoob.com/java/java-environment-setup.html)
-- Maven (3.6.1+) 必选[如何安装MAVEN](https://m.runoob.com/maven/maven-setup.html)
-- SQOOP (1.4.6) 必选，如果想要SQOOP做传输引擎，要安装SQOOP，SQOOP安装依赖Hive,Hadoop环境
-- DSS1.0.1必选，确保安装部署环境下有DSS服务，以便进行APPCONN接入[如何安装DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/DSS%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3.md)
-- Linkis1.1.0必选，请求的路由规则，执行引擎等均需要linkis[如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy)
-- SQOOP引擎 必选，用户执行数据同步任务。[如何安装sqoop引擎](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy)
-- Nginx
-- Hadoop(2.7.2，Hadoop其他版本需自行编译Linkis)，单机部署Hadoop可参考：[Hadoop单机部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) ；分布式部署Hadoop可参考：[Hadoop分布式部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy)。
-- Hive(2.3.3，Hive其他版本需自行编译Linkis) [Hive快速安装](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy)
+## 前言
 
-#### 1.2）创建用户
-1.2.1.部署用户与部署linkis的用户保持一致，例如：部署用户是hadoop账号
+Exchangis 的安装，主要分为以下四步：
 
-在部署机器上创建部署用户，用于安装
-```
-sudo useradd hadoop  
-```
-1.2.2.底层依赖及组件检查
+1. Exchangis 依赖环境准备
+2. Exchangis 安装部署
+3. DSS ExchangisAppConn 安装部署
+4. Linkis Sqoop 引擎安装部署
 
-执行相应的命令，查看当前环境是否支持相关依赖及组件
-```
-hdfs  version
-hive --version
-curl 127.0.0.1:3306 | grep LINKIS  #通过eureka地址查看是否部署LINKIS服务
-curl 127.0.0.1:3306 | grep DSS     #通过eureka地址查看是否部署DSS服务
-```
+## 1. Exchangis 依赖环境准备
 
-### 2.安装包准备
-#### 2.3）下载二进制包
-从Exchangis已发布的release中[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)，下载最新的安装包
-#### 2.4） 编译打包（二进制包跳过）
-直接从Git上面获得源代码，在项目的根目录下执行如下命令
-```
-mvn clean install 
-```
-执行成功后将会在工程的${EXCHANGIS_HOME}/assembly-package/target目录下生成安装包
-```
-target/wedatasphere-exchangis-{VERSION}.tar.gz
-```
+#### 1.1 基础软件安装
+
+| 依赖的组件 | 是否必装 | 安装直通车 |
+| -------------- | ------ | --------------- |
+| MySQL (5.5+) | 必装  | [如何安装mysql](https://www.runoob.com/mysql/mysql-install.html) |
+| JDK (1.8.0_141) | 必装 | [如何安装JDK](https://www.runoob.com/java/java-environment-setup.html) |
+| Hadoop(2.7.2，Hadoop 其他版本需自行编译 Linkis) | 必装 | [Hadoop单机部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) ；[Hadoop分布式部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
+| Hive(2.3.3，Hive 其他版本需自行编译 Linkis) | 必装 | [Hive快速安装](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
+| SQOOP (1.4.6) | 必装 | [如何安装Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
+| DSS1.0.1 | 必装 | [如何安装DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/DSS%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3.md) |
+| Linkis1.1.0 | 必装 | [如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
+| Nginx | 必装 | [如何安装 Nginx](http://nginx.org/en/linux_packages.html) |
 
 
-#### 2.3）解压安装包
-先解压安装包到安装目录，并对解压后的文件进行配置修改。
-```
-tar -zxvf wedatasphere-exchangis-{VERSION}.tar.gz
-```
-在解压出来的目录结构为：
-```
-config
+#### 1.2 创建 Linux 用户
 
-db
+请保持 Exchangis 的部署用户与 Linkis 的部署用户一致，例如：部署用户是hadoop账号。
 
-exchangis-extds
+#### 1.3 底层依赖组件检查
 
-packages
+**请确保 DSS1.0.1 与 Linkis1.1.0 基本可用，可在 DSS 前端界面执行 HiveQL 脚本，可正常创建并执行 DSS 工作流。**
 
-sbin
-```
-其中，config为项目相关配置文件，db为数据库表sql文件夹，sbin为各种自动化脚本存放的文件夹。
+## 2. Exchangis 安装部署
 
-#### 2.4）依赖LINKIS及MYBATIS的基础配置修改
-```
-vi config/config.sh
-```
-```
-LINKIS_GATEWAY_HOST=          #LINKIS_GATEWAY服务地址IP，用于查找linkis-mg-gateway服务
-LINKIS_GATEWAY_PORT=          #LINKIS_GATEWAY服务地址端口，用于查找linkis-mg-gateway服务
-DATASOURCE_TOKEN=             #用于请求校验数据源的token,该字段可在linkis表linkis_mg_gateway_auth_token的token_name字段获取
-LINKIS_TOKEN=                 #用于请求校验linkis服务的token
+### 2.1 安装包准备
+
+#### 2.1.1下载二进制包
+
+从 Exchangis 已发布的 release 中 [点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)，下载最新的安装包。
+
+#### 2.1.2 编译打包
+
+在项目的根目录下执行如下命令：
+
+```shell script
+  mvn clean install 
 ```
 
-#### 2.5）修改数据库配置
+编译成功后将会在项目的 `assembly-package/target` 目录下生成安装包。
+
+### 2.2 解压安装包
+
+执行以下命令进行解压：
+
+```shell script
+  tar -zxvf wedatasphere-exchangis-{VERSION}.tar.gz
 ```
+
+解压出来后的目录结构如下：
+
+```html
+|-- config：一键安装部署参数配置目录
+|-- db：数据库表初始化 SQL 目录
+|-- exchangis-extds
+|-- packages：Exchangis 安装包目录
+|-- sbin：脚本存放目录
+```
+
+### 2.3 修改配置参数
+
+```shell script
+  vim config/config.sh
+```
+
+```shell script
+#LINKIS_GATEWAY服务地址IP，用于查找linkis-mg-gateway服务
+LINKIS_GATEWAY_HOST= 
+
+#LINKIS_GATEWAY服务地址端口，用于查找linkis-mg-gateway服务         
+LINKIS_GATEWAY_PORT=       
+
+#用于请求校验数据源的 token ,该字段可在 linkis 表 linkis_mg_gateway_auth_token 的 token_name 字段获取
+DATASOURCE_TOKEN=
+
+#用于请求校验 linkis 服务的 token             
+LINKIS_TOKEN=
+
+EUREKA_INSTALL_IP=
+
+EUREKA_INSTALL_PORT=
+
+```
+
+### 2.4 修改数据库配置
+
+```shell script
+  vim config/db.sh
+```
+
+```shell script
 # 设置数据库的连接信息
 # 包括IP地址、数据库名称、用户名、端口
 MYSQL_HOST=
@@ -83,110 +108,109 @@ MYSQL_PASSWORD=
 DATABASE=
 ```
 
-### 3.安装和启动
+### 2.5 安装和启动
 
-#### 3.1）执行一键安装脚本
-进入解压后的目录，找到sbin目录下面的install.sh文件，如果选择交互式的安装，则直接执行
-```
-./sbin/install.sh
+#### 2.5.1 执行一键安装脚本
+
+执行 `install.sh` 脚本，完成一键安装部署：
+
+```shell script
+ sh sbin/install.sh
 ```
 
-#### 3.2）安装步骤
+#### 2.5.2 安装步骤
+
 该脚本为交互式安装，开始执行install.sh脚本后，安装步骤依次分为以下几步：
-1.	解压缩lib包
 
-当出现该提醒时：Do you want to decompress this package: [exchangis-server_1.0.0-RC1.tar.gz]
-
-输入y确认解压，就会将项目的实际jar包解压到项目的根目录文件下lib下。
-2.	安装部署数据库
+1.	初始化数据库表
 
 当出现该提醒时：Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?
 
-输入y确认，就会开始部署数据库
-3.	配置exchangis-server.properties中基本的配置参数
+输入 `y` 初始化数据库表，输入 `n` 跳过数据库表初始化步骤。
 
-当出现该提醒时候：Do you want to initalize exchangis-server.properties?
+#### 2.5.3 启动服务
 
-输入y确认，就会开始配置exchangis-server.properties中的相关参数
+执行以下命令，启动 Exchangis Server：
 
-#### 3.3）启动服务
-
-进入到sbin文件夹下，一键启动所有服务
-
+```shell script
+  sh sbin/daemon.sh start
 ```
-cd sbin
-./daemon.sh start server
-```
-中途可能发生启动失败或者卡住，可以退出重复执行
 
-使用以下命令执行脚本，可一键完成服务的停止和重启
+您也可以使用以下命令完成 Exchangis Server 的重启：
+
+```shell script
+./sbin/daemon.sh restart server
 ```
-./daemon.sh restart server
-```
-执行完成启动脚本后，会出现以下提示
+
+执行完成启动脚本后，会出现以下提示：
+
 ![企业微信截图_16532930262583](https://user-images.githubusercontent.com/27387830/169773764-1c5ed6fb-35e9-48cb-bac8-6fa7f738368a.png)
 
-#### 3.4）查看服务是否启动成功
+### 2.6 查看服务是否启动成功
+
 可以在Eureka界面查看服务启动成功情况，查看方法：
 
-使用http://${EUREKA_INSTALL_IP}:${EUREKA_PORT}, 在浏览器中打开，查看服务是否注册成功。
+使用 http://${EUREKA_INSTALL_IP}:${EUREKA_PORT}, 建议在 Chrome 浏览器中打开，查看服务是否注册成功。
 
-如果您没有在application-eureka.yml指定EUREKA_INSTALL_IP和EUREKA_INSTALL_IP，则HTTP地址为：http://127.0.0.1:20303
+如下图所示：
 
-默认启动的服务名称如下：
+![补充Eureka截图]()
+
+### 2.7 前端安装部署
+
+#### 2.7.1 获取前端安装包
+
+Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
+
+您也可以自行编译 Exchangis 前端，在 Exchangis 根目录下执行如下命令：
+
+```shell script
+  cd web
+  npm i
+  npm run build
 ```
-exchangis-server
-```
 
-Exchangis1.0通过EUREKA查看启动的服务，其端口号在配置文件application-exchangis.yml。
-可根据需要修改服务IP及端口号，配置文件为application-exchangis.yml
-```
-port: XXXX
-defaultZone: http://127.0.0.1:3306/eureka/
-```
+从 `web/` 路径获取编译好的 dist.zip 前端包。
 
-#### 3.5）查看服务是否正常
-您也可以通过exchangis用户手册来测试exchangis是否能正常运行任务[点击跳转用户手册](https://github.com/WeBankFinTech/Exchangis/releases)
-
-#### 3.6）前端安装部署
-web端是使用nginx作为静态资源服务器的，如果您想要通过前端界面访问Exchangis1.0，就要进行以下几步对前端进行安装配置操作：
-
-3.6.1.	获取前端安装包
-这里提供Exchangis1.0前端包，您可以自行下载使用：
-[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
-
-如果您需要自行对前端代码进行开发编译，也可以在Exchangis1.0项目中找到前端web模块，路径为${EXCHANGIS_PROJECT_HOME}/web。这里以Fes编译为例，使用Fes命令对前端模块进行打包，编译步骤如下：
-```
-cd ${EXCHANGIS_HOME}/web
-npm i
-npm run build
-```
-通过上面的编译步骤，即可在${EXCHANGIS_PROJECT_HOME}/web/路径下生成编译好的dist.zip包，既为我们需要使用的前端包。
 获取到的前端包，您可以放在服务器上的任意位置，这里建议您与后端安装地址目录保持一致，在同一目录下放置并解压。
 
-3.6.2.前端安装部署
+#### 2.7.2 前端安装部署
 
-exchangis的nginx配置文件默认是在/etc/nginx/conf.d/linkis.conf nginx的日志文件在 /var/log/nginx/access.log 和/var/log/nginx/error.log。为了正确找到前端资源，需要在服务器上配置nginx的conf文件，这里提供一个exchangis.conf示例配置，您可根据实际需要进行修改：
+1. 解压前端安装包
+
+如您打算将 Exchangis 前端包部署到 `/appcom/Install/exchangis/web` 目录，请先将 `dist.zip` 拷贝到该目录并执行解压：
+
+```shell script
+  # 请先将 Exchangis 前端包拷贝到 `/appcom/Install/exchangis/web` 目录
+  cd /appcom/Install/exchangis/web
+  unzip dist.zip
 ```
 
+执行如下命令：
+
+```shell script
+  vim /etc/nginx/conf.d/exchangis.conf
+```
+
+```
         server {
-            listen       8090;# 访问端口 如果端口被占用，则需要修改
+            listen       8098; # 访问端口 如果该端口被占用，则需要修改
             server_name  localhost;
             #charset koi8-r;
             #access_log  /var/log/nginx/host.access.log  main;
-            location /linkis/visualis {
-            root   /appcom/Install/exchangis/web; # 静态文件目录，需要修改
+            location /dist {
+            root   /appcom/Install/exchangis/web; # Exchangis 前端部署目录
             autoindex on;
             }
             location / {
-            proxy_pass http://127.0.0.1:9020;#后端Linkis的地址，需要修改
+            proxy_pass http://127.0.0.1:9020; # 后端Linkis的地址，需要修改
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection upgrade;
             }
 
             location /api {
-            proxy_pass http://127.0.0.1:9020; #后端Linkis的地址，需要修改
+            proxy_pass http://127.0.0.1:9020;  # 后端Linkis的地址，需要修改
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header x_real_ipP $remote_addr;
@@ -210,11 +234,26 @@ exchangis的nginx配置文件默认是在/etc/nginx/conf.d/linkis.conf nginx的�
         }
 ```
 
-3.6.3.启动nginx及访问前端页面
-配置完成之后，使用以下命令重新启动nginx:
-```
-nginx -s reload
+#### 2.7.3 启动 nginx 及访问前端页面
+
+配置完成之后，使用以下命令重新刷新 nginx 配置:
+
+```shell script
+  nginx -s reload
 ```
 
-访问域名 https://www.open.source/origin/exchangis/(此处为示例域名，请根据实际域名进行修改)，即可进入Exchangis主界面：
+请通过 http://${EXCHANGIS_INSTALL_IP}:8098/#/projectManage 访问 Exchangis 前端页面，如下图所示：
+
 ![image](https://user-images.githubusercontent.com/27387830/170417473-af0b4cbe-758e-4800-a58f-0972f83d87e6.png)
+
+## 3. DSS ExchangisAppConn 安装部署
+
+如您想正常使用 Exchangis1.0.0 前端，还需安装 DSS ExchangisAppConn 插件，请参考: [ExchangisAppConn 插件安装文档](exchangis_appconn_deploy_cn.md)
+
+## 4. Linkis Sqoop 引擎安装部署
+
+如您想正常执行 Exchangis1.0.0 的 Sqoop作业，还需安装 Linkis Sqoop 引擎，请参考: [Linkis Sqoop 引擎插件安装文档](exchangis_sqoop_deploy_cn.md)
+
+## 5. 如何登录使用 Exchangis
+
+待补充
