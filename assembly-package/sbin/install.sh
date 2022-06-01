@@ -21,8 +21,8 @@ workDir=`cd ${shellDir}/..;pwd`
 
 SOURCE_ROOT=${workDir}
 #load config
-source ${SOURCE_ROOT}/conf/config.sh
-source ${SOURCE_ROOT}/conf/db.sh
+source ${SOURCE_ROOT}/config/config.sh
+source ${SOURCE_ROOT}/config/db.sh
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SHELL_LOG="${DIR}/console.out"   #console.out是什么文件？
 export SQL_SOURCE_PATH="${DIR}/../db/exchangis_ddl.sql"
