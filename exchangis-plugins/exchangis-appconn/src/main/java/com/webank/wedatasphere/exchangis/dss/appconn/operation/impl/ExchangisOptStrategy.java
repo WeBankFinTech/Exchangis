@@ -190,11 +190,22 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
 
     @Override
     public RefExecutionState state(AsyncExecutionRequestRef ref, String baseUrl, SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation, String execId) throws ExternalOperationFailedException {
+        String originLabels = ref.getExecutionRequestRefContext().getRuntimeMap().get("labels").toString();
+        String realLabels = null;
+        if (originLabels.contains("route")) {
+            Map<String, String> changeData = BDPJettyServerHelper.gson().fromJson(originLabels, Map.class);
+            realLabels = changeData.get("route");
+        } else {
+            realLabels = originLabels;
+        }
+        logger.info("getStatuslabels7777: {}", realLabels);
+        logger.info("getStatuslabels988888: {}", originLabels);
+
         if (StringUtils.isEmpty(execId)) {
             ref.getExecutionRequestRefContext().appendLog("dss execute sqoop error for execId is null when get state!");
             throw new ExternalOperationFailedException(90176, "dss execute sqoop error when get state");
         }
-        String url = baseUrl + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/job" + "/execution/" + execId +"/status";
+        String url = baseUrl + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/job" + "/execution/" + execId +"/status?labels=" + realLabels;
         ref.getExecutionRequestRefContext().appendLog("dss execute sqoop node,ready to submit from " + url);
 
         ExchangisGetAction exchangisGetAction = new ExchangisGetAction();
@@ -277,11 +288,22 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
 
 
     public boolean kill (AsyncExecutionRequestRef ref, String baseUrl, SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation, String execId) throws ExternalOperationFailedException {
+        String originLabels = ref.getExecutionRequestRefContext().getRuntimeMap().get("labels").toString();
+        String realLabels = null;
+        if (originLabels.contains("route")) {
+            Map<String, String> changeData = BDPJettyServerHelper.gson().fromJson(originLabels, Map.class);
+            realLabels = changeData.get("route");
+        } else {
+            realLabels = originLabels;
+        }
+        logger.info("killJoblabels7777: {}", realLabels);
+        logger.info("killJoblabels988888: {}", originLabels);
+
         if (StringUtils.isEmpty(execId)) {
             ref.getExecutionRequestRefContext().appendLog("dss execute sqoop error for execId is null when kill job!");
             throw new ExternalOperationFailedException(90176, "dss execute sqoop error when kill job");
         }
-        String url = baseUrl + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/job" + "/execution/" + execId + "/kill";
+        String url = baseUrl + "api/rest_j/" + ServerConfiguration.BDP_SERVER_VERSION() + "/dss/exchangis/main/job" + "/execution/" + execId + "/kill?labels=" + realLabels;
         ref.getExecutionRequestRefContext().appendLog("dss execute sqoop node,ready to submit from " + url);
 
         ExchangisEntityPostAction exchangisPostAction = new ExchangisEntityPostAction();
