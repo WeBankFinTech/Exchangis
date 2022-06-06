@@ -80,10 +80,7 @@ LINKIS_GATEWAY_HOST=
 #LINKIS_GATEWAY服务地址端口，用于查找linkis-mg-gateway服务         
 LINKIS_GATEWAY_PORT=       
 
-#用于请求校验数据源的 token ,该字段可在 linkis 表 linkis_mg_gateway_auth_token 的 token_name 字段获取
-DATASOURCE_TOKEN=
-
-#用于请求校验 linkis 服务的 token             
+#用于请求校验 linkis 服务的 token，该字段可在 linkis 安装目录的${LINKIST_INSTALLED_HOME}/conf/token.propertis中获取    
 LINKIS_TOKEN=
 
 EUREKA_INSTALL_IP=
@@ -201,12 +198,6 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
             location /dist {
             root   /appcom/Install/exchangis/web; # Exchangis 前端部署目录
             autoindex on;
-            }
-            location / {
-            proxy_pass http://127.0.0.1:9020; # 后端Linkis的地址，需要修改
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection upgrade;
             }
 
             location /api {
