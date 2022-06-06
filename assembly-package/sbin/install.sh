@@ -147,6 +147,7 @@ fi
 
 init_properties(){
 BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
+APPLICATION_YML="${CONF_PATH}/application-exchangis.yml"
 # Start to initalize propertis
       #interact_echo "Do you want to initalize exchangis-server.properties?"
       #if [ $? == 0 ]; then
@@ -166,7 +167,11 @@ BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
         sed -ri "s![#]?(wds.exchangis.datasource.client.serverurl=)\S*!\1${LINKIS_SERVER_URL}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.client.linkis.server-url=)\S*!\1${LINKIS_SERVER_URL}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.key=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.value=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.exchangis.client.linkis.token.value=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(port: )\S*!\1${EUREKA_PORT}!g" ${APPLICATION_YML}
+        sed -ri "s![#]?(defaultZone: )\S*!\1${DEFAULT_ZONE}!g" ${APPLICATION_YML}
       #fi
 }
 
