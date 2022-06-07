@@ -18,7 +18,7 @@
 
 ![exchangis1.0_entrance](../../../images/zh_CN/ch1/exchangis1.0_entrance.png)
 <div align="center">
-图2.1 Exchangis1.0入口
+图2-1 Exchangis1.0入口
  </div>
 
 ## 三、项目管理
@@ -47,12 +47,12 @@
 
 ![task_type_and_engine](../../../images/zh_CN/ch1/task_type_and_engine.png)
 <div align="center">
-图3-1 数据源管理列表
+图3-3 数据源管理列表
  </div>
 
 ### 3、数据同步任务配置和执行
 
-&emsp;&emsp;数据同步任务的配置和执行是Exchangis1.0的核心功能，基本配置数据同步流程为：**添加子任务->选择源数据源库表和目的数据源库表（在数据源管理模块添加好数据源以供选择）->字段映射（可默认）->过程控制（可默认）->配置（可默认）->执行**。
+&emsp;&emsp;数据同步任务配置和执行是Exchangis1.0的核心功能，基本配置数据同步流程为：**添加子任务->选择源数据源库表和目的数据源库表（在数据源管理模块添加好数据源以供选择）->字段映射（可默认）->过程控制（可默认）->配置（可默认）->执行**。
 
 任务执行主要功能包括：
 1.	子任务卡片的添加，复制和删除；
@@ -71,7 +71,7 @@
 
 ![add_subtask](../../../images/zh_CN/ch1/add_subtask.png)
 <div align="center">
-图4-1 添加子任务
+图3-4 添加子任务
  </div>
 
 &emsp;&emsp;MySQL为目的地数据源时，支持**插入**和**更新**两种写入方式；为源数据源时，支持**WHERE条件语句查询**。
@@ -167,10 +167,11 @@
 3.	查看每个任务的运行情况和实时日志；
 4.	查看每个同步任务的更细节配置信息和更新时间等。
 
+![sync_history](..\..\..\images\zh_CN\ch1\sync_history.png)
 
+<div align="center">
 图5-1 同步历史界面
-
-
+ </div>
 
 ## 六、EXCHANGIS APPCONN使用
 
@@ -185,39 +186,73 @@ Exchangis Appconn主要支持以下功能：
 
 ### 1、项目操作
 
-&emsp;&emsp;这里以在DSS创建项目为例，在exchangis appconn操作的流程为：**点击创建项目->填写项目信息->点击确认->进入Exchangis端->点击项目管理**，即可查看到同步创建的项目，如下图所示，同理对DSS端项目信息的修改和删除，也会同步对Exchangis端的项目进行操作：
+&emsp;&emsp;该模块能够对DSS项目进行创建、修改和删除，在DSS端的操作会同步到Exchangis端，这里以在DSS创建的项目为例，在exchangis appconn操作的流程为：**点击创建项目->填写项目信息->点击确认->进入Exchangis端->点击项目管理**，即可查看到同步创建的项目，如下图所示：
 
 ![appconn_pro_create](..\..\..\images\zh_CN\ch1\appconn_pro_create.png)
+
+<div align="center">
+图6-1 项目操作
+ </div>
 
 创建完成后，会在Exchangis端看到同步过来的项目
 
 ![appconn_pro_sync](..\..\..\images\zh_CN\ch1\appconn_pro_sync.jpg)
 
+<div align="center">
+图6-2 项目同步到Exchangis
+ </div>
+
 ### 2、工作流节点基本操作
 
-&emsp;&emsp;这里以对sqoop工作流节点的创建操作为例，在exchangis appconn对项目的操作流程为：**创建一条工作流->从左侧插件栏拖动sqoop节点至右侧画布->点击确认创建sqoop节点任务->进入exchangis端查看同步创建的任务**，如下图所示，对sqoop节点任务的删除和修改同理。
+&emsp;工作流节点能够进行创建、修改、删除和进行依赖选择，可以进行节点之间的关联，在DSS端的操作会同步到Exchangis端。这里以对sqoop工作流节点的创建操作为例，在exchangis appconn对项目的操作流程为：**创建一条工作流->从左侧插件栏拖动sqoop节点至右侧画布->点击确认创建sqoop节点任务->进入exchangis端查看同步创建的任务**，如下图所示，对sqoop节点任务的删除和修改同理。
 
-![1654487436835](..\..\..\images\zh_CN\ch1\appconn_pro_sqoop.png)
+![appconn_pro_sqoop](..\..\..\images\zh_CN\ch1\appconn_pro_sqoop.png)
+
+<div align="center">
+图6-3 Sqoop节点功能
+ </div>
 
 可以看到导数任务也同步到Exchangis中了
 
 ![](..\..\..\images\zh_CN\ch1\appconn_pro_sqoop_sync.jpg)
 
+<div align="center">
+图6-4 Sqoop节点同步到Exchangis
+ </div>
+
 ### 3、工作流导数操作
 
-&emsp;&emsp;以工作流节点形式进行导数任务是Exchangis Appconn的核心功能，**每一个sqoop节点代表一个数据同步任务**，具体操作流程如下：**双击sqoop节点->弹出任务配置界面->配置任务信息->执行任务**。这里有两种执行方式，一种是在弹出的任务配置界面点击执行按钮进行执行。另一种是点击DSS编排器的《执行》按钮或者是《选中执行》按钮进行执行，《执行》按钮会对该工作流中的所有节点执行，《选中执行》仅会执行选中的工作流节点，不会执行全部节点，如下图所示：
+&emsp;&emsp;双击Sqoop节点进行工作流节点进行操作，支持sqoop工作流节点配置与执行数据同步任务。以工作流节点形式进行导数任务是Exchangis Appconn的核心功能，**每一个sqoop节点代表一个数据同步任务**，具体操作流程如下：**双击sqoop节点->弹出任务配置界面->配置任务信息->执行任务**，如下图所示：
 
+![sqoop_config](..\..\..\images\zh_CN\ch1\sqoop_config.png)
+
+<div align="center">
 图6-5 双击sqoop工作流节点进入配置界面
+ </div>
 
-图6-6配置工作流节点信息
+![sqoop_user_config](..\..\..\images\zh_CN\ch1\sqoop_user_config.png)
 
-图6-5执行任务
+<div align="center">
+图6-6 配置工作流节点信息
+ </div>
+
+&emsp;&emsp;这里有两种执行方式，一种是在弹出的任务配置界面点击执行按钮进行执行；另一种是点击DSS编排器的**执行按钮**或者是**选中执行按钮**进行执行，**点击执行**会对该工作流中的所有节点执行，**点击选中执行**仅会执行选中的工作流节点，不会执行全部节点。
+
+![sqoop_execute](..\..\..\images\zh_CN\ch1\sqoop_execute.png)
+
+<div align="center">
+图6-7 执行任务
+ </div>
 
 注：在DSS的sqoop节点中执行的数据同步任务，均可在Exchangis端查看相关信息。
 
 ### 4、工作流发布操作
 
-&emsp;&emsp;工作流任务的《发布》功能，在开发中心创建和配置的数据交换任务信息，通过发布，发布到WTSS，能够在WTSS中进行任务调度。关于WTSS的使用说明，详见该地址XXXX
+&emsp;&emsp;工作流任务的**发布**功能，支持sqoop工作流节点发布至WTSS进行任务调度。在**开发中心**创建和配置的数据交换任务信息，通过发布，发布到WTSS，能够在WTSS中进行任务调度。
 
-图6-6 发布至WTSS进行任务调度
+### 5、生产中心
+
+&emsp;&emsp;点击命名空间的下拉框，切换到**生产中心**，可以看到所有项目的工作流的日志，可以查看每个工作流调度的状态
+
+![production_center](..\..\..\images\zh_CN\ch1\production_center.png)
 
