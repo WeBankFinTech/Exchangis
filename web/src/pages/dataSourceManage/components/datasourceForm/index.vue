@@ -59,8 +59,8 @@ const typesMap = {
         const fApi = self.fApi;
         if (typeof data.dataSource === 'string') {
             if (!/^https?:/.test(data.dataSource)) {
-                // data.dataSource = window.location.origin + '/api/rest_j/v1' + data.dataSource
-                data.dataSource = window.location.origin + data.dataSource;
+                data.dataSource = window.location.origin + '/api/rest_j/v1' + data.dataSource
+                // data.dataSource = window.location.origin + data.dataSource;
             }
             request(data.dataSource, {
                 labels: getEnvironment()
