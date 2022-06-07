@@ -81,7 +81,7 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
             logger.info("workspace =>  workspace: {}", workspace);
             executionRequestRefJson = BDPJettyServerHelper.jacksonJson().writeValueAsString(nodeRequestRef);
         } catch (JsonProcessingException e) {
-            logger.error("Parser request happen error8989");
+            logger.error("Parser request happen error");
         }
 
         logger.info("executionRequestRef =>  executionRequestRef: {}", nodeRequestRef);
@@ -154,17 +154,7 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
         } else {
             realLabels = originLabels;
         }
-        logger.info("realLables7777: {}", realLabels);
-        logger.info("originLables988888: {}", originLabels);
         setSSORequestService(developmentService);
-        /*String realLabels = "";
-        try {
-            logger.info("originLabels: {}", originLabels);
-            Map responseMap = BDPJettyServerHelper.jacksonJson().readValue(originLabels, Map.class);
-            realLabels = responseMap.get("route").toString();
-        } catch (JsonProcessingException e) {
-            logger.error("parser request error", e);
-        }*/
         String submitUser = ref.getExecutionRequestRefContext().getRuntimeMap().get("wds.dss.workflow.submit.user").toString();
         HashMap<String, String> labels = new HashMap<>();
         labels.put("route", realLabels);
@@ -198,9 +188,6 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
         } else {
             realLabels = originLabels;
         }
-        logger.info("getStatuslabels7777: {}", realLabels);
-        logger.info("getStatuslabels988888: {}", originLabels);
-
         if (StringUtils.isEmpty(execId)) {
             ref.getExecutionRequestRefContext().appendLog("dss execute sqoop error for execId is null when get state!");
             throw new ExternalOperationFailedException(90176, "dss execute sqoop error when get state");
@@ -296,8 +283,6 @@ public class ExchangisOptStrategy extends AbstractExchangisRefOperation implemen
         } else {
             realLabels = originLabels;
         }
-        logger.info("killJoblabels7777: {}", realLabels);
-        logger.info("killJoblabels988888: {}", originLabels);
 
         if (StringUtils.isEmpty(execId)) {
             ref.getExecutionRequestRefContext().appendLog("dss execute sqoop error for execId is null when kill job!");
