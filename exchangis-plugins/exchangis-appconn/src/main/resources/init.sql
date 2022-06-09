@@ -10,6 +10,9 @@ select @dss_exchangis_applicationId:=id from `dss_application` WHERE `name` ='ex
 delete from  `dss_menu` WHERE `name` ='exchangis';
 INSERT  INTO `dss_menu`(`name`,`level`,`upper_menu_id`,`front_name`,`comment`,`description`,`is_active`,`is_component`,`icon`,`application_id`) values ('exchangis','2',4,'数据交换(exchangis)',NULL,NULL,1,1,NULL,@dss_exchangis_applicationId);
 
+delete from  `dss_onestop_menu`  WHERE  name='数据交换';
+INSERT INTO `dss_onestop_menu` (`id`, `name`, `title_en`, `title_cn`, `description`, `is_active`, `icon`, `order`, `create_by`, `create_time`, `last_update_time`, `last_update_user`) VALUES('6','数据交换','data exchange','数据交换','数据交换描述','1',NULL,NULL,NULL,NULL,NULL,NULL);
+
 delete from  `dss_onestop_menu_application`  WHERE  title_en='exchangis';
 INSERT INTO  `dss_onestop_menu_application` (`application_id`, `onestop_menu_id`, `title_en`, `title_cn`, `desc_en`, `desc_cn`, `labels_en`, `labels_cn`, `is_active`, `access_button_en`, `access_button_cn`, `manual_button_en`, `manual_button_cn`, `manual_button_url`, `icon`, `order`, `create_by`, `create_time`, `last_update_time`, `last_update_user`, `image`) VALUES(@dss_exchangis_applicationId,'6','exchangis','exchangis','Exchangis','Exchangis是一个轻量级的、高扩展性的数据交换平台，支持对结构化及无结构化的异构数据源之间的数据传输，在应用层上具有数据权限管控、节点服务高可用和多租户资源隔离等业务特性，而在数据层上又具有传输架构多样化、模块插件化和组件低耦合等架构特点。','user manual','生产,运维','1','enter Exchangis','进入Exchangis','user manual','用户手册','http://127.0.0.1:8088/wiki/scriptis/manual/workspace_cn.html','shujujiaohuan-logo',NULL,NULL,NULL,NULL,NULL,'shujujiaohuan-icon');
 

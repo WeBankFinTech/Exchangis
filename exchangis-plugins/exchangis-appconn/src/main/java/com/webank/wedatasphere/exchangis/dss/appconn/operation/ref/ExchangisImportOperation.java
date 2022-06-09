@@ -51,7 +51,7 @@ public class ExchangisImportOperation extends AbstractExchangisRefOperation impl
         exchangisEntityPostAction.addRequestPayload("user", importRequestRef.getParameter("user").toString());
         //exchangisEntityPostAction.addRequestPayload("labels", "{\"route\":\"prod\"}");
         HashMap<String, String> labels = new HashMap<>();
-        labels.put("route", "prod");
+        labels.put("route", "dev");
         exchangisEntityPostAction.addRequestPayload("labels", labels);
         LOG.info("resourceId: {}", importRequestRef.getParameter("resourceId"));
         LOG.info("exchangisEntityPostAction: {}", exchangisEntityPostAction.getRequestPayload());
