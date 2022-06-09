@@ -83,9 +83,6 @@ LINKIS_GATEWAY_PORT=
 #LINKIS_GATEWAY服务地址URL，由上面两部分组成 
 LINKIS_SERVER_URL=
 
-#用于请求校验 MySQL 服务的 token，该字段可在 linkis 安装目录的${LINKIST_INSTALLED_HOME}/conf/token.propertis中获取    
-DATASOURCE_TOKEN=
-
 #用于请求校验 linkis 服务的 token，该字段可在 linkis 安装目录的${LINKIST_INSTALLED_HOME}/conf/token.propertis中获取    
 LINKIS_TOKEN=
 
