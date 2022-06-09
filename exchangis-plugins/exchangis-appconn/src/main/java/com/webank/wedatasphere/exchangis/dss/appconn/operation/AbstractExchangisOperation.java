@@ -151,12 +151,12 @@ public abstract class AbstractExchangisOperation {
                                                                                                           T requestRef, HttpActionBuilder<T> httpActionBuilder, Class<?> entityClass, Class<?>... entityParameters) throws ExternalOperationFailedException {
         LOG.info("Create job url{}: ", url);
         HttpExtAction action = httpActionBuilder.build(requestRef);
-        LOG.info("Action123456{}: ", action.getRequestBody());
+        LOG.info("Action{}: ", action.getRequestBody());
         if (Objects.nonNull(action)){
             SSOUrlBuilderOperation ssoUrlBuilderOperation = getSSOUrlBuilderOperation(workspace, getAppName(), url);
             ExchangisEntityRespResult.BasicMessageEntity<R> entity;
             try {
-                LOG.info("ssoUrlBuilderOperation666: {}", ssoUrlBuilderOperation.getBuiltUrl());
+                LOG.info("ssoUrlBuilderOperation: {}", ssoUrlBuilderOperation.getBuiltUrl());
                 action.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
                 SSORequestOperation<HttpAction, HttpResult> ssoRequestOperation = getOrCreateSSORequestOperation();
                 ExchangisEntityRespResult httpResult = new ExchangisEntityRespResult(ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, action));
