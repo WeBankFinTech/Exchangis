@@ -26,7 +26,7 @@ import com.webank.wedatasphere.exchangis.dss.appconn.utils.AppConnUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.linkis.httpclient.request.HttpAction;
 import org.apache.linkis.httpclient.response.HttpResult;
-import org.apache.linkis.server.BDPJettyServerHelper;
+//import org.apache.linkis.server.BDPJettyServerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
