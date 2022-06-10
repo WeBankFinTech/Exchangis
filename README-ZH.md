@@ -49,7 +49,7 @@ Exchangis 抽象了一套统一的数据源和同步作业定义插件，允许�
 
 ### 架构设计
 
-![架构设计](https://user-images.githubusercontent.com/27387830/171487056-842512b4-fd17-413f-97a1-8f4b72a3ebe9.png)
+![架构设计](![image](https://user-images.githubusercontent.com/27387830/173026427-5694174f-26d7-4f86-b3a8-59da94587808.png))
 
 ## 相关文档
 [安装部署文档](exchangis_deploy_cn.md)  
