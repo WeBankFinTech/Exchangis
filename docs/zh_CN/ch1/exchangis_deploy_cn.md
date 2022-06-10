@@ -125,9 +125,9 @@ DATABASE=
 
 1.	初始化数据库表
 
-当出现该提醒时：Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?
+当出现该提醒时：Do you want to confiugre and install project?
 
-输入 `y` 初始化数据库表，输入 `n` 跳过数据库表初始化步骤。
+输入 `y` 既开始安装Exchangis服务，输入 `n` 为不进行安装
 
 #### 2.5.3 启动服务
 
