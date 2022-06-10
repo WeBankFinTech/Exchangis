@@ -80,13 +80,17 @@ LINKIS_GATEWAY_HOST=
 #LINKIS_GATEWAY服务地址端口，用于查找linkis-mg-gateway服务         
 LINKIS_GATEWAY_PORT=       
 
+#LINKIS_GATEWAY服务地址URL，由上面两部分组成 
+LINKIS_SERVER_URL=
+
 #用于请求校验 linkis 服务的 token，该字段可在 linkis 安装目录的${LINKIST_INSTALLED_HOME}/conf/token.propertis中获取    
 LINKIS_TOKEN=
 
-EUREKA_INSTALL_IP=
+#Eureka服务端口
+EUREKA_PORT=
 
-EUREKA_INSTALL_PORT=
-
+#Eureka服务URL
+DEFAULT_ZONE=
 ```
 
 ### 2.4 修改数据库配置
@@ -97,7 +101,7 @@ EUREKA_INSTALL_PORT=
 
 ```shell script
 # 设置数据库的连接信息
-# 包括IP地址、数据库名称、用户名、端口
+# 包括IP地址、端口、用户名、密码和数据库名称
 MYSQL_HOST=
 MYSQL_PORT=
 MYSQL_USERNAME=
@@ -121,9 +125,9 @@ DATABASE=
 
 1.	初始化数据库表
 
-当出现该提醒时：Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?
+当出现该提醒时：Do you want to confiugre and install project?
 
-输入 `y` 初始化数据库表，输入 `n` 跳过数据库表初始化步骤。
+输入 `y` 既开始安装Exchangis服务，输入 `n` 为不进行安装
 
 #### 2.5.3 启动服务
 
