@@ -10,18 +10,81 @@
 
 ### 1、登录DSS
 
-&emsp;&emsp;系统默认通过Linkis的Linux部署用户登录DSS，如使用hadoop部署Linkis和DSS，可以直接通过账号密码：hadoop/hadoop登录。 首先根据前端容器地址ip:port 登录网页，接着输入账号密码：hadoop/hadoop进入DSS
+&emsp;&emsp;系统默认通过Linkis的Linux部署用户登录DSS，如使用hadoop用户部署Linkis和DSS，可以直接通过账号密码：hadoop/hadoop登录。 首先根据DSS的前端部署地址登录网页，接着输入账号密码：hadoop/hadoop进入DSS
 
 ### 2、进入Exchangis
 
-&emsp;&emsp;Exchangis通过DSS来进入，在DSS页面中一词点击：**首页->应用商店->数据应用->进入开发中心**
+&emsp;&emsp;Exchangis通过DSS来进入，在DSS页面中一词点击：**首页->DSS应用组件->数据交换->进入Exchangis**
 
 ![exchangis1.0_entrance](../../../images/zh_CN/ch1/exchangis1.0_entrance.png)
 <div align="center">
 图2-1 Exchangis1.0入口
  </div>
 
-## 三、项目管理
+## 三、数据源管理
+
+&emsp;&emsp;该模块可以对数据源进行配置和管理，为进行数据同步作业的起始步骤，目前Exchangis1.0支持对mysql和hive直接数据的互相导入。
+数据源主要功能如下1：
+
+1.	创建，编辑，删除数据源
+2.	根据类型和名称搜索数据源，支持对数据源快速定位
+3.	数据源连接测试操作
+4.	历史数据源版本发布及记录
+
+![datasource_list](../../../images/zh_CN/ch1/datasource_list.png)
+
+<div align="center">
+图4-1 数据源管理列表
+ </div>
+
+
+### 1、创建数据源
+
+&emsp;&emsp;点击**创建数据源**，选择自己想要创建的数据源，当前支持MySQL和Hive两种数据源的创建。
+
+![datasource_type](../../../images/zh_CN/ch1/datasource_type.png)
+
+<div align="center">
+图4-2 数据源类型
+ </div>
+
+
+&emsp;&emsp;选择创建MySQL数据源，填写配置参数，其中，带星号的为必填项，务必保证连接MySQL数据库的Host，端口号，用户名和密码连接正确。**连接参数**为Json格式，用于设置MySQL的配置信息，填写完能够进行**测试连接**。
+
+![MySQL_datasource_config](../../../images/zh_CN/ch1/MySQL_datasource_config.png)
+
+<div align="center">
+图4-3 MySQL数据源配置
+ </div>
+
+
+&emsp;&emsp;对于Hive数据源的配置，与MySQL不太相同，暂时不提供用户自行在界面进行集群参数配置的功能，对于集群环境，由后端统一配置完成，用户只需要选择需要的集群环境即可，点击确定即可保存。
+
+![Hive_datasource_config](../../../images/zh_CN/ch1/Hive_datasource_config.png)
+
+<div align="center">
+图4-4 Hive数据源配置
+ </div>
+
+
+### 2、数据源功能
+
+&emsp;&emsp;数据源管理模块提供对配置数据源版本的**发布**功能，只有经过发布的数据源才能在配置导数任务的时候被使用，否则会提示不可用，只要再次编辑的数据源就会被视为一个新的版本，最新的版本在第一行。在版本列表中可以**查看**所有历史数据源版本的配置，您可在随时需要回滚时进行参考。
+
+![datasource_func](../../../images/zh_CN/ch1/datasource_func.png)
+
+<div align="center">
+图4-5 数据源发布功能
+ </div>
+
+&emsp;&emsp;数据源管理的**过期**功能，用于提示此数据源已经逐渐要被替换，请及时更换使用该数据源的任务配置，避免直接删除数据源造成所配置的执行任务失效。
+![datasource_timelimit](../../../images/zh_CN/ch1/datasource_timelimit.png)
+
+<div align="center">
+图4-6 数据源过期功能
+ </div>
+
+## 四、项目管理
 
 ### 1、项目列表
 
@@ -36,18 +99,18 @@
 
 ### 2、任务列表
 
-&emsp;&emsp;任务列表中可以对创建的job数据同步任务进行管理，与项目类似，包括**创建**，**修改**和**删除**以及**搜索**。
+&emsp;&emsp;任务列表中可以对创建的Job数据同步任务进行管理，与项目类似，包括**创建**，**修改**、**删除**和**搜索**。
 
 ![job_task_list](../../../images/zh_CN/ch1/job_task_list.png)
 <div align="center">
 图3-2 任务列表
  </div>
 
-&emsp;&emsp;除此之外，**任务支持复制**，能够增加需要的任务，复制的任务包含其原任务配置的所有信息。点击《创建任务》任务，能够选择任务类型和执行引擎，**目前仅支持离线任务和SQOOP执行引擎**，未来将会支持流式任务和DATAX引擎等。
+&emsp;&emsp;除此之外，**任务支持复制**，能够增加需要的任务，复制的任务包含其原任务配置的所有信息。点击《创建任务》任务，能够选择任务类型和执行引擎，**目前仅支持离线任务和SQOOP执行引擎**，未来将会支持流式任务和DataX引擎等。
 
 ![task_type_and_engine](../../../images/zh_CN/ch1/task_type_and_engine.png)
 <div align="center">
-图3-3 数据源管理列表
+图3-3 任务类型和引擎配置
  </div>
 
 ### 3、数据同步任务配置和执行
@@ -63,7 +126,7 @@
 6.	数据同步任务执行情况查看；
 7.	每个主任务和各个子任务的日志查看；
 8.	任务执行历史状态查看；
-9.	执行任务kill操作
+9.	执行任务kill操作。
 
 ### 4、数据源选择和配置
 
@@ -88,73 +151,14 @@
 
 ### 7、作业执行
 
-&emsp;&emsp;Exchangis1.0支持多个子任务同时执行，任务配置完成后，点击执行，即开始数据同步任务，界面下方会弹出工作台，工作台主要包含三个部分功能：《运行情况》，《实时日志》和《执行历史》；
-&emsp;&emsp;《运行情况》能够查看当前数据同步任务整体进度，包含task成功和失败的数量等，以及点击task的名字，能够展示每个task的各项运行指标信息。
+&emsp;&emsp;Exchangis1.0支持多个子任务同时执行，任务配置完成后，点击执行，即开始数据同步任务，界面下方会弹出工作台，工作台主要包含三个部分功能：**运行情况、实时日志和执行历史**；
+&emsp;&emsp;**运行情况**能够查看当前数据同步任务整体进度，包含task成功和失败的数量等，以及点击task的名字，能够展示每个task的各项运行指标信息。
 
-&emsp;&emsp;《实时日志》主要展示的内容包含两大类，一是整个导数job的日志，能够输出每个task的状态日志，例如task是否被调度，是否运行中等；二是每个task的日志，输出的是各自相应的导数日志。《实时日志》能够根据关键字和忽略字进行日志筛选，并别提供获取最后n行日志功能。
-在《实时日志》中可以对Error、Warning和Info不同类型的日志进行筛选展示，只需点击相应的按钮即可。
+&emsp;&emsp;**实时日志**主要展示的内容包含两大类，一是整个导数job的日志，能够输出每个task的状态日志，例如task是否被调度，是否运行中等；二是每个task的日志，输出的是各自相应的导数日志。在实时日志中能够根据关键字和忽略字进行日志筛选，并别提供获取最后n行日志功能；还可以对Error、Warning和Info不同类型的日志进行筛选展示，只需点击相应的按钮即可。
 
-&emsp;&emsp;《执行历史》能够展示该导数任务的历史执行信息，对历史执行过程提供初步的概览，如果想进一步查看详细历史信息，点击任务名称，即可跳转到同步历史界面进行查看。
+&emsp;&emsp;**执行历史**能够展示该导数任务的历史执行信息，对历史执行过程提供初步的概览，如果想进一步查看详细历史信息，点击任务名称，即可跳转到同步历史界面进行查看。
 
 &emsp;&emsp;数据同步任务执行需指定执行用户，默认为登录用户，具体情况需根据实际数据源的配置去调整。
-
-## 四、数据源管理
-
-&emsp;&emsp;该模块可以对数据源进行配置和管理，为进行数据同步作业的起始步骤，目前Exchangis1.0支持对mysql和hive直接数据的互相导入。
-数据源主要功能如下1：
-
-1.	创建，编辑，删除数据源
-2.	根据类型和名称搜索数据源，支持对数据源快速定位
-3.	数据源连接测试操作
-4.	历史数据源版本发布及记录
-
-![datasource_list](../../../images/zh_CN/ch1/datasource_list.png)
-<div align="center">
-图4-1 数据源管理列表
- </div>
-
-
-### 1、创建数据源
-
-&emsp;&emsp;点击**创建数据源**，选择自己想要创建的数据源，当前支持MySQL和Hive两种数据源的创建。
-
-![datasource_type](../../../images/zh_CN/ch1/datasource_type.png)
-<div align="center">
-图4-2 数据源类型
- </div>
-
-
-&emsp;&emsp;选择创建MySQL数据源，填写配置参数，其中，带星号的为必填项，务必保证连接MySQL数据库的Host，端口号，用户名和密码连接正确。**连接参数**为Json格式，用于设置MySQL的配置信息，填写完能够进行**测试连接**。
-
-![datasource_config](../../../images/zh_CN/ch1/datasource_config.png)
-<div align="center">
-图4-3 数据源配置
- </div>
-
-
-&emsp;&emsp;对于Hive数据源的配置，与MySQL不太相同，暂时不提供用户自行在界面进行集群参数配置的功能，对于集群环境，由后端统一配置完成，用户只需要选择需要的集群环境即可，点击确定即可保存。
-
-![add_datasource](../../../images/zh_CN/ch1/add_datasource.png)
-<div align="center">
-图4-4 添加数据源
- </div>
-
-
-### 2、数据源功能
-
-&emsp;&emsp;数据源管理模块提供对配置数据源版本的**发布**功能，只有经过发布的数据源才能在配置导数任务的时候被使用，否则会提示不可用，只要再次编辑的数据源就会被视为一个新的版本，最新的版本在第一行。在版本列表中可以**查看**所有历史数据源版本的配置，您可在随时需要回滚时进行参考。
-
-![datasource_func](../../../images/zh_CN/ch1/datasource_func.png)
-<div align="center">
-图4-5 数据源发布功能
- </div>
-
-
-&emsp;&emsp;数据源管理《过期》按钮，用于提示此数据源已经逐渐要被替换，请及时更换使用该数据源的任务配置，避免直接删除数据源造成所配置的执行任务失效。
-![datasource_timelimit](../../../images/zh_CN/ch1/datasource_timelimit.png)
-<div align="center">
-图4-6 数据源过期功能
- </div>
 
 
 ## 五、同步历史
@@ -167,28 +171,28 @@
 3.	查看每个任务的运行情况和实时日志；
 4.	查看每个同步任务的更细节配置信息和更新时间等。
 
-![sync_history](..\..\..\images\zh_CN\ch1\sync_history.png)
+![sync_history](../../../images/zh_CN/ch1/sync_history.png)
 
 <div align="center">
 图5-1 同步历史界面
  </div>
 
-## 六、EXCHANGIS APPCONN使用
+## 六、Exchangis Appconn使用
 
 &emsp;&emsp;目前，Exchangis1.0支持以Appconn形式与DSS对接，**在DSS端**，能够通过DSS的**应用开发->项目列表**，以工作流编排的模式创建数据交换**sqoop工作流节点**，在这里，能够进行数据同步任务的配置和执行。在DSS创建的Exchangis项目和数据交换任务，会同步在Exchangis中创建。
 
 Exchangis Appconn主要支持以下功能：
 
-1.	《项目操作》对DSS项目的创建，删除，修改操作会同步影响Exchangis端的项目；
-2.	《工作流节点基本操作》DSS编排器中对sqoop工作流节点创建，删除，修改操作会同步到Exchangis端的任务；
-3.	《工作流导数操作》支持sqoop工作流节点配置执行数据同步任务；
-4.	《工作流发布操作》支持sqoop工作流节点发布至WTSS进行任务调度。
+1.	**项目操作**是对DSS项目的创建，删除，修改操作会同步影响Exchangis端的项目；
+2.	**工作流节点基本操作**是DSS编排器中对sqoop工作流节点创建，删除，修改操作会同步到Exchangis端的任务；
+3.	**工作流导数操作**支持sqoop工作流节点配置执行数据同步任务；
+4.	**工作流发布操作**支持sqoop工作流节点发布至WTSS进行任务调度。
 
 ### 1、项目操作
 
 &emsp;&emsp;该模块能够对DSS项目进行创建、修改和删除，在DSS端的操作会同步到Exchangis端，这里以在DSS创建的项目为例，在exchangis appconn操作的流程为：**点击创建项目->填写项目信息->点击确认->进入Exchangis端->点击项目管理**，即可查看到同步创建的项目，如下图所示：
 
-![appconn_pro_create](..\..\..\images\zh_CN\ch1\appconn_pro_create.png)
+![appconn_pro_create](../../../images/zh_CN/ch1/appconn_pro_create.png)
 
 <div align="center">
 图6-1 项目操作
@@ -196,7 +200,7 @@ Exchangis Appconn主要支持以下功能：
 
 创建完成后，会在Exchangis端看到同步过来的项目
 
-![appconn_pro_sync](..\..\..\images\zh_CN\ch1\appconn_pro_sync.jpg)
+![appconn_pro_sync](../../../images/zh_CN/ch1/appconn_pro_sync.jpg)
 
 <div align="center">
 图6-2 项目同步到Exchangis
@@ -206,7 +210,7 @@ Exchangis Appconn主要支持以下功能：
 
 &emsp;工作流节点能够进行创建、修改、删除和进行依赖选择，可以进行节点之间的关联，在DSS端的操作会同步到Exchangis端。这里以对sqoop工作流节点的创建操作为例，在exchangis appconn对项目的操作流程为：**创建一条工作流->从左侧插件栏拖动sqoop节点至右侧画布->点击确认创建sqoop节点任务->进入exchangis端查看同步创建的任务**，如下图所示，对sqoop节点任务的删除和修改同理。
 
-![appconn_pro_sqoop](..\..\..\images\zh_CN\ch1\appconn_pro_sqoop.png)
+![appconn_pro_sqoop](../../../images/zh_CN/ch1/appconn_pro_sqoop.png)
 
 <div align="center">
 图6-3 Sqoop节点功能
@@ -214,7 +218,7 @@ Exchangis Appconn主要支持以下功能：
 
 可以看到导数任务也同步到Exchangis中了
 
-![](..\..\..\images\zh_CN\ch1\appconn_pro_sqoop_sync.jpg)
+![](../../../images/zh_CN/ch1/appconn_pro_sqoop_sync.jpg)
 
 <div align="center">
 图6-4 Sqoop节点同步到Exchangis
@@ -224,13 +228,13 @@ Exchangis Appconn主要支持以下功能：
 
 &emsp;&emsp;双击Sqoop节点进行工作流节点进行操作，支持sqoop工作流节点配置与执行数据同步任务。以工作流节点形式进行导数任务是Exchangis Appconn的核心功能，**每一个sqoop节点代表一个数据同步任务**，具体操作流程如下：**双击sqoop节点->弹出任务配置界面->配置任务信息->执行任务**，如下图所示：
 
-![sqoop_config](..\..\..\images\zh_CN\ch1\sqoop_config.png)
+![sqoop_config](../../../images/zh_CN/ch1/sqoop_config.png)
 
 <div align="center">
 图6-5 双击sqoop工作流节点进入配置界面
  </div>
 
-![sqoop_user_config](..\..\..\images\zh_CN\ch1\sqoop_user_config.png)
+![sqoop_user_config](../../../images/zh_CN/ch1/sqoop_user_config.png)
 
 <div align="center">
 图6-6 配置工作流节点信息
@@ -238,7 +242,7 @@ Exchangis Appconn主要支持以下功能：
 
 &emsp;&emsp;这里有两种执行方式，一种是在弹出的任务配置界面点击执行按钮进行执行；另一种是点击DSS编排器的**执行按钮**或者是**选中执行按钮**进行执行，**点击执行**会对该工作流中的所有节点执行，**点击选中执行**仅会执行选中的工作流节点，不会执行全部节点。
 
-![sqoop_execute](..\..\..\images\zh_CN\ch1\sqoop_execute.png)
+![sqoop_execute](../../../images/zh_CN/ch1/sqoop_execute.png)
 
 <div align="center">
 图6-7 执行任务
@@ -254,5 +258,5 @@ Exchangis Appconn主要支持以下功能：
 
 &emsp;&emsp;点击命名空间的下拉框，切换到**生产中心**，可以看到所有项目的工作流的日志，可以查看每个工作流调度的状态
 
-![production_center](..\..\..\images\zh_CN\ch1\production_center.png)
+![production_center](../../../images/zh_CN/ch1/production_center.png)
 
