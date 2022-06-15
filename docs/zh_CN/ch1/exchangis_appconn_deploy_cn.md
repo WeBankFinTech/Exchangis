@@ -5,7 +5,7 @@ ExchangisAppConn安装文档
 
 ### 2.ExchangisAppConn插件的下载和编译
 #### 1）下载二进制包
-我们提供ExchangisAppconn的物料包，您可直接下载使用。[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
+我们提供ExchangisAppconn的物料包，您可直接下载使用。[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/exchangis-appconn.zip)
 #### 2） 编译打包
 
 如果您想自己开发和编译ExchangisAppConn，具体编译步骤如下：
@@ -24,6 +24,9 @@ mvn clean install
 1.拿到打包出来的exchangis-appconn.zip物料包
 
 2.放置到如下目录并进行解压
+
+注意：第一次解压exchangis appconn后，确保当前文件夹下没有index_v0000XX.index文件，该文件在后面才会生成
+
 ```
 cd {DSS_Install_HOME}/dss/dss-appconns
 unzip exchangis-appconn.zip
@@ -36,24 +39,23 @@ lib
 appconn.properties
 ```
 
-###3.执行脚本进行自动化安装
-```
+3.执行脚本进行自动化安装
+
+```shell
 cd {DSS_INSTALL_HOME}/dss/bin
 ./install-appconn.sh
-脚本是交互式的安装方案，您需要输入字符串exchangis以及exchangis服务的ip和端口，即可以完成安装
-这里的exchangis端口是指前端端口，在nginx进行配置。而不是后端的服务端口
+# 脚本是交互式的安装方案，您需要输入字符串exchangis以及exchangis服务的ip和端口，即可以完成安装
+# 这里的exchangis端口是指前端端口，在nginx进行配置。而不是后端的服务端口
 ```
 
 ### 4.完成exchangis-appconn的安装后，需要重启dss服务，才能最终完成插件的更新
 
 #### 4.1）使部署好的APPCONN生效
-使用DSS启停脚本使APPCONN生效，脚本所在位置为{DSS_INSTALL_HOME}/sbin中，依次使用如下命令执行脚本
+使用DSS启停脚本使APPCONN生效，进入到脚本所在目录{DSS_INSTALL_HOME}/sbin中，依次使用如下命令执行脚本：
 ```
-sh /sbin/dss-stop-all.sh
-sh /sbin/dss-start-all.sh
+sh ./dss-stop-all.sh
+sh ./dss-start-all.sh
 ```
-中途可能发生启动失败或者卡住，可以退出重复执行
-
 #### 4.2）验证exchangis-appconn是否生效
 在安装部署完成exchangis-appconn之后，可通过以下步骤初步验证exchangis-appconn是否安装成功。
 1.	在DSS工作空间创建一个新的项目
@@ -64,8 +66,6 @@ sh /sbin/dss-start-all.sh
 
 更多使用操作可参照[Exchangis1.0用户手册](https://user-images.githubusercontent.com/27387830/169782142-b2fc2633-e605-4553-9433-67756135a6f1.png)
 
-注意：第一次安装exchangis appconn后，确保该文件下没有index_v0000XX.index文件，该文件在后面才会生成
-
 ### 5.Exchangis AppConn安装原理
 
 Exchangis 的相关配置信息会插入到以下表中，通过配置下表，可以完成 Exchangis 的使用配置，安装 Exchangis AppConn 时，脚本会替换每个 AppConn 下的 init.sql，并插入到表中。(注：如果仅仅需要快速安装APPCONN，无需过分关注以下字段，提供的init.sql中大多以进行默认配置。重点关注以上操作即可)
@@ -74,8 +74,8 @@ Exchangis 的相关配置信息会插入到以下表中，通过配置下表，�
 | :----: | :----: |-------|
 | dss_application	 | 应用表,主要是插入 exchangis 应用的基本信息	| 必须 |
 | dss_menu | 菜单表，存储对外展示的内容，如图标、名称等 | 必须 |
-| dss_onestop_menu_application| menu 和 application 的关联表，用于联合查找 | 必须 | 
-| dss_appconn |appconn 的基本信息，用于加载 appconn | 必须 | 
+| dss_onestop_menu_application| menu 和 application 的关联表，用于联合查找 | 必须 |
+| dss_appconn |appconn 的基本信息，用于加载 appconn | 必须 |
 | dss_appconn_instance| AppConn 的实例的信息，包括自身的url信息 | 必须 |
 | dss_workflow_node | schedulis 作为工作流节点需要插入的信息	 | 必须 |
 
