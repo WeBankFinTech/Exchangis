@@ -4,6 +4,10 @@
 
  ![img](../../../images/zh_CN/ch1/job_overall.png)
 
+<div align="center">
+图1-1 总体流程图
+ </div>
+
 请注意：
 
 1.   如果用户通过REST客户端直接提交一段希望被执行的同步任务JSON，则无需进行步骤二，直接将JSON提交给TaskGenerator即可。
@@ -17,6 +21,10 @@
 ## 二、前后台交互
 
 ![img](../../../images/zh_CN/ch1/job_frontend_backend.png)
+
+<div align="center">
+图2-1 前后台交互
+ </div>
 
 ### 1.  jobExecutionId的必要性
 
@@ -62,6 +70,10 @@ JobExecution的TaskChooseRuler会去数据库中扫描所有的ExchangTask，如
 
 ![img](../../../images/zh_CN/ch1/job_frontend_1.png)
 
+<div align="center">
+图3-1 任务提交
+ </div>
+
 点击执行之后，如下图所示：
 
 需注意，这时会弹出作业信息台，默认展示运行情况，即总体进度和所有子任务的进度情况。
@@ -70,25 +82,37 @@ JobExecution的TaskChooseRuler会去数据库中扫描所有的ExchangTask，如
 
 ![img](../../../images/zh_CN/ch1/job_frontend_2.png)
 
+<div align="center">
+图3-2 任务执行
+ </div>
+
 ### 2. 子任务的运行情况
 
 当用户点击正在运行/已完成的某个子作业时，这时前端触发请求后台的【获取Task Metrics信息】接口，通过jobExecutionId & taskId来获取task Metrics信息，展示如下页面的内容：
 
-![img](../../../images/zh_CN/ch1/job_frontend_3.png)
+![1655260735321](../../../images/zh_CN/ch1/job_frontend_3.png)
+
+<div align="center">
+图3-3 子任务运行情况
+ </div>
 
 主要展示资源使用情况、流量情况和核心指标。
 
-![img](../../../images/zh_CN/ch1/job_frontend_4.png)
+<div align="center">
+图3-4 子任务资源使用情况
+ </div>
+
+![1655260937221](../../../images/zh_CN/ch1/job_frontend_4.png)
 
 ### 3. 实时日志
 
-当用户点击如下图所示的右下角“日志”按钮时，信息台出现“实时日志”Tab，并默认展示Job的实时日志，如下图二所示：
+当用户点击如下图所示的右下角“日志”按钮时，信息台出现“实时日志”Tab，并默认展示Job的实时日志。当点击运行情况的“日志”按钮时，首先会默认展示整个作业的运行日志，这时前端默认调用【获取Job实时日志】的接口，通过jobExecutionId获取Job日志并进行展示，如下图：
 
 ![img](../../../images/zh_CN/ch1/job_frontend_5.png)
 
-当点击运行情况的“日志”按钮时，首先会默认展示整个作业的运行日志，这时前端默认调用【获取Job实时日志】的接口，通过jobExecutionId获取Job日志并进行展示，如下图：
-
-![img](../../../images/zh_CN/ch1/job_frontend_6.png)
+<div align="center">
+图3-5 任务实时日志
+ </div>
 
 只要用户不切到信息台的其他Tab，则前端会不断向后台轮询实时日志；
 
@@ -106,366 +130,13 @@ JobExecution的TaskChooseRuler会去数据库中扫描所有的ExchangTask，如
 
 ![img](../../../images/zh_CN/ch1/job_backend_datasource_design.png)
 
+<div align="center">
+图4-1 数据库表结构设计
+ </div>
+
 ### 2.  接口文档
 
-#### 2.1 提交配置好的job进行执行 
-
-接口描述：提交执行ExchangisJob，后台返回jobExecutionId
-
-请求URL：/api/rest_j/v1/exchangis/job/{id}/execute 
-
-请求方式：POST 
-
-请求参数： 
-
-| 名称                  | 类型    | 备注                                                         | 是否必须 | 默认值 |
-| --------------------- | ------- | ------------------------------------------------------------ | -------- | ------ |
-| id                    | Long    | Exchangis的ID                                                | 是       | 无     |
-| permitPartialFailures | boolean | 是否允许部分失败。如果为true，就算 部分子任务失败，整个Job还是会继续 执行，执行完成后，Job状态为 Partial_Success。该参数为 requestBody参数。 | 否       | false  |
-
-返回参数： 
-
-| 名称           | 类型   | 是否必须 | 默认值 | 备注                 |
-| -------------- | ------ | -------- | ------ | -------------------- |
-| method         | String | 是       |        | 调用的方法(请求路径) |
-| status         | int    | 是       |        | 响应状态码           |
-| message        | String | 否       |        | 响应的信息           |
-| data           | Map    | 是       |        | 返回的数据           |
-| jobExecutionId | String | 是       |        | 执行job的执行id      |
-
-返回示例：
-
-```json
-{
-    "method": "/api/rest_j/v1/exchangis/job/{id}/execute",
-    "status": 0,
-    "message": "Submitted succeed(提交成功)！",
-    "data": {
-    "jobExecutionId": "555node1node2node3execId1"
-}
-
-```
-
-#### 2.2 获取Job的执行状态 
-
-接口描述：根据jobExecutionId获取Job的状态
-
-请求URL：/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/status 
-
-请求方式：GET 
-
-请求参数： 
-
-| 名称           | 类型   | 备注                 | 是否必须 | 默认值 |
-| -------------- | ------ | -------------------- | -------- | ------ |
-| jobExecutionId | String | ExchangisJob的执行ID | 是       | 无     |
-
-返回参数： 
-
-| 名称           | 类型   | 是否必须 | 默认值 | 备注                                                         |
-| -------------- | ------ | -------- | ------ | ------------------------------------------------------------ |
-| method         | String | 是       |        | 调用的方法(请求路径)                                         |
-| status         | int    | 是       |        | 响应状态码                                                   |
-| message        | String | 否       |        | 响应的信息                                                   |
-| data           | Map    | 是       |        | 返回的数据                                                   |
-| jobExecutionId | String | 是       |        | 执行job的状态，包含：Inited，Scheduled， Running，WaitForRetry，Cancelled，Failed， Partial_Success，Success，Undefined，Timeout。其 中，Running状态表示正在运行，从Cancelled开始，都 是已完成状态。 |
-
-返回示例：
-
-```json
-{
-    "method": "/api/rest_j/v1/exchangis/job/execution/{id}/status",
-    "status": 0,
-    "message": "Submitted succeed(提交成功)！",
-    "data": {
-    "status": "Running",
-    "progress": 0.1
-}
-```
-
-#### 2.3 获取本次Job执行的task列表  
-
-接口描述：通过jobExecutionId，获取任务列表
-
-前提条件：Job的执行状态必须为Running后，才可以拿到task列表，否则返回的task列表为空
-
-请求URL：/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/tasklist 
-
-请求方式：GET 
-
-请求参数： 
-
-| 名称           | 类型   | 备注   | 是否必须 | 默认值 |
-| -------------- | ------ | ------ | -------- | ------ |
-| jobExecutionId | String | string | 是       | 无     |
-
-返回参数： 
-
-| 名称           | 类型   | 是否必须 | 默认值 | 备注                                                         |
-| -------------- | ------ | -------- | ------ | ------------------------------------------------------------ |
-| method         | String | 是       |        | 调用的方法(请求路径)                                         |
-| status         | int    | 是       |        | 响应状态码                                                   |
-| message        | String | 否       |        | 响应的信息                                                   |
-| data           | Map    | 是       |        | 返回的数据                                                   |
-| jobExecutionId | String | 是       |        | 任务列表。Job的执行状态必须为Running后，才可以 拿到task列表，否则返回的task列表为空。 请注意：task没有Partial_Success状态。 |
-
-返回示例：
-
-```json
-{
-    "method": "/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/tasklist",
-    "status": 0,
-    "message": "Submitted succeed(提交成功)！",
-    "data": {
-        "tasks": [
-            {
-                "taskId": 5,
-                "name": "test-1",
-                "status": "Inited", // task没有Partial_Success状态
-                "createTime": "2022-01-03 09:00:00",
-                "launchTime": null,
-                "lastUpdateTime": "2022-01-03 09:00:00",
-                "engineType": "sqoop",
-                "linkisJobId": null,
-                "linkisJobInfo": null,
-                "executeUser": "enjoyyin"
-            }
-        ]
-    }
-}
-
-```
-
-####  2.4 获取Job & task的执行进度 
-
-接口描述：通过jobExecutionId，获取执行进度
-
-前提条件：Job的执行状态必须为Running后，才可以拿到task列表的进度
-
-请求URL：/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/progress  
-
-请求方式：GET 
-
-请求参数： 
-
-| 名称           | 类型   | 备注                 | 是否必须 | 默认值 |
-| -------------- | ------ | -------------------- | -------- | ------ |
-| jobExecutionId | String | ExchangisJob的执行ID | 是       | 无     |
-
-返回参数： 
-
-| 名称           | 类型   | 是否必须 | 默认值 | 备注                                                         |
-| -------------- | ------ | -------- | ------ | ------------------------------------------------------------ |
-| method         | String | 是       |        | 调用的方法(请求路径)                                         |
-| status         | int    | 是       |        | 响应状态码                                                   |
-| message        | String | 否       |        | 响应的信息                                                   |
-| data           | Map    | 是       |        | 返回的数据                                                   |
-| jobExecutionId | String | 是       |        | 任务列表。Job的执行状态必须为Running后，才可以 拿到task列表，否则返回的task列表为空。 |
-
-返回示例：
-
-```json
-{
-    "method": "/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/progress",
-    "status": 0,
-    "message": "Submitted succeed(提交成功)！",
-    "data": {
-        "job": {
-            "status": "Running",
-            "progress": 0.1,
-            "tasks": {
-                "running": [
-                    {
-                        "taskId": 5,
-                        "name": "test-1",
-                        "status": "Running",
-                        "progress": 0.1
-                    }
-                ],
-                "Inited": [
-                    {
-                        "taskId": 5,
-                        "name": "test-1",
-                        "status": "Inited",
-                        "progress": 0.1
-                    }
-                ],
-                "Scheduled": [],
-                "Success": [],
-                "Failed": [], // 如果存在Failed的task，则Job会直接失败
-                "WaitForRetry": [],
-                "Cancelled": [], // 如果存在Cancelled的task，则Job会直接失败
-                "Undefined": [], // 如果存在Undefined的task，则Job会直接失败
-                "Timeout": []
-            }
-        }
-    }
-}
-
-```
-
-#### 2.5 获取task运行时的各项指标信息 
-
-接口描述：通过jobExecutionId和taskId，获取task运行时的各项指标信息
-
-前提条件：task的执行状态必须为Running后，才可以拿到task的各项指标信息，否则返回的 为空
-
-请求URL：/api/rest_j/v1/exchangis/task/execution/{taskId}/metrics 
-
-请求方式：POST 
-
-请求参数： 
-
-| 名称           | 类型   | 备注                                     | 是否必须 | 默认值 |
-| -------------- | ------ | ---------------------------------------- | -------- | ------ |
-| jobExecutionId | String | ExchangisJob的执行ID，放入 requestBody中 | 是       | 无     |
-| taskId         | String | task的执行ID，放入URI中                  | 是       | 无     |
-
-返回参数： 
-
-| 名称           | 类型   | 是否必须 | 默认值 | 备注                                                         |
-| -------------- | ------ | -------- | ------ | ------------------------------------------------------------ |
-| method         | String | 是       |        | 调用的方法(请求路径)                                         |
-| status         | int    | 是       |        | 响应状态码                                                   |
-| message        | String | 否       |        | 响应的信息                                                   |
-| data           | Map    | 是       |        | 返回的数据                                                   |
-| jobExecutionId | String | 是       |        | 任务各项指标信息。task的执行状态必须为 Running后，才可以拿到task的各项指标信息。 |
-
-返回示例：
-
-```json
-{
-    "method": "/api/rest_j/v1/exchangis/task/execution/{taskId}/metrics",
-    "status": 0,
-    "message": "Submitted succeed(提交成功)！",
-    "data": {
-        "task": {
-            "taskId": 5,
-            "name": "test-1",
-            "status": "running",
-            "metrics": {
-                "resourceUsed": {
-                    "cpu": 10, // 单位：vcores
-                    "memory": 20 // 单位：GB
-                },
-                "traffic": {
-                    "source": "mysql",
-                    "sink": "hive",
-                    "flow": 100 // 单位：Records/S
-                },
-                "indicator": {
-                    "exchangedRecords": 109345, // 单位：Records
-                    "errorRecords": 5,
-                    "ignoredRecords": 5
-                }
-            }
-        }
-    }
-}
-```
-
-#### 2.6 获取Job的实时日志 
-
-接口描述：通过jobExecutionId，获取Job的实时日志
-
-请求URL：/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/log? fromLine=&pageSize=&ignoreKeywords=&onlyKeywords=&lastRows= 
-
-请求方式：GET 
-
-请求参数： 
-
-| 名称           | 类型   | 备注                                                         | 是否必须 | 默认值 |
-| -------------- | ------ | ------------------------------------------------------------ | -------- | ------ |
-| jobExecutionId | String | ExchangisJob的执行ID                                         | 是       | 无     |
-| fromLine       | int    | 读取的起始行                                                 | 否       | 0      |
-| pageSize       | int    | 本次读取日志行数                                             | 否       | 100    |
-| ignoreKeywords | String | 忽略哪些关键字所在的行，多个关键字以英 文,分隔               | 否       | 无     |
-| onlyKeywords   | String | 只取哪些关键字所在的行，多个关键字以英 文,分隔               | 否       | 无     |
-| lastRows       | int    | 只读取最后多少行的日志，相当于tail -f log。该参数大于0时，上面所有的参数都会 失效。 | 否       | 无     |
-
-返回参数： 
-
-| 名称    | 类型    | 是否必须 | 默认值 | 备注                                                   |
-| ------- | ------- | -------- | ------ | ------------------------------------------------------ |
-| method  | String  | 是       |        | 调用的方法(请求路径)                                   |
-| status  | int     | 是       |        | 响应状态码                                             |
-| message | String  | 否       |        | 响应的信息                                             |
-| data    | Map     | 是       |        | 返回的数据                                             |
-| endLine | int     | 是       |        | 本次读取的结束行号,下次可以从 endLine + 1 继续读取日志 |
-| isEnd   | boolean |          |        | 日志是否已经全部读完                                   |
-| logs    | List    | 是       |        | 返回Job的执行日志                                      |
-
-返回示例：
-
-```json
-{
-    "method": "/api/rest_j/v1/exchangis/job/execution/{jobExecutionId}/log",
-    "status": 0,
-    "message": "Submitted succeed(提交成功)！",
-    "data": {
-        "endLine": 99, // 本次读取的结束行号,下次可以从 endLine + 1 继续读取日志
-        "isEnd": false, // 日志是否已经全部读完
-        "logs": [
-            "all": "",
-            "error": "",
-            "warn": "",
-            "info": ""
-        ]
-    }
-}
-```
-
-#### 2.7 获取task的实时日志 
-
-接口描述：通过jobExecutionId和taskId，获取task的实时日志
-
-请求URL：/api/rest_j/v1/exchangis/task/execution/{taskId}/log? jobExecutionId=&fromLine=&pageSize=&ignoreKeywords=&onlyKeywords=&lastRows= 
-
-请求方式：GET 
-
-请求参数： 
-
-| 名称           | 类型   | 备注                                                         | 是否必须 | 默认值 |
-| -------------- | ------ | ------------------------------------------------------------ | -------- | ------ |
-| taskId         | String | task的执行Id                                                 | 是       | 无     |
-| jobExecutionId | String | ExchangisJob的执行ID                                         | 是       | 无     |
-| fromLine       | int    | 读取的起始行                                                 | 否       | 0      |
-| pageSize       | int    | 本次读取日志行数                                             | 否       | 100    |
-| ignoreKeywords | String | 忽略哪些关键字所在的行，多个关键字以英 文,分隔               | 否       | 无     |
-| onlyKeywords   | String | 只取哪些关键字所在的行，多个关键字以英 文,分隔               | 否       | 无     |
-| lastRows       | int    | 只读取最后多少行的日志，相当于tail -f log。该参数大于0时，上面所有的参数都会 失效。 | 否       | 无     |
-
-返回参数： 
-
-| 名称    | 类型    | 是否必须 | 默认值 | 备注                                                   |
-| ------- | ------- | -------- | ------ | ------------------------------------------------------ |
-| method  | String  | 是       |        | 调用的方法(请求路径)                                   |
-| status  | int     | 是       |        | 响应状态码                                             |
-| message | String  | 否       |        | 响应的信息                                             |
-| data    | Map     | 是       |        | 返回的数据                                             |
-| endLine | int     | 是       |        | 本次读取的结束行号,下次可以从 endLine + 1 继续读取日志 |
-| isEnd   | boolean |          |        | 日志是否已经全部读完                                   |
-| logs    | List    | 是       |        | 返回Job的执行日志                                      |
-
-返回示例：
-
-```json
-{
-    "method": "/api/rest_j/v1/exchangis/job/execution/{taskId}/log",
-    "status": 0,
-    "message": "Submitted succeed(提交成功)！",
-    "data": {
-        "endLine": 99, // 本次读取的结束行号,下次可以从 endLine + 1 继续读取日志
-        "isEnd": false, // 日志是否已经全部读完
-        "logs": [
-            "all": "",
-            "error": "",
-            "warn": "",
-            "info": ""
-        ]
-    }
-}
-```
+详见：Exchangis作业执行模块接口文档
 
 ### 3.  核心模块 & 核心类设计
 
@@ -475,13 +146,19 @@ JobExecution的TaskChooseRuler会去数据库中扫描所有的ExchangTask，如
 
  
 
-请注意：其中所有以Entity结尾的非接口，都是需要存储到数据库之中，作为一张表而存在。
+<div align="center">
+图4-2 实体Bean的UML类图
+ </div>
 
- 
+请注意：其中所有以Entity结尾的非接口，都是需要存储到数据库之中，作为一张表而存在。
 
 #### 3.2 TaskGenerator的UML类图结构如下：
 
 ![img](../../../images/zh_CN/ch1/job_backend_uml_2.png)
+
+<div align="center">
+图4-3 TaskGenerator的UML类图
+ </div>
 
 TaskGenerator只负责将一个Job的JSON转换成可以提交给Linkis执行的任务集（即将Job下面的所有subJob翻译成一个ExchangisTask集），翻译完成后写入DB。
 
@@ -490,6 +167,10 @@ TaskGenerator只负责将一个Job的JSON转换成可以提交给Linkis执行的
 #### 3.3 TaskExecution体系的UML类图结构如下：
 
 ![img](../../../images/zh_CN/ch1/job_backend_uml_3.png)
+
+<div align="center">
+图4-4 TaskExecution体系的UML类图
+ </div>
 
 1. TaskExecution主要由TaskConsumer、TaskManager、TaskScheduler和TaskSchedulerLoadBalancer组成。
 
@@ -505,11 +186,19 @@ TaskGenerator只负责将一个Job的JSON转换成可以提交给Linkis执行的
 
 ![img](../../../images/zh_CN/ch1/job_backend_uml_4.png)
 
+<div align="center">
+图4-5 TaskScheduler体系的UML类图
+ </div>
+
 TaskScheduler基于linkis-scheduler模块来实现。
 
 #### 3.5 Listener体系的UML类图如下：
 
 ![img](../../../images/zh_CN/ch1/job_backend_uml_5.png)
+
+<div align="center">
+图4-6 Listener体系的UML类图
+ </div>
 
 Listener体系是保证各信息能更新到数据库的核心，实现这些listener的实现类应该都是各个service类。
 
