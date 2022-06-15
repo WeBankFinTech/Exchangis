@@ -11,6 +11,8 @@ Exchangis 的安装，主要分为以下四步：
 
 #### 1.1 基础软件安装
 
+由于Exchangis依赖于DSS和Linkis，所以需要预先安装这两个组件，Exchangis通过DSS进行免密登录
+
 | 依赖的组件 | 是否必装 | 安装直通车 |
 | -------------- | ------ | --------------- |
 | MySQL (5.5+) | 必装  | [如何安装mysql](https://www.runoob.com/mysql/mysql-install.html) |
@@ -22,16 +24,17 @@ Exchangis 的安装，主要分为以下四步：
 | Linkis1.1.1 | 必装 | [如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
 | Nginx | 必装 | [如何安装 Nginx](http://nginx.org/en/linux_packages.html) |
 
+#### 1.2 基础环境准备
 
-#### 1.2 创建 Linux 用户
+##### 1）在Linux上创建用户
 
 请保持 Exchangis 的部署用户与 Linkis 的部署用户一致，例如：部署用户是hadoop账号。
 
-#### 1.3 在linkis中为exchangis加专用token
+##### 2）在linkis中为exchangis加专用token
 
 添加方式为，linkis数据库表  linkis_mg_gateway_auth_token，token_name字段用于配置访问到config.sh 的 LINKIS_TOKEN中
 
-#### 1.4 底层依赖组件检查
+#### 1.3 底层依赖组件检查
 
 **请确保 DSS1.0.1 与 Linkis1.1.0 基本可用，可在 DSS 前端界面执行 HiveQL 脚本，可正常创建并执行 DSS 工作流。**
 
@@ -182,13 +185,11 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 从 `web/` 路径获取编译好的 dist.zip 前端包。
 
-获取到的前端包，您可以放在服务器上的任意位置，这里建议您与后端安装地址目录保持一致，在同一目录下放置并解压。
-
 #### 2.7.2 前端安装部署
 
 1. 解压前端安装包
 
-如您打算将 Exchangis 前端包部署到 `/appcom/Install/exchangis/web` 目录，请先将 `dist.zip` 拷贝到该目录并执行解压，注意，请在安装dss的机器上安装exchangis前端：
+如您打算将 Exchangis 前端包部署到 `/appcom/Install/exchangis/web` 目录，请先将 `dist.zip` 拷贝到该目录并执行解压，注意，**请在安装dss的机器上安装exchangis前端**：
 
 ```shell script
   # 请先将 Exchangis 前端包拷贝到 `/appcom/Install/exchangis/web` 目录
@@ -247,7 +248,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
   nginx -s reload
 ```
 
-请通过 http://${EXCHANGIS_INSTALL_IP}:8098/#/projectManage 访问 Exchangis 前端页面，出现以下界面，说明exchangis安装前端成功，如果要真正试用exchangis，需要安装dss和linkis，通过dss进行免密登录，如下图所示：
+请通过 http://${EXCHANGIS_INSTALL_IP}:8098/#/projectManage 访问 Exchangis 前端页面，如下图所示：
 
 ![image](https://user-images.githubusercontent.com/27387830/170417473-af0b4cbe-758e-4800-a58f-0972f83d87e6.png)
 
