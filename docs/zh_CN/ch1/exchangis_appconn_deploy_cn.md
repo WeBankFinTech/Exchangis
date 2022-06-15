@@ -5,7 +5,7 @@ ExchangisAppConn安装文档
 
 ### 2.ExchangisAppConn插件的下载和编译
 #### 1）下载二进制包
-我们提供ExchangisAppconn的物料包，您可直接下载使用。[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
+我们提供ExchangisAppconn的物料包，您可直接下载使用。[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/exchangis-appconn.zip)
 #### 2） 编译打包
 
 如果您想自己开发和编译ExchangisAppConn，具体编译步骤如下：
