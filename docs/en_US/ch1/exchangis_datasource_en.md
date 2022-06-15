@@ -139,19 +139,19 @@ Make some modifications and extensions to the entity objects contained in **link
 
 2.1  Among them, **DataSourceParamKeyDefinition** keeps the original consistent structure, and adds some attributes to support interface rendering. The detailed structure is as follows: 
 
-| **Field name**  | **Field type** | **Remark**                                                   |
-| --------------- | -------------- | ------------------------------------------------------------ |
-| id              | string         | persistent ID                                                |
-| key             | string         | attribute name keyword                                       |
-| description     | string         | describe                                                     |
-| name            | string         | attribute display name                                       |
-| defaultValue    | string         | attribute default value                                      |
-| valueType       | string         | attribute value type                                         |
-| require         | boolean        | is it a required attribute                                   |
-| refId           | string         | another attribute ID of the cascade                          |
-| dataSrcTypId    | string         | the associated data source type ID                           |
-| 【新增】refMap  | string         | cascading relation table, format should be as follows:  value1=refValue1, value2=refValue2 |
-| 【新增】loadUrl | string         | upload URL, which is empty by default                        |
+| **Field name** | **Field type** | **Remark**                                                   |
+| -------------- | -------------- | ------------------------------------------------------------ |
+| id             | string         | persistent ID                                                |
+| key            | string         | attribute name keyword                                       |
+| description    | string         | describe                                                     |
+| name           | string         | attribute display name                                       |
+| defaultValue   | string         | attribute default value                                      |
+| valueType      | string         | attribute value type                                         |
+| require        | boolean        | is it a required attribute                                   |
+| refId          | string         | another attribute ID of the cascade                          |
+| dataSrcTypId   | string         | the associated data source type ID                           |
+| refMap[Add]    | string         | cascading relation table, format should be as follows:  value1=refValue1, value2=refValue2 |
+| loadUrl[Add]   | string         | upload URL, which is empty by default                        |
 
 2.2 The **DataSource** structure is similar, but it contains label information
 
@@ -185,7 +185,7 @@ Make some modifications and extensions to the entity objects contained in **link
 
 2.4  **DataSourceType** and **DataSourceEnv** are also roughly the same as the original classes, in which **DataSourceType** needs to add **classifier** fields to classify different datasource types, and the others will not be described. 
 
-**datasource-server**具有的主要服务处理类如下:
+The main service processing classes of **datasource-server** are as follows: 
 
 | **Interface name**              | **Interface role**                                           | **Single realization** |
 | ------------------------------- | ------------------------------------------------------------ | ---------------------- |
