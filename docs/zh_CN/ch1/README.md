@@ -60,7 +60,7 @@ Exchangis 抽象了一套统一的数据源和同步作业定义插件，允许�
 
 如果您想得到最快的响应，请给我们提 issue，或者扫码进群：
 
-![communication](../../../images/communication.png)
+![communication](images/en_US/ch1/communication.png)
 
 ## License
 
