@@ -55,14 +55,14 @@ Exchangis 抽象了一套统一的数据源和同步作业定义插件，允许�
 
 
 ## 相关文档
-[安装部署文档](exchangis_deploy_cn.md)  
-[用户手册](exchangis_user_manual_cn.md)
+[安装部署文档](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)  
+[用户手册](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
 
 ## 交流贡献
 
 如果您想得到最快的响应，请给我们提 issue，或者扫码进群：
 
-![communication](./images/zh_CN/ch1/communication.JPG)
+![communication](images/zh_CN/ch1/communication.JPG)
 
 ## License
 
