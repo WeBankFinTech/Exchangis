@@ -30,7 +30,7 @@ Monitor long-running tasks and tasks with abnormal status, release occupied reso
 Comparison of some existing data exchange tools and platforms：  
 
 | Function module | Description | Exchangis | DataX | Sqoop | DataLink | DBus |
-| :----: | :----: |-------|-------|-------|-------|-------|  
+| :----: | :----: |-------|-------|-------|-------|-------|
 | UI | Integrated the convenient management interface and monitoring window | Integrated | None | None | Integrated |Integrated |
 | Installation and deployment | Ease of deployment and third-party dependencies | One-click deployment, no dependencies | No dependencies | Rely on Hadoop environment | Rely on Zookeeper | Rely on a large number of third-party components |
 | Data authority management |  Multi-tenant permission configuration and data source permission control | Support | Not support | Not support | Not support | Support |
@@ -55,7 +55,7 @@ Comparison of some existing data exchange tools and platforms：
 
 If you desire immediate response, please kindly raise issues to us or scan the below QR code by WeChat and QQ to join our group:
 
-![Communication](images/communication.png)
+![Communication](./images/zh_CN/ch1/communication.JPG)
 
 ## License
 
