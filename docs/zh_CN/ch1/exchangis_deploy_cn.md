@@ -159,9 +159,9 @@ DATABASE=
 ./sbin/daemon.sh restart server
 ```
 
-执行完成启动脚本后，会出现以下提示：
+执行完成启动脚本后，会出现以下提示，eureka地址也会在启动服务时在控制台打出：
 
-![企业微信截图_16532930262583](https://user-images.githubusercontent.com/27387830/169773764-1c5ed6fb-35e9-48cb-bac8-6fa7f738368a.png)
+![企业微信截图_16532930262583](https://user-images.githubusercontent.com/27387830/173892397-7cc7e988-0222-4f64-92ed-2cc58669770e.png)
 
 ### 2.6 查看服务是否启动成功
 
@@ -172,14 +172,6 @@ DATABASE=
 如下图所示：
 
 ![补充Eureka截图](../../../images/zh_CN/ch1/eureka_exchangis.png)
-
-数据源功能的启用
-
-请注意，Exchangis1.0任务执行依赖于linkis-datasource，linkis的启动脚本中默认不会启动数据源相关的服务两个服务（ps-data-source-manager，ps-metadatamanager）， 如果想使用数据源服务，可以通过如下方式进行开启: 修改$LINKIS_CONF_DIR/linkis-env.sh中的 export ENABLE_METADATA_MANAGER=true值为true。 通过linkis-start-all.sh/linkis-stop-all.sh 进行服务启停时，会进行数据源服务的启动与停止。
-
-除此之外，为了使用hive数据源，需要在linkis的数据库表linkis_ps_dm_datasource_env，配置parameter的hive元服务IP地址
-
-![image](https://user-images.githubusercontent.com/27387830/173819138-aae10669-0cfe-47a0-a715-c6ab213837d9.png)
 
 ### 2.7 前端安装部署
 
@@ -272,7 +264,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 ## 4. Linkis Sqoop 引擎安装部署
 
-如您想正常执行 Exchangis1.0.0 的 Sqoop作业，还需安装 Linkis Sqoop 引擎，请参考: [Linkis Sqoop 引擎插件安装文档](exchangis_sqoop_deploy_cn.md)
+如您想正常执行 Exchangis1.0.0 的 Sqoop作业，还需安装 Linkis Sqoop 引擎，请参考: [Linkis Sqoop 引擎插件安装文档](https://linkis.staged.apache.org/zh-CN/docs/1.1.2/engine_usage/sqoop)
 
 ## 5. 如何登录使用 Exchangis
 
