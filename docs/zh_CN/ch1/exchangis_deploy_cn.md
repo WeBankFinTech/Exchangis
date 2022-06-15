@@ -170,7 +170,7 @@ DATABASE=
 
 #### 2.7.1 获取前端安装包
 
-Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
+Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/dist.zip)
 
 您也可以自行编译 Exchangis 前端，在 Exchangis 根目录下执行如下命令：
 
