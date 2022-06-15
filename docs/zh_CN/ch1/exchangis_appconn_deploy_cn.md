@@ -64,6 +64,8 @@ sh /sbin/dss-start-all.sh
 
 更多使用操作可参照[Exchangis1.0用户手册](https://user-images.githubusercontent.com/27387830/169782142-b2fc2633-e605-4553-9433-67756135a6f1.png)
 
+注意：第一次安装exchangis appconn后，确保该文件下没有index_v0000XX.index文件，该文件在后面才会生成
+
 ### 5.Exchangis AppConn安装原理
 
 Exchangis 的相关配置信息会插入到以下表中，通过配置下表，可以完成 Exchangis 的使用配置，安装 Exchangis AppConn 时，脚本会替换每个 AppConn 下的 init.sql，并插入到表中。(注：如果仅仅需要快速安装APPCONN，无需过分关注以下字段，提供的init.sql中大多以进行默认配置。重点关注以上操作即可)
