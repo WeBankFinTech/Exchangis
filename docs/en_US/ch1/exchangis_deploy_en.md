@@ -11,7 +11,7 @@ Exchangis installation is mainly divided into the following four steps ：
 
 #### 1.1 Basic software installation 
 
-| Dependent components | Must be installed | 安装直通车 |
+| Dependent components | Must be installed | Install through train |
 | -------------- | ------ | --------------- |
 | MySQL (5.5+) | yes | [How to install mysql](https://www.runoob.com/mysql/mysql-install.html) |
 | JDK (1.8.0_141) | yes | [How to install JDK](https://www.runoob.com/java/java-environment-setup.html) |
