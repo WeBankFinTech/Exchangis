@@ -24,7 +24,11 @@ Exchangis 的安装，主要分为以下四步：
 
 底层依赖组件检查
 
-$\color{#FF0000}{注意：一定要重新安装dss1.0.1，并且linkis版本必须大于1.1.1，请重新编译linkis，请使用6月15号发布的包，或者编译6月15号仓库的代码。}$
+$\color{#FF0000}{注意：一定要重新安装dss1.0.1，并且linkis版本必须大于1.1.1，请重新编译linkis，请使用6月15号发布的包}$。
+
+[linkis1.1.1代码地址](https://github.com/apache/incubator-linkis/tree/release-1.1.1)    
+
+[DSS1.0.1代码地址](https://github.com/WeBankFinTech/DataSphereStudio/tree/master)
 
 datasource启用
 
