@@ -43,8 +43,6 @@ With the help of [Linkis](https://github.com/apache/incubator-linkis) computing 
 
 - As the data exchange node of DSS workflow, it is the portal process in the whole workflow link, which provides a solid data foundation for the subsequent operation of workflow nodes；
 
-- Because AppConn is connected with Linkis, the external data application system has the capabilities of resource control, concurrent current limiting, user resource management, etc., and allows the context information to be shared across the system level, leaving the application island completely.
-
 ## Overall Design 
 
 ### Architecture Design
