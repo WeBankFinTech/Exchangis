@@ -61,7 +61,7 @@ With the help of [Linkis](https://github.com/apache/incubator-linkis) computing 
 
 If you want to get the fastest response, please mention issue to us, or scan the code into the group ：
 
-![communication](D:\IdeaProjects\GithubPros\Exchangis\communication.png)
+![communication](images/en_US/ch1/communication.png)
 
 ## License
 
