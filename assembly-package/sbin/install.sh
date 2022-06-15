@@ -128,6 +128,7 @@ BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
 # Start to initalize database
 if [ "x${SQL_SOURCE_PATH}" != "x" ] && [ -f "${SQL_SOURCE_PATH}" ]; then
    `mysql --version >/dev/null 2>&1`
+   interact_echo "Do you want to initalize database with sql?"
    if [ $? == 0 ]; then
       LOG INFO "\033[1m Scan out mysql command, so begin to initalize the database\033[0m"
       #interact_echo "Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?"
@@ -164,14 +165,14 @@ APPLICATION_YML="${CONF_PATH}/application-exchangis.yml"
         sed -ri "s![#]?(wds.linkis.gateway.ip=)\S*!\1${LINKIS_GATEWAY_HOST}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_GATEWAY_PORT}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.gateway.url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.exchangis.datasource.client.serverurl=)\S*!\1${LINKIS_SERVER_URL}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.exchangis.client.linkis.server-url=)\S*!\1${LINKIS_SERVER_URL}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.exchangis.datasource.client.serverurl=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.exchangis.client.linkis.server-url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.key=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.value=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.client.linkis.token.value=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(port: )\S*!\1${EUREKA_PORT}!g" ${APPLICATION_YML}
-        sed -ri "s![#]?(defaultZone: )\S*!\1${DEFAULT_ZONE}!g" ${APPLICATION_YML}
+        sed -ri "s![#]?(port: )\S*!\1${EXCHANGIS_PORT}!g" ${APPLICATION_YML}
+        sed -ri "s![#]?(defaultZone: )\S*!\1${EUREKA_URL}!g" ${APPLICATION_YML}
       #fi
 }
 
@@ -179,12 +180,9 @@ install_modules(){
   LOG INFO "\033[1m ####### Start To Install project ######\033[0m"
   echo ""
     if [ ${FORCE_INSTALL} == false ]; then
-      interact_echo "Do you want to confiugre and install project?"
-      if [ $? == 0 ]; then  #$? 执行上一个指令的返回值 (显示最后命令的退出状态。0表示没有错误，其他任何值表明有错误)
         LOG INFO "\033[1m Install project ......\033[0m"
         init_database
         init_properties
-      fi
     else
       LOG INFO "\033[1m Install project ......\033[0m"
       init_database
