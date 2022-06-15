@@ -56,7 +56,7 @@ INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_t
 
 #### 2.1.1下载二进制包
 
-从 Exchangis 已发布的 release 中 [点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)，下载最新的安装包。
+从 Exchangis 已发布的 release 中 [点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/wedatasphere-exchangis-1.0.0-RC1.tar.gz)，下载最新的安装包。
 
 #### 2.1.2 编译打包
 
@@ -98,6 +98,9 @@ LINKIS_GATEWAY_HOST=
 
 #LINKIS_GATEWAY服务地址端口，用于查找linkis-mg-gateway服务         
 LINKIS_GATEWAY_PORT=       
+
+#用于请求校验 linkis 服务的 token，该字段可在 linkis 的数据库表linkis_mg_gateway_auth_token，token_name字段中找到  
+LINKIS_TOKEN=
 
 #Exchangis服务端口
 EXCHANGIS_PORT=
@@ -182,7 +185,7 @@ DATABASE=
 
 #### 2.7.1 获取前端安装包
 
-Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
+Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/dist.zip)
 
 您也可以自行编译 Exchangis 前端，在 Exchangis 根目录下执行如下命令：
 
@@ -194,11 +197,13 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 从 `web/` 路径获取编译好的 dist.zip 前端包。
 
+获取到的前端包，您可以放在服务器上的任意位置，这里建议您与后端安装地址目录保持一致，在同一目录下放置并解压。
+
 #### 2.7.2 前端安装部署
 
 1. 解压前端安装包
 
-如您打算将 Exchangis 前端包部署到 `/appcom/Install/exchangis/web` 目录，请先将 `dist.zip` 拷贝到该目录并执行解压，注意，请在安装dss前端的机器上安装exchangis前端（加粗）：
+如您打算将 Exchangis 前端包部署到 `/appcom/Install/exchangis/web` 目录，请先将 `dist.zip` 拷贝到该目录并执行解压，注意，**请在安装dss的机器上安装exchangis前端**：
 
 ```shell script
   # 请先将 Exchangis 前端包拷贝到 `/appcom/Install/exchangis/web` 目录
