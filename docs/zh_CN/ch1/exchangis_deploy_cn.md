@@ -41,7 +41,7 @@ Exchangis 的安装，主要分为以下四步：
 
 #### 2.1.1下载二进制包
 
-从 Exchangis 已发布的 release 中 [点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)，下载最新的安装包。
+从 Exchangis 已发布的 release 中 [点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/wedatasphere-exchangis-1.0.0-RC1.tar.gz)，下载最新的安装包。
 
 #### 2.1.2 编译打包
 
