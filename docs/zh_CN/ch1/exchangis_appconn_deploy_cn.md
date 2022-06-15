@@ -36,12 +36,13 @@ lib
 appconn.properties
 ```
 
-###3.执行脚本进行自动化安装
-```
+3.执行脚本进行自动化安装
+
+```shell
 cd {DSS_INSTALL_HOME}/dss/bin
 ./install-appconn.sh
-脚本是交互式的安装方案，您需要输入字符串exchangis以及exchangis服务的ip和端口，即可以完成安装
-这里的exchangis端口是指前端端口，在nginx进行配置。而不是后端的服务端口
+# 脚本是交互式的安装方案，您需要输入字符串exchangis以及exchangis服务的ip和端口，即可以完成安装
+# 这里的exchangis端口是指前端端口，在nginx进行配置。而不是后端的服务端口
 ```
 
 ### 4.完成exchangis-appconn的安装后，需要重启dss服务，才能最终完成插件的更新
