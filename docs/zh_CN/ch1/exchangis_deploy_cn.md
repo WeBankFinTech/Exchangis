@@ -22,6 +22,9 @@ Exchangis 的安装，主要分为以下四步：
 | Linkis1.1.1 | 必装 | [如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
 | Nginx | 必装 | [如何安装 Nginx](http://nginx.org/en/linux_packages.html) |
 
+底层依赖组件检查
+注意：一定要重新安装dss1.0.1，并且linkis版本必须大于1.1.1，请重新编译linkis，请使用6月15号发布的包，或者编译6月15号仓库的代码。
+datasource启用
 
 #### 1.2 创建 Linux 用户
 
@@ -29,11 +32,23 @@ Exchangis 的安装，主要分为以下四步：
 
 #### 1.3 在linkis中为exchangis加专用token
 
-添加方式为，linkis数据库表  linkis_mg_gateway_auth_token，token_name字段用于配置访问到config.sh 的 LINKIS_TOKEN中
+通过在linkis数据库中执行以下语句，为Exchangis分配专属token：
+
+```
+INSERT INTO `linkis_mg_gateway_auth_token`(`token_name`,`legal_users`,`legal_hosts`,`business_owner`,`create_time`,`update_time`,`elapse_day`,`update_by`) VALUES ('EXCHANGIS-AUTH','*','*','BDP',curdate(),curdate(),-1,'LINKIS');
+```
+
+通过在linkis数据库中执行以下sql语句，插入hive数据源环境配置，注意，执行前需要修改语句中的${HIVE_METADATA_IP}和${HIVE_METADATA_PORT}，例如${HIVE_METADATA_IP}=127.0.0.1，${HIVE_METADATA_PORT}=3306：
+
+```
+INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境SIT', '开发环境SIT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
+INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境UAT', '开发环境UAT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
+```
 
 #### 1.4 底层依赖组件检查
 
-**请确保 DSS1.0.1 与 Linkis1.1.0 基本可用，可在 DSS 前端界面执行 HiveQL 脚本，可正常创建并执行 DSS 工作流。**
+**请确保 DSS1.0.1 与 Linkis1.1.1 基本可用，可在 DSS 前端界面执行 HiveQL 脚本，可正常创建并执行 DSS 工作流。**
+
 
 ## 2. Exchangis 安装部署
 
@@ -83,9 +98,6 @@ LINKIS_GATEWAY_HOST=
 
 #LINKIS_GATEWAY服务地址端口，用于查找linkis-mg-gateway服务         
 LINKIS_GATEWAY_PORT=       
-
-#用于请求校验 linkis 服务的 token，该字段可在 linkis 的数据库表linkis_mg_gateway_auth_token，token_name字段中找到  
-LINKIS_TOKEN=
 
 #Exchangis服务端口
 EXCHANGIS_PORT=
@@ -182,13 +194,11 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 从 `web/` 路径获取编译好的 dist.zip 前端包。
 
-获取到的前端包，您可以放在服务器上的任意位置，这里建议您与后端安装地址目录保持一致，在同一目录下放置并解压。
-
 #### 2.7.2 前端安装部署
 
 1. 解压前端安装包
 
-如您打算将 Exchangis 前端包部署到 `/appcom/Install/exchangis/web` 目录，请先将 `dist.zip` 拷贝到该目录并执行解压，注意，请在安装dss的机器上安装exchangis前端：
+如您打算将 Exchangis 前端包部署到 `/appcom/Install/exchangis/web` 目录，请先将 `dist.zip` 拷贝到该目录并执行解压，注意，请在安装dss前端的机器上安装exchangis前端（加粗）：
 
 ```shell script
   # 请先将 Exchangis 前端包拷贝到 `/appcom/Install/exchangis/web` 目录

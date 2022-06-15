@@ -167,10 +167,10 @@ APPLICATION_YML="${CONF_PATH}/application-exchangis.yml"
         sed -ri "s![#]?(wds.linkis.gateway.url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.datasource.client.serverurl=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.exchangis.client.linkis.server-url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.key=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.value=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.exchangis.client.linkis.token.value=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
+        #sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.key=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
+        #sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.value=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
+        #sed -ri "s![#]?(wds.exchangis.client.linkis.token.value=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
+        sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_GATEWAY_PORT}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(port: )\S*!\1${EXCHANGIS_PORT}!g" ${APPLICATION_YML}
         sed -ri "s![#]?(defaultZone: )\S*!\1${EUREKA_URL}!g" ${APPLICATION_YML}
       #fi
