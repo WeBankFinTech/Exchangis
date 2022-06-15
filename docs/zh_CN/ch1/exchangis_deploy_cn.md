@@ -148,12 +148,6 @@ DATABASE=
 
 ![企业微信截图_16532930262583](https://user-images.githubusercontent.com/27387830/169773764-1c5ed6fb-35e9-48cb-bac8-6fa7f738368a.png)
 
-并在最后打印出eureka地址，可在该地址查看exchangis服务是否启动成功：
-
-```
-Please check exchangis server in EUREKA_ADDRESS: ${EUREKA_URL}
-```
-
 ### 2.6 查看服务是否启动成功
 
 可以在Eureka界面查看服务启动成功情况，查看方法：
@@ -167,6 +161,10 @@ Please check exchangis server in EUREKA_ADDRESS: ${EUREKA_URL}
 数据源功能的启用
 
 请注意，Exchangis1.0任务执行依赖于linkis-datasource，linkis的启动脚本中默认不会启动数据源相关的服务两个服务（ps-data-source-manager，ps-metadatamanager）， 如果想使用数据源服务，可以通过如下方式进行开启: 修改$LINKIS_CONF_DIR/linkis-env.sh中的 export ENABLE_METADATA_MANAGER=true值为true。 通过linkis-start-all.sh/linkis-stop-all.sh 进行服务启停时，会进行数据源服务的启动与停止。
+
+除此之外，为了使用hive数据源，需要在linkis的数据库表linkis_ps_dm_datasource_env，配置parameter的hive元服务IP地址
+
+![image](https://user-images.githubusercontent.com/27387830/173819138-aae10669-0cfe-47a0-a715-c6ab213837d9.png)
 
 ### 2.7 前端安装部署
 
@@ -197,6 +195,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
   cd /appcom/Install/exchangis/web
   unzip dist.zip
 ```
+
 
 执行如下命令：
 
@@ -248,7 +247,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
   nginx -s reload
 ```
 
-请通过 http://${EXCHANGIS_INSTALL_IP}:8098/#/projectManage 访问 Exchangis 前端页面，出现以下界面，说明exchangis安装前端成功，如果要真正使用exchangis，需要安装dss和linkis，通过dss进行免密登录，如下图所示：
+请通过 http://${EXCHANGIS_INSTALL_IP}:8098/#/projectManage 访问 Exchangis 前端页面，出现以下界面，说明exchangis安装前端成功，如果要真正试用exchangis，需要安装dss和linkis，通过dss进行免密登录，如下图所示：
 
 ![image](https://user-images.githubusercontent.com/27387830/170417473-af0b4cbe-758e-4800-a58f-0972f83d87e6.png)
 
