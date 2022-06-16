@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="LaunchedJobMap" type="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="create_time" property="createTime"/>
+        <result column="last_update_time" property="lastUpdateTime"/>
+        <result column="job_id" property="jobId"/>
+        <result column="job_execution_id" property="jobExecutionId"/>
+        <result column="engine_type" property="engineType"/>
+        <result column="launchable_task_num" property="launchableTaskNum"/>
+        <result column="execute_user" property="executeUser"/>
+        <result column="job_name" property="jobName"/>
+        <result column="status" property="status"/>
+        <result column="progress" property="progress"/>
+        <result column="error_code" property="errorCode"/>
+        <result column="error_msg" property="errorMessage"/>
+        <result column="retry_num" property="retryNum"/>
+        <result column="log_path" property="logPath"/>
+        <result column="create_user" property="createUser"/>
+        <association property="exchangisJobEntity" javaType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity" >
+            <result property="id" column="id" />
+            <result property="source" column="source" />
+        </association>
+    </resultMap>
+
+    <sql id="TableName">
+        exchangis_launched_job_entity
+    </sql>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        id, name, create_time, last_update_time, job_id, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, create_user    </sql>
+
+    <insert id="insertLaunchedJob" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
+        insert into
+        <include refid="TableName"/>
+        (name, create_time, last_update_time, job_id, launchable_task_num, job_execution_id, engine_type, execute_user, create_user, job_name, status, progress, error_code, error_msg, retry_num, log_path)
+        values(
+        #{name},
+        #{createTime},
+        #{lastUpdateTime},
+        #{jobId},
+        #{launchableTaskNum},
+        #{jobExecutionId},
+        #{engineType},
+        #{executeUser},
+        #{createUser},
+        #{jobName},
+        #{status},
+        #{progress},
+        #{errorCode},
+        #{errorMessage},
+        #{retryNum},
+        #{logPath}
+        );
+    </insert>
+
+    <delete id="jobExecutionId">
+        DELETE FROM <include refid="TableName"/> WHERE
+        job_execution_id = #{jobExecutionId}
+    </delete>
+
+    <update id="upgrateLaunchedJob">
+        UPDATE <include refid="TableName"/>
+        SET
+        name = #{name},
+        create_time = #{createTime},
+        last_update_time = #{lastUpdateTime},
+        job_id = #{jobId},
+        launchable_task_num = #{launchableTaskNum},
+        job_execution_id = #{jobExecutionId},
+        engine_type = #{engineType},
+        execute_user = #{execute_user},
+        job_name = #{jobName},
+        status = #{status},
+        progress = #{progress},
+        error_code = #{errorCode},
+        error_msg = #{errorMessage},
+        retry_num = #{retryNum},
+        log_path = #{logPath}
+        where id = #{id}
+    </update>
+    <update id="updateLaunchInfo">
+        UPDATE <include refid="TableName"/>
+        SET
+        last_update_time = #{lastUpdateTime},
+        launchable_task_num = #{launchableTaskNum},
+        status = #{status}
+        WHERE job_execution_id = #{jobExecutionId}
+    </update>
+    <select id="searchLaunchedJob" parameterType="java.lang.String" resultMap="LaunchedJobMap">
+        select
+        <include refid="BaseColumnList"/>
+        from
+        <include refid="TableName" />
+        where job_execution_id = #{jobExecutionId}
+    </select>
+
+    <select id="searchLogPathInfo" parameterType="java.lang.String" resultMap="LaunchedJobMap">
+        <![CDATA[SELECT log_path,status,execute_user FROM exchangis_launched_job_entity WHERE job_execution_id = #{jobExecutionId} LIMIT 1;]]>
+    </select>
+
+    <update id="upgradeLaunchedJobStatus">
+        UPDATE <include refid="TableName"/>
+        SET
+        status = #{status},
+        last_update_time = #{updateTime}
+        WHERE
+        job_execution_id = #{jobExecutionId}
+    </update>
+
+    <update id="upgradeLaunchedJobStatusInVersion">
+        <![CDATA[UPDATE ]]>
+        <include refid="TableName"/>
+        <![CDATA[SET
+        status = #{status},
+        last_update_time = #{updateTime}]]>
+        <where>
+            <if test="jobExecutionId != null and jobExecutionId != ''">
+                AND job_execution_id = #{jobExecutionId}
+            </if>
+            <if test="updateTime != null">
+                AND #{updateTime} >= last_update_time
+            </if>
+            <if test="launchableTaskNum > 0">
+                AND launchable_task_num = #{launchableTaskNum};
+            </if>
+        </where>
+    </update>
+
+    <update id="upgradeLaunchedJobProgress">
+        <![CDATA[UPDATE ]]>
+        <include refid="TableName"/>
+        <![CDATA[SET
+        progress = ${totalTaskProgress} / launchable_task_num,
+        last_update_time = #{updateTime}
+        WHERE
+        job_execution_id = #{jobExecutionId}]]>
+    </update>
+    <select id="getAllLaunchedJob" resultMap="LaunchedJobMap">
+        SELECT
+        l.job_execution_id,
+        l.name,
+        l.create_time,
+        l.execute_user,
+        l.status,
+        l.progress,
+        l.last_update_time,
+        l.create_user,
+        c.source
+        FROM
+        `exchangis_launched_job_entity` l
+        LEFT JOIN `exchangis_job_entity` c ON l.job_id = c.id
+        <where>
+            <if test="jobExecutionId.trim() != '' and jobExecutionId != null">
+                and l.job_execution_id = #{jobExecutionId}
+            </if>
+            <!--如果name有值，则模糊匹配name-->
+            <if test="jobName.trim() != '' and jobName != null">
+                and l.name like concat('%', #{jobName}, '%')
+            </if>
+            <if test="loginUser.trim() != '' and loginUser != null">
+                and l.create_user like concat('%', #{loginUser}, '%')
+            </if>
+            <if test="status.trim() != '' and status != null">
+                and l.status = #{status}
+            </if>
+            <if test="launchStartTime != null">
+                and l.create_time >= #{launchStartTime}
+            </if>
+            <if test="launchEndTime != null">
+                and l.create_time &lt;= #{launchEndTime}
+            </if>
+        </where>
+        order by create_time desc
+        limit ${start}, ${size}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM
+        <include refid="TableName"/>
+        <where>
+            <if test="jobExecutionId.trim() != '' and jobExecutionId != null">
+                and job_execution_id = #{jobExecutionId}
+            </if>
+            <!--如果name有值，则模糊匹配name-->
+            <if test="jobName.trim() != '' and jobName != null">
+                and name like concat('%', #{jobName}, '%')
+            </if>
+            <if test="loginUser.trim() != '' and loginUser != null">
+                and create_user like concat('%', #{loginUser}, '%')
+            </if>
+            <if test="status.trim() != '' and status != null">
+                and status = #{status}
+            </if>
+            <if test="launchStartTime != null">
+                and create_time >= #{launchStartTime}
+            </if>
+            <if test="launchEndTime != null">
+                and create_time &lt;= #{launchEndTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteJob">
+        DELETE FROM <include refid="TableName"/> WHERE
+        job_execution_id = #{jobExecutionId}
+    </delete>
+
+</mapper>
