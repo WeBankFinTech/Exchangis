@@ -4,7 +4,7 @@ English | [中文](README-ZH.md)
 
 ## Introduction
 
-Exchangis 1.0.0 is a new version of data exchange tool jointly developed by WeDataSphere, a big data platform of WeBank, and community users, which supports the synchronization of structured and unstructured data transmission between heterogeneous data sources.
+Exchangis 1.0.1 is a new version of data exchange tool jointly developed by WeDataSphere, a big data platform of WeBank, and community users, which supports the synchronization of structured and unstructured data transmission between heterogeneous data sources.
 
 Exchangis abstracts a unified set of data source and synchronization job definition plugins, allowing users to quickly access new data sources and use them on pages with simple configuration in the database.
 
@@ -52,8 +52,8 @@ With the help of [Linkis](https://github.com/apache/incubator-linkis) computing 
 
 ## Documents
 
-[Quick Deploy](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)  
-[User Manual](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
+[Quick Deploy](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/en_US/ch1/exchangis_deploy_en.md)  
+[User Manual](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/en_US/ch1/exchangis_user_manual_en.md)
 
 ## Communication and contribution 
 
