@@ -6,7 +6,7 @@
 
 ## 二、Login Exchangis1.0
 
-&emsp;&emsp; Exchangis1.0 is currently a part of DSS**data exchange component**, and it can be accessed in the component list by logging in to DSS. Therefore, before using Exchangis 1.0, please make basic deployment of DSS, Exchange IS 1.0, Linkis and other related components to ensure that the components' functions are available. This article will not go into details. See for details:[exchangis_deploy_en](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/en_US/ch1/exchangis_deploy_en.md)和[exchangis-appconn_deploy_en](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/en_US/ch1/exchangis_appconn_deploy_en.md)
+&emsp;&emsp; Exchangis1.0 is currently a part of DSS**data exchange component**, and it can be accessed in the component list by logging in to DSS. Therefore, before using Exchangis 1.0, please make basic deployment of DSS, Exchange IS 1.0, Linkis and other related components to ensure that the components' functions are available. This article will not go into details. See for details:[exchangis_deploy_en](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/en_US/ch1/exchangis_deploy_en.md)和[exchangis-appconn_deploy_en](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/en_US/ch1/exchangis_appconn_deploy_en.md)
 
 ### 1、Login DSS
 
