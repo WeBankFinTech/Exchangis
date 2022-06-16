@@ -4,11 +4,11 @@ English | [中文](README-ZH.md)
 
 ## Introduction
 
-Exchangis 1.0.0 is a new version of data exchange tool jointly developed by WeDataSphere, a big data platform of WeBank, and community users, which supports the synchronization of structured and unstructured data transmission between heterogeneous data sources. 
+Exchangis 1.0.0 is a new version of data exchange tool jointly developed by WeDataSphere, a big data platform of WeBank, and community users, which supports the synchronization of structured and unstructured data transmission between heterogeneous data sources.
 
-Exchangis is abstracted a set of unified data source and synchronous job definition plugins, which allows users to quickly access new data sources, and can be used in the page only by simple configuration in the database. 
+Exchangis abstracts a unified set of data source and synchronization job definition plugins, allowing users to quickly access new data sources and use them on pages with simple configuration in the database.
 
-Based on the plug-in framework design and the computing middleware [Linkis](https://github.com/apache/incubator-Linkis), Exchangis can quickly integrate and dock Linkis's integrated data synchronization engine, and transform Exchangis's synchronization job into Linkis's data synchronization job.
+Based on the plugin framework design and the computing middleware [Linkis](https://github.com/apache/incubator-Linkis), Exchangis can quickly connect to the data synchronization engine in Linkis, and convert the data synchronization job of Exchangis into the job of Linkis.
 
 With the help of [Linkis](https://github.com/apache/incubator-linkis) computing middleware's connection, reuse and simplification capabilities, Exchangia is inherently equipped with financial-grade data synchronization capabilities of high concurrency, high availability, multi-tenant isolation and resource control. 
 
@@ -20,7 +20,7 @@ With the help of [Linkis](https://github.com/apache/incubator-linkis) computing 
 
 ### 1. Lightweight datasource management  
 
-- Based on Linkis DataSource, all the necessary capabilities of the underlying datasource in Exchangis abstracted as the source and sink of a synchronous job. A datasource can be created by simple configuration.
+- Based on Linkis DataSource, Exchangis abstracts all the necessary capabilities of the underlying data source as the Source and Sink of a synchronization job. A data source can be created with simple configuration.
 
 - Special datasource version publishing management function supports version history datasource rollback, and one-click publishing does not need to configure historical datasources again. 
 
@@ -37,11 +37,11 @@ With the help of [Linkis](https://github.com/apache/incubator-linkis) computing 
   Monitor long-running tasks and abnormal tasks, stop tasks and release occupied resources in time.   
 
 
-### 3. The first one-stop portal for big data development through DSS workflow. 
+### 3. Integrate with DSS workflow, one-stop big data development portal 
 
-- Realize DSS AppConn's three-level specification, including the first-level SSO specification, the second-level organizational structure specification and the third-level development process specification;
+- Realize DSS AppConn's three-level specification, including the first-level SSO specification, the second-level organizational structure specification and the third-level development process specification.
 
-- As the data exchange node of DSS workflow, it is the portal process in the whole workflow link, which provides a solid data foundation for the subsequent operation of workflow nodes；
+- As the data exchange node of DSS workflow, it is the fundamental process in the whole workflow link, which provides a solid data foundation for the subsequent operation of workflow nodes.
 
 ## Overall Design 
 
