@@ -22,12 +22,38 @@ Exchangis installation is mainly divided into the following four steps ：
 | Linkis1.1.0 | yes | [How to install Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
 | Nginx | yes | [How to install Nginx](http://nginx.org/en/linux_packages.html) |
 
+Underlying component checking 
+
+$\color{#FF0000}{Note: be sure to reinstall dss1.0.1, and the linkis version must be greater than 1.1.1. Please recompile linkis and use the package released on June 15th }$
+
+[linkis1.1.1 code address ](https://github.com/apache/incubator-linkis/tree/release-1.1.1)    
+
+[DSS1.0.1 code address ](https://github.com/WeBankFinTech/DataSphereStudio/tree/master)
+
+datasource enabled 
+
+By default, two services related to datasources (ps-data-source-manager, ps-metadatamanager) will not be started in the startup script of linkis. If you want to use datasource services, you can start them by modifying the export enable _ metadata _ manager = true value in $ linkis_conf_dir/linkis-env.sh. When the service is started and stopped through linkis-start-all.sh/linkis-stop-all.sh, the datasource service will be started and stopped. For more details about data sources, please refer to [Data Source Function Usage](https://linkis.apache.org/zh-CN/docs/1.1.0/deployment/start_metadatasource) 
 
 #### 1.2 Create Linux users 
 
 Please keep the deployment user of Exchangis consistent with that of Linkis, for example, the deployment user is hadoop account. 
 
-#### 1.3  Underlying component checking 
+#### 1.3 在linkis中为exchangis加专用token
+
+Add special token to exchangis in linkis:
+
+```sql
+INSERT INTO `linkis_mg_gateway_auth_token`(`token_name`,`legal_users`,`legal_hosts`,`business_owner`,`create_time`,`update_time`,`elapse_day`,`update_by`) VALUES ('EXCHANGIS-AUTH','*','*','BDP',curdate(),curdate(),-1,'LINKIS');
+```
+
+Insert hive data source environment configuration by executing the following sql statement in linkis database. Note that ${HIVE_METADATA_IP} and ${HIVE_METADATA_PORT} in the statement need to be modified before execution, for example:${HIVE_METADATA_IP}=127.0.0.1，${HIVE_METADATA_PORT}=3306：
+
+```sql
+INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境SIT', '开发环境SIT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
+INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境UAT', '开发环境UAT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
+```
+
+#### 1.4  Underlying component checking 
 
 Please ensure that DSS1.0.1 and Linkis1.1.0 are basically available. HiveQL scripts can be executed in the front-end interface of DSS, and DSS workflows can be created and executed normally. 
 
@@ -131,7 +157,7 @@ DATABASE=
 
 #### 2.5.3  Start service 
 
- Execute the following command to start Exchangis Server: 
+Execute the following command to start Exchangis Server: 
 
 ```shell script
   sh sbin/daemon.sh start server
@@ -143,7 +169,7 @@ DATABASE=
 ./sbin/daemon.sh restart server
 ```
 
- After executing the startup script, the following prompt will appear: 
+After executing the startup script, the following prompt will appear, eureka address will also be typed in the console when starting the service: 
 
 ![企业微信截图_16532930262583](https://user-images.githubusercontent.com/27387830/169773764-1c5ed6fb-35e9-48cb-bac8-6fa7f738368a.png)
 
@@ -237,7 +263,7 @@ The acquired front-end package can be placed anywhere on the server. Here, it is
   nginx -s reload
 ```
 
-Please visit the Exchange front-end page at  http://${EXCHANGIS_INSTALL_IP}:8098/#/projectManage. As shown in the following figure :
+Please visit the Exchange front-end page at  http://${EXCHANGIS_INSTALL_IP}:8098/#/projectManage.  The following interface appears, indicating that Exchangis successfully installed on the front end. If you really want to try Exchangis, you need to install dss and linkis, and log in secret-free through dss. As shown in the following figure :
 
 ![image](https://user-images.githubusercontent.com/27387830/170417473-af0b4cbe-758e-4800-a58f-0972f83d87e6.png)
 
