@@ -6,7 +6,7 @@
 
 ## 二、登录Exchangis1.0
 
-&emsp;&emsp;Exchangis1.0目前作为DSS**数据交换组件**的一部分，通过登录DSS的方式在组件列表中免密进入。所以，在使用Exchangis1.0之前，请对DSS，Exchangis1.0，Linkis等相关组件进行基本部署，保证组件功能可用，本文不进行赘述，详情见[exchangis部署文档](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)和[exchangis-appconn部署文档](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_appconn_deploy_cn.md)
+&emsp;&emsp;Exchangis1.0目前作为DSS**数据交换组件**的一部分，通过登录DSS的方式在组件列表中免密进入。所以，在使用Exchangis1.0之前，请对DSS，Exchangis1.0，Linkis等相关组件进行基本部署，保证组件功能可用，本文不进行赘述，详情见[exchangis部署文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)和[exchangis-appconn部署文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/zh_CN/ch1/exchangis_appconn_deploy_cn.md)
 
 ### 1、登录DSS
 
