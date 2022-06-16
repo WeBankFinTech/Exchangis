@@ -27,13 +27,13 @@ With the help of [Linkis](https://github.com/apache/incubator-linkis) computing 
 
 ### 2. High-stability and fast-response data synchronization task execution 
 
-- **Near-real-time task management **  
+- **Near-real-time task management**  
   Quickly capture information such as transmission task log and transmission rate, monitor and display various indicators of multi-task including CPU usage, memory usage, data synchronization record, etc., and support closing tasks in real time.
 
-- **Task high concurrent transmission **  
+- **Task high concurrent transmission**  
   Multi-tasks are executed concurrently, and sub-tasks can be copied to show the status of each task in real time. Multi-tenant execution function can effectively prevent tasks from affecting each other during execution. 
 
-- **Self-check of task status **  
+- **Self-check of task status**  
   Monitor long-running tasks and abnormal tasks, stop tasks and release occupied resources in time.   
 
 
