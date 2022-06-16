@@ -29,7 +29,7 @@ Sqoop引擎主要依赖Hadoop基础环境，如果该节点需要部署Sqoop引�
 
 Exchangis1.0.0和Linkis 1.1.0支持的主流Sqoop版本1.4.6与1.4.7，更高版本可能需要修改部分代码重新编译。
 
-[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
+[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/sqoop.zip)
 #### 2） 编译打包
 如果您想自己开发和编译sqoop引擎，具体编译步骤如下：
 
@@ -72,4 +72,4 @@ cd {LINKIS_INSTALL_HOME}/links/sbin/
 待服务启动成功，至此，sqoop安装部署就完成了。
 
 engineplugin更详细的介绍可以参看下面的文章。  
-https://linkis.apache.org/zh-CN/docs/1.1.1/deployment/engine_conn_plugin_installation
+https://linkis.apache.org/zh-CN/docs/latest/deployment/engine_conn_plugin_installation
