@@ -29,7 +29,7 @@
             #{projectUser.projectId},
             #{projectUser.privUser},
             #{projectUser.priv},
-            #{projectUser.updateTime},
+            #{projectUser.updateTime}
             );
         </foreach>
     </insert>

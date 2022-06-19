@@ -107,18 +107,19 @@ public class  ExchangisProjectInfo {
 
     public ExchangisProjectInfo(ExchangisProjectAppVo project){
         Map<String, Object> labels = new HashMap<>();
-        labels.put("route", project.getLabels());
+        //labels.put("route", project.getLabels());
         this.setName(project.getName());
         this.setDescription(project.getDescription());
         this.setDomain(project.getDomain());
         this.setSource(project.getSource());
+        this.setPrivUser("");
         this.setEditUsers(project.getEditUsers());
         this.setViewUsers(project.getViewUsers());
         this.setExecUsers(project.getExecUsers());
         this.setLabel(project.getLabel());
         this.setCreateUser(project.getCreateUser());
         this.setCreateTime(project.getCreateTime());
-        this.setLabels(labels);
+        this.setLabels(project.getLabels());
     }
     public String getId() {
         return id + "";
@@ -166,7 +167,7 @@ public class  ExchangisProjectInfo {
 
     public void setEditUsers(String editUsers) {
         this.editUsers = editUsers;
-        if(!privUser.equals(null)) {
+        /*if(!privUser.equals(null)) {
             if (this.editUsers.contains(privUser)) {
                 if (privilege.length() != 0) {
                     privilege += ",3";
@@ -174,7 +175,7 @@ public class  ExchangisProjectInfo {
                     privilege += "3";
                 }
             }
-        }
+        }*/
     }
 
     public String getViewUsers() {
@@ -183,7 +184,7 @@ public class  ExchangisProjectInfo {
 
     public void setViewUsers(String viewUsers) {
         this.viewUsers = viewUsers;
-        if(!privUser.equals(null)) {
+        /*if(!privUser.equals(null)) {
             if (this.viewUsers.contains(privUser)) {
                 if (privilege.length() != 0) {
                     privilege += ",1";
@@ -191,7 +192,7 @@ public class  ExchangisProjectInfo {
                     privilege += "1";
                 }
             }
-        }
+        }*/
     }
 
     public String getExecUsers() {
@@ -200,7 +201,7 @@ public class  ExchangisProjectInfo {
 
     public void setExecUsers(String execUsers) {
         this.execUsers = execUsers;
-        if(!privUser.equals(null)) {
+        /*if(!privUser.equals(null)) {
             if (this.execUsers.contains(privUser)) {
                 if (privilege.length() != 0) {
                     privilege += ",2";
@@ -208,7 +209,7 @@ public class  ExchangisProjectInfo {
                     privilege += "2";
                 }
             }
-        }
+        }*/
     }
 
     public String getLabel() {
@@ -225,7 +226,7 @@ public class  ExchangisProjectInfo {
 
     public void setCreateUser(String createUser) {
         this.createUser = createUser;
-        if(!privUser.equals(null)) {
+        /*if(!privUser.equals(null)) {
             if (this.createUser.contains(privUser)) {
                 if (privilege.length() != 0) {
                     privilege += ",0";
@@ -233,7 +234,7 @@ public class  ExchangisProjectInfo {
                     privilege += "0";
                 }
             }
-        }
+        }*/
     }
 
     public Date getCreateTime() {
