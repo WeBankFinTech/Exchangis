@@ -44,6 +44,7 @@ public class ExchangisRefCreationOperation
                 createRequestRef.getRefProjectId(), createRequestRef.getProjectName(), createRequestRef.getType());
         DSSPostAction postAction = new DSSPostAction();
         postAction.setUser(createRequestRef.getUserName());
+        // TODO 创建工作流节点返回的projectid不正确
         addExchangisJobInfo(postAction, createRequestRef, createRequestRef.getRefProjectId());
         InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(createRequestRef, createUrl, postAction, ssoRequestOperation);
         return RefJobContentResponseRef.newBuilder().setRefJobContent(responseRef.getData()).success();

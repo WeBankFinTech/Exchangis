@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.dss.appconn.operation.development;
 
+import com.sun.xml.bind.v2.TODO;
 import com.webank.wedatasphere.dss.standard.app.development.operation.AbstractDevelopmentOperation;
 import com.webank.wedatasphere.dss.standard.app.development.operation.RefExportOperation;
 import com.webank.wedatasphere.dss.standard.app.development.ref.ExportResponseRef;
@@ -41,8 +42,8 @@ public class ExchangisExportOperation
         postAction.setUser(exportRequestRef.getUserName());
         postAction.addRequestPayload("projectId", exportRequestRef.getRefProjectId());
         postAction.addRequestPayload("partial", true);
-        String nodeType = exportRequestRef.getParameter("nodeType").toString();
-        Long id = (Long) exportRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID);
+        String nodeType = exportRequestRef.getType();
+        Long id = ((Double) exportRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID)).longValue();
         if(Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase(nodeType)) {
             postAction.addRequestPayload("sqoopIds", id);
         } else if(Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(nodeType)) {

@@ -46,7 +46,7 @@ public class ExchangisRefCopyOperation extends
         postAction.addRequestPayload("projectVersion", "v1");
         postAction.addRequestPayload("flowVersion", copyRequestRef.getNewVersion());
         String nodeType = copyRequestRef.getType();
-        Long id = (Long) copyRequestRef.getRefJobContent().get(REF_JOB_ID);
+        Long id = ((Integer) copyRequestRef.getRefJobContent().get(REF_JOB_ID)).longValue();
         if(Constraints.NODE_TYPE_SQOOP.equals(nodeType)) {
             postAction.addRequestPayload("sqoopIds", id);
         } else if(Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(nodeType)) {

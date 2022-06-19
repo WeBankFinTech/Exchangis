@@ -59,7 +59,7 @@ public class ProjectImportServerImpl implements IProjectImportService {
         String userName = SecurityFilter.getLoginUsername(req);
         //String resourceId = "99763d27-a35e-43f2-829b-100830bca538";
         String resourceId = (String) params.get("resourceId");
-        String version = (String) params.get("flowVersion");
+        String version = (String) params.get("version");
         //Long projectId = Long.parseLong("1497870871035973669");
         Long projectId = Long.parseLong("111111");
         String projectVersion = (String) params.get("projectVersion");
