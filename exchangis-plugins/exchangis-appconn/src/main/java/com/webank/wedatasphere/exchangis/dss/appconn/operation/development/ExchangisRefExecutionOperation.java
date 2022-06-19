@@ -7,6 +7,7 @@ import com.webank.wedatasphere.dss.standard.app.development.listener.core.Killab
 import com.webank.wedatasphere.dss.standard.app.development.listener.core.LongTermRefExecutionOperation;
 import com.webank.wedatasphere.dss.standard.app.development.listener.ref.ExecutionResponseRef;
 import com.webank.wedatasphere.dss.standard.app.development.listener.ref.RefExecutionRequestRef;
+import com.webank.wedatasphere.dss.standard.app.development.operation.RefExecutionOperation;
 import com.webank.wedatasphere.dss.standard.app.sso.origin.request.action.DSSGetAction;
 import com.webank.wedatasphere.dss.standard.app.sso.origin.request.action.DSSPostAction;
 import com.webank.wedatasphere.dss.standard.common.entity.ref.InternalResponseRef;
@@ -32,7 +33,7 @@ public class ExchangisRefExecutionOperation
         logger.info("User {} try to execute Exchangis job {} with jobContent: {}, refProjectId: {}, projectName: {}, nodeType:{}.",
                 user, executionRequestRef.getName(), executionRequestRef.getRefJobContent(),
                 executionRequestRef.getRefProjectId(), executionRequestRef.getProjectName(), executionRequestRef.getType());
-        Long id = (Long) executionRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID);
+        Long id = ((Double) executionRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID)).longValue();
         String url = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "appJob/execute/" + id));
         executionRequestRef.getExecutionRequestRefContext().appendLog("try to execute " + executionRequestRef.getType() + " node, ready to request to " + url);
         DSSPostAction postAction = new DSSPostAction();
@@ -81,6 +82,7 @@ public class ExchangisRefExecutionOperation
 
     @Override
     public boolean kill(RefExecutionAction refExecutionAction) {
+        // TODO 没有调用kill方法
         ExchangisExecutionAction action = (ExchangisExecutionAction) refExecutionAction;
         action.getExecutionRequestRefContext().appendLog("try to kill ExchangisJob with execId: " + action.getExecId());
         String url = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "job/execution/" + action.getExecId() +"/kill"));

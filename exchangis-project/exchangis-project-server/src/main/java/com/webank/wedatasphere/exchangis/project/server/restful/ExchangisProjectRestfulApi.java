@@ -160,9 +160,14 @@ public class ExchangisProjectRestfulApi {
         String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectStored = projectService.getProjectById(Long.valueOf(projectVo.getId()));
-            if (!AuthorityUtils.hasOwnAuthority(Long.parseLong(projectVo.getId()), username) && !AuthorityUtils.hasEditAuthority(Long.parseLong(projectVo.getId()), username)) {
-                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
+
+            if (!hasAuthority(username, projectStored)) {
+                return Message.error("You have no permission to update (没有项目的更新权限)");
             }
+
+            /*if (!AuthorityUtils.hasOwnAuthority(Long.parseLong(projectVo.getId()), username) && !AuthorityUtils.hasEditAuthority(Long.parseLong(projectVo.getId()), username)) {
+                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
+            }*/
 
             String domain = projectStored.getDomain();
             if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
@@ -192,9 +197,13 @@ public class ExchangisProjectRestfulApi {
         try {
             ExchangisProjectInfo projectInfo = projectService.getProjectById(id);
 
-            if (!AuthorityUtils.hasOwnAuthority(id, username) && !AuthorityUtils.hasEditAuthority(id, username)) {
-                return Message.error("You have no permission to update (没有编辑权限，无法删除项目)");
+            if (!hasAuthority(username, projectInfo)) {
+                return Message.error("You have no permission to delete (删除工程失败)");
             }
+
+           /* if (!AuthorityUtils.hasOwnAuthority(id, username) && !AuthorityUtils.hasEditAuthority(id, username)) {
+                return Message.error("You have no permission to update (没有编辑权限，无法删除项目)");
+            }*/
             String domain = projectInfo.getDomain();
             if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
                     .equalsIgnoreCase(domain)){
