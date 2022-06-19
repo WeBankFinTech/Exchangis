@@ -18,6 +18,7 @@ import org.apache.linkis.manager.label.entity.SerializableLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,13 +39,17 @@ public class ExchangisHttpUtils {
         ssoUrlBuilderOperation.setAppName(Constraints.EXCHANGIS_APPCONN_NAME);
         ssoUrlBuilderOperation.setReqUrl(url);
         httpAction.setUrl(ssoUrlBuilderOperation.getBuiltUrl());
-        String labels = serializeDssLabel(requestRef.getDSSLabels());
+        //String labels = serializeDssLabel(requestRef.getDSSLabels());
         if(httpAction instanceof POSTAction) {
+            HashMap<String, String> labels = new HashMap<>();
+            labels.put("route", requestRef.getDSSLabels().get(0).getValue().get("DSSEnv"));
+            //exchangisEntityPostAction.addRequestPayload("labels", labels);
             ((POSTAction) httpAction).addRequestPayload("labels", labels);
         } else if(httpAction instanceof GetAction) {
+            String labels = requestRef.getDSSLabels().get(0).getValue().get("DSSEnv");
             ((GetAction) httpAction).setParameter("labels", labels);
         }
-        LOG.info("User {} try to request Exchangis with url {} and labels {}.", httpAction.getUser(), httpAction.getURL(), labels);
+        LOG.info("User {} try to request Exchangis with url {} and labels {}.", httpAction.getUser(), httpAction.getURL(), requestRef.getDSSLabels().get(0).getValue().get("DSSEnv"));
         HttpResult httpResult = ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, httpAction);
         InternalResponseRef responseRef = ResponseRef.newInternalBuilder().setResponseBody(httpResult.getResponseBody()).build();
         if (responseRef.isFailed()){
