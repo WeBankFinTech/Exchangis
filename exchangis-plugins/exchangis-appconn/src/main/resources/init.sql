@@ -15,16 +15,16 @@ INSERT  INTO `dss_application`(
     `redirect_url`)
 VALUES (
            'exchangis',
-           'http://10.107.97.166:9090',
+           'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT',
            0,
            1,
            NULL,
            1,
-           'http://10.107.97.166:9090/#/projectManage',
+           'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/#/projectManage',
            '{"watermark":false,"rsDownload":true}',
            1,
-           'http://10.107.97.166:9090/#/projectManage',
-           'http://10.107.97.166:9090/#/projectManage');
+           'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/#/projectManage',
+           'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/#/projectManage');
 
 select @dss_exchangis_applicationId:=id from `dss_application` WHERE `name` in('exchangis');
 
@@ -36,7 +36,7 @@ select @dss_appconn_exchangisId:=id from `dss_appconn` where `appconn_name` = 'e
 
 delete from `dss_appconn_instance` where `homepage_uri` like '%exchangis%';
 INSERT INTO `dss_appconn_instance` (`appconn_id`, `label`, `url`, `enhance_json`, `homepage_uri`)
-VALUES (@dss_appconn_exchangisId, 'DEV', 'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/', '', 'http://10.107.97.166:9090/#/projectManage');
+VALUES (@dss_appconn_exchangisId, 'DEV', 'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/', '', 'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/#/projectManage');
 --homepage_uri没改
 
 -- 看appconn组件是要归属于哪个菜单
