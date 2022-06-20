@@ -41,7 +41,7 @@ public class ExchangisRefCopyOperation extends
                 copyRequestRef.getRefProjectId(), copyRequestRef.getProjectName(), copyRequestRef.getType());
         DSSPostAction postAction = new DSSPostAction();
         postAction.setUser(copyRequestRef.getUserName());
-        postAction.addRequestPayload("projectId", copyRequestRef.getRefProjectId());
+        postAction.addRequestPayload("projectId", copyRequestRef.getRefJobContent().get("refProjectId"));
         postAction.addRequestPayload("partial", true);
         postAction.addRequestPayload("projectVersion", "v1");
         postAction.addRequestPayload("flowVersion", copyRequestRef.getNewVersion());
