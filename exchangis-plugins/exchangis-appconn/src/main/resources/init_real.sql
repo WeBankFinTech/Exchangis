@@ -1,32 +1,4 @@
 
-delete from `dss_application` where `name`='mlss';
-INSERT  INTO `dss_application`(
-    `name`,
-    `url`,
-    `is_user_need_init`,
-    `level`,
-    `user_init_url`,
-    `exists_project_service`,
-    `project_url`,
-    `enhance_json`,
-    `if_iframe`,
-    `homepage_url`,
-    `redirect_url`)
-VALUES (
-           'mlss',
-           'http://10.107.127.19:30793',
-           0,
-           1,
-           NULL,
-           1,
-           'http://10.107.127.19:30793',
-           '{"MLSS-SecretKey":"MLFLOW","MLSS-Auth-Type":"SYSTEM","MLSS-APPSignature":"MLFLOW","MLSS-BaseUrl":"http://10.107.127.19:30793","baseUrl":"http://10.107.127.19:30793","MLSS-ModelMonitoring-JAR":"/appcom/Install/quickml/qml_algo/hwenzan/qml_algo.jar"}',
-           1,
-           'http://10.107.127.19:30793/#/dashboard',
-           'http://10.107.127.19:30793/#/mlFlow');
-
-select @dss_mlss_applicationId:=id from `dss_application` WHERE `name` in('mlss');
-
 select @dss_appconn_mlssId:=id from `dss_appconn` where `appconn_name` = 'mlss';
 delete from `dss_appconn_instance` where  `appconn_id`=@dss_appconn_mlssId;
 
