@@ -100,9 +100,9 @@ public class ExchangisJobRestfulApi {
         String userName = SecurityFilter.getLoginUsername(request);
         exchangisJobVo.setCreateUser(userName);
         Message response = Message.ok();
-        if (!AuthorityUtils.hasOwnAuthority(exchangisJobVo.getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(exchangisJobVo.getProjectId(), userName)) {
+       /* if (!AuthorityUtils.hasOwnAuthority(exchangisJobVo.getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(exchangisJobVo.getProjectId(), userName)) {
             return Message.error("You have no permission to create (没有编辑权限，无法创建任务)");
-        }
+        }*/
         try {
             response.data("result", jobInfoService.createJob(exchangisJobVo));
         } catch (Exception e) {
@@ -164,9 +164,12 @@ public class ExchangisJobRestfulApi {
         exchangisJobVo.setModifyUser(userName);
         Message response = Message.ok();
         try {
-            if (!AuthorityUtils.hasOwnAuthority(exchangisJobVo.getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(exchangisJobVo.getProjectId(), userName)) {
-                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
+            if (!hasAuthority(userName, jobInfoService.getJob(id, true))) {
+                return Message.error("You have no permission to update (没有更新权限)");
             }
+            /*if (!AuthorityUtils.hasOwnAuthority(exchangisJobVo.getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(exchangisJobVo.getProjectId(), userName)) {
+                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
+            }*/
             response.data("result", jobInfoService.updateJob(exchangisJobVo));
         } catch (Exception e) {
             String message = "Fail to update job: " + exchangisJobVo.getJobName() + " (更新任务失败)";
@@ -188,9 +191,12 @@ public class ExchangisJobRestfulApi {
         String userName = SecurityFilter.getLoginUsername(request);
         Message response = Message.ok("job deleted");
         try {
-            if (!AuthorityUtils.hasOwnAuthority(jobInfoService.getJob(id, true).getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(jobInfoService.getJob(id, true).getProjectId(), userName)) {
-                return Message.error("You have no permission to delete (没有编辑权限，无法删除)");
+            if (!hasAuthority(userName, jobInfoService.getJob(id, true))) {
+                return Message.error("You have no permission to update ()");
             }
+           /* if (!AuthorityUtils.hasOwnAuthority(jobInfoService.getJob(id, true).getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(jobInfoService.getJob(id, true).getProjectId(), userName)) {
+                return Message.error("You have no permission to delete (没有编辑权限，无法删除)");
+            }*/
             jobInfoService.deleteJob(id);
         } catch (Exception e) {
             String message = "Fail to delete job [ id: " + id + "] (删除任务失败)";
@@ -287,9 +293,9 @@ public class ExchangisJobRestfulApi {
         jobVo.setModifyUser(SecurityFilter.getLoginUsername(request));
         Message response = Message.ok();
         try {
-            if (!AuthorityUtils.hasOwnAuthority(jobVo.getProjectId(), jobVo.getModifyUser()) && !AuthorityUtils.hasEditAuthority(jobVo.getProjectId(), jobVo.getModifyUser())) {
+            /*if (!AuthorityUtils.hasOwnAuthority(jobVo.getProjectId(), jobVo.getModifyUser()) && !AuthorityUtils.hasEditAuthority(jobVo.getProjectId(), jobVo.getModifyUser())) {
                 return Message.error("You have no permission to update (没有编辑权限)");
-            }
+            }*/
             ExchangisJobVo exchangisJob = jobInfoService.updateJobConfig(jobVo);
             response.data("id", exchangisJob.getId());
         } catch (Exception e) {
@@ -309,9 +315,9 @@ public class ExchangisJobRestfulApi {
         Long projectId = jobVo.getProjectId();
         Message response = Message.ok();
         try {
-            if (!AuthorityUtils.hasOwnAuthority(projectId, loginUser) && !AuthorityUtils.hasEditAuthority(projectId, loginUser)) {
+            /*if (!AuthorityUtils.hasOwnAuthority(projectId, loginUser) && !AuthorityUtils.hasEditAuthority(projectId, loginUser)) {
                 return Message.error("You have no permission to update (没有编辑权限，无法保存配置)");
-            }
+            }*/
             ExchangisJobVo exchangisJob = jobInfoService.updateJobContent(jobVo);
             response.data("id", exchangisJob.getId());
         } catch (Exception e) {
