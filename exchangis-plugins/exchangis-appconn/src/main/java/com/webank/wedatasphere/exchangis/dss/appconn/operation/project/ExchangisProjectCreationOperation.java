@@ -12,6 +12,9 @@ import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
 import com.webank.wedatasphere.exchangis.dss.appconn.utils.ExchangisHttpUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.httpclient.request.POSTAction;
+import org.apache.linkis.server.BDPJettyServerHelper;
+
+import java.util.Map;
 
 import static com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints.API_REQUEST_PREFIX;
 
@@ -42,7 +45,11 @@ public class ExchangisProjectCreationOperation extends AbstractStructureOperatio
         logger.info("User {} created a Exchangis project {} with response {}.", projectRequestRef.getUserName(), projectRequestRef.getDSSProject().getName(), responseRef.getResponseBody());
         long projectId;
         try {
-            projectId = new Double(responseRef.getData().get(Constraints.PROJECT_ID).toString()).longValue();
+            ResponseMessage data = BDPJettyServerHelper.gson().fromJson(responseRef.getResponseBody(), ResponseMessage.class);
+            //responseRef.getResponseBody();
+            //projectId = Long.parseLong(String.valueOf(responseRef.getData().get(Constraints.PROJECT_ID)));
+            projectId = Long.parseLong(String.valueOf(data.getData().get("projectId")));
+            logger.info("Exchangis projectId is {}", projectId);
         } catch (Exception e){
             throw new ExternalOperationFailedException(31020, "Fail to resolve the project id from response entity", e);
         }
@@ -63,5 +70,47 @@ public class ExchangisProjectCreationOperation extends AbstractStructureOperatio
         postAction.addRequestPayload("editUsers", StringUtils.join(requestRef.getDSSProjectPrivilege().getEditUsers(),","));
         postAction.addRequestPayload("viewUsers", StringUtils.join(requestRef.getDSSProjectPrivilege().getAccessUsers(),","));
         postAction.addRequestPayload("execUsers", StringUtils.join(requestRef.getDSSProjectPrivilege().getReleaseUsers(),","));
+    }
+
+    public static class ResponseMessage {
+        private String method;
+        private Double status;
+        private String message;
+        private Map<String, Object> data;
+
+        public ResponseMessage() {
+        }
+
+        public String getMethod() {
+            return method;
+        }
+
+        public void setMethod(String method) {
+            this.method = method;
+        }
+
+        public Double getStatus() {
+            return status;
+        }
+
+        public void setStatus(Double status) {
+            this.status = status;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public Map<String, Object> getData() {
+            return data;
+        }
+
+        public void setData(Map<String, Object> data) {
+            this.data = data;
+        }
     }
 }
