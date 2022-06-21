@@ -118,8 +118,27 @@ public class ExchangisJobRestfulApi {
      */
     @RequestMapping(value = "/{sourceJobId:\\d+}/copy", method = RequestMethod.POST)
     public Message copyJob(@PathVariable("sourceJobId") Long sourceJobId,
-                           @RequestBody ExchangisJobVo exchangisJobVo) {
-        return Message.error("Function will be supported in next version (该功能将在下版本支持)");
+                           @Validated @RequestBody ExchangisJobVo exchangisJobVo,
+                           BindingResult result, HttpServletRequest request) {
+        if (result.hasErrors()) {
+            return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
+        }
+        String userName = SecurityFilter.getLoginUsername(request);
+        exchangisJobVo.setId(sourceJobId);
+        exchangisJobVo.setModifyUser(userName);
+        Message response = Message.ok();
+        try {
+            if (!hasAuthority(userName, jobInfoService.getJob(sourceJobId, true))) {
+                return Message.error("You have no permission to update (没有复制权限)");
+            }
+            response.data("result", jobInfoService.copyJob(exchangisJobVo));
+        } catch (Exception e) {
+            String message = "Fail to update job: " + exchangisJobVo.getJobName() + " (复制任务失败)";
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
+        //return Message.error("Function will be supported in next version (该功能将在下版本支持)");
     }
 
     /**

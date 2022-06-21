@@ -5,7 +5,7 @@
     <parent>
         <artifactId>exchangis</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
-        <version>1.0.0-RC1</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,26 +20,26 @@
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-datasource-server</artifactId>
-            <version>1.0.0-RC1</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-server</artifactId>
-            <version>1.0.0-RC1</version>
+            <version>1.0.0</version>
         </dependency>
         <!--
         metrics interface, wait for audit
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-metrics</artifactId>
-            <version>1.0.0-RC1</version>
+            <version>1.0.0</version>
         </dependency>
         -->
 
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-project-server</artifactId>
-            <version>1.0.0-RC1</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.linkis</groupId>

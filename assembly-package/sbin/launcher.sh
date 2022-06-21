@@ -176,7 +176,7 @@ wait_for_startup(){
             return 0
         fi
         sleep ${SLEEP_TIMEREVAL_S}
-        now_s=`date '+%s'`
+        now_s=`date '+%s'`  #计算当前时间时间戳
     done
     return 1
 }
@@ -212,6 +212,7 @@ launcher_start(){
     wait_for_startup 20 $1 $2
     if [[ $? -eq 0 ]]; then
         LOG INFO "Launcher: [ $1 ] start success"
+        LOG INFO "Please check exchangis server in EUREKA_ADDRESS: ${EUREKA_URL} "
     else
         LOG ERROR "Launcher: [ $1 ] start fail over 20 seconds, please retry it"
     fi
