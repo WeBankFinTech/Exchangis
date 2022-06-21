@@ -5,7 +5,7 @@
     <parent>
         <artifactId>exchangis-job</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
-        <version>1.0.0-RC1</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,12 +15,12 @@
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-common</artifactId>
-            <version>1.0.0-RC1</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-builder</artifactId>
-            <version>1.0.0-RC1</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.linkis</groupId>
