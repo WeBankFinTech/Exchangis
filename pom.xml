@@ -22,7 +22,7 @@
 
 	<groupId>com.webank.wedatasphere.exchangis</groupId>
 	<artifactId>exchangis</artifactId>
-	<version>1.0.0-RC1</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
 	<name>exchangis</name>
