@@ -1,5 +1,5 @@
 -- exchangis_v4.exchangis_job_ds_bind definition
-
+DROP TABLE IF EXISTS `exchangis_job_ds_bind`
 CREATE TABLE `exchangis_job_ds_bind` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `job_id` bigint(20) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE `exchangis_job_ds_bind` (
 
 
 -- exchangis_v4.exchangis_job_entity definition
-
+DROP TABLE IF EXISTS `exchangis_job_entity`
 CREATE TABLE `exchangis_job_entity` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE `exchangis_job_entity` (
 
 
 -- exchangis_v4.exchangis_job_param_config definition
-
+DROP TABLE IF EXISTS `exchangis_job_param_config`;
 CREATE TABLE `exchangis_job_param_config` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `config_key` varchar(64) NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE `exchangis_job_param_config` (
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 
 -- exchangis_v4.exchangis_project_info definition
-
+DROP TABLE IF EXISTS `exchangis_project_info`
 CREATE TABLE `exchangis_project_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
@@ -81,11 +81,8 @@ CREATE TABLE `exchangis_project_info` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1497870871035973934 DEFAULT CHARSET=utf8;
 
--- exchangis_v4.exchangis_job_entity definition
-
-
 -- exchangis_v4.exchangis_launchable_task definition
-
+DROP TABLE IF EXISTS `exchangis_launchable_task`
 CREATE TABLE `exchangis_launchable_task` (
   `id` bigint(13) NOT NULL,
   `name` varchar(100) NOT NULL,
@@ -103,7 +100,7 @@ CREATE TABLE `exchangis_launchable_task` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- exchangis_v4.exchangis_launched_job_entity definition
-
+DROP TABLE IF EXISTS `exchangis_launched_job_entity`
 CREATE TABLE `exchangis_launched_job_entity` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -127,7 +124,7 @@ CREATE TABLE `exchangis_launched_job_entity` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8380 DEFAULT CHARSET=utf8;
 
 -- exchangis_v4.exchangis_launched_task_entity definition
-
+DROP TABLE IF EXISTS `exchangis_launched_task_entity`
 CREATE TABLE `exchangis_launched_task_entity` (
   `id` bigint(20) NOT NULL,
   `name` varchar(100) NOT NULL,
