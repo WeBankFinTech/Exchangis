@@ -3,60 +3,65 @@
 English | [中文](README-ZH.md)  
 
 ## Introduction
-Exchangis is a lightweight,highly extensible data exchange platform that supports data transmission between structured and unstructured heterogeneous data sources. On the application layer, it has business features such as data permission management and control, high availability of node services and multi-tenant resource isolation. On the data layer, it also has architectural characteristics such as diversified transmission architecture, module plug-in and low coupling of components.
 
-Exchnagis's transmission and exchange capabilities depend on its underlying aggregated transmission engines. It defines a unified parameter model for various data sources on the top layer. It maps and configures the parameter model for each transmission engine, and then converts it into the engine's input model. Each type of engine will add Exchangis features, and  the enhancement of certain engine features will improve the Exchangis features. Exchangis's default engine aggregated and enhanced is Alibaba's DataX transmission engine.
+Exchangis 1.0.0 is a new version of data exchange tool jointly developed by WeDataSphere, a big data platform of WeBank, and community users, which supports the synchronization of structured and unstructured data transmission between heterogeneous data sources.
 
-## Features
-- **Data Source Management**  
-Share your own data source in a bound project；  
-Set the external authority of the data source to control the inflow and outflow of data。
+Exchangis abstracts a unified set of data source and synchronization job definition plugins, allowing users to quickly access new data sources and use them on pages with simple configuration in the database.
 
-- **Muti-transport Engine Support**  
-Transmission engine scales horizontally；  
-The current version fully aggregates the offline batch engine DataX and partially aggregates the big data batch derivative engine SQOOP
+Based on the plugin framework design and the computing middleware [Linkis](https://github.com/apache/incubator-Linkis), Exchangis can quickly connect to the data synchronization engine in Linkis, and convert the data synchronization job of Exchangis into the job of Linkis.
 
-- **Near Real-time Task Control**  
-Quickly capture the transmission task log, transmission rate and other information, close the task in real time；  
-Dynamically limit transmission rate based on bandwidth  
+With the help of [Linkis](https://github.com/apache/incubator-linkis) computing middleware's connection, reuse and simplification capabilities, Exchangia is inherently equipped with financial-grade data synchronization capabilities of high concurrency, high availability, multi-tenant isolation and resource control. 
 
-- **Support Unstructured Transmission**  
-Transform the DataX framework and build a binary stream fast channel separately, suitable for pure data synchronization scenarios without data conversion。
+###  Interface preview 
 
-- **Task Status Self-check**  
-Monitor long-running tasks and tasks with abnormal status, release occupied resources in time and issue alarms。  
+![image](https://user-images.githubusercontent.com/27387830/171488936-2cea3ee9-4ef7-4309-93e1-e3b697bd3be1.png)
 
-## Comparison With Existing Systems
-Comparison of some existing data exchange tools and platforms：  
+## Core characteristics
 
-| Function module | Description | Exchangis | DataX | Sqoop | DataLink | DBus |
-| :----: | :----: |-------|-------|-------|-------|-------|  
-| UI | Integrated the convenient management interface and monitoring window | Integrated | None | None | Integrated |Integrated |
-| Installation and deployment | Ease of deployment and third-party dependencies | One-click deployment, no dependencies | No dependencies | Rely on Hadoop environment | Rely on Zookeeper | Rely on a large number of third-party components |
-| Data authority management |  Multi-tenant permission configuration and data source permission control | Support | Not support | Not support | Not support | Support |
-|        |Dynamic limit transmission | Support | Partially supported, unable to adjust dynamically | Partially supported, unable to adjust dynamically | Support | Support，with Kafka |
-| Data transmission| Unstructured data binary transmission | Support, fast channel | Not support | Not support | Not support，only transport record | Not support，need to be converted to a unified message format|
-|        | Embed processing code | Support，dynamic compilation | Not support | Not support | Not support | Partial support |
-|        | Transmission breakpoint recovery | Support（Not open source） | Not support | Not support | Support | Support |
-| High availability | Mutiple services, failure does not affect the use | Application high availability, transmission single point（Distributed architecture planning） | Single point service（Open source version） | Multipoint transmission | Application、transmission high availability | Application、transmission high availability |
-| System Management | Nodes、resources management | Support | Not support | Not support | Support | Support |
+### 1. Lightweight datasource management  
 
-## Overall Design
+- Based on Linkis DataSource, Exchangis abstracts all the necessary capabilities of the underlying data source as the Source and Sink of a synchronization job. A data source can be created with simple configuration.
 
-### Architecture
+- Special datasource version publishing management function supports version history datasource rollback, and one-click publishing does not need to configure historical datasources again. 
 
-![Architecture](images/en_US/ch1/architecture.png)
+
+### 2. High-stability and fast-response data synchronization task execution 
+
+- **Near-real-time task management**  
+  Quickly capture information such as transmission task log and transmission rate, monitor and display various indicators of multi-task including CPU usage, memory usage, data synchronization record, etc., and support closing tasks in real time.
+
+- **Task high concurrent transmission**  
+  Multi-tasks are executed concurrently, and sub-tasks can be copied to show the status of each task in real time. Multi-tenant execution function can effectively prevent tasks from affecting each other during execution. 
+
+- **Self-check of task status**  
+  Monitor long-running tasks and abnormal tasks, stop tasks and release occupied resources in time.   
+
+
+### 3. Integrate with DSS workflow, one-stop big data development portal 
+
+- Realize DSS AppConn's three-level specification, including the first-level SSO specification, the second-level organizational structure specification and the third-level development process specification.
+
+- As the data exchange node of DSS workflow, it is the fundamental process in the whole workflow link, which provides a solid data foundation for the subsequent operation of workflow nodes.
+
+## Overall Design 
+
+### Architecture Design
+
+![架构设计](images/en_US/ch1/architecture.png)
+
 
 ## Documents
-[Quick Deploy](docs/zh_CN/ch1/exchangis_deploy_cn.md)  
-[User Manual](docs/zh_CN/ch1/exchangis_user_manual_cn.md)
 
-## Communication
+[Quick Deploy](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)  
+[User Manual](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
 
-If you desire immediate response, please kindly raise issues to us or scan the below QR code by WeChat and QQ to join our group:
+## Communication and contribution 
 
-![Communication](images/communication.png)
+If you want to get the fastest response, please mention issue to us, or scan the code into the group ：
+
+![communication](images/en_US/ch1/communication.png)
 
 ## License
 
-Exchangis is under the Apache 2.0 License. See the [License](LICENSE) file for details.
+Exchangis is under the Apache 2.0 License. See the [License](../../../LICENSE) file for details.
+
