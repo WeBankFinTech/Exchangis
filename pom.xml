@@ -22,7 +22,7 @@
 
 	<groupId>com.webank.wedatasphere.exchangis</groupId>
 	<artifactId>exchangis</artifactId>
-	<version>1.0.0-RC1</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
 	<name>exchangis</name>
@@ -38,7 +38,7 @@
 
 	<properties>
 		<exchangis.version>1.0.0-RC1</exchangis.version>
-		<dss.version>1.0.1</dss.version>
+		<dss.version>1.1.0</dss.version>
 		<linkis.version>1.1.1</linkis.version>
 		<streamis.version>0.1.0-SNAPSHOT</streamis.version>
 		<scala.version>2.11.8</scala.version>
