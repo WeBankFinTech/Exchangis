@@ -3,11 +3,11 @@
 This paper mainly introduces the deployment, configuration and installation of ExchangisAppConn in DSS(DataSphere Studio)1.0.1.
 
 ### 1. Preparations for the deployment of ExchangisAppConn 
-Before you deploy ExchangisAppConn, please follow the [Exchangis1.0.0 to install the deployment document](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md) to complete the installation of Exchangis1.0.0 and other related components, and ensure that the basic functions of the project are available. 
+Before you deploy ExchangisAppConn, please follow the [Exchangis1.0.1 to install the deployment document](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_deploy_en.md) to complete the installation of Exchangis1.0.1 and other related components, and ensure that the basic functions of the project are available. 
 
 ### 2. Download and compilation of the ExchangisAppConn plugin 
 #### 1） Download binary package 
- We provide ExchangisAppconn's material package, which you can download and use directly. [Click to jump to Release interface](https://github.com/WeBankFinTech/Exchangis/releases)
+We provide ExchangisAppconn's material package, which you can download and use directly. [Click to jump to Release interface](https://github.com/WeBankFinTech/Exchangis/releases)
 #### 2）  Compile and package 
 
 If you want to develop and compile ExchangisAppConn yourself, the specific compilation steps are as follows: 
@@ -20,7 +20,7 @@ mvn clean install
 ```
 The exchangis-appconn.zip installation package will be found in this path. 
 ```
-{EXCHANGIS_CODE_HOME}\exchangis-plugins\exchangis-appconn\target\exchangis-appconn.zip
+{EXCHANGIS_CODE_HOME}/exchangis-plugins/exchangis-appconn/target/exchangis-appconn.zip
 ```
 
 ### 3. Overall steps for deployment and configuration of ExchangisAppConn
@@ -60,14 +60,14 @@ sh /sbin/dss-start-all.sh
 There may be startup failure or jam in the middle, so you can quit repeated execution. 
 
 #### 4.2） Verify that exchangis-appconn is effective. 
- After the exchangis-appconn is installed and deployed, the following steps can be taken to preliminarily verify whether exchangis-appconn is successfully installed. 
+After the exchangis-appconn is installed and deployed, the following steps can be taken to preliminarily verify whether exchangis-appconn is successfully installed. 
 1.	 Create a new project in DSS workspace 
 ![image](https://user-images.githubusercontent.com/27387830/169782142-b2fc2633-e605-4553-9433-67756135a6f1.png)
 
 2.	 Check whether the project is created synchronously on Exchangis. Successful creation means successful installation of appconn 
 ![image](https://user-images.githubusercontent.com/27387830/169782337-678f2df0-080a-495a-b59f-a98c5a427cf8.png)
 
-For more operation, please refer to [Exchange IS 1.0 User Manual](https://user-images.githubusercontent.com/27387830/169782142-b2fc2633-e605-4553-9433-67756135a6f1.png)
+For more operation, please refer to [Exchangis 1.0 User Manual](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_user_manual_cn.md)
 
 ### 5.Exchangis AppConn installation principle 
 

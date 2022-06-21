@@ -269,11 +269,11 @@ Please visit the Exchange front-end page at  http://${EXCHANGIS_INSTALL_IP}:8098
 
 ## 3. DSS ExchangisAppConn installation and deployment 
 
-If you want to use Exchangis1.0.0 front-end, you also need to install the DSS ExchangisAppConn plugin. Please refer to: [ExchangisAppConn installation documentation for plugins ](exchangis_appconn_deploy_cn.md)
+If you want to use Exchangis1.0.1 front-end, you also need to install the DSS ExchangisAppConn plugin. Please refer to: [ExchangisAppConn installation documentation for plugins ](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/en_US/ch1/exchangis_appconn_deploy_en.md)
 
 ## 4. Linkis Sqoop engine installation and deployment 
 
-If you want to execute the Sqoop operation of Exchangis1.0.0 normally, you also need to install the Linkis Sqoop engine. Please refer to: : [Linkis Sqoop engine installation documentation ](exchangis_sqoop_deploy_cn.md)
+If you want to execute the Sqoop operation of Exchangis1.0.1 normally, you also need to install the Linkis Sqoop engine. Please refer to: : [Linkis Sqoop engine installation documentation ](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/en_US/ch1/exchangis_sqoop_deploy_en.md)
 
 ## 5.  How to log in and use Exchangis
 
