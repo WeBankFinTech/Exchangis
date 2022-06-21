@@ -9,24 +9,6 @@ import com.webank.wedatasphere.exchangis.dss.appconn.service.*;
  */
 public class ExchangisDevelopmentIntegrationStandard  extends AbstractDevelopmentIntegrationStandard {
 
-    private static ExchangisDevelopmentIntegrationStandard instance;
-
-    static {
-        instance = new ExchangisDevelopmentIntegrationStandard();
-    }
-
-    /**
-     * Get singleton instance
-     * @return development integration
-     */
-    public static ExchangisDevelopmentIntegrationStandard getInstance(){
-        return instance;
-    }
-
-    private ExchangisDevelopmentIntegrationStandard(){
-
-    }
-
     @Override
     protected RefCRUDService createRefCRUDService() {
         return new ExchangisRefCRUDService();
