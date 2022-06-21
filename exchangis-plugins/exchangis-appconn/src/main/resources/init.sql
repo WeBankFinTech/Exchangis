@@ -20,20 +20,15 @@ INSERT INTO `dss_workspace_menu_appconn` (`appconn_id`, `menu_id`, `title_en`, `
 
 delete from `dss_workflow_node`  where `node_type` like '%exchangis%';
 insert into `dss_workflow_node` (`name`, `appconn_name`, `node_type`, `jump_type`, `support_jump`, `submit_to_scheduler`, `enable_copy`, `should_creation_before_node`, `icon_path`)
-values('sqoop','exchangis','linkis.appconn.exchangis.sqoop',1,'1','1','0','1','icons/exchangis.icon');
-
-select @dss_exchangis_sqoopId:=id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop';
-
-delete from `dss_workflow_node_to_group` where `node_id`=@dss_exchangis_sqoopId;
-
-delete from `dss_workflow_node_to_ui` where `workflow_node_id`=@dss_exchangis_sqoopId;
+values('sqoop','exchangis','linkis.appconn.exchangis.sqoop',1,'1','1','0','1','icons/sqoop.icon');
 
 -- 查找节点所属组的id
-select @dss_exchangis_sqoopId:=id from `dss_workflow_node_group` where `name` = '数据交换';
-
+select @dss_exchangis_sqoopId:=id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop';
+--select @dss_exchangis_node_id:=id from `dss_workflow_node_group` where `name` = '数据交换';
 delete from `dss_workflow_node_to_group` where `node_id`=@dss_exchangis_sqoopId;
 INSERT INTO `dss_workflow_node_to_group`(`node_id`,`group_id`) values (@dss_exchangis_sqoopId, 1);
 
+-- 查找sqoop节点所属组的iddelete from `dss_workflow_node_to_ui` where `workflow_node_id`=@dss_exchangis_sqoopId;
 INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values (@dss_exchangis_sqoopId, 1);
 INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values (@dss_exchangis_sqoopId, 2);
 INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values (@dss_exchangis_sqoopId, 3);
