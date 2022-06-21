@@ -172,8 +172,9 @@ public class ProjectImportServerImpl implements IProjectImportService {
             } else {
                 //sqoop.setJobName("hahaha");
                 LOG.info("Sqoop job content is: {}, Modify user is: {}, jobType is: {}", sqoop.getContent(), sqoop.getExecuteUser(), sqoop.getJobType());
-                jobInfoService.createJob(sqoop);
-                idCatalog.getSqoop().put(oldId, sqoop.getId());
+                ExchangisJobVo jobVo = jobInfoService.createJob(sqoop);
+                LOG.info("oldId: {}, newid: {}, jobName0000000: {}", sqoop.getId(), jobVo.getId(), jobVo.getJobName());
+                idCatalog.getSqoop().put(oldId, jobVo.getId());
             }
         }
     }

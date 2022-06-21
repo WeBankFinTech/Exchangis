@@ -1,75 +1,48 @@
 package com.webank.wedatasphere.exchangis.dss.appconn.operation.project;
 
-import com.webank.wedatasphere.dss.standard.app.structure.StructureService;
-import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectRequestRef;
-import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectResponseRef;
+import com.webank.wedatasphere.dss.standard.app.sso.origin.request.action.DSSPutAction;
+import com.webank.wedatasphere.dss.standard.app.structure.AbstractStructureOperation;
 import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectUpdateOperation;
+import com.webank.wedatasphere.dss.standard.app.structure.project.ref.ProjectUpdateRequestRef;
+import com.webank.wedatasphere.dss.standard.common.entity.ref.InternalResponseRef;
+import com.webank.wedatasphere.dss.standard.common.entity.ref.ResponseRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
 import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
-import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisProjectResponseRef;
-import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisEntityPutAction;
-import com.webank.wedatasphere.exchangis.dss.appconn.request.entity.ProjectReqEntity;
-import com.webank.wedatasphere.exchangis.dss.appconn.response.result.ExchangisEntityRespResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.webank.wedatasphere.exchangis.dss.appconn.utils.ExchangisHttpUtils;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
+import static com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints.API_REQUEST_PREFIX;
 
 /**
  * Project update operation
  */
-public class ExchangisProjectUpdateOperation extends AbstractExchangisProjectOperation implements ProjectUpdateOperation {
-    private static final Logger LOG = LoggerFactory.getLogger(ExchangisProjectUpdateOperation.class);
+public class ExchangisProjectUpdateOperation
+        extends AbstractStructureOperation<ProjectUpdateRequestRef.ProjectUpdateRequestRefImpl, ResponseRef>
+        implements ProjectUpdateOperation<ProjectUpdateRequestRef.ProjectUpdateRequestRefImpl> {
 
-    private StructureService structureService;
-
-    public ExchangisProjectUpdateOperation(StructureService structureService) {
-        super(new String[]{"appProject"});
-        setStructureService(structureService);
-    }
+    private String projectUpdateUrl;
 
     @Override
-    public ProjectResponseRef updateProject(ProjectRequestRef projectRequestRef) throws ExternalOperationFailedException {
-        LOG.info("update project request => dss_projectId:{}, name:{}, createName:{}",
-                projectRequestRef.getId(), projectRequestRef.getName(),projectRequestRef.getCreateBy());
-        ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(projectRequestRef.getWorkspace(), projectRequestRef,
-                (requestRef) -> {
-                    // Build project put(update) action
-                    return new ExchangisEntityPutAction<>(getProjectEntity(requestRef), requestRef.getCreateBy());
-                }, Map.class);
-        if (Objects.isNull(entity)){
-            throw new ExternalOperationFailedException(31020, "The response entity cannot be empty", null);
-        }
-        ExchangisEntityRespResult httpResult = entity.getResult();
-        LOG.info("update project response => status {}, response {}", httpResult.getStatusCode(), httpResult.getResponseBody());
-        AtomicLong newProjectId = new AtomicLong(projectRequestRef.getId());
-        try {
-            Optional.ofNullable(entity.getData()).ifPresent( data -> newProjectId
-                    .set(Long.parseLong(String.valueOf(data.getOrDefault(Constraints.PROJECT_ID, newProjectId.get())))));
-        } catch (Exception e){
-            throw new ExternalOperationFailedException(31020, "Fail to resolve the project id from response entity", e);
-        }
-        ExchangisProjectResponseRef responseRef = new ExchangisProjectResponseRef(httpResult, newProjectId.get());
-        responseRef.setAppInstance(structureService.getAppInstance());
+    public ResponseRef updateProject(ProjectUpdateRequestRef.ProjectUpdateRequestRefImpl projectRequestRef) throws ExternalOperationFailedException {
+        String url = mergeUrl(projectUpdateUrl, String.valueOf(projectRequestRef.getRefProjectId()));
+        logger.info("User {} try to update Exchangis project with dssProjectName: {}, refProjectId: {}, url is {}.",
+                projectRequestRef.getUserName(), projectRequestRef.getDSSProject().getName(),
+                projectRequestRef.getRefProjectId(), url);
+        DSSPutAction putAction = new DSSPutAction();
+        putAction.setUser(projectRequestRef.getUserName());
+        ExchangisProjectCreationOperation.addProjectInfo(putAction, projectRequestRef);
+        InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(projectRequestRef, url, putAction, ssoRequestOperation);
+        logger.info("User {} updated Exchangis project {} with response {}.", projectRequestRef.getUserName(), projectRequestRef.getRefProjectId(), responseRef.getResponseBody());
         return responseRef;
     }
 
     @Override
+    protected String getAppConnName() {
+        return Constraints.EXCHANGIS_APPCONN_NAME;
+    }
+
+    @Override
     public void init() {
-
-    }
-
-    @Override
-    public void setStructureService(StructureService structureService) {
-        this.structureService = structureService;
-        setSSORequestService(this.structureService);
-    }
-
-    @Override
-    protected Logger getLogger() {
-        return LOG;
+        super.init();
+        projectUpdateUrl = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "appProject"));
     }
 }
