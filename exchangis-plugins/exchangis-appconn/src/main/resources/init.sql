@@ -1,33 +1,5 @@
 -- TODO 这里只适用于第一次安装时。如果是更新的话dss_appconn表不能先删除再插入，因为其他表如dss_workspace_appconn_role关联了appconn_id(不能变)，需要使用update、alter语句更新
 
-delete from `dss_application` where `name`='exchangis';
-INSERT  INTO `dss_application`(
-    `name`,
-    `url`,
-    `is_user_need_init`,
-    `level`,
-    `user_init_url`,
-    `exists_project_service`,
-    `project_url`,
-    `enhance_json`,
-    `if_iframe`,
-    `homepage_url`,
-    `redirect_url`)
-VALUES (
-           'exchangis',
-           'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT',
-           0,
-           1,
-           NULL,
-           1,
-           'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/#/projectManage',
-           '{"watermark":false,"rsDownload":true}',
-           1,
-           'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/#/projectManage',
-           'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/#/projectManage');
-
-select @dss_exchangis_applicationId:=id from `dss_application` WHERE `name` in('exchangis');
-
 delete from `dss_appconn`  where `appconn_name`='exchangis';
 INSERT INTO `dss_appconn` (`appconn_name`, `is_user_need_init`, `level`, `if_iframe`, `is_external`, `reference`, `class_name`, `appconn_class_path`, `resource`)
 VALUES ('exchangis', 0, 1, 1, 1, NULL, 'com.webank.wedatasphere.exchangis.dss.appconn.ExchangisAppConn', 'DSS_INSTALL_HOME_VAL/dss-appconns/exchangis/lib', '');
@@ -59,10 +31,8 @@ delete from `dss_workflow_node_to_ui` where `workflow_node_id`=@dss_exchangis_sq
 -- 查找节点所属组的id
 select @dss_exchangis_sqoopId:=id from `dss_workflow_node_group` where `name` = '数据交换';
 
+delete from `dss_workflow_node_to_group` where `node_id`=@dss_exchangis_sqoopId;
 INSERT INTO `dss_workflow_node_to_group`(`node_id`,`group_id`) values (@dss_exchangis_sqoopId, 1);
-
--- 表中有的是重复记录，最好加上limit 1
-select @exchangis_node_ui_label_name_1:=id from `dss_workflow_node_ui` where `label_name` = '节点名' limit 1;
 
 INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values (@dss_exchangis_sqoopId, 1);
 INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values (@dss_exchangis_sqoopId, 2);
