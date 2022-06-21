@@ -1,84 +1,116 @@
 package com.webank.wedatasphere.exchangis.dss.appconn.operation.project;
 
-import com.webank.wedatasphere.dss.standard.app.sso.builder.SSOUrlBuilderOperation;
-import com.webank.wedatasphere.dss.standard.app.sso.request.SSORequestOperation;
-import com.webank.wedatasphere.dss.standard.app.structure.StructureService;
+import com.webank.wedatasphere.dss.common.utils.MapUtils;
+import com.webank.wedatasphere.dss.standard.app.sso.origin.request.action.DSSPostAction;
+import com.webank.wedatasphere.dss.standard.app.structure.AbstractStructureOperation;
 import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectCreationOperation;
-import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectRequestRef;
-import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectResponseRef;
+import com.webank.wedatasphere.dss.standard.app.structure.project.ref.DSSProjectContentRequestRef;
+import com.webank.wedatasphere.dss.standard.app.structure.project.ref.ProjectResponseRef;
+import com.webank.wedatasphere.dss.standard.common.entity.ref.InternalResponseRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
-
 import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
-import com.webank.wedatasphere.exchangis.dss.appconn.request.action.ExchangisEntityPostAction;
-import com.webank.wedatasphere.exchangis.dss.appconn.operation.AbstractExchangisOperation;
-import com.webank.wedatasphere.exchangis.dss.appconn.ref.ExchangisProjectResponseRef;
-import com.webank.wedatasphere.exchangis.dss.appconn.request.entity.ProjectReqEntity;
-import com.webank.wedatasphere.exchangis.dss.appconn.response.result.ExchangisEntityRespResult;
-import com.webank.wedatasphere.exchangis.dss.appconn.utils.AppConnUtils;
-import com.webank.wedatasphere.exchangis.dss.appconn.utils.JsonExtension;
-import org.apache.linkis.httpclient.request.HttpAction;
-import org.apache.linkis.httpclient.response.HttpResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.webank.wedatasphere.exchangis.dss.appconn.utils.ExchangisHttpUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.httpclient.request.POSTAction;
+import org.apache.linkis.server.BDPJettyServerHelper;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+
+import static com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints.API_REQUEST_PREFIX;
 
 /**
  * Project create operation
  */
-public class ExchangisProjectCreationOperation extends AbstractExchangisProjectOperation implements ProjectCreationOperation {
-    private final static Logger LOG = LoggerFactory.getLogger(ExchangisProjectCreationOperation.class);
+public class ExchangisProjectCreationOperation extends AbstractStructureOperation<DSSProjectContentRequestRef.DSSProjectContentRequestRefImpl, ProjectResponseRef>
+        implements ProjectCreationOperation<DSSProjectContentRequestRef.DSSProjectContentRequestRefImpl> {
 
-    private StructureService structureService;
+    private String projectUrl;
 
-    public ExchangisProjectCreationOperation(StructureService structureService) {
-        super(new String[]{"appProject"});
-        setStructureService(structureService);
+
+    @Override
+    protected String getAppConnName() {
+        return Constraints.EXCHANGIS_APPCONN_NAME;
     }
 
     @Override
-    public ProjectResponseRef createProject(ProjectRequestRef projectRequestRef) throws ExternalOperationFailedException {
-        LOG.info("create project request => dss_projectId:{}, name:{}, createUser:{}, parameters:{}, workspaceName:{}",
-                projectRequestRef.getId(), projectRequestRef.getName(), projectRequestRef.getCreateBy(), projectRequestRef.getParameters().toString(),
+    public ProjectResponseRef createProject(DSSProjectContentRequestRef.DSSProjectContentRequestRefImpl projectRequestRef) throws ExternalOperationFailedException {
+        logger.info("User {} want to create a Exchangis project with dssProjectName:{}, createUser:{}, parameters:{}, workspaceName:{}",
+                projectRequestRef.getUserName(), projectRequestRef.getDSSProject().getName(),
+                projectRequestRef.getDSSProject().getCreateBy(), projectRequestRef.getParameters().toString(),
                 projectRequestRef.getWorkspace().getWorkspaceName());
-        ExchangisEntityRespResult.BasicMessageEntity<Map<String, Object>> entity = requestToGetEntity(projectRequestRef.getWorkspace(), projectRequestRef,
-                (requestRef) -> {
-                    // Build project post(add) action
-                    ExchangisEntityPostAction<ProjectReqEntity> postAction =  new ExchangisEntityPostAction<>(getProjectEntity(requestRef));
-                    postAction.setUser(requestRef.getCreateBy());
-                    return postAction;
-                }, Map.class);
-        if (Objects.isNull(entity)){
-            throw new ExternalOperationFailedException(31020, "The response entity cannot be empty", null);
-        }
-        ExchangisEntityRespResult httpResult = entity.getResult();
-        LOG.info("create project response => status {}, response {}", httpResult.getStatusCode(), httpResult.getResponseBody());
+        DSSPostAction postAction = new DSSPostAction();
+        postAction.setUser(projectRequestRef.getUserName());
+        addProjectInfo(postAction, projectRequestRef);
+        InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(projectRequestRef, projectUrl, postAction, ssoRequestOperation);
+        logger.info("User {} created a Exchangis project {} with response {}.", projectRequestRef.getUserName(), projectRequestRef.getDSSProject().getName(), responseRef.getResponseBody());
         long projectId;
         try {
-            projectId = Long.parseLong(String.valueOf(entity.getData().get(Constraints.PROJECT_ID)));
+            ResponseMessage data = BDPJettyServerHelper.gson().fromJson(responseRef.getResponseBody(), ResponseMessage.class);
+            //responseRef.getResponseBody();
+            //projectId = Long.parseLong(String.valueOf(responseRef.getData().get(Constraints.PROJECT_ID)));
+            projectId = Long.parseLong(String.valueOf(data.getData().get("projectId")));
+            logger.info("Exchangis projectId is {}", projectId);
         } catch (Exception e){
             throw new ExternalOperationFailedException(31020, "Fail to resolve the project id from response entity", e);
         }
-        ExchangisProjectResponseRef responseRef = new ExchangisProjectResponseRef(httpResult, projectId);
-        responseRef.setAppInstance(structureService.getAppInstance());
-        return responseRef;
+        return ProjectResponseRef.newInternalBuilder().setRefProjectId(projectId).success();
     }
 
     @Override
     public void init() {
-
+        super.init();
+        projectUrl = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "appProject"));
     }
 
-    @Override
-    public void setStructureService(StructureService structureService) {
-        this.structureService = structureService;
-        setSSORequestService(this.structureService);
+    public static void addProjectInfo(POSTAction postAction, DSSProjectContentRequestRef requestRef) {
+        postAction.addRequestPayload("projectName", requestRef.getDSSProject().getName());
+        postAction.addRequestPayload("description", requestRef.getDSSProject().getDescription());
+        postAction.addRequestPayload("domain", Constraints.DOMAIN_NAME);
+        postAction.addRequestPayload("source", MapUtils.newCommonMap("workspace", requestRef.getWorkspace().getWorkspaceName()));
+        postAction.addRequestPayload("editUsers", StringUtils.join(requestRef.getDSSProjectPrivilege().getEditUsers(),","));
+        postAction.addRequestPayload("viewUsers", StringUtils.join(requestRef.getDSSProjectPrivilege().getAccessUsers(),","));
+        postAction.addRequestPayload("execUsers", StringUtils.join(requestRef.getDSSProjectPrivilege().getReleaseUsers(),","));
     }
 
-    @Override
-    protected Logger getLogger() {
-        return LOG;
+    public static class ResponseMessage {
+        private String method;
+        private Double status;
+        private String message;
+        private Map<String, Object> data;
+
+        public ResponseMessage() {
+        }
+
+        public String getMethod() {
+            return method;
+        }
+
+        public void setMethod(String method) {
+            this.method = method;
+        }
+
+        public Double getStatus() {
+            return status;
+        }
+
+        public void setStatus(Double status) {
+            this.status = status;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public Map<String, Object> getData() {
+            return data;
+        }
+
+        public void setData(Map<String, Object> data) {
+            this.data = data;
+        }
     }
 }
