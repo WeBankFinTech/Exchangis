@@ -1,0 +1,57 @@
+[{
+  "subJobName": "streamjob0001",
+  "dataSources": {
+    "source_id": "HIVE.10001.test_db.test_table",
+    "sink_id": "MYSQL.10002.mask_db.mask_table"
+  },
+  "params": {},
+  "transforms": {
+    "type": "SQL",
+    "sql": "select * from aaa"
+  },
+  "settings": [
+    {
+      "config_key": "exchangis.datax.setting.speed.byte",
+      "config_name": "传输速率",
+      "config_value": 102400,
+      "sort": 1
+    },
+    {
+      "config_key": "exchangis.datax.setting.errorlimit.record",
+      "config_name": "脏数据最大记录数",
+      "config_value": 100,
+      "sort": 2
+    }
+  ]
+}, {
+  "subJobName": "streamjob0002",
+  "dataSources": {
+    "source_id": "HIVE.10001.test_db.test_table",
+    "sink_id": "MYSQL.10002.mask_db.mask_table"
+  },
+  "params": {},
+  "transforms": {
+    "type": "SQL",
+    "sql": "insert into xxx"
+  },
+  "settings": [
+    {
+      "config_key": "exchangis.datax.setting.speed.byte",
+      "config_name": "传输速率",
+      "config_value": 102400,
+      "sort": 1
+    },
+    {
+      "config_key": "exchangis.datax.setting.errorlimit.record",
+      "config_name": "脏数据最大记录数",
+      "config_value": 10000,
+      "sort": 2
+    },
+    {
+      "config_key": "exchangis.datax.setting.errorlimit.percentage",
+      "config_name": "脏数据占比阈值",
+      "config_value": 100,
+      "sort": 3
+    }
+  ]
+}]
