@@ -64,8 +64,6 @@
             <directory>${basedir}/src/main/resources</directory>
             <includes>
                 <include>init.sql</include>
-                <include>init_real.sql</include>
-                <include>appconn-install.sh</include>
             </includes>
             <fileMode>0777</fileMode>
             <outputDirectory>db</outputDirectory>
