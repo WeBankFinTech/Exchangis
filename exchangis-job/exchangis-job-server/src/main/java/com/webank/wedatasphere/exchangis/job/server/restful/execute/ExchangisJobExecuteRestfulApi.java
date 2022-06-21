@@ -60,9 +60,12 @@ public class ExchangisJobExecuteRestfulApi {
             // Convert to the job info
             jobInfo = new ExchangisJobInfo(jobVo);
 
-            if (!AuthorityUtils.hasOwnAuthority(jobVo.getProjectId(), loginUser) && !AuthorityUtils.hasExecAuthority(jobVo.getProjectId(), loginUser)) {
+            if (!hasAuthority(loginUser, jobInfo)){
                 return Message.error("You have no permission to execute job (没有执行任务权限)");
             }
+            /*if (!AuthorityUtils.hasOwnAuthority(jobVo.getProjectId(), loginUser) && !AuthorityUtils.hasExecAuthority(jobVo.getProjectId(), loginUser)) {
+                return Message.error("You have no permission to execute job (没有执行任务权限)");
+            }*/
             // Send to execute service
             String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
                     jobInfo.getExecuteUser() : loginUser);

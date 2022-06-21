@@ -51,7 +51,9 @@ public class ExchangisProjectDssAppConnRestfulApi {
             if (projectService.existsProject(null, projectVo.getName())){
                 return Message.error("Have the same name project (存在同名工程)");
             }
-            long projectId = projectService.createProject(projectVo, username);
+            long projectIdd = projectService.createProject(projectVo, username);
+            String projectId = String.valueOf(projectIdd);
+            System.out.println(projectId);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectId));
