@@ -72,4 +72,12 @@ public interface ProjectMapper {
     List<ExchangisProject> getDetailByName(@Param("projectName") String projectName);
 
     ExchangisProject selectByName(String name);
+
+    /**
+     * get projects authoritis
+     * @param projectId
+     * @param loginUser
+     * @return List
+     */
+    List<String> getAuthoritis(@Param("projectId") Long projectId, @Param("loginUser") String loginUser);
 }

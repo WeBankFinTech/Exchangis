@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.project.server.restful.external;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
+import com.webank.wedatasphere.exchangis.project.server.utils.AuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
@@ -50,7 +51,9 @@ public class ExchangisProjectDssAppConnRestfulApi {
             if (projectService.existsProject(null, projectVo.getName())){
                 return Message.error("Have the same name project (存在同名工程)");
             }
-            long projectId = projectService.createProject(projectVo, username);
+            long projectIdd = projectService.createProject(projectVo, username);
+            String projectId = String.valueOf(projectIdd);
+            System.out.println(projectId);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectId));
@@ -76,9 +79,14 @@ public class ExchangisProjectDssAppConnRestfulApi {
         String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectStored = projectService.getProjectById(Long.valueOf(projectVo.getId()));
-            if (!hasAuthority(username, projectStored)){
+
+            if (!hasAuthority(username, projectStored)) {
                 return Message.error("You have no permission to update (没有项目的更新权限)");
             }
+
+//            if (!AuthorityUtils.hasOwnAuthority(Long.parseLong(projectVo.getId()), username) && !AuthorityUtils.hasEditAuthority(Long.parseLong(projectVo.getId()), username)) {
+//                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
+//            }
             String domain = projectStored.getDomain();
             if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
                     .equalsIgnoreCase(domain)){
@@ -115,7 +123,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
 //                return Message.error("Cannot delete the outer project (无法删除来自 " + domain + " 的外部项目)");
 //            }
             projectService.deleteProjectByName(name);
-            return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
+            return ExchangisProjectRestfulUtils.dealOk("删除工程成功777");
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
             return Message.error("Failed to delete project (删除工程失败)");
