@@ -2,8 +2,6 @@ package com.webank.wedatasphere.exchangis.job.vo;
 
 
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import org.hibernate.validator.constraints.NotBlank;
