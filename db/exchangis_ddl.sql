@@ -1,6 +1,6 @@
 -- exchangis_v4.exchangis_job_ds_bind definition
 
-CREATE TABLE `exchangis_job_ds_bind` (
+CREATE TABLE IF NOT EXISTS `exchangis_job_ds_bind` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `job_id` bigint(20) NOT NULL,
   `task_index` int(11) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE `exchangis_job_ds_bind` (
 
 -- exchangis_v4.exchangis_job_entity definition
 
-CREATE TABLE `exchangis_job_entity` (
+CREATE TABLE IF NOT EXISTS `exchangis_job_entity` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `create_time` datetime DEFAULT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE `exchangis_job_entity` (
 
 
 -- exchangis_v4.exchangis_job_param_config definition
-
+DROP TABLE 'exchangis_job_param_config';
 CREATE TABLE `exchangis_job_param_config` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `config_key` varchar(64) NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE `exchangis_job_param_config` (
 
 -- exchangis_v4.exchangis_project_info definition
 
-CREATE TABLE `exchangis_project_info` (
+CREATE TABLE IF NOT EXISTS `exchangis_project_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
@@ -86,7 +86,7 @@ CREATE TABLE `exchangis_project_info` (
 
 -- exchangis_v4.exchangis_launchable_task definition
 
-CREATE TABLE `exchangis_launchable_task` (
+CREATE TABLE IF NOT EXISTS `exchangis_launchable_task` (
   `id` bigint(13) NOT NULL,
   `name` varchar(100) NOT NULL,
   `job_execution_id` varchar(64) DEFAULT NULL,
@@ -104,7 +104,7 @@ CREATE TABLE `exchangis_launchable_task` (
 
 -- exchangis_v4.exchangis_launched_job_entity definition
 
-CREATE TABLE `exchangis_launched_job_entity` (
+CREATE TABLE IF NOT EXISTS `exchangis_launched_job_entity` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `create_time` datetime DEFAULT NULL,
@@ -128,7 +128,7 @@ CREATE TABLE `exchangis_launched_job_entity` (
 
 -- exchangis_v4.exchangis_launched_task_entity definition
 
-CREATE TABLE `exchangis_launched_task_entity` (
+CREATE TABLE IF NOT EXISTS `exchangis_launched_task_entity` (
   `id` bigint(20) NOT NULL,
   `name` varchar(100) NOT NULL,
   `create_time` datetime DEFAULT NULL,
