@@ -10,6 +10,7 @@ import com.webank.wedatasphere.exchangis.job.server.service.IProjectImportServic
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.ProjectImportServerImpl;
+import com.webank.wedatasphere.exchangis.job.server.utils.AuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectMapper;
@@ -78,6 +79,9 @@ public class ExchangisJobDssAppConnRestfulApi {
         String userName = SecurityFilter.getLoginUsername(request);
         exchangisJobVo.setCreateUser(userName);
         Message response = Message.ok();
+        /*if (!AuthorityUtils.hasOwnAuthority(exchangisJobVo.getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(exchangisJobVo.getProjectId(), userName)) {
+            return Message.error("You have no permission to create (没有编辑权限，无法创建任务)");
+        }*/
         try{
             Long id = null;
             id = jobInfoService.createJob(exchangisJobVo).getId();
@@ -106,9 +110,12 @@ public class ExchangisJobDssAppConnRestfulApi {
             if (Objects.isNull(jobInfoService.getJob(id, true)) || jobInfoService.getJob(id, true).getId() == null){
                 return response;
             }
-            else if (!hasAuthority(userName, jobInfoService.getJob(id, true))){
+            else if (!hasAuthority(userName, jobInfoService.getJob(id, true))) {
                 return Message.error("You have no permission to update (没有删除权限)");
             }
+            /*else if (!AuthorityUtils.hasOwnAuthority(jobInfoService.getJob(id, true).getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(jobInfoService.getJob(id, true).getProjectId(), userName)) {
+                return Message.error("You have no permission to delete (没有编辑权限，无法删除)");
+            }*/
             jobInfoService.deleteJob(id);
         } catch (Exception e){
             String message = "Fail to delete dss job [ id: " + id + "] (删除DSS任务失败)";
@@ -140,9 +147,12 @@ public class ExchangisJobDssAppConnRestfulApi {
             if (Objects.isNull(jobInfoService.getJob(id, true)) || jobInfoService.getJob(id, true).getId() == null){
                 return Message.error("You have no job in exchangis,please delete this job (该节点在exchangis端不存在，请删除该节点)");
             }
-            else if (!hasAuthority(userName, jobInfoService.getJob(id , true))){
-                return Message.error("You have no permission to update (没有更新权限666)");
+            else if (!hasAuthority(userName, jobInfoService.getJob(id , true))) {
+                return Message.error("You have no permission to update (没有更新权限)");
             }
+            /*else if (!AuthorityUtils.hasOwnAuthority(exchangisJobVo.getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(exchangisJobVo.getProjectId(), userName)) {
+                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
+            }*/
             response.data("id", jobInfoService.updateJob(exchangisJobVo).getId());
         } catch (Exception e){
             String message = "Fail to update dss job: " + exchangisJobVo.getJobName() +" (更新DSS任务失败)";
@@ -174,6 +184,9 @@ public class ExchangisJobDssAppConnRestfulApi {
         try {
             // First to find the job from the old table.
             ExchangisJobVo jobVo = jobInfoService.getJob(id, false);
+           /* if (!AuthorityUtils.hasOwnAuthority(jobVo.getProjectId(), loginUser) && !AuthorityUtils.hasExecAuthority(jobVo.getProjectId(), loginUser)) {
+                return Message.error("You have no permission to execute job (没有执行任务权限)");
+            }*/
             if (Objects.isNull(jobVo)){
                 return Message.error("Job related the id: [" + id + "] is Empty(关联的DSS任务不存在)");
             }
