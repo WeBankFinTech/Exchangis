@@ -59,6 +59,7 @@ public class ExchangisImportOperation extends AbstractDevelopmentOperation<Third
                 break;
             }
         }
+        logger.info("New job id is {}", newId);
         return RefJobContentResponseRef.newBuilder().setRefJobContent(MapUtils.newCommonMap(REF_JOB_ID, newId)).success();
     }
 
