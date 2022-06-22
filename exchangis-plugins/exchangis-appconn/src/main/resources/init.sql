@@ -29,7 +29,7 @@ delete from `dss_workflow_node_to_group` where `node_id`=@dss_exchangis_sqoopId;
 delete from `dss_workflow_node_to_ui` where `workflow_node_id`=@dss_exchangis_sqoopId;
 
 -- 查找节点所属组的id
-select @dss_exchangis_sqoopId:=id from `dss_workflow_node_group` where `name` = '数据交换';
+-- select @dss_exchangis_sqoopId:=id from `dss_workflow_node_group` where `name` = '数据交换';
 
 delete from `dss_workflow_node_to_group` where `node_id`=@dss_exchangis_sqoopId;
 INSERT INTO `dss_workflow_node_to_group`(`node_id`,`group_id`) values (@dss_exchangis_sqoopId, 1);

@@ -76,7 +76,7 @@ public class ProjectImportServerImpl implements IProjectImportService {
         try {
             String projectJson = IOUtils.toString(bmlDownloadResponse.inputStream(), StandardCharsets.UTF_8);
             LOG.info("projectJson: {}", projectJson);
-            IdCatalog idCatalog = importOpt(projectJson, projectId, versionSuffix, userName);
+            IdCatalog idCatalog = importOpt(projectJson, projectId, versionSuffix, userName, "import");
             message = Message.ok("import Job ok")
                     .data("sqoop", idCatalog.getSqoop())
                     .data("datax", idCatalog.getDatax());
@@ -95,18 +95,18 @@ public class ProjectImportServerImpl implements IProjectImportService {
     }
 
     @Override
-    public IdCatalog importOpt(String projectJson, Long projectId, String versionSuffix, String userName) throws ExchangisJobServerException {
+    public IdCatalog importOpt(String projectJson, Long projectId, String versionSuffix, String userName, String importType) throws ExchangisJobServerException {
         ExportedProject exportedProject = BDPJettyServerHelper.gson().fromJson(projectJson, ExportedProject.class);
         IdCatalog idCatalog = new IdCatalog();
 
-        importSqoop(projectId, versionSuffix, exportedProject, idCatalog, userName);
+        importSqoop(projectId, versionSuffix, exportedProject, idCatalog, userName, importType);
 
-        importDatax(projectId, versionSuffix, exportedProject, idCatalog, userName);
+        importDatax(projectId, versionSuffix, exportedProject, idCatalog, userName, importType);
 
         return idCatalog;
     }
 
-    private void importSqoop(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog, String userName) throws ExchangisJobServerException {
+    private void importSqoop(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog, String userName, String importType) throws ExchangisJobServerException {
         List<ExchangisJobVo> sqoops = exportedProject.getSqoops();
         if (sqoops == null) {
             return;
@@ -119,17 +119,17 @@ public class ProjectImportServerImpl implements IProjectImportService {
             project.setCreateUser(userName);
             Long newProjectId = projectMapper.insertOne(project);
             List<ExchangisProject> newProjects = projectMapper.getDetailByName(exportedProject.getName());
-            addSqoopTask (sqoops, newProjects, versionSuffix, idCatalog, projectId);
+            addSqoopTask (sqoops, newProjects, versionSuffix, idCatalog, projectId, importType);
         }
         else if (projects.size() == 1) {
-            addSqoopTask (sqoops, projects, versionSuffix, idCatalog, projectId);
+            addSqoopTask (sqoops, projects, versionSuffix, idCatalog, projectId, importType);
         }
         else {
             throw new ExchangisJobServerException(31101, "Already exits duplicated project name(存在重复项目名称) projectName is:" + "[" + exportedProject.getName() + "]");
         }
     }
 
-    private void importDatax(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog, String userName) {
+    private void importDatax(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog, String userName, String importType) {
         List<ExchangisJobVo> dataxes = exportedProject.getDataxes();
         if (dataxes == null) {
             return;
@@ -150,11 +150,13 @@ public class ProjectImportServerImpl implements IProjectImportService {
         }
     }
 
-    public void addSqoopTask (List<ExchangisJobVo> sqoops, List<ExchangisProject> projects, String versionSuffix, IdCatalog idCatalog, Long projectId) throws ExchangisJobServerException {
+    public void addSqoopTask (List<ExchangisJobVo> sqoops, List<ExchangisProject> projects, String versionSuffix, IdCatalog idCatalog, Long projectId, String importType) throws ExchangisJobServerException {
         for (ExchangisJobVo sqoop : sqoops) {
             Long projectIdProd = projects.get(0).getId();
             Long oldId = sqoop.getId();
-            sqoop.setProjectId(projectIdProd);
+            if (importType.equals("import")) {
+                sqoop.setProjectId(projectIdProd);
+            }
             sqoop.setJobName(updateName(sqoop.getJobName(), versionSuffix));
             //Long existingId = (long) 55;
             LOG.info("oldId: {}, projectid: {}, jobName: {}", sqoop.getId(), sqoop.getProjectId(), sqoop.getJobName());
