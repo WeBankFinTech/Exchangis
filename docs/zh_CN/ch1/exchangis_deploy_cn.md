@@ -38,7 +38,9 @@ linkis的启动脚本中默认不会启动数据源相关的服务两个服务�
 
 请保持 Exchangis 的部署用户与 Linkis 的部署用户一致，例如：部署用户是hadoop账号。
 
-#### 1.3 在linkis中为exchangis加专用token
+#### 1.3 在linkis中配置授权认证
+
+###### 1）为exchangis加专用token
 
 通过在linkis数据库中执行以下语句，为Exchangis分配专属token：
 
@@ -46,12 +48,16 @@ linkis的启动脚本中默认不会启动数据源相关的服务两个服务�
 INSERT INTO `linkis_mg_gateway_auth_token`(`token_name`,`legal_users`,`legal_hosts`,`business_owner`,`create_time`,`update_time`,`elapse_day`,`update_by`) VALUES ('EXCHANGIS-AUTH','*','*','BDP',curdate(),curdate(),-1,'LINKIS');
 ```
 
+###### 2）为exchangis加hive数据源的认证
+
 通过在linkis数据库中执行以下sql语句，插入hive数据源环境配置，注意，执行前需要修改语句中的${HIVE_METADATA_IP}和${HIVE_METADATA_PORT}，例如${HIVE_METADATA_IP}=127.0.0.1，${HIVE_METADATA_PORT}=3306：
 
 ```
 INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境SIT', '开发环境SIT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
 INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境UAT', '开发环境UAT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
 ```
+
+如果hive数据源在部署时设置了需要进行kerberos方式认证，则需要在linkis_ps_dm_datasource_env表的parameter字段指定一个参数keyTab，其值的获取方式可见：[在Linkis中设置并认证hive数据源](https://linkis.apache.org/zh-CN/docs/1.1.2/deployment/start_metadatasource/#32--hive-%E6%95%B0%E6%8D%AE%E6%BA%90)
 
 #### 1.4 底层依赖组件检查
 
