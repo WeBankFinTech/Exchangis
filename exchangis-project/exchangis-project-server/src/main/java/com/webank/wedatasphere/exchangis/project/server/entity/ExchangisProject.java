@@ -84,6 +84,8 @@ public class ExchangisProject {
 
     private String source;
 
+    private String privUser;
+
     public Long getId() {
         return id;
     }
@@ -174,6 +176,14 @@ public class ExchangisProject {
 
     public void setLabels(String labels) {
         this.labels = labels;
+    }
+
+    public String getPrivUser() {
+        return privUser;
+    }
+
+    public void setPrivUser(String privUser) {
+        this.privUser = privUser;
     }
 
     // TODO use the common Json util
