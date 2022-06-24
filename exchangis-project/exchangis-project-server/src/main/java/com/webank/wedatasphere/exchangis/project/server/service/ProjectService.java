@@ -8,6 +8,7 @@ import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Project query
@@ -65,4 +66,5 @@ public interface ProjectService {
      ExchangisProjectInfo getProjectById(Long projectId);
 
      ExchangisProjectInfo selectByName(String name);
+
 }
