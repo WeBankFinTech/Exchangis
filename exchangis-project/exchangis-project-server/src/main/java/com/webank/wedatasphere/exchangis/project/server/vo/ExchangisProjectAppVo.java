@@ -78,7 +78,7 @@ public class ExchangisProjectAppVo {
      */
     private Date createTime;
 
-    private String labels;
+    private HashMap<String, Object> labels;
 
     public ExchangisProjectAppVo(){
 
@@ -186,11 +186,11 @@ public class ExchangisProjectAppVo {
         return Objects.nonNull(label)? label : "";
     }
 
-    public String getLabels() {
+    public HashMap<String, Object> getLabels() {
         return labels;
     }
 
-    public void setLabels(String labels) {
+    public void setLabels(HashMap labels) {
         this.labels = labels;
     }
 }
