@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.restful;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
+import com.webank.wedatasphere.exchangis.job.server.utils.AuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
@@ -99,6 +100,9 @@ public class ExchangisJobRestfulApi {
         String userName = SecurityFilter.getLoginUsername(request);
         exchangisJobVo.setCreateUser(userName);
         Message response = Message.ok();
+       /* if (!AuthorityUtils.hasOwnAuthority(exchangisJobVo.getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(exchangisJobVo.getProjectId(), userName)) {
+            return Message.error("You have no permission to create (没有编辑权限，无法创建任务)");
+        }*/
         try {
             response.data("result", jobInfoService.createJob(exchangisJobVo));
         } catch (Exception e) {
@@ -163,6 +167,9 @@ public class ExchangisJobRestfulApi {
             if (!hasAuthority(userName, jobInfoService.getJob(id, true))) {
                 return Message.error("You have no permission to update (没有更新权限)");
             }
+            /*if (!AuthorityUtils.hasOwnAuthority(exchangisJobVo.getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(exchangisJobVo.getProjectId(), userName)) {
+                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
+            }*/
             response.data("result", jobInfoService.updateJob(exchangisJobVo));
         } catch (Exception e) {
             String message = "Fail to update job: " + exchangisJobVo.getJobName() + " (更新任务失败)";
@@ -187,6 +194,9 @@ public class ExchangisJobRestfulApi {
             if (!hasAuthority(userName, jobInfoService.getJob(id, true))) {
                 return Message.error("You have no permission to update ()");
             }
+           /* if (!AuthorityUtils.hasOwnAuthority(jobInfoService.getJob(id, true).getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(jobInfoService.getJob(id, true).getProjectId(), userName)) {
+                return Message.error("You have no permission to delete (没有编辑权限，无法删除)");
+            }*/
             jobInfoService.deleteJob(id);
         } catch (Exception e) {
             String message = "Fail to delete job [ id: " + id + "] (删除任务失败)";
@@ -283,6 +293,9 @@ public class ExchangisJobRestfulApi {
         jobVo.setModifyUser(SecurityFilter.getLoginUsername(request));
         Message response = Message.ok();
         try {
+            /*if (!AuthorityUtils.hasOwnAuthority(jobVo.getProjectId(), jobVo.getModifyUser()) && !AuthorityUtils.hasEditAuthority(jobVo.getProjectId(), jobVo.getModifyUser())) {
+                return Message.error("You have no permission to update (没有编辑权限)");
+            }*/
             ExchangisJobVo exchangisJob = jobInfoService.updateJobConfig(jobVo);
             response.data("id", exchangisJob.getId());
         } catch (Exception e) {
@@ -298,8 +311,13 @@ public class ExchangisJobRestfulApi {
                                @RequestBody ExchangisJobVo jobVo, HttpServletRequest request) {
         jobVo.setId(id);
         jobVo.setModifyUser(SecurityFilter.getLoginUsername(request));
+        String loginUser = SecurityFilter.getLoginUsername(request);
+        Long projectId = jobVo.getProjectId();
         Message response = Message.ok();
         try {
+            /*if (!AuthorityUtils.hasOwnAuthority(projectId, loginUser) && !AuthorityUtils.hasEditAuthority(projectId, loginUser)) {
+                return Message.error("You have no permission to update (没有编辑权限，无法保存配置)");
+            }*/
             ExchangisJobVo exchangisJob = jobInfoService.updateJobContent(jobVo);
             response.data("id", exchangisJob.getId());
         } catch (Exception e) {

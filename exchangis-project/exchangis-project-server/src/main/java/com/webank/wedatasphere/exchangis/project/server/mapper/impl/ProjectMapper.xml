@@ -17,6 +17,7 @@
         <result column="exec_users" property="execUsers"/>
         <result column="domain" property="domain"/>
         <result column="source" property="source"/>
+        <result column="priv_user" property="privUser"/>
     </resultMap>
 
     <!--columns-->
@@ -31,24 +32,21 @@
 
     <!--where condition-->
     <sql id="pageCondition">
-        <where>
             <if test="name != '' and name != null">
-                AND name like concat('%', #{name}, '%')
+                AND dp.name like concat('%', #{name}, '%')
             </if>
             <if test="createUser != '' and createUser != null">
-                AND create_user = #{createUser}
+                AND dp.create_user = #{createUser}
             </if>
             <if test="domain != '' and domain != null">
-                AND domain = #{domain}
+                AND dp.domain = #{domain}
             </if>
-        </where>
     </sql>
 
     <!--queryPageList-->
     <select id="queryPageList" resultMap="projectResult">
-        SELECT
-        <include refid="basic_columns"/>
-        FROM `exchangis_project_info`
+        select DISTINCT dp.id, dp.name, dp.description, dp.create_user, dp.create_time, dp.last_update_user,dp.last_update_time, dp.project_labels,dp.domain,dp.view_users, dp.exec_users, dp.edit_users, du.priv_user
+        from exchangis_project_info dp inner join exchangis_project_user du on dp.id = du.project_id where du.priv_user = #{createUser}
         <include refid="pageCondition"/>
         ORDER BY create_time DESC
     </select>
@@ -130,5 +128,9 @@
                 name = #{projectName}
             </if>
         </where>
+    </select>
+
+    <select id="getAuthoritis" resultType="java.lang.String">
+        select priv from exchangis_project_user where priv_user = #{loginUser} and project_id = #{projectId}
     </select>
 </mapper>

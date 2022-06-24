@@ -24,7 +24,7 @@ Exchangis 的安装，主要分为以下四步：
 
 底层依赖组件检查
 
-$\color{#FF0000}{注意：一定要重新安装dss1.0.1，并且linkis版本必须大于1.1.1，请重新编译linkis，请使用6月15号发布的包}$。
+$\color{#FF0000}{注意：一定要使用最新版的dss1.1.0，及linkis1.1.1}$。
 
 [linkis1.1.1代码地址](https://github.com/apache/incubator-linkis/tree/release-1.1.1)    
 
@@ -38,7 +38,9 @@ linkis的启动脚本中默认不会启动数据源相关的服务两个服务�
 
 请保持 Exchangis 的部署用户与 Linkis 的部署用户一致，例如：部署用户是hadoop账号。
 
-#### 1.3 在linkis中为exchangis加专用token
+#### 1.3 在linkis中配置授权认证
+
+###### 1）为exchangis加专用token
 
 通过在linkis数据库中执行以下语句，为Exchangis分配专属token：
 
@@ -46,12 +48,16 @@ linkis的启动脚本中默认不会启动数据源相关的服务两个服务�
 INSERT INTO `linkis_mg_gateway_auth_token`(`token_name`,`legal_users`,`legal_hosts`,`business_owner`,`create_time`,`update_time`,`elapse_day`,`update_by`) VALUES ('EXCHANGIS-AUTH','*','*','BDP',curdate(),curdate(),-1,'LINKIS');
 ```
 
+###### 2）为exchangis加hive数据源的认证
+
 通过在linkis数据库中执行以下sql语句，插入hive数据源环境配置，注意，执行前需要修改语句中的${HIVE_METADATA_IP}和${HIVE_METADATA_PORT}，例如${HIVE_METADATA_IP}=127.0.0.1，${HIVE_METADATA_PORT}=3306：
 
 ```
 INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境SIT', '开发环境SIT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
 INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境UAT', '开发环境UAT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
 ```
+
+如果hive数据源在部署时设置了需要进行kerberos方式认证，则需要在linkis_ps_dm_datasource_env表的parameter字段指定一个参数keyTab，其值的获取方式可见：[在Linkis中设置并认证hive数据源](https://linkis.apache.org/zh-CN/docs/1.1.2/deployment/start_metadatasource/#32--hive-%E6%95%B0%E6%8D%AE%E6%BA%90)
 
 #### 1.4 底层依赖组件检查
 
@@ -64,7 +70,7 @@ INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_t
 
 #### 2.1.1下载二进制包
 
-从 Exchangis 已发布的 release 中 [点击下载exchangis安装包](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/wedatasphere-exchangis-1.0.0-RC1.tar.gz)，下载最新的安装包。
+从 Exchangis 已发布的 release 中 [点击下载exchangis安装包](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0/wedatasphere-exchangis-1.0.0.tar.gz)，下载最新的安装包。
 
 #### 2.1.2 编译打包
 
@@ -102,19 +108,16 @@ INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_t
 
 ```shell script
 #LINKIS_GATEWAY服务地址IP，用于查找linkis-mg-gateway服务
-LINKIS_GATEWAY_HOST= 
+LINKIS_GATEWAY_HOST={IP}
 
 #LINKIS_GATEWAY服务地址端口，用于查找linkis-mg-gateway服务         
-LINKIS_GATEWAY_PORT=       
-
-#用于请求校验 linkis 服务的 token，该字段可在 linkis 的数据库表linkis_mg_gateway_auth_token，token_name字段中找到  
-LINKIS_TOKEN=
+LINKIS_GATEWAY_PORT={PORT}    
 
 #Exchangis服务端口
-EXCHANGIS_PORT=
+EXCHANGIS_PORT={PORT}
 
 #Eureka服务URL
-EUREKA_URL=
+EUREKA_URL=http://{IP:PORT}/eureka/
 ```
 
 ### 2.4 修改数据库配置
@@ -126,11 +129,11 @@ EUREKA_URL=
 ```shell script
 # 设置数据库的连接信息
 # 包括IP地址、端口、用户名、密码和数据库名称
-MYSQL_HOST=
-MYSQL_PORT=
-MYSQL_USERNAME=
-MYSQL_PASSWORD=
-DATABASE=
+MYSQL_HOST={IP}
+MYSQL_PORT={PORT}
+MYSQL_USERNAME={username}
+MYSQL_PASSWORD={password}
+DATABASE={dbName}
 ```
 
 ### 2.5 安装和启动
@@ -185,7 +188,7 @@ DATABASE=
 
 #### 2.7.1 获取前端安装包
 
-Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/dist.zip)
+Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0/dist.zip)
 
 您也可以自行编译 Exchangis 前端，在 Exchangis 根目录下执行如下命令：
 
@@ -220,7 +223,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 ```
         server {
-            listen       8098; # 访问端口 如果该端口被占用，则需要修改
+            listen       {PORT}; # 访问端口 如果该端口被占用，则需要修改
             server_name  localhost;
             #charset koi8-r;
             #access_log  /var/log/nginx/host.access.log  main;
@@ -230,7 +233,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
             }
 
             location /api {
-            proxy_pass http://127.0.0.1:9020;  # 后端Linkis的地址，需要修改
+            proxy_pass http://{IP}:{PORT};  # 后端Linkis的地址，需要修改
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header x_real_ipP $remote_addr;
@@ -262,7 +265,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
   nginx -s reload
 ```
 
-请通过 http://${EXCHANGIS_INSTALL_IP}:8098/#/projectManage 访问 Exchangis 前端页面，出现以下界面，说明exchangis安装前端成功，如果要真正试用exchangis，需要安装dss和linkis，通过dss进行免密登录，如下图所示：
+请通过 http://${EXCHANGIS_INSTALL_IP}:{PORT}/#/projectManage 访问 Exchangis 前端页面，出现以下界面，说明exchangis安装前端成功，如果要真正试用exchangis，需要安装dss和linkis，通过dss进行免密登录，如下图所示：
 
 ![image](https://user-images.githubusercontent.com/27387830/170417473-af0b4cbe-758e-4800-a58f-0972f83d87e6.png)
 
@@ -276,4 +279,4 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 ## 5. 如何登录使用 Exchangis
 
-Exchangis1.0更多使用说明，请参考用户使用手册[Exchangis1.0 用户手册](exchangis_user_manual_cn.md)
+Exchangis1.0更多使用说明，请参考用户使用手册[Exchangis1.0 用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
