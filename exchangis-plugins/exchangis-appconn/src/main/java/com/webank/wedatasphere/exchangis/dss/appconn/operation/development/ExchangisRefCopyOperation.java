@@ -55,8 +55,20 @@ public class ExchangisRefCopyOperation extends
             throw new ExternalOperationFailedException(90177, "Unknown Exchangis jobType " + nodeType);
         }
         InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(copyRequestRef, copyUrl, postAction, ssoRequestOperation);
-        Map<Long, Long> sqoops = (Map<Long, Long>) responseRef.getData().get("sqoop");
-        return RefJobContentResponseRef.newBuilder().setRefJobContent(MapUtils.newCommonMap(REF_JOB_ID, sqoops.get(id))).success();
+        Map<String, Object> sqoops = (Map<String, Object>) responseRef.getData().get("sqoop");
+        //Map<Long, Object> sqoops = (Map<Long, Object>) responseRef.getData().get("sqoop");
+        /*long newId = 0L;
+        newId = ((Double) sqoops.get(id)).longValue();*/
+
+        long newId = 0L;
+        for (Map.Entry<String, Object> entry : sqoops.entrySet()) {
+            newId = ((Double) Double.parseDouble(entry.getValue().toString())).longValue();
+            if (newId != 0) {
+                break;
+            }
+        }
+        logger.info("New job id is {}", newId);
+        return RefJobContentResponseRef.newBuilder().setRefJobContent(MapUtils.newCommonMap(REF_JOB_ID, newId)).success();
     }
 
 }
