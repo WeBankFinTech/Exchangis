@@ -18,6 +18,7 @@ INSERT INTO `dss_workspace_menu_appconn` (`appconn_id`, `menu_id`, `title_en`, `
  VALUES(@dss_appconn_exchangisId,@exchangis_menuId,'Exchangis','Exchangis','Exchangis',''
  ,'exchangis, statement','数据交换,数据源','1','enter Exchangis','进入Exchangis','user manual','用户手册','/manual_url','shujukeshihua-logo',NULL,NULL,NULL,NULL,NULL,'shujukeshihua-icon');
 
+select @dss_exchangis_sqoopId:=id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop';
 delete from `dss_workflow_node`  where `node_type` like '%exchangis%';
 insert into `dss_workflow_node` (`name`, `appconn_name`, `node_type`, `jump_type`, `support_jump`, `submit_to_scheduler`, `enable_copy`, `should_creation_before_node`, `icon_path`)
 values('sqoop','exchangis','linkis.appconn.exchangis.sqoop',1,'1','1','0','1','icons/sqoop.icon');
