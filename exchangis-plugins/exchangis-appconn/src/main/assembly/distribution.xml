@@ -69,6 +69,15 @@
             <outputDirectory>db</outputDirectory>
             <lineEnding>unix</lineEnding>
         </fileSet>
+        <fileSet>
+            <directory>${basedir}/src/main/resources</directory>
+            <includes>
+                <include>sqoop.icon</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <outputDirectory>icons</outputDirectory>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
 
     </fileSets>
 
