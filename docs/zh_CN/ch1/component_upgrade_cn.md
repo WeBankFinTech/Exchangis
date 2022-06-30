@@ -72,4 +72,18 @@ sh ./appconn-refresh.sh
 2.	在exchangis端查看是否同步创建项目，创建成功说明appconn安装成功
 ![image](https://user-images.githubusercontent.com/27387830/169782337-678f2df0-080a-495a-b59f-a98c5a427cf8.png)
 
-更多使用操作可参照[Exchangis1.0用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
+#### 4.3）更新Exchangis安装目录下的lib包
+
+将从下载连接中得到的exchangis-project-server-1.0.0.jar和exchangis-server-1.0.0.jar两个包放入以下Exchangis安装目录的文件路径下(先删除原有旧的这两个包)：
+
+```$xslt
+lib/exchangis-server
+```
+
+再通过以下命令完成 Exchangis Server 的更新重启：
+   
+   ```shell script
+   ./sbin/daemon.sh restart server
+   ```
+
+ 更多使用操作可参照[Exchangis1.0用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
