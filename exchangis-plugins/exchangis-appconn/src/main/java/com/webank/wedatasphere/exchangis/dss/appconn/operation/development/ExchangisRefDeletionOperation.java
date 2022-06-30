@@ -28,7 +28,7 @@ public class ExchangisRefDeletionOperation extends AbstractDevelopmentOperation<
 
 
 
-        String url = mergeUrl(API_REQUEST_PREFIX, "appJob/" + id);
+        String url = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "appJob/" + id));
         logger.info("User {} try to delete Exchangis job {} in project {}, the url is {}.", deleteRequestRef.getUserName(),
                 deleteRequestRef.getName(), deleteRequestRef.getProjectName(), url);
         DSSPostAction postAction = new DSSPostAction();
