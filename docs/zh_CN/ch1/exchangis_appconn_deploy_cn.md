@@ -1,23 +1,23 @@
 ExchangisAppConn安装文档
 本文主要介绍在DSS(DataSphere Studio)1.0.1中ExchangisAppConn的部署、配置以及安装
 ### 1.部署ExchangisAppConn的准备工作
-您在部署ExchangisAppConn之前，请按照[Exchangis1.0.0安装部署文档](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)安装完成Exchangis1.0.0及其他相关组件的安装，并确保工程基本功能可用。
+您在部署ExchangisAppConn之前，请按照[Exchangis1.0.0安装部署文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_deploy_cn.md)安装完成Exchangis1.0.0及其他相关组件的安装，并确保工程基本功能可用。
 
 ### 2.ExchangisAppConn插件的下载和编译
 #### 1）下载二进制包
-我们提供ExchangisAppconn的物料包，您可直接下载使用。[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/exchangis-appconn.zip)
+我们提供ExchangisAppconn的物料包，您可直接下载使用。[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0/exchangis-appconn.zip)
 #### 2） 编译打包
 
 如果您想自己开发和编译ExchangisAppConn，具体编译步骤如下：
 1.clone Exchangis的代码
 2.在exchangis-plugins模块下，找到exchangis-appconn，单独编译exchangis-appconn
-```
+```shell
 cd {EXCHANGIS_CODE_HOME}/exchangis-plugins/exchangis-appconn
 mvn clean install
 ```
 会在该路径下找到exchangis-appconn.zip安装包
-```
-{EXCHANGIS_CODE_HOME}\exchangis-plugins\exchangis-appconn\target\exchangis-appconn.zip
+```shell
+{EXCHANGIS_CODE_HOME}/exchangis-plugins/exchangis-appconn/target/exchangis-appconn.zip
 ```
 
 ### 3.ExchangisAppConn插件的部署和配置总体步骤
@@ -27,12 +27,12 @@ mvn clean install
 
 注意：第一次解压exchangis appconn后，确保当前文件夹下没有index_v0000XX.index文件，该文件在后面才会生成
 
-```
+```shell
 cd {DSS_Install_HOME}/dss/dss-appconns
 unzip exchangis-appconn.zip
 ```
 解压出来的目录结构为：
-```
+```shell
 conf
 db
 lib
@@ -52,7 +52,7 @@ cd {DSS_INSTALL_HOME}/dss/bin
 
 #### 4.1）使部署好的APPCONN生效
 使用DSS启停脚本使APPCONN生效，进入到脚本所在目录{DSS_INSTALL_HOME}/sbin中，依次使用如下命令执行脚本：
-```
+```shell
 sh ./dss-stop-all.sh
 sh ./dss-start-all.sh
 ```
@@ -64,7 +64,7 @@ sh ./dss-start-all.sh
 2.	在exchangis端查看是否同步创建项目，创建成功说明appconn安装成功
 ![image](https://user-images.githubusercontent.com/27387830/169782337-678f2df0-080a-495a-b59f-a98c5a427cf8.png)
 
-更多使用操作可参照[Exchangis1.0用户手册](https://user-images.githubusercontent.com/27387830/169782142-b2fc2633-e605-4553-9433-67756135a6f1.png)
+更多使用操作可参照[Exchangis1.0用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
 
 ### 5.Exchangis AppConn安装原理
 
