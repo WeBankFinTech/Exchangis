@@ -2,7 +2,7 @@
 ### 环境准备
 Sqoop引擎是执行Exchangis数据同步任务不可或缺的组件，只有安装部署完成Sqoop引擎才能够成功执行数据同步任务。同时，确保所部署的机器上有安装sqoop。
 
-您在安装部署Sqoop引擎之前，请按照[Exchangis1.0.0](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_deploy_cn.md)安装部署文档安装完成Exchangis1.0.0及相关组件的安装，并确保工程基本功能可用。
+您在安装部署Sqoop引擎之前，请按照[Exchangis1.0.0安装部署文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_deploy_cn.md)安装完成Exchangis1.0.0及相关组件的安装，并确保工程基本功能可用。
 
 Sqoop引擎主要依赖Hadoop基础环境，如果该节点需要部署Sqoop引擎，需要部署Hadoop客户端环境。
 
@@ -29,7 +29,7 @@ Sqoop引擎主要依赖Hadoop基础环境，如果该节点需要部署Sqoop引�
 
 Exchangis1.0.0和Linkis 1.1.0支持的主流Sqoop版本1.4.6与1.4.7，更高版本可能需要修改部分代码重新编译。
 
-[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.1-rc/sqoop.zip)
+[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.0.0)
 
 #### 2） 编译打包
 如果您想自己开发和编译sqoop引擎，具体编译步骤如下：

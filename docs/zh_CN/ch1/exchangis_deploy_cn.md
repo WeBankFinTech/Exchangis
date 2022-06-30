@@ -28,7 +28,7 @@ $\color{#FF0000}{注意：一定要使用最新版的dss1.1.0，及linkis1.1.1}$
 
 [linkis1.1.1代码地址](https://github.com/apache/incubator-linkis/tree/release-1.1.1)    
 
-[DSS1.0.1代码地址](https://github.com/WeBankFinTech/DataSphereStudio/tree/master)
+[DSS1.0.1代码地址](https://github.com/WeBankFinTech/DataSphereStudio/tree/dev-1.1.0)
 
 datasource启用
 
@@ -40,7 +40,7 @@ linkis的启动脚本中默认不会启动数据源相关的服务两个服务�
 
 #### 1.3 在linkis中配置授权认证
 
-###### 1）为exchangis加专用token
+###### 1）为exchangis加数据源认证的token
 
 通过在linkis数据库中执行以下语句，为Exchangis分配专属token：
 
@@ -70,7 +70,7 @@ INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_t
 
 #### 2.1.1下载二进制包
 
-从 Exchangis 已发布的 release 中 [点击下载exchangis安装包](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0/wedatasphere-exchangis-1.0.0.tar.gz)，下载最新的安装包。
+从 Exchangis 已发布的 release 中 [点击下载exchangis安装包](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.0.0)，下载最新的安装包。
 
 #### 2.1.2 编译打包
 
@@ -188,7 +188,7 @@ DATABASE={dbName}
 
 #### 2.7.1 获取前端安装包
 
-Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0/dist.zip)
+Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://github.com/WeBankFinTech/Exchangis/releases/download/release-1.0.0/web-dist.zip)
 
 您也可以自行编译 Exchangis 前端，在 Exchangis 根目录下执行如下命令：
 
@@ -271,7 +271,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 ## 3. DSS ExchangisAppConn 安装部署
 
-如您想正常使用 Exchangis1.0.0 前端，还需安装 DSS ExchangisAppConn 插件，请参考: [ExchangisAppConn 插件安装文档](exchangis_appconn_deploy_cn.md)
+如您想正常使用 Exchangis1.0.0 前端，还需安装 DSS ExchangisAppConn 插件，请参考: [ExchangisAppConn 插件安装文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_appconn_deploy_cn.md)
 
 ## 4. Linkis Sqoop 引擎安装部署
 
