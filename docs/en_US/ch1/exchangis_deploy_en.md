@@ -28,7 +28,7 @@ $\color{#FF0000}{Note: be sure to reinstall dss1.0.1, and the linkis version mus
 
 [linkis1.1.1 code address ](https://github.com/apache/incubator-linkis/tree/release-1.1.1)    
 
-[DSS1.0.1 code address ](https://github.com/WeBankFinTech/DataSphereStudio/tree/master)
+[DSS1.0.1 code address ](https://github.com/WeBankFinTech/DataSphereStudio/tree/dev-1.1.0)
 
 datasource enabled 
 
@@ -63,7 +63,7 @@ Please ensure that DSS1.0.1 and Linkis1.1.0 are basically available. HiveQL scri
 
 #### 2.1.1  Download binary package 
 
-Download the latest installation package from the Released release of Exchangis [click to jump to the release interface](https://github.com/WeBankFinTech/Exchangis/releases).
+Download the latest installation package from the Released release of Exchangis [click to jump to the release interface](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.0.0).
 
 #### 2.1.2  Compile and package 
 
@@ -187,7 +187,7 @@ As shown in the figure below:
 
 #### 2.7.1  Get the front-end installation package 
 
-Exchangis has provided compiled front-end installation package by default, which can be downloaded and used directly ：[Click to jump to the Release interface](https://github.com/WeBankFinTech/Exchangis/releases)
+Exchangis has provided compiled front-end installation package by default, which can be downloaded and used directly ：[Click to jump to the Release interface](https://github.com/WeBankFinTech/Exchangis/releases/download/release-1.0.0/web-dist.zip)
 
 You can also compile the exchange front-end by yourself and execute the following command in the exchanise root directory:
 
@@ -269,12 +269,12 @@ Please visit the Exchange front-end page at  http://${EXCHANGIS_INSTALL_IP}:8098
 
 ## 3. DSS ExchangisAppConn installation and deployment 
 
-If you want to use Exchangis1.0.1 front-end, you also need to install the DSS ExchangisAppConn plugin. Please refer to: [ExchangisAppConn installation documentation for plugins ](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/en_US/ch1/exchangis_appconn_deploy_en.md)
+If you want to use Exchangis1.0.1 front-end, you also need to install the DSS ExchangisAppConn plugin. Please refer to: [ExchangisAppConn installation documentation for plugins ](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_appconn_deploy_en.md)
 
 ## 4. Linkis Sqoop engine installation and deployment 
 
-If you want to execute the Sqoop operation of Exchangis1.0.1 normally, you also need to install the Linkis Sqoop engine. Please refer to: : [Linkis Sqoop engine installation documentation ](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/en_US/ch1/exchangis_sqoop_deploy_en.md)
+If you want to execute the Sqoop operation of Exchangis1.0.1 normally, you also need to install the Linkis Sqoop engine. Please refer to: : [Linkis Sqoop engine installation documentation ](https://linkis.staged.apache.org/zh-CN/docs/1.1.2/engine_usage/sqoop)
 
 ## 5.  How to log in and use Exchangis
 
- To be supplemented !
+Exchangis1.0 for more instructions, please refer to the user manual.[Exchangis1.0 user manual](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_user_manual_en.md)
