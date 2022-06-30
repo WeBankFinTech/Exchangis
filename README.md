@@ -52,8 +52,8 @@ With the help of [Linkis](https://github.com/apache/incubator-linkis) computing 
 
 ## Documents
 
-[Quick Deploy](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)  
-[User Manual](https://github.com/WeDataSphere/Exchangis/blob/dev-1.0.0-rc/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
+[Quick Deploy](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_deploy_en.md)  
+[User Manual](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_user_manual_en.md)
 
 ## Communication and contribution 
 
