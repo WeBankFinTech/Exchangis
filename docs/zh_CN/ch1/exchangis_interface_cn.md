@@ -12,9 +12,9 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注        | 是否必须 | 默认值 |
-| ------- | ------------------ | ----------- | -------- | ------ |
-| request | HttpServletRequest | request请求 | 是       | /      |
+| 名称    | 类型               | 备注 | 是否必须 | 默认值 | 备注        |
+| ------- | ------------------ | ---- | -------- | ------ | ----------- |
+| request | HttpServletRequest |      | 是       | /      | request请求 |
 
 返回参数： 
 
@@ -35,10 +35,10 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注        | 是否必须 | 默认值 |
-| ------- | ------------------ | ----------- | -------- | ------ |
-| request | HttpServletRequest | request请求 | 是       | /      |
-| vo      | DataSourceQueryVO  |             | 是       | /      |
+| 名称    | 类型               | 是否必须 | 默认值 | 备注        |
+| ------- | ------------------ | -------- | ------ | ----------- |
+| request | HttpServletRequest | 是       | /      | request请求 |
+| vo      | DataSourceQueryVO  | 是       | /      |             |
 
 返回参数： 
 
@@ -59,13 +59,13 @@
 
 请求参数： 
 
-| 名称     | 类型               | 备注         | 是否必须 | 默认值 |
-| -------- | ------------------ | ------------ | -------- | ------ |
-| request  | HttpServletRequest | request请求  | 是       | /      |
-| typeId   | Long               | 数据源类型ID | 是       | /      |
-| typeName | String             | 数据源类型   | 是       | /      |
-| page     | Integer            | 页数         | 是       | /      |
-| size     | Integer            | 每页大小     | 是       | /      |
+| 名称     | 类型               | 是否必须 | 默认值 | 备注         |
+| -------- | ------------------ | -------- | ------ | ------------ |
+| request  | HttpServletRequest | 是       | /      | request请求  |
+| typeId   | Long               | 是       | /      | 数据源类型ID |
+| typeName | String             | 是       | /      | 数据源类型   |
+| page     | Integer            | 是       | /      | 页数         |
+| size     | Integer            | 是       | /      | 每页大小     |
 
 返回参数： 
 
@@ -86,10 +86,10 @@
 
 请求参数： 
 
-| 名称             | 类型               | 备注         | 是否必须 | 默认值 |
-| ---------------- | ------------------ | ------------ | -------- | ------ |
-| request          | HttpServletRequest | request请求  | 是       | /      |
-| dataSourceTypeId | Long               | 数据源类型ID | 是       | /      |
+| 名称             | 类型               | 是否必须 | 默认值 | 备注         |
+| ---------------- | ------------------ | -------- | ------ | ------------ |
+| request          | HttpServletRequest | 是       | /      | request请求  |
+| dataSourceTypeId | Long               | 是       | /      | 数据源类型ID |
 
 返回参数： 
 
@@ -110,10 +110,10 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注        | 是否必须 | 默认值 |
-| ------- | ------------------ | ----------- | -------- | ------ |
-| request | HttpServletRequest | request请求 | 是       | /      |
-| id      | Long               | 数据源ID    | 是       | /      |
+| 名称    | 类型               | 是否必须 | 默认值 | 备注        |
+| ------- | ------------------ | -------- | ------ | ----------- |
+| request | HttpServletRequest | 是       | /      | request请求 |
+| id      | Long               | 是       | /      | 数据源ID    |
 
 返回参数： 
 
@@ -134,11 +134,11 @@
 
 请求参数： 
 
-| 名称               | 类型               | 备注         | 是否必须 | 默认值 |
-| ------------------ | ------------------ | ------------ | -------- | ------ |
-| request            | HttpServletRequest | request请求  | 是       | /      |
-| dataSourceCreateVO | DataSourceCreateVO | 数据源创建VO | 是       | /      |
-| bindingResult      | BindingResult      | 绑定结果     | 是       | /      |
+| 名称               | 类型               | 是否必须 | 默认值 | 备注         |
+| ------------------ | ------------------ | -------- | ------ | ------------ |
+| request            | HttpServletRequest | 是       | /      | request请求  |
+| dataSourceCreateVO | DataSourceCreateVO | 是       | /      | 数据源创建VO |
+| bindingResult      | BindingResult      | 是       | /      | 绑定结果     |
 
 返回参数： 
 
@@ -159,11 +159,11 @@
 
 请求参数： 
 
-| 名称      | 类型               | 备注        | 是否必须 | 默认值 |
-| --------- | ------------------ | ----------- | -------- | ------ |
-| request   | HttpServletRequest | request请求 | 是       | /      |
-| id        | Long               | 数据源ID    | 是       | /      |
-| versionId | String             | 版本ID      | 是       | /      |
+| 名称      | 类型               | 是否必须 | 默认值 | 备注        |
+| --------- | ------------------ | -------- | ------ | ----------- |
+| request   | HttpServletRequest | 是       | /      | request请求 |
+| id        | Long               | 是       | /      | 数据源ID    |
+| versionId | String             | 是       | /      | 版本ID      |
 
 返回参数： 
 
@@ -184,10 +184,10 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注        | 是否必须 | 默认值 |
-| ------- | ------------------ | ----------- | -------- | ------ |
-| request | HttpServletRequest | request请求 | 是       | /      |
-| Long    | id                 | 数据源ID    | 是       | /      |
+| 名称    | 类型               | 是否必须 | 默认值 | 备注        |
+| ------- | ------------------ | -------- | ------ | ----------- |
+| request | HttpServletRequest | 是       | /      | request请求 |
+| Long    | id                 | 是       | /      | 数据源ID    |
 
 返回参数： 
 
@@ -208,12 +208,12 @@
 
 请求参数： 
 
-| 名称               | 类型               | 备注         | 是否必须 | 默认值 |
-| ------------------ | ------------------ | ------------ | -------- | ------ |
-| request            | HttpServletRequest | request请求  | 是       | /      |
-| id                 | Long               | 数据源类型ID | 是       | /      |
-| dataSourceCreateVO | DataSourceCreateVO | 数据源创建VO | 是       | /      |
-| bindingResult      | BindingResult      | 绑定结果     | 是       | /      |
+| 名称               | 类型               | 是否必须 | 默认值 | 备注         |
+| ------------------ | ------------------ | -------- | ------ | ------------ |
+| request            | HttpServletRequest | 是       | /      | request请求  |
+| id                 | Long               | 是       | /      | 数据源类型ID |
+| dataSourceCreateVO | DataSourceCreateVO | 是       | /      | 数据源创建VO |
+| bindingResult      | BindingResult      | 是       | /      | 绑定结果     |
 
 返回参数： 
 
@@ -234,11 +234,11 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注        | 是否必须 | 默认值 |
-| ------- | ------------------ | ----------- | -------- | ------ |
-| request | HttpServletRequest | request请求 | 是       | /      |
-| id      | Long               | 数据源ID    | 是       | /      |
-| version | Long               | 版本ID      | 是       | /      |
+| 名称    | 类型               | 是否必须 | 默认值 | 备注        |
+| ------- | ------------------ | -------- | ------ | ----------- |
+| request | HttpServletRequest | 是       | /      | request请求 |
+| id      | Long               | 是       | /      | 数据源ID    |
+| version | Long               | 是       | /      | 版本ID      |
 
 返回参数： 
 
@@ -259,10 +259,10 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注        | 是否必须 | 默认值 |
-| ------- | ------------------ | ----------- | -------- | ------ |
-| request | HttpServletRequest | request请求 | 是       | /      |
-| id      | Long               | 数据源ID    | 是       | /      |
+| 名称    | 类型               | 是否必须 | 默认值 | 备注        |
+| ------- | ------------------ | -------- | ------ | ----------- |
+| request | HttpServletRequest | 是       | /      | request请求 |
+| id      | Long               | 是       | /      | 数据源ID    |
 
 返回参数： 
 
@@ -283,11 +283,11 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注        | 是否必须 | 默认值 |
-| ------- | ------------------ | ----------- | -------- | ------ |
-| request | HttpServletRequest | request请求 | 是       | /      |
-| id      | Long               | 数据源ID    | 是       | /      |
-| version | Long               | 版本ID      | 是       | /      |
+| 名称    | 类型               | 是否必须 | 默认值 | 备注        |
+| ------- | ------------------ | -------- | ------ | ----------- |
+| request | HttpServletRequest | 是       | /      | request请求 |
+| id      | Long               | 是       | /      | 数据源ID    |
+| version | Long               | 是       | /      | 版本ID      |
 
 返回参数： 
 
@@ -308,10 +308,10 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注        | 是否必须 | 默认值 |
-| ------- | ------------------ | ----------- | -------- | ------ |
-| request | HttpServletRequest | request请求 | 是       | /      |
-| id      | Long               | 数据源ID    | 是       | /      |
+| 名称    | 类型               | 是否必须 | 默认值 | 备注        |
+| ------- | ------------------ | -------- | ------ | ----------- |
+| request | HttpServletRequest | 是       | /      | request请求 |
+| id      | Long               | 是       | /      | 数据源ID    |
 
 返回参数： 
 
@@ -332,10 +332,10 @@
 
 请求参数： 
 
-| 名称             | 类型               | 备注         | 是否必须 | 默认值 |
-| ---------------- | ------------------ | ------------ | -------- | ------ |
-| request          | HttpServletRequest | request请求  | 是       | /      |
-| dataSourceTypeId | Long               | 数据源类型ID | 是       | /      |
+| 名称             | 类型               | 是否必须 | 默认值 | 备注         |
+| ---------------- | ------------------ | -------- | ------ | ------------ |
+| request          | HttpServletRequest | 是       | /      | request请求  |
+| dataSourceTypeId | Long               | 是       | /      | 数据源类型ID |
 
 返回参数： 
 
@@ -356,11 +356,11 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注        | 是否必须 | 默认值 |
-| ------- | ------------------ | ----------- | -------- | ------ |
-| request | HttpServletRequest | request请求 | 是       | /      |
-| type    | String             | 数据源类型  | 是       | /      |
-| id      | Long               | 数据源ID    | 是       | /      |
+| 名称    | 类型               | 是否必须 | 默认值 | 备注        |
+| ------- | ------------------ | -------- | ------ | ----------- |
+| request | HttpServletRequest | 是       | /      | request请求 |
+| type    | String             | 是       | /      | 数据源类型  |
+| id      | Long               | 是       | /      | 数据源ID    |
 
 返回参数： 
 
@@ -381,12 +381,12 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注        | 是否必须 | 默认值 |
-| ------- | ------------------ | ----------- | -------- | ------ |
-| request | HttpServletRequest | request请求 | 是       | /      |
-| type    | String             | 数据源类型  | 是       | /      |
-| id      | Long               | 数据源ID    | 是       | /      |
-| dbName  | String             | 数据库名    | 是       | /      |
+| 名称    | 类型               | 是否必须 | 默认值 | 备注        |
+| ------- | ------------------ | -------- | ------ | ----------- |
+| request | HttpServletRequest | 是       | /      | request请求 |
+| type    | String             | 是       | /      | 数据源类型  |
+| id      | Long               | 是       | /      | 数据源ID    |
+| dbName  | String             | 是       | /      | 数据库名    |
 
 返回参数： 
 
@@ -407,13 +407,13 @@
 
 请求参数： 
 
-| 名称      | 类型               | 备注        | 是否必须 | 默认值 |
-| --------- | ------------------ | ----------- | -------- | ------ |
-| request   | HttpServletRequest | request请求 | 是       | /      |
-| type      | String             | 数据源类型  | 是       | /      |
-| id        | Long               | 数据源ID    | 是       | /      |
-| dbName    | String             | 数据库名    | 是       | /      |
-| tableName | String             | 数据表      | 是       | /      |
+| 名称      | 类型               | 是否必须 | 默认值 | 备注        |
+| --------- | ------------------ | -------- | ------ | ----------- |
+| request   | HttpServletRequest | 是       | /      | request请求 |
+| type      | String             | 是       | /      | 数据源类型  |
+| id        | Long               | 是       | /      | 数据源ID    |
+| dbName    | String             | 是       | /      | 数据库名    |
+| tableName | String             | 是       | /      | 数据表      |
 
 返回参数： 
 
@@ -434,10 +434,10 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注        | 是否必须 | 默认值 |
-| ------- | ------------------ | ----------- | -------- | ------ |
-| request | HttpServletRequest | request请求 | 是       | /      |
-| vo      | FieldMappingVO     | 字段映射VO  | 是       | /      |
+| 名称    | 类型               | 是否必须 | 默认值 | 备注        |
+| ------- | ------------------ | -------- | ------ | ----------- |
+| request | HttpServletRequest | 是       | /      | request请求 |
+| vo      | FieldMappingVO     | 是       | /      | 字段映射VO  |
 
 返回参数： 
 
@@ -458,12 +458,12 @@
 
 请求参数： 
 
-| 名称    | 类型               | 备注         | 是否必须 | 默认值 |
-| ------- | ------------------ | ------------ | -------- | ------ |
-| request | HttpServletRequest | request请求  | 是       | /      |
-| engine  | String             | 引擎         | 是       | /      |
-| type    | String             | 数据源类型   | 是       | /      |
-| dir     | String             | 文件系统路径 | 是       | /      |
+| 名称    | 类型               | 是否必须 | 默认值 | 备注         |
+| ------- | ------------------ | -------- | ------ | ------------ |
+| request | HttpServletRequest | 是       | /      | request请求  |
+| engine  | String             | 是       | /      | 引擎         |
+| type    | String             | 是       | /      | 数据源类型   |
+| dir     | String             | 是       | /      | 文件系统路径 |
 
 返回参数： 
 
