@@ -81,6 +81,16 @@ CREATE TABLE `exchangis_project_info` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1497870871035973934 DEFAULT CHARSET=utf8;
 
+-- exchangis_v4.exchangis_project_user definition
+CREATE TABLE `exchangis_project_user` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) NOT NULL,
+  `priv_user` varchar(32) COLLATE utf8_bin DEFAULT NULL,
+  `priv` int(20) DEFAULT NULL,
+  `last_update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT
+
 -- exchangis_v4.exchangis_launchable_task definition
 DROP TABLE IF EXISTS `exchangis_launchable_task`;
 CREATE TABLE `exchangis_launchable_task` (
