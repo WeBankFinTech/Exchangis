@@ -34,7 +34,7 @@
 ![datasource_list](../../../images/zh_CN/ch1/datasource_list.png)
 
 <div align="center">
-图4-1 数据源管理列表
+图3-1 数据源管理列表
  </div>
 
 
@@ -45,7 +45,7 @@
 ![datasource_type](../../../images/zh_CN/ch1/datasource_type.png)
 
 <div align="center">
-图4-2 数据源类型
+图3-2 数据源类型
  </div>
 
 
@@ -54,7 +54,7 @@
 ![MySQL_datasource_config](../../../images/zh_CN/ch1/MySQL_datasource_config.png)
 
 <div align="center">
-图4-3 MySQL数据源配置
+图3-3 MySQL数据源配置
  </div>
 
 
@@ -63,7 +63,7 @@
 ![Hive_datasource_config](../../../images/zh_CN/ch1/Hive_datasource_config.png)
 
 <div align="center">
-图4-4 Hive数据源配置
+图3-4 Hive数据源配置
  </div>
 
 
@@ -74,14 +74,14 @@
 ![datasource_func](../../../images/zh_CN/ch1/datasource_func.png)
 
 <div align="center">
-图4-5 数据源发布功能
+图3-5 数据源发布功能
  </div>
 
 &emsp;&emsp;数据源管理的**过期**功能，用于提示此数据源已经逐渐要被替换，请及时更换使用该数据源的任务配置，避免直接删除数据源造成所配置的执行任务失效。
 ![datasource_timelimit](../../../images/zh_CN/ch1/datasource_timelimit.png)
 
 <div align="center">
-图4-6 数据源过期功能
+图3-6 数据源过期功能
  </div>
 
 ## 四、项目管理
@@ -93,29 +93,46 @@
 
 ![item_list](../../../images/zh_CN/ch1/item_list.png)
 <div align="center">
-图3-1 项目列表
+图4-1 项目列表
  </div>
 
-
 ### 2、任务列表
+
+进入项目，可以看到该项目下的任务列表。
+
+#### 1）任务管理
 
 &emsp;&emsp;任务列表中可以对创建的Job数据同步任务进行管理，与项目类似，包括**创建**，**修改**、**删除**和**搜索**。
 
 ![job_task_list](../../../images/zh_CN/ch1/job_task_list.png)
 <div align="center">
-图3-2 任务列表
+图4-2 任务列表
  </div>
 
-&emsp;&emsp;除此之外，**任务支持复制**，能够增加需要的任务，复制的任务包含其原任务配置的所有信息。点击**创建任务**，能够选择任务类型和执行引擎，**目前仅支持离线任务和SQOOP执行引擎**，未来将会支持流式任务和DataX引擎等。
+&emsp;&emsp;点击**创建任务**，能够选择任务类型和执行引擎，**目前仅支持离线任务和SQOOP执行引擎**，未来将会支持流式任务和DataX引擎等。
 
 ![task_type_and_engine](../../../images/zh_CN/ch1/task_type_and_engine.png)
 <div align="center">
-图3-3 任务类型和引擎配置
- </div>
+图4-3 任务类型和引擎配置
+</div>
 
-### 3、数据同步任务配置和执行
+#### 2）子任务管理
 
-&emsp;&emsp;数据同步任务配置和执行是Exchangis1.0的核心功能，基本配置数据同步流程为：**添加子任务->选择源数据源库表和目的数据源库表（在数据源管理模块添加好数据源以供选择）->字段映射（可默认）->过程控制（可默认）->配置（可默认）->执行**。
+&emsp;&emsp;在任务中点击**添加子任务**，可以添加多个子任务，支持对子任务的**修改、复制和删除**
+
+&emsp;&emsp;同时也支持**任务支持复制**，复制的子任务包含其原子任务配置的所有信息。
+
+![1656571126825](../../../images/zh_CN/ch1/sub_task_manage.png)
+
+<div align="center">
+图4-4 子任务管理
+</div>
+
+#### 3）数据同步任务配置和执行
+
+&emsp;&emsp;进行该步骤前，需要预先在**数据源管理模块**添加好数据源以供选择，并进行**发布**，当前Exchangis版本仅支持**MySQL数据源和Hive数据源**。
+
+&emsp;&emsp;数据同步任务配置和执行是Exchangis1.0.0的核心功能，基本配置数据同步流程为：**添加子任务 -> 选择Source数据源和Sink数据源 -> 字段映射配置 -> 过程控制 -> 任务配置 -> 保存 -> 执行**。
 
 任务执行主要功能包括：
 1.	子任务卡片的添加，复制和删除；
@@ -128,30 +145,49 @@
 8.	任务执行历史状态查看；
 9.	执行任务kill操作。
 
-### 4、数据源选择和配置
+##### 数据源选择和配置
 
-&emsp;&emsp;点击**添加子任务**开始创建一个数据同步任务，对于新创建的数据同步子任务，首先要进行数据源库表的选择，数据源要在**数据源管理模块**中提前配置好，才会在任务配置中出现。数据源选择支持搜索，搜索方式为先搜索库，再搜索表。
-
-![add_subtask](../../../images/zh_CN/ch1/add_subtask.png)
-<div align="center">
-图3-4 添加子任务
- </div>
+&emsp;&emsp;对于新创建的数据同步子任务，要进行数据源库表的选择，选择的数据源为在**数据源模块**中已发布的数据源。数据源选择支持搜索，搜索方式为先搜索库，再搜索表。
 
 &emsp;&emsp;MySQL为目的地数据源时，支持**插入**和**更新**两种写入方式；为源数据源时，支持**WHERE条件语句查询**。
 
 &emsp;&emsp;Hive为目的地数据源时，支持分区信息配置，写入方式为**追加数据**和**覆盖**两种；为源数据源时，支持**分区信息配置**。
 
-### 5、数据源字段映射
+![add_subtask](../../../images/zh_CN/ch1/data_source_select.png)
+<div align="center">
+图4-5 选择数据源
+ </div>
 
-&emsp;&emsp;当配置完成数据源库表信息时，Exchangis1.0会自动在**字段映射**一行生成原数据源和目的数据源的字段自动映射，并且可以自行选择想要映射的字段；当HIVE为目的地数据源时，其映射字段不可修改，这点要注意。
+ ![1656574588669](../../../images/zh_CN/ch1/data_source_insert_way.png)
 
-### 6、过程控制
+<div align="center">
+图4-6 写入方式配置
+ </div>
 
-&emsp;&emsp;任务执行提供对任务的最大并行数配置，以及作业最大内存配置，可根据实际需要进行更改。
+##### 数据源字段映射
 
-### 7、作业执行
+&emsp;&emsp;当配置完成数据源库表信息时，Exchangis1.0.0会自动进行Source数据源和Sink数据源的字段映射，并且可以自行选择想要映射的字段，也可以用来检查我们的字段是否匹配；当Hive为Sink数据源时，其映射字段不可修改。
 
-&emsp;&emsp;Exchangis1.0支持多个子任务同时执行，任务配置完成后，点击执行，即开始数据同步任务，界面下方会弹出工作台，工作台主要包含三个部分功能：**运行情况、实时日志和执行历史**；
+![1656574253553](../../../images/zh_CN/ch1/data_source_field_mapping.png)
+
+<div align="center">
+图4-7 字段映射
+ </div>
+
+##### 过程控制
+
+&emsp;&emsp;任务执行提供**作业最大并行数**配置（默认为1个），以及**作业最大内存**配置（默认为1024Mb），可根据实际需要进行更改。
+
+![1656574125954](../../../images/zh_CN/ch1/task_proccess_control.png)
+
+<div align="center">
+图4-8 过程控制
+ </div>
+
+#### 4）作业执行
+
+&emsp;&emsp;Exchangis1.0支持多个子任务同时执行，任务配置完成后，点击执行，即开始数据同步任务，界面下方会弹出工作台，工作台主要包含三个部分功能：**运行情况、实时日志和执行历史**。
+
 &emsp;&emsp;**运行情况**能够查看当前数据同步任务整体进度，包含task成功和失败的数量等，以及点击task的名字，能够展示每个task的各项运行指标信息。
 
 &emsp;&emsp;**实时日志**主要展示的内容包含两大类，一是整个导数job的日志，能够输出每个task的状态日志，例如task是否被调度，是否运行中等；二是每个task的日志，输出的是各自相应的导数日志。在实时日志中能够根据关键字和忽略字进行日志筛选，并别提供获取最后n行日志功能；还可以对Error、Warning和Info不同类型的日志进行筛选展示，只需点击相应的按钮即可。
@@ -259,4 +295,8 @@ Exchangis Appconn主要支持以下功能：
 &emsp;&emsp;点击命名空间的下拉框，切换到**生产中心**，可以看到所有项目的工作流的日志，可以查看每个工作流调度的状态
 
 ![production_center](../../../images/zh_CN/ch1/production_center.png)
+
+<div align="center">
+图6-8 生产中心
+ </div>
 
