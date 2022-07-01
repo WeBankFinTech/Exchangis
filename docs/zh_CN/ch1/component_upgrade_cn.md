@@ -64,17 +64,9 @@ cd {DSS_INSTALL_HOME}/dss/bin
 sh ./appconn-refresh.sh
 ```
 
-#### 4.2）验证exchangis-appconn是否生效
-在安装部署完成exchangis-appconn之后，可通过以下步骤初步验证exchangis-appconn是否安装成功。
-1.	在DSS工作空间创建一个新的项目
-![image](https://user-images.githubusercontent.com/27387830/169782142-b2fc2633-e605-4553-9433-67756135a6f1.png)
+#### 4.2）更新Exchangis安装目录下的lib包
 
-2.	在exchangis端查看是否同步创建项目，创建成功说明appconn安装成功
-![image](https://user-images.githubusercontent.com/27387830/169782337-678f2df0-080a-495a-b59f-a98c5a427cf8.png)
-
-#### 4.3）更新Exchangis安装目录下的lib包
-
-将从下载连接中得到的exchangis-project-server-1.0.0.jar和exchangis-server-1.0.0.jar两个包放入以下Exchangis安装目录的文件路径下(先删除原有旧的这两个包)：
+将从下载链接中得到的exchangis-project-server-1.0.0.jar和exchangis-server-1.0.0.jar两个包放入以下Exchangis安装目录的文件路径下(先删除原有旧的这两个包)：
 
 ```$xslt
 lib/exchangis-server
@@ -85,5 +77,21 @@ lib/exchangis-server
    ```shell script
    ./sbin/daemon.sh restart server
    ```
+# 4.3）更新exchangis-server.propertis文件
+
+将exchangis-server.propertis文件中的最后一行进行替换，替换内容如下
+
+```$xslt
+wds.linkis-session.ticket.key=bdp-user-ticket-id
+```
+
+#### 4.3）验证exchangis-appconn是否生效
+在安装部署完成exchangis-appconn之后，可通过以下步骤初步验证exchangis-appconn是否安装成功。
+1.	在DSS工作空间创建一个新的项目
+![image](https://user-images.githubusercontent.com/27387830/169782142-b2fc2633-e605-4553-9433-67756135a6f1.png)
+
+2.	在exchangis端查看是否同步创建项目，创建成功说明appconn安装成功
+![image](https://user-images.githubusercontent.com/27387830/169782337-678f2df0-080a-495a-b59f-a98c5a427cf8.png)
+
 
  更多使用操作可参照[Exchangis1.0用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
