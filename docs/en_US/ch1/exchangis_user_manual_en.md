@@ -34,7 +34,7 @@ The main functions of data source are as follows ：
 ![datasource_list](../../../images/zh_CN/ch1/datasource_list.png)
 
 <div align="center">
-Pic4-1 Datasource management list
+Pic3-1 Datasource management list
  </div>
 
 
@@ -45,7 +45,7 @@ Pic4-1 Datasource management list
 ![datasource_type](../../../images/zh_CN/ch1/datasource_type.png)
 
 <div align="center">
-Pic4-2 Datasource type
+Pic3-2 Datasource type
  </div>
 
 
@@ -54,7 +54,7 @@ Pic4-2 Datasource type
 ![MySQL_datasource_config](../../../images/zh_CN/ch1/MySQL_datasource_config.png)
 
 <div align="center">
-Pic4-3 MySQL datasource config
+Pic3-3 MySQL datasource config
  </div>
 
 
@@ -63,7 +63,7 @@ Pic4-3 MySQL datasource config
 ![Hive_datasource_config](../../../images/zh_CN/ch1/Hive_datasource_config.png)
 
 <div align="center">
-Pic4-4 Hive datasource config
+Pic3-4 Hive datasource config
  </div>
 
 
@@ -74,14 +74,14 @@ Pic4-4 Hive datasource config
 ![datasource_func](../../../images/zh_CN/ch1/datasource_func.png)
 
 <div align="center">
-Pic4-5 Datasource release
+Pic3-5 Datasource release
  </div>
 
 &emsp;&emsp;The **expired ** function of data source management is used to indicate that this data source has been gradually replaced. Please change the task configuration using this data source in time to avoid the failure of the configured execution task caused by directly deleting the data source. 
 ![datasource_timelimit](../../../images/zh_CN/ch1/datasource_timelimit.png)
 
 <div align="center">
-Pic4-6 Datasource expiration
+Pic3-6 Datasource expiration
  </div>
 
 ## 四、Project management
@@ -92,29 +92,47 @@ Pic4-6 Datasource expiration
 
 ![item_list](../../../images/zh_CN/ch1/item_list.png)
 <div align="center">
-Pic3-1 Project list
+Pic4-1 Project list
  </div>
 
 
 ### 2、Task list
 
-&emsp;&emsp; You can manage the created Job data synchronization tasks in the task list, similar to projects, including **Create**, **Modify**, **Delete** and **Search**. 
+&emsp;&emsp;Enter the project, and you can see the task list under the project. 
+
+#### 1）Task manage
+
+&emsp;&emsp;You can manage the created Job data synchronization tasks in the task list, similar to projects, including **Create**, **Modify**, **Delete** and **Search**. 
 
 ![job_task_list](../../../images/zh_CN/ch1/job_task_list.png)
 <div align="center">
-Pic3-2 Task list
+Pic4-2 Task list
  </div>
 
-&emsp;&emsp; In addition, the **task supports copying**, which can increase the required tasks. The copied task contains all the information of its original task configuration. Click **Create Task** to select the task type and execution engine. **Currently, only offline tasks and SQOOP execution engine** are supported, and streaming tasks and DataX engines will be supported in the future. 
+&emsp;&emsp;  Click **Create Task** to select the task type and execution engine. **Currently, only offline tasks and SQOOP execution engine** are supported, and streaming tasks and DataX engines will be supported in the future. 
 
 ![task_type_and_engine](../../../images/zh_CN/ch1/task_type_and_engine.png)
 <div align="center">
-Pic3-3 Task type and Engine config
+Pic4-3 Task type and Engine config
  </div>
 
-### 3、Synchronize data task configuration and execution 
+#### 2）Subtasks manage
 
-&emsp;&emsp; Data synchronization task configuration and execution is the core function of Exchangis1.0. The basic configuration data synchronization process is: **Add subtasks-> Select source data source database table and destination data source database table (add data source in data source management module for selection)-> Field mapping (default)-> Process control (default)-> Configuration (default)-> Execute**. 
+&emsp;&emsp;Click **Add subtask** in the task to add multiple subtasks. You can **modify, copy and delete subtasks**.
+
+&emsp;&emsp; At the same time, **tasks support copying**, and copied subtasks contain all information of their atomic task configuration. 
+
+![1656571126825](../../../images/zh_CN/ch1/sub_task_manage.png)
+
+<div align="center">
+Pic4-4 Subtask manage
+</div>
+
+#### 3）Synchronize data task configuration and execution 
+
+&emsp;&emsp;Before this step, you need to add data sources in the **data source management module** for selection and **publish**. The current Exchangis version only supports **MySQL data sources and Hive data sources **. 
+
+&emsp;&emsp;Data synchronization task configuration and execution is the core function of Exchangis1.0.0. The basic configuration data synchronization process is: **Add subtask-> Select Source data source and Sink data source-> Field mapping configuration-> Process control-> Task configuration-> Save-> Execute**. 
 
 The main functions of task execution include: 
 1.	 Add, copy and delete subtask cards ；
@@ -127,28 +145,46 @@ The main functions of task execution include:
 8.	 Task execution history status view ；
 9.	 Execute the task kill operation. 
 
-### 4、Selecting and configuring data sources 
+##### Selecting and configuring data sources 
 
-&emsp;&emsp;Click **Add Sub-task** to start creating a data synchronization task. For the newly created data synchronization sub-task, you must first select the data source library table. The data source must be configured in advance in the **data source management module** before it will appear in the task configuration. Select the data source to support search, and the search method is to search the library first, and then search the table.
-
-![add_subtask](../../../images/zh_CN/ch1/add_subtask.png)
-<div align="center">
-Pic3-4 Add sub-task
- </div>
+&emsp;&emsp;For the newly created data synchronization subtask, you should select the data source library table, and the selected data source is the published data source in the **data source module**. Select the data source to support search, and the search method is to search the library first, and then search the table. 
 
 &emsp;&emsp;When MySQL is the destination data source, it supports **insert** and **update** two writing methods; When it is the source data source, it supports **WHERE conditional statement query**.
 
-&emsp;&emsp; When Hive is the destination data source, partition information configuration is supported, and the writing methods are **append data** and **overwrite**; When the source data source is **partition information configuration is supported**.
+&emsp;&emsp;When Hive is the destination data source, partition information configuration is supported, and the writing methods are **append data** and **overwrite**; When the source data source is **partition information configuration is supported**.
 
-### 5、Datasource field mapping 
+![add_subtask](../../../images/zh_CN/ch1/data_source_select.png)
+<div align="center">
+Pic4-5 Select datasource
+ </div>
 
-&emsp;&emsp; When the data source library table information is configured, Exchangis1.0 will automatically generate automatic field mapping between the original data source and the destination data source in the **field mapping** line, and you can choose the field you want to map; When HIVE is the destination data source, its mapping field cannot be modified, which should be noted. 
+![1656574588669](../../../images/zh_CN/ch1/data_source_insert_way.png)
 
-### 6、Process control
+<div align="center">
+Pic4-6 Write mode configuration
+ </div>
 
-&emsp;&emsp; Task execution provides the configuration of the maximum parallel number of tasks and the maximum memory configuration of jobs, which can be changed according to actual needs. 
+##### Datasource field mapping 
 
-### 7、Job execution 
+&emsp;&emsp;When the data Source library table information is configured, Exchangis1.0.0 will automatically map the fields of source data source and Sink data source, and you can choose the fields you want to map by yourself, or check whether our fields match. When Hive is a Sink data source, its mapping field cannot be modified. 
+
+![1656574253553](../../../images/zh_CN/ch1/data_source_field_mapping.png)
+
+<div align="center">
+Pic4-7 Field mapping
+ </div>
+
+##### Process control
+
+&emsp;&emsp;Task execution provides **configuration of maximum number of parallel jobs** (default is 1) and **configuration of maximum job memory** (default is 1024Mb), which can be changed according to actual needs. 
+
+![1656574125954](../../../images/zh_CN/ch1/task_proccess_control.png)
+
+<div align="center">
+Pic4-8 Process control
+ </div>
+
+#### 4）Job execution 
 
 &emsp;&emsp;Exchangis1.0  support the simultaneous execution of multiple subtasks. After the task configuration is completed, click Execute to start the data synchronization task, and the workbench will pop up at the bottom of the interface. The workbench mainly contains three functions: **running status, real-time log and execution history** .
 &emsp;&emsp; **Running Status** :You can view the overall progress of the current data synchronization task, including the number of successes and failures of the task, and click on the name of the task to display the information of various running indicators of each task. 
@@ -261,4 +297,8 @@ Note: For data synchronization tasks performed in sqoop node of DSS, relevant in
 &emsp;&emsp;Click the drop-down box in the namespace and switch to **Production Center **, where you can see the workflow logs of all projects and check the scheduling status of each workflow. 
 
 ![production_center](../../../images/zh_CN/ch1/production_center.png)
+
+<div align="center">
+Pic6-8 Production center 
+ </div>
 
