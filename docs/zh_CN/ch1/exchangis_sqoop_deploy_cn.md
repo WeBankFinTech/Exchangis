@@ -22,8 +22,7 @@ Sqoop引擎主要依赖Hadoop基础环境，如果该节点需要部署Sqoop引�
 | Linkis系统参数              | 参数                            | 备注                                                         |
 | --------------------------- | ------------------------------- | ------------------------------------------------------------ |
 | wds.linkis.hadoop.site.xml  | 设置sqoop加载hadoop参数文件位置 | 必须，参考示例："/etc/hadoop/conf/core-site.xml;/etc/hadoop/conf/hdfs-site.xml;/etc/hadoop/conf/yarn-site.xml;/etc/hadoop/conf/mapred-site.xml" |
-| sqoop.fetch.status.interval | 设置获取sqoop执行状态的间隔时间 | 非必须，默认值为5s    
-
+| sqoop.fetch.status.interval | 设置获取sqoop执行状态的间隔时间 | 非必须，默认值为5s                                           |
 ### 安装包准备
 #### 1）下载二进制包
 
@@ -43,30 +42,31 @@ mvn clean install
 ```
 然后会在该路径下找到sqoop引擎安装包
 ```
-{EXCHANGIS_CODE_HOME}/exchangis-plugins/sqoop/target/out/sqoop
+{EXCHANGIS_CODE_HOME}/exchangis-plugins/sqoop/target/out
 ```
 
 
 ### 开始部署
 #### 1）sqoop引擎安装
-1.拿到打包出来的sqoop.zip物料包
+1.拿到打包出来的sqoop物料包，目录结构为：
 
-2.放置到如下目录并进行解压
+```shell
+sqoop
+-- dist
+-- plugin
 ```
+
+2.放置到linkis安装路径的如下目录
+
+```shell
 cd {LINKIS_HOME}/linkis/lib/linkis-engineconn-plugins
-unzip.zip
-```
-解压出来的目录结构为：
-```
-dist
-plugin
 ```
 (注意，看当前sqoop引擎对哪些用户有权限，不一定是root)
 
 
 #### 2）重启linkis-engineplugin服务使sqoop引擎生效
-新加入linkis的引擎都要重启linkis的engineplugin服务才会生效，重启脚本为linkis安装目录下的./linkis-daemon.sh，具体步骤如下
-```
+新加入linkis的引擎都要重启linkis的engineplugin服务才会生效，重启脚本为linkis安装目录下的./sbin/linkis-daemon.sh，具体步骤如下
+```shell
 cd {LINKIS_INSTALL_HOME}/links/sbin/
 ./linkis-daemon.sh restart cg-engineplugin
 ```
