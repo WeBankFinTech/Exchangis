@@ -607,7 +607,9 @@ export default {
                     this.activeIndex = 0;
                     this.curTask = this.list[this.activeIndex];
                     this.addEnable = this.curTask.transforms.addEnable;
+
                     this.updateSourceInfo(this.curTask, true)
+
                     // this.updateSinkInfo(this.curTask); 当sink和source都有值的时候,请求的结果是一致的,所以省去一次多余重复请求
                 }
             } catch (error) {
