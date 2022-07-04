@@ -140,10 +140,10 @@ DATABASE={dbName}
 
 #### 2.5.1 执行一键安装脚本
 
-执行 `install.sh` 脚本，完成一键安装部署：
+在sbin目录下执行 `install.sh` 脚本，完成一键安装部署：
 
 ```shell script
- sh sbin/install.sh
+./install.sh
 ```
 
 #### 2.5.2 安装步骤
@@ -158,16 +158,16 @@ DATABASE={dbName}
 
 #### 2.5.3 启动服务
 
-第一次启动，可以执行以下命令，启动 Exchangis Server：
+第一次启动，可以sbin目录下执行以下命令，启动 Exchangis Server：
 
 ```shell script
-  sh sbin/daemon.sh start server
+./daemon.sh start server
 ```
 
-您也可以使用以下命令完成 Exchangis Server 的完成重启：
+您也可以使用以下命令在sbin目录下完成 Exchangis Server 的重启：
 
 ```shell script
-./sbin/daemon.sh restart server
+./daemon.sh restart server
 ```
 
 执行完成启动脚本后，会出现以下提示，eureka地址也会在启动服务时在控制台打出：
@@ -265,7 +265,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
   nginx -s reload
 ```
 
-请通过 http://${EXCHANGIS_INSTALL_IP}:{PORT}/#/projectManage 访问 Exchangis 前端页面，出现以下界面，说明exchangis安装前端成功，如果要真正试用exchangis，需要安装dss和linkis，通过dss进行免密登录，如下图所示：
+请通过 http://${EXCHANGIS_INSTALL_IP}:{EXCHANGIS_INSTALL_PORT}/#/projectManage 访问 Exchangis 前端页面，出现以下界面，说明exchangis安装前端成功，如果要真正试用exchangis，需要安装dss和linkis，通过dss进行免密登录，如下图所示：
 
 ![image](https://user-images.githubusercontent.com/27387830/170417473-af0b4cbe-758e-4800-a58f-0972f83d87e6.png)
 
