@@ -22,8 +22,7 @@ Sqoop引擎主要依赖Hadoop基础环境，如果该节点需要部署Sqoop引�
 | Linkis系统参数              | 参数                            | 备注                                                         |
 | --------------------------- | ------------------------------- | ------------------------------------------------------------ |
 | wds.linkis.hadoop.site.xml  | 设置sqoop加载hadoop参数文件位置 | 必须，参考示例："/etc/hadoop/conf/core-site.xml;/etc/hadoop/conf/hdfs-site.xml;/etc/hadoop/conf/yarn-site.xml;/etc/hadoop/conf/mapred-site.xml" |
-| sqoop.fetch.status.interval | 设置获取sqoop执行状态的间隔时间 | 非必须，默认值为5s    
-
+| sqoop.fetch.status.interval | 设置获取sqoop执行状态的间隔时间 | 非必须，默认值为5s                                           |
 ### 安装包准备
 #### 1）下载二进制包
 
