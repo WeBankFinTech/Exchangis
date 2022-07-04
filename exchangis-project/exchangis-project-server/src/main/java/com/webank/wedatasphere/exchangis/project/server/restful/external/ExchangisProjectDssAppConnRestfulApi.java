@@ -53,7 +53,6 @@ public class ExchangisProjectDssAppConnRestfulApi {
             }
             long projectIdd = projectService.createProject(projectVo, username);
             String projectId = String.valueOf(projectIdd);
-            System.out.println(projectId);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectId));
