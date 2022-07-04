@@ -64,8 +64,8 @@ public class ProjectImportServerImpl implements IProjectImportService {
         Long projectId = Long.parseLong("111111");
         String projectVersion = (String) params.get("projectVersion");
         String flowVersion = (String) params.get("flowVersion");
-        String versionSuffix = projectVersion;
-        LOG.info("resourceId: {}, projectId: {}, versionSuffix: {}, version: {}, userName: {}", resourceId, projectId, versionSuffix, version, userName);
+        String versionSuffix = projectVersion + "_" + flowVersion;
+        LOG.info("resourceId: {}, projectId: {}, versionSuffix: {}, version: {}, userName: {}, flowVersion: {}", resourceId, projectId, versionSuffix, version, userName, flowVersion);
         BmlClient bmlClient = BmlClientFactory.createBmlClient(userName);
         BmlDownloadResponse bmlDownloadResponse = bmlClient.downloadShareResource(userName, resourceId, version);
         LOG.info("bmlDownloadResponse: {}", bmlDownloadResponse);
