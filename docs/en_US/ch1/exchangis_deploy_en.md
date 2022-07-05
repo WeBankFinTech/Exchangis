@@ -40,11 +40,13 @@ Please keep the deployment user of Exchangis consistent with that of Linkis, for
 
 #### 1.3 在linkis中为exchangis加专用token
 
-Add special token to exchangis in linkis:
+###### 1）Add special token to exchangis in linkis:
 
 ```sql
 INSERT INTO `linkis_mg_gateway_auth_token`(`token_name`,`legal_users`,`legal_hosts`,`business_owner`,`create_time`,`update_time`,`elapse_day`,`update_by`) VALUES ('EXCHANGIS-AUTH','*','*','BDP',curdate(),curdate(),-1,'LINKIS');
 ```
+
+###### 2）Authentication of hive data source for exchangis 
 
 Insert hive data source environment configuration by executing the following sql statement in linkis database. Note that ${HIVE_METADATA_IP} and ${HIVE_METADATA_PORT} in the statement need to be modified before execution, for example:${HIVE_METADATA_IP}=127.0.0.1，${HIVE_METADATA_PORT}=3306：
 
@@ -52,6 +54,8 @@ Insert hive data source environment configuration by executing the following sql
 INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境SIT', '开发环境SIT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
 INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境UAT', '开发环境UAT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
 ```
+
+If the hive data source needs kerberos authentication when deployed, you need to specify a parameter keyTab in the parameter field of the Linkis_ps_dm_datasource_env table, and the way to obtain its value can be seen: [Setting and authenticating hive data source in linkis](https://linkis.apache.org/zh-CN/docs/1.1.1/deployment/start_metadatasource). 
 
 #### 1.4  Underlying component checking 
 
