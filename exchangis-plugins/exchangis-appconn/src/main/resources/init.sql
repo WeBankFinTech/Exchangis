@@ -16,7 +16,7 @@ VALUES (@dss_appconn_exchangis_id, 'DEV', 'http://APPCONN_INSTALL_IP:APPCONN_INS
 select @exchangis_menuId:=id from `dss_workspace_menu` where `name` = "数据交换";
 INSERT INTO `dss_workspace_menu_appconn` (`appconn_id`, `menu_id`, `title_en`, `title_cn`, `desc_en`, `desc_cn`, `labels_en`, `labels_cn`, `is_active`, `access_button_en`, `access_button_cn`, `manual_button_en`, `manual_button_cn`, `manual_button_url`, `icon`, `order`, `create_by`, `create_time`, `last_update_time`, `last_update_user`, `image`)
  VALUES(@dss_appconn_exchangis_id,@exchangis_menuId,'Exchangis','Exchangis','Exchangis',''
- ,'exchangis, statement','数据交换,数据源','1','enter Exchangis','进入Exchangis','user manual','用户手册','/manual_url','shujukeshihua-logo',NULL,NULL,NULL,NULL,NULL,'shujukeshihua-icon');
+ ,'exchangis, statement','数据交换,数据源','1','enter Exchangis','进入Exchangis','user manual','用户手册','http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/#/projectManage','shujukeshihua-logo',NULL,NULL,NULL,NULL,NULL,'shujukeshihua-icon');
 
 select @dss_exchangis_sqoopId:=id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop';
 delete from `dss_workflow_node`  where `node_type` like '%exchangis%';
