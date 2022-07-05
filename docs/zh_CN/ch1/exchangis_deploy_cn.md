@@ -11,16 +11,16 @@ Exchangis 的安装，主要分为以下四步：
 
 #### 1.1 基础软件安装
 
-| 依赖的组件 | 是否必装 | 安装直通车 |
-| -------------- | ------ | --------------- |
-| MySQL (5.5+) | 必装  | [如何安装mysql](https://www.runoob.com/mysql/mysql-install.html) |
-| JDK (1.8.0_141) | 必装 | [如何安装JDK](https://www.runoob.com/java/java-environment-setup.html) |
+| 依赖的组件                                 | 是否必装 | 安装直通车 |
+|---------------------------------------| ------ | --------------- |
+| MySQL (5.5+)                          | 必装  | [如何安装mysql](https://www.runoob.com/mysql/mysql-install.html) |
+| JDK (1.8.0_141)                       | 必装 | [如何安装JDK](https://www.runoob.com/java/java-environment-setup.html) |
 | Hadoop(2.7.2，Hadoop 其他版本需自行编译 Linkis) | 必装 | [Hadoop单机部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) ；[Hadoop分布式部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
-| Hive(2.3.3，Hive 其他版本需自行编译 Linkis) | 必装 | [Hive快速安装](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
-| SQOOP (1.4.6) | 必装 | [如何安装Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
-| DSS1.0.1 | 必装 | [如何安装DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/DSS%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3.md) |
-| Linkis1.1.1 | 必装 | [如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
-| Nginx | 必装 | [如何安装 Nginx](http://nginx.org/en/linux_packages.html) |
+| Hive(2.3.3，Hive 其他版本需自行编译 Linkis)     | 必装 | [Hive快速安装](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
+| SQOOP (1.4.6)                         | 必装 | [如何安装Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
+| DSS1.1.0                              | 必装 | [如何安装DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/DSS%26Linkis%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3%E5%8D%95%E6%9C%BA%E7%89%88.md) |
+| Linkis1.1.1                           | 必装 | [如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
+| Nginx                                 | 必装 | [如何安装 Nginx](http://nginx.org/en/linux_packages.html) |
 
 底层依赖组件检查
 
@@ -28,7 +28,7 @@ $\color{#FF0000}{注意：一定要使用最新版的dss1.1.0，及linkis1.1.1}$
 
 [linkis1.1.1代码地址](https://github.com/apache/incubator-linkis/tree/release-1.1.1)    
 
-[DSS1.0.1代码地址](https://github.com/WeBankFinTech/DataSphereStudio/tree/dev-1.1.0)
+[DSS1.1.0代码地址](https://github.com/WeBankFinTech/DataSphereStudio/tree/dev-1.1.0)
 
 datasource启用
 
@@ -50,7 +50,7 @@ INSERT INTO `linkis_mg_gateway_auth_token`(`token_name`,`legal_users`,`legal_hos
 
 ###### 2）为exchangis加hive数据源的认证
 
-通过在linkis数据库中执行以下sql语句，插入hive数据源环境配置，注意，执行前需要修改语句中的${HIVE_METADATA_IP}和${HIVE_METADATA_PORT}，例如${HIVE_METADATA_IP}=127.0.0.1，${HIVE_METADATA_PORT}=3306：
+通过在linkis数据库中执行以下sql语句，插入hive数据源环境配置，注意，执行前需要修改语句中的\$\{HIVE_METADATA_IP\}和\$\{HIVE_METADATA_PORT\}，例如\$\{HIVE_METADATA_IP\}=127.0.0.1，\$\{HIVE_METADATA_PORT\}=3306：
 
 ```
 INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境SIT', '开发环境SIT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
@@ -61,7 +61,7 @@ INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_t
 
 #### 1.4 底层依赖组件检查
 
-**请确保 DSS1.0.1 与 Linkis1.1.1 基本可用，可在 DSS 前端界面执行 HiveQL 脚本，可正常创建并执行 DSS 工作流。**
+**请确保 DSS1.1.0 与 Linkis1.1.1 基本可用，可在 DSS 前端界面执行 HiveQL 脚本，可正常创建并执行 DSS 工作流。**
 
 
 ## 2. Exchangis 安装部署
