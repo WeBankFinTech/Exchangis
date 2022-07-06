@@ -26,7 +26,7 @@ Sqoop引擎主要依赖Hadoop基础环境，如果该节点需要部署Sqoop引�
 ### 安装包准备
 #### 1）下载二进制包
 
-Exchangis1.0.0和Linkis 1.1.0支持的主流Sqoop版本1.4.6与1.4.7，更高版本可能需要修改部分代码重新编译。
+Exchangis1.0.0和Linkis 1.1.1支持的主流Sqoop版本1.4.6与1.4.7，更高版本可能需要修改部分代码重新编译。
 
 [点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.0.0)
 
