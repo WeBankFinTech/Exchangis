@@ -11,24 +11,24 @@ Exchangis installation is mainly divided into the following four steps ：
 
 #### 1.1 Basic software installation 
 
-| Dependent components | Must be installed | Install through train |
-| -------------- | ------ | --------------- |
-| MySQL (5.5+) | yes | [How to install mysql](https://www.runoob.com/mysql/mysql-install.html) |
-| JDK (1.8.0_141) | yes | [How to install JDK](https://www.runoob.com/java/java-environment-setup.html) |
+| Dependent components                                                         | Must be installed | Install through train |
+|------------------------------------------------------------------------------| ------ | --------------- |
+| MySQL (5.5+)                                                                 | yes | [How to install mysql](https://www.runoob.com/mysql/mysql-install.html) |
+| JDK (1.8.0_141)                                                              | yes | [How to install JDK](https://www.runoob.com/java/java-environment-setup.html) |
 | Hadoop(2.7.2，Other versions of Hadoop need to compile Linkis by themselves.) | yes | [Hadoop stand-alone deployment](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) ；[Hadoop distributed deployment](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
-| Hive(2.3.3，Other versions of Hive need to compile Linkis by themselves.) | yes | [Hive quick installation](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
-| SQOOP (1.4.6) | yes | [How to install Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
-| DSS1.0.1 | yes | [How to install DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/DSS%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3.md) |
-| Linkis1.1.0 | yes | [How to install Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
-| Nginx | yes | [How to install Nginx](http://nginx.org/en/linux_packages.html) |
+| Hive(2.3.3，Other versions of Hive need to compile Linkis by themselves.)     | yes | [Hive quick installation](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
+| SQOOP (1.4.6)                                                                | yes | [How to install Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
+| DSS1.1.0                                                                     | yes | [How to install DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/DSS%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3.md) |
+| Linkis1.1.1                                                                  | yes | [How to install Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
+| Nginx                                                                        | yes | [How to install Nginx](http://nginx.org/en/linux_packages.html) |
 
 Underlying component checking 
 
-$\color{#FF0000}{Note: be sure to reinstall dss1.0.1, and the linkis version must be greater than 1.1.1. Please recompile linkis and use the package released on June 15th }$
+$\color{#FF0000}{Note: be sure to reinstall dss1.1.0, and the linkis version must be greater than 1.1.1. Please recompile linkis and use the package released on June 15th }$
 
 [linkis1.1.1 code address ](https://github.com/apache/incubator-linkis/tree/release-1.1.1)    
 
-[DSS1.0.1 code address ](https://github.com/WeBankFinTech/DataSphereStudio/tree/dev-1.1.0)
+[DSS1.1.0 code address ](https://github.com/WeBankFinTech/DataSphereStudio/tree/dev-1.1.0)
 
 datasource enabled 
 
@@ -40,11 +40,13 @@ Please keep the deployment user of Exchangis consistent with that of Linkis, for
 
 #### 1.3 在linkis中为exchangis加专用token
 
-Add special token to exchangis in linkis:
+###### 1）Add special token to exchangis in linkis:
 
 ```sql
 INSERT INTO `linkis_mg_gateway_auth_token`(`token_name`,`legal_users`,`legal_hosts`,`business_owner`,`create_time`,`update_time`,`elapse_day`,`update_by`) VALUES ('EXCHANGIS-AUTH','*','*','BDP',curdate(),curdate(),-1,'LINKIS');
 ```
+
+###### 2）Authentication of hive data source for exchangis 
 
 Insert hive data source environment configuration by executing the following sql statement in linkis database. Note that ${HIVE_METADATA_IP} and ${HIVE_METADATA_PORT} in the statement need to be modified before execution, for example:${HIVE_METADATA_IP}=127.0.0.1，${HIVE_METADATA_PORT}=3306：
 
@@ -53,9 +55,11 @@ INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_t
 INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境UAT', '开发环境UAT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
 ```
 
+If the hive data source needs kerberos authentication when deployed, you need to specify a parameter keyTab in the parameter field of the Linkis_ps_dm_datasource_env table, and the way to obtain its value can be seen: [Setting and authenticating hive data source in linkis](https://linkis.apache.org/zh-CN/docs/1.1.1/deployment/start_metadatasource). 
+
 #### 1.4  Underlying component checking 
 
-Please ensure that DSS1.0.1 and Linkis1.1.0 are basically available. HiveQL scripts can be executed in the front-end interface of DSS, and DSS workflows can be created and executed normally. 
+Please ensure that DSS1.1.0 and Linkis1.1.1 are basically available. HiveQL scripts can be executed in the front-end interface of DSS, and DSS workflows can be created and executed normally. 
 
 ## 2. Exchangis installation and deployment 
 
@@ -269,11 +273,11 @@ Please visit the Exchange front-end page at  http://${EXCHANGIS_INSTALL_IP}:8098
 
 ## 3. DSS ExchangisAppConn installation and deployment 
 
-If you want to use Exchangis1.0.1 front-end, you also need to install the DSS ExchangisAppConn plugin. Please refer to: [ExchangisAppConn installation documentation for plugins ](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_appconn_deploy_en.md)
+If you want to use Exchangis1.0.0 front-end, you also need to install the DSS ExchangisAppConn plugin. Please refer to: [ExchangisAppConn installation documentation for plugins ](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_appconn_deploy_en.md)
 
 ## 4. Linkis Sqoop engine installation and deployment 
 
-If you want to execute the Sqoop operation of Exchangis1.0.1 normally, you also need to install the Linkis Sqoop engine. Please refer to: : [Linkis Sqoop engine installation documentation ](https://linkis.staged.apache.org/zh-CN/docs/1.1.2/engine_usage/sqoop)
+If you want to execute the Sqoop operation of Exchangis1.0.0 normally, you also need to install the Linkis Sqoop engine. Please refer to: : [Linkis Sqoop engine installation documentation ](https://linkis.staged.apache.org/zh-CN/docs/1.1.2/engine_usage/sqoop)
 
 ## 5.  How to log in and use Exchangis
 
