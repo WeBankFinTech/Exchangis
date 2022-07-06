@@ -106,7 +106,7 @@ Batch import and export of datasource configuration.
 
 Description: 
 
-The background needs to integrate it with the labeling function of Linkis1.0, and give the datasource a labeling relationship.
+The background needs to integrate it with the labeling function of Linkis1.1.1, and give the datasource a labeling relationship.
 
 Process design: 
 

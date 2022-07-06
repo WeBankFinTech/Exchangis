@@ -26,7 +26,7 @@ It is strongly recommended that you use the native Sqoop to perform the test tas
 ### Prepare installation package 
 #### 1）Download binary package 
 
-Exchangis1.0.1 and Linkis 1.1.0 support the mainstream Sqoop versions 1.4.6 and 1.4.7, and later versions may need to modify some codes for recompilation. 
+Exchangis1.0.0 and Linkis 1.1.1 support the mainstream Sqoop versions 1.4.6 and 1.4.7, and later versions may need to modify some codes for recompilation. 
 
 [Click to jump to Release interface](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.0.0)
 

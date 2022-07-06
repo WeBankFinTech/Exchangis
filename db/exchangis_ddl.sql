@@ -82,6 +82,7 @@ CREATE TABLE `exchangis_project_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1497870871035973934 DEFAULT CHARSET=utf8;
 
 -- exchangis_v4.exchangis_project_user definition
+DROP TABLE IF EXISTS `exchangis_project_user`;
 CREATE TABLE `exchangis_project_user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `project_id` bigint(20) NOT NULL,
