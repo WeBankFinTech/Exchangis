@@ -10,7 +10,7 @@ VALUES ('exchangis', 0, 1, 1, 1, NULL, 'com.webank.wedatasphere.exchangis.dss.ap
 select @dss_appconn_exchangis_id:=id from `dss_appconn` where `appconn_name` = "exchangis";
 
 INSERT INTO `dss_appconn_instance` (`appconn_id`, `label`, `url`, `enhance_json`, `homepage_uri`)
-VALUES (@dss_appconn_exchangis_id, 'DEV', 'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/', '', 'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/#/projectManage');
+VALUES (@dss_appconn_exchangis_id, 'DEV', 'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/', '', '#/projectManage');
 
 -- 看appconn组件是要归属于哪个菜单
 select @exchangis_menuId:=id from `dss_workspace_menu` where `name` = "数据交换";
