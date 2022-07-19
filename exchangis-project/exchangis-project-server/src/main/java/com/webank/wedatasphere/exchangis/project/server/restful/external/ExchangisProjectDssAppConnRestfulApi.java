@@ -87,10 +87,10 @@ public class ExchangisProjectDssAppConnRestfulApi {
 //                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
 //            }
             String domain = projectStored.getDomain();
-            if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
+            /*if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
                     .equalsIgnoreCase(domain)){
                 return Message.error("Cannot update the outer project (无法更新来自 " + domain + " 的外部项目)");
-            }
+            }*/
             LOG.info("UpdateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             projectService.updateProject(projectVo, username);
             return ExchangisProjectRestfulUtils.dealOk("更新工程成功",

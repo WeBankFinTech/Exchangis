@@ -90,7 +90,7 @@ CREATE TABLE `exchangis_project_user` (
   `priv` int(20) DEFAULT NULL,
   `last_update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT;
 
 -- exchangis_v4.exchangis_launchable_task definition
 DROP TABLE IF EXISTS `exchangis_launchable_task`;

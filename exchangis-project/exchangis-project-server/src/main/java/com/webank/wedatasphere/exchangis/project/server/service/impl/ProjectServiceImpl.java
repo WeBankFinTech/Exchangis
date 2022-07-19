@@ -125,7 +125,7 @@ public class ProjectServiceImpl implements ProjectService {
         updatedProject.setLastUpdateTime(Calendar.getInstance().getTime());
         this.projectMapper.updateOne(updatedProject);
 
-        List<ExchangisProjectUser> projectUsers = new ArrayList<>();
+        /*List<ExchangisProjectUser> projectUsers = new ArrayList<>();
         if (updatedProject.getViewUsers() != null && updatedProject.getViewUsers().length()!=0) {
             for (String view : updatedProject.getViewUsers().split(",")) {
                 ExchangisProjectUser projectUser = new ExchangisProjectUser();
@@ -162,7 +162,7 @@ public class ProjectServiceImpl implements ProjectService {
         projectUser.setPriv(0);
         projectUser.setUpdateTime(updatedProject.getLastUpdateTime());
         projectUsers.add(projectUser);
-        this.projectUserMapper.updateProjectUser(projectUsers);
+        this.projectUserMapper.updateProjectUser(projectUsers);*/
     }
 
     @Override
