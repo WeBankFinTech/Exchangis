@@ -96,7 +96,7 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(errorMessage, e);
             message = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
         }
-        message.setMethod("/api/rest_j/v1/dss/exchangis/main/job/execution/" + jobExecutionId + "/taskList");
+        message.setMethod("/api/rest_j/v1/" + jobExecutionId + "/taskList");
         return message;
     }
 
