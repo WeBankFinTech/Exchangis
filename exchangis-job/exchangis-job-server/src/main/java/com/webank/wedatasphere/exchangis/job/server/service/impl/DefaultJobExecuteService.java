@@ -332,6 +332,13 @@ public class DefaultJobExecuteService implements JobExecuteService {
     private ExchangisCategoryLogVo resultToCategoryLog(LogQuery logQuery, LogResult logResult, TaskStatus status){
         ExchangisCategoryLogVo categoryLogVo = new ExchangisCategoryLogVo();
         boolean noLogs = logResult.getLogs().isEmpty();
+        for (int i = 0; i < logResult.getLogs().size(); i++) {
+            if (logResult.getLogs().get(i).contains("password")) {
+                LOG.info("Sensitive information in there: {}", logResult.getLogs().get(i));
+                logResult.getLogs().set(i, "----");
+                LOG.info("Change line is: {}", logResult.getLogs().get(i));
+            }
+        }
         if (Objects.nonNull(logQuery.getLastRows())){
             logResult.setEnd(true);
         }else if (noLogs){
