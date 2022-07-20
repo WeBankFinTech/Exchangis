@@ -9,6 +9,8 @@ import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
+import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
+import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
@@ -38,6 +40,9 @@ public class ExchangisJobRestfulApi {
     @Resource
     private JobInfoService jobInfoService;
 
+    @Resource
+    private ProjectService projectService;
+
     /**
      * Query job in page
      *
@@ -60,6 +65,11 @@ public class ExchangisJobRestfulApi {
                 projectId, jobType, name, current, size
         );
         String userName = SecurityFilter.getLoginUsername(request);
+
+        ExchangisProjectInfo projectStored = projectService.getProjectById(projectId);
+        if (!hasProjectAuthority(userName, projectStored)) {
+            return Message.error("You have no permission to create Job (没有创建任务权限)");
+        }
         queryVo.setCreateUser(userName);
         try {
             PageResult<ExchangisJobVo> pageResult = jobInfoService.queryJobList(queryVo);
@@ -100,6 +110,12 @@ public class ExchangisJobRestfulApi {
         String userName = SecurityFilter.getLoginUsername(request);
         exchangisJobVo.setCreateUser(userName);
         Message response = Message.ok();
+
+        ExchangisProjectInfo projectStored = projectService.getProjectById(exchangisJobVo.getProjectId());
+        if (!hasProjectAuthority(userName, projectStored)) {
+            return Message.error("You have no permission to create Job (没有创建任务权限)");
+        }
+
        /* if (!AuthorityUtils.hasOwnAuthority(exchangisJobVo.getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(exchangisJobVo.getProjectId(), userName)) {
             return Message.error("You have no permission to create (没有编辑权限，无法创建任务)");
         }*/
@@ -192,7 +208,7 @@ public class ExchangisJobRestfulApi {
         Message response = Message.ok("job deleted");
         try {
             if (!hasAuthority(userName, jobInfoService.getJob(id, true))) {
-                return Message.error("You have no permission to update ()");
+                return Message.error("You have no permission to delete (没有删除权限)");
             }
            /* if (!AuthorityUtils.hasOwnAuthority(jobInfoService.getJob(id, true).getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(jobInfoService.getJob(id, true).getProjectId(), userName)) {
                 return Message.error("You have no permission to delete (没有编辑权限，无法删除)");
@@ -219,6 +235,11 @@ public class ExchangisJobRestfulApi {
         Message response = Message.ok();
         try {
             LOG.info("Request88888: {}", request);
+
+            String userName = SecurityFilter.getLoginUsername(request);
+            if (!hasAuthority(userName, jobInfoService.getJob(id, true))) {
+                return Message.error("You have no permission to get job (没有获取任务权限)");
+            }
             ExchangisJobVo job = jobInfoService.getDecoratedJob(request, id);
             response.data("result", job);
         } catch (Exception e) {
@@ -292,10 +313,14 @@ public class ExchangisJobRestfulApi {
         jobVo.setId(id);
         jobVo.setModifyUser(SecurityFilter.getLoginUsername(request));
         Message response = Message.ok();
+        String loginUser = SecurityFilter.getLoginUsername(request);
         try {
             /*if (!AuthorityUtils.hasOwnAuthority(jobVo.getProjectId(), jobVo.getModifyUser()) && !AuthorityUtils.hasEditAuthority(jobVo.getProjectId(), jobVo.getModifyUser())) {
                 return Message.error("You have no permission to update (没有编辑权限)");
             }*/
+            if (!hasAuthority(loginUser, jobInfoService.getJob(id, true))){
+                return Message.error("You have no permission to save content (没有保存任务权限)");
+            }
             ExchangisJobVo exchangisJob = jobInfoService.updateJobConfig(jobVo);
             response.data("id", exchangisJob.getId());
         } catch (Exception e) {
@@ -318,6 +343,9 @@ public class ExchangisJobRestfulApi {
             /*if (!AuthorityUtils.hasOwnAuthority(projectId, loginUser) && !AuthorityUtils.hasEditAuthority(projectId, loginUser)) {
                 return Message.error("You have no permission to update (没有编辑权限，无法保存配置)");
             }*/
+            if (!hasAuthority(loginUser, jobInfoService.getJob(id, true))){
+                return Message.error("You have no permission to save content (没有保存任务权限)");
+            }
             ExchangisJobVo exchangisJob = jobInfoService.updateJobContent(jobVo);
             response.data("id", exchangisJob.getId());
         } catch (Exception e) {
@@ -341,6 +369,10 @@ public class ExchangisJobRestfulApi {
      */
     private boolean hasAuthority(String username, ExchangisJobVo job) {
         return Objects.nonNull(job) && username.equals(job.getCreateUser());
+    }
+
+    private boolean hasProjectAuthority(String username, ExchangisProjectInfo project){
+        return Objects.nonNull(project) && username.equals(project.getCreateUser());
     }
 
 }

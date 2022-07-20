@@ -86,9 +86,13 @@ public class ExchangisJobExecuteRestfulApi {
     }
 
     @RequestMapping( value = "/execution/{jobExecutionId}/taskList", method = RequestMethod.GET)
-    public Message getExecutedJobTaskList(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
+    public Message getExecutedJobTaskList(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) {
         Message message = Message.ok("Submitted succeed(提交成功)！");
+        String userName = SecurityFilter.getLoginUsername(request);
         try {
+            if(executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+                return Message.error("You have no permission to get taskList (没有获取任务列表权限)");
+            }
             List<ExchangisJobTaskVo> jobTaskList = executeService.getExecutedJobTaskList(jobExecutionId);
             message.data("tasks", jobTaskList);
         } catch (ExchangisJobServerException e) {
@@ -101,9 +105,14 @@ public class ExchangisJobExecuteRestfulApi {
     }
 
     @RequestMapping( value = "/execution/{jobExecutionId}/progress", method = RequestMethod.GET)
-    public Message getExecutedJobAndTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
+    public Message getExecutedJobAndTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) {
         ExchangisJobProgressVo jobAndTaskStatus;
+        String userName = SecurityFilter.getLoginUsername(request);
         try {
+
+            if(executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+                return Message.error("You have no permission to get task progress (没有获取任务进度权限)");
+            }
             jobAndTaskStatus = executeService.getExecutedJobProgressInfo(jobExecutionId);
         } catch (ExchangisJobServerException e) {
             // TODO Log exception
@@ -116,9 +125,13 @@ public class ExchangisJobExecuteRestfulApi {
     }
 
     @RequestMapping( value = "/execution/{jobExecutionId}/status", method = RequestMethod.GET)
-    public Message getExecutedJobStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) {
+    public Message getExecutedJobStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) {
         Message message = Message.ok("Submitted succeed(提交成功)！");
+        String userName = SecurityFilter.getLoginUsername(request);
         try {
+            if(executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+                return Message.error("You have no permission to get tastStatus (没有权限去获取任务状态)");
+            }
             ExchangisJobProgressVo jobStatus = executeService.getJobStatus(jobExecutionId);
             message.setMethod("/api/rest_j/v1/dss/exchangis/main/job/execution/" + jobExecutionId + "/status");
             message.data("status", jobStatus.getStatus());
@@ -143,7 +156,11 @@ public class ExchangisJobExecuteRestfulApi {
         Message result = Message.ok("Submitted succeed(提交成功)！");
         LogQuery logQuery = new LogQuery(fromLine, pageSize,
                 ignoreKeywords, onlyKeywords, lastRows);
+        String userName = SecurityFilter.getLoginUsername(request);
         try {
+            if(executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+                return Message.error("You have no permission to get logs (没有获取任务日志权限)");
+            }
             ExchangisCategoryLogVo categoryLogVo = this.executeService
                     .getJobLogInfo(jobExecutionId, logQuery, SecurityFilter.getLoginUsername(request));
             result.setData(Json.convert(categoryLogVo, Map.class, String.class, Object.class));
@@ -157,10 +174,14 @@ public class ExchangisJobExecuteRestfulApi {
     }
 
     @RequestMapping( value = "/execution/{jobExecutionId}/kill", method = RequestMethod.POST)
-    public Message ExecutedJobKill(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobServerException {
+    public Message ExecutedJobKill(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) throws ExchangisJobServerException {
         ExchangisJobProgressVo jobStatus = executeService.getJobStatus(jobExecutionId);
         String status = jobStatus.getStatus().toString();
         Message message = null;
+        String userName = SecurityFilter.getLoginUsername(request);
+        if(executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+            return Message.error("You have no permission to get tastStatus (没有权限去获取任务状态)");
+        }
         if (!TaskStatus.isCompleted(jobStatus.getStatus()))
         {
             message = Message.ok("Kill succeed(停止成功)！");
@@ -215,10 +236,14 @@ public class ExchangisJobExecuteRestfulApi {
     }
 
     @RequestMapping( value = "/{jobExecutionId}/deleteJob", method = RequestMethod.POST)
-    public Message ExecutedJobDelete(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobServerException {
+    public Message ExecutedJobDelete(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) throws ExchangisJobServerException {
         //ExchangisLaunchedJobEntity jobAndTaskStatus = exchangisExecutionService.getExecutedJobAndTaskStatus(jobExecutionId);
         Message message = Message.ok("Kill succeed(停止成功)！");
+        String userName = SecurityFilter.getLoginUsername(request);
         try {
+            if(executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+                return Message.error("You have no permission to delete this record (没有删除历史记录权限)");
+            }
             executeService.deleteJob(jobExecutionId);
             message.data("jobExecutionId", jobExecutionId);
         } catch (ExchangisJobServerException e){
@@ -231,10 +256,14 @@ public class ExchangisJobExecuteRestfulApi {
     }
 
     @RequestMapping( value = "/{jobExecutionId}/allTaskStatus", method = RequestMethod.GET)
-    public Message allTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId) throws ExchangisJobServerException {
+    public Message allTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) throws ExchangisJobServerException {
         //ExchangisLaunchedJobEntity jobAndTaskStatus = exchangisExecutionService.getExecutedJobAndTaskStatus(jobExecutionId);
         Message message = Message.ok("所有任务状态");
+        String userName = SecurityFilter.getLoginUsername(request);
         try {
+            if(executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+                return Message.error("You have no permission to get tastStatus (没有权限去获取任务状态)");
+            }
             List<String> allStatus = executeService.allTaskStatus(jobExecutionId);
             message.data("allStatus", allStatus);
             message.data("jobExecutionId", jobExecutionId);
