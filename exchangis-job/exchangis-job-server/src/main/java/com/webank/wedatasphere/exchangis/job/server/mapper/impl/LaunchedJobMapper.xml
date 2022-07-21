@@ -136,7 +136,7 @@
         <![CDATA[UPDATE ]]>
         <include refid="TableName"/>
         <![CDATA[SET
-        progress = ${totalTaskProgress} / launchable_task_num,
+        progress = #{totalTaskProgress} / launchable_task_num,
         last_update_time = #{updateTime}
         WHERE
         job_execution_id = #{jobExecutionId}]]>
@@ -177,7 +177,7 @@
             </if>
         </where>
         order by create_time desc
-        limit ${start}, ${size}
+        limit #{start}, #{size}
     </select>
 
     <select id="count" resultType="java.lang.Integer">
