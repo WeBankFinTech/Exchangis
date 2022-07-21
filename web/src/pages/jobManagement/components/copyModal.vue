@@ -51,6 +51,7 @@ export default {
       default: {},
     },
   },
+  inject: ['getcurTab'],
   emits: ["finish", "cancel", "update:visible"],
   data() {
     return {
@@ -58,7 +59,7 @@ export default {
       confirmLoading: false,
       // 表单数据
       formState: {
-        jobName: "",
+        jobName: '',
         jobLabels: "",
         jobDesc: "",
       },
@@ -68,7 +69,15 @@ export default {
       },
     };
   },
-  watch: {},
+  watch: {
+    visible: function(val) {
+      if (val) {
+          this.formState.jobName = this.getcurTab().jobName || ''
+      } else {
+          this.formState.jobName = ''
+      }
+    }
+  },
   methods: {
     async handleOk() {
       await this.$refs.formRef.validate();

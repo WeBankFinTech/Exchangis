@@ -57,7 +57,7 @@
                 :help="sourcesHelpMsg[item.key.split('.').pop()]"
                 :validate-status="sourcesHelpStatus[item.key.split('.').pop()]"
                 :required="item.required"
-              >
+              > 
                 <dync-render
                   v-bind:param="item"
                   @updateInfo="updateSourceParams"

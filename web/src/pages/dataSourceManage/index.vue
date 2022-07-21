@@ -390,6 +390,7 @@ export default {
   float: left;
 }
 .data-source-manage-table {
+  min-width: 1000px;
   :deep(.ant-tag) {
     overflow: hidden;
     white-space: nowrap;
