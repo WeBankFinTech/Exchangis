@@ -55,7 +55,7 @@
                 :dataSource="fieldMap.sourceDS"
                 :columns="columns1"
                 size="large"
-                :pagination="false"
+                :pagination="pagination"
                 v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
                 bordered
               >
@@ -118,7 +118,7 @@
                 :dataSource="fieldMap.sinkDS"
                 :columns="columns2"
                 size="large"
-                :pagination="false"
+                :pagination="pagination"
                 v-if="type === 'MAPPING' && fieldMap.sinkDS.length > 0"
                 bordered
               >
@@ -171,6 +171,17 @@ export default defineComponent({
     deductions: Array,
     addEnabled: Boolean,
     engineType: String,
+  },
+  data(){
+    return{
+        pagination:{
+              defaultPageSize: 2,
+              showTotal: total => `共 ${total} 条数据`,
+              showSizeChanger:true,
+              pageSizeOptions: ['2', '10', '15', '20'],
+              onShowSizeChange:(current, pageSize)=>this.pageSize = pageSize
+        }
+    }
   },
   emits: ["updateFieldMap"],
   components: {
@@ -601,4 +612,9 @@ export default defineComponent({
   font-size: 14px;
   text-align: left;
 }
+// .filed-map-wrap-l-content {
+//   :deep(.ant-pagination) {
+//     display: none;
+//   }
+// }
 </style>

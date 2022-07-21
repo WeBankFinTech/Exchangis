@@ -13,7 +13,7 @@
 
     <!-- top nav -->
     <div class="job-management-tabs">
-      <div class="name" style="
+      <div class="name ant-tag ant-tag-blue" style="
         position: absolute;
         right: 15px;
         line-height: 33px;">{{ name }}</div>
@@ -127,6 +127,11 @@ export default {
       tabs: [],
       active: -1,
     };
+  },
+  provide() {
+    return {
+      getcurTab: () => this.curTab // 获取当前任务
+    }
   },
   mounted() {
     if (this.$route.query.labels) {

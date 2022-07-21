@@ -1296,10 +1296,11 @@ export default {
       }
     }
     .jd_right {
-      overflow-x: auto;
+      overflow: auto;
       float: right;
       width: calc(100% - 250px);
       background: white;
+      height: calc(100vh - 82px);
     }
   }
 
