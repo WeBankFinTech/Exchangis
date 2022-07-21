@@ -83,6 +83,7 @@
           :height="400"
           :tree-data="treeData"
           :autoExpandParent="false"
+          :icon="getIcon"
           v-model:expandedKeys="expandedKeys"
           @select="selectItem"
           @expand="handleExpandSql"
@@ -282,7 +283,30 @@ export default defineComponent({
       }
     };
     const visible = ref(false);
-    const showModal = () => {
+    // 重置数据 
+    const resetData = () => {
+      state.sqlId = '';
+      state.dsId = '';
+      state.curSql = "";
+      state.dataSource = "";
+      state.selectTable = "";
+      state.treeData = [];
+      state.originTreeData = [];
+      expandedKeys.value = [];
+    };
+    // 展示弹窗
+    const showModal = async () => {
+      resetData(); // 先重置数据
+      let selects = state.defaultSelect === '请点击后选择' ? [] : state.defaultSelect
+      if (selects[0]) {
+        await handleChangeSql(selects[0]);
+      }
+      if (selects[1]) {
+        const cur = state.dataSourceList.filter((item) => {
+          return item.name === selects[1];
+        })[0];
+        await handleChangeDS(cur?.value);
+      }
       visible.value = true;
     };
     const selectItem = (e) => {
@@ -361,6 +385,16 @@ export default defineComponent({
       let name = state.curSql || (typeof state.defaultSelect === 'string' ? state.defaultSelect.split('.')[0] : state.defaultSelect[0])
       return `background-image: url(${require('@/images/dataSourceTypeIcon/' + name + '.png')})`
     }
+    const getIcon = (props) => {
+      const databaseActive = require('@/images/dataSourceTypeIcon/database_active.png');
+      const database = require('@/images/dataSourceTypeIcon/database.png');
+      const table = require('@/images/dataSourceTypeIcon/table.png');
+      const { isLeaf, expanded } = props;
+      if (isLeaf) {
+        return <img src={table} />;;
+      }
+      return <img src={expanded ? databaseActive : database} />;
+    }
     return {
       ...toRefs(state),
       selectItem,
@@ -376,7 +410,8 @@ export default defineComponent({
       createTree,
       filterTree,
       spinning,
-      showTableSearch
+      showTableSearch,
+      getIcon
     };
   },
 });
