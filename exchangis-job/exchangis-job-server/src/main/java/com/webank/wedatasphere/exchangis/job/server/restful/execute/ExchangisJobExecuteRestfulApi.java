@@ -180,7 +180,7 @@ public class ExchangisJobExecuteRestfulApi {
         Message message = null;
         String userName = SecurityFilter.getLoginUsername(request);
         if(!executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
-            return Message.error("You have no permission to get tastStatus (没有权限去获取任务状态)");
+            return Message.error("You have no permission to get kill job (没有权限去杀死任务)");
         }
         if (!TaskStatus.isCompleted(jobStatus.getStatus()))
         {
