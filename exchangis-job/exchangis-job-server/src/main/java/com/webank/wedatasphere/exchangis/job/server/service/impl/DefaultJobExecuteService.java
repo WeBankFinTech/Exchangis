@@ -184,6 +184,8 @@ public class DefaultJobExecuteService implements JobExecuteService {
 
     @Override
     public boolean hasExecuteJobAuthority(String jobExecutionId, String userName) {
+        String jobUser = this.launchedJobDao.searchLaunchedJob(jobExecutionId).getCreateUser();
+        LOG.info("Job user is99999:{}, reuquest user is: {}", jobUser, userName);
         return hasExecuteJobAuthority(this.launchedJobDao.searchLaunchedJob(jobExecutionId) , userName);
     }
 
@@ -194,14 +196,14 @@ public class DefaultJobExecuteService implements JobExecuteService {
      * @return
      */
     public boolean hasExecuteJobAuthority(LaunchedExchangisJobEntity launchedExchangisJob, String userName){
-//        return Objects.nonNull(launchedExchangisJob) && launchedExchangisJob.getExecuteUser().equals(userName);
-        return true;
+        return Objects.nonNull(launchedExchangisJob) && launchedExchangisJob.getCreateUser().equals(userName);
+        //return true;
     }
 
     @Override
     public ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, LogQuery logQuery, String userName) throws ExchangisJobServerException {
         LaunchedExchangisJobEntity launchedExchangisJob = this.launchedJobDao.searchLogPathInfo(jobExecutionId);
-        if (Objects.isNull(launchedExchangisJob) || !hasExecuteJobAuthority(launchedExchangisJob, userName)){
+        if (Objects.isNull(launchedExchangisJob) || !hasExecuteJobAuthority(jobExecutionId, userName)){
             throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
         }
         LogResult logResult = jobLogService.logsFromPageAndPath(launchedExchangisJob.getLogPath(), logQuery);
