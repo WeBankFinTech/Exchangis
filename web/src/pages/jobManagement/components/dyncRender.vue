@@ -64,7 +64,8 @@ export default defineComponent({
   },
   emits: ["updateInfo"],
   setup(props, context) {
-    let { type, field, value, unit, source, description} = props.param;
+    let { type, field, value, unit, source, description } = props.param;
+    // console.log(props.param, 'asdadsad')
     value = ref(value)
     //let tmlName = field.split(".").pop();
     const newProps = computed(() => JSON.parse(JSON.stringify(props.param)))
@@ -120,6 +121,7 @@ export default defineComponent({
       } else {
         url = window.location.origin + source.split('?')[0]
       }
+      // 获取分区信息
       getPartitionInfo({
         source: url,
         dataSourceId: props.data.id,
