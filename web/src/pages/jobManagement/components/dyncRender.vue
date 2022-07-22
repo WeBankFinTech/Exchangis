@@ -11,6 +11,9 @@
     >
     </a-select>
     <template v-if="type === 'MAP'">
+      <div style="margin-bottom: 5px" v-if="(sourceType ==='HIVE') && !partitionArr.length">
+        <a-input style="width: 400px;" disabled />
+      </div>
       <div style="margin-bottom: 5px" v-for="item in partitionArr">
         <a-input
           style="width: 30%"
@@ -111,6 +114,8 @@ export default defineComponent({
         })
       })
     }
+    // 数据源类型
+    const sourceType = computed(() => props.data.type)
     let partitionArr = ref([])
     const _buildMap = function () {
       partitionArr.value = []
@@ -205,7 +210,9 @@ export default defineComponent({
       source,
       partitionArr,
       description,
-      handleChange
+      handleChange,
+      partitionArr,
+      sourceType
     }
   }
 });
