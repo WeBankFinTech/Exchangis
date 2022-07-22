@@ -339,10 +339,11 @@
             </div>
         </div>
 
-        <config-modal
+        <config-drawer
             :id="modalCfg.id"
             v-model:visible="modalCfg.visible"
             :formData="configModalData"
+            :dialogStyle="dialogStyle"
             @finish="handleModalFinish"
         />
         <copy-modal
@@ -470,7 +471,7 @@ export default {
         PlusOutlined,
         DownOutlined,
         RightOutlined,
-        'config-modal': defineAsyncComponent(() => import('./configModal.vue')),
+        'config-drawer': defineAsyncComponent(() => import('./configDrawer.vue')),
         'copy-modal': defineAsyncComponent(() => import('./copyModal.vue')),
         DataSource: defineAsyncComponent(() => import('./dataSource.vue')),
         FieldMap: defineAsyncComponent(() => import('./fieldMap.vue')),
@@ -548,7 +549,10 @@ export default {
                 Timeout: '超时'
             },
             activeKey: '1',
-            dateFormat
+            dateFormat,
+            dialogStyle: {
+                right: 0,
+            }
         };
     },
     computed: {

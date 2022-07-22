@@ -84,7 +84,29 @@
           <!-- mid -->
           <div class="field-map-wrap-mid">
             <div>
-              <template
+              <a-table
+                :dataSource="fieldMap.transformerList"
+                :columns="columns3"
+                size="large"
+                :pagination="pagination"
+                bordered
+              >
+                <template #fieldName="{ record }">
+                  <div style="height: 60px;line-height: 60px; width: 200px;">
+                    <Transformer
+                      v-if="true"
+                      v-bind:tfData="record"
+                      @updateTransformer="updateTransformer"
+                    />
+                    <DeleteOutlined
+                      v-if="false"
+                      @click="deleteField(record.key)"
+                      style="color:#1890ff;"
+                    />
+                  </div>
+                </template>
+              </a-table>
+              <!-- <template
                 v-for="(item, index) in fieldMap.transformerList"
                 :key="item.key"
               >
@@ -107,7 +129,7 @@
                     style="position: absolute; right: 0; top: 23px; color:#1890ff;"
                   />
                 </div>
-              </template>
+              </template> -->
             </div>
           </div>
 
@@ -145,6 +167,16 @@
             </div>
           </div>
         </div>
+        <div class="pagination-footer">
+          <a-pagination
+            v-model:current="pagination.current"
+            v-model:page-size="pagination.pageSize"
+            :total="fieldMap.sourceDS.length"
+            :show-total="total => `总共 ${fieldMap.sourceDS.length} 条`"
+            show-size-changer
+            @change="changeEvents"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -172,17 +204,6 @@ export default defineComponent({
     addEnabled: Boolean,
     engineType: String,
   },
-  data(){
-    return{
-        pagination:{
-              defaultPageSize: 2,
-              showTotal: total => `共 ${total} 条数据`,
-              showSizeChanger:true,
-              pageSizeOptions: ['2', '10', '15', '20'],
-              onShowSizeChange:(current, pageSize)=>this.pageSize = pageSize
-        }
-    }
-  },
   emits: ["updateFieldMap"],
   components: {
     Transformer: defineAsyncComponent(() => import("./transformer.vue")),
@@ -192,6 +213,16 @@ export default defineComponent({
   },
   setup(props, context) {
     const { type } = props.fmData;
+
+    const pagination = reactive({
+      current: 1,
+      pageSize: 10
+    })
+
+    const changeEvents = (page, pageSize) => {
+      pagination.current = page;
+      pagination.pageSize = pageSize;
+    }
 
     let fieldMap = reactive({
       sourceDS: [],
@@ -454,9 +485,9 @@ export default defineComponent({
       fieldMap.sinkDS.push(sinkItem);
     };
     const deleteField = (index) => {
-      fieldMap.transformerList.splice(index, 1);
-      fieldMap.sourceDS.splice(index, 1);
-      fieldMap.sinkDS.splice(index, 1);
+      fieldMap.transformerList.splice(+index, 1);
+      fieldMap.sourceDS.splice(+index, 1);
+      fieldMap.sinkDS.splice(+index, 1);
 
       const transforms = createTransforms(
         fieldMap.sourceDS,
@@ -515,6 +546,19 @@ export default defineComponent({
           },
         ]
       }],
+      columns3: [{
+        title: "",
+        children: [
+          {
+            title: "",
+            dataIndex: "fieldName",
+            key: "fieldName",
+            slots: {
+              customRender: "fieldName",
+            },
+          },
+        ]
+      }],
       updateTransformer,
       updateSourceFieldName,
       updateSinkFieldName,
@@ -522,6 +566,8 @@ export default defineComponent({
       isFold,
       showInfo,
       deleteField,
+      pagination,
+      changeEvents,
     };
   },
 });
@@ -607,14 +653,21 @@ export default defineComponent({
   justify-content: center;
   position: relative;
   margin-top: 86px;
+  :deep(.ant-table-thead) {
+    display: none;
+  }
 }
 .field-map-label {
   font-size: 14px;
   text-align: left;
 }
-// .filed-map-wrap-l-content {
-//   :deep(.ant-pagination) {
-//     display: none;
-//   }
-// }
+.filed-map-wrap-l-content,.field-map-wrap-r-content,.field-map-wrap-mid {
+  :deep(.ant-pagination) {
+    display: none;
+  }
+}
+
+.pagination-footer {
+  margin-top: 20px;
+}
 </style>
