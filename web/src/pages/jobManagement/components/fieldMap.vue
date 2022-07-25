@@ -83,54 +83,37 @@
 
           <!-- mid -->
           <div class="field-map-wrap-mid">
-            <div>
               <a-table
                 :dataSource="fieldMap.transformerList"
                 :columns="columns3"
                 size="large"
                 :pagination="pagination"
+                v-if="fieldMap.transformerList.length > 0"
                 bordered
               >
                 <template #fieldName="{ record }">
-                  <div style="height: 60px;line-height: 60px; width: 200px;">
-                    <Transformer
-                      v-if="true"
-                      v-bind:tfData="record"
-                      @updateTransformer="updateTransformer"
-                    />
-                    <DeleteOutlined
-                      v-if="false"
-                      @click="deleteField(record.key)"
-                      style="color:#1890ff;"
-                    />
-                  </div>
-                </template>
-              </a-table>
-              <!-- <template
-                v-for="(item, index) in fieldMap.transformerList"
-                :key="item.key"
-              >
                 <div
                   style="
                     position: relative;
-                    height: 65px;
+                    height: 57px;
                     float: left;
                     width: 200px;
+                    margin-top: -15px;
                   "
                 >
                   <Transformer
                     v-if="engineType === 'DATAX'"
-                    v-bind:tfData="item"
+                    v-bind:tfData="record"
                     @updateTransformer="updateTransformer"
                   />
                   <DeleteOutlined
-                    v-if="item.deleteEnable"
-                    @click="deleteField(index)"
-                    style="position: absolute; right: 0; top: 23px; color:#1890ff;"
+                    v-if="record.deleteEnable"
+                    @click="deleteField(record.key)"
+                    style="position: absolute; right: 0; top: 30px; color:#1890ff;"
                   />
                 </div>
-              </template> -->
-            </div>
+                </template>
+              </a-table>
           </div>
 
           <!-- right -->
@@ -167,16 +150,16 @@
             </div>
           </div>
         </div>
-        <div class="pagination-footer">
-          <a-pagination
-            v-model:current="pagination.current"
-            v-model:page-size="pagination.pageSize"
-            :total="fieldMap.sourceDS.length"
-            :show-total="total => `总共 ${fieldMap.sourceDS.length} 条`"
-            show-size-changer
-            @change="changeEvents"
-          />
-        </div>
+
+        <a-pagination
+          v-model:current="pagination.current"
+          v-model:page-size="pagination.pageSize"
+          :page-size-options="pagination.pageSizeOptions"
+          :total="fieldMap.sourceDS.length"
+          :show-total="total => `总共 ${fieldMap.sourceDS.length}条`"
+          show-size-changer
+          @change="changeEvents"
+        />
       </div>
     </div>
   </div>
@@ -214,14 +197,16 @@ export default defineComponent({
   setup(props, context) {
     const { type } = props.fmData;
 
+    // 分页操作
     const pagination = reactive({
       current: 1,
-      pageSize: 10
+      pageSize: 10,
+      pageSizeOptions:	['10', '20', '30', '40']	
     })
 
     const changeEvents = (page, pageSize) => {
-      pagination.current = page;
-      pagination.pageSize = pageSize;
+      pagination.current = page
+      pagination.pageSize = pageSize
     }
 
     let fieldMap = reactive({
@@ -614,21 +599,6 @@ export default defineComponent({
     max-width: 950px;
     display: flex;
     flex-direction: column;
-    :deep(.ant-table-thead) {
-      tr {
-        th {
-          text-align: center;
-          background-color: #F8FAFD;
-        }
-      }
-    }
-    :deep(.ant-table-tbody) {
-      tr {
-        td {
-          padding: 16px 10px;
-        }
-      }
-    }
   }
   .text-danger {
     padding: 0px;
@@ -661,13 +631,45 @@ export default defineComponent({
   font-size: 14px;
   text-align: left;
 }
-.filed-map-wrap-l-content,.field-map-wrap-r-content,.field-map-wrap-mid {
-  :deep(.ant-pagination) {
+ 
+.filed-map-wrap-l, .field-map-wrap-r {
+  :deep(.ant-table-pagination) {
     display: none;
   }
+  :deep(.ant-table-thead) {
+    tr {
+      th {
+        text-align: center;
+        background-color: #F8FAFD;
+      }
+    }
+  }
+  :deep(.ant-table-tbody) {
+    tr {
+      td {
+        padding: 21px 10px;
+      }
+    }
+  }
 }
-
-.pagination-footer {
-  margin-top: 20px;
+.field-map-wrap-mid {
+    width: 248px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin-top: 86px;
+    :deep(.ant-table-thead) {
+      display: none;
+    }
+    :deep(.ant-table-tbody) {
+      tr {
+        td {
+          padding: 16px 10px;
+        }
+      }
+    }
+    :deep(.ant-table-pagination) {
+      display: none;
+    }
 }
 </style>
