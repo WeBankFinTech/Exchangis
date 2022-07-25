@@ -424,8 +424,8 @@ export default defineComponent({
 }
 .tf-top {
   text-align: center;
-  line-height: 22px;
-  height: 22px;
+  line-height: 27px;
+  height: 27px;
   > span {
     font-size: 12px;
   }
@@ -445,6 +445,5 @@ export default defineComponent({
 }
 .transformer-wrap {
   position: relative;
-  top: -14px;
 }
 </style>
