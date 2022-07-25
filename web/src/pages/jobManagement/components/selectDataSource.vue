@@ -113,7 +113,7 @@ export default defineComponent({
       // 数据源
       SQLlist.forEach((sql) => {
         sqlList.push({
-          name: sql.name,
+          name: `${sql.name}(${sql.classifier})`,
           value: sql.name,
           id: sql.id,
         });
