@@ -152,6 +152,7 @@
         </div>
 
         <a-pagination
+          v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
           v-model:current="pagination.current"
           v-model:page-size="pagination.pageSize"
           :page-size-options="pagination.pageSizeOptions"
