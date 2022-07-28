@@ -6,10 +6,14 @@
       <span>{{ defaultSelect }}</span>
     </div>
     <a-card hoverable v-else style="width: 400px;">
-      <div class="sds-title-tag" v-for="(item, idx) in defaultSelect" :key="idx" @click="showModal"
-        :title="item">
-        <span v-if="idx===0" class="logo" :style="getBg()"> </span>
-        {{ item }}
+      <div 
+          class="sds-title-tag" 
+          v-for="(item, idx) in defaultSelect" 
+          :key="item + idx" 
+          @click="showModal"
+          :title="item">
+          <span v-if="idx===0" class="logo" :style="getBg()"></span>
+          {{ item || '- -' }}
       </div>
     </a-card>
     <a-modal v-model:visible="visible" title="选择数据源" @ok="handleOk" width="500px">
@@ -17,9 +21,13 @@
       <div class="sds-wrap-t">
         <a-space size="middle">
           <span>数据类型</span>
-          <a-select v-model:value="curSql" style="width: 150px" placeholder="请先选择数据库" :options="
-              sqlList.map((sql) => ({ value: sql.value, label: sql.name }))
-            " @change="handleChangeSql">
+          <a-select 
+              v-model:value="curSql" 
+              style="width: 150px" 
+              placeholder="请先选择数据库" 
+              :options="sqlList.map((sql) => ({ value: sql.value, label: sql.name }))"
+              @change="handleChangeSql"
+            >
           </a-select>
           <span>数据源</span>
           <a-select placeholder="请先选择数据源" style="width: 150px" v-model:value="dataSource"
@@ -78,6 +86,8 @@ import { message } from 'ant-design-vue';
 export default defineComponent({
   props: {
     title: [Object, String],
+    engineType: String,
+    direct: String,
   },
   components: {
     PlusOutlined,
@@ -120,9 +130,9 @@ export default defineComponent({
       });
       if (state.sqlSource) await createTree(state.sqlSource);
     }
-    onMounted(init());
+    onMounted(init())
     // 根据数据类型ID的不同返回不同的数据源列表
-    const queryDataSource = async (typeId) => {
+    const queryDataSource = async (typeId, sql) => {
       // 这里前端目前不做分页 固定了 page 和 pageSize
       let body = {
         name: '',
@@ -131,6 +141,11 @@ export default defineComponent({
         pageSize: 1000,
       };
       let res = [];
+      let param = {
+        engineType: props.engineType,
+        direct: props.direct,
+      }
+      if(props.direct === 'sink') param.sourceType = sql
       try {
         let _res = await getDataSource(body);
         const { list } = _res;
@@ -140,6 +155,7 @@ export default defineComponent({
           o.value = item.id;
           res.push(o);
         });
+        await getDataSourceTypes(param);
       } catch (err) {
         console.log('err');
       }
@@ -147,13 +163,13 @@ export default defineComponent({
     };
 
     let showTableSearch = ref(false);
-
+   
     // 选择数据库触发
     const handleChangeSql = async (sql) => {
       state.curSql = sql;
       const cur = state.sqlList.filter((i) => i.value === sql)[0];
       state.sqlId = cur.id;
-      let dsOptions = await queryDataSource(cur.id);
+      let dsOptions = await queryDataSource(cur.id, sql);
       state.dataSourceList = dsOptions.length > 0 ? dsOptions : [];
       // 清空
       state.dataSource = '';
@@ -259,8 +275,7 @@ export default defineComponent({
     // 展示弹窗
     const showModal = async () => {
       resetData(); // 先重置数据
-      let selects =
-        state.defaultSelect === '请点击后选择' ? [] : state.defaultSelect;
+      let selects = state.defaultSelect === '请点击后选择' ? [] : state.defaultSelect;
       if (selects[0]) {
         await handleChangeSql(selects[0]);
       }
@@ -408,11 +423,11 @@ export default defineComponent({
   }
   .sds-button {
     width: 420px;
-    height: 46px;
+    height: 128px;
     background: #f8fafd;
     border: 1px dashed #dee4ec;
     border-radius: 2px;
-    line-height: 46px;
+    line-height: 128px;
     text-align: center;
 
     font-family: PingFangSC-Medium;
@@ -448,7 +463,9 @@ export default defineComponent({
     }
   }
   :deep(.ant-card-body) {
-    padding: 10px;
+    padding: 5px;
+    height: 137px;
+    overflow: hidden;
   }
 }
 .sds-wrap-b {
