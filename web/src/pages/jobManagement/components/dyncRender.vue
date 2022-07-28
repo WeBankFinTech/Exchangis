@@ -63,7 +63,7 @@ export default defineComponent({
         return { width: '200px' }
       }
     },
-    data: Object
+    data: Object // 数据源参数包含数据类型， 数据源等参数{ db，ds，id，table，type }
   },
   emits: ["updateInfo"],
   setup(props, context) {

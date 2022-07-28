@@ -46,6 +46,8 @@
                 <SelectDataSource
                   @updateDsInfo="updateSourceInfo"
                   :title="sourceTitle"
+                  :engineType="engineType"
+                  direct="source"
                 />
               </a-form-item>
               <!-- 动态组件 -->
@@ -93,6 +95,8 @@
                   @updateDsInfo="updateSinkInfo"
                   :title="sinkTitle"
                   :style="styleObject"
+                  :engineType="engineType"
+                  direct="sink"
                 />
               </a-form-item>
               <!-- 动态组件 -->
@@ -183,6 +187,8 @@ export default defineComponent({
         sinks: [ ...props.dsData.params.sinks ]
       },
     });
+    //test 代码调试中
+    console.log('%c%s','color: red; background: yellow; font-size: 24px;', '调试', props.dsData.params.sources)
 
     const sourcesHelpMsg = reactive({});
     const sourcesHelpStatus = reactive({});
@@ -526,8 +532,8 @@ export default defineComponent({
 }
 .data-source-warp-mid {
   width: 74px;
-  height: 46px;
-  line-height: 46px;
+  height: 128px;
+  line-height: 128px;
   text-align: center;
 }
 .data-source-label {
