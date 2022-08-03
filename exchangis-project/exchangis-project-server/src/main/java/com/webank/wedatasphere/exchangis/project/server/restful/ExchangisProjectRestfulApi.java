@@ -6,6 +6,7 @@ import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.AuthorityUtils;
+import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectConfiguration;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
@@ -105,6 +106,9 @@ public class ExchangisProjectRestfulApi {
     @RequestMapping(value = "createProject", method = RequestMethod.POST)
     public Message createProject(@Validated @RequestBody ExchangisProjectInfo projectVo,
                                  BindingResult result, HttpServletRequest request) {
+        if (ExchangisProjectConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to create (没有创建项目权限)");
+        }
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
@@ -154,6 +158,9 @@ public class ExchangisProjectRestfulApi {
     @RequestMapping( value = "updateProject", method = RequestMethod.PUT)
     public Message updateProject(@Validated({UpdateGroup.class, Default.class}) @RequestBody ExchangisProjectInfo projectVo
             , BindingResult result, HttpServletRequest request) {
+        if (ExchangisProjectConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to update (没有项目的更新权限)");
+        }
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
@@ -193,6 +200,9 @@ public class ExchangisProjectRestfulApi {
      */
     @RequestMapping( value = "/projects/{id:\\d+}", method = RequestMethod.DELETE)
     public Message deleteProject(HttpServletRequest request, @PathVariable("id") Long id) {
+        if (ExchangisProjectConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to update (没有编辑权限，无法删除项目)");
+        }
         String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.getProjectById(id);
