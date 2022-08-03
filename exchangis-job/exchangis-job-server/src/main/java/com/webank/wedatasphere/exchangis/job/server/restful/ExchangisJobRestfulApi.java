@@ -3,7 +3,10 @@ package com.webank.wedatasphere.exchangis.job.server.restful;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
+import com.webank.wedatasphere.exchangis.job.server.service.JobFuncService;
 import com.webank.wedatasphere.exchangis.job.server.utils.AuthorityUtils;
+import com.webank.wedatasphere.exchangis.job.server.vo.JobFunction;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
@@ -11,6 +14,7 @@ import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServer
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
+import org.apache.linkis.server.BDPJettyServerHelper;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
@@ -42,6 +46,9 @@ public class ExchangisJobRestfulApi {
 
     @Resource
     private ProjectService projectService;
+
+    @Resource
+    private JobFuncService jobFuncService;
 
     /**
      * Query job in page
@@ -89,7 +96,91 @@ public class ExchangisJobRestfulApi {
     public Message getEngineList() {
         // TODO limit the engine type in exchangis
 //        return Message.ok().data("result", EngineTypeEnum.values());
-        return Message.ok().data("result", new EngineTypeEnum[]{EngineTypeEnum.SQOOP});
+        return Message.ok().data("result", new EngineTypeEnum[]{EngineTypeEnum.SQOOP, EngineTypeEnum.DATAX});
+    }
+
+    /**
+     * Executor
+     *
+     * @return message
+     */
+    @RequestMapping(value = "/Executor", method = RequestMethod.GET)
+    public Message getExecutor(HttpServletRequest request) {
+//        return Message.ok().data("result", EngineTypeEnum.values());
+        String executor = SecurityFilter.getLoginUsername(request);
+        return Message.ok().data("result", executor);
+    }
+
+    /**
+     * TRANSFORM function
+     *
+     * @return message
+     */
+    @RequestMapping(value = "/func/transform", method = RequestMethod.GET)
+    public Message tjobFuncList() {
+        // TODO limit the engine type in exchangis
+//        return Message.ok().data("result", EngineTypeEnum.values());
+        Date date = new Date(1587461706);
+        JobFunction jobFunction = new JobFunction();
+        jobFunction.setId(1);
+        jobFunction.setFuncType(JobFunction.FunctionType.TRANSFORM);
+        jobFunction.setFuncName("dx_substr");
+        jobFunction.setParamNum(2);
+        jobFunction.setCreateTime(date);
+        List<String> paramNames = new ArrayList<String>();
+        paramNames.add("startIndex");
+        paramNames.add("length");
+        jobFunction.setParamNames(paramNames);
+        List<JobFunction> jobFunctionList = new ArrayList<>();
+        jobFunctionList.add(jobFunction);
+        return Message.ok().data("data", jobFunctionList);
+    }
+
+    /**
+     * TRANSFORM function
+     *
+     * @return message
+     */
+    @RequestMapping(value = "/func/verify", method = RequestMethod.GET)
+    public Message vjobFuncList() {
+        // TODO limit the engine type in exchangis
+//        return Message.ok().data("result", EngineTypeEnum.values());
+        Date date = new Date(1587461706);
+        JobFunction jobFunction = new JobFunction();
+        jobFunction.setId(5);
+        jobFunction.setFuncType(JobFunction.FunctionType.VERIFY);
+        jobFunction.setFuncName("like");
+        jobFunction.setParamNum(1);
+        jobFunction.setTabName("DATAX");
+        jobFunction.setCreateTime(date);
+        jobFunction.setRefName("dx_filter");
+        List<String> paramNames = new ArrayList<String>();
+        paramNames.add("value");
+        jobFunction.setParamNames(paramNames);
+        List<JobFunction> jobFunctionList = new ArrayList<>();
+        jobFunctionList.add(jobFunction);
+        return Message.ok().data("data", jobFunctionList);
+    }
+
+    @RequestMapping(value = "/func/{tabName:\\w+}/{funcType:\\w+}", method = RequestMethod.GET)
+    public Message jobFuncList(@PathVariable("tabName")String tabName,
+                                        @PathVariable("funcType")String funcType,
+                               HttpServletRequest request){
+
+        String userName = SecurityFilter.getLoginUsername(request);
+        Message response = Message.ok();
+        try {
+            //Limit that the tab should be an engine tab
+            EngineTypeEnum.valueOf(tabName.toUpperCase());
+            JobFunction.FunctionType funcTypeEnum = JobFunction.FunctionType.valueOf(funcType);
+            List<JobFunction> functionList = jobFuncService.getFunctions(tabName, funcTypeEnum);
+            return Message.ok().data("data", functionList);
+        }catch(Exception e){
+            String message = "Fail to get function (获取函数失败)";
+            LOG.error(message, e);
+            response = Message.error(message);
+        }
+        return response;
     }
 
     /**
@@ -104,6 +195,9 @@ public class ExchangisJobRestfulApi {
             @Validated({InsertGroup.class, Default.class}) @RequestBody ExchangisJobVo exchangisJobVo,
             BindingResult result,
             HttpServletRequest request) {
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to create Job (没有创建任务权限)");
+        }
         if (result.hasErrors()) {
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
@@ -140,6 +234,9 @@ public class ExchangisJobRestfulApi {
     public Message copyJob(@PathVariable("sourceJobId") Long sourceJobId,
                            @Validated @RequestBody ExchangisJobVo exchangisJobVo,
                            BindingResult result, HttpServletRequest request) {
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to update (没有复制权限)");
+        }
         if (result.hasErrors()) {
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
@@ -172,6 +269,9 @@ public class ExchangisJobRestfulApi {
     public Message updateJob(@PathVariable("id") Long id,
                              @Validated @RequestBody ExchangisJobVo exchangisJobVo,
                              BindingResult result, HttpServletRequest request) {
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to update (没有更新权限)");
+        }
         if (result.hasErrors()) {
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
@@ -204,6 +304,9 @@ public class ExchangisJobRestfulApi {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public Message deleteJob(@PathVariable("id") Long id, HttpServletRequest request) {
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to delete (没有删除权限)");
+        }
         String userName = SecurityFilter.getLoginUsername(request);
         Message response = Message.ok("job deleted");
         try {
@@ -310,6 +413,9 @@ public class ExchangisJobRestfulApi {
     @RequestMapping(value = "/{id}/config", method = RequestMethod.PUT)
     public Message saveJobConfig(@PathVariable("id") Long id,
                                  @RequestBody ExchangisJobVo jobVo, HttpServletRequest request) {
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to save content (没有保存任务权限)");
+        }
         jobVo.setId(id);
         jobVo.setModifyUser(SecurityFilter.getLoginUsername(request));
         Message response = Message.ok();
@@ -334,6 +440,9 @@ public class ExchangisJobRestfulApi {
     @RequestMapping(value = "/{id}/content", method = RequestMethod.PUT)
     public Message saveSubJobs(@PathVariable("id") Long id,
                                @RequestBody ExchangisJobVo jobVo, HttpServletRequest request) {
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to save content (没有保存任务权限)");
+        }
         jobVo.setId(id);
         jobVo.setModifyUser(SecurityFilter.getLoginUsername(request));
         String loginUser = SecurityFilter.getLoginUsername(request);

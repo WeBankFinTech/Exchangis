@@ -161,7 +161,8 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                             type.getId(),
                             type.getClassifier(),
 //                            item.classifier(),
-                            item.name()
+                            item.name(),
+                            "结构化"
                     );
 //                    dto.setDescription(item.description());
 //                    dto.setIcon(item.icon());
@@ -1273,6 +1274,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             deductions.add(deduction);
         }
         message.data("deductions", deductions);
+        message.data("transformEnable", true);
 
         return message;
     }

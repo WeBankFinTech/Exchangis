@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.restful.execute;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
@@ -238,6 +239,9 @@ public class ExchangisJobExecuteRestfulApi {
     @RequestMapping( value = "/{jobExecutionId}/deleteJob", method = RequestMethod.POST)
     public Message ExecutedJobDelete(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) throws ExchangisJobServerException {
         //ExchangisLaunchedJobEntity jobAndTaskStatus = exchangisExecutionService.getExecutedJobAndTaskStatus(jobExecutionId);
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to delete this record (没有删除历史记录权限)");
+        }
         Message message = Message.ok("Kill succeed(停止成功)！");
         String userName = SecurityFilter.getLoginUsername(request);
         try {
