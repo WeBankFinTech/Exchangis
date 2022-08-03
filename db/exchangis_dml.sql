@@ -15,3 +15,19 @@ INSERT INTO exchangis_job_param_config (config_key,config_name,config_direction,
 ('partition','分区信息','SOURCE','HIVE','MAP','partition','分区信息(文本)',NULL,0,'VARCHAR',NULL,NULL,'REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,NULL,1,NULL,1)
 ,('writeMode','写入方式','SQOOP-SINK','MYSQL','OPTION','writeMode','写入方式',NULL,1,'OPTION','["INSERT","UPDATE"]','INSERT',NULL,NULL,'写入方式输入错误',0,0,NULL,1,NULL,1,NULL,1)
 ;
+
+INSERT INTO exchangis_job_func (func_type,func_name,tab_name,name_dispaly,param_num,ref_name,description,modify_time,create_time) VALUES
+('TRANSFORM','dx_substr','DATAX',NULL,2,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
+,('TRANSFORM','dx_pad','DATAX',NULL,3,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
+,('TRANSFORM','dx_replace','DATAX',NULL,3,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
+,('VERIFY','like','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
+,('VERIFY','not like','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
+,('VERIFY','>','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
+,('VERIFY','<','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
+,('VERIFY','=','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
+,('VERIFY','!=','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
+,('VERIFY','>=','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
+;
+INSERT INTO exchangis_job_func (func_type,func_name,tab_name,name_dispaly,param_num,ref_name,description,modify_time,create_time) VALUES
+('TRANSFORM','dx_precision','DATAX',NULL,1,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
+;

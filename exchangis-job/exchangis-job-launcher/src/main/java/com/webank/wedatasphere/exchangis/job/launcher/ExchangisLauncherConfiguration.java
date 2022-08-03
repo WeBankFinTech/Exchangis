@@ -25,4 +25,7 @@ public class ExchangisLauncherConfiguration {
     public static final CommonVars<String> LINKIS_SERVER_URL = CommonVars.apply("wds.exchangis.client.linkis.server-url", "http://127.0.0.1:9001");
 
     public static final CommonVars<String> LINKIS_TOKEN_VALUE = CommonVars.apply("wds.exchangis.client.linkis.token.value", "EXCHANGIS-TOKEN");
+
+    public static final CommonVars<Boolean> LIMIT_INTERFACE = CommonVars.apply("wds.exchangis.limit.interface.value", true);
+
 }
