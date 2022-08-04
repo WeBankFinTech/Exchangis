@@ -631,6 +631,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             item.setModifyTime(ds.getModifyTime());
             item.setVersionId(ds.getVersionId());
             item.setExpire(ds.isExpire());
+            item.setReadAble(true);
+            item.setWriteAble(true);
+            item.setAuthDbs("");
+            item.setAuthTbls("");
             dataSources.add(item);
         });
 
@@ -1279,4 +1283,12 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         return message;
     }
 
+    public Message encryptConnectInfo(String encryStr) throws Exception {
+        if (Objects.isNull(encryStr)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "dataSourceType connect parameter show not be null");
+        }
+
+        Message message = new Message();
+        return message;
+    }
 }

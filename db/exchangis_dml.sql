@@ -31,3 +31,19 @@ INSERT INTO exchangis_job_func (func_type,func_name,tab_name,name_dispaly,param_
 INSERT INTO exchangis_job_func (func_type,func_name,tab_name,name_dispaly,param_num,ref_name,description,modify_time,create_time) VALUES
 ('TRANSFORM','dx_precision','DATAX',NULL,1,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
 ;
+
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`, `order`) VALUES(1, 'startIndex', 'startIndex', 0) ON DUPLICATE KEY UPDATE `name_display` = 'startIndex';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`, `order`) VALUES(1, 'length', 'length', 1) ON DUPLICATE KEY UPDATE `name_display` = 'length';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`, `order`) VALUES(2, 'padType', 'padType(r or l)', 0) ON DUPLICATE KEY UPDATE `name_display` = 'padType(r or l)';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`, `order`) VALUES(2, 'length', 'length', 1) ON DUPLICATE KEY UPDATE `name_display` = 'length';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`, `order`) VALUES(2, 'padString', 'padString', 2) ON DUPLICATE KEY UPDATE `name_display` = 'padString';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`, `order`) VALUES(3, 'startIndex', 'startIndex', 0) ON DUPLICATE KEY UPDATE `name_display` = 'startIndex';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`, `order`) VALUES(3, 'length', 'length', 1) ON DUPLICATE KEY UPDATE `name_display` = 'length';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`, `order`) VALUES(3, 'replaceString', 'replaceString', 2) ON DUPLICATE KEY UPDATE `name_display` = 'replaceString';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`) VALUES(4, 'value', 'value') ON DUPLICATE KEY UPDATE `name_display` = 'value';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`) VALUES(5, 'value', 'value') ON DUPLICATE KEY UPDATE `name_display` = 'value';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`) VALUES(6, 'value', 'value') ON DUPLICATE KEY UPDATE `name_display` = 'value';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`) VALUES(7, 'value', 'value') ON DUPLICATE KEY UPDATE `name_display` = 'value';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`) VALUES(8, 'value', 'value') ON DUPLICATE KEY UPDATE `name_display` = 'value';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`) VALUES(9, 'value', 'value') ON DUPLICATE KEY UPDATE `name_display` = 'value';
+INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`) VALUES(10, 'value', 'value') ON DUPLICATE KEY UPDATE `name_display` = 'value';
