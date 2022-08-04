@@ -7,6 +7,7 @@
                     :sourceTypeList="sourceTypeList"
                     @create="handleCreate"
                     @search="handleSearch"
+                    @encrypt="showEncrypt"
                 />
             </a-col>
             <a-col :span="24"><div class="line"></div></a-col>
@@ -119,6 +120,9 @@
             :zIndex="1002"
             @finish="handleModalFinish"
         />
+        <encrypt-modal
+            v-model:visible="encryptVisible"
+        />
     </div>
 </template>
 
@@ -130,6 +134,7 @@ import TopLine from './components/topLine.vue';
 import SelectTypeModal from './components/selectTypeModal.vue';
 import EditModal from './components/editModal.vue';
 import VersionModal from './components/versionModal.vue';
+import EncryptModal from './components/encryptModal.vue';
 import {
     getDataSourceList,
     deleteDataSource,
@@ -145,7 +150,8 @@ export default {
         TopLine,
         SelectTypeModal,
         EditModal,
-        VersionModal
+        VersionModal,
+        EncryptModal
     },
     setup() {
         const { t } = useI18n({ useScope: 'global' });
@@ -252,7 +258,9 @@ export default {
                 showQuickJumper: true,
                 showSizeChanger: true
             },
-            searchData: {}
+            searchData: {},
+            // 加密弹窗
+            encryptVisible: false,
         };
     },
     mounted() {
@@ -273,6 +281,7 @@ export default {
             };
             this.getDataSourceList();
         },
+
         // 打开版本弹框
         handleOpenVersionModal(text) {
             this.versionModalCfg = {
@@ -362,6 +371,10 @@ export default {
                 page: current,
                 pageSize
             });
+        },
+        // 显示加密弹窗
+        showEncrypt() {
+            this.encryptVisible = true
         }
     }
 };
