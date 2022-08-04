@@ -18,6 +18,10 @@ public class DataSourceDTO {
     private String modifyUser;
     private Date modifyTime;
     private boolean expire;
+    private boolean writeAble;
+    private boolean readAble;
+    private String authDbs;
+    private String authTbls;
 
     public boolean isExpire() {
         return expire;
@@ -129,5 +133,37 @@ public class DataSourceDTO {
 
     public void setCreateSystem(String createSystem) {
         this.createSystem = createSystem;
+    }
+
+    public boolean isWriteAble() {
+        return writeAble;
+    }
+
+    public void setWriteAble(boolean writeAble) {
+        this.writeAble = writeAble;
+    }
+
+    public boolean isReadAble() {
+        return readAble;
+    }
+
+    public void setReadAble(boolean readAble) {
+        this.readAble = readAble;
+    }
+
+    public String getAuthDbs() {
+        return authDbs;
+    }
+
+    public void setAuthDbs(String authDbs) {
+        this.authDbs = authDbs;
+    }
+
+    public String getAuthTbls() {
+        return authTbls;
+    }
+
+    public void setAuthTbls(String authTbls) {
+        this.authTbls = authTbls;
     }
 }

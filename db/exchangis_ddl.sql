@@ -176,6 +176,16 @@ CREATE TABLE `exchangis_job_func` (
   UNIQUE KEY `job_func_tab_name_idx` (`tab_name`,`func_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8
 
+DROP TABLE IF EXISTS `exchangis_job_func_params`;
+CREATE TABLE IF NOT EXISTS `exchangis_job_func_params`(
+        `func_id` INT(11) NOT NULL,
+    `param_name` VARCHAR(100) NOT NULL,
+    `order`  INT(11) DEFAULT 0,
+    `name_display` VARCHAR(100),
+    `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(`func_id`, `param_name`)
+)Engine=InnoDB DEFAULT CHARSET=utf8;
+
 INSERT INTO exchangis_job_param_config (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status) VALUES
 ('setting.speed.bytes','作业速率限制','','DATAX','INPUT','setting.speed.bytes','作业速率限制','Mb/s',1,'NUMBER','','','REGEX','^[1-9]\\d*$','作业速率限制输入错误',0,0,'',1,'',1,'',1)
 ,('setting.speed.records','作业记录数限制','','DATAX','INPUT','setting.speed.records','作业记录数限制','条/s',1,'NUMBER','','','REGEX','^[1-9]\\d*$','作业记录数限制输入错误',0,0,'',1,'',2,'',1)
