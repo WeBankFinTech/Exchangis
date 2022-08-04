@@ -1,3 +1,8 @@
+<!--
+ * @Description: 
+ * @Author: sueRim
+ * @Date: 2022-05-13 10:19:27
+-->
 <template>
   <div class="top-line">
     <span>
@@ -20,6 +25,9 @@
       </a-button>
     </span>
     <a-space>
+      <a-button :loading="loading" type="primary" @click="$emit('encrypt')">
+        {{ $t("加密插件") }}
+      </a-button>
       <a-button :loading="loading" type="primary" @click="$emit('create')">
         <template v-slot:icon> <icon-plusOutlined /></template>
         {{ $t("dataSource.topLine.createDataSourceButton") }}
