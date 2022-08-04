@@ -540,3 +540,27 @@ export const getPartitionInfo = (params) => {
     }
   );
 }
+
+// 获取字段映射转换函数
+export const getFieldFunc = (funcType) => {
+  if (!funcType) return
+  return request(
+    `/job/func/${funcType}?labels=${getEnvironment()}&_=${Math.random()}`,
+    {},
+    {
+      method: "GET",
+    }
+  );
+}
+
+// 获取字段映射转换函数
+export const encryptFunc = (encryStr) => {
+  if (!encryStr) return
+  return request(
+    `/datasources/encrypt?labels=${getEnvironment()}&encryStr=${encryStr}`,
+    {},
+    {
+      method: "POST",
+    }
+  );
+}
