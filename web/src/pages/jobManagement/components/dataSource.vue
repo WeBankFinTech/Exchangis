@@ -187,8 +187,6 @@ export default defineComponent({
         sinks: [ ...props.dsData.params.sinks ]
       },
     });
-    //test 代码调试中
-    console.log('%c%s','color: red; background: yellow; font-size: 24px;', '调试', props.dsData.params.sources)
 
     const sourcesHelpMsg = reactive({});
     const sourcesHelpStatus = reactive({});
