@@ -409,6 +409,34 @@ public class ExchangisDataSourceRestfulApi {
         return message;
     }
 
+    @RequestMapping( value = "/tools/encrypt", method = RequestMethod.POST)
+    public Message sourceStrEncrypt(HttpServletRequest request, @RequestBody Map<String, Object> params, @QueryParam(value = "encryStr") String encryStr) throws Exception {
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.encryptConnectInfo(encryStr);
+            //message = Message.ok().data("encryStr", "owwonowoww");
+        } catch (Exception e) {
+            String errorMessage = "Encrypted string failed";
+            LOG.error(errorMessage, e);
+            message = Message.error("加密字符串失败");
+        }
+        return message;
+    }
+
+    /*@RequestMapping( value = "/tools/decrypt", method = RequestMethod.POST)
+    public Message sinkStrDecrypt(HttpServletRequest request, @RequestBody Map<String, Object> params, @QueryParam(value = "sinkStr") String sinkStr) throws Exception {
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.decryptConnectInfo(sinkStr);
+            //message = Message.ok().data("encryStr", "owwonowoww");
+        } catch (Exception e) {
+            String errorMessage = "Encrypted string failed";
+            LOG.error(errorMessage, e);
+            message = Message.error("加密字符串失败");
+        }
+        return message;
+    }*/
+
     @RequestMapping( value = "/{engine}/{type}/params/ui", method = RequestMethod.GET)
     public Message getParamsUI(
             HttpServletRequest request,

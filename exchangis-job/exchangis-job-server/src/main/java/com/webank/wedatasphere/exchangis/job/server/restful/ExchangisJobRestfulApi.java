@@ -107,7 +107,10 @@ public class ExchangisJobRestfulApi {
     @RequestMapping(value = "/Executor", method = RequestMethod.GET)
     public Message getExecutor(HttpServletRequest request) {
 //        return Message.ok().data("result", EngineTypeEnum.values());
-        String executor = SecurityFilter.getLoginUsername(request);
+        String userName = SecurityFilter.getLoginUsername(request);
+        List<String> executor = new ArrayList<>();
+        executor.add("hduser05");
+        executor.add("hduser06");
         return Message.ok().data("result", executor);
     }
 

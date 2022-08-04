@@ -18,8 +18,8 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.webank.wedatasphere.exchangis.job.dao.JobFunctionDao">
-    <resultMap id="resultJobFunc" type="JobFunction">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.server.mapper.JobFunctionDao">
+    <resultMap id="resultJobFunc" type="com.webank.wedatasphere.exchangis.job.server.vo.JobFunction">
         <result column="id" property="id"/>
         <result column="func_type" property="funcType"/>
         <result column="func_name" property="funcName"/>
