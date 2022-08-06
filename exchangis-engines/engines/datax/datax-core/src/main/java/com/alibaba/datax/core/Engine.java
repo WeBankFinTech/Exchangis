@@ -44,6 +44,8 @@ public class Engine {
     /* check job model (job/task) first */
     public void start(Configuration allConf) {
 
+        //todo 放在DataxOnceExecutor实现
+
         // 绑定column转换信息
         ColumnCast.bind(allConf);
 
