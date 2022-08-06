@@ -75,7 +75,6 @@
 		<module>exchangis-plugins</module>
 		<module>exchangis-server</module>
 		<module>assembly-package</module>
-        <module>exchangis-engines</module>
     </modules>
 	<dependencyManagement>
 		<dependencies>
