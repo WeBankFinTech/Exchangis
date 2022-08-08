@@ -8,6 +8,7 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
+import com.webank.wedatasphere.exchangis.job.server.builder.AbstractLoggingExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.SubExchangisJobHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * TransformJob builder
  */
-public class GenericExchangisTransformJobBuilder extends AbstractExchangisJobBuilder<ExchangisJobInfo, TransformExchangisJob> {
+public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangisJobBuilder<ExchangisJobInfo, TransformExchangisJob> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenericExchangisTransformJobBuilder.class);
 
