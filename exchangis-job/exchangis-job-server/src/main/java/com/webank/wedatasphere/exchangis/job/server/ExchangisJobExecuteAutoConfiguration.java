@@ -22,12 +22,12 @@ import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObs
 import com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger;
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
 import com.webank.wedatasphere.exchangis.job.server.log.service.LocalSimpleJobLogService;
+import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.executer.ExecutorManager;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
@@ -64,9 +64,8 @@ public class ExchangisJobExecuteAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TaskGeneratorContext.class)
-    public TaskGeneratorContext taskGeneratorContext(JobLogListener jobLogListener,
-                                                     MetadataInfoService metadataInfoService){
-        return new DefaultTaskGeneratorContext(jobLogListener, metadataInfoService);
+    public TaskGeneratorContext taskGeneratorContext(JobLogListener jobLogListener){
+        return new SpringTaskGeneratorContext(jobLogListener, SpringContextHolder.getApplicationContext());
     }
 
     /**
