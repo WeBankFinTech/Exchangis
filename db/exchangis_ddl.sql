@@ -59,6 +59,7 @@ CREATE TABLE `exchangis_job_param_config` (
   `sort` int(11) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL,
+  `ref_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 
@@ -90,7 +91,7 @@ CREATE TABLE `exchangis_project_user` (
   `priv` int(20) DEFAULT NULL,
   `last_update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT;
 
 -- exchangis_v4.exchangis_launchable_task definition
 DROP TABLE IF EXISTS `exchangis_launchable_task`;
@@ -160,19 +161,61 @@ CREATE TABLE `exchangis_launched_task_entity` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO exchangis_job_param_config (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status) VALUES
-('setting.speed.bytes','作业速率限制','','DATAX','INPUT','setting.speed.bytes','作业速率限制','Mb/s',1,'NUMBER','','','REGEX','^[1-9]\\d*$','作业速率限制输入错误',0,0,'',1,'',1,'',1)
-,('setting.speed.records','作业记录数限制','','DATAX','INPUT','setting.speed.records','作业记录数限制','条/s',1,'NUMBER','','','REGEX','^[1-9]\\d*$','作业记录数限制输入错误',0,0,'',1,'',2,'',1)
-,('setting.max.parallelism','作业最大并行度','','DATAX','INPUT','setting.max.parallelism','作业最大并行度','个',1,'NUMBER','','1','REGEX','^[1-9]\\d*$','作业最大并行度输入错误',0,0,'',1,'',3,'',1)
-,('setting.max.memory','作业最大使用内存','','DATAX','INPUT','setting.max.memory','作业最大使用内存','Mb',1,'NUMBER','','1024','REGEX','^[1-9]\\d*$','作业最大使用内存输入错误',0,0,'',1,'',4,'',1)
-,('setting.errorlimit.record','最多错误记录数','','DATAX','INPUT','setting.errorlimit.record','最多错误记录数','条',1,'NUMBER','','','REGEX','^[1-9]\\d*$','最多错误记录数输入错误',0,0,'',1,'',5,'',1)
-,('setting.max.parallelism','作业最大并行数','','SQOOP','INPUT','setting.max.parallelism','作业最大并行数','个',1,'NUMBER','','1','REGEX','^[1-9]\\d*$','作业最大并行数输入错误',0,0,'',1,'',1,'',1)
-,('setting.max.memory','作业最大内存','','SQOOP','INPUT','setting.max.memory','作业最大内存','Mb',1,'NUMBER','','1024','REGEX','^[1-9]\\d*$','作业最大内存输入错误',0,0,'',1,'',2,'',1)
-,('where','WHERE条件','SOURCE','MYSQL','INPUT','where','WHERE条件','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,500}$','WHERE条件输入过长',0,0,'',1,'',2,'',1)
-,('writeMode','写入方式','SQOOP-SINK','HIVE','OPTION','writeMode','写入方式(OVERWRITE只对TEXT类型表生效)','',1,'OPTION','["OVERWRITE","APPEND"]','OVERWRITE','','','写入方式输入错误',0,0,'',1,'',1,'',1)
-,('partition','分区信息','SINK','HIVE','MAP','partition','分区信息(文本)','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,'',2,'',1)
+DROP TABLE IF EXISTS `exchangis_job_func`;
+CREATE TABLE `exchangis_job_func` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `func_type` varchar(50) NOT NULL,
+  `func_name` varchar(100) NOT NULL,
+  `tab_name` varchar(50) NOT NULL COMMENT 'Tab',
+  `name_dispaly` varchar(100) DEFAULT NULL,
+  `param_num` int(11) DEFAULT '0',
+  `ref_name` varchar(100) DEFAULT NULL,
+  `description` varchar(200) DEFAULT NULL,
+  `modify_time` datetime DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `job_func_tab_name_idx` (`tab_name`,`func_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8
+
+DROP TABLE IF EXISTS `exchangis_job_func_params`;
+CREATE TABLE IF NOT EXISTS `exchangis_job_func_params`(
+    `func_id` INT(11) NOT NULL,
+    `param_name` VARCHAR(100) NOT NULL,
+    `order`  INT(11) DEFAULT 0,
+    `name_display` VARCHAR(100),
+    `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(`func_id`, `param_name`)
+)Engine=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `exchangis_engine_settings`;
+CREATE TABLE IF NOT EXISTS `exchangis_engine_settings`(
+    `id` bigint(20) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    `engine_name` VARCHAR(255) NOT NULL,
+    `direct_source`  VARCHAR(255) NOT NULL,
+    `direct_sink` VARCHAR(255)  NOT NULL,
+    `func_id` bigint(20),
+    `use_func` BOOL
+)Engine=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO exchangis_job_param_config (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
+('setting.speed.bytes','作业速率限制','','DATAX','INPUT','setting.speed.bytes','作业速率限制','Mb/s',1,'NUMBER','','','REGEX','^[1-9]\\d*$','作业速率限制输入错误',0,0,'',1,'',1,'',1,null)
+,('setting.speed.records','作业记录数限制','','DATAX','INPUT','setting.speed.records','作业记录数限制','条/s',1,'NUMBER','','','REGEX','^[1-9]\\d*$','作业记录数限制输入错误',0,0,'',1,'',2,'',1,null)
+,('setting.max.parallelism','作业最大并行度','','DATAX','INPUT','setting.max.parallelism','作业最大并行度','个',1,'NUMBER','','1','REGEX','^[1-9]\\d*$','作业最大并行度输入错误',0,0,'',1,'',3,'',1,null)
+,('setting.max.memory','作业最大使用内存','','DATAX','INPUT','setting.max.memory','作业最大使用内存','Mb',1,'NUMBER','','1024','REGEX','^[1-9]\\d*$','作业最大使用内存输入错误',0,0,'',1,'',4,'',1,null)
+,('setting.errorlimit.record','最多错误记录数','','DATAX','INPUT','setting.errorlimit.record','最多错误记录数','条',1,'NUMBER','','','REGEX','^[1-9]\\d*$','最多错误记录数输入错误',0,0,'',1,'',5,'',1,null)
+,('setting.max.parallelism','作业最大并行数','','SQOOP','INPUT','setting.max.parallelism','作业最大并行数','个',1,'NUMBER','','1','REGEX','^[1-9]\\d*$','作业最大并行数输入错误',0,0,'',1,'',1,'',1,null)
+,('setting.max.memory','作业最大内存','','SQOOP','INPUT','setting.max.memory','作业最大内存','Mb',1,'NUMBER','','1024','REGEX','^[1-9]\\d*$','作业最大内存输入错误',0,0,'',1,'',2,'',1,null)
+,('where','WHERE条件','SOURCE','MYSQL','INPUT','where','WHERE条件','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,500}$','WHERE条件输入过长',0,0,'',1,'',2,'',1,null)
+,('writeMode','写入方式','SQOOP-SINK','HIVE','OPTION','writeMode','写入方式(OVERWRITE只对TEXT类型表生效)','',1,'OPTION','["OVERWRITE","APPEND"]','OVERWRITE','','','写入方式输入错误',0,0,'',1,'',1,'',1,null)
+,('partition','分区信息','SINK','HIVE','MAP','partition','分区信息(文本)','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,'',2,'',1,null)
+,('batchSize','批量大小','DATAX-SINK','ELASTICSEARCH','INPUT','batchSize','批量大小','',0,'NUMBER','','','REGEX','^[1-9]\\d*$','批量大小输入错误',0,0,'',1,'',1,'',1,null)
+,('nullCharacter','空值字符','DATAX-SINK','ELASTICSEARCH','INPUT','nullCharacter','空值字符','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','空值字符输入错误',0,0,'',1,'',2,'',1,null)
+,('query','query条件','DATAX-SOURCE','MONGODB','INPUT','query','query条件','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,500}$','query条件输入过长',0,0,'',1,'',2,'',1,null)
+,('writeMode','写入方式','DATAX-SINK','MONGODB','OPTION','writeMode','写入方式','',1,'OPTION','["INSERT","REPLACE"]','INSERT','','','写入方式输入错误',0,0,'',1,'',1,'',1,null)
+,('batchSize','批量大小','DATAX-SINK','MONGODB','INPUT','batchSize','批量大小','',0,'NUMBER','','','REGEX','^[1-9]\\d*$','批量大小输入错误',0,0,'',1,'',2,'',1,null)
+,('transferMode','传输方式','DATAX-SOURCE','HIVE','OPTION','transferMode','传输方式','',1,'OPTION','["二进制","记录"]','记录','','','该传输方式不可用',0,0,'',1,'',1,'',1,null)
 ;
-INSERT INTO exchangis_job_param_config (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status) VALUES
-('partition','分区信息','SOURCE','HIVE','MAP','partition','分区信息(文本)',NULL,0,'VARCHAR',NULL,NULL,'REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,NULL,1,NULL,1)
-,('writeMode','写入方式','SQOOP-SINK','MYSQL','OPTION','writeMode','写入方式',NULL,1,'OPTION','["INSERT","UPDATE"]','INSERT',NULL,NULL,'写入方式输入错误',0,0,NULL,1,NULL,1,NULL,1)
+INSERT INTO exchangis_job_param_config (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
+('partition','分区信息','SOURCE','HIVE','MAP','partition','分区信息(文本)',NULL,0,'VARCHAR',NULL,NULL,'REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,NULL,1,NULL,1,null)
+,('writeMode','写入方式','SQOOP-SINK','MYSQL','OPTION','writeMode','写入方式',NULL,1,'OPTION','["INSERT","UPDATE"]','INSERT',NULL,NULL,'写入方式输入错误',0,0,NULL,1,NULL,1,NULL,1,null)
 ;
