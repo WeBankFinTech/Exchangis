@@ -7,11 +7,13 @@ public class ExchangisDataSourceDTO {
     private String option;
     private String description;
     private String icon;
+    private String struct_classifier;
 
-    public ExchangisDataSourceDTO(String id, String classifier, String name) {
+    public ExchangisDataSourceDTO(String id, String classifier, String name, String struct_classifier) {
         this.id = id;
         this.classifier = classifier;
         this.name = name;
+        this.struct_classifier = struct_classifier;
     }
 
     public String getId() {
@@ -48,5 +50,13 @@ public class ExchangisDataSourceDTO {
 
     public String getIcon() {
         return icon;
+    }
+
+    public String getStruct_classifier() {
+        return struct_classifier;
+    }
+
+    public void setStruct_classifier(String struct_classifier) {
+        this.struct_classifier = struct_classifier;
     }
 }

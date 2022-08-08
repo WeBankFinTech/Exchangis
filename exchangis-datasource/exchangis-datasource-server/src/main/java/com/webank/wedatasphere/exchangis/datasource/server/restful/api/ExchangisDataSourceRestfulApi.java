@@ -40,8 +40,12 @@ public class ExchangisDataSourceRestfulApi {
 
     // list all datasource types
     @RequestMapping( value = "/type", method = RequestMethod.GET)
-    public Message listDataSourceTypes(HttpServletRequest request) throws Exception {
+    public Message listDataSourceTypes(HttpServletRequest request,
+                                       @RequestParam(value = "engine_type", required = false) String engineType,
+                                       @RequestParam(value = "direct", required = false) String direct,
+                                       @RequestParam(value = "source_type", required = false) String sourceType) throws Exception {
         Message message = null;
+        LOG.info("engineType:{}, direct:{}, sourceType:{}", engineType, direct, sourceType);
         try{
             message = exchangisDataSourceService.listDataSources(request);
         } catch (ExchangisDataSourceException e) {
@@ -401,6 +405,34 @@ public class ExchangisDataSourceRestfulApi {
             String errorMessage = "Error occur while getting field List Information";
             LOG.error(errorMessage, e);
             message = Message.error("获取表字段列表信息失败，请检查数据源配置或更换数据源");
+        }
+        return message;
+    }
+
+    @RequestMapping( value = "/tools/encrypt", method = RequestMethod.POST)
+    public Message sourceStrEncrypt(HttpServletRequest request, @RequestBody Map<String, Object> params, @QueryParam(value = "encryStr") String encryStr) throws Exception {
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.encryptConnectInfo(encryStr);
+            //message = Message.ok().data("encryStr", "owwonowoww");
+        } catch (Exception e) {
+            String errorMessage = "Encrypted string failed";
+            LOG.error(errorMessage, e);
+            message = Message.error("加密字符串失败");
+        }
+        return message;
+    }
+
+    @RequestMapping( value = "/tools/decrypt", method = RequestMethod.POST)
+    public Message sinkStrDecrypt(HttpServletRequest request, @RequestBody Map<String, Object> params, @QueryParam(value = "sinkStr") String sinkStr) throws Exception {
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.decryptConnectInfo(sinkStr);
+            //message = Message.ok().data("encryStr", "owwonowoww");
+        } catch (Exception e) {
+            String errorMessage = "Encrypted string failed";
+            LOG.error(errorMessage, e);
+            message = Message.error("加密字符串失败");
         }
         return message;
     }

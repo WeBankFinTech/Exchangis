@@ -8,6 +8,7 @@ public class DataSourceQueryVO {
     private Long typeId;
     private String typeName;
     private String name;
+    private String direct;
     private Map<String, Object> labels;
 
     public Map<String, Object> getLabels() {
@@ -56,5 +57,13 @@ public class DataSourceQueryVO {
 
     public void setTypeId(Long typeId) {
         this.typeId = typeId;
+    }
+
+    public String getDirect() {
+        return direct;
+    }
+
+    public void setDirect(String direct) {
+        this.direct = direct;
     }
 }

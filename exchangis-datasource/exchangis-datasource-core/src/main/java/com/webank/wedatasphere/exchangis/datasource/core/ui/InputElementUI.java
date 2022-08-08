@@ -5,6 +5,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import java.util.Map;
 
 public class InputElementUI implements ElementUI<String> {
+    private Long id;
     private String key;
     private String field;
     private String label;
@@ -17,6 +18,15 @@ public class InputElementUI implements ElementUI<String> {
     private String validateRange;
     private String validateMsg;
     private String source;
+    private Long refId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getSource() {
         return source;
@@ -36,6 +46,14 @@ public class InputElementUI implements ElementUI<String> {
 
     public void setField(String field) {
         this.field = field;
+    }
+
+    public Long getRefId() {
+        return refId;
+    }
+
+    public void setRefId(Long refId) {
+        this.refId = refId;
     }
 
     @Override

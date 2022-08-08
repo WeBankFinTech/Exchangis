@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Map;
 
 public class OptionElementUI implements ElementUI<String> {
+    private Long id;
     private String key;
     private String field;
     private String label;
@@ -15,6 +16,23 @@ public class OptionElementUI implements ElementUI<String> {
     private Integer sort;
     private String unit;
     private Boolean required;
+    private Long refId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getRefId() {
+        return refId;
+    }
+
+    public void setRefId(Long refId) {
+        this.refId = refId;
+    }
 
     public String getKey() {
         return key;
