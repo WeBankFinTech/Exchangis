@@ -1,6 +1,5 @@
-package com.webank.wedatasphere.exchangis.datasource.server.configuration;
+package com.webank.wedatasphere.exchangis.job.server.utils;
 
-import org.apache.linkis.common.conf.CommonVars;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -15,11 +14,6 @@ import java.security.spec.X509EncodedKeySpec;
  * @Date 2022/8/4 10:35
  */
 public class RSAUtil {
-
-    public static final CommonVars<String> PUBLIC_KEY_STR = CommonVars.apply("wds.exchangis.publicKeyStr", "publicKeyStr");
-    public static final CommonVars<String> PRIVATE_KEY_STR = CommonVars.apply("wds.exchangis.privateKeyStr", "privateKeyStr");
-
-
     //生成秘钥对
     public static KeyPair getKeyPair() throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");

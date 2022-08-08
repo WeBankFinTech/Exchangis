@@ -423,7 +423,7 @@ public class ExchangisDataSourceRestfulApi {
         return message;
     }
 
-    /*@RequestMapping( value = "/tools/decrypt", method = RequestMethod.POST)
+    @RequestMapping( value = "/tools/decrypt", method = RequestMethod.POST)
     public Message sinkStrDecrypt(HttpServletRequest request, @RequestBody Map<String, Object> params, @QueryParam(value = "sinkStr") String sinkStr) throws Exception {
         Message message = null;
         try{
@@ -435,7 +435,7 @@ public class ExchangisDataSourceRestfulApi {
             message = Message.error("加密字符串失败");
         }
         return message;
-    }*/
+    }
 
     @RequestMapping( value = "/{engine}/{type}/params/ui", method = RequestMethod.GET)
     public Message getParamsUI(
