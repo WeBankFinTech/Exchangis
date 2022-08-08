@@ -23,6 +23,7 @@ import org.apache.linkis.engineconn.once.executor.{OnceExecutorExecutionContext,
 import org.apache.linkis.engineconnplugin.datax.config.exception.JobExecutionException
 import org.apache.linkis.engineconnplugin.datax.config.{DataxEngine, DataxEnvConfiguration}
 import org.apache.linkis.engineconnplugin.datax.context.DataxEngineConnContext
+import org.apache.linkis.engineconnplugin.datax.params.DataxParamsResolver
 import org.apache.linkis.manager.common.entity.enumeration.NodeStatus
 import org.apache.linkis.protocol.engine.JobProgressInfo
 import org.apache.linkis.scheduler.executer.ErrorExecuteResponse
@@ -36,6 +37,7 @@ class DataxCodeOnceExecutor(override val id: Long,
   private var params: util.Map[String, String] = _
   private var future: Future[_] = _
   private var daemonThread: Future[_] = _
+  private val paramsResolvers: Array[DataxParamsResolver] = Array()
 
   override def doSubmit(onceExecutorExecutionContext: OnceExecutorExecutionContext, options: Map[String, String]): Unit = {
     var isFailed = false
@@ -60,8 +62,16 @@ class DataxCodeOnceExecutor(override val id: Long,
   }
 
   protected def runDatax(params: util.Map[String, String], context: EngineCreationContext): Int = {
-    //todo Client
-
+    Utils.tryCatch {
+      val finalParams = paramsResolvers.foldLeft(params) {
+        case (newParam, resolver) => resolver.resolve(newParam, context)
+      }
+      DataxEngine.run(finalParams)
+    }{
+      case e: Exception =>
+        error(s"Run Error Message: ${e.getMessage}", e)
+        -1
+    }
   }
 
   override protected def waitToRunning(): Unit = {
