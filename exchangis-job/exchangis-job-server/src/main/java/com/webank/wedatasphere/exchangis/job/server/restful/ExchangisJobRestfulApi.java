@@ -16,12 +16,14 @@ import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
 import org.apache.linkis.server.BDPJettyServerHelper;
 import org.apache.linkis.server.Message;
+import org.apache.linkis.server.security.ProxyUserSSOUtils;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import scala.Option;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -106,63 +108,26 @@ public class ExchangisJobRestfulApi {
      */
     @RequestMapping(value = "/Executor", method = RequestMethod.GET)
     public Message getExecutor(HttpServletRequest request) {
-//        return Message.ok().data("result", EngineTypeEnum.values());
+        Option<String> proxyUserUsername =
+                ProxyUserSSOUtils.getProxyUserUsername(request);
         String userName = SecurityFilter.getLoginUsername(request);
         List<String> executor = new ArrayList<>();
         executor.add("hduser05");
-        executor.add("hduser06");
+        executor.add("hadoop");
+        executor.add(userName);
         return Message.ok().data("result", executor);
     }
 
-    /**
-     * TRANSFORM function
-     *
-     * @return message
-     */
-    @RequestMapping(value = "/func/transform", method = RequestMethod.GET)
-    public Message tjobFuncList() {
-        // TODO limit the engine type in exchangis
-//        return Message.ok().data("result", EngineTypeEnum.values());
-        Date date = new Date(1587461706);
-        JobFunction jobFunction = new JobFunction();
-        jobFunction.setId(1);
-        jobFunction.setFuncType(JobFunction.FunctionType.TRANSFORM);
-        jobFunction.setFuncName("dx_substr");
-        jobFunction.setParamNum(2);
-        jobFunction.setCreateTime(date);
-        List<String> paramNames = new ArrayList<String>();
-        paramNames.add("startIndex");
-        paramNames.add("length");
-        jobFunction.setParamNames(paramNames);
-        List<JobFunction> jobFunctionList = new ArrayList<>();
-        jobFunctionList.add(jobFunction);
-        return Message.ok().data("data", jobFunctionList);
-    }
 
     /**
-     * TRANSFORM function
+     * function
      *
      * @return message
      */
-    @RequestMapping(value = "/func/verify", method = RequestMethod.GET)
-    public Message vjobFuncList() {
-        // TODO limit the engine type in exchangis
-//        return Message.ok().data("result", EngineTypeEnum.values());
-        Date date = new Date(1587461706);
-        JobFunction jobFunction = new JobFunction();
-        jobFunction.setId(5);
-        jobFunction.setFuncType(JobFunction.FunctionType.VERIFY);
-        jobFunction.setFuncName("like");
-        jobFunction.setParamNum(1);
-        jobFunction.setTabName("DATAX");
-        jobFunction.setCreateTime(date);
-        jobFunction.setRefName("dx_filter");
-        List<String> paramNames = new ArrayList<String>();
-        paramNames.add("value");
-        jobFunction.setParamNames(paramNames);
-        List<JobFunction> jobFunctionList = new ArrayList<>();
-        jobFunctionList.add(jobFunction);
-        return Message.ok().data("data", jobFunctionList);
+    @RequestMapping(value = "/func/{funcType:\\w+}", method = RequestMethod.GET)
+    public Message vjobFuncList(@PathVariable("funcType")String funcType,
+                                HttpServletRequest request) {
+        return jobFuncList("DATAX", funcType, request);
     }
 
     @RequestMapping(value = "/func/{tabName:\\w+}/{funcType:\\w+}", method = RequestMethod.GET)
@@ -175,7 +140,7 @@ public class ExchangisJobRestfulApi {
         try {
             //Limit that the tab should be an engine tab
             EngineTypeEnum.valueOf(tabName.toUpperCase());
-            JobFunction.FunctionType funcTypeEnum = JobFunction.FunctionType.valueOf(funcType);
+            JobFunction.FunctionType funcTypeEnum = JobFunction.FunctionType.valueOf(funcType.toUpperCase());
             List<JobFunction> functionList = jobFuncService.getFunctions(tabName, funcTypeEnum);
             return Message.ok().data("data", functionList);
         }catch(Exception e){
