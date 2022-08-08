@@ -9,11 +9,18 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>exchangis-engine-manager</artifactId>
+    <artifactId>exchangis-engine-core</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-dao</artifactId>
+            <version>${exchangis.version}</version>
+        </dependency>
+    </dependencies>
 </project>
