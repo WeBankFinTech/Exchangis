@@ -9,6 +9,7 @@ import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
 import com.webank.wedatasphere.exchangis.datasource.GetDataSourceInfoByIdAndVersionIdAction;
+import com.webank.wedatasphere.exchangis.datasource.Utils.RSAUtil;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
@@ -41,6 +42,7 @@ import org.apache.linkis.httpclient.response.Result;
 import org.apache.linkis.metadatamanager.common.domain.MetaColumnInfo;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
+import org.bouncycastle.jcajce.provider.asymmetric.RSA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.*;
 
 import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.*;
@@ -155,13 +159,15 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         if (Objects.isNull(allDataSourceType)) allDataSourceType = Collections.emptyList();
 
         for (DataSourceType type : allDataSourceType) {
+            LOGGER.info("Current datasource Type is :{}", type.getName());
             for (ExchangisDataSource item : all) {
                 if (item.name().equalsIgnoreCase(type.getName())) {
                     ExchangisDataSourceDTO dto = new ExchangisDataSourceDTO(
                             type.getId(),
                             type.getClassifier(),
 //                            item.classifier(),
-                            item.name()
+                            item.name(),
+                            "结构化"
                     );
 //                    dto.setDescription(item.description());
 //                    dto.setIcon(item.icon());
@@ -613,29 +619,55 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         List<DataSource> allDataSource = result.getAllDataSource();
 
+        List<DataSourceDTO> originDataSources = new ArrayList<>();
         List<DataSourceDTO> dataSources = new ArrayList<>();
         allDataSource.forEach(ds -> {
-            DataSourceDTO item = new DataSourceDTO();
-            item.setId(ds.getId());
-            item.setCreateIdentify(ds.getCreateIdentify());
-            item.setName(ds.getDataSourceName());
-            item.setType(ds.getCreateSystem());
-            item.setCreateSystem(ds.getCreateSystem());
-            item.setDataSourceTypeId(ds.getDataSourceTypeId());
-            item.setLabels(ds.getLabels());
-            item.setLabel(ds.getLabels());
-            item.setDesc(ds.getDataSourceDesc());
-            item.setCreateUser(ds.getCreateUser());
-            item.setModifyUser(ds.getModifyUser());
-            item.setModifyTime(ds.getModifyTime());
-            item.setVersionId(ds.getVersionId());
-            item.setExpire(ds.isExpire());
-            dataSources.add(item);
-        });
+                DataSourceDTO item = new DataSourceDTO();
+                item.setId(ds.getId());
+                item.setCreateIdentify(ds.getCreateIdentify());
+                item.setName(ds.getDataSourceName());
+                item.setType(ds.getCreateSystem());
+                item.setCreateSystem(ds.getCreateSystem());
+                item.setDataSourceTypeId(ds.getDataSourceTypeId());
+                item.setLabels(ds.getLabels());
+                item.setLabel(ds.getLabels());
+                item.setDesc(ds.getDataSourceDesc());
+                item.setCreateUser(ds.getCreateUser());
+                item.setModifyUser(ds.getModifyUser());
+                item.setModifyTime(ds.getModifyTime());
+                item.setVersionId(ds.getVersionId());
+                item.setExpire(ds.isExpire());
+                item.setReadAble(true);
+                item.setWriteAble(true);
+                item.setAuthDbs("");
+                item.setAuthTbls("");
+                originDataSources.add(item);
+                });
 
+        String direct = vo.getDirect();
+        LOGGER.info("direct is: {}", direct);
+        LOGGER.info("originDatasource is: {}", originDataSources);
+        if (direct!=null) {
+            if ("source".equals(direct)) {
+                for (DataSourceDTO originDataSource : originDataSources) {
+                    if (originDataSource.isReadAble()) {
+                        dataSources.add(originDataSource);
+                    }
+                }
+            } else if ("sink".equals(direct)) {
+                for (DataSourceDTO originDataSource : originDataSources) {
+                    if (originDataSource.isReadAble()) {
+                        dataSources.add(originDataSource);
+                    }
+                }
+            }
+        }
+        else {
+            dataSources.addAll(originDataSources);
+        }
         Message message = Message.ok();
         message.data("list", dataSources);
-        message.data("total", result.getTotalPage());
+        message.data("total", dataSources.size());
         return message;
         //return Message.ok().data("list", dataSources);
     }
@@ -1166,6 +1198,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         if (Objects.isNull(dataSourceTypeId)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "dataSourceType id should not be null");
         }
+        Message message = Message.ok();
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
 
         String userName = SecurityFilter.getLoginUsername(request);
@@ -1191,7 +1224,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
         }
 
-        return Message.ok().data("list", Objects.isNull(result.getKeyDefine()) ? null : result.getKeyDefine());
+        message.data("list", Objects.isNull(result.getKeyDefine()) ? null : result.getKeyDefine());
+        //message.data("list", result.getDataSourceParamKeyDefinitions());
+        return message;
+        //return Message.ok().data("list", Objects.isNull(result.getKeyDefine()) ? null : result.getKeyDefine());
     }
 
     public void checkDSSupportDegree(String engine, String sourceDsType, String sinkDsType) throws ExchangisDataSourceException {
@@ -1273,8 +1309,41 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             deductions.add(deduction);
         }
         message.data("deductions", deductions);
+        message.data("transformEnable", true);
 
         return message;
     }
 
+    public Message encryptConnectInfo(String encryStr) throws Exception {
+        if (Objects.isNull(encryStr)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "dataSourceType connect parameter show not be null");
+        }
+
+        String publicKeyStr = RSAUtil.PUBLIC_KEY_STR.getValue();
+        PublicKey publicKey = RSAUtil.string2PublicKey(publicKeyStr);
+        //用公钥加密
+        byte[] publicEncrypt = RSAUtil.publicEncrypt(encryStr.getBytes(), publicKey);
+        //加密后的内容Base64编码
+        String byte2Base64 = RSAUtil.byte2Base64(publicEncrypt);
+        Message message = new Message();
+        message.data("encryStr", byte2Base64);
+        return message;
+    }
+
+    public Message decryptConnectInfo(String sinkStr) throws Exception {
+        if (Objects.isNull(sinkStr)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "dataSourceType connect parameter show not be null");
+        }
+
+        String privateKeyStr = RSAUtil.PRIVATE_KEY_STR.getValue();
+        PrivateKey privateKey = RSAUtil.string2PrivateKey(privateKeyStr);
+        //加密后的内容Base64解码
+        byte[] base642Byte = RSAUtil.base642Byte(sinkStr);
+        //用私钥解密
+        byte[] privateDecrypt = RSAUtil.privateDecrypt(base642Byte, privateKey);
+        String decryptStr = new String(privateDecrypt);
+        Message message = new Message();
+        message.data("decryptStr", decryptStr);
+        return message;
+    }
 }
