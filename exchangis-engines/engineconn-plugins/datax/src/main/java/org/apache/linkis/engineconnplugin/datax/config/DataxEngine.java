@@ -34,6 +34,10 @@ public class DataxEngine {
         }
     }
 
+    public static int run(Map<String, String> params) {
+        return -1;
+    }
+
     public static String getApplicationId() {
         return cl.getOptionValue("jobId");
     }
