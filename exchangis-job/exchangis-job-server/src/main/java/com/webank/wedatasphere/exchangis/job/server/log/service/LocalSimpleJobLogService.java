@@ -171,7 +171,7 @@ public class LocalSimpleJobLogService implements JobLogService {
                     }
                     if (!rowIgnore) {
                         if (line.contains("password")) {
-                            LOG.info("have error information66666");
+                            LOG.info("have error information");
                         }
                         if (!line.contains("password")) {
                             logs.add(new String(line.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
