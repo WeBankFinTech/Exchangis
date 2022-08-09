@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.dss.appconn.operation.project;
 
+import com.webank.wedatasphere.dss.common.utils.MapUtils;
 import com.webank.wedatasphere.dss.standard.app.sso.origin.request.action.DSSPutAction;
 import com.webank.wedatasphere.dss.standard.app.structure.AbstractStructureOperation;
 import com.webank.wedatasphere.dss.standard.app.structure.project.ProjectUpdateOperation;
@@ -29,6 +30,8 @@ public class ExchangisProjectUpdateOperation
                 projectRequestRef.getRefProjectId(), url);
         DSSPutAction putAction = new DSSPutAction();
         putAction.setUser(projectRequestRef.getUserName());
+        addProjectInfo(putAction, projectRequestRef);
+        logger.info("project payload is: {}", putAction.getRequestPayload());
         ExchangisProjectCreationOperation.addProjectInfo(putAction, projectRequestRef);
         InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(projectRequestRef, url, putAction, ssoRequestOperation);
         logger.info("User {} updated Exchangis project {} with response {}.", projectRequestRef.getUserName(), projectRequestRef.getRefProjectId(), responseRef.getResponseBody());
@@ -45,4 +48,13 @@ public class ExchangisProjectUpdateOperation
         super.init();
         projectUpdateUrl = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "appProject"));
     }
+
+    public static void addProjectInfo(DSSPutAction putAction, ProjectUpdateRequestRef requestRef) {
+        putAction.addRequestPayload("id", requestRef.getRefProjectId());
+        putAction.addRequestPayload("projectName", requestRef.getDSSProject().getName());
+        putAction.addRequestPayload("description", requestRef.getDSSProject().getDescription());
+        putAction.addRequestPayload("domain", Constraints.DOMAIN_NAME);
+        putAction.addRequestPayload("source", MapUtils.newCommonMap("workspace", requestRef.getWorkspace().getWorkspaceName()));
+    }
+
 }
