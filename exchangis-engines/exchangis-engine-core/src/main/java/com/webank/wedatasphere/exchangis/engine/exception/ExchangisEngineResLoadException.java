@@ -1,16 +1,19 @@
 package com.webank.wedatasphere.exchangis.engine.exception;
 
-import org.apache.linkis.common.exception.ErrorException;
+import static com.webank.wedatasphere.exchangis.engine.exception.ExchangisEngineExceptionCode.RESOURCE_LOAD_ERROR;
 
 /**
  * Engine resource load exception
  */
-public class ExchangisEngineResLoadException extends ErrorException {
+public class ExchangisEngineResLoadException extends ExchangisEngineResException {
+
+
     public ExchangisEngineResLoadException(String desc) {
-        super(ExchangisEngineExceptionCode.RESOURCE_LOAD_ERROR.getCode(), desc);
+        super(desc);
     }
 
-    public ExchangisEngineResLoadException(String desc, String ip, int port, String serviceKind) {
-        super(ExchangisEngineExceptionCode.RESOURCE_LOAD_ERROR.getCode(), desc, ip, port, serviceKind);
+    public ExchangisEngineResLoadException(String desc, Throwable t) {
+        super(desc, t);
+        super.setErrCode(RESOURCE_LOAD_ERROR.getCode());
     }
 }

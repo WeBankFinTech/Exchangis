@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>exchangis-engine-core</artifactId>
+    <artifactId>exchangis-engine-server</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -22,11 +22,10 @@
             <artifactId>exchangis-dao</artifactId>
             <version>${exchangis.version}</version>
         </dependency>
-        <!--bml-client-->
         <dependency>
-            <groupId>org.apache.linkis</groupId>
-            <artifactId>linkis-bml-client</artifactId>
-            <version>${linkis.version}</version>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-engine-core</artifactId>
+            <version>${exchangis.version}</version>
         </dependency>
     </dependencies>
 </project>

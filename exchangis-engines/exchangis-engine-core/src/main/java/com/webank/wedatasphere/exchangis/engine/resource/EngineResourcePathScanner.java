@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.engine.resource;
 
 import com.webank.wedatasphere.exchangis.engine.domain.EngineLocalPathResource;
-import com.webank.wedatasphere.exchangis.engine.exception.ExchangisEngineResLoadException;
+import com.webank.wedatasphere.exchangis.engine.exception.ExchangisEngineResException;
 
 import java.util.Set;
 
@@ -19,5 +19,5 @@ public interface EngineResourcePathScanner {
      * Scan entrance
      * @param rootPath root path
      */
-    Set<EngineLocalPathResource> doScan(String rootPath) throws ExchangisEngineResLoadException;
+    Set<EngineLocalPathResource> doScan(String rootPath) throws ExchangisEngineResException;
 }

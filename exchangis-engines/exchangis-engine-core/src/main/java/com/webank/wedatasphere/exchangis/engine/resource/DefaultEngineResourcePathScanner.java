@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.engine.resource;
 import com.webank.wedatasphere.exchangis.engine.config.ExchangisEngineConfiguration;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineLocalPathResource;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
+import com.webank.wedatasphere.exchangis.engine.exception.ExchangisEngineResException;
 import com.webank.wedatasphere.exchangis.engine.exception.ExchangisEngineResLoadException;
 import com.webank.wedatasphere.exchangis.engine.utils.ResourceUtils;
 import org.apache.commons.io.IOUtils;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,11 +35,12 @@ public class DefaultEngineResourcePathScanner implements EngineResourcePathScann
 
     @Override
     public void registerResourceLoader(EngineResourceLoader<? extends EngineLocalPathResource> resourceLoader) {
+        LOG.info("Register the resource loader: '{}'", resourceLoader.getClass().getCanonicalName());
         this.resourceLoaders.put(resourceLoader.engineType(), resourceLoader);
     }
 
     @Override
-    public Set<EngineLocalPathResource> doScan(String rootPath) throws ExchangisEngineResLoadException {
+    public Set<EngineLocalPathResource> doScan(String rootPath) throws ExchangisEngineResException {
         File rootFile = new File(rootPath);
         List<EngineLocalPathResource> resources = new ArrayList<>();
         if (!rootFile.exists()){
@@ -107,6 +110,7 @@ public class DefaultEngineResourcePathScanner implements EngineResourcePathScann
                                 resArray[0].setPacket(true);
                                 Path source = rawFile.toPath();
                                 Path dest = source.resolveSibling(StringUtils.substringBefore(rawFile.getName(), "."));
+                                Files.createDirectory(dest);
                                 LOG.info("Un packet the engine resource: [{}] to [{}]", source, dest);
                                 ResourceUtils.unPacket(source, dest);
                             }
