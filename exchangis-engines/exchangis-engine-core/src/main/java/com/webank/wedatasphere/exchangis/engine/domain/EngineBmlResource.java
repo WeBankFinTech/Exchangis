@@ -31,11 +31,14 @@ public class EngineBmlResource extends EngineResource {
     private String version;
 
     public EngineBmlResource(String engineType,
-                             String path,
+                             String path,  String name,
                              String resourceId, String version, String creator){
         this.type = DEFAULT_SCHEME;
+        this.name = name;
         this.engineType = engineType;
         this.resourceId = resourceId;
+        // Use the bml resource id as id
+        this.id = resourceId;
         this.version = version;
         this.path = path;
         this.creator = creator;
@@ -49,7 +52,7 @@ public class EngineBmlResource extends EngineResource {
      * @param storeResource store resource
      */
     public EngineBmlResource(EngineStoreResource storeResource){
-        this(storeResource.engineType, storeResource.path, null, null,
+        this(storeResource.engineType, storeResource.path, storeResource.name, null, null,
                 storeResource.creator);
         this.createTime = storeResource.createTime;
         this.modifyTime = storeResource.modifyTime;

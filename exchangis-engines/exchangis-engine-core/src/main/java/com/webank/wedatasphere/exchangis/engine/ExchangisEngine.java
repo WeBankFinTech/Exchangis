@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.engine;
 
+import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineSettings;
 import com.webank.wedatasphere.exchangis.engine.resource.EngineResourceContainer;
 
@@ -24,5 +25,5 @@ public interface ExchangisEngine {
      * Resource container
      * @return container
      */
-    EngineResourceContainer<?, ?> getResourceContainer();
+    <T extends EngineResource, U extends EngineResource> EngineResourceContainer<T, U> getResourceContainer();
 }

@@ -51,13 +51,17 @@ public class DefaultEngineResourceContainer extends AbstractEngineResourceContai
         if (Objects.isNull(pathNode.getRemoteResource()) || pathNode.getRemoteResource()
                 .getModifyTime().getTime() <  pathNode.lastModifyTime) {
             ReentrantReadWriteLock nodeLock = pathNode.nodeLock;
-            List<EngineResource> resourcesFiltered;
+            List<EngineLocalPathResource> resourcesFiltered;
             nodeLock.readLock().lock();
             try {
                 resourcesFiltered = pathNode.subResources.values().stream().filter(Objects::nonNull)
                         .collect(Collectors.toList());
             }finally {
                 nodeLock.readLock().unlock();
+            }
+            if (resourcesFiltered.size() == 1 && resourcesFiltered.get(0).isPacket()){
+                //Ignore the packet resource
+                return resourcesFiltered.get(0);
             }
             // Merged resource is a local resource, its name is equal to the path in pathNode
             String mergedResourcePath;
@@ -98,5 +102,4 @@ public class DefaultEngineResourceContainer extends AbstractEngineResourceContai
         }
         return null;
     }
-
 }

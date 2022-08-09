@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.engine.config.ExchangisEngineConfigurat
 import com.webank.wedatasphere.exchangis.engine.dao.EngineResourceDao;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineStoreResource;
+import com.webank.wedatasphere.exchangis.engine.exception.ExchangisEngineResException;
 import com.webank.wedatasphere.exchangis.engine.utils.ResourceUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -112,7 +113,7 @@ public abstract class AbstractEngineResourceContainer<T extends EngineResource, 
     }
 
     @Override
-    public void flushResources(String resourcePath) {
+    public void flushResources(String resourcePath) throws ExchangisEngineResException{
         String[] paths = pathSplit(resourcePath);
         if (Objects.nonNull(paths)){
             flushResources(searchResPathNode(paths));
@@ -120,7 +121,7 @@ public abstract class AbstractEngineResourceContainer<T extends EngineResource, 
     }
 
     @Override
-    public void flushAllResources() {
+    public void flushAllResources() throws ExchangisEngineResException{
         Queue<ResourcePathNode> queue = new LinkedList<>();
         queue.offer(this.rootNode);
         while(!queue.isEmpty()){
@@ -185,7 +186,7 @@ public abstract class AbstractEngineResourceContainer<T extends EngineResource, 
         String[] subPath = new String[upper];
         System.arraycopy(paths, 0, subPath, 0, upper);
         // path
-        String path = StringUtils.join(subPath, "/");
+        String path = subPath.length <= 1 ? "/" : StringUtils.join(subPath, "/");
         ResourcePathNode currentNode;
         if (null == parentNode){
             if (path.equals("/")) {
@@ -197,7 +198,7 @@ public abstract class AbstractEngineResourceContainer<T extends EngineResource, 
         } else {
             currentNode = parentNode.childNodes.computeIfAbsent(path, ResourcePathNode::new);
         }
-        if (upper >= paths.length - 1){
+        if (upper >= paths.length){
             operate.accept(currentNode);
         } else {
             operateResPathNode(currentNode, paths, pos + 1, operate);
@@ -216,7 +217,7 @@ public abstract class AbstractEngineResourceContainer<T extends EngineResource, 
         String[] subPath = new String[upper];
         System.arraycopy(paths, 0, subPath, 0, upper);
         // path
-        String path = StringUtils.join(subPath, "/");
+        String path = subPath.length <= 1 ? "/" : StringUtils.join(subPath, "/");
         ResourcePathNode currentNode;
         if (null == parentNode){
             if (path.equals("/")) {
@@ -228,13 +229,13 @@ public abstract class AbstractEngineResourceContainer<T extends EngineResource, 
         } else {
             currentNode = parentNode.childNodes.get(path);
         }
-        if (upper >= paths.length - 1 || Objects.isNull(currentNode)){
+        if (upper >= paths.length || Objects.isNull(currentNode)){
             return currentNode;
         }
         return searchResPathNode(currentNode, paths, pos + 1);
     }
 
-    private void flushResources(ResourcePathNode pathNode){
+    private void flushResources(ResourcePathNode pathNode) throws ExchangisEngineResException {
         if(Objects.nonNull(pathNode)){
             LOG.info("Flush the {} engine resources in path: [{}]", getEngineType(), pathNode.getPath());
             T nodeEngineRes = mergeNodeEngineResource(pathNode);
@@ -244,7 +245,11 @@ public abstract class AbstractEngineResourceContainer<T extends EngineResource, 
                 if (Objects.nonNull(uploadedRes)) {
                     // Store the uploaded remoted resource information
                     pathNode.setRemoteResource(uploadedRes);
-                    this.engineResourceDao.insertResource(new EngineStoreResource(uploadedRes));
+                    if (Objects.nonNull(pathNode.getRemoteResource())){
+                        this.engineResourceDao.updateResource(new EngineStoreResource(uploadedRes));
+                    } else {
+                        this.engineResourceDao.insertResource(new EngineStoreResource(uploadedRes));
+                    }
                 }
             }
         }
