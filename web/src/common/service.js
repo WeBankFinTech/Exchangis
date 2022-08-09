@@ -287,13 +287,16 @@ export const getJobs = (id, jobType, name, current, size) => {
   });
 };
 
-export const saveProject = (id, body) => {
+export const saveProject = (id, body, type = 'save') => {
+  //test 代码调试中
+  console.log('%c%s', 'color: red; background: yellow; font-size: 24px;', '调试', request)
   return request(`/job/${id}/content`, {
     ...body,
     labels: {
       route: getEnvironment()
     }
   }, {
+    headers: { 'save-from': type },
     method: "PUT",
   });
 };
@@ -554,13 +557,23 @@ export const getFieldFunc = (funcType) => {
 }
 
 // 获取字段映射转换函数
-export const encryptFunc = (encryStr) => {
-  if (!encryStr) return
+export const encryptFunc = (param) => {
   return request(
-    `/datasources/encrypt?labels=${getEnvironment()}&encryStr=${encryStr}`,
-    {},
+    `/datasources/encrypt?labels=${getEnvironment()}`,
+    param,
     {
       method: "POST",
     }
   );
+}
+
+// 获取执行用户
+export const getExecutor = () => {
+  return request(
+    `/job/Executor?labels=${getEnvironment()}`,
+    {},
+    {
+      method: "GET",
+    }
+  )
 }

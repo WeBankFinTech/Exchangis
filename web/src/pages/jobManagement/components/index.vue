@@ -139,6 +139,7 @@
                             v-bind:fieldsSource="fieldsSource"
                             v-bind:deductions="deductions"
                             v-bind:addEnabled="addEnable"
+                            v-bind:transformEnable="transformEnable"
                             v-bind:engineType="curTask.engineType"
                             @updateFieldMap="updateFieldMap"
                         />
@@ -323,10 +324,11 @@
             </div>
         </div>
 
-        <config-modal
+        <config-drawer
             :id="modalCfg.id"
             v-model:visible="modalCfg.visible"
             :formData="configModalData"
+            :dialogStyle="dialogStyle"
             @finish="handleModalFinish"
         />
         <copy-modal
@@ -450,7 +452,7 @@ export default {
         CheckCircleOutlined,
         EditOutlined,
         PlusOutlined,
-        'config-modal': defineAsyncComponent(() => import('./configModal.vue')),
+        'config-drawer': defineAsyncComponent(() => import('./configDrawer.vue')),
         'copy-modal': defineAsyncComponent(() => import('./copyModal.vue')),
         DataSource: defineAsyncComponent(() => import('./dataSource.vue')),
         FieldMap: defineAsyncComponent(() => import('./fieldMap.vue')),
@@ -484,7 +486,7 @@ export default {
             fieldsSink: [],
             deductions: [],
             addEnable: false,
-
+            transformEnable: false, // 控制是否可以编辑转换函数
             configModalData: {},
 
             visibleDrawer: false,
@@ -528,6 +530,9 @@ export default {
             dateFormat,
             curTab: {
                 id: ''
+            },
+            dialogStyle: {
+                right: 0,
             }
         };
     },
@@ -591,7 +596,10 @@ export default {
                 if (this.list.length) {
                     this.activeIndex = 0;
                     this.curTask = this.list[this.activeIndex];
+                    // test
+                    console.log('初始获取详情', this.curTask)
                     this.addEnable = this.curTask.transforms.addEnable;
+                    this.transformEnable = this.curTask.transforms.transformEnable;
                     this.updateSourceInfo(this.curTask);
                     // this.updateSinkInfo(this.curTask); 当sink和source都有值的时候,请求的结果是一致的,所以省去一次多余重复请求
                 }
@@ -640,10 +648,12 @@ export default {
                 this.activeIndex = 0;
                 this.curTask = this.list[this.activeIndex];
                 this.addEnable = this.curTask.transforms.addEnable;
+                this.transformEnable = this.curTask.transforms.transformEnable;
             } else {
                 this.activeIndex = -1;
                 this.curTask = null;
                 this.addEnable = false;
+                this.transformEnable = false;
             }
         },
         cancel() {},
@@ -657,6 +667,7 @@ export default {
             this.activeIndex = index;
             this.curTask = this.list[this.activeIndex];
             this.addEnable = this.curTask.transforms.addEnable;
+            this.transformEnable = this.curTask.transforms.transformEnable;
         },
         addNewTask() {
             const subJobName = randomString(12);
@@ -701,10 +712,12 @@ export default {
                     this.activeIndex = this.jobData.content.subJobs.length - 1;
                     this.curTask = this.list[this.activeIndex];
                     this.addEnable = false;
+                    this.transformEnable = false;
                     this.deductions = [];
                 });
             });
         },
+        // 字段映射更新
         updateFieldMap(transforms) {
             console.log('update field map', transforms);
             this.curTask.transforms = transforms;
@@ -758,6 +771,7 @@ export default {
                     this.fieldsSink = res.sinkFields;
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
+                    this.transformEnable = res.transformEnable;
                     // 不在使用deductions 直接将deductions作为值使用
                     if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
                         this.curTask.transforms.mapping = this.convertDeductions(res.deductions);
@@ -769,6 +783,7 @@ export default {
                 this.fieldsSink = [];
                 this.deductions = [];
                 this.addEnable = false;
+                this.transformEnable = false;
                 this.curTask.transforms.mapping = [];
             }
         },
@@ -780,6 +795,7 @@ export default {
                     this.fieldsSink = res.sinkFields;
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
+                    this.transformEnable = res.transformEnable;
                     // 不在使用deductions 直接将deductions作为值使用
                     if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
                         this.curTask.transforms.mapping = this.convertDeductions(res.deductions);
@@ -791,6 +807,7 @@ export default {
                 this.fieldsSink = [];
                 this.deductions = [];
                 this.addEnable = false;
+                this.transformEnable = false;
                 this.curTask.transforms.mapping = [];
             }
         },
@@ -829,7 +846,7 @@ export default {
 
             return res;
         },
-        saveAll(cb) {
+        saveAll(type = 'save', cb) {
             const saveContent = [];
             const data = toRaw(this.jobData);
             const tips = this.checkPostData(data);
@@ -891,6 +908,7 @@ export default {
                 });
                 cur.transforms = jobData.transforms;
                 cur.transforms.addEnable = this.addEnable;
+                cur.transforms.transformEnable = this.transformEnable;
                 cur.settings = [];
                 if (jobData.settings && jobData.settings.length) {
                     jobData.settings.forEach((setting) => {
@@ -904,16 +922,18 @@ export default {
                 }
                 saveContent.push(cur);
             }
+            // test
+            console.log(saveContent)
             saveProject(this.jobData.id, {
                 content: JSON.stringify(saveContent)
-            }).then((res) => {
+            }, type).then((res) => {
                 cb && cb();
                 message.success('保存成功');
             });
         },
         // 执行任务
         executeTask() {
-            this.saveAll(() => {
+            this.saveAll('execute', () => {
                 const { id } = this.curTab;
                 this.tasklist = [];
                 this.spinning = true;

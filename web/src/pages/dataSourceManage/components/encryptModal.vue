@@ -4,7 +4,7 @@
     <a-spin :spinning="confirmLoading">
       <a-form ref="formRef" :model="formState" :label-col="{ span: 6 }">
         <a-form-item label="原始字符串">
-          <a-input v-model:value="formState.originStr" placeholder="请输入" />
+          <a-input-password v-model:value="formState.originStr" placeholder="请输入" />
         </a-form-item>
         <a-form-item class="inline-button">
           <a-button type="primary" @click="handleEncrypt">加密</a-button>
@@ -57,9 +57,11 @@ export default {
   methods: {
     // modal加密
     async handleEncrypt() {
+      const { originStr } = this.formState
+      if(!originStr) return
       this.confirmLoading = true;
       try {
-        const res = await encryptFunc(this.formState.originStr);
+        const res = await encryptFunc({ encryStr: originStr });
         this.formState.encryStr = res?.encryStr || '';
         message.success('加密成功');
       } catch (error) {

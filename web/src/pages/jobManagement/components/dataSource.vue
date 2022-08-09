@@ -52,7 +52,7 @@
               </a-form-item>
               <!-- 动态组件 -->
               <a-form-item
-                v-for="item in dataSource.params.sources"
+                v-for="item in sourceParams"
                 :key="item.field"
                 :label="item.label"
                 :name="item.label"
@@ -200,6 +200,27 @@ export default defineComponent({
       sourcesHelpStatus[key] = "success";
     });
 
+    // 
+    const setParamSource = (arr) => {
+      let transferModeValue = ''
+      let defShow  = arr.filter(v => !v.refId)
+      arr.forEach(ui => {
+        ui.show = true
+        if (ui.field === "transferMode") {
+          transferModeValue = ui.value + ui.id;
+        }
+        if (ui.refId) {
+          ui.show = defShow.some(v => v.id === ui.refId);
+          if (ui.field === "nullCharacter") {
+            ui.show = transferModeValue === ("记录" + ui.refId);
+          }
+          ui.value = ui.show ? ui.value : ''
+        }
+      })
+    }
+
+    setParamSource(dataSource.params.sources)
+
     dataSource["params"]["sinks"].forEach((item) => {
       let key = item.key.split(".").pop();
       sinksHelpMsg[key] = "";
@@ -219,9 +240,12 @@ export default defineComponent({
         sources: newVal.params.sources || [],
         sinks: newVal.params.sinks || []
       };
+      setParamSource(dataSource.params.sources);
     });
 
     const formRef = ref();
+
+    // 选完
     const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split(".");
 
@@ -263,6 +287,8 @@ export default defineComponent({
         dataSource.dataSourceIds.source.type,
         "source"
       ).then((res) => {
+        let transferModeValue = '';
+        let defShow = res.uis.filter(v => !v.refId);
         res.uis.forEach((ui, index) => {
           /*if (ui.type && ui.type === 'MAP') {
             res.uis[index] = ui = {
@@ -284,8 +310,19 @@ export default defineComponent({
           if (ui.source) {
             ui.source = ui.source + '?_=' + Math.random()
           }*/
+          ui.show = true
           if (!ui.value && ui.defaultValue) {
             ui.value = ui.defaultValue;
+          }
+          if (ui.field === "transferMode" && ui.id ) {
+            transferModeValue = ui.value + ui.id;
+          }
+          if (ui.refId) {
+            ui.show = defShow.some(v => v.id === ui.refId);
+            if (ui.field === "nullCharacter") {
+              ui.show = transferModeValue === ("记录" + ui.refId);
+            }
+            ui.value = ui.show ? ui.value : ''
           }
         });
         dataSource.params.sources = res.uis || [];
@@ -367,13 +404,24 @@ export default defineComponent({
           }
           break;
       }*/
-
+      let transferModeValue = ''
+      let defShow = _sourceParams.filter(v => !v.refId); // 默认显示项
       _sourceParams.forEach((item) => {
+        item.show = true
+        if (item.field === "transferMode" && item.id) {
+          transferModeValue = item.value + item.id
+        }
+        if (item.refId) {
+          item.show = defShow.some(v => v.id === item.refId);
+          if (item.field === "nullCharacter") {
+            item.show = transferModeValue === ("记录" + item.refId);
+          }
+          item.value = item.show ? item.value : ''
+        }
         if (item.field === info.field) {
           return (item.value = info.value);
         }
       });
-
       dataSource.params.sources = _sourceParams;
       context.emit("updateSourceParams", dataSource);
     };
@@ -436,6 +484,9 @@ export default defineComponent({
     const showInfo = () => {
       isFold.value = !isFold.value;
     };
+
+    // 源数据数组
+    const sourceParams = computed(() => dataSource.params.sources.filter(v => v.show))
     return {
       formRef,
       updateSourceInfo,
@@ -447,12 +498,11 @@ export default defineComponent({
       updateSinkParams,
       showInfo,
       isFold,
-
       sourcesHelpMsg,
       sourcesHelpStatus,
       sinksHelpMsg,
       sinksHelpStatus,
-
+      sourceParams,
       labelCol: {
         style: {
           style: {

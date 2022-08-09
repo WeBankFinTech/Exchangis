@@ -128,11 +128,6 @@ export default {
       active: -1,
     };
   },
-  provide() {
-    return {
-      getcurTab: () => this.curTab // 获取当前任务
-    }
-  },
   mounted() {
     if (this.$route.query.labels) {
       localStorage.setItem('exchangis_environment', this.$route.query.labels)

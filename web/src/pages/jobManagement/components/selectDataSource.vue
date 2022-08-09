@@ -112,6 +112,8 @@ export default defineComponent({
       selectTable: '',
       searchWord: '',
       searchDB: '',
+      authDbs: [],
+      authTbls: []
     });
     let spinning = ref(false);
     const newProps = computed(() => JSON.parse(JSON.stringify(props.title)));
@@ -145,15 +147,19 @@ export default defineComponent({
         engineType: props.engineType,
         direct: props.direct,
       }
-      if(props.direct === 'sink') param.sourceType = sql
+      let keyWord = 'readAble'
+      if (props.direct === 'sink') {
+        keyWord = 'writeAble'
+        param.sourceType = sql
+      }
       try {
         let _res = await getDataSource(body);
         const { list } = _res;
-        list.forEach((item) => {
+        list.filter(v => v[keyWord]).forEach((item) => {
           let o = Object.create(null);
           o.name = item.name;
           o.value = item.id;
-          res.push(o);
+          res.push({ ...o, ...item });
         });
         await getDataSourceTypes(param);
       } catch (err) {
@@ -192,6 +198,11 @@ export default defineComponent({
         })[0];
         state.dataSource = cur.name;
         state.dsId = cur.value;
+        state.authDbs = (cur.authDbs || '').split(',').filter(v => v);
+        state.authTbls = (cur.authTbls || '').split(',').filter(v => v);
+        // 设置权限库表
+        console.log('库表', state.authDbs, state.authTbls);
+        
       });
     };
     // 创建 db & tables tree
@@ -288,10 +299,13 @@ export default defineComponent({
       visible.value = true;
     };
     const selectItem = (e) => {
+      const [authDb, authTbl] = e.join('').split('.');
+      let bool1 = state.authDbs.length && !state.authDbs.includes(authDb); // 无权限的情况
+      let bool2 = state.authTbls.length && !state.authTbls.includes(authTbl);  // 无权限的情况
+      if (bool1 || bool2) {
+        return message.error('无权限');
+      }
       state.selectTable = e.join('');
-      // state.defaultSelect = `${state.sqlSource}-${state.dataSource}-${e.join(
-      //   ""
-      // )}`;
     };
     const handleOk = () => {
       if (!state.curSql) {
