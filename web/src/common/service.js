@@ -557,7 +557,7 @@ export const getFieldFunc = (funcType) => {
 // 获取字段映射转换函数
 export const encryptFunc = (param) => {
   return request(
-    `/datasources/encrypt?labels=${getEnvironment()}`,
+    `/datasources/tools/encrypt?labels=${getEnvironment()}`,
     param,
     {
       method: "POST",
