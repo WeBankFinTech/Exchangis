@@ -7,16 +7,22 @@
       :style="{ position: 'absolute' }" 
       @close="$emit('update:visible', false)
       ">
-      <a-form ref="formRef" :rules="rules" :model="formState" :label-col="{ span: 4 }"
+      <a-form ref="formRef" :rules="rules" :model="formState" :label-col="{ span: 6 }"
         class="config-modal-form">
         <div class="cm-title">
           <span>任务配置</span>
         </div>
-        <a-form-item label="执行用户" name="proxyUser">
-          <a-input v-model:value="formState.proxyUser" :style="{ width: '366px'}" />
+        <a-form-item label="执行(代理)用户" name="proxyUser">
+          <a-select 
+              v-model:value="formState.proxyUser" 
+              style="width: 340 px" 
+              placeholder="请先选择数据库" 
+              :options="proxyList"
+            >
+          </a-select>
         </a-form-item>
         <a-form-item label="执行节点" name="executeNode">
-          <a-input v-model:value="formState.executeNode" :style="{ width: '366px'}" />
+          <a-input v-model:value="formState.executeNode" :style="{ width: '359px'}" />
         </a-form-item>
         <a-form-item label="同步方式" name="syncType">
           <a-radio-group v-model:value="formState.syncType" name="syncType">
@@ -56,10 +62,10 @@
 </template>
 
 <script>
-import { toRaw, ref, watch, reactive, watchEffect, nextTick } from 'vue';
+import { toRaw, ref, watch, reactive, watchEffect, nextTick, onMounted, computed } from 'vue';
 import { message } from 'ant-design-vue';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue';
-import { createProject, getProjectById, updateProject } from '@/common/service';
+import { createProject, getProjectById, updateProject, getExecutor } from '@/common/service';
 import { cloneDeep } from 'lodash-es';
 
 // 抒写JS代码与组件低耦合
@@ -137,9 +143,11 @@ export default {
         }
         formData['jobParams'] = jobParams;
         formState['executeNode'] = formData['executeNode'] || '';
-        formState['proxyUser'] = formData['proxyUser'] || '';
         formState['syncType'] = formData['syncType'] || 'FULL';
         formState['jobParams'] = formData['jobParams'] || '';
+        if (formData['proxyUser']) {
+          formState['proxyUser'] = formData['proxyUser'];
+        }
       }
     );
 
@@ -187,6 +195,35 @@ export default {
       context.emit('finish', formatData);
     };
 
+    const proxyUsers = ref([])
+
+    const proxyList = computed(() => {
+      const curUser = formState['proxyUser']
+      if (curUser) {
+        return [
+          { label: curUser, value: curUser },
+          ...proxyUsers.value
+        ]
+      } else {
+        return proxyUsers.value
+      }
+    })
+    // 获取执行用户
+    onMounted(() => {
+      getExecutor().then(res => {
+        const list = res?.result || [];
+        if (!formState['proxyUser']) {
+          formState['proxyUser'] = list[0] || '';
+        }
+        proxyUsers.value = list.map(v => {
+          return {
+            label: v,
+            value: v
+          }
+        })
+      })
+    })
+
     return {
       formRef,
       rules,
@@ -195,6 +232,7 @@ export default {
       createTask,
       handleOk,
       deleteTask,
+      proxyList
     };
   },
 };

@@ -139,6 +139,7 @@
                             v-bind:fieldsSource="fieldsSource"
                             v-bind:deductions="deductions"
                             v-bind:addEnabled="addEnable"
+                            v-bind:transformEnable="transformEnable"
                             v-bind:engineType="curTask.engineType"
                             @updateFieldMap="updateFieldMap"
                         />
@@ -507,8 +508,8 @@ export default {
             fieldsSource: [],
             fieldsSink: [],
             deductions: [],
-            addEnable: false,
-
+            addEnable: false, // 控制添加字段映射
+            transformEnable: false, // 控制是否可以编辑转换函数
             configModalData: {},
 
             visibleDrawer: false,
@@ -610,8 +611,10 @@ export default {
                 if (this.list.length) {
                     this.activeIndex = 0;
                     this.curTask = this.list[this.activeIndex];
+                    // test 
+                    console.log('当前任务详情', this.curTask)
                     this.addEnable = this.curTask.transforms.addEnable;
-
+                    this.transformEnable = this.curTask.transforms.transformEnable;
                     this.updateSourceInfo(this.curTask, true)
 
                     // this.updateSinkInfo(this.curTask); 当sink和source都有值的时候,请求的结果是一致的,所以省去一次多余重复请求
@@ -655,16 +658,19 @@ export default {
             this.copyObj = item;
             this.modalCopy.visible = true;
         },
+        // 删除子任务
         deleteSub(index) {
             this.jobData.content.subJobs.splice(index, 1);
             if (this.activeIndex === index && this.list.length) {
                 this.activeIndex = 0;
                 this.curTask = this.list[this.activeIndex];
                 this.addEnable = this.curTask.transforms.addEnable;
+                this.transformEnable = this.curTask.transforms.transformEnable;
             } else {
                 this.activeIndex = -1;
                 this.curTask = null;
                 this.addEnable = false;
+                this.transformEnable = false;
             }
         },
         cancel() {},
@@ -678,6 +684,7 @@ export default {
             this.activeIndex = index;
             this.curTask = this.list[this.activeIndex];
             this.addEnable = this.curTask.transforms.addEnable;
+            this.transformEnable = this.curTask.transforms.transformEnable;
             const data = this.getFieldsParams(this.curTask);
             if (data) {
                 getFields(data).then((res) => {
@@ -729,6 +736,7 @@ export default {
                     this.activeIndex = this.jobData.content.subJobs.length - 1;
                     this.curTask = this.list[this.activeIndex];
                     this.addEnable = false;
+                    this.transformEnable = false;
                     this.deductions = [];
                 });
             });
@@ -785,6 +793,7 @@ export default {
                     this.fieldsSink = res.sinkFields;
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
+                    this.transformEnable = res.transformEnable;
                     // 不在使用deductions 直接将deductions作为值使用
                     if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
                         this.curTask.transforms.mapping = this.convertDeductions(res.deductions);
@@ -796,6 +805,7 @@ export default {
                 this.fieldsSink = [];
                 this.deductions = [];
                 this.addEnable = false;
+                this.transformEnable = false;
                 this.curTask.transforms.mapping = [];
             }
         },
@@ -807,6 +817,7 @@ export default {
                     this.fieldsSink = res.sinkFields;
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
+                    this.transformEnable = res.transformEnable;
                     // 不在使用deductions 直接将deductions作为值使用
                     if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
                         this.curTask.transforms.mapping = this.convertDeductions(res.deductions);
@@ -818,6 +829,7 @@ export default {
                 this.fieldsSink = [];
                 this.deductions = [];
                 this.addEnable = false;
+                this.transformEnable = false;
                 this.curTask.transforms.mapping = [];
             }
         },
@@ -856,7 +868,7 @@ export default {
 
             return res;
         },
-        saveAll(cb) {
+        saveAll(type = 'save', cb) {
             const saveContent = [];
             const data = toRaw(this.jobData);
             const tips = this.checkPostData(data);
@@ -918,6 +930,7 @@ export default {
                 });
                 cur.transforms = jobData.transforms;
                 cur.transforms.addEnable = this.addEnable;
+                cur.transforms.transformEnable = this.transformEnable;
                 cur.settings = [];
                 if (jobData.settings && jobData.settings.length) {
                     jobData.settings.forEach((setting) => {
@@ -931,9 +944,11 @@ export default {
                 }
                 saveContent.push(cur);
             }
+            // test
+            console.log(saveContent)
             saveProject(this.jobData.id, {
                 content: JSON.stringify(saveContent)
-            }).then((res) => {
+            }, type).then((res) => {
                 cb && cb();
                 message.success('保存成功');
             });
@@ -943,7 +958,7 @@ export default {
             if (!this.list.length) {
                 return message.error('没有子任务');
             }
-            this.saveAll(() => {
+            this.saveAll('execute', () => {
                 const { id } = this.curTab;
                 this.tasklist = [];
                 this.spinning = true;

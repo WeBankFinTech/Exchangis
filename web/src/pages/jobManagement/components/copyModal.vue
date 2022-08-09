@@ -35,6 +35,7 @@
 import { toRaw } from "vue";
 import { message } from "ant-design-vue";
 import { PlusOutlined } from "@ant-design/icons-vue";
+import { randomString } from '@/common/utils';
 export default {
   name: "JobManagementConfigModal",
   components: {
@@ -51,7 +52,6 @@ export default {
       default: {},
     },
   },
-  inject: ['getcurTab'],
   emits: ["finish", "cancel", "update:visible"],
   data() {
     return {
@@ -72,9 +72,9 @@ export default {
   watch: {
     visible: function(val) {
       if (val) {
-          this.formState.jobName = this.getcurTab().jobName || ''
+        this.formState.jobName = randomString(12); // 设置复制任务默认名称
       } else {
-          this.formState.jobName = ''
+        this.formState.jobName = '';
       }
     }
   },
