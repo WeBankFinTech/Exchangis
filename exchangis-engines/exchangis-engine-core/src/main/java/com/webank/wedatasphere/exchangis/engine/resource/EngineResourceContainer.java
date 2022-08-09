@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.engine.resource;
 
 import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
+import com.webank.wedatasphere.exchangis.engine.exception.ExchangisEngineResException;
 
 import java.util.List;
 
@@ -54,12 +55,12 @@ public interface EngineResourceContainer<T extends EngineResource, U extends Eng
      * @param resourcePath resource path
      * @return (merged)resource
      */
-    void flushResources(String resourcePath);
+    void flushResources(String resourcePath) throws ExchangisEngineResException;
 
     /**
      * Flush(upload) all the resources in container
      */
-    void flushAllResources();
+    void flushAllResources() throws ExchangisEngineResException;
 
     /**
      * Get remote(upload) resource in path

@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Calendar;
+import java.util.UUID;
 
 /**
  * Local engine resource
@@ -33,12 +34,15 @@ public class EngineLocalPathResource extends EngineResource{
         this.engineType = engineType;
         this.path = path;
         this.localFile = new File(baseUri.getPath(), path);
+        this.name = localFile.getName();
         this.isPacket = isPacket;
         Calendar calendar = Calendar.getInstance();
         this.createTime = calendar.getTime();
         this.modifyTime = calendar.getTime();
         // Set the creator as jvm user
         this.creator = EnvironmentUtils.getJvmUser();
+        // Random resource id
+        this.id = UUID.randomUUID().toString();
     }
     @Override
     public InputStream getInputStream() throws IOException {

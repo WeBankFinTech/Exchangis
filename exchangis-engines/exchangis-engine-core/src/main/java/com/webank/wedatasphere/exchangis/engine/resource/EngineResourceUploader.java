@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.engine.resource;
 
 import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
+import com.webank.wedatasphere.exchangis.engine.exception.ExchangisEngineResUploadException;
 
 /**
  * Engine resource uploader
@@ -14,7 +15,7 @@ public interface EngineResourceUploader<T extends EngineResource, R extends Engi
      * @param needUploadResource resource need to be uploaded
      * @return uploaded resource
      */
-    R upload(T needUploadResource);
+    R upload(T needUploadResource) throws ExchangisEngineResUploadException;
 
-    R upload(T needUploadResource, R relatedResource);
+    R upload(T needUploadResource, R relatedResource) throws ExchangisEngineResUploadException;
 }
