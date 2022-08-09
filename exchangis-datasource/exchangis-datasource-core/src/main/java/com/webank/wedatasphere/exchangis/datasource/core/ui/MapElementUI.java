@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class MapElementUI implements ElementUI<Map<String, Object>> {
+    private Long id;
     private String key;
     private String field;
     private String label;
@@ -18,6 +19,23 @@ public class MapElementUI implements ElementUI<Map<String, Object>> {
     private String validateRange;
     private String validateMsg;
     private String source;
+    private Long refId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getRefId() {
+        return refId;
+    }
+
+    public void setRefId(Long refId) {
+        this.refId = refId;
+    }
 
     public String getSource() {
         return source;
