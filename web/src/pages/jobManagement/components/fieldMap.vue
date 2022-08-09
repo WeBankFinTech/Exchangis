@@ -30,51 +30,32 @@
 
       <div class="main-header" @click="showInfo">
         <span style="margin-right: 8px; color: rgba(0, 0, 0, 0.45)">
-          <RightOutlined v-if="!isFold"/>
-          <DownOutlined v-else/>
+          <RightOutlined v-if="!isFold" />
+          <DownOutlined v-else />
         </span>
         <span>字段映射</span>
       </div>
 
-      <div
-        class="main-content"
-        v-show="isFold"
-        :class="{ 'text-danger': !fieldsSource.length && !fieldsSink.length }"
-      >
-        <div
-          style="margin-bottom: 15px"
-          v-if="fieldsSource.length && fieldsSink.length && addEnabled"
-        >
+      <div class="main-content" v-show="isFold"
+        :class="{ 'text-danger': !fieldsSource.length && !fieldsSink.length }">
+        <div style="margin-bottom: 15px"
+          v-if="fieldsSource.length && fieldsSink.length && addEnabled">
           <a-button type="dashed" @click="addTableRow">新增</a-button>
         </div>
         <!-- left -->
         <div style="display: flex">
           <div class="filed-map-wrap-l">
             <div class="filed-map-wrap-l-content">
-              <a-table
-                :dataSource="fieldMap.sourceDS"
-                :columns="columns1"
-                size="large"
-                :pagination="pagination"
-                v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
-                bordered
-              >
+              <a-table :dataSource="fieldMap.sourceDS" :columns="columns1" size="large"
+                :pagination="pagination" v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
+                bordered>
                 <template #fieldName="{ record }">
-                  <a-select
-                    ref="select"
-                    :value="record.fieldName"
-                    style="width: 150px"
-                    :options="record.fieldOptions"
-                    @change="updateSourceFieldName(record, $event)"
-                  >
+                  <a-select ref="select" :value="record.fieldName" style="width: 150px"
+                    :options="record.fieldOptions" @change="updateSourceFieldName(record, $event)">
                   </a-select>
                 </template>
                 <template #fieldType="{ record }">
-                  <a-input
-                    :value="record.fieldType"
-                    style="width: 150px"
-                    disabled
-                  >
+                  <a-input :value="record.fieldType" style="width: 150px" disabled>
                   </a-input>
                 </template>
               </a-table>
@@ -83,67 +64,44 @@
 
           <!-- mid -->
           <div class="field-map-wrap-mid">
-              <a-table
-                :dataSource="fieldMap.transformerList"
-                :columns="columns3"
-                size="large"
-                :pagination="pagination"
-                v-if="fieldMap.transformerList.length > 0"
-                bordered
-              >
-                <template #fieldName="{ record }">
-                <div
-                  style="
+            <a-table :dataSource="fieldMap.transformerList" :columns="columns3" size="large"
+              :pagination="pagination" v-if="fieldMap.transformerList.length > 0" bordered>
+              <template #fieldName="{ record }">
+                <div style="
                     position: relative;
                     height: 57px;
                     float: left;
                     width: 200px;
                     margin-top: -15px;
-                  "
-                >
-                  <Transformer
-                    v-if="engineType === 'DATAX'"
+                  ">
+                  <Transformer 
+                    v-if="engineType === 'DATAX'" 
                     v-bind:tfData="record"
-                    @updateTransformer="updateTransformer"
-                  />
-                  <DeleteOutlined
-                    v-if="record.deleteEnable"
-                    @click="deleteField(record.key)"
-                    style="position: absolute; right: 0; top: 30px; color:#1890ff;"
-                  />
+                    :checkOptions="checkOptions"
+                    :transformFuncOptions="transformFuncOptions"
+                    :transformEnable="transformEnable"
+                    @updateTransformer="updateTransformer" />
+                  <DeleteOutlined v-if="record.deleteEnable" @click="deleteField(record.key)"
+                    style="position: absolute; right: 0; top: 30px; color:#1890ff;" />
                 </div>
-                </template>
-              </a-table>
+              </template>
+            </a-table>
           </div>
 
           <!-- right -->
           <div class="field-map-wrap-r">
             <div class="field-map-wrap-r-content">
-              <a-table
-                :dataSource="fieldMap.sinkDS"
-                :columns="columns2"
-                size="large"
-                :pagination="pagination"
-                v-if="type === 'MAPPING' && fieldMap.sinkDS.length > 0"
-                bordered
-              >
+              <a-table :dataSource="fieldMap.sinkDS" :columns="columns2" size="large"
+                :pagination="pagination" v-if="type === 'MAPPING' && fieldMap.sinkDS.length > 0"
+                bordered>
                 <template #fieldName="{ record }">
-                  <a-select
-                    :disabled="!record.fieldEditable"
-                    ref="select"
-                    :value="record.fieldName"
-                    style="width: 150px"
-                    :options="record.fieldOptions"
-                    @change="updateSinkFieldName(record, $event)"
-                  >
+                  <a-select :disabled="!record.fieldEditable" ref="select" :value="record.fieldName"
+                    style="width: 150px" :options="record.fieldOptions"
+                    @change="updateSinkFieldName(record, $event)">
                   </a-select>
                 </template>
                 <template #fieldType="{ record }">
-                  <a-input
-                    :value="record.fieldType"
-                    style="width: 150px"
-                    disabled
-                  >
+                  <a-input :value="record.fieldType" style="width: 150px" disabled>
                   </a-input>
                 </template>
               </a-table>
@@ -151,16 +109,11 @@
           </div>
         </div>
 
-        <a-pagination
-          v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
-          v-model:current="pagination.current"
-          v-model:page-size="pagination.pageSize"
-          :page-size-options="pagination.pageSizeOptions"
-          :total="fieldMap.sourceDS.length"
-          :show-total="total => `总共 ${fieldMap.sourceDS.length}条`"
-          show-size-changer
-          @change="changeEvents"
-        />
+        <a-pagination v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
+          v-model:current="pagination.current" v-model:page-size="pagination.pageSize"
+          :page-size-options="pagination.pageSizeOptions" :total="fieldMap.sourceDS.length"
+          :show-total="total => `总共 ${fieldMap.sourceDS.length}条`" show-size-changer
+          @change="changeEvents" />
       </div>
     </div>
   </div>
@@ -175,9 +128,15 @@ import {
   watch,
   computed,
   defineAsyncComponent,
-} from "vue";
-import { cloneDeep } from "lodash-es";
-import { DeleteOutlined, RightOutlined,DownOutlined } from "@ant-design/icons-vue";
+  onMounted
+} from 'vue';
+import { cloneDeep } from 'lodash-es';
+import {
+  DeleteOutlined,
+  RightOutlined,
+  DownOutlined,
+} from '@ant-design/icons-vue';
+import { getFieldFunc } from '@/common/service';
 
 export default defineComponent({
   props: {
@@ -186,14 +145,15 @@ export default defineComponent({
     fieldsSink: Array,
     deductions: Array,
     addEnabled: Boolean,
+    transformEnable: Boolean,
     engineType: String,
   },
-  emits: ["updateFieldMap"],
+  emits: ['updateFieldMap'],
   components: {
-    Transformer: defineAsyncComponent(() => import("./transformer.vue")),
+    Transformer: defineAsyncComponent(() => import('./transformer.vue')),
     DeleteOutlined,
     RightOutlined,
-    DownOutlined
+    DownOutlined,
   },
   setup(props, context) {
     const { type } = props.fmData;
@@ -202,13 +162,13 @@ export default defineComponent({
     const pagination = reactive({
       current: 1,
       pageSize: 10,
-      pageSizeOptions:	['10', '20', '30', '40']	
-    })
+      pageSizeOptions: ['10', '20', '30', '40'],
+    });
 
     const changeEvents = (page, pageSize) => {
-      pagination.current = page
-      pagination.pageSize = pageSize
-    }
+      pagination.current = page;
+      pagination.pageSize = pageSize;
+    };
 
     let fieldMap = reactive({
       sourceDS: [],
@@ -218,8 +178,8 @@ export default defineComponent({
 
     const newProps = computed(() => JSON.parse(JSON.stringify(props.fmData)));
     watch(newProps, (val, oldVal) => {
-      const newVal = typeof val === "string" ? JSON.parse(val) : val;
-      isFold.value = !!toRaw(newVal).mapping.length
+      const newVal = typeof val === 'string' ? JSON.parse(val) : val;
+      isFold.value = !!toRaw(newVal).mapping.length;
       createDataSource(toRaw(newVal).mapping || []);
     });
 
@@ -227,9 +187,8 @@ export default defineComponent({
       JSON.parse(JSON.stringify(props.deductions))
     );
     watch(deductionsArray, (val, oldVal) => {
-      if (val)
-        isFold.value = !!toRaw(props.fmData.mapping).length
-        createDataSource(toRaw(props.fmData.mapping) || []);
+      if (val) isFold.value = !!toRaw(props.fmData.mapping).length;
+      createDataSource(toRaw(props.fmData.mapping) || []);
     });
 
     const createFieldOptions = (fieldInfo) => {
@@ -256,21 +215,21 @@ export default defineComponent({
           if (sink.key == key) {
             o.sink_field_name = sink.fieldName;
             o.sink_field_type = sink.fieldType;
-            o.sink_field_index = sink.fieldIndex
-            o.sink_field_editable = sink.fieldEditable
+            o.sink_field_index = sink.fieldIndex;
+            o.sink_field_editable = sink.fieldEditable;
           }
         });
         transformerList.forEach((tf) => {
           if (tf.key == key) {
             o.validator = tf.validator;
             o.transformer = tf.transformer;
-            o.deleteEnable = tf.deleteEnable
+            o.deleteEnable = tf.deleteEnable;
           }
         });
         o.source_field_name = source.fieldName;
         o.source_field_type = source.fieldType;
-        o.source_field_index = source.fieldIndex
-        o.source_field_editable = source.fieldEditable
+        o.source_field_index = source.fieldIndex;
+        o.source_field_editable = source.fieldEditable;
         mapping.push(o);
       });
       const { type, sql } = props.fmData;
@@ -286,7 +245,7 @@ export default defineComponent({
       fieldMap.sourceDS = [];
       fieldMap.sinkDS = [];
       fieldMap.transformerList = [];
-      if (typeof map !== "object") {
+      if (typeof map !== 'object') {
         return;
       }
 
@@ -316,70 +275,70 @@ export default defineComponent({
           fieldMap.sinkDS.push(sinkItem);
         });
       } else { */
-        map.forEach((item, idx) => {
+      map.forEach((item, idx) => {
+        let sourceItem = {};
+        let sinkItem = {};
+        let transformerItem = {};
+
+        if (item.source_field_name && item.source_field_type) {
+          sourceItem.key = idx + '';
+          sourceItem.fieldName =
+            item.source_field_name && item.source_field_name;
+          sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
+          sourceItem.fieldType =
+            item.source_field_type && item.source_field_type;
+          sourceItem.fieldIndex = item.source_field_index;
+          sourceItem.fieldEditable = item.source_field_editable;
+
+          sinkItem.key = idx + '';
+          sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
+          sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
+          sinkItem.fieldType = item.sink_field_type && item.sink_field_type;
+          sinkItem.fieldIndex = item.sink_field_index;
+          sinkItem.fieldEditable = item.sink_field_editable;
+
+          transformerItem.key = idx + '';
+          transformerItem.validator = item.validator && item.validator;
+          transformerItem.transformer = item.transformer && item.transformer;
+          transformerItem.deleteEnable = item.deleteEnable;
+
+          fieldMap.transformerList.push(transformerItem);
+          fieldMap.sourceDS.push(sourceItem);
+          fieldMap.sinkDS.push(sinkItem);
+        } else if (item.source && item.source.name && item.source.type) {
           let sourceItem = {};
           let sinkItem = {};
           let transformerItem = {};
 
-          if (item.source_field_name && item.source_field_type) {
-            sourceItem.key = idx + "";
-            sourceItem.fieldName =
-              item.source_field_name && item.source_field_name;
-            sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
-            sourceItem.fieldType =
-              item.source_field_type && item.source_field_type;
-            sourceItem.fieldIndex = item.source_field_index
-            sourceItem.fieldEditable = item.source_field_editable
+          sourceItem.key = idx + '';
+          sourceItem.fieldName = item.source.name;
+          sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
+          sourceItem.fieldType = item.source.type;
+          sourceItem.fieldIndex = item.source.fieldIndex;
+          sourceItem.fieldEditable = item.source.fieldEditable;
 
-            sinkItem.key = idx + "";
-            sinkItem.fieldName = item.sink_field_name && item.sink_field_name;
-            sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
-            sinkItem.fieldType = item.sink_field_type && item.sink_field_type;
-            sinkItem.fieldIndex = item.sink_field_index
-            sinkItem.fieldEditable = item.sink_field_editable
+          sinkItem.key = idx + '';
+          sinkItem.fieldName = item.sink.name;
+          sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
+          sinkItem.fieldType = item.sink.type;
+          sinkItem.fieldIndex = item.sink.fieldIndex;
+          sinkItem.fieldEditable = item.sink.fieldEditable;
 
-            transformerItem.key = idx + "";
-            transformerItem.validator = item.validator && item.validator;
-            transformerItem.transformer = item.transformer && item.transformer;
-            transformerItem.deleteEnable = item.deleteEnable;
+          transformerItem.key = idx + '';
+          transformerItem.validator = [];
+          transformerItem.transformer = {};
+          transformerItem.deleteEnable = item.deleteEnable;
 
-            fieldMap.transformerList.push(transformerItem);
-            fieldMap.sourceDS.push(sourceItem);
-            fieldMap.sinkDS.push(sinkItem);
-          } else if (item.source && item.source.name && item.source.type) {
-            let sourceItem = {};
-            let sinkItem = {};
-            let transformerItem = {};
-
-            sourceItem.key = idx + "";
-            sourceItem.fieldName = item.source.name;
-            sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
-            sourceItem.fieldType = item.source.type;
-            sourceItem.fieldIndex = item.source.fieldIndex
-            sourceItem.fieldEditable = item.source.fieldEditable
-
-            sinkItem.key = idx + "";
-            sinkItem.fieldName = item.sink.name;
-            sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
-            sinkItem.fieldType = item.sink.type;
-            sinkItem.fieldIndex = item.sink.fieldIndex
-            sinkItem.fieldEditable = item.sink.fieldEditable
-
-            transformerItem.key = idx + "";
-            transformerItem.validator = [];
-            transformerItem.transformer = {};
-            transformerItem.deleteEnable = item.deleteEnable;
-
-            fieldMap.transformerList.push(transformerItem);
-            fieldMap.sourceDS.push(sourceItem);
-            fieldMap.sinkDS.push(sinkItem);
-          }
-        })
+          fieldMap.transformerList.push(transformerItem);
+          fieldMap.sourceDS.push(sourceItem);
+          fieldMap.sinkDS.push(sinkItem);
+        }
+      });
       //}
     };
     createDataSource(toRaw(props.fmData).mapping || []);
 
-    console.log("sourceDS", fieldMap);
+    console.log('sourceDS', fieldMap);
 
     const updateTransformer = (res) => {
       const _transformerList = fieldMap.transformerList.filter(
@@ -393,7 +352,7 @@ export default defineComponent({
         fieldMap.sinkDS,
         fieldMap.transformerList
       );
-      context.emit("updateFieldMap", transforms);
+      context.emit('updateFieldMap', transforms);
     };
 
     const updateSourceFieldName = (info, e) => {
@@ -415,7 +374,7 @@ export default defineComponent({
         fieldMap.sinkDS,
         fieldMap.transformerList
       );
-      context.emit("updateFieldMap", transforms);
+      context.emit('updateFieldMap', transforms);
     };
 
     const updateSinkFieldName = (info, e) => {
@@ -437,7 +396,7 @@ export default defineComponent({
         fieldMap.sinkDS,
         fieldMap.transformerList
       );
-      context.emit("updateFieldMap", transforms);
+      context.emit('updateFieldMap', transforms);
     };
 
     const addTableRow = () => {
@@ -449,19 +408,19 @@ export default defineComponent({
       let sinkItem = {};
       let transformerItem = {};
 
-      sourceItem.key = sourceLen + "";
-      sourceItem.fieldName = "";
+      sourceItem.key = sourceLen + '';
+      sourceItem.fieldName = '';
       sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
-      sourceItem.fieldType = "";
-      sourceItem.fieldEditable = true
+      sourceItem.fieldType = '';
+      sourceItem.fieldEditable = true;
 
-      sinkItem.key = sinkLen + "";
-      sinkItem.fieldName = "";
+      sinkItem.key = sinkLen + '';
+      sinkItem.fieldName = '';
       sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
-      sinkItem.fieldType = "";
-      sinkItem.fieldEditable = true
+      sinkItem.fieldType = '';
+      sinkItem.fieldEditable = true;
 
-      transformerItem.key = tfLen + "";
+      transformerItem.key = tfLen + '';
       transformerItem.validator = [];
       transformerItem.transformer = {};
       transformerItem.deleteEnable = true;
@@ -480,71 +439,101 @@ export default defineComponent({
         fieldMap.sinkDS,
         fieldMap.transformerList
       );
-      context.emit("updateFieldMap", transforms);
+      context.emit('updateFieldMap', transforms);
     };
     let isFold = ref(false);
     const showInfo = () => {
       isFold.value = !isFold.value;
     };
 
+    // 检验函数和转换函数的下拉选项
+    const checkOptions = ref([]);
+    const transformFuncOptions = ref([]);
+
+    onMounted(() => {
+      // 获取检验列表
+      getFieldFunc('verify').then((res) => {
+        checkOptions.value = (res?.data || []).map((v) => ({
+          label: v.funcName,
+          value: v.funcName,
+          ...v,
+        }));
+      });
+
+      // 获取转换函数
+      getFieldFunc('transform').then((res) => {
+        transformFuncOptions.value = (res?.data || []).map((v) => ({
+          label: v.funcName,
+          value: v.funcName,
+          ...v,
+        }));
+      });
+    });
+
     return {
       type,
       fieldMap,
-      columns1: [{
-        title: "来源字段",
-        children: [
-          {
-            title: "字段名",
-            dataIndex: "fieldName",
-            key: "fieldName",
-            slots: {
-              customRender: "fieldName",
+      columns1: [
+        {
+          title: '来源字段',
+          children: [
+            {
+              title: '字段名',
+              dataIndex: 'fieldName',
+              key: 'fieldName',
+              slots: {
+                customRender: 'fieldName',
+              },
             },
-          },
-          {
-            title: "类型",
-            dataIndex: "fieldType",
-            key: "fieldType",
-            slots: {
-              customRender: "fieldType",
+            {
+              title: '类型',
+              dataIndex: 'fieldType',
+              key: 'fieldType',
+              slots: {
+                customRender: 'fieldType',
+              },
             },
-          },
-        ]
-      }],
-      columns2: [{
-        title: "目的字段",
-        children: [
-          {
-            title: "字段名",
-            dataIndex: "fieldName",
-            key: "fieldName",
-            slots: {
-              customRender: "fieldName",
+          ],
+        },
+      ],
+      columns2: [
+        {
+          title: '目的字段',
+          children: [
+            {
+              title: '字段名',
+              dataIndex: 'fieldName',
+              key: 'fieldName',
+              slots: {
+                customRender: 'fieldName',
+              },
             },
-          },
-          {
-            title: "类型",
-            dataIndex: "fieldType",
-            key: "fieldType",
-            slots: {
-              customRender: "fieldType",
+            {
+              title: '类型',
+              dataIndex: 'fieldType',
+              key: 'fieldType',
+              slots: {
+                customRender: 'fieldType',
+              },
             },
-          },
-        ]
-      }],
-      columns3: [{
-        title: "",
-        children: [
-          {
-            title: "",
-            dataIndex: "fieldName",
-            key: "fieldName",
-            slots: {
-              customRender: "fieldName",
+          ],
+        },
+      ],
+      columns3: [
+        {
+          title: '',
+          children: [
+            {
+              title: '',
+              dataIndex: 'fieldName',
+              key: 'fieldName',
+              slots: {
+                customRender: 'fieldName',
+              },
             },
-          },
-        ]
-      }],
+          ],
+        },
+      ],
       updateTransformer,
       updateSourceFieldName,
       updateSinkFieldName,
@@ -554,13 +543,15 @@ export default defineComponent({
       deleteField,
       pagination,
       changeEvents,
+      checkOptions,
+      transformFuncOptions
     };
   },
 });
 </script>
 
 <style lang="less" scoped>
-@import "../../../common/content.less";
+@import '../../../common/content.less';
 .field-map-wrap {
   display: flex;
   border-bottom: 1px solid #dee4ec;
@@ -632,8 +623,9 @@ export default defineComponent({
   font-size: 14px;
   text-align: left;
 }
- 
-.filed-map-wrap-l, .field-map-wrap-r {
+
+.filed-map-wrap-l,
+.field-map-wrap-r {
   :deep(.ant-table-pagination) {
     display: none;
   }
@@ -641,7 +633,7 @@ export default defineComponent({
     tr {
       th {
         text-align: center;
-        background-color: #F8FAFD;
+        background-color: #f8fafd;
       }
     }
   }
@@ -654,23 +646,23 @@ export default defineComponent({
   }
 }
 .field-map-wrap-mid {
-    width: 248px;
-    display: flex;
-    justify-content: center;
-    position: relative;
-    margin-top: 86px;
-    :deep(.ant-table-thead) {
-      display: none;
-    }
-    :deep(.ant-table-tbody) {
-      tr {
-        td {
-          padding: 16px 10px;
-        }
+  width: 248px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  margin-top: 86px;
+  :deep(.ant-table-thead) {
+    display: none;
+  }
+  :deep(.ant-table-tbody) {
+    tr {
+      td {
+        padding: 16px 10px;
       }
     }
-    :deep(.ant-table-pagination) {
-      display: none;
-    }
+  }
+  :deep(.ant-table-pagination) {
+    display: none;
+  }
 }
 </style>
