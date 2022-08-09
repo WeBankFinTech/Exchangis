@@ -288,8 +288,6 @@ export const getJobs = (id, jobType, name, current, size) => {
 };
 
 export const saveProject = (id, body, type = 'save') => {
-  //test 代码调试中
-  console.log('%c%s', 'color: red; background: yellow; font-size: 24px;', '调试', request)
   return request(`/job/${id}/content`, {
     ...body,
     labels: {
