@@ -7,7 +7,8 @@ import org.apache.linkis.common.conf.CommonVars;
  */
 public class ExchangisEngineConfiguration {
 
-    public static final CommonVars<String> ENGINE_RESOURCE_ROOT_PATH = CommonVars.apply("wds.exchangis.engine.root.path", "/data/exchangis/engine");
+    public static final CommonVars<String> ENGINE_RESOURCE_ROOT_PATH = CommonVars.apply("wds.exchangis.engine.root.path",
+            System.getProperty("user.dir", "/tmp/exchangis/") + "/engine");
     /**
      * If need to store the merged resource into local path
      */

@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.linkis
 
+import com.webank.wedatasphere.exchangis.common.linkis.ClientConfiguration
 import org.apache.linkis.datasource.client.impl.{LinkisDataSourceRemoteClient, LinkisMetaDataRemoteClient}
 import org.apache.linkis.datasource.client.request._
 import org.apache.linkis.datasource.client.response._
@@ -12,7 +13,8 @@ import java.util.concurrent.TimeUnit
 
 object ExchangisLinkisRemoteClient {
   //Linkis Datasource Client Config
-  val serverUrl: String = ExchangisDataSourceConfiguration.SERVER_URL.getValue
+  val serverUrl: String = ClientConfiguration.LINKIS_SERVER_URL.getValue
+  val authTokenValue: String = ClientConfiguration.LINKIS_TOKEN_VALUE.getValue
   val connectionTimeout: lang.Long = ExchangisDataSourceConfiguration.CONNECTION_TIMEOUT.getValue
   val discoveryEnabled: lang.Boolean = ExchangisDataSourceConfiguration.DISCOVERY_ENABLED.getValue
   val discoveryFrequencyPeriod: lang.Long = ExchangisDataSourceConfiguration.DISCOVERY_FREQUENCY_PERIOD.getValue
@@ -20,8 +22,6 @@ object ExchangisLinkisRemoteClient {
   val maxConnectionSize: Integer = ExchangisDataSourceConfiguration.MAX_CONNECTION_SIZE.getValue
   val retryEnabled: lang.Boolean = ExchangisDataSourceConfiguration.RETRY_ENABLED.getValue
   val readTimeout: lang.Long = ExchangisDataSourceConfiguration.READ_TIMEOUT.getValue
-  val authTokenKey: String = ExchangisDataSourceConfiguration.AUTHTOKEN_KEY.getValue
-  val authTokenValue: String = ExchangisDataSourceConfiguration.AUTHTOKEN_VALUE.getValue
   val dwsVersion: String = ExchangisDataSourceConfiguration.DWS_VERSION.getValue
 
 
@@ -50,7 +50,6 @@ object ExchangisLinkisRemoteClient {
     .retryEnabled(retryEnabled)
     .readTimeout(readTimeout)
     .setAuthenticationStrategy(new TokenAuthenticationStrategy())
-    .setAuthTokenKey(authTokenKey)
     .setAuthTokenValue(authTokenValue)
     .setDWSVersion(dwsVersion)
     .build()

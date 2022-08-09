@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.engine.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.common.utils.JsonUtils;
 import org.slf4j.Logger;
@@ -31,10 +32,12 @@ public class EngineSettings {
     /**
      * Settings: engine_settings_value
      */
+    @JsonIgnoreProperties
     private String settings;
     /**
      * Direction: engine_direction => hdfs->local,mysql->hdfs,mysql->hdfs
      */
+    @JsonIgnoreProperties
     private String direction;
 
     /**

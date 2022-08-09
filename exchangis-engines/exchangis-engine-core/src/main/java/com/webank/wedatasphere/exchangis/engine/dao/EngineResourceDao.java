@@ -21,4 +21,10 @@ public interface EngineResourceDao {
      * @param storeResource store resource
      */
     void insertResource(EngineStoreResource storeResource);
+
+    /**
+     * Update resource
+     * @param storeResource store resource
+     */
+    void updateResource(EngineStoreResource storeResource);
 }

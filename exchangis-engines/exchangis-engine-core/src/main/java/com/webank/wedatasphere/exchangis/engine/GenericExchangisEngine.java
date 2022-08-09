@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.engine;
 
+import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineSettings;
 import com.webank.wedatasphere.exchangis.engine.resource.EngineResourceContainer;
 
@@ -33,8 +34,9 @@ public class GenericExchangisEngine implements ExchangisEngine{
         this.settings = settings;
     }
 
-    public EngineResourceContainer<?, ?> getResourceContainer() {
-        return resourceContainer;
+    @SuppressWarnings("unchecked")
+    public <T extends EngineResource, U extends EngineResource> EngineResourceContainer<T, U> getResourceContainer() {
+        return (EngineResourceContainer<T, U>) resourceContainer;
     }
 
     public void setResourceContainer(EngineResourceContainer<?, ?> resourceContainer) {

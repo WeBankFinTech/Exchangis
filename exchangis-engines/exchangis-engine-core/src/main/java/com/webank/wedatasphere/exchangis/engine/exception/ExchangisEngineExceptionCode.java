@@ -5,7 +5,9 @@ package com.webank.wedatasphere.exchangis.engine.exception;
  * 32000 ~ 32999
  */
 public enum ExchangisEngineExceptionCode {
-    RESOURCE_LOAD_ERROR(32000);
+    RESOURCE_ERROR(32000),
+    RESOURCE_LOAD_ERROR(32001),
+    RESOURCE_UPLOAD_ERROR(32002);
 
     private int code;
 
