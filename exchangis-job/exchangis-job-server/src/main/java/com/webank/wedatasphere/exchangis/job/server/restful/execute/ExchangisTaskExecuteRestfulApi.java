@@ -5,6 +5,7 @@ import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
+import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedTaskMetricsVo;
 import org.apache.commons.lang.StringUtils;
@@ -33,6 +34,9 @@ public class ExchangisTaskExecuteRestfulApi {
 
     @Resource
     private JobExecuteService jobExecuteService;
+
+    @Resource
+    private DefaultJobExecuteService executeService;
 
     @RequestMapping( value = "/execution/{taskId}/metrics", method = RequestMethod.POST)
     public Message getTaskMetrics(@PathVariable("taskId") String taskId,
@@ -70,7 +74,12 @@ public class ExchangisTaskExecuteRestfulApi {
         Message result = Message.ok("Submitted succeed(提交成功)！");
         LogQuery logQuery = new LogQuery(fromLine, pageSize,
                 ignoreKeywords, onlyKeywords, lastRows);
+        String userName = SecurityFilter.getLoginUsername(request);
         try {
+
+            if(!executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+                return Message.error("You have no permission to get logs(没有查看日志权限)");
+            }
             ExchangisCategoryLogVo categoryLogVo = this.jobExecuteService.getTaskLogInfo(taskId, jobExecutionId, logQuery, SecurityFilter.getLoginUsername(request));
             result.setData(Json.convert(categoryLogVo, Map.class, String.class, Object.class));
         } catch (Exception e) {
