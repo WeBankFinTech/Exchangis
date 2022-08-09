@@ -125,11 +125,13 @@ import {
   MinusCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons-vue';
-import { getFieldFunc, getFieldTransfer } from '@/common/service';
 
 export default defineComponent({
   props: {
     tfData: Object,
+    checkOptions: Array,
+    transformFuncOptions: Array,
+    transformEnable: Boolean
   },
   emits: ['updateTransformer'],
   components: {
@@ -155,7 +157,9 @@ export default defineComponent({
     const visible = ref(false);
 
     const showModal = () => {
-      visible.value = true;
+      if (props.transformEnable) {
+        visible.value = true;
+      }
     };
 
     // 点击确认
@@ -258,8 +262,8 @@ export default defineComponent({
     };
 
     // 检验函数和转换函数的下拉选项
-    const checkOptions = ref([]);
-    const transformFuncOptions = ref([]);
+    const checkOptions = computed(() => props.checkOptions);
+    const transformFuncOptions = computed(() => props.transformFuncOptions);
 
     // 转换函数的参数
     let placeholder1 = ref(''),
@@ -279,26 +283,6 @@ export default defineComponent({
         placeholderKeys[i].value = paramNames[i] || '';
       });
     };
-
-    onMounted(() => {
-      // 获取检验列表
-      getFieldFunc('verify').then((res) => {
-        checkOptions.value = (res?.data || []).map((v) => ({
-          label: v.funcName,
-          value: v.funcName,
-          ...v,
-        }));
-      });
-
-      // 获取转换函数
-      getFieldFunc('transform').then((res) => {
-        transformFuncOptions.value = (res?.data || []).map((v) => ({
-          label: v.funcName,
-          value: v.funcName,
-          ...v,
-        }));
-      });
-    });
 
     return {
       visible,
