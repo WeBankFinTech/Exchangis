@@ -1,16 +1,21 @@
+<!--
+ * @Description: 
+ * @Author: sueRim
+ * @Date: 2022-08-04 10:12:48
+-->
 <template>
-  <a-modal :title="$t(`加密`)" :footer="null" :visible="visible" :confirm-loading="confirmLoading"
+  <a-modal :title="$t(`加密插件`)" :footer="null" :visible="visible" :confirm-loading="confirmLoading"
     :width="600" @cancel="$emit('update:visible', false)">
     <a-spin :spinning="confirmLoading">
       <a-form ref="formRef" :model="formState" :label-col="{ span: 6 }">
         <a-form-item label="原始字符串">
-          <a-input-password v-model:value="formState.originStr" placeholder="请输入" />
-        </a-form-item>
-        <a-form-item class="inline-button">
-          <a-button type="primary" @click="handleEncrypt">加密</a-button>
+          <div class="inline-group">
+            <a-input-password v-model:value="formState.originStr" placeholder="请输入" />
+            <a-button type="primary" @click="handleEncrypt">加密</a-button>
+          </div>
         </a-form-item>
         <a-form-item label="加密字符串">
-          <a-input v-model:value="formState.encryStr" :readOnly="true"/>
+          <a-input v-model:value="formState.encryStr" disabled />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -57,8 +62,10 @@ export default {
   methods: {
     // modal加密
     async handleEncrypt() {
-      const { originStr } = this.formState
-      if(!originStr) return
+      const { originStr } = this.formState;
+      if (!originStr) {
+        return message.warning('原始字符串不能为空');
+      }
       this.confirmLoading = true;
       try {
         const res = await encryptFunc({ encryStr: originStr });
@@ -74,9 +81,10 @@ export default {
 </script>
 
 <style scoped lang="less">
-.inline-button {
-  :deep(.ant-form-item-control-input-content) {
-    text-align: center;
+.inline-group {
+  :deep(.ant-input-password) {
+    width: calc(100% - 80px);
+    margin-right: 16px;
   }
 }
 </style>
