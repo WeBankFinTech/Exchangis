@@ -257,7 +257,8 @@ export default {
           // this.dataSrc = { ...result.info,  ...mConnect};
           this.formData = { ...result.info, ...mConnect };
           if (this.formData.elasticUrls) {
-            let str = this.formData.elasticUrls.match(/(?<=\[\").*?(?=\"\])/)[0];
+            let str =
+              this.formData.elasticUrls.match(/(?<=\[\").*?(?=\"\])/)[0];
             this.formData.elasticUrls = (str || '').split(',');
           }
         });
@@ -279,7 +280,7 @@ export default {
 
       keyDefinitions.forEach((obj) => {
         let item = {};
-          Object.keys(obj).forEach((keyName) => {
+        Object.keys(obj).forEach((keyName) => {
           switch (typeof typesMap[keyName]) {
             case 'object':
               item = merge({}, item, typesMap[keyName]);
@@ -347,33 +348,42 @@ export default {
       let curItem = tempData.find((v) => v.field === 'elasticUrls');
       if (curItem) {
         Object.assign(curItem, {
-            type: 'group',
-            props: {
-                rule: [{ type: 'input', field: 'field1',col:{ span: 24 }}],
-                field: 'field1',
+          type: 'group',
+          props: {
+            rule: [{ type: 'input', field: 'field1', col: { span: 24 } }],
+            field: 'field1',
+          },
+          validate: [
+            {
+              required: true,
+              type: 'array',
+              min: 1,
+              message: '最少添加1个Elastic Url',
             },
-            validate: [
-                { required: true, type: 'array', min: 1, message: '最少添加1个Elastic Url' },
-            ]
-        })
+          ],
+        });
       }
       return tempData;
     },
+    beforeHandle(_formData) {
+      let elasticUrls = _formData?.elasticUrls;
+      if (elasticUrls && Array.isArray(elasticUrls)) {// es数据源时转换为字符串
+        elasticUrls = `["${String(elasticUrls.filter((v) => !!v))}"]`;
+      }
+      return { ..._formData, elasticUrls: elasticUrls };
+    },
     submit() {
       this.fApi.submit((formData, fApi) => {
-        const _formData = JSON.parse(JSON.stringify(formData));
-        if (_formData?.elasticUrls) { // es数据源时转换为字符串
-          let str = `["${String(_formData.elasticUrls.filter(v => !!v))}"]`;
-          _formData.elasticUrls = str;
-        }
+        const _formData = this.beforeHandle(formData);
         this.$emit('submit', JSON.stringify(_formData), this.originalDefine);
       });
     },
     // 测试链接
     handleTestConnect() {
+      const _formData = this.beforeHandle(this.formData);
       this.$emit(
         'connect',
-        JSON.stringify(toRaw(this.formData)),
+        JSON.stringify(toRaw(_formData)),
         this.originalDefine
       );
     },
@@ -445,14 +455,14 @@ export default {
 }
 
 .table-warp {
-    :deep(.ant-col-2)  {
-        display: block;
-        flex: 0 0 60px;
-        max-width: 60px;
-        margin-bottom: 24px;
-        span {
-            margin: 0 1px;
-        }
+  :deep(.ant-col-2) {
+    display: block;
+    flex: 0 0 60px;
+    max-width: 60px;
+    margin-bottom: 24px;
+    span {
+      margin: 0 1px;
     }
+  }
 }
 </style>
