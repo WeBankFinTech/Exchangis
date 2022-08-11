@@ -69,7 +69,7 @@ public class DefaultEngineResourceContainer extends AbstractEngineResourceContai
             if (ExchangisEngineConfiguration.ENGINE_RESOURCE_MERGE_LOCAL.getValue()) {
                 // Need to store the merged resource into local path
                 String rootPath = rootUri.getPath();
-                mergedResourcePath = (rootPath.endsWith(IOUtils.DIR_SEPARATOR + "")? rootUri : rootPath + IOUtils.DIR_SEPARATOR )
+                mergedResourcePath = (rootPath.endsWith(IOUtils.DIR_SEPARATOR + "")? rootPath : rootPath + IOUtils.DIR_SEPARATOR )
                         + pathNode.getPath() + ExchangisEngineConfiguration.ENGINE_RESOURCE_PACKET_SUFFIX.getValue();
             } else {
                 File temporaryPath = new File(ExchangisEngineConfiguration.ENGINE_RESOURCE_TMP_PATH.getValue());
@@ -90,11 +90,13 @@ public class DefaultEngineResourceContainer extends AbstractEngineResourceContai
                     }
                 }
                 try {
-                    ResourceUtils.combinePacket(resourcesFiltered.stream().toArray(value -> new EngineResource[0]), new FileOutputStream(resourceFile));
-                    if (temp) {
-                        resourceFile.deleteOnExit();
+                    if (resourceFile.createNewFile()) {
+                        ResourceUtils.combinePacket(resourcesFiltered.stream().toArray(value -> new EngineResource[resourcesFiltered.size()]), new FileOutputStream(resourceFile));
+                        if (temp) {
+                            resourceFile.deleteOnExit();
+                        }
+                        return new EngineLocalPathResource(getEngineType(), rootUri, pathNode.getPath() + ExchangisEngineConfiguration.ENGINE_RESOURCE_PACKET_SUFFIX.getValue());
                     }
-                    return new EngineLocalPathResource(getEngineType(), rootUri, pathNode.getPath());
                 } catch (IOException e) {
                     LOG.warn("Exception in combing and packet resources in [{}]", pathNode.getPath(), e);
                 }

@@ -187,15 +187,35 @@ CREATE TABLE IF NOT EXISTS `exchangis_job_func_params`(
     PRIMARY KEY(`func_id`, `param_name`)
 )Engine=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `exchangis_engine_resources`
+CREATE TABLE `exchangis_engine_resources` (
+   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+   `engine_type` varchar(50) NOT NULL,
+   `resource_name` varchar(100) NOT NULL,
+   `resource_type` varchar(50) NOT NULL COMMENT 'resource type' DEFAULT 'file',
+   `resource_path` varchar(255) NOT NULL,
+   `store_uri` varchar(500) NOT NULL,
+   `create_user` varchar(50) NOT NULL,
+   `modify_time` datetime DEFAULT NULL,
+   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `engine_res_idx` (`engine_type`,`resource_path`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `exchangis_engine_settings`;
-CREATE TABLE IF NOT EXISTS `exchangis_engine_settings`(
-    `id` bigint(20) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    `engine_name` VARCHAR(255) NOT NULL,
-    `direct_source`  VARCHAR(255) NOT NULL,
-    `direct_sink` VARCHAR(255)  NOT NULL,
-    `func_id` bigint(20),
-    `use_func` BOOL
-)Engine=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `exchangis_engine_settings` (
+   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+   `engine_name` varchar(50) NOT NULL,
+   `engine_desc` varchar(500) NOT NULL,
+   `engine_settings_value` text,
+   `engine_direction` varchar(255) NOT NULL,
+   `res_loader_class` varchar(255),
+   `res_uploader_class` varchar(255),
+   `modify_time` datetime DEFAULT NULL,
+   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `engine_setting_idx` (`engine_name`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO exchangis_job_param_config (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
 ('setting.speed.bytes','作业速率限制','','DATAX','INPUT','setting.speed.bytes','作业速率限制','Mb/s',1,'NUMBER','','','REGEX','^[1-9]\\d*$','作业速率限制输入错误',0,0,'',1,'',1,'',1,null)

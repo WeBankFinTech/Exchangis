@@ -4,6 +4,8 @@ import com.webank.wedatasphere.exchangis.engine.resource.loader.AbstractEngineLo
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.conf.CommonVars;
 
+import java.util.regex.Pattern;
+
 /**
  * Datax engine resource loader
  */
@@ -24,4 +26,5 @@ public class DataxEngineResourceLoader extends AbstractEngineLocalPathResourceLo
     public String engineType() {
         return "datax";
     }
+
 }

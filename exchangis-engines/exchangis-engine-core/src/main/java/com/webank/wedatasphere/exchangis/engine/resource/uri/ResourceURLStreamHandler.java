@@ -26,6 +26,6 @@ import java.net.URLStreamHandler;
 public class ResourceURLStreamHandler extends URLStreamHandler {
     @Override
     protected URLConnection openConnection(URL url) throws IOException {
-        throw new IllegalArgumentException("Cannot open connection for url [" + url.getPath() + "]");
+        throw new IllegalArgumentException("Cannot open connection for url [" + url + "]");
     }
 }

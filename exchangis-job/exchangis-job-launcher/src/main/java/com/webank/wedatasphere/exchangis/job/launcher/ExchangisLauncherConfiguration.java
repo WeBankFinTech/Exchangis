@@ -14,6 +14,8 @@ public class ExchangisLauncherConfiguration {
 
     public static final String LAUNCHER_LINKIS_REQUEST_MEMORY = "wds.linkis.engineconn.java.driver.memory";
 
+    public static final String LAUNCHER_LINKIS_RESOURCES = "wds.linkis.engineconn.java.bml.resources";
+
     public static final CommonVars<String> LAUNCHER_LINKIS_CREATOR = CommonVars.apply("wds.exchangis.job.task.launcher.linkis.creator", "exchangis");
 
     public static final CommonVars<String> LAUNCHER_LINKIS_ENGINE_CONN_MODE = CommonVars.apply("wds.exchangis.job.task.launcher.linkis.engineConn.mode", "once");
