@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.linkis.engineconnplugin.datax.context
+package org.apache.linkis.engineconnplugin.datax.config
 
-class EnvironmentContext {
+class DataxPluginConfiguration {
+
 
 }
