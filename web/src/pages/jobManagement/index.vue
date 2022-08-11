@@ -57,7 +57,7 @@
           </div>
           <div class="close-icon">
             <a-popconfirm
-              title="确定未保存就离开？"
+              title="是否离开？离开前请确认保存"
               @confirm="() => deleteTab(item)"
             >
               <template #icon
