@@ -34,6 +34,12 @@
             <artifactId>exchangis-job-launcher</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-engine-core</artifactId>
+            <version>${exchangis.version}</version>
+        </dependency>
         <!-- scheduler module -->
         <dependency>
             <groupId>org.apache.linkis</groupId>

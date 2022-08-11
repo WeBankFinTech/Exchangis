@@ -25,7 +25,7 @@ object ApplicationUtils{
         mainProgram
       }{
         case e: Exception =>
-          LOG.info("The process has been shutdown: [" + e.getMessage + "]")
+          LOG.info("The process has been shutdown: [" + e.getMessage + "]", e)
           System.exit(1)
       }
     }

@@ -61,7 +61,7 @@ public abstract class AbstractExchangisJobBuilder<T extends ExchangisJob, E exte
      * Get current job builder context
      * @return
      */
-    protected static ExchangisJobBuilderContext getCurrentBuilderContext(){
+    public static ExchangisJobBuilderContext getCurrentBuilderContext(){
         return contextThreadLocal.get();
     }
 }
