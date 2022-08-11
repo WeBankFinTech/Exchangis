@@ -4,6 +4,8 @@ import com.webank.wedatasphere.exchangis.engine.domain.EngineLocalPathResource;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,6 +27,8 @@ import java.util.zip.ZipOutputStream;
  */
 public class ResourceUtils {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceUtils.class);
+
     private static final Integer BUFFER_SIZE = 2 * 1024;
 
     public static String normalizeFilePath(String path){
@@ -38,6 +42,8 @@ public class ResourceUtils {
      * @throws IOException
      */
     public static void combinePacket(EngineResource[] resources, OutputStream outputStream) throws IOException {
+        LOG.info("Start to combine the resources to packet file...");
+        long startTime = System.currentTimeMillis();
         try(ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
             for (EngineResource resource : resources) {
                 if (resource instanceof EngineLocalPathResource) {
@@ -48,6 +54,7 @@ public class ResourceUtils {
                 }
             }
         }
+        LOG.info("Success to combine the resources to packet file, taken: {}", System.currentTimeMillis() - startTime);
     }
 
     public static void packet(Path source, Path target, boolean includeBaseDir) throws IOException {

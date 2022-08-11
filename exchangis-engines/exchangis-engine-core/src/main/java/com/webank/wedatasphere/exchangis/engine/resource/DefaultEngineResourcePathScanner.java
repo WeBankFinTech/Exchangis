@@ -6,6 +6,8 @@ import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
 import com.webank.wedatasphere.exchangis.engine.exception.ExchangisEngineResException;
 import com.webank.wedatasphere.exchangis.engine.exception.ExchangisEngineResLoadException;
 import com.webank.wedatasphere.exchangis.engine.utils.ResourceUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -41,6 +43,7 @@ public class DefaultEngineResourcePathScanner implements EngineResourcePathScann
 
     @Override
     public Set<EngineLocalPathResource> doScan(String rootPath) throws ExchangisEngineResException {
+        rootPath = FilenameUtils.normalize(rootPath);
         File rootFile = new File(rootPath);
         List<EngineLocalPathResource> resources = new ArrayList<>();
         if (!rootFile.exists()){
@@ -95,7 +98,9 @@ public class DefaultEngineResourcePathScanner implements EngineResourcePathScann
                     }
                 });
                 List<File> rawFiles = Arrays.stream(childFiles).filter(file ->
-                        file.isFile() && !skipNames.contains(file.getName())).collect(Collectors.toList());
+                        file.isFile() && skipNames.stream().noneMatch(skipName ->
+                                file.getName().equals(skipName + ExchangisEngineConfiguration.ENGINE_RESOURCE_PACKET_SUFFIX.getValue())))
+                        .collect(Collectors.toList());
                 rawFiles.forEach(rawFile -> {
                     try {
                         String rawFilePath = path + IOUtils.DIR_SEPARATOR  + rawFile.getName();
@@ -110,9 +115,13 @@ public class DefaultEngineResourcePathScanner implements EngineResourcePathScann
                                 resArray[0].setPacket(true);
                                 Path source = rawFile.toPath();
                                 Path dest = source.resolveSibling(StringUtils.substringBefore(rawFile.getName(), "."));
-                                Files.createDirectory(dest);
+                                if (!Files.isDirectory(dest)) {
+                                    Files.createDirectory(dest);
+                                }
                                 LOG.info("Un packet the engine resource: [{}] to [{}]", source, dest);
                                 ResourceUtils.unPacket(source, dest);
+                                // Update the path value
+                                resArray[0].setPath(StringUtils.substringBeforeLast(rawFilePath, "."));
                             }
                             resources.addAll(Arrays.asList(resArray));
                         }

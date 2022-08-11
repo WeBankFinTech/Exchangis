@@ -9,12 +9,10 @@
         <result column="engine_direction" property="direction"/>
         <result column="res_loader_class" property="resourceLoaderClass"/>
         <result column="res_uploader_class" property="resourceUploaderClass"/>
-        <result column="create_time" property="createTime"/>
-        <result column="modify_time" property="modifyTime"/>
     </resultMap>
     <!--All settings-->
     <select id="getSettings" resultMap="settings">
-        <![CDATA[SELECT * FROM `exchangis_engine_settings;`]]>
+        <![CDATA[SELECT * FROM `exchangis_engine_settings`;]]>
     </select>
 
 </mapper>

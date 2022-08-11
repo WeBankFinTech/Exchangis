@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import static com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob.*;
 
@@ -48,42 +49,46 @@ public class DataxExchangisEngineJobBuilder extends AbstractExchangisJobBuilder<
     private static final JobParamDefine<String> SINK_FIELD_TYPE = JobParams.define("type", "sink_field_type", String.class);
     private static final JobParamDefine<Integer> SINK_FIELD_INDEX = JobParams.define("index", "sink_field_index", Integer.class);
 
-    private static final JobParamDefine<List<Map<String, Object>>> SOURCE_COLUMN = JobParams.define("column", (BiFunction<String, JobParamSet, List<Map<String, Object>>>) (key, paramSet) -> {
-
-        List<Map<String, Object>> columns = new ArrayList<>();
-        List<Map<String, Object>> mappings = TRANSFORM_MAPPING.newParam(paramSet).getValue();
+    /**
+     * Source column definition
+     */
+    private static final JobParamDefine<List<Map<String, Object>>> SOURCE_COLUMN = JobParams.define("column", paramSet -> {
+        List<Map<String, Object>> mappings = TRANSFORM_MAPPING.getValue(paramSet);
         if (Objects.nonNull(mappings)) {
-            mappings.forEach(mapping -> {
+            return mappings.stream().map(mapping -> {
+                // JobParams.define(key, mappingKey) will remove the previous value
                 Map<String, Object> _mapping = new HashMap<>(mapping);
                 Map<String, Object> column = new HashMap<>();
-                columns.add(column);
-                column.put(SOURCE_FIELD_NAME.getKey(), SOURCE_FIELD_NAME.newParam(_mapping).getValue());
-                column.put(SOURCE_FIELD_TYPE.getKey(), SOURCE_FIELD_TYPE.newParam(_mapping).getValue());
-                column.put(SOURCE_FIELD_INDEX.getKey(), SOURCE_FIELD_INDEX.newParam(_mapping).getValue());
-            });
+                column.put(SOURCE_FIELD_NAME.getKey(), SOURCE_FIELD_NAME.newValue(_mapping));
+                column.put(SOURCE_FIELD_TYPE.getKey(), SOURCE_FIELD_TYPE.newValue(_mapping));
+                column.put(SOURCE_FIELD_INDEX.getKey(), SOURCE_FIELD_INDEX.newValue(_mapping));
+                return column;
+            }).collect(Collectors.toList());
         }
-        return columns;
+        return new ArrayList<>();
     });
 
-    private static final JobParamDefine<List<Map<String, Object>>> SINK_COLUMN = JobParams.define("column", (BiFunction<String, JobParamSet, List<Map<String, Object>>>) (key, paramSet) -> {
-        List<Map<String, Object>> columns = new ArrayList<>();
-        List<Map<String, Object>> mappings = TRANSFORM_MAPPING.newParam(paramSet).getValue();
+    /**
+     * Sink column definition
+     */
+    private static final JobParamDefine<List<Map<String, Object>>> SINK_COLUMN = JobParams.define("column", paramSet -> {
+        List<Map<String, Object>> mappings = TRANSFORM_MAPPING.getValue(paramSet);
         if (Objects.nonNull(mappings)) {
-            mappings.forEach(mapping -> {
+            return mappings.stream().map(mapping -> {
                 Map<String, Object> _mapping = new HashMap<>(mapping);
                 Map<String, Object> column = new HashMap<>();
-                columns.add(column);
-                column.put(SINK_FIELD_NAME.getKey(), SINK_FIELD_NAME.newParam(_mapping).getValue());
-                column.put(SINK_FIELD_TYPE.getKey(), SINK_FIELD_TYPE.newParam(_mapping).getValue());
-                column.put(SINK_FIELD_INDEX.getKey(), SINK_FIELD_INDEX.newParam(_mapping).getValue());
-            });
+                column.put(SINK_FIELD_NAME.getKey(), SINK_FIELD_NAME.newValue(_mapping));
+                column.put(SINK_FIELD_TYPE.getKey(), SINK_FIELD_TYPE.newValue(_mapping));
+                column.put(SINK_FIELD_INDEX.getKey(), SINK_FIELD_INDEX.newValue(_mapping));
+                return column;
+            }).collect(Collectors.toList());
         }
-        return columns;
+        return new ArrayList<>();
     });
 
-    private static final JobParamDefine<List<Transformer>> TRANSFORMER = JobParams.define("column", (BiFunction<String, JobParamSet, List<Transformer>>) (key, paramSet) -> {
+    private static final JobParamDefine<List<Transformer>> TRANSFORMER = JobParams.define("column", paramSet -> {
         List<Transformer> transformers = new ArrayList<>();
-        List<Map<String, Object>> mappings = TRANSFORM_MAPPING.newParam(paramSet).getValue();
+        List<Map<String, Object>> mappings = TRANSFORM_MAPPING.getValue(paramSet);
         if (Objects.nonNull(mappings)) {
             mappings.forEach(mapping -> {
                 Map<String, Object> _mapping = new HashMap<>(mapping);
