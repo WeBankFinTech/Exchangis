@@ -257,9 +257,11 @@ export default {
           // this.dataSrc = { ...result.info,  ...mConnect};
           this.formData = { ...result.info, ...mConnect };
           if (this.formData.elasticUrls) {
-            let str =
-              this.formData.elasticUrls.match(/(?<=\[\").*?(?=\"\])/)[0];
-            this.formData.elasticUrls = (str || '').split(',');
+            let str = this.formData.elasticUrls.match(/(?<=\[).*?(?=\])/)[0];
+            let arr = (str || '')
+              .split(',')
+              .map((v) => v.replaceAll(/[\"|\"]/g, ''));
+            this.formData.elasticUrls = arr;
           }
         });
       } else {
@@ -367,8 +369,13 @@ export default {
     },
     beforeHandle(_formData) {
       let elasticUrls = _formData?.elasticUrls;
-      if (elasticUrls && Array.isArray(elasticUrls)) {// es数据源时转换为字符串
-        elasticUrls = `["${String(elasticUrls.filter((v) => !!v))}"]`;
+      if (elasticUrls && Array.isArray(elasticUrls)) {
+        // es数据源时转换为字符串
+        let midStr = elasticUrls
+          .filter((v) => !!v)
+          .map((n) => `"${n}"`)
+          .join(',');
+        elasticUrls = `[${midStr}]`;
       }
       return { ..._formData, elasticUrls: elasticUrls };
     },
