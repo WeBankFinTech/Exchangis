@@ -31,5 +31,5 @@ trait DataxParamsResolver {
    * @param params input
    * @return
    */
-  def resolve(params: util.Map[String, String], context: EngineCreationContext): util.Map[String, String]
+  def resolve(params: util.Map[String, Object], context: EngineCreationContext): util.Map[String, Object]
 }
