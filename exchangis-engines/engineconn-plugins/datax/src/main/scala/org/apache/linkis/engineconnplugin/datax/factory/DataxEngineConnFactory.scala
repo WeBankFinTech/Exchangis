@@ -54,6 +54,7 @@ class DataxEngineConnFactory  extends MultiExecutorEngineConnFactory with Loggin
 
   //todo executionContext
   def createExecutionContext(options: util.Map[String, String], environmentContext: EnvironmentContext): ExecutionContext = {
+    null
     //todo
   }
 
@@ -62,8 +63,9 @@ class DataxEngineConnFactory  extends MultiExecutorEngineConnFactory with Loggin
   }
 
   override def getExecutorFactories: Array[ExecutorFactory] = {
-    val executorFactoryArray = Array[ExecutorFactory](new DataxEngineConnFactory)
-    executorFactoryArray
+//    val executorFactoryArray = Array[ExecutorFactory](new DataxEngineConnFactory)
+//    executorFactoryArray
+    Array()
   }
 
 }
