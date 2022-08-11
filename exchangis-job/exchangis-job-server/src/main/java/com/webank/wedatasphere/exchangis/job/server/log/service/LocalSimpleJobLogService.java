@@ -170,7 +170,12 @@ public class LocalSimpleJobLogService implements JobLogService {
                         rowIgnore = !isIncludeLine(line, onlyKeywords, ignoreKeywords);
                     }
                     if (!rowIgnore) {
-                        logs.add(new String(line.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
+                        if (line.contains("password")) {
+                            LOG.info("have error information");
+                        }
+                        if (!line.contains("password")) {
+                            logs.add(new String(line.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
+                        }
                         readLine += 1;
                     }
                 }

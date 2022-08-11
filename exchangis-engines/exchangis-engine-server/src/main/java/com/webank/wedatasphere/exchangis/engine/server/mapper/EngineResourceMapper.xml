@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.engine.dao.EngineResourceDao">
+    <resultMap id="storeResource" type="com.webank.wedatasphere.exchangis.engine.domain.EngineStoreResource">
+        <id column="id" property="id"/>
+        <result column="engine_type" property="engineType"/>
+        <result column="resource_name" property="name"/>
+        <result column="resource_type" property="type" />
+        <result column="resource_path" property="path"/>
+        <result column="create_user" property="creator"/>
+        <result column="store_uri" property="storeUri"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+    <sql id= "detail_column">
+
+    </sql>
+    <!--Get engine resources-->
+    <select id="getResources" resultMap="storeResource">
+        <![CDATA[SELECT * FROM `exchangis_engine_resources` WHERE `engine_type` = #{engineType};]]>
+    </select>
+    <!--Insert engine resources-->
+    <insert id="insertResource">
+        <![CDATA[INSERT INTO `exchangis_engine_resources`
+            (`engine_type`, `resource_name`, `resource_type`, `resource_path`, `create_user`, `store_uri`, `create_time`, `modify_time`)
+            VALUES(#{engineType}, #{name}, #{type}, #{path}, #{creator}, #{storeUri}, #{createTime}, #{modifyTime})
+             ON DUPLICATE KEY UPDATE `store_uri` = #{storeUri},`modify_time` = #{modifyTime},`resource_name` = #{name},`resource_type` = #{type};
+        ]]>
+    </insert>
+    <!--Update engine resources-->
+    <update id="updateResource">
+        <![CDATA[UPDATE `exchangis_engine_resources`
+            SET
+            `store_uri` = #{storeUri},
+            `resource_name` = #{name},
+            `resource_type` = #{type},
+            `modify_time` = #{modifyTime}
+            WHERE `engine_type` = #{engineType} AND `resource_path` = #{path};
+        ]]>
+    </update>
+</mapper>

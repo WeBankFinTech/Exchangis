@@ -74,7 +74,7 @@ public class CryptoUtils {
     public static String md5(String source, String salt, int iterator){
         StringBuilder token = new StringBuilder();
         try{
-            MessageDigest digest = MessageDigest.getInstance("md5");
+            MessageDigest digest = MessageDigest.getInstance("sha-256");
             if(StringUtils.isNotEmpty(salt)){
                 digest.update(salt.getBytes(StandardCharsets.UTF_8));
             }
