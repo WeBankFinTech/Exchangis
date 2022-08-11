@@ -9,18 +9,15 @@ import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
 import com.webank.wedatasphere.exchangis.job.server.log.JobServerLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Objects;
 
 /**
  * Service in job builder context
  */
-public class ServiceInExchangisJobBuilderContext extends ExchangisJobBuilderContext {
+public class SpringExchangisJobBuilderContext extends ExchangisJobBuilderContext {
 
-    /**
-     *  Meta info service
-     */
-    private MetadataInfoService metadataInfoService;
 
     /**
      * Job execution id
@@ -32,9 +29,12 @@ public class ServiceInExchangisJobBuilderContext extends ExchangisJobBuilderCont
      */
     private JobServerLogging<ExchangisJobBuilder<?, ?>> logging;
 
-    public ServiceInExchangisJobBuilderContext(ExchangisJobInfo originalJob,
-                                               JobLogListener jobLogListener) {
+    private ApplicationContext applicationContext;
+
+    public SpringExchangisJobBuilderContext(ExchangisJobInfo originalJob,
+                                            ApplicationContext applicationContext, JobLogListener jobLogListener) {
         super(originalJob);
+        this.applicationContext = applicationContext;
         this.logging = new JobServerLogging<ExchangisJobBuilder<?, ?>>() {
             @Override
             public Logger getLogger() {
@@ -62,12 +62,8 @@ public class ServiceInExchangisJobBuilderContext extends ExchangisJobBuilderCont
         this.jobExecutionId = jobExecutionId;
     }
 
-    public MetadataInfoService getMetadataInfoService() {
-        return metadataInfoService;
-    }
-
-    public void setMetadataInfoService(MetadataInfoService metadataInfoService) {
-        this.metadataInfoService = metadataInfoService;
+    public <T>T getBean(Class<T> requiredType) {
+        return applicationContext.getBean(requiredType);
     }
 
     public JobServerLogging<ExchangisJobBuilder<?, ?>> getLogging() {
