@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.restful.external;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.IProjectCopyService;
@@ -73,6 +74,9 @@ public class ExchangisJobDssAppConnRestfulApi {
             @Validated({InsertGroup.class, Default.class}) @RequestBody ExchangisJobVo exchangisJobVo,
             BindingResult result,
             HttpServletRequest request) {
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to create (没有创建项目权力)");
+        }
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
@@ -103,6 +107,9 @@ public class ExchangisJobDssAppConnRestfulApi {
      */
     @RequestMapping( value = "/{id:\\d+}", method = RequestMethod.POST)
     public Message deleteJob(@PathVariable("id") Long id, HttpServletRequest request) {
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to update (没有删除权限)");
+        }
         String userName = SecurityFilter.getLoginUsername(request);
         Message response = Message.ok("dss job deleted");
         try {
@@ -135,6 +142,9 @@ public class ExchangisJobDssAppConnRestfulApi {
     public Message updateJob(@PathVariable("id") Long id,
                              @Validated @RequestBody ExchangisJobVo exchangisJobVo,
                              BindingResult result, HttpServletRequest request) {
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to update (没有更新权限)");
+        }
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }

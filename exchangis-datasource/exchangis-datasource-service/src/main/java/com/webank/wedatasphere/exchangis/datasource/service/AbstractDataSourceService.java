@@ -305,6 +305,7 @@ public class AbstractDataSourceService {
         }
 
         OptionElementUI ui = new OptionElementUI();
+        ui.setId(config.getId());
         ui.setKey(config.getConfigKey());
         ui.setField(config.getUiField());
         ui.setLabel(config.getUiLabel());
@@ -314,11 +315,13 @@ public class AbstractDataSourceService {
         ui.setSort(config.getSort());
         ui.setRequired(config.getRequired());
         ui.setUnit(config.getUnit());
+        ui.setRefId(config.getRefId());
         return ui;
     }
 
     private InputElementUI fillInputElementUIValue(ExchangisJobParamConfig config, String value) {
         InputElementUI ui = new InputElementUI();
+        ui.setId(config.getId());
         ui.setKey(config.getConfigKey());
         ui.setField(config.getUiField());
         ui.setLabel(config.getUiLabel());
@@ -331,11 +334,13 @@ public class AbstractDataSourceService {
         ui.setValidateType(config.getValidateType());
         ui.setValidateRange(config.getValidateRange());
         ui.setValidateMsg(config.getValidateMsg());
+        ui.setRefId(config.getRefId());
         return ui;
     }
 
     private MapElementUI fillMapElementUIValue(ExchangisJobParamConfig config, Map<String, Object> value) {
         MapElementUI ui = new MapElementUI();
+        ui.setId(config.getId());
         ui.setKey(config.getConfigKey());
         ui.setField(config.getUiField());
         ui.setLabel(config.getUiLabel());
@@ -348,6 +353,7 @@ public class AbstractDataSourceService {
         ui.setValidateType(config.getValidateType());
         ui.setValidateRange(config.getValidateRange());
         ui.setValidateMsg(config.getValidateMsg());
+        ui.setRefId(config.getId());
         return ui;
     }
 
