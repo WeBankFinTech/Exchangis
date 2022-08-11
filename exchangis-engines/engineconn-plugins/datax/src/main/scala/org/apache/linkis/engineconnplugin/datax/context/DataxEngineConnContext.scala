@@ -17,16 +17,20 @@
 
 package org.apache.linkis.engineconnplugin.datax.context
 
-import org.apache.linkis.engineconnplugin.datax.config.config.ExecutionContext
+import org.apache.linkis.engineconnplugin.datax.config.{DataxPluginConfiguration, DataxResourceConfiguration}
 
-class DataxEngineConnContext(environmentContext: EnvironmentContext) {
+class DataxEngineConnContext() {
 
-  private var executionContext: ExecutionContext = _
+  private var dataxResourceConfiguration: DataxResourceConfiguration = _
 
-  def getExecutionContext: ExecutionContext = executionContext
+  private var dataxPluginConfiguration: DataxPluginConfiguration = _
 
-  def setExecutionContext(executionContext: ExecutionContext): Unit = this.executionContext = executionContext
+  def getDataxResourceConfiguration: DataxResourceConfiguration = dataxResourceConfiguration
 
-  def getEnvironmentContext: EnvironmentContext = environmentContext
+  def setDataxResourceConfiguration(dataxResourceConfiguration: DataxResourceConfiguration): Unit = this.dataxResourceConfiguration = dataxResourceConfiguration
+
+  def getDataxPluginConfiguration: DataxPluginConfiguration = dataxPluginConfiguration
+
+  def setDataxPluginConfiguration(dataxPluginConfiguration: DataxPluginConfiguration): Unit = this.dataxPluginConfiguration = dataxPluginConfiguration
 
 }
