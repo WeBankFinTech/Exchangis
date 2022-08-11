@@ -26,6 +26,6 @@ class DataxEngineConnResourceFactory extends AbstractEngineResourceFactory {
 
   //todo getRequestResource
   override protected def getRequestResource(properties: util.Map[String, String]): Resource = {
-
+    null
   }
 }
