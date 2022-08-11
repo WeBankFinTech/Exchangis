@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaCompilerConfiguration">
+    <profile name="Maven 1" modules="exchangis-appconn,exchangis-dao,exchangis-datasource-core,exchangis-datasource-ext-elasticsearch,exchangis-datasource-ext-hive,exchangis-datasource-ext-mongodb,exchangis-datasource-ext-mysql,exchangis-datasource-ext-sftp,exchangis-datasource-linkis,exchangis-datasource-loader,exchangis-datasource-server,exchangis-datasource-service,exchangis-datasource-streamis,exchangis-job-metrics,exchangis-job-server,exchangis-project-server,exchangis-server,linkis-engineplugin-sqoop" />
+  </component>
+</project>
