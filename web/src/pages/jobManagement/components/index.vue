@@ -644,11 +644,9 @@ export default {
         },
         deleteSub(index) {
             this.jobData.content.subJobs.splice(index, 1);
-            if (this.activeIndex === index && this.list.length) {
-                this.activeIndex = 0;
-                this.curTask = this.list[this.activeIndex];
-                this.addEnable = this.curTask.transforms.addEnable;
-                this.transformEnable = this.curTask.transforms.transformEnable;
+            if (this.list.length) {
+                this.activeIndex = this.activeIndex > index ? this.activeIndex - 1 : this.activeIndex;
+                this.changeCurTask(this.activeIndex);
             } else {
                 this.activeIndex = -1;
                 this.curTask = null;
@@ -668,6 +666,16 @@ export default {
             this.curTask = this.list[this.activeIndex];
             this.addEnable = this.curTask.transforms.addEnable;
             this.transformEnable = this.curTask.transforms.transformEnable;
+            console.log('当前任务切换后', this.curTask.transforms);
+            const data = this.getFieldsParams(this.curTask);
+            if (data) {
+                getFields(data).then((res) => {
+                    this.addEnable = res.addEnable;
+                    this.transformEnable = res.transformEnable;
+                }).catch((err) => {
+                    console.log(err);
+                });
+            }
         },
         addNewTask() {
             const subJobName = randomString(12);
