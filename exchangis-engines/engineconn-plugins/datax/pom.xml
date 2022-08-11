@@ -16,7 +16,6 @@
         <datax.engine.version>3.0.0-Plus-2</datax.engine.version>
         <datax.version>3.0.0</datax.version>
         <hadoop.version>2.7.2</hadoop.version>
-        <linkis.version>1.1.1</linkis.version>
         <commons-cli-version>1.2</commons-cli-version>
         <commons-configuration-version>1.10</commons-configuration-version>
     </properties>
@@ -35,6 +34,12 @@
             <groupId>org.apache.linkis</groupId>
             <artifactId>linkis-engineconn-plugin-core</artifactId>
             <version>${linkis.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.linkis</groupId>
+            <artifactId>linkis-storage</artifactId>
+            <version>${linkis.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.linkis</groupId>
