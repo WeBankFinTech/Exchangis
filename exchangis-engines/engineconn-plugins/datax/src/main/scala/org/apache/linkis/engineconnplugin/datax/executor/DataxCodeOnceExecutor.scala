@@ -23,7 +23,6 @@ import org.apache.linkis.engineconn.once.executor.{OnceExecutorExecutionContext,
 import org.apache.linkis.engineconnplugin.datax.config.exception.JobExecutionException
 import org.apache.linkis.engineconnplugin.datax.config.{DataxEngine, DataxEnvConfiguration}
 import org.apache.linkis.engineconnplugin.datax.context.DataxEngineConnContext
-import org.apache.linkis.engineconnplugin.datax.params.DataxParamsResolver
 import org.apache.linkis.manager.common.entity.enumeration.NodeStatus
 import org.apache.linkis.protocol.engine.JobProgressInfo
 import org.apache.linkis.scheduler.executer.ErrorExecuteResponse
@@ -34,25 +33,23 @@ import java.util.concurrent.{Future, TimeUnit}
 class DataxCodeOnceExecutor(override val id: Long,
                             override protected val dataxEngineConnContext: DataxEngineConnContext) extends DataxOnceExecutor with OperableOnceExecutor {
 
-  private var params: util.Map[String, String] = _
+  private var params: util.Map[String, Object] = _
   private var future: Future[_] = _
   private var daemonThread: Future[_] = _
-  private val paramsResolvers: Array[DataxParamsResolver] = Array()
+  protected var dataxEngine: DataxEngine
 
   override def doSubmit(onceExecutorExecutionContext: OnceExecutorExecutionContext, options: Map[String, String]): Unit = {
     var isFailed = false
     future = Utils.defaultScheduler.submit(new Runnable {
       override def run(): Unit = {
-        // TODO filter job content
-        params = onceExecutorExecutionContext.getOnceExecutorContent.getJobContent.asInstanceOf[util.Map[String, String]]
+        params = onceExecutorExecutionContext.getOnceExecutorContent.getJobContent
         info("Try to execute params." + params)
-        if(runDatax(params, onceExecutorExecutionContext.getEngineCreationContext) != 0) {
+        if (runDatax(params, onceExecutorExecutionContext.getEngineCreationContext) != 0) {
           isFailed = true
           tryFailed()
           setResponse(ErrorExecuteResponse("Run code failed!", new JobExecutionException("Exec Datax Code Error")))
         }
         info("All codes completed, now to stop SqoopEngineConn.")
-//        closeDaemon()
         if (!isFailed) {
           trySucceed()
         }
@@ -61,13 +58,12 @@ class DataxCodeOnceExecutor(override val id: Long,
     })
   }
 
-  protected def runDatax(params: util.Map[String, String], context: EngineCreationContext): Int = {
-    Utils.tryCatch {
-      val finalParams = paramsResolvers.foldLeft(params) {
-        case (newParam, resolver) => resolver.resolve(newParam, context)
-      }
-      DataxEngine.run(finalParams)
-    }{
+  protected def runDatax(params: util.Map[String, Object], context: EngineCreationContext): Int = {
+    dataxEngine = new DataxEngine(params)
+    try {
+      dataxEngine.run()
+      0
+    } catch {
       case e: Exception =>
         error(s"Run Error Message: ${e.getMessage}", e)
         -1
@@ -88,19 +84,19 @@ class DataxCodeOnceExecutor(override val id: Long,
   }
 
   override def getProgress: Float = {
-    DataxEngine.progress()
+    dataxEngine.progress()
   }
 
   override def getProgressInfo: Array[JobProgressInfo] = {
-    Array(DataxEngine.getProgressInfo)
+    Array(dataxEngine.getProgressInfo)
   }
 
   override def getMetrics: util.Map[String, Any] = {
-    DataxEngine.getMetrics.asInstanceOf[util.Map[String, Any]]
+    dataxEngine.getMetrics.asInstanceOf[util.Map[String, Any]]
   }
 
   override def getDiagnosis: util.Map[String, Any] = {
-    DataxEngine.getDiagnosis.asInstanceOf[util.Map[String, Any]]
+    dataxEngine.getDiagnosis.asInstanceOf[util.Map[String, Any]]
   }
 
   override def isClosed: Boolean = {
