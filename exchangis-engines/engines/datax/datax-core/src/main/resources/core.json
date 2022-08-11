@@ -15,17 +15,6 @@
     }
   },
   "core": {
-    "dataXServer": {
-      "address": "${server.address}/api/v1/task/process",
-      "timeout": 10000,
-      "protocol":"http",
-      "endpoint": {
-        "report": "/report",
-        "reportState": "/report/state"
-      },
-      "reportDataxLog": false,
-      "reportPerfLog": false
-    },
     "transport": {
       "type": "record",
       "channel":{
