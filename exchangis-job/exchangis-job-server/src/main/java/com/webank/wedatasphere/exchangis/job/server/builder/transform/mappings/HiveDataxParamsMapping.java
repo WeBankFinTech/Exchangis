@@ -2,6 +2,9 @@ package com.webank.wedatasphere.exchangis.job.server.builder.transform.mappings;
 
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 
+/**
+ * Hive datax
+ */
 public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
     @Override
     public JobParamDefine<?>[] sourceMappings() {

@@ -1,9 +1,12 @@
 package com.webank.wedatasphere.exchangis.job.domain;
 
 
+import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
 import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +37,11 @@ public class ExchangisEngineJob extends GenericExchangisJob {
      */
     private Long cpuUsed;
 
+    /**
+     * Engine resources
+     */
+    private List<EngineResource> resources = new ArrayList<>();
+
     public Map<String, Object> getJobContent() {
         return jobContent;
     }
@@ -49,6 +57,7 @@ public class ExchangisEngineJob extends GenericExchangisJob {
     public void setRuntimeParams(Map<String, Object> runtimeParams) {
         this.runtimeParams = runtimeParams;
     }
+
 
     public Long getMemoryUsed() {
         return memoryUsed;
@@ -72,5 +81,13 @@ public class ExchangisEngineJob extends GenericExchangisJob {
 
     public void setMemoryUnit(String memoryUnit) {
         this.memoryUnit = memoryUnit;
+    }
+
+    public List<EngineResource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<EngineResource> resources) {
+        this.resources = resources;
     }
 }
