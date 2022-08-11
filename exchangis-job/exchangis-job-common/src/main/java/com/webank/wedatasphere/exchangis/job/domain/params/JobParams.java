@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -23,7 +24,9 @@ public class JobParams {
     public static <T, U>JobParamDefine<T> define(String key, BiFunction<String, U, T> valueLoader){
         return new JobParamDefine<>(key, valueLoader);
     }
-
+    public static <T>JobParamDefine<T> define(String key, Function<JobParamSet, T> valueLoader){
+        return new JobParamDefine<>(key, valueLoader);
+    }
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <U>JobParamDefine<U> define(String key){
         return new JobParamDefine<>(key, (paramKey, source) -> {
