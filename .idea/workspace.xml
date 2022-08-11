@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="7deeefa4-a7f3-46a2-99bf-7a8b8e4c68e8" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exchangis-datasource/exchangis-datasource-server/src/main/java/com/webank/wedatasphere/exchangis/datasource/server/restful/api/ExchangisDataSourceRestfulApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/exchangis-datasource/exchangis-datasource-server/src/main/java/com/webank/wedatasphere/exchangis/datasource/server/restful/api/ExchangisDataSourceRestfulApi.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exchangis-datasource/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/exchangis-datasource/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exchangis-job/exchangis-job-server/src/main/java/com/webank/wedatasphere/exchangis/job/server/mapper/impl/JobFunctionDao.xml" beforeDir="false" afterPath="$PROJECT_DIR$/exchangis-job/exchangis-job-server/src/main/java/com/webank/wedatasphere/exchangis/job/server/mapper/impl/JobFunctionDao.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev-1.1.0-job-config" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$PROJECT_DIR$/../../../apache-maven-3.5.4" />
+        <option name="userSettingsFile" value="D:\developsoft\apache-maven-3.5.4\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="1" />
+  </component>
+  <component name="ProjectId" id="29xOI45lHCiEYJNQMPwacodRJJQ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="reference.settings.project.maven.ignored.files" />
+    <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/exchangis-datasource/extension-datasources/exchangis-datasource-ext-mysql/pom.xml" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.webank.wedatasphere.exchangis.datasource.server.configuration" />
+      <recent name="com.webank.wedatasphere.exchangis.job.server.utils" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\developsoft\gitfile\WeDataSphere\Exchangis\exchangis-datasource\extension-datasources" />
+      <recent name="D:\developsoft\gitfile\WeDataSphere\Exchangis\exchangis-job\exchangis-job-server\src\main\java\com\webank\wedatasphere\exchangis\job\server\mapper\impl" />
+      <recent name="D:\developsoft\gitfile\WeDataSphere\Exchangis\exchangis-job\exchangis-job-server\src\main\java\com\webank\wedatasphere\exchangis\job\server\mapper" />
+      <recent name="D:\developsoft\gitfile\WeDataSphere\Exchangis\exchangis-job\exchangis-job-server\src\main\java\com\webank\wedatasphere\exchangis\job\server\service\impl" />
+      <recent name="D:\developsoft\gitfile\WeDataSphere\Exchangis\exchangis-job\exchangis-job-server\src\main\java\com\webank\wedatasphere\exchangis\job\server\service" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.JobParamSet">
+    <configuration name="ExchangisDataSourceRestfulApi" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.webank.wedatasphere.exchangis.datasource.server.restful.api.ExchangisDataSourceRestfulApi" />
+      <module name="exchangis-datasource-server" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.webank.wedatasphere.exchangis.datasource.server.restful.api.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GenericExchangisTransformJobBuilder" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.webank.wedatasphere.exchangis.job.server.builder.transform.GenericExchangisTransformJobBuilder" />
+      <module name="exchangis-job-server" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.webank.wedatasphere.exchangis.job.server.builder.transform.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="JobParamSet" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet" />
+      <module name="exchangis-job-common" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.webank.wedatasphere.exchangis.job.domain.params.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
+      <module name="exchangis" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType" factoryName="Kotlin script">
+      <module name="exchangis" />
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="exchangis [clean,install,-D,skipTest]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="clean" />
+                <option value="install" />
+                <option value="-D" />
+                <option value="skipTest" />
+              </list>
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <configuration name="exchangis [install,-N]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="install" />
+                <option value="-N" />
+              </list>
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <configuration name="exchangis-appconn [clean,install,-D...]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="clean" />
+                <option value="install" />
+                <option value="-D" />
+                <option value="skipTest" />
+              </list>
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$/exchangis-plugins/exchangis-appconn" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <configuration name="exchangis-job-server [clean,install,-D...]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="clean" />
+                <option value="install" />
+                <option value="-D" />
+                <option value="skipTests" />
+              </list>
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$/exchangis-job/exchangis-job-server" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <configuration name="exchangis-project [clean,install,-D...]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="clean" />
+                <option value="install" />
+                <option value="-D" />
+                <option value="skipTests" />
+              </list>
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$/exchangis-project" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <configuration name="linkis-engineplugin-sqoop [clean,install...]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="clean" />
+                <option value="install" />
+                <option value="-D" />
+                <option value="skipTest" />
+              </list>
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$/exchangis-plugins/engine/sqoop" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="exchangis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <module name="exchangis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <module name="exchangis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <module name="exchangis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Application.GenericExchangisTransformJobBuilder" />
+      <item itemvalue="Application.ExchangisDataSourceRestfulApi" />
+      <item itemvalue="Maven.exchangis [install,-N]" />
+      <item itemvalue="Maven.exchangis [clean,install,-D,skipTest]" />
+      <item itemvalue="Maven.linkis-engineplugin-sqoop [clean,install...]" />
+      <item itemvalue="Maven.exchangis-appconn [clean,install,-D...]" />
+      <item itemvalue="Maven.exchangis-job-server [clean,install,-D...]" />
+      <item itemvalue="Maven.exchangis-project [clean,install,-D...]" />
+      <item itemvalue="Application.JobParamSet" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.JobParamSet" />
+        <item itemvalue="Application.ExchangisDataSourceRestfulApi" />
+        <item itemvalue="Application.GenericExchangisTransformJobBuilder" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7deeefa4-a7f3-46a2-99bf-7a8b8e4c68e8" name="Default Changelist" comment="" />
+      <created>1654051187588</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1654051187588</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Modify script and add README-ZH.md.">
+      <created>1654112400450</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1654112400450</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Modify install.sh, config.sh and sqoop engine pom.xml file">
+      <created>1654500870152</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1654500870152</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Modify datasource_service">
+      <created>1654508541618</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1654508541618</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Modify ExchangisOptStrategy.java">
+      <created>1654566818907</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1654566818907</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Modify pom.xml">
+      <created>1654783302262</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1654783302262</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Modify script and document.">
+      <created>1655300570457</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1655300570457</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Update deploy document and install.sh">
+      <created>1655314504653</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1655314504653</updated>
+    </task>
+    <task id="LOCAL-00008" summary="update exchangis_deploy_cn.md">
+      <created>1655316107955</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1655316107955</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Add component_upgrade_cn.md,update init.sql and add init_real.sql.">
+      <created>1655438742378</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1655438742379</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Modify appconn init.sql,repair jobid from Integer type to double type,repair ProjectUserMapper.xml,repair ExchangisHttpUtils labels bug.">
+      <created>1655645413718</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1655645413718</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Add config file.Fix some bugs">
+      <created>1655695256764</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1655695256764</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Delete authority operation.">
+      <created>1655777459352</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1655777459352</updated>
+    </task>
+    <task id="LOCAL-00013" summary="sqoop engine">
+      <created>1655780742508</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1655780742508</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Modify exchangis copyOperation,Deleteoperation and importoperation.">
+      <created>1655899281058</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1655899281058</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Modify launcher.sh while output EUREKA_URL.">
+      <created>1656467396385</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1656467396385</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Modify appconn import operation jobname display.">
+      <created>1656467924873</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1656467924873</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Modify component_upgrade_cn.md.">
+      <created>1656596772345</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1656596772345</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Modify component_upgrade_cn.md">
+      <created>1656643003208</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1656643003208</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Modify exchangis_deploy_cn.md">
+      <created>1656936246895</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1656936246895</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Delete username and password in exchangis.properties.Modify CryptoUtils.java.">
+      <created>1657790818073</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1657790818073</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Fix updateProjectOperation fail bug.">
+      <created>1658223766990</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1658223766990</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Fix ExchangisJobExecuteRestfulApi and ExchangisJobRestfulApi authrity bug.">
+      <created>1658311488046</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1658311488046</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Remove sensitive information from logs">
+      <created>1658321778315</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1658321778315</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Mybatis sql inject fix. log permission added">
+      <created>1658388316866</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1658388316866</updated>
+    </task>
+    <task id="LOCAL-00025" summary="dev-1.0.0-save">
+      <created>1658398325204</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1658398325204</updated>
+    </task>
+    <task id="LOCAL-00026" summary="dev-1.0.0-save development update.">
+      <created>1658750512921</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1658750512921</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Modify ddl and dml, add restful interface limit switch, add transform function.">
+      <created>1659493082596</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1659493082596</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Add the specific implementation of the transform function, update the ddl and dml, and add the encryption plug-in class">
+      <created>1659595306488</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1659595306488</updated>
+    </task>
+    <task id="LOCAL-00029" summary="1.Update exchangis_ddl.sql add exchangis_dml.sql&#10;2.Add ES and mongodb datasource.&#10;3.Add task configuration parameter cascade relationship&#10;4.Add connection information encryption and decryption interface&#10;5.Conversion function implementation modification">
+      <created>1659947067683</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1659947067684</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Delete irrelevant information">
+      <created>1659947593093</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1659947593093</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="1">
+          <value>
+            <State>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="structure">
+                    <value>
+                      <list>
+                        <option value="dir:D:/developsoft/gitfile/WeDataSphere/Exchangis/web" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+        <entry key="2">
+          <value>
+            <State>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="roots">
+                    <value>
+                      <list>
+                        <option value="$PROJECT_DIR$" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="OPEN_TABS">
+      <set>
+        <option value="1" />
+        <option value="2" />
+      </set>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Modify script and document." />
+    <MESSAGE value="Update deploy document and install.sh" />
+    <MESSAGE value="update exchangis_deploy_cn.md" />
+    <MESSAGE value="Add component_upgrade_cn.md,update init.sql and add init_real.sql." />
+    <MESSAGE value="Modify appconn init.sql,repair jobid from Integer type to double type,repair ProjectUserMapper.xml,repair ExchangisHttpUtils labels bug." />
+    <MESSAGE value="Add config file.Fix some bugs" />
+    <MESSAGE value="Delete authority operation." />
+    <MESSAGE value="sqoop engine" />
+    <MESSAGE value="Modify exchangis copyOperation,Deleteoperation and importoperation." />
+    <MESSAGE value="Modify launcher.sh while output EUREKA_URL." />
+    <MESSAGE value="Modify appconn import operation jobname display." />
+    <MESSAGE value="Modify component_upgrade_cn.md." />
+    <MESSAGE value="Modify component_upgrade_cn.md" />
+    <MESSAGE value="Modify exchangis_deploy_cn.md" />
+    <MESSAGE value="Delete username and password in exchangis.properties.Modify CryptoUtils.java." />
+    <MESSAGE value="Fix updateProjectOperation fail bug." />
+    <MESSAGE value="Fix ExchangisJobExecuteRestfulApi and ExchangisJobRestfulApi authrity bug." />
+    <MESSAGE value="Remove sensitive information from logs" />
+    <MESSAGE value="Mybatis sql inject fix. log permission added" />
+    <MESSAGE value="dev-1.0.0-save" />
+    <MESSAGE value="dev-1.0.0-save development update." />
+    <MESSAGE value="Modify ddl and dml, add restful interface limit switch, add transform function." />
+    <MESSAGE value="Add the specific implementation of the transform function, update the ddl and dml, and add the encryption plug-in class" />
+    <MESSAGE value="1.Update exchangis_ddl.sql add exchangis_dml.sql&#10;2.Add ES and mongodb datasource.&#10;3.Add task configuration parameter cascade relationship&#10;4.Add connection information encryption and decryption interface&#10;5.Conversion function implementation modification" />
+    <MESSAGE value="Delete irrelevant information" />
+    <option name="LAST_COMMIT_MESSAGE" value="Delete irrelevant information" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="552" y="178" key="#Project_Structure" timestamp="1658224241010">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="178" key="#Project_Structure/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1658224241010" />
+    <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1658989845629">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1658989845629" />
+    <state x="2334" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1654173254966" />
+    <state x="765" y="204" key="#com.intellij.ide.util.MemberChooser" timestamp="1659934416029">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="765" y="204" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1659934416029" />
+    <state x="2685" y="204" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1659615626286" />
+    <state x="2726" y="409" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog" timestamp="1658409838136">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="2726" y="409" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1658409838136" />
+    <state x="690" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1654768746694">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="690" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1654768746694" />
+    <state x="672" y="383" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1658743548332">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="672" y="383" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1658743548332" />
+    <state x="2298" y="113" key="CommitChangelistDialog2" timestamp="1660047355047">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="483" y="185" key="CommitChangelistDialog2/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1659947588951" />
+    <state x="2298" y="113" key="CommitChangelistDialog2/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660047355047" />
+    <state x="378" y="113" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1658397196163" />
+    <state x="2012" y="92" width="1736" height="856" key="DiffContextDialog" timestamp="1660047765734">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="92" y="92" width="1536" height="860" key="DiffContextDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1659947035257" />
+    <state x="2012" y="92" width="1736" height="856" key="DiffContextDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660047765734" />
+    <state x="92" y="92" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1655300112735" />
+    <state x="2303" y="265" width="440" height="473" key="FileChooserDialogImpl" timestamp="1660049900924">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="383" y="265" key="FileChooserDialogImpl/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1659671940905" />
+    <state x="2303" y="265" width="440" height="473" key="FileChooserDialogImpl/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660049900924" />
+    <state x="383" y="265" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1655351660055" />
+    <state width="1877" height="206" key="GridCell.Tab.0.bottom" timestamp="1660205959843">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="206" key="GridCell.Tab.0.bottom/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1660205959843" />
+    <state width="1877" height="206" key="GridCell.Tab.0.bottom/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660122597734" />
+    <state width="1877" height="206" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1660134744768" />
+    <state width="1877" height="206" key="GridCell.Tab.0.center" timestamp="1660205959843">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="206" key="GridCell.Tab.0.center/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1660205959843" />
+    <state width="1877" height="206" key="GridCell.Tab.0.center/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660122597734" />
+    <state width="1877" height="206" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1660134744768" />
+    <state width="1877" height="206" key="GridCell.Tab.0.left" timestamp="1660205959843">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="206" key="GridCell.Tab.0.left/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1660205959843" />
+    <state width="1877" height="206" key="GridCell.Tab.0.left/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660122597734" />
+    <state width="1877" height="206" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1660134744767" />
+    <state width="1877" height="206" key="GridCell.Tab.0.right" timestamp="1660205959843">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="206" key="GridCell.Tab.0.right/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1660205959843" />
+    <state width="1877" height="206" key="GridCell.Tab.0.right/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660122597734" />
+    <state width="1877" height="206" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1660134744768" />
+    <state x="2410" y="175" key="Maven.ArtifactSearchDialog" timestamp="1654652594705">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="2410" y="175" key="Maven.ArtifactSearchDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1654652594705" />
+    <state x="490" y="175" key="Maven.ArtifactSearchDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1654610767284" />
+    <state x="2104" y="86" key="MergeDialog" timestamp="1660029619835">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="184" y="86" key="MergeDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1655372082172" />
+    <state x="2104" y="86" key="MergeDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660029619835" />
+    <state x="184" y="86" key="MergeDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1655300673533" />
+    <state x="2589" y="235" key="MultipleFileMergeDialog" timestamp="1660029630408">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="669" y="235" key="MultipleFileMergeDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1658752586543" />
+    <state x="2589" y="235" key="MultipleFileMergeDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660029630408" />
+    <state x="669" y="235" key="MultipleFileMergeDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1655300675290" />
+    <state x="560" y="231" key="RollbackChangesDialog" timestamp="1654481655096">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="560" y="231" key="RollbackChangesDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1654481655096" />
+    <state x="2381" y="162" key="SettingsEditor" timestamp="1660051861636">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="461" y="162" key="SettingsEditor/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1659513090998" />
+    <state x="2381" y="162" key="SettingsEditor/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660051861636" />
+    <state x="461" y="162" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1658552519332" />
+    <state x="2482" y="223" key="VCS.ChangeListViewerDialog" timestamp="1660048960101">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="2482" y="223" key="VCS.ChangeListViewerDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660048960101" />
+    <state x="2472" y="253" key="Vcs.Push.Dialog.v2" timestamp="1660047766798">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1659947617589" />
+    <state x="2472" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660047766798" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1658398350209" />
+    <state x="2439" y="254" key="VcsDiffUtil.ChangesDialog" timestamp="1660031773732">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="519" y="254" key="VcsDiffUtil.ChangesDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1658974614171" />
+    <state x="2439" y="254" key="VcsDiffUtil.ChangesDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660031773732" />
+    <state x="2012" y="92" width="1736" height="856" key="com.intellij.dvcs.ui.CompareBranchesDialog" timestamp="1660031852579">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="2012" y="92" width="1736" height="856" key="com.intellij.dvcs.ui.CompareBranchesDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660031852579" />
+    <state x="2560" y="344" key="com.intellij.ide.util.TipDialog" timestamp="1660096125522">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="640" y="344" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1659578620704" />
+    <state x="2560" y="344" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660096125522" />
+    <state x="609" y="135" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1658373005627">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="609" y="135" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1658373005627" />
+    <state x="567" y="225" width="1044" height="590" key="find.popup" timestamp="1660201957826">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="567" y="225" width="1044" height="590" key="find.popup/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1660201957826" />
+    <state x="2487" y="225" width="1028" height="590" key="find.popup/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660122816169" />
+    <state x="567" y="225" width="963" height="590" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1659428694603" />
+    <state x="2642" y="232" key="git4idea.branch.GitSmartOperationDialog" timestamp="1660028978390">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="722" y="232" key="git4idea.branch.GitSmartOperationDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1658752501146" />
+    <state x="2642" y="232" key="git4idea.branch.GitSmartOperationDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660028978390" />
+    <state x="716" y="311" key="git4idea.merge.GitMergeDialog" timestamp="1660207371494">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="716" y="311" key="git4idea.merge.GitMergeDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1660207371494" />
+    <state x="648" y="311" key="git4idea.merge.GitPullDialog" timestamp="1660207305867">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="648" y="311" key="git4idea.merge.GitPullDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1660207305867" />
+    <state x="2568" y="311" key="git4idea.merge.GitPullDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1658114405533" />
+    <state x="648" y="311" key="git4idea.merge.GitPullDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1655299957772" />
+    <state x="728" y="420" key="git4idea.ui.GitStashDialog" timestamp="1659512892165">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="728" y="420" key="git4idea.ui.GitStashDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1659512892165" />
+    <state x="2513" y="367" key="git4idea.ui.GitUnstashDialog" timestamp="1660051658752">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="593" y="367" key="git4idea.ui.GitUnstashDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1659513916557" />
+    <state x="2513" y="367" key="git4idea.ui.GitUnstashDialog/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1660051658752" />
+    <state x="601" y="246" width="700" height="530" key="recent.locations.popup" timestamp="1659511398523">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="601" y="246" width="700" height="530" key="recent.locations.popup/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1659511398523" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1660134667991">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1658319169436" />
+    <state x="2543" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1659616993020" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1660134667991" />
+  </component>
+</project>
