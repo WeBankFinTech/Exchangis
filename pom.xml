@@ -71,11 +71,11 @@
 		<module>exchangis-dao</module>
 		<module>exchangis-project</module>
 		<module>exchangis-datasource</module>
+		<module>exchangis-engines</module>
 		<module>exchangis-job</module>
 		<module>exchangis-plugins</module>
 		<module>exchangis-server</module>
 		<module>assembly-package</module>
-        <module>exchangis-engines</module>
     </modules>
 	<dependencyManagement>
 		<dependencies>

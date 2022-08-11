@@ -57,6 +57,7 @@ public class EngineLocalPathResource extends EngineResource{
         return this.localFile.toURI();
     }
 
+
     public String getPath() {
         return path;
     }
@@ -75,14 +76,15 @@ public class EngineLocalPathResource extends EngineResource{
 
     @Override
     public int hashCode() {
-        return (getEngineType() + ":" + getPath()).hashCode();
+        return (getEngineType() + ":" + this.localFile.getPath()).hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof EngineLocalPathResource){
             EngineLocalPathResource other = (EngineLocalPathResource)obj;
-            return this.engineType.equals(other.getEngineType()) && this.getPath().equals(other.getPath());
+            return this.engineType.equals(other.getEngineType()) &&
+                    this.localFile.getPath().equals(other.localFile.getPath());
         }
         return super.equals(obj);
     }

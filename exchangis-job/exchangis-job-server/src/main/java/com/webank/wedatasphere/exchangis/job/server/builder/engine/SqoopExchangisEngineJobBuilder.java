@@ -116,13 +116,13 @@ public class SqoopExchangisEngineJobBuilder extends AbstractLoggingExchangisJobB
     /**
      * Meta columns
      */
-    private static final JobParamDefine<List<MetaColumn>> META_COLUMNS = JobParams.define("sqoop.meta.table.columns", (BiFunction<String, JobParamSet, List<MetaColumn>>) (k, paramSet) -> {
+    private static final JobParamDefine<List<MetaColumn>> META_COLUMNS = JobParams.define("sqoop.meta.table.columns", paramSet -> {
         SpringExchangisJobBuilderContext context = getSpringBuilderContext();
         JobParam<String> dataSourceId = paramSet.get(JobParamConstraints.DATA_SOURCE_ID);
         JobParam<String> database = paramSet.get(JobParamConstraints.DATABASE, String.class);
         JobParam<String> table = paramSet.get(JobParamConstraints.TABLE, String.class);
         try {
-            return context.getBean(MetadataInfoService.class).getColumns(context.getOriginalJob().getCreateUser(),
+            return getBean(MetadataInfoService.class).getColumns(context.getOriginalJob().getCreateUser(),
                             Long.valueOf(dataSourceId.getValue()), database.getValue(), table.getValue());
         } catch (ExchangisDataSourceException e) {
             throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());
@@ -153,10 +153,10 @@ public class SqoopExchangisEngineJobBuilder extends AbstractLoggingExchangisJobB
         Map<String, String> partition = PARTITION_MAP.getValue(job);
         try {
             if (Objects.isNull(partition)) {
-                return context.getBean(MetadataInfoService.class).getTableProps(userName, Long.valueOf(dataSourceId.getValue()),
+                return getBean(MetadataInfoService.class).getTableProps(userName, Long.valueOf(dataSourceId.getValue()),
                         database.getValue(), table.getValue());
             } else {
-                return context.getBean(MetadataInfoService.class).getPartitionProps(userName, Long.valueOf(dataSourceId.getValue()),
+                return getBean(MetadataInfoService.class).getPartitionProps(userName, Long.valueOf(dataSourceId.getValue()),
                         database.getValue(), table.getValue(), URLEncoder.encode(partition.entrySet().stream().map(entry ->
                                 entry.getKey() + "=" + entry.getValue()
                         ).collect(Collectors.joining(",")), "UTF-8"));

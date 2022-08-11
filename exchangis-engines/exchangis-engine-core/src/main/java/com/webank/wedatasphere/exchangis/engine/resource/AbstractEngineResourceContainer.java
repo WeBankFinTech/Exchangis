@@ -240,16 +240,23 @@ public abstract class AbstractEngineResourceContainer<T extends EngineResource, 
             LOG.info("Flush the {} engine resources in path: [{}]", getEngineType(), pathNode.getPath());
             T nodeEngineRes = mergeNodeEngineResource(pathNode);
             if (Objects.nonNull(nodeEngineRes)){
+                // Mark the resource under the path
+                nodeEngineRes.setPath(pathNode.path);
                 // Try tp upload the node engine resource
-                U uploadedRes = this.engineResourceUploader.upload(nodeEngineRes, pathNode.getRemoteResource());
-                if (Objects.nonNull(uploadedRes)) {
-                    // Store the uploaded remoted resource information
-                    pathNode.setRemoteResource(uploadedRes);
-                    if (Objects.nonNull(pathNode.getRemoteResource())){
-                        this.engineResourceDao.updateResource(new EngineStoreResource(uploadedRes));
-                    } else {
-                        this.engineResourceDao.insertResource(new EngineStoreResource(uploadedRes));
+                try {
+                    U uploadedRes = this.engineResourceUploader.upload(nodeEngineRes, pathNode.getRemoteResource());
+                    if (Objects.nonNull(uploadedRes)) {
+                        // Store the uploaded remoted resource information
+                        if (Objects.nonNull(pathNode.getRemoteResource())) {
+                            this.engineResourceDao.updateResource(new EngineStoreResource(uploadedRes));
+                        } else {
+                            this.engineResourceDao.insertResource(new EngineStoreResource(uploadedRes));
+                        }
+                        pathNode.setRemoteResource(uploadedRes);
                     }
+                }catch(Exception e){
+                    // Not throw
+                    LOG.warn(null, e);
                 }
             }
         }

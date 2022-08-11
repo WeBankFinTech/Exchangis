@@ -14,7 +14,7 @@ public abstract class AbstractEngineResourceLoader<T extends EngineResource> imp
     /**
      * Support schemes for uri
      */
-    private static final CommonVars<String> SUPPORT_SCHEMES = CommonVars.apply("wds.exchangis.engine.resource.schemes", "bml,hdfs,viewfs,file");
+    private static final CommonVars<String> SUPPORT_SCHEMES = CommonVars.apply("wds.exchangis.engine.resource.schemes", "bml,hdfs,viewfs");
     static{
         URL.setURLStreamHandlerFactory(new ResourceURLStreamHandlerFactory(
                 SUPPORT_SCHEMES.getValue().split(",")));
