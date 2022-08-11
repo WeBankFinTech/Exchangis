@@ -187,10 +187,10 @@ export default defineComponent({
       showTableSearch.value = false;
     };
     // 选择数据源触发
-    const handleChangeDS = async (ds) => {
+    const handleChangeDS = async (ds, dbName = '') => {
       // 清空
       state.searchWord = '';
-      state.searchDB = '';
+      state.searchDB = dbName;
       showTableSearch.value = false;
       createTree(ds, () => {
         const cur = state.dataSourceList.filter((item) => {
@@ -285,7 +285,7 @@ export default defineComponent({
     };
     // 展示弹窗
     const showModal = async () => {
-      resetData(); // 先重置数据
+      resetData(); // 先重置数据s
       let selects = state.defaultSelect === '请点击后选择' ? [] : state.defaultSelect;
       if (selects[0]) {
         await handleChangeSql(selects[0]);
@@ -294,7 +294,7 @@ export default defineComponent({
         const cur = state.dataSourceList.filter((item) => {
           return item.name === selects[1];
         })[0];
-        await handleChangeDS(cur?.value);
+        await handleChangeDS(cur?.value, selects[2]);
       }
       visible.value = true;
     };

@@ -200,12 +200,10 @@ export default {
     const proxyList = computed(() => {
       const curUser = formState['proxyUser']
       if (curUser) {
-        return [
-          { label: curUser, value: curUser },
-          ...proxyUsers.value
-        ]
+        let arr = new Set([...proxyUsers.value, curUser])
+        return [...arr].map(v => ({ label: v, value: v }))
       } else {
-        return proxyUsers.value
+        return proxyUsers.value.map(v => ({ label: v, value: v }))
       }
     })
     // 获取执行用户
@@ -215,12 +213,7 @@ export default {
         if (!formState['proxyUser']) {
           formState['proxyUser'] = list[0] || '';
         }
-        proxyUsers.value = list.map(v => {
-          return {
-            label: v,
-            value: v
-          }
-        })
+        proxyUsers.value = list;
       })
     })
 
