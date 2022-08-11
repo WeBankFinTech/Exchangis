@@ -64,7 +64,7 @@ public class EngineBmlResource extends EngineResource {
                     storePath = storePath.substring(1);
                 }
                 String[] storeParts = storePath.split(IOUtils.DIR_SEPARATOR_UNIX + "");
-                if (storeParts.length > 2){
+                if (storeParts.length >= 2){
                     this.resourceId = storeParts[0];
                     this.version = storeParts[1];
                 }

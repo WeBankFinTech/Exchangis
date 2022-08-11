@@ -14,9 +14,10 @@
     <version>1.0.0</version>
 
     <modules>
+        <module>exchangis-engine-common</module>
         <module>exchangis-engine-core</module>
         <module>exchangis-engine-server</module>
-<!--        <module>engineconn-plugins/datax</module>-->
+        <!--        <module>engineconn-plugins/datax</module>-->
     </modules>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

@@ -5,6 +5,8 @@ import com.webank.wedatasphere.exchangis.engine.exception.ExchangisEngineResLoad
 import com.webank.wedatasphere.exchangis.engine.resource.AbstractEngineResourceLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URI;
@@ -18,6 +20,7 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractEngineLocalPathResourceLoader extends AbstractEngineResourceLoader<EngineLocalPathResource> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractEngineLocalPathResourceLoader.class);
     private static final String DEFAULT_SUPPORT_SCHEMA = "file";
 
     /**
@@ -47,6 +50,7 @@ public abstract class AbstractEngineLocalPathResourceLoader extends AbstractEngi
 
     @Override
     public EngineLocalPathResource[] loadResource(URI baseUri, String path) throws ExchangisEngineResLoadException {
+        LOG.info("Load local engine resource, path: {}", path);
         String scheme = baseUri.getScheme();
         if (StringUtils.isBlank(baseUri.getScheme()) || DEFAULT_SUPPORT_SCHEMA.equals(scheme)){
             return loadLocalResource(baseUri, path);
@@ -67,20 +71,23 @@ public abstract class AbstractEngineLocalPathResourceLoader extends AbstractEngi
      */
     private EngineLocalPathResource[] loadLocalResource(URI baseUri, String path) throws ExchangisEngineResLoadException {
         File localFile = new File(baseUri.getPath(), path);
+        EngineLocalPathResource[] resources = new EngineLocalPathResource[0];
         if (localFile.isDirectory()) {
             File[] resourceFiles = localFile.listFiles();
             if (Objects.nonNull(resourceFiles)) {
-                EngineLocalPathResource[] resources = new EngineLocalPathResource[resourceFiles.length];
+                resources = new EngineLocalPathResource[resourceFiles.length];
                 for (int i = 0; i < resources.length; i++) {
                     resources[i] = createLocalResource(resourceFiles[i], baseUri, path);
                 }
-                return resources;
             }
         } else if (localFile.isFile()) {
-            return new EngineLocalPathResource[]{createLocalResource(localFile, baseUri, path)};
+            resources = new EngineLocalPathResource[]{createLocalResource(localFile, baseUri, path)};
         }
-
-        return new EngineLocalPathResource[0];
+        // Important: make all the resources have the same value in 'path'
+        for(EngineLocalPathResource resource : resources){
+            resource.setPath(path);
+        }
+        return resources;
     }
 
     /**

@@ -50,4 +50,14 @@ public abstract class AbstractLoggingExchangisJobBuilder<T extends ExchangisJob,
     public static void info(String message, Throwable t){
         getSpringBuilderContext().getLogging().info(null, message, t);
     }
+
+    /**
+     * Get bean in spring context
+     * @param beanClass bean class
+     * @param <T>
+     * @return
+     */
+    public static <T>T getBean(Class<T> beanClass){
+        return getSpringBuilderContext().getBean(beanClass);
+    }
 }

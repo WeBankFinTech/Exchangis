@@ -18,7 +18,7 @@ import java.util.Optional;
 /**
  * Abstract implement, to fetch the data source params of job
  */
-public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
+public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJobHandler{
 
     public static final String ID_SPLIT_SYMBOL = "\\.";
 
@@ -32,7 +32,7 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
     }
 
     @Override
-    public void handleSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
+    public void handleJobSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
         ExchangisJobInfo originJob = ctx.getOriginalJob();
         JobParamSet idParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_DATA_SOURCE);
         JobParamSet sourceParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
@@ -43,7 +43,7 @@ public class GenericSubExchangisJobHandler implements SubExchangisJobHandler{
     }
 
     @Override
-    public void handleSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException{
+    public void handleJobSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException{
         ExchangisJobInfo originJob = ctx.getOriginalJob();
         JobParamSet idParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_DATA_SOURCE);
         JobParamSet sinkParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK);

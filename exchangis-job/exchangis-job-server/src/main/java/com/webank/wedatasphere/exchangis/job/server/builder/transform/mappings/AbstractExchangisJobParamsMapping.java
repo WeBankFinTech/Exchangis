@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.AbstractLoggingSubExchangisJobHandler;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.SubExchangisJobHandler;
 import org.apache.linkis.common.exception.ErrorException;
 
@@ -14,10 +15,10 @@ import java.util.Optional;
 /**
  * Implement "SubExchangisJobHandler", only handle the params of job
  */
-public abstract class AbstractExchangisJobParamsMapping implements SubExchangisJobHandler {
+public abstract class AbstractExchangisJobParamsMapping extends AbstractLoggingSubExchangisJobHandler {
 
     @Override
-    public void handleSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
+    public void handleJobSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
         JobParamSet paramSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
         if (Objects.nonNull(paramSet)){
             Optional.ofNullable(sourceMappings()).ifPresent(jobParamDefines -> Arrays.asList(jobParamDefines).forEach(paramSet::addNonNull));
@@ -25,7 +26,7 @@ public abstract class AbstractExchangisJobParamsMapping implements SubExchangisJ
     }
 
     @Override
-    public void handleSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
+    public void handleJobSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
         JobParamSet paramSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK);
         if (Objects.nonNull(paramSet)){
             Optional.ofNullable(sourceMappings()).ifPresent(jobParamDefines -> Arrays.asList(jobParamDefines).forEach(paramSet::addNonNull));
