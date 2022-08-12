@@ -888,10 +888,15 @@ export default {
             if (!data.content || !data.content.subJobs) {
                 return message.error('缺失保存对象');
             }
+            let subJobNames = []
             for (let i = 0; i < data.content.subJobs.length; i++) {
                 const jobData = toRaw(data.content.subJobs[i]);
                 const cur = {};
                 cur.subJobName = jobData.subJobName;
+                if (subJobNames.includes(cur.subJobName)) {
+                    return message.error('子任务名重复');
+                }
+                subJobNames.push(cur.subJobName);
                 if (
                     !jobData.dataSourceIds
                     || objectValueEmpty(jobData.dataSourceIds.source)
