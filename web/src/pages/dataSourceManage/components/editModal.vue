@@ -180,7 +180,7 @@ export default {
                     ...connectParams
                 }
             });
-            //     message.success('连接成功');
+            message.success('连接成功');
             //     this.modalCfg.isTested = false;
             // } catch (error) {
             //     console.log('error: ', error);
