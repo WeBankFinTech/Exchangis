@@ -166,10 +166,9 @@ export default defineComponent({
     const handleOk = () => {
       const { domains, transf } = dynamicValidateForm;
       const transformer = {};
-      const validator = [];
+      let validator = [];
       domains.forEach((item) => {
-        let str = item.optionVal + ' ' + item.value;
-        validator.push(str);
+        validator = [item.optionVal, item.value];
       });
 
       if (dynamicValidateForm.transf.value) {
@@ -200,7 +199,8 @@ export default defineComponent({
     const transF = (arr) => {
       if (!arr) return [];
       const domains = [];
-      arr.forEach((item, idx) => {
+      let temp = arr.length > 1 ? [arr.join(' ')] : arr // 兼容老数据
+      temp.forEach((item, idx) => {
         let domain = Object.create(null);
         domain.key = idx + '';
         domain.optionVal = item.split(' ')[0];
