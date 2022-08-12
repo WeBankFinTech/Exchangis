@@ -97,6 +97,7 @@
                   :style="styleObject"
                   :engineType="engineType"
                   direct="sink"
+                  :sourceType="sourceType"
                 />
               </a-form-item>
               <!-- 动态组件 -->
@@ -175,6 +176,7 @@ export default defineComponent({
 
     let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source));
     let sinkTitle = ref(objToTitle(props.dsData.dataSourceIds.sink));
+    let sourceType = ref(props.dsData.dataSourceIds.source.type) // 源数据的数据源类型
     let isFold = ref(true);
 
     const dataSource = reactive({
@@ -226,12 +228,13 @@ export default defineComponent({
       sinksHelpMsg[key] = "";
       sinksHelpStatus[key] = "success";
     });
-
+  
     const newProps = computed(() => JSON.parse(JSON.stringify(props.dsData)))
     watch(newProps, (val, oldVal) => {
       const newVal = typeof val === "string" ? JSON.parse(val) : val;
       sourceTitle.value = objToTitle(newVal.dataSourceIds.source);
       sinkTitle.value = objToTitle(newVal.dataSourceIds.sink);
+      sourceType.value = newVal.dataSourceIds.source.type; // 源数据源类型赋值
       dataSource.dataSourceIds = {
         source: newVal.dataSourceIds.source || {},
         sink: newVal.dataSourceIds.sink || {}
@@ -244,7 +247,6 @@ export default defineComponent({
     });
 
     const formRef = ref();
-
     // 选完
     const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split(".");
@@ -277,6 +279,7 @@ export default defineComponent({
         });
         return message.error("SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择");
       }*/
+      sourceType.value = info[0];
       dataSource.dataSourceIds.source.type = info[0];
       dataSource.dataSourceIds.source.ds = info[1];
       dataSource.dataSourceIds.source.db = info[2];
@@ -519,6 +522,7 @@ export default defineComponent({
       styleObject: {
         width: "400px",
       },
+      sourceType
     };
   },
   watch: {},

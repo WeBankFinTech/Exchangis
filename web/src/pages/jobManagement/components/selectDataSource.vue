@@ -6,14 +6,10 @@
       <span>{{ defaultSelect }}</span>
     </div>
     <a-card hoverable v-else style="width: 400px;">
-      <div 
-          class="sds-title-tag" 
-          v-for="(item, idx) in defaultSelect" 
-          :key="item + idx" 
-          @click="showModal"
-          :title="item">
-          <span v-if="idx===0" class="logo" :style="getBg()"></span>
-          {{ item || '- -' }}
+      <div class="sds-title-tag" v-for="(item, idx) in defaultSelect" :key="item + idx"
+        @click="showModal" :title="item">
+        <span v-if="idx===0" class="logo" :style="getBg()"></span>
+        {{ item || '- -' }}
       </div>
     </a-card>
     <a-modal v-model:visible="visible" title="选择数据源" @ok="handleOk" width="500px">
@@ -21,13 +17,9 @@
       <div class="sds-wrap-t">
         <a-space size="middle">
           <span>数据类型</span>
-          <a-select 
-              v-model:value="curSql" 
-              style="width: 150px" 
-              placeholder="请先选择数据库" 
-              :options="sqlList.map((sql) => ({ value: sql.value, label: sql.name }))"
-              @change="handleChangeSql"
-            >
+          <a-select v-model:value="curSql" style="width: 150px" placeholder="请先选择数据库"
+            :options="sqlList.map((sql) => ({ value: sql.value, label: sql.name }))"
+            @change="handleChangeSql">
           </a-select>
           <span>数据源</span>
           <a-select placeholder="请先选择数据源" style="width: 150px" v-model:value="dataSource"
@@ -88,6 +80,7 @@ export default defineComponent({
     title: [Object, String],
     engineType: String,
     direct: String,
+    sourceType: String,
   },
   components: {
     PlusOutlined,
@@ -113,7 +106,7 @@ export default defineComponent({
       searchWord: '',
       searchDB: '',
       authDbs: [],
-      authTbls: []
+      authTbls: [],
     });
     let spinning = ref(false);
     const newProps = computed(() => JSON.parse(JSON.stringify(props.title)));
@@ -132,7 +125,7 @@ export default defineComponent({
       });
       if (state.sqlSource) await createTree(state.sqlSource);
     }
-    onMounted(init())
+    onMounted(init());
     // 根据数据类型ID的不同返回不同的数据源列表
     const queryDataSource = async (typeId, sql) => {
       // 这里前端目前不做分页 固定了 page 和 pageSize
@@ -143,25 +136,21 @@ export default defineComponent({
         pageSize: 1000,
       };
       let res = [];
-      let param = {
-        engineType: props.engineType,
-        direct: props.direct,
-      }
-      let keyWord = 'readAble'
+      let keyWord = 'readAble';
       if (props.direct === 'sink') {
-        keyWord = 'writeAble'
-        param.sourceType = sql
+        keyWord = 'writeAble';
       }
       try {
         let _res = await getDataSource(body);
         const { list } = _res;
-        list.filter(v => v[keyWord]).forEach((item) => {
-          let o = Object.create(null);
-          o.name = item.name;
-          o.value = item.id;
-          res.push({ ...o, ...item });
-        });
-        await getDataSourceTypes(param);
+        list
+          .filter((v) => v[keyWord])
+          .forEach((item) => {
+            let o = Object.create(null);
+            o.name = item.name;
+            o.value = item.id;
+            res.push({ ...o, ...item });
+          });
       } catch (err) {
         console.log('err');
       }
@@ -169,7 +158,7 @@ export default defineComponent({
     };
 
     let showTableSearch = ref(false);
-   
+
     // 选择数据库触发
     const handleChangeSql = async (sql) => {
       state.curSql = sql;
@@ -190,7 +179,8 @@ export default defineComponent({
     const handleChangeDS = async (ds, dbName = '') => {
       // 清空
       state.searchDB = '';
-      if (dbName.toString() !== '[object Object]') { // 避免select组件传入默认参数
+      if (dbName.toString() !== '[object Object]') {
+        // 避免select组件传入默认参数
         state.searchDB = dbName;
       }
       state.searchWord = '';
@@ -201,11 +191,10 @@ export default defineComponent({
         })[0];
         state.dataSource = cur.name;
         state.dsId = cur.value;
-        state.authDbs = (cur.authDbs || '').split(',').filter(v => v);
-        state.authTbls = (cur.authTbls || '').split(',').filter(v => v);
+        state.authDbs = (cur.authDbs || '').split(',').filter((v) => v);
+        state.authTbls = (cur.authTbls || '').split(',').filter((v) => v);
         // 设置权限库表
         console.log('库表', state.authDbs, state.authTbls);
-        
       });
     };
     // 创建 db & tables tree
@@ -288,8 +277,17 @@ export default defineComponent({
     };
     // 展示弹窗
     const showModal = async () => {
+      let param = {
+        engineType: props.engineType,
+        direct: props.direct,
+      };
+      if (props.direct === 'sink') {
+        param.sourceType = props.sourceType;
+      }
+      await getDataSourceTypes(param);
       resetData(); // 先重置数据
-      let selects = state.defaultSelect === '请点击后选择' ? [] : state.defaultSelect;
+      let selects =
+        state.defaultSelect === '请点击后选择' ? [] : state.defaultSelect;
       if (selects[0]) {
         await handleChangeSql(selects[0]);
       }
@@ -304,7 +302,7 @@ export default defineComponent({
     const selectItem = (e) => {
       const [authDb, authTbl] = e.join('').split('.');
       let bool1 = state.authDbs.length && !state.authDbs.includes(authDb); // 无权限的情况
-      let bool2 = state.authTbls.length && !state.authTbls.includes(authTbl);  // 无权限的情况
+      let bool2 = state.authTbls.length && !state.authTbls.includes(authTbl); // 无权限的情况
       if (bool1 || bool2) {
         return message.error('无权限');
       }
