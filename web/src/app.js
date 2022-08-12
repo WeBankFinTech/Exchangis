@@ -46,6 +46,7 @@ export const request = {
         return message.error(error.response.data.data.errorMsg.desc);
       }
       console.log(error, error?.response)
+      if (error?.type === 'REPEAT') return // 重复请求不进行提示
       message.error(error?.response?.data?.message || error?.data?.message ||  "系统异常");
     },
   },
