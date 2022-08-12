@@ -679,13 +679,14 @@ export default {
             return 'sub-content';
         },
         changeCurTask(index) {
-            this.activeIndex = index;
-            this.curTask = this.list[this.activeIndex];
+            if (this.activeIndex === index) return
+            this.activeIndex = index
+            this.curTask = this.list[index];
             this.addEnable = this.curTask.transforms.addEnable;
             this.transformEnable = this.curTask.transforms.transformEnable;
             console.log('当前任务切换后', this.curTask.transforms);
             const data = this.getFieldsParams(this.curTask);
-            if (data && this.activeIndex !== index) {
+            if (data) {
                 getFields(data).then((res) => {
                     this.addEnable = res.addEnable;
                     this.transformEnable = res.transformEnable;
