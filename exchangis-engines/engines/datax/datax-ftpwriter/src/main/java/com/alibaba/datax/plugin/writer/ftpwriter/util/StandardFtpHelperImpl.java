@@ -2,9 +2,8 @@ package com.alibaba.datax.plugin.writer.ftpwriter.util;
 
 import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.plugin.writer.ftpwriter.FtpWriterErrorCode;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.webank.wedatasphere.exchangis.datax.common.CryptoUtils;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
@@ -243,7 +242,7 @@ public class StandardFtpHelperImpl implements IFtpHelper {
             this.printWorkingDirectory();
             FTPFile[] fs = this.ftpClient.listFiles(dir);
             LOG.debug(String.format("ls: %s",
-                    JSON.toJSONString(fs, SerializerFeature.UseSingleQuotes)));
+                    Json.toJson(fs, null)));
             StringBuilder dirBuilder = new StringBuilder(dir);
             if(!dirBuilder.toString().endsWith(String.valueOf(IOUtils.DIR_SEPARATOR))){
                 dirBuilder.append(IOUtils.DIR_SEPARATOR);

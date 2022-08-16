@@ -14,6 +14,7 @@ import com.alibaba.datax.plugin.rdbms.reader.util.SingleTableSplitUtil;
 import com.alibaba.datax.plugin.rdbms.util.*;
 import com.google.common.collect.Lists;
 import com.webank.wedatasphere.exchangis.datax.common.CryptoUtils;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,7 @@ public class CommonRdbmsReader {
             }
             Collection<PreCheckTask> taskList = new ArrayList<PreCheckTask>();
             for (int i = 0, len = connList.size(); i < len; i++) {
-                Configuration connConf = Configuration.from(connList.get(i).toString());
+                Configuration connConf = Configuration.from(Json.toJson(connList.get(i), null));
                 PreCheckTask t = new PreCheckTask(username, password, proxyHost, proxyPort, connConf, dataBaseType, splitPK);
                 taskList.add(t);
             }
