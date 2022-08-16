@@ -29,6 +29,11 @@ public class ExchangisSftpDataSource extends ExchangisBatchDataSource {
     }
 
     @Override
+    public String structClassifier() {
+        return "无结构";
+    }
+
+    @Override
     public String icon() {
         return "icon-sftp";
     }
