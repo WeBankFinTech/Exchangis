@@ -17,6 +17,8 @@ import org.apache.linkis.computation.client.once.simple.SimpleOnceJob;
 import org.apache.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
 import org.apache.linkis.computation.client.operator.impl.*;
 import org.apache.linkis.computation.client.utils.LabelKeyUtils;
+import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
+import org.apache.linkis.datasourcemanager.common.util.PatternInjectUtils;
 import org.apache.linkis.protocol.engine.JobProgressInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -272,6 +274,12 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 jobBuilder.setStartupParams((Map<String, Object>) startupParams);
             }
         });
+        try {
+            jobBuilder.addStartupParam(PatternInjectUtils.inject(LAUNCHER_LINKIS_EXEC_ID,
+                    new String[]{task.getEngineType().toLowerCase(Locale.ROOT)}), task.getId());
+        } catch (JsonErrorException e) {
+            //Ignore
+        }
         return jobBuilder.build();
     }
 
