@@ -18,28 +18,26 @@
 package org.apache.linkis.engineconnplugin.datax.executor
 
 import org.apache.linkis.engineconn.executor.entity.{LabelExecutor, ResourceExecutor}
-import org.apache.linkis.engineconnplugin.datax.config.exception.JobExecutionException
 import org.apache.linkis.engineconnplugin.datax.context.DataxEngineConnContext
+import org.apache.linkis.engineconnplugin.datax.exception.DataxJobExecutionException
 import org.apache.linkis.manager.common.entity.resource.NodeResource
 import org.apache.linkis.manager.label.entity.Label
 
 import java.util
 
+/**
+ * Datax executor with label
+ */
 trait DataxExecutor extends LabelExecutor with ResourceExecutor {
 
-  private var jobID: String = _
   private var executorLabels: util.List[Label[_]] = new util.ArrayList[Label[_]]
-
-  def getJobID: String = jobID
-  protected def setJobID(jobID: String): Unit = {
-    this.jobID = jobID
-  }
 
   override def getExecutorLabels(): util.List[Label[_]] = executorLabels
   override def setExecutorLabels(labels: util.List[Label[_]]): Unit = this.executorLabels = labels
 
-  override def requestExpectedResource(expectedResource: NodeResource): NodeResource = throw new JobExecutionException("Not support method for requestExpectedResource.")
+  override def requestExpectedResource(expectedResource: NodeResource): NodeResource = throw new DataxJobExecutionException("Not support method for requestExpectedResource.")
 
   protected val dataxEngineConnContext: DataxEngineConnContext
+
 
 }
