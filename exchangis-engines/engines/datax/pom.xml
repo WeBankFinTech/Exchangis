@@ -11,7 +11,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>exchangis-executor-engine-datax</artifactId>
+    <artifactId>exchangis-engine-datax</artifactId>
     <packaging>pom</packaging>
     <properties>
         <slf4j-api-version>1.7.25</slf4j-api-version>

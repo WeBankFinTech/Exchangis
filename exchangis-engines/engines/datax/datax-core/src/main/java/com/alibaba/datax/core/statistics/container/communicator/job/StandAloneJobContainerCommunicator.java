@@ -5,7 +5,9 @@ import com.alibaba.datax.core.statistics.communication.Communication;
 import com.alibaba.datax.core.statistics.communication.CommunicationTool;
 import com.alibaba.datax.core.statistics.container.collector.ProcessInnerCollector;
 import com.alibaba.datax.core.statistics.container.communicator.AbstractContainerCommunicator;
+import com.alibaba.datax.core.statistics.container.report.AbstractReporter;
 import com.alibaba.datax.core.statistics.container.report.ProcessInnerReporter;
+import com.alibaba.datax.core.util.ClassUtil;
 import com.alibaba.datax.core.util.container.CoreConstant;
 import com.alibaba.datax.dataxservice.face.domain.enums.State;
 import org.slf4j.Logger;
@@ -22,7 +24,9 @@ public class StandAloneJobContainerCommunicator extends AbstractContainerCommuni
         super(configuration);
         super.setCollector(new ProcessInnerCollector(configuration.getLong(
                 CoreConstant.DATAX_CORE_CONTAINER_JOB_ID)));
-        super.setReporter(new ProcessInnerReporter(configuration));
+        // Set the reporter defined in configuration
+        super.setReporter(ClassUtil.instantiate(configuration.getString(CoreConstant.DATAX_CORE_STATISTICS_REPORTER_PLUGIN_CLASS),
+                AbstractReporter.class, configuration));
     }
 
     @Override
