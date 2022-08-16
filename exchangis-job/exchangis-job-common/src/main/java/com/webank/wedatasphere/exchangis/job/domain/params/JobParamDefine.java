@@ -26,6 +26,13 @@ public class JobParamDefine<T>{
         this.key = key;
         this.valueLoader = (s, paramSet) -> valueLoader.apply((JobParamSet) paramSet);
     }
+
+    @SuppressWarnings("unchecked")
+    <U>JobParamDefine(String key, Function<U, T> valueLoader, Class<U> clazz){
+        this.key = key;
+        this.valueLoader = (s, paramSet) -> valueLoader.apply((U) paramSet);
+    }
+
     public String getKey() {
         return key;
     }
