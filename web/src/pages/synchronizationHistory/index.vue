@@ -265,33 +265,23 @@ export default {
       speedLimitData: [],
       selectItem: {},
     });
-    let pageSize = 10;
-    let currentPage = 1;
     let tableData = ref([]);
     let pagination = ref({
       total: 0,
-      pageSize: pageSize,
+      current: 1,
+      pageSize: 10,
       showQuickJumper: true,
       showSizeChanger: true,
       showTotal: total => `总计 ${total} 条`
     });
 
     // 根据 current 获取当前页的数据
-    const getTableFormCurrent = (current, type, size) => {
-      if (
-        tableData.value.length == pagination.value.total &&
-        pagination.value.total > 0 &&
-        type !== "search"
-      )
-        return;
-      //if (currentPage == current && type !== "search") return;
-
+    const getTableFormCurrent = (type) => {
       const formData = cloneDeep(state.formState);
       formData["launchStartTime"] = Date.parse(formData.time[0]) || "";
       formData["launchEndTime"] = Date.parse(formData.time[1]) || "";
-      currentPage = current;
-      formData["current"] = currentPage;
-      formData["size"] = size || pageSize;
+      formData["current"] = pagination.value.current;
+      formData["size"] = pagination.value.pageSize;
       delete formData.time;
 
       getSyncHistoryJobList(formData)
@@ -326,7 +316,8 @@ export default {
 
     const search = () => {
       jobId.value = null
-      getTableFormCurrent(1, "search");
+      pagination.value.current = 1;
+      getTableFormCurrent("search");
     };
 
     const clearData = () => {
@@ -335,11 +326,13 @@ export default {
       state.formState["status"] = "";
       state.formState["time"] = [];
       state.formState['jobExecutionId'] = ''
+      search();
     };
 
-    const onChange = (page) => {
-      const { current, pageSize } = page;
-      getTableFormCurrent(current, "onChange", pageSize);
+    const onChange = ({ current, pageSize }) => {
+      pagination.value.current = current;
+      pagination.value.pageSize = pageSize;
+      getTableFormCurrent("onChange");
     };
 
     const showInfoLog = (id) => {
