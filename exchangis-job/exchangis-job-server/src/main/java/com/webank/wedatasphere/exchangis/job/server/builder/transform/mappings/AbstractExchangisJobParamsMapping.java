@@ -30,7 +30,7 @@ public abstract class AbstractExchangisJobParamsMapping extends AbstractLoggingS
 //            info("SourceParamSet: {}", Json.toJson(paramSet.toList().stream().collect(
 //                    Collectors.toMap(JobParam::getStrKey, JobParam::getValue)), null));
             Optional.ofNullable(sourceMappings()).ifPresent(jobParamDefines ->
-                    Arrays.asList(jobParamDefines).forEach(define -> paramSet.add(define.get(paramSet))));
+                    Arrays.asList(jobParamDefines).forEach(define -> paramSet.addNonNull(define.get(paramSet))));
         }
     }
 
@@ -42,7 +42,7 @@ public abstract class AbstractExchangisJobParamsMapping extends AbstractLoggingS
 //            info("SinkParamSet: {}", Json.toJson(paramSet.toList().stream().collect(
 //                    Collectors.toMap(JobParam::getStrKey, JobParam::getValue)), null));
             Optional.ofNullable(sinkMappings()).ifPresent(jobParamDefines ->
-                    Arrays.asList(jobParamDefines).forEach(define -> paramSet.add(define.get(paramSet))));
+                    Arrays.asList(jobParamDefines).forEach(define -> paramSet.addNonNull(define.get(paramSet))));
         }
     }
 

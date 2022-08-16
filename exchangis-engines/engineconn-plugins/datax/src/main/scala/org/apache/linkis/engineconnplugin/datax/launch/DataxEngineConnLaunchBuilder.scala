@@ -17,6 +17,7 @@
 
 package org.apache.linkis.engineconnplugin.datax.launch
 
+import org.apache.commons.lang3.StringUtils
 import org.apache.linkis.common.utils.JsonUtils
 import org.apache.linkis.engineconnplugin.datax.config.DataxConfiguration
 import org.apache.linkis.engineconnplugin.datax.plugin.{PluginBmlResource, PluginResource}
@@ -25,6 +26,7 @@ import org.apache.linkis.manager.engineplugin.common.launch.entity.EngineConnBui
 import org.apache.linkis.manager.engineplugin.common.launch.process.JavaProcessEngineConnLaunchBuilder
 
 import java.util
+import java.util.Base64
 
 /**
  * Datax engine conn launch builder
@@ -36,20 +38,24 @@ class DataxEngineConnLaunchBuilder extends JavaProcessEngineConnLaunchBuilder {
     val props = engineConnBuildRequest.engineConnCreationDesc.properties
     DataxConfiguration.PLUGIN_RESOURCES.getValue(props) match {
       case resources: String =>
-        val mapper = JsonUtils.jackson
-        val pluginBmlResources: Array[PluginBmlResource] = mapper.readValue(resources,
-          mapper.getTypeFactory.constructArrayType(classOf[PluginBmlResource]))
-        Option(pluginBmlResources).foreach(pluginBmlResources => pluginBmlResources.foreach(pluginBmlResource =>{
-          // Convert to bml resources
-          val bmlResource = new BmlResource
-          bmlResource.setFileName(pluginBmlResource.getName)
-          bmlResource.setResourceId(pluginBmlResource.getResourceId)
-          bmlResource.setVersion(pluginBmlResource.getVersion)
-          bmlResource.setOwner(pluginBmlResource.getCreator)
-          // Import: must be a public bml resource
-          bmlResource.setVisibility(BmlResource.BmlResourceVisibility.Public)
-          bmlResources.add(bmlResource)
-        }))
+        if (StringUtils.isNotBlank(resources)) {
+          val mapper = JsonUtils.jackson
+          val pluginBmlResources: Array[PluginBmlResource] = mapper.readValue(resources,
+            mapper.getTypeFactory.constructArrayType(classOf[PluginBmlResource]))
+          Option(pluginBmlResources).foreach(pluginBmlResources => pluginBmlResources.foreach(pluginBmlResource => {
+            // Convert to bml resources
+            val bmlResource = new BmlResource
+            bmlResource.setFileName(pluginBmlResource.getName)
+            bmlResource.setResourceId(pluginBmlResource.getResourceId)
+            bmlResource.setVersion(pluginBmlResource.getVersion)
+            bmlResource.setOwner(pluginBmlResource.getCreator)
+            // Import: must be a public bml resource
+            bmlResource.setVisibility(BmlResource.BmlResourceVisibility.Public)
+            bmlResources.add(bmlResource)
+          }))
+          // Encoding the resources json
+          props.put(DataxConfiguration.PLUGIN_RESOURCES.key, Base64.getEncoder.encodeToString(resources.getBytes("utf-8")))
+        }
     }
     bmlResources
   }
