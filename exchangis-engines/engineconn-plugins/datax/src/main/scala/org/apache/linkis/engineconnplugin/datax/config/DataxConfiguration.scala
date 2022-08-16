@@ -17,7 +17,32 @@
 
 package org.apache.linkis.engineconnplugin.datax.config
 
-class DataxPluginConfiguration {
+import org.apache.linkis.common.conf.{CommonVars, TimeType}
 
+/**
+ * Datax basic config
+ */
+object DataxConfiguration {
+
+  val CONFIG_PREFIX: String = "_datax_."
+  /**
+   * Environment config name
+   */
+  val ENV_CONFIG_NAME: CommonVars[String] = CommonVars[String]("datax.env.config.name", "entry.environment")
+
+  /**
+   * Fetch interval
+   */
+  val STATUS_FETCH_INTERVAL: CommonVars[TimeType] = CommonVars("wds.linkis.engineconn.datax.fetch.status.interval", new TimeType("5s"))
+
+  /**
+   * Execution id
+   */
+  val JOB_EXECUTION_ID: CommonVars[String] = CommonVars[String]("wds.linkis.engineconn.datax.execution.id", "")
+
+  /**
+   * Plugin resources
+   */
+  val PLUGIN_RESOURCES: CommonVars[String] = CommonVars[String]("wds.linkis.engineconn.datax.bml.resources", "")
 
 }
