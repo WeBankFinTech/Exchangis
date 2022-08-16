@@ -32,6 +32,11 @@ public class ExchangisESDataSource extends ExchangisBatchDataSource {
     }
 
     @Override
+    public String structClassifier() {
+        return "无结构";
+    }
+
+    @Override
     public String description() {
         return "ES description";
     }
