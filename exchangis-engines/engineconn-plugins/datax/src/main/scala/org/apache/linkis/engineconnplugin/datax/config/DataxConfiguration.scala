@@ -45,4 +45,8 @@ object DataxConfiguration {
    */
   val PLUGIN_RESOURCES: CommonVars[String] = CommonVars[String]("wds.linkis.engineconn.datax.bml.resources", "")
 
+  /**
+   * Security manager
+   */
+  val SECURITY_MANAGER_CLASSES: CommonVars[String] = CommonVars[String]("wds.linkis.engineconn.datax.security.manager", "")
 }

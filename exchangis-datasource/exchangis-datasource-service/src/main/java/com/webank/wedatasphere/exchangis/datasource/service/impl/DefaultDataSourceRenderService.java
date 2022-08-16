@@ -8,10 +8,7 @@ import com.webank.wedatasphere.exchangis.datasource.service.DataSourceRenderServ
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Default render service
@@ -41,7 +38,7 @@ public class DefaultDataSourceRenderService implements DataSourceRenderService {
     public ElementUI<?> getPartitionAndRender(String userName,
                                               Long dataSourceId, String database, String table, ElementUI.Type uiType) throws ExchangisDataSourceException {
         List<String> partitionKeys = metadataInfoService.getPartitionKeys(userName, dataSourceId, database, table);
-        Map<String, Object> renderParams = new HashMap<>();
+        Map<String, Object> renderParams = new LinkedHashMap<>();
         List<String> placeHolder = Arrays.asList(DEFAULT_PLACEHOLDER);
         partitionKeys.forEach(partition -> renderParams.putIfAbsent(partition, placeHolder));
         return elementUIFactory.createElement(uiType.name(), renderParams, Map.class);
