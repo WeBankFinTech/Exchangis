@@ -31,7 +31,7 @@ import com.alibaba.datax.core.util.TransformerUtil;
 import com.alibaba.datax.core.util.container.CoreConstant;
 import com.alibaba.datax.core.util.container.LoadUtil;
 import com.alibaba.datax.dataxservice.face.domain.enums.State;
-import com.alibaba.fastjson.JSON;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,7 +145,7 @@ public class TaskGroupContainer extends AbstractContainer {
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("taskGroup[{}]'s task configs[{}]", this.taskGroupId,
-                        JSON.toJSONString(taskConfigs));
+                        Json.toJson(taskConfigs, null));
             }
 
             int taskCountInThisTaskGroup = taskConfigs.size();

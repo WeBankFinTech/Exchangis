@@ -1,6 +1,7 @@
 package com.alibaba.datax.common.element;
 
-import com.alibaba.fastjson.JSON;
+
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -66,7 +67,7 @@ public abstract class Column {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this);
+        return Json.toJson(this, null);
     }
 
     public enum Type {
