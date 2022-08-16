@@ -17,7 +17,11 @@
         <module>exchangis-engine-common</module>
         <module>exchangis-engine-core</module>
         <module>exchangis-engine-server</module>
-        <!--        <module>engineconn-plugins/datax</module>-->
+        <!--package the engines module-->
+        <module>engines/datax</module>
+        <!--package the engine plugin-->
+        <module>engineconn-plugins/sqoop</module>
+        <module>engineconn-plugins/datax</module>
     </modules>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
