@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.linkis.service;
 
+import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisServiceRpcException;
@@ -7,7 +8,9 @@ import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoSer
 import com.webank.wedatasphere.exchangis.datasource.core.service.rpc.ServiceRpcClient;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
 //import com.webank.wedatasphere.exchangis.datasource.linkis.partition.MetadataGetPartitionsResult;
+import com.webank.wedatasphere.exchangis.datasource.linkis.request.MetadataGetConnInfoAction;
 import com.webank.wedatasphere.exchangis.datasource.linkis.request.MetadataGetPartitionPropsAction;
+import com.webank.wedatasphere.exchangis.datasource.linkis.response.MetadataGetConnInfoResult;
 import com.webank.wedatasphere.exchangis.datasource.linkis.response.MetadataGetPartitionPropsResult;
 import com.webank.wedatasphere.exchangis.datasource.linkis.service.rpc.LinkisDataSourceServiceOperation;
 import com.webank.wedatasphere.exchangis.datasource.linkis.service.rpc.LinkisDataSourceServiceRpcDispatcher;
@@ -20,10 +23,7 @@ import org.apache.linkis.datasource.client.response.MetadataGetPartitionsResult;
 import org.apache.linkis.datasource.client.response.MetadataGetTablePropsResult;
 import org.apache.linkis.metadatamanager.common.domain.MetaColumnInfo;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.*;
 
@@ -32,7 +32,8 @@ import static com.webank.wedatasphere.exchangis.datasource.core.exception.Exchan
  */
 public class LinkisMetadataInfoService extends LinkisDataSourceServiceRpcDispatcher<LinkisMetaDataRemoteClient>
         implements MetadataInfoService {
-
+    // TODO define in properties file
+    private static final String LOCAL_HDFS_NAME = ".LOCAL_HDFS";
     @Override
     public Class<?> getClientClass() {
         return LinkisMetaDataRemoteClient.class;
@@ -96,6 +97,18 @@ public class LinkisMetadataInfoService extends LinkisDataSourceServiceRpcDispatc
         Optional.ofNullable(columnInfoList).ifPresent(infoList -> infoList.forEach(info ->
                 columns.add(new MetaColumn(info.getIndex(), info.getName(), info.getType(), info.isPrimaryKey()))));
         return columns;
+    }
+
+    @Override
+    public Map<String, String> getLocalHdfsInfo(String uri) throws ExchangisDataSourceException{
+        Map<String, Object> query = new HashMap<>();
+        query.put("uri", uri);
+        MetadataGetConnInfoResult result = dispatch(getDefaultRemoteClient(), new LinkisDataSourceServiceOperation(() -> {
+            MetadataGetConnInfoAction action = new MetadataGetConnInfoAction(LOCAL_HDFS_NAME, LINKIS_RPC_CLIENT_SYSTEM.getValue(), query);
+            action.setUser(EnvironmentUtils.getJvmUser());
+            return action;
+        }), CLIENT_METADATA_GET_PARTITION.getCode(), "getLocalHdfsInfo");
+        return result.getInfo();
     }
 
 
