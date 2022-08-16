@@ -353,7 +353,7 @@ public class AbstractDataSourceService {
         ui.setValidateType(config.getValidateType());
         ui.setValidateRange(config.getValidateRange());
         ui.setValidateMsg(config.getValidateMsg());
-        ui.setRefId(config.getId());
+        ui.setRefId(config.getRefId());
         return ui;
     }
 

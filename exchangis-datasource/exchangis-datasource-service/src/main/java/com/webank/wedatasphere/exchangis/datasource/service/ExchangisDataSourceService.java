@@ -583,6 +583,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String dataSourceName = Objects.isNull(vo.getName()) ? "" : vo.getName();
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         QueryDataSourceResult result;
+        int totalPage = 0;
         try {
             QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
                     .setSystem("system")
@@ -605,6 +606,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
             QueryDataSourceAction action = builder.build();
             result = linkisDataSourceRemoteClient.queryDataSource(action);
+            totalPage = result.getTotalPage();
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
@@ -667,7 +669,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         }
         Message message = Message.ok();
         message.data("list", dataSources);
-        message.data("total", dataSources.size());
+        message.data("total", totalPage);
         return message;
         //return Message.ok().data("list", dataSources);
     }
