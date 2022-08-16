@@ -17,15 +17,20 @@
 
 package org.apache.linkis.engineconnplugin.datax.resource
 
-import org.apache.linkis.manager.common.entity.resource.Resource
+import org.apache.linkis.manager.common.entity.resource.{LoadInstanceResource, Resource}
+import org.apache.linkis.manager.engineplugin.common.conf.EngineConnPluginConf
 import org.apache.linkis.manager.engineplugin.common.resource.AbstractEngineResourceFactory
 
 import java.util
 
+/**
+ * Resource factory
+ */
 class DataxEngineConnResourceFactory extends AbstractEngineResourceFactory {
 
-  //todo getRequestResource
   override protected def getRequestResource(properties: util.Map[String, String]): Resource = {
-    null
+    // Just use local resource
+    new LoadInstanceResource(EngineConnPluginConf.JAVA_ENGINE_REQUEST_MEMORY.getValue(properties).toLong,
+      EngineConnPluginConf.JAVA_ENGINE_REQUEST_CORES.getValue(properties), 1)
   }
 }

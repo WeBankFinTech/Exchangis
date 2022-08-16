@@ -21,21 +21,23 @@ import org.apache.linkis.engineconn.common.creation.EngineCreationContext
 import org.apache.linkis.engineconn.common.engineconn.EngineConn
 import org.apache.linkis.engineconn.once.executor.OnceExecutor
 import org.apache.linkis.engineconn.once.executor.creation.OnceExecutorFactory
+import org.apache.linkis.engineconnplugin.datax.config.DataxCoreConfiguration
 import org.apache.linkis.engineconnplugin.datax.context.DataxEngineConnContext
-import org.apache.linkis.engineconnplugin.datax.executor.DataxCodeOnceExecutor
+import org.apache.linkis.engineconnplugin.datax.executor.DataxContainerOnceExecutor
 import org.apache.linkis.manager.label.entity.Label
 import org.apache.linkis.manager.label.entity.engine.RunType
 import org.apache.linkis.manager.label.entity.engine.RunType.{JAVA, RunType, SCALA}
 
-class DataxExecutorFactory extends OnceExecutorFactory {
+class DataxCodeExecutorFactory extends OnceExecutorFactory {
   protected override def newExecutor(id: Int,
                                      engineCreationContext: EngineCreationContext,
                                      engineConn: EngineConn,
                                      labels: Array[Label[_]]): OnceExecutor = {
     engineConn.getEngineConnSession match {
       case context: DataxEngineConnContext =>
-        new DataxCodeOnceExecutor(id, context)
+//        new DataxContainerOnceExecutor(id, context)
     }
+    null
   }
 
   override protected def getSupportRunTypes: Array[String] = Array(SCALA.toString, JAVA.toString)
