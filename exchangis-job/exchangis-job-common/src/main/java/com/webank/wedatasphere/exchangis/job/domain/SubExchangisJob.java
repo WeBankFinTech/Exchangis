@@ -3,6 +3,8 @@ package com.webank.wedatasphere.exchangis.job.domain;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -26,12 +28,28 @@ public class SubExchangisJob extends GenericExchangisJob {
 
     public static final String REALM_JOB_CONTENT_SOURCE = "job.realm.content.source";
 
-    public static final String REALM_JOB_COLUMN_MAPPING = "job.realm.column-mappings";
+//    public static final String REALM_JOB_COLUMN_MAPPING = "job.realm.column-mappings";
+
 
     /**
      * Realm params set
      */
-    private Map<String, JobParamSet> realmParamSet = new ConcurrentHashMap<>();
+    private final Map<String, JobParamSet> realmParamSet = new ConcurrentHashMap<>();
+
+    /**
+     * Source columns
+     */
+    private final List<ColumnDefine> sourceColumns = new ArrayList<>();
+
+    /**
+     * Sink columns
+     */
+    private final List<ColumnDefine> sinkColumns = new ArrayList<>();
+
+    /**
+     * Functions
+     */
+    private final List<ColumnFunction> columnFunctions = new ArrayList<>();
 
     public String getSourceType() {
         return sourceType;
@@ -93,5 +111,109 @@ public class SubExchangisJob extends GenericExchangisJob {
                 .collect(Collectors.toMap(JobParam::getStrKey, JobParam::getValue, (left, right) -> right));
     }
 
+    public List<ColumnDefine> getSourceColumns() {
+        return sourceColumns;
+    }
 
+    public List<ColumnDefine> getSinkColumns() {
+        return sinkColumns;
+    }
+
+    public List<ColumnFunction> getColumnFunctions() {
+        return columnFunctions;
+    }
+
+    /**
+     * Column definition
+     */
+    public static class ColumnDefine{
+
+        /**
+         * Column name
+         */
+        private String name;
+
+        /**
+         * Column type
+         */
+        private String type;
+        /**
+         * Column index
+         */
+        private Integer index;
+
+        public ColumnDefine(){
+
+        }
+
+        public ColumnDefine(String name, String type, Integer index){
+            this.name = name;
+            this.type = type;
+            this.index = index;
+        }
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public Integer getIndex() {
+            return index;
+        }
+
+        public void setIndex(Integer index) {
+            this.index = index;
+        }
+    }
+
+    /**
+     * Column function
+     */
+    public static class ColumnFunction{
+
+        private Integer index;
+        /**
+         * Function name
+         */
+        private String name;
+
+        /**
+         * Function params
+         */
+        private List<String> params = new ArrayList<>();
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public List<String> getParams() {
+            return params;
+        }
+
+        public void setParams(List<String> params) {
+            this.params = params;
+        }
+
+        public Integer getIndex() {
+            return index;
+        }
+
+        public void setIndex(Integer index) {
+            this.index = index;
+        }
+    }
 }
