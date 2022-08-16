@@ -20,7 +20,7 @@ package com.webank.wedatasphere.exchangis.datax.core.transport.stream;
 import com.alibaba.datax.common.exception.CommonErrorCode;
 import com.alibaba.datax.common.exception.DataXException;
 import com.webank.wedatasphere.exchangis.datax.core.transport.channel.StreamChannel;
-import com.alibaba.fastjson.JSON;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +66,7 @@ public class ChannelOutput {
         if(StringUtils.isBlank(encoding)){
             encoding = DEFAULT_ENCODING;
         }
-        String metaJson = JSON.toJSONString(meta);
+        String metaJson = Json.toJson(meta, null);
         return createStream(metaJson.getBytes(encoding));
     }
     private OutputStream createStream(byte[] metaData) throws IOException {

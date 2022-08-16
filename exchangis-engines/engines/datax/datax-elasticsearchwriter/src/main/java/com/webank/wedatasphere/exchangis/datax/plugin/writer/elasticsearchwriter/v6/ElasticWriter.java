@@ -27,10 +27,8 @@ import com.alibaba.datax.common.util.Configuration;
 import com.alibaba.datax.core.statistics.plugin.task.util.DirtyRecord;
 import com.webank.wedatasphere.exchangis.datax.plugin.writer.elasticsearchwriter.v6.column.ElasticColumn;
 import com.webank.wedatasphere.exchangis.datax.plugin.writer.elasticsearchwriter.v6.column.ElasticFieldDataType;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import com.webank.wedatasphere.exchangis.datax.common.CryptoUtils;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -145,14 +143,14 @@ public class ElasticWriter extends Writer {
                 //allow to custom the fields of properties
                 properties = new HashMap<>(rawColumnList.size());
                 rawColumnList.forEach(columnRaw -> {
-                    String raw = columnRaw.toString();
-                    ElasticColumn column = JSONObject
-                            .parseObject(raw, ElasticColumn.class);
+                    String raw = Json.toJson(columnRaw, null);
+                    ElasticColumn column = Json
+                            .fromJson(raw, ElasticColumn.class);
                     if (StringUtils.isNotBlank(column.getName()) && StringUtils.isNotBlank(column.getType())) {
                         outputColumn.add(column);
                         if (!column.getName().equals(DEFAULT_ID) && ElasticFieldDataType.valueOf(column.getType().toUpperCase())
                                 != ElasticFieldDataType.ALIAS) {
-                            Map property = JSONObject.parseObject(raw, Map.class);
+                            Map property = Json.fromJson(raw, Map.class);
                             property.remove(ElasticKey.PROPS_COLUMN_NAME);
                             properties.put(column.getName(), property);
                         }
@@ -229,8 +227,7 @@ public class ElasticWriter extends Writer {
             columnNameSeparator = this.taskConf.getString(ElasticKey.COLUMN_NAME_SEPARATOR, ElasticColumn.DEFAULT_NAME_SPLIT);
             int batchSize = this.taskConf.getInt(ElasticKey.BULK_ACTIONS, 1000);
             int bulkPerTask = this.taskConf.getInt(ElasticKey.BULK_PER_TASK, 1);
-            columns = JSON.parseObject(this.taskConf.getString(ElasticKey.PROPS_COLUMN), new TypeReference<List<ElasticColumn>>(){
-            });
+            columns = Json.fromJson(this.taskConf.getString(ElasticKey.PROPS_COLUMN), List.class, ElasticColumn.class);
             String userName = this.taskConf.getString(ElasticKey.USERNAME, "");
             String password = this.taskConf.getString(ElasticKey.PASSWORD, "");
             if(StringUtils.isNotBlank(password)){
@@ -318,7 +315,7 @@ public class ElasticWriter extends Writer {
                             message.add(String.valueOf(itemResponse.getFailure().getStatus().getStatus()));
                             message.add(itemResponse.getId());
                             message.add(itemResponse.getFailureMessage());
-                            pluginCollector.collectDirtyRecord(new DirtyRecord(), null, JSON.toJSONString(message));
+                            pluginCollector.collectDirtyRecord(new DirtyRecord(), null, Json.toJson(message, null));
                         }
                     }
                 }
