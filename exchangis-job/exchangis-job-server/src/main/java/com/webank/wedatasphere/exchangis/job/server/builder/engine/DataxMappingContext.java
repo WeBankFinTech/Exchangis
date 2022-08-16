@@ -64,14 +64,16 @@ public class DataxMappingContext {
         /**
          * Index name
          */
-        private Integer index;
+        private String index;
 
         public Column(){
 
         }
 
-        public Column(String name, String type, Integer index){
-
+        public Column(String name, String type, String index){
+            this.name = name;
+            this.type = type;
+            this.index = index;
         }
         public String getName() {
             return name;
@@ -89,11 +91,11 @@ public class DataxMappingContext {
             this.type = type;
         }
 
-        public Integer getIndex() {
+        public String getIndex() {
             return index;
         }
 
-        public void setIndex(Integer index) {
+        public void setIndex(String index) {
             this.index = index;
         }
     }
@@ -144,7 +146,7 @@ public class DataxMappingContext {
             /**
              * Index
              */
-            private int columnIndex;
+            private String columnIndex;
 
             /**
              * Params
@@ -158,11 +160,12 @@ public class DataxMappingContext {
             public Parameter(List<String> paras){
                 this.paras = paras;
             }
-            public int getColumnIndex() {
+
+            public String getColumnIndex() {
                 return columnIndex;
             }
 
-            public void setColumnIndex(int columnIndex) {
+            public void setColumnIndex(String columnIndex) {
                 this.columnIndex = columnIndex;
             }
 
