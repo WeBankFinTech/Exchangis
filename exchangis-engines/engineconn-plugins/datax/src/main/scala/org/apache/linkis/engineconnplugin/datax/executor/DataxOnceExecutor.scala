@@ -17,6 +17,7 @@
 
 package org.apache.linkis.engineconnplugin.datax.executor
 
+import org.apache.linkis.common.utils.Utils
 import org.apache.linkis.engineconn.core.EngineConnObject
 import org.apache.linkis.engineconn.once.executor.{ManageableOnceExecutor, OnceExecutorExecutionContext}
 import org.apache.linkis.engineconnplugin.datax.context.DataxEngineConnContext
@@ -29,8 +30,10 @@ trait DataxOnceExecutor extends ManageableOnceExecutor with DataxExecutor {
 
   val id: Long
 
-  override def getId: String = "DataxOnceApp" + id
-
+  /**
+   * Submit entrance
+   * @param onceExecutorExecutionContext execution context
+   */
   override protected def submit(onceExecutorExecutionContext: OnceExecutorExecutionContext): Unit = {
     val options = onceExecutorExecutionContext.getOnceExecutorContent.getJobContent.map {
       case (k, v: String) => k -> v
@@ -45,13 +48,7 @@ trait DataxOnceExecutor extends ManageableOnceExecutor with DataxExecutor {
   override protected val dataxEngineConnContext: DataxEngineConnContext
 
   override def getCurrentNodeResource(): NodeResource = {
-    val memorySuffix = "g"
     val properties = EngineConnObject.getEngineCreationContext.getOptions
-    Option(properties.get(EngineConnPluginConf.JAVA_ENGINE_REQUEST_MEMORY.key)).foreach(memory => {
-      if (! memory.toLowerCase.endsWith(memorySuffix)) {
-        properties.put(EngineConnPluginConf.JAVA_ENGINE_REQUEST_MEMORY.key, memory + memorySuffix)
-      }
-    })
     val resource = new LoadResource(
       EngineConnPluginConf.JAVA_ENGINE_REQUEST_MEMORY.getValue(properties).toLong,
       EngineConnPluginConf.JAVA_ENGINE_REQUEST_CORES.getValue(properties)
@@ -60,6 +57,12 @@ trait DataxOnceExecutor extends ManageableOnceExecutor with DataxExecutor {
     engineResource.setUsedResource(resource)
     engineResource
   }
+
+  override def ensureAvailable[A](f: => A): A = {
+    // Not need to throws exception
+    Utils.tryQuietly{ super.ensureAvailable(f) }
+  }
+
 }
 
 

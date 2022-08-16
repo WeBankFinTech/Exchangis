@@ -18,27 +18,30 @@
 package org.apache.linkis.engineconnplugin.datax.context
 
 import com.alibaba.datax.common.util.Configuration
-import java.util
+
 /**
- * Datax engine conn context
+ * Plugin definitions
+ * @param pluginName plugin name
+ * @param pluginPath plugin path
+ * @param pluginConf plugin conf
  */
-class DataxEngineConnContext(settings: Configuration, coreConfig: Configuration, pluginDefinitions: util.List[DataxPluginDefinition]) {
+class DataxPluginDefinition(pluginName: String, pluginPath: String, pluginConf: Configuration) {
 
   /**
-   * Plugin definition
+   * Plugin name
    * @return
    */
-  def getPluginDefinitions: util.List[DataxPluginDefinition] = pluginDefinitions
+  def getPluginName: String = pluginName
 
   /**
-   * Settings configuration
+   * Plugin path
    * @return
    */
-  def getSettings: Configuration = settings
+  def getPluginPath: String = pluginPath
 
   /**
-   * Core configuration
+   * Plugin configuration
    * @return
    */
-  def getCoreConfig: Configuration = coreConfig
+  def getPluginConf: Configuration = pluginConf
 }
