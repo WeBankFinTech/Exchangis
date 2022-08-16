@@ -39,6 +39,11 @@ object DataxCoreConfiguration {
   val COMMON_COLUMN_ENCODING: CommonVars[String] = CommonVars("common.column.encoding", "utf-8")
 
   /**
+   * Container model
+   */
+  val CORE_CONTAINER_MODEL: CommonVars[String] = CommonVars(CoreConstant.DATAX_CORE_CONTAINER_MODEL, "job")
+
+  /**
    * Transport type
    */
   val CORE_TRANSPORT_TYPE: CommonVars[String] = CommonVars(CoreConstant.DATAX_CORE_TRANSPORT_TYPE, "record")
@@ -136,7 +141,7 @@ object DataxCoreConfiguration {
   /**
    * Reporter class (EC use DataxEngineConnCommunicateReporter)
    */
-  val CORE_STATISTICS_REPORTER_PLUGIN_CLASS: CommonVars[String] = CommonVars(CoreConstant.DATAX_CORE_STATISTICS_REPORTER_PLUGIN_CLASS, "org.apache.linkis.engineconnplugin.datax.reporter.DataxEngineConnCommunicateReporter")
+  val CORE_STATISTICS_REPORTER_PLUGIN_CLASS: CommonVars[String] = CommonVars(CoreConstant.DATAX_CORE_STATISTICS_REPORTER_PLUGIN_CLASS, "org.apache.linkis.engineconnplugin.datax.report.DataxEngineConnCommunicateReporter")
   /**
    * Processor loader plugin class
    */

@@ -11,7 +11,9 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.server.utils.JsonEntity;
+import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,8 @@ import java.util.function.Consumer;
 public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataxExchangisEngineJob.class);
+
+    private static final String BYTE_SPEED_SETTING_PARAM = "setting.speed.byte";
 
     private static final Map<String, String> PLUGIN_NAME_MAPPER = new HashMap<>();
 
@@ -38,14 +42,14 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
     private static final JobParamDefine<DataxMappingContext> COLUMN_MAPPINGS = JobParams.define("column.mappings", job -> {
         DataxMappingContext mappingContext = new DataxMappingContext();
         job.getSourceColumns().forEach(columnDefine -> mappingContext.getSourceColumns().add(
-                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(), columnDefine.getIndex())
+                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(), columnDefine.getIndex() + "")
         ));
         job.getSinkColumns().forEach(columnDefine -> mappingContext.getSinkColumns().add(
-                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(), columnDefine.getIndex())
+                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(), columnDefine.getIndex() + "")
         ));
         job.getColumnFunctions().forEach(function -> {
             DataxMappingContext.Transformer.Parameter parameter = new DataxMappingContext.Transformer.Parameter();
-            parameter.setColumnIndex(function.getIndex());
+            parameter.setColumnIndex(function.getIndex() + "");
             parameter.setParas(function.getParams());
             mappingContext.getTransformers()
                     .add(new DataxMappingContext.Transformer(function.getName(), parameter));
@@ -74,13 +78,13 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
     /**
      * Source columns
      */
-    private static final JobParamDefine<List<DataxMappingContext.Column>> SOURCE_COLUMNS = JobParams.define("content[0].reader.column",
+    private static final JobParamDefine<List<DataxMappingContext.Column>> SOURCE_COLUMNS = JobParams.define("content[0].reader.parameter.column",
             DataxMappingContext::getSourceColumns,DataxMappingContext.class);
 
     /**
      * Sink columns
      */
-    private static final JobParamDefine<List<DataxMappingContext.Column>> SINK_COLUMNS = JobParams.define("content[0].writer.column",
+    private static final JobParamDefine<List<DataxMappingContext.Column>> SINK_COLUMNS = JobParams.define("content[0].writer.parameter.column",
             DataxMappingContext::getSinkColumns,DataxMappingContext.class);
 
     /**
@@ -111,6 +115,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Datax-code built complete, output: " + Json.getMapper().writerWithDefaultPrettyPrinter().writeValueAsString(codeMap));
                     }
+                    info("Datax-code built complete, output: " + Json.getMapper().writerWithDefaultPrettyPrinter().writeValueAsString(codeMap));
                 } catch (JsonProcessingException e) {
                     //Ignore
                 }
@@ -120,6 +125,14 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
             engineJob.getResources().addAll(
                     getResources(inputJob.getEngineType().toLowerCase(Locale.ROOT), getResourcesPaths(inputJob)));
             engineJob.setName(inputJob.getName());
+            //Unit MB
+            Optional.ofNullable(engineJob.getRuntimeParams().get(BYTE_SPEED_SETTING_PARAM)).ifPresent(byteLimit -> {
+                long limit = Long.parseLong(String.valueOf(byteLimit));
+                // Convert to bytes
+                engineJob.getRuntimeParams().put(BYTE_SPEED_SETTING_PARAM,
+                        MemUtils.convertToByte(limit, MemUtils.StoreUnit.MB.name()));
+            });
+
             engineJob.setCreateUser(inputJob.getCreateUser());
             // Lock the memory unit
             engineJob.setMemoryUnitLock(true);
@@ -148,17 +161,21 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
             dataxJob.set(PLUGIN_SINK_PARAM.getKey() + "." + key, value);
         }));
         DataxMappingContext mappingContext = COLUMN_MAPPINGS.getValue(inputJob);
-        dataxJob.set(SOURCE_COLUMNS.getKey(), SOURCE_COLUMNS.getValue(mappingContext));
-        dataxJob.set(SINK_COLUMNS.getKey(), SINK_COLUMNS.getValue(mappingContext));
+        if (Objects.isNull(dataxJob.get(SOURCE_COLUMNS.getKey()))) {
+            dataxJob.set(SOURCE_COLUMNS.getKey(), SOURCE_COLUMNS.getValue(mappingContext));
+        }
+        if (Objects.isNull(dataxJob.get(SINK_COLUMNS.getKey()))){
+            dataxJob.set(SINK_COLUMNS.getKey(), SINK_COLUMNS.getValue(mappingContext));
+        }
         dataxJob.set(TRANSFORM_LIST.getKey(), TRANSFORM_LIST.getValue(mappingContext));
         return dataxJob.toMap();
     }
 
     private String[] getResourcesPaths(SubExchangisJob inputJob){
         return new String[]{
-                DataxEngineResourceConf.RESOURCE_PATH_PREFIX.getValue() + IOUtils.DIR_SEPARATOR_UNIX +
+                DataxEngineResourceConf.RESOURCE_PATH_PREFIX.getValue() + IOUtils.DIR_SEPARATOR_UNIX + "reader" + IOUtils.DIR_SEPARATOR_UNIX +
                         PLUGIN_SOURCE_NAME.getValue(inputJob),
-                DataxEngineResourceConf.RESOURCE_PATH_PREFIX.getValue() + IOUtils.DIR_SEPARATOR_UNIX +
+                DataxEngineResourceConf.RESOURCE_PATH_PREFIX.getValue() + IOUtils.DIR_SEPARATOR_UNIX + "writer" + IOUtils.DIR_SEPARATOR_UNIX +
                         PLUGIN_SINK_NAME.getValue(inputJob)
         };
     }
@@ -170,7 +187,8 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
      * @return plugin name
      */
     private static String getPluginName(String typeName, String suffix){
-        return Objects.nonNull(typeName) ? PLUGIN_NAME_MAPPER.get(typeName.toLowerCase(Locale.ROOT))
+        return Objects.nonNull(typeName) ? PLUGIN_NAME_MAPPER.getOrDefault(typeName.toLowerCase(Locale.ROOT),
+                typeName.toLowerCase(Locale.ROOT))
                 + suffix : null;
     }
 }
