@@ -32,6 +32,11 @@ public class ExchangisMySQLDataSource extends ExchangisBatchDataSource {
     }
 
     @Override
+    public String structClassifier() {
+        return "结构化";
+    }
+
+    @Override
     public String description() {
         return "MYSQL description";
     }

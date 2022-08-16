@@ -25,6 +25,7 @@ public interface ExchangisDataSource {
     String classifier();
 //    String type();
 
+    String structClassifier();
 
 //    String category();
 
