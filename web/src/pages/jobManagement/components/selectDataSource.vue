@@ -44,7 +44,7 @@
         <a-spin :spinning="spinning" style="
           text-align: center;
           width: 100%;
-          height: 300px;
+          height: 400px;
           padding-top: 150px;" />
         <a-directory-tree :height="400" :tree-data="treeData" :autoExpandParent="false"
           :icon="getIcon" v-model:expandedKeys="expandedKeys" @select="selectItem"

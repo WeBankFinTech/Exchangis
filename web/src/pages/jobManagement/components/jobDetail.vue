@@ -849,23 +849,31 @@ export default {
             const { proxyUser, content } = data;
             const jobs = content.subJobs.slice();
             if (!proxyUser) {
-                res.push('配置任务中执行用户不可为空');
+                res.push(<li style="list-style: none;">配置任务中执行用户不可为空</li>);
             }
             jobs.forEach((job) => {
                 const { params, settings } = job;
+                let isInsert = false
+                res.push(<li style="list-style: none;"><span style="margin-left: -30px;">{job.subJobName}:</span></li>)
                 for (const key in params) {
                     params[key].forEach((i) => {
                         if (!i.value && i.required) {
-                            res.push(`${i.label}不可为空`);
+                            isInsert = true;
+                            res.push(<li style="list-style: none;">{i.label}不可为空</li>);
                         }
                     });
                 }
 
                 settings.forEach((i) => {
                     if (!i.value && i.required) {
-                        res.push(`${i.label}不可为空`);
+                        isInsert = true;
+                        res.push(<li style="list-style: none;">{i.label}不可为空</li>);
                     }
                 });
+
+                if (!isInsert) {
+                    res.splice(res.length - 1, 1)
+                }
             });
 
             return res;
@@ -880,7 +888,7 @@ export default {
                     description: h(
                         'ul',
                         {},
-                        tips.map(tip => h('li', {}, tip))
+                        tips.map(tip => tip)
                     ),
                     duration: 5
                 });
@@ -942,7 +950,7 @@ export default {
                 if (jobData.settings && jobData.settings.length) {
                     jobData.settings.forEach((setting) => {
                         cur.settings.push({
-                            config_key: setting.field, // UI中field
+                            config_key: setting.key, // UI中field
                             config_name: setting.label, // UI中label
                             config_value: setting.value, // UI中value
                             sort: setting.sort
