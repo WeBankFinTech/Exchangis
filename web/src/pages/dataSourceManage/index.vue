@@ -385,7 +385,7 @@ export default {
   padding: 16px 24px;
   box-sizing: border-box;
   background: #fff;
-  min-height: calc(100vh - 48px);
+  min-height: 100vh;
 }
 .top-line {
   display: flex;
