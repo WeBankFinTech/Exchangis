@@ -7,12 +7,15 @@ import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
+
 
 /**
- * Convert the metrics in sqoop engine
+ * Convert the metrics in datax engine
  */
-public class SqoopMetricConverter extends AbstractMetricConverter implements AbstractMetricConverter.MetricsParser {
+public class DataxMetricConverter extends AbstractMetricConverter implements AbstractMetricConverter.MetricsParser{
 
     @Override
     public String resourceUsedKey() {
@@ -26,7 +29,7 @@ public class SqoopMetricConverter extends AbstractMetricConverter implements Abs
 
     @Override
     public String indicatorKey() {
-        return JsonEntity.encodePath("org.apache.hadoop.mapreduce.TaskCounter");
+        return "";
     }
 
     @Override
@@ -57,10 +60,9 @@ public class SqoopMetricConverter extends AbstractMetricConverter implements Abs
     @Override
     public ExchangisMetricsVo.Traffic parseTraffic(String key, JsonEntity rawValue) {
         ExchangisMetricsVo.Traffic traffic = new ExchangisMetricsVo.Traffic();
-        Double records = rawValue.getDouble(JsonEntity.encodePath("org.apache.hadoop.mapreduce.TaskCounter") + ".MAP_OUTPUT_RECORDS");
-        Double runTime = rawValue.getDouble("MetricsRunTime");
-        if (Objects.nonNull(records) && Objects.nonNull(runTime)){
-            traffic.setFlow(new BigDecimal(records / runTime * 1000).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        Double speed = rawValue.getDouble("recordSpeed");
+        if (Objects.nonNull(speed)){
+            traffic.setFlow(new BigDecimal(speed).setScale(2, RoundingMode.HALF_UP).doubleValue());
         }
         return traffic;
     }
@@ -68,10 +70,8 @@ public class SqoopMetricConverter extends AbstractMetricConverter implements Abs
     @Override
     public ExchangisMetricsVo.Indicator parseIndicator(String key, JsonEntity rawValue) {
         ExchangisMetricsVo.Indicator indicator = new ExchangisMetricsVo.Indicator();
-        Long records = rawValue.getLong("MAP_OUTPUT_RECORDS");
-        if (Objects.nonNull(records)){
-            indicator.setExchangedRecords(records);
-        }
+        Optional.ofNullable(rawValue.getLong("writeSucceedRecords")).ifPresent(indicator::setExchangedRecords);
+        Optional.ofNullable(rawValue.getLong("totalErrorRecords")).ifPresent(indicator::setErrorRecords);
         return indicator;
     }
 

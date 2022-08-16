@@ -10,17 +10,9 @@ import java.util.Objects;
 public class SqoopExchangisEngineJob extends ExchangisEngineJob {
     //Empty
 
-    public SqoopExchangisEngineJob(){
-
-    }
-
     public SqoopExchangisEngineJob(ExchangisEngineJob engineJob){
-        if (Objects.nonNull(engineJob)) {
-            setName(engineJob.getName());
-            setEngineType(engineJob.getEngineType());
-            getJobContent().putAll(engineJob.getJobContent());
-            getRuntimeParams().putAll(engineJob.getRuntimeParams());
-            setMemoryUsed(engineJob.getMemoryUsed());
-        }
+        super(engineJob);
     }
+
+
 }
