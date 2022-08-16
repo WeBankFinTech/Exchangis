@@ -34,7 +34,7 @@ import com.alibaba.datax.core.util.container.ClassLoaderSwapper;
 import com.alibaba.datax.core.util.container.CoreConstant;
 import com.alibaba.datax.core.util.container.LoadUtil;
 import com.alibaba.datax.dataxservice.face.domain.enums.ExecuteMode;
-import com.alibaba.fastjson.JSON;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.lang.StringUtils;
@@ -465,14 +465,14 @@ public class JobContainer extends AbstractContainer {
         //change the channel speed when channel speed * taskNumber
         List<Configuration> transformerList = this.configuration.getListConfiguration(CoreConstant.DATAX_JOB_CONTENT_TRANSFORMER);
 
-        LOG.debug("transformer configuration: " + JSON.toJSONString(transformerList));
+        LOG.debug("transformer configuration: " + Json.toJson(transformerList, null));
         //input:  reader parameter list and writer task list(contain properties: parameter, name and processor)
         //output: "content" array
         List<Configuration> contentConfig = mergeReaderAndWriterTaskConfigs(
                 readerTaskConfigs, writerTaskConfigs, transformerList);
 
 
-        LOG.debug("contentConfig configuration: " + JSON.toJSONString(contentConfig));
+        LOG.debug("contentConfig configuration: " + Json.toJson(contentConfig, null));
 
         this.configuration.set(CoreConstant.DATAX_JOB_CONTENT, contentConfig);
 
@@ -733,7 +733,7 @@ public class JobContainer extends AbstractContainer {
             report.put("transformerFailedRecords",communication.getLongCounter(CommunicationTool.TRANSFORMER_FAILED_RECORDS));
             report.put("transformerFilterRecords",communication.getLongCounter(CommunicationTool.TRANSFORMER_FILTER_RECORDS));
             report.put("transformerTotalRecords",communication.getLongCounter(CommunicationTool.TRANSFORMER_SUCCEED_RECORDS));
-            StringEntity entity = new StringEntity(JSON.toJSONString(report));
+            StringEntity entity = new StringEntity(Json.toJson(report, null));
             entity.setContentEncoding("UTF-8");
             entity.setContentType("application/json");
             HttpPost post = HttpClientUtil.getPostRequest(configuration.getString(CoreConstant.DATAX_CORE_DATAXSERVER_PROTOCOL)
@@ -1213,7 +1213,7 @@ public class JobContainer extends AbstractContainer {
                 }
             });
         }
-        LOG.info("Loading processors finished, " + JSON.toJSONString(processors));
+        LOG.info("Loading processors finished, " + Json.toJson(processors, null));
         return processors;
     }
 

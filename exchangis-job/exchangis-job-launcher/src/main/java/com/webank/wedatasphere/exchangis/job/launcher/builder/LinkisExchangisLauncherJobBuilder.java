@@ -58,7 +58,7 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
         if (!resources.isEmpty()){
             try {
                 LOG.info("Use the engine resources: {} for job/task: [{}]", Json.toJson(resources, null), inputJob.getName());
-                startUpParams.put(PatternInjectUtils.inject(LAUNCHER_LINKIS_RESOURCES, new String[]{engine}), resources);
+                startUpParams.put(PatternInjectUtils.inject(LAUNCHER_LINKIS_RESOURCES, new String[]{engine}), Json.toJson(resources, null));
             } catch (JsonErrorException e) {
                 throw new ExchangisJobException(TASK_EXECUTE_ERROR.getCode(), "Fail to use engine resources", e);
             }
@@ -79,7 +79,7 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
      * @return params
      */
     private Map<String, Object> appendPrefixToParams(String prefix, Map<String, Object> customParams){
-        return customParams.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
-                entry -> prefix + entry.getValue()));
+        return customParams.entrySet().stream().collect(Collectors.toMap(entry -> prefix + entry.getKey(),
+                Map.Entry::getValue));
     }
 }

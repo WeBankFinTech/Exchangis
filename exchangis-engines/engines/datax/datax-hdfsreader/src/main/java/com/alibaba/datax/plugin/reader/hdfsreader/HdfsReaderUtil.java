@@ -13,10 +13,9 @@ import com.alibaba.datax.plugin.unstructuredstorage.reader.ColumnEntry;
 import com.alibaba.datax.plugin.unstructuredstorage.reader.UnstructuredStorageReaderErrorCode;
 import com.alibaba.datax.plugin.unstructuredstorage.reader.UnstructuredStorageReaderUtil;
 import com.alibaba.datax.plugin.utils.HdfsUserGroupInfoLock;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.webank.wedatasphere.exchangis.datax.common.CryptoUtils;
 import com.webank.wedatasphere.exchangis.datax.common.ldap.LdapConnector;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import com.webank.wedatasphere.exchangis.datax.util.KerberosUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.fs.*;
@@ -94,11 +93,12 @@ public class HdfsReaderUtil {
         hadoopConf = new org.apache.hadoop.conf.Configuration();
         //http://blog.csdn.net/yangjl38/article/details/7583374
         Configuration hadoopSiteParams = readerConfig.getConfiguration(Key.HADOOP_CONFIG);
-        JSONObject hadoopSiteParamsAsJsonObject = JSON.parseObject(readerConfig.getString(Key.HADOOP_CONFIG));
+        Map<String, Object> hadoopSiteParamsAsJsonObject = Json.fromJson(readerConfig.getString(Key.HADOOP_CONFIG), Map.class);
         if (null != hadoopSiteParams) {
             Set<String> paramKeys = hadoopSiteParams.getKeys();
             for (String each : paramKeys) {
-                hadoopConf.set(each, hadoopSiteParamsAsJsonObject.getString(each));
+                assert hadoopSiteParamsAsJsonObject != null;
+                hadoopConf.set(each, String.valueOf(hadoopSiteParamsAsJsonObject.getOrDefault(each, "")));
             }
         }
         hadoopConf.set(HDFS_DEFAULT_FS_KEY, readerConfig.getString(Key.DEFAULT_FS));
@@ -152,7 +152,7 @@ public class HdfsReaderUtil {
             throw DataXException.asDataXException(HdfsReaderErrorCode.CONNECT_HDFS_IO_ERROR, message);
         }
 
-        LOG.info(String.format("hadoopConfig details:%s", JSON.toJSONString(this.hadoopConf)));
+        LOG.trace(String.format("hadoopConfig details:%s", Json.toJson(this.hadoopConf, null)));
     }
 
     /**
@@ -544,7 +544,7 @@ public class HdfsReaderUtil {
                 throw DataXException.asDataXException(HdfsReaderErrorCode.READ_FILE_ERROR, message);
             }
         } else {
-            String message = String.format("请确认您所读取的列配置正确！columnIndexMax 小于0,column:%s", JSON.toJSONString(column));
+            String message = String.format("请确认您所读取的列配置正确！columnIndexMax 小于0,column:%s", Json.toJson(column, null));
             throw DataXException.asDataXException(HdfsReaderErrorCode.BAD_CONFIG_VALUE, message);
         }
     }
@@ -709,7 +709,7 @@ public class HdfsReaderUtil {
             Integer columnIndex = columnConfig.getIndex();
             if (columnIndex != null && columnIndex < 0) {
                 String message = String.format("您column中配置的index不能小于0，请修改为正确的index,column配置:%s",
-                        JSON.toJSONString(columnConfigs));
+                        Json.toJson(columnConfigs, null));
                 LOG.error(message);
                 throw DataXException.asDataXException(HdfsReaderErrorCode.CONFIG_INVALID_EXCEPTION, message);
             } else if (columnIndex != null && columnIndex > maxIndex) {

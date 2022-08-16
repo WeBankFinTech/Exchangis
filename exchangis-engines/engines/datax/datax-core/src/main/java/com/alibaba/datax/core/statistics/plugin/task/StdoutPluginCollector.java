@@ -6,7 +6,7 @@ import com.alibaba.datax.common.util.Configuration;
 import com.alibaba.datax.core.statistics.communication.Communication;
 import com.alibaba.datax.core.statistics.plugin.task.util.DirtyRecord;
 import com.alibaba.datax.core.util.container.CoreConstant;
-import com.alibaba.fastjson.JSON;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class StdoutPluginCollector extends AbstractTaskPluginCollector {
                     .getColumns());
         }
 
-        return JSON.toJSONString(msgGroup);
+        return Json.toJson(msgGroup, null);
     }
 
     @Override
