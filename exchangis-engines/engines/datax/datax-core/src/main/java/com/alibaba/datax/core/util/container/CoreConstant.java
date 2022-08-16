@@ -80,11 +80,14 @@ public class CoreConstant {
 
     public static final String DATAX_CORE_STATISTICS_COLLECTOR_PLUGIN_MAXDIRTYNUM = "core.statistics.collector.plugin.maxDirtyNumber";
 
+    public static final String DATAX_CORE_STATISTICS_REPORTER_PLUGIN_CLASS = "core.statistics.reporter.plugin.class";
+
     public static final String DATAX_CORE_PROCESSOR_LOADER_PLUGIN_CLASS = "core.processor.loader.plugin.class";
 
     public static final String DATAX_CORE_PROCESSOR_LODAER_PLUGIN_SOURCEPATH = "core.processor.loader.plugin.sourcePath";
 
     public static final String DATAX_CORE_PROCESSOR_LOADER_PLUGIN_PACKAGE = "core.processor.loader.plugin.package";
+
 
     public static final String DATAX_JOB_CONTENT_READER_NAME = "job.content[0].reader.name";
 
