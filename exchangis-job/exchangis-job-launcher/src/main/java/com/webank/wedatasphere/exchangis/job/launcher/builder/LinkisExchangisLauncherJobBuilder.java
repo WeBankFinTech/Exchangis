@@ -8,14 +8,13 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
 import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
+import org.apache.linkis.datasourcemanager.common.util.PatternInjectUtils;
 import org.apache.linkis.datasourcemanager.common.util.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.TASK_EXECUTE_ERROR;
 import static com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration.*;
@@ -32,6 +31,7 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
 
     @Override
     public LaunchableExchangisTask buildJob(ExchangisEngineJob inputJob, LaunchableExchangisTask expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
+        String engine = inputJob.getEngineType().toLowerCase(Locale.ROOT);
         LaunchableExchangisTask launchableTask = new LaunchableExchangisTask();
         launchableTask.setName(inputJob.getName());
         launchableTask.setJobId(inputJob.getId());
@@ -39,18 +39,26 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
 //        launcherJob.setExecuteNode(exchangisJob.getExecuteNode());
         launchableTask.setLinkisContentMap(inputJob.getJobContent());
         Map<String, Object> linkisParams = new HashMap<>();
-        //        linkisParams.put(LAUNCHER_LINKIS_RUNTIME_PARAM_NAME, inputJob.getRuntimeParams());
-        // Add the runtime params to startup params for once job
-        Map<String, Object> startUpParams = new HashMap<>(inputJob.getRuntimeParams());
+        Map<String, Object> startUpParams = new HashMap<>();
         linkisParams.put(LAUNCHER_LINKIS_STARTUP_PARAM_NAME, startUpParams);
-        long memoryUsed = Objects.nonNull(inputJob.getMemoryUsed())? MemUtils.convertToGB(inputJob.getMemoryUsed(),
-                inputJob.getMemoryUnit()) : 0;
-        startUpParams.put(LAUNCHER_LINKIS_REQUEST_MEMORY, String.valueOf(memoryUsed <= 0 ? 1 : memoryUsed));
+        try {
+            String customParamPrefix = PatternInjectUtils.inject(LAUNCHER_LINKIS_CUSTOM_PARAM_PREFIX, new String[]{engine});
+            // Add the runtime params to startup params for once job
+            startUpParams.putAll(appendPrefixToParams(customParamPrefix, inputJob.getRuntimeParams()));
+        } catch (JsonErrorException e) {
+            throw new ExchangisJobException(TASK_EXECUTE_ERROR.getCode(), "Fail to convert custom params for launching", e);
+        }
+        long memoryUsed = Optional.ofNullable(inputJob.getMemoryUsed()).orElse(0L);
+        if (!inputJob.isMemoryUnitLock() && memoryUsed > 0){
+            memoryUsed = MemUtils.convertToGB(inputJob.getMemoryUsed(), inputJob.getMemoryUnit());
+            inputJob.setMemoryUnit("G");
+        }
+        startUpParams.put(LAUNCHER_LINKIS_REQUEST_MEMORY, (memoryUsed <= 0 ? 1 : memoryUsed) + inputJob.getMemoryUnit());
         List<EngineResource> resources = inputJob.getResources();
         if (!resources.isEmpty()){
             try {
                 LOG.info("Use the engine resources: {} for job/task: [{}]", Json.toJson(resources, null), inputJob.getName());
-                startUpParams.put(LAUNCHER_LINKIS_RESOURCES, resources);
+                startUpParams.put(PatternInjectUtils.inject(LAUNCHER_LINKIS_RESOURCES, new String[]{engine}), Json.toJson(resources, null));
             } catch (JsonErrorException e) {
                 throw new ExchangisJobException(TASK_EXECUTE_ERROR.getCode(), "Fail to use engine resources", e);
             }
@@ -62,5 +70,16 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
         // Use launcher name placeholder
         launchableTask.setLinkisJobName(LAUNCHER_NAME);
         return launchableTask;
+    }
+
+    /**
+     * Append prefix to params
+     * @param prefix prefix
+     * @param customParams custom params
+     * @return params
+     */
+    private Map<String, Object> appendPrefixToParams(String prefix, Map<String, Object> customParams){
+        return customParams.entrySet().stream().collect(Collectors.toMap(entry -> prefix + entry.getKey(),
+                Map.Entry::getValue));
     }
 }
