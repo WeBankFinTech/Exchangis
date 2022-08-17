@@ -45,10 +45,10 @@
               >
                 <a-form-item
                   :label="item.label"
-                  :name="item.label"
+                  :name="value"
                   :model="formState"
                   :help="helpMsg[item.key]"
-                  :validate-status="helpStatus[item.key]"
+                  :validateStatus="helpStatus[item.key]"
                   :required="item.required"
                   class="process-control-label"
                 >

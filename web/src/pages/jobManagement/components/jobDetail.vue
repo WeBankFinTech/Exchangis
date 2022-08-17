@@ -212,7 +212,8 @@
                 </a-table>
             </div>
         </div>
-
+        
+        <div v-show="visibleLog" class="fill-jd-bottom"></div>
         <!-- 执行日志  jd-bottom -->
         <div v-show="visibleLog" class="jd-bottom jd-bottom-log">
             <div class="jd-bottom-top jd-bottom-log-top">
@@ -849,17 +850,23 @@ export default {
             const { proxyUser, content } = data;
             const jobs = content.subJobs.slice();
             if (!proxyUser) {
-                res.push(<li style="list-style: none;">配置任务中执行用户不可为空</li>);
+                res.push(<li style="list-style: none;"><span style="margin-left: -30px;">配置任务中执行用户不可为空</span></li>);
             }
             jobs.forEach((job) => {
                 const { params, settings } = job;
                 let isInsert = false
-                res.push(<li style="list-style: none;"><span style="margin-left: -30px;">{job.subJobName}:</span></li>)
+                res.push(<li style="list-style: none;"><span style="margin-left: -30px;">{job.subJobName}:</span></li>);
                 for (const key in params) {
                     params[key].forEach((i) => {
                         if (!i.value && i.required) {
                             isInsert = true;
-                            res.push(<li style="list-style: none;">{i.label}不可为空</li>);
+                            res.push(<li>{i.label}不可为空</li>);
+                        } else if (i.validateType === "REGEX") {
+                            const num_reg = new RegExp(`${i.validateRange}`);
+                            if (!num_reg.test(i.value)) {
+                                isInsert = true;
+                                res.push(<li>{i.label}格式不正确</li>);
+                            }
                         }
                     });
                 }
@@ -867,7 +874,13 @@ export default {
                 settings.forEach((i) => {
                     if (!i.value && i.required) {
                         isInsert = true;
-                        res.push(<li style="list-style: none;">{i.label}不可为空</li>);
+                        res.push(<li>{i.label}不可为空</li>);
+                    } else if (i.validateType === "REGEX") {
+                        const num_reg = new RegExp(`${i.validateRange}`);
+                        if (!num_reg.test(i.value)) {
+                            isInsert = true;
+                            res.push(<li>{i.label}格式不正确</li>);
+                        }
                     }
                 });
 
@@ -1336,6 +1349,11 @@ export default {
       background: white;
       height: calc(100vh - 82px);
     }
+  }
+
+  .fill-jd-bottom {
+    width: calc(100% - 200px);
+    height: 35vh;
   }
 
   .jd-bottom {
