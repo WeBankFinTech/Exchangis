@@ -199,12 +199,12 @@ export default defineComponent({
     const transF = (arr) => {
       if (!arr) return [];
       const domains = [];
-      let temp = arr.length > 1 ? [arr.join(' ')] : arr // 兼容老数据
+      let temp = arr.length > 0 ? [arr.join('$_$')] : arr
       temp.forEach((item, idx) => {
         let domain = Object.create(null);
         domain.key = idx + '';
-        domain.optionVal = item.split(' ')[0];
-        domain.value = item.split(' ').slice(-1).pop();
+        domain.optionVal = item.split('$_$')[0];
+        domain.value = item.split('$_$').slice(-1).pop();
         domains.push(domain);
       });
       return domains;

@@ -20,6 +20,7 @@
                     :pagination="pagination"
                     class="data-source-manage-table"
                     @change="onChange"
+                    :scroll="{ x: 2000, y: 600 }"
                 >
                     <template #tags="{ text }">
                         <a-tag color="#2e92f7">{{text.labels}}</a-tag>
@@ -256,7 +257,8 @@ export default {
                 current: 1,
                 pageSize: 10,
                 showQuickJumper: true,
-                showSizeChanger: true
+                showSizeChanger: true,
+                showTotal: total => `总计 ${total} 条`
             },
             searchData: {},
             // 加密弹窗
@@ -398,9 +400,6 @@ export default {
   width: calc(100% + 48px);
   background-color: #dee4ec;
   margin-left: -24px;
-}
-:deep(.ant-table-pagination.ant-pagination) {
-  float: left;
 }
 .data-source-manage-table {
   min-width: 1000px;
