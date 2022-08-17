@@ -113,8 +113,10 @@ export default defineComponent({
     watch(newProps, (val, oldVal) => {
       state.defaultSelect = val;
     });
-    async function init() {
-      SQLlist = (await getDataSourceTypes()).list;
+    // 获取数据类型接口
+    async function init(param) {
+      sqlList.length = 0
+      SQLlist = (await getDataSourceTypes(param)).list;
       // 数据源
       SQLlist.forEach((sql) => {
         sqlList.push({
@@ -125,7 +127,6 @@ export default defineComponent({
       });
       if (state.sqlSource) await createTree(state.sqlSource);
     }
-    onMounted(init());
     // 根据数据类型ID的不同返回不同的数据源列表
     const queryDataSource = async (typeId, sql) => {
       // 这里前端目前不做分页 固定了 page 和 pageSize
@@ -284,7 +285,7 @@ export default defineComponent({
       if (props.direct === 'sink') {
         param.sourceType = props.sourceType;
       }
-      await getDataSourceTypes(param);
+      await init(param);
       resetData(); // 先重置数据
       let selects =
         state.defaultSelect === '请点击后选择' ? [] : state.defaultSelect;
