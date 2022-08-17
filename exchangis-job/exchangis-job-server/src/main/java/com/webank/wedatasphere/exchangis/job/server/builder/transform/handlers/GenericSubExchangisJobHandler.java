@@ -22,9 +22,9 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
 
     public static final String ID_SPLIT_SYMBOL = "\\.";
 
-    private static final JobParamDefine<String> SOURCE_ID = JobParams.define("source_id", String.class);
+    private static final JobParamDefine<String> SOURCE_ID = JobParams.define("source_id");
 
-    private static final JobParamDefine<String> SINK_ID = JobParams.define("sink_id", String.class);
+    private static final JobParamDefine<String> SINK_ID = JobParams.define("sink_id");
 
     @Override
     public String dataSourceType() {
@@ -37,6 +37,7 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
         JobParamSet idParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_DATA_SOURCE);
         JobParamSet sourceParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sourceParamSet)){
+            info("Fetch data source parameters in [{}]", subExchangisJob.getSourceType());
             appendDataSourceParams(idParamSet.load(SOURCE_ID),  sourceParamSet, originJob.getCreateUser());
         }
 
@@ -48,6 +49,7 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
         JobParamSet idParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_DATA_SOURCE);
         JobParamSet sinkParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK);
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sinkParamSet)){
+            info("Fetch data source parameters in [{}]", subExchangisJob.getSinkType());
             appendDataSourceParams(idParamSet.load(SINK_ID),  sinkParamSet, originJob.getCreateUser());
         }
     }
@@ -72,6 +74,12 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
             }
         }
     }
+
+    @Override
+    public int order() {
+        return Integer.MIN_VALUE;
+    }
+
     public static class DataSourceService{
 
         /**

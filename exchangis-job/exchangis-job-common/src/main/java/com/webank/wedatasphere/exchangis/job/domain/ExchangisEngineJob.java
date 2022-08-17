@@ -4,17 +4,26 @@ package com.webank.wedatasphere.exchangis.job.domain;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
 import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * EngineJob
  */
 public class ExchangisEngineJob extends GenericExchangisJob {
 
+    public ExchangisEngineJob(){
 
+    }
+
+    public ExchangisEngineJob(ExchangisEngineJob engineJob){
+        if (Objects.nonNull(engineJob)) {
+            setName(engineJob.getName());
+            setEngineType(engineJob.getEngineType());
+            getJobContent().putAll(engineJob.getJobContent());
+            getRuntimeParams().putAll(engineJob.getRuntimeParams());
+            setMemoryUsed(engineJob.getMemoryUsed());
+        }
+    }
     /**
      * Job content
      */
@@ -32,6 +41,10 @@ public class ExchangisEngineJob extends GenericExchangisJob {
 
     private String memoryUnit = MemUtils.StoreUnit.MB.name();
 
+    /**
+     * If lock the unit of memory
+     */
+    private boolean memoryUnitLock = false;
     /**
      * Cpu used in engine job
      */
@@ -89,5 +102,13 @@ public class ExchangisEngineJob extends GenericExchangisJob {
 
     public void setResources(List<EngineResource> resources) {
         this.resources = resources;
+    }
+
+    public boolean isMemoryUnitLock() {
+        return memoryUnitLock;
+    }
+
+    public void setMemoryUnitLock(boolean memoryUnitLock) {
+        this.memoryUnitLock = memoryUnitLock;
     }
 }

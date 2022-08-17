@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.metrics;
 
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
+import com.webank.wedatasphere.exchangis.job.server.metrics.converter.DataxMetricConverter;
 import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricsConverter;
 import com.webank.wedatasphere.exchangis.job.server.metrics.converter.RegisterMetricConverterFactory;
 import com.webank.wedatasphere.exchangis.job.server.metrics.converter.SqoopMetricConverter;
@@ -22,7 +23,7 @@ public class ExchangisMetricConverterFactory implements RegisterMetricConverterF
     @PostConstruct
     public void init(){
         register(EngineTypeEnum.SQOOP.name(), new SqoopMetricConverter());
-//        register(EngineTypeEnum.DATAX.name(), null);
+        register(EngineTypeEnum.DATAX.name(), new DataxMetricConverter());
     }
     @Override
     public void register(String engineType, MetricsConverter<ExchangisMetricsVo> converter) {

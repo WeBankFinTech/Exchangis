@@ -105,7 +105,7 @@ CREATE TABLE `exchangis_launchable_task` (
   `execute_user` varchar(50) DEFAULT '',
   `linkis_job_name` varchar(100) NOT NULL,
   `linkis_job_content` text NOT NULL,
-  `linkis_params` varchar(255) DEFAULT NULL,
+  `linkis_params` text DEFAULT NULL,
   `linkis_source` varchar(64) DEFAULT NULL,
   `labels` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`)
