@@ -113,16 +113,13 @@ public class ExchangisJobDssAppConnRestfulApi {
         String userName = SecurityFilter.getLoginUsername(request);
         Message response = Message.ok("dss job deleted");
         try {
-            LOG.info("delete job bean: {}, jobid: {}", jobInfoService.getJob(id, true), jobInfoService.getJob(id, true).getId());
+            //LOG.info("delete job bean: {}, jobid: {}", jobInfoService.getJob(id, true), jobInfoService.getJob(id, true).getId());
             if (Objects.isNull(jobInfoService.getJob(id, true)) || jobInfoService.getJob(id, true).getId() == null){
                 return response;
             }
             else if (!hasAuthority(userName, jobInfoService.getJob(id, true))) {
                 return Message.error("You have no permission to update (没有删除权限)");
             }
-            /*else if (!AuthorityUtils.hasOwnAuthority(jobInfoService.getJob(id, true).getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(jobInfoService.getJob(id, true).getProjectId(), userName)) {
-                return Message.error("You have no permission to delete (没有编辑权限，无法删除)");
-            }*/
             jobInfoService.deleteJob(id);
         } catch (Exception e){
             String message = "Fail to delete dss job [ id: " + id + "] (删除DSS任务失败)";
