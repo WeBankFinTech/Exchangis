@@ -29,6 +29,7 @@ import org.apache.linkis.scheduler.queue.ConsumerManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +39,7 @@ import java.util.Optional;
  * Auto configure the beans in job execution
  */
 @Configuration
+@Import(SpringContextHolder.class)
 public class ExchangisJobExecuteAutoConfiguration {
 
     @Bean
