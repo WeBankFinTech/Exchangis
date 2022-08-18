@@ -24,6 +24,11 @@ public class ExchangisHiveDataSource extends ExchangisBatchDataSource {
     }
 
     @Override
+    public String structClassifier() {
+        return "半结构化";
+    }
+
+    @Override
     public String description() {
         return "Hive Description";
     }
