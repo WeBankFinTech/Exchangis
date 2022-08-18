@@ -720,33 +720,34 @@ public class JobContainer extends AbstractContainer {
         }
 
         //report to server
-        try {
-            HttpClientUtil httpClientUtil = HttpClientUtil.getHttpClientUtil();
-            Map<String,Object> report =new HashMap<>(10);
-            report.put("id", configuration.getLong(CoreConstant.DATAX_CORE_CONTAINER_JOB_ID));
-            report.put("byteSpeedPerSecond",byteSpeedPerSecond);
-            report.put("recordSpeedPerSecond",recordSpeedPerSecond);
-            report.put("totalCosts",totalCosts);
-            report.put("totalErrorRecords",CommunicationTool.getTotalErrorRecords(communication));
-            report.put("totalReadRecords",CommunicationTool.getTotalReadRecords(communication));
-            report.put("totalReadBytes", CommunicationTool.getTotalReadBytes(communication));
-            report.put("transformerFailedRecords",communication.getLongCounter(CommunicationTool.TRANSFORMER_FAILED_RECORDS));
-            report.put("transformerFilterRecords",communication.getLongCounter(CommunicationTool.TRANSFORMER_FILTER_RECORDS));
-            report.put("transformerTotalRecords",communication.getLongCounter(CommunicationTool.TRANSFORMER_SUCCEED_RECORDS));
-            StringEntity entity = new StringEntity(Json.toJson(report, null));
-            entity.setContentEncoding("UTF-8");
-            entity.setContentType("application/json");
-            HttpPost post = HttpClientUtil.getPostRequest(configuration.getString(CoreConstant.DATAX_CORE_DATAXSERVER_PROTOCOL)
-                    + "://" + configuration.getString(CoreConstant.DATAX_CORE_DATAXSERVER_ADDRESS)
-                    + configuration.getString(CoreConstant.DATAX_CORE_DATAXSERVER_ENDPOINT_REPORT),
-                    entity,
-                    "Content-Type", "application/json;charset=UTF-8");
-            String response = httpClientUtil.executeAndGet(post, String.class);
-            LOG.info("Send report respone,{}",response);
-        }catch (Exception e){
-            LOG.error("Post report error",e);
+        if (StringUtils.isNotBlank(configuration.getString(CoreConstant.DATAX_CORE_DATAXSERVER_ENDPOINT_REPORT))) {
+            try {
+                HttpClientUtil httpClientUtil = HttpClientUtil.getHttpClientUtil();
+                Map<String, Object> report = new HashMap<>(10);
+                report.put("id", configuration.getLong(CoreConstant.DATAX_CORE_CONTAINER_JOB_ID));
+                report.put("byteSpeedPerSecond", byteSpeedPerSecond);
+                report.put("recordSpeedPerSecond", recordSpeedPerSecond);
+                report.put("totalCosts", totalCosts);
+                report.put("totalErrorRecords", CommunicationTool.getTotalErrorRecords(communication));
+                report.put("totalReadRecords", CommunicationTool.getTotalReadRecords(communication));
+                report.put("totalReadBytes", CommunicationTool.getTotalReadBytes(communication));
+                report.put("transformerFailedRecords", communication.getLongCounter(CommunicationTool.TRANSFORMER_FAILED_RECORDS));
+                report.put("transformerFilterRecords", communication.getLongCounter(CommunicationTool.TRANSFORMER_FILTER_RECORDS));
+                report.put("transformerTotalRecords", communication.getLongCounter(CommunicationTool.TRANSFORMER_SUCCEED_RECORDS));
+                StringEntity entity = new StringEntity(Json.toJson(report, null));
+                entity.setContentEncoding("UTF-8");
+                entity.setContentType("application/json");
+                HttpPost post = HttpClientUtil.getPostRequest(configuration.getString(CoreConstant.DATAX_CORE_DATAXSERVER_PROTOCOL)
+                                + "://" + configuration.getString(CoreConstant.DATAX_CORE_DATAXSERVER_ADDRESS)
+                                + configuration.getString(CoreConstant.DATAX_CORE_DATAXSERVER_ENDPOINT_REPORT),
+                        entity,
+                        "Content-Type", "application/json;charset=UTF-8");
+                String response = httpClientUtil.executeAndGet(post, String.class);
+                LOG.info("Send report respone,{}", response);
+            } catch (Exception e) {
+                LOG.error("Post report error", e);
+            }
         }
-
     }
 
     /**
