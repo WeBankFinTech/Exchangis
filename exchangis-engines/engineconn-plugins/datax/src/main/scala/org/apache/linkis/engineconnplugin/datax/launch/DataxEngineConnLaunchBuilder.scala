@@ -23,16 +23,29 @@ import org.apache.linkis.engineconnplugin.datax.config.DataxConfiguration
 import org.apache.linkis.engineconnplugin.datax.plugin.{PluginBmlResource, PluginResource}
 import org.apache.linkis.manager.common.protocol.bml.BmlResource
 import org.apache.linkis.manager.engineplugin.common.launch.entity.EngineConnBuildRequest
+import org.apache.linkis.manager.engineplugin.common.launch.process.Environment.{PWD, variable}
 import org.apache.linkis.manager.engineplugin.common.launch.process.JavaProcessEngineConnLaunchBuilder
 
 import java.util
 import java.util.Base64
+import scala.collection.mutable.ArrayBuffer
 
 /**
  * Datax engine conn launch builder
  * (use public module lib)
  */
 class DataxEngineConnLaunchBuilder extends JavaProcessEngineConnLaunchBuilder {
+
+  protected override def getCommands(implicit engineConnBuildRequest: EngineConnBuildRequest): Array[String] = {
+    // CD to the worker space directory
+    var commands = new ArrayBuffer[String]()
+    commands += "cd"
+    commands += variable(PWD)
+    commands += "&&"
+    commands = commands ++ super.getCommands
+    commands.toArray
+  }
+
   protected override def getBmlResources(implicit engineConnBuildRequest: EngineConnBuildRequest): util.List[BmlResource] = {
     val bmlResources = new util.ArrayList[BmlResource](super.getBmlResources)
     val props = engineConnBuildRequest.engineConnCreationDesc.properties
