@@ -69,6 +69,15 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
     private static final JobParamDefine<String> HIVE_TABLE = JobParams.define("hiveTable", JobParamConstraints.TABLE);
 
     /**
+     * Hive uris
+     */
+    private static final JobParamDefine<String> HIVE_URIS = JobParams.define("hiveMetastoreUris", "uris");
+
+    /**
+     * Data file name (prefix)
+     */
+    private static final JobParamDefine<String> DATA_FILE_NAME = JobParams.define("fileName", "exch_hive_");
+    /**
      * Encoding
      */
     private static final JobParamDefine<String> ENCODING  = JobParams.define("encoding", paramSet -> {
@@ -302,7 +311,7 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
     public JobParamDefine<?>[] sinkMappings() {
         return new JobParamDefine[]{HIVE_DATABASE, HIVE_TABLE, ENCODING,
                 NULL_FORMAT, PARTITION_VALUES, FIELD_DELIMITER, FILE_TYPE, DATA_PATH, HADOOP_CONF, DEFAULT_FS,
-                COMPRESS_NAME, IS_SINK_FILETYPE_SUPPORT};
+                COMPRESS_NAME, IS_SINK_FILETYPE_SUPPORT, HIVE_URIS, DATA_FILE_NAME};
     }
 
     @Override
