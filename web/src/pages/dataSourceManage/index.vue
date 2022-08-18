@@ -20,7 +20,7 @@
                     :pagination="pagination"
                     class="data-source-manage-table"
                     @change="onChange"
-                    :scroll="{ x: 2000, y: 600 }"
+                    :scroll="{ x: 200, y: 600 }"
                 >
                     <template #tags="{ text }">
                         <a-tag color="#2e92f7">{{text.labels}}</a-tag>
