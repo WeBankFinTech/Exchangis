@@ -32,6 +32,13 @@ public class JobParamSet {
         }
         return null;
     }
+
+    public JobParamSet addNonNull(JobParam<?> jobParam){
+        if (Objects.nonNull(jobParam.getValue())) {
+            jobParamStore.put(jobParam.getStrKey(), jobParam);
+        }
+        return this;
+    }
     /**
      * Append
      * @param key custom key

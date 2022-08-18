@@ -7,6 +7,7 @@ import com.alibaba.datax.plugin.rdbms.util.DBUtil;
 import com.alibaba.datax.plugin.rdbms.util.DataBaseType;
 import com.alibaba.datax.plugin.rdbms.util.RdbmsException;
 import com.alibaba.druid.sql.parser.ParserException;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,11 +61,11 @@ public class PreCheckTask implements Callable<Boolean> {
             for (int i = 0; i < querySqls.size(); i++) {
 
                 String splitPkSql = null;
-                String querySql = querySqls.get(i).toString();
+                String querySql = Json.toJson(querySqls.get(i), null);
 
                 String table = null;
                 if (tables != null && !tables.isEmpty()) {
-                    table = tables.get(i).toString();
+                    table = Json.toJson(tables.get(i), null);
                 }
 
             /*verify query*/
@@ -84,7 +85,7 @@ public class PreCheckTask implements Callable<Boolean> {
             /*verify splitPK*/
                 try {
                     if (splitPkSqls != null && !splitPkSqls.isEmpty()) {
-                        splitPkSql = splitPkSqls.get(i).toString();
+                        splitPkSql = Json.toJson(splitPkSqls.get(i), null);
                         DBUtil.sqlValid(splitPkSql, dataBaseType);
                         if (i == 0) {
                             SingleTableSplitUtil.precheckSplitPk(conn, splitPkSql, fetchSize, table, userName);

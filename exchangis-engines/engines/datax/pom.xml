@@ -16,7 +16,6 @@
     <properties>
         <slf4j-api-version>1.7.25</slf4j-api-version>
         <logback-classic-version>1.2.3</logback-classic-version>
-        <fastjson-version>1.2.68</fastjson-version>
         <commons-math3-version>3.1.1</commons-math3-version>
         <guava-version>16.0.1</guava-version>
         <gson-version>2.8.2</gson-version>
@@ -31,6 +30,7 @@
         <es.version>6.7.1</es.version>
         <commons-codec>1.11</commons-codec>
         <datax.engine.version>3.0.0-Plus-2</datax.engine.version>
+        <jackson.version>2.11.0</jackson.version>
     </properties>
     <modules>
         <module>datax-core</module>
@@ -58,11 +58,6 @@
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
                 <version>${commons-pool}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${fastjson-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -113,6 +108,16 @@
                 <groupId>commons-configuration</groupId>
                 <artifactId>commons-configuration</artifactId>
                 <version>${commons-configuration-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

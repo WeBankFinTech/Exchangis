@@ -4,7 +4,7 @@ import com.alibaba.datax.common.element.Column;
 import com.alibaba.datax.common.element.Record;
 import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.core.util.FrameworkErrorCode;
-import com.alibaba.fastjson.JSON;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -32,7 +32,7 @@ public class DirtyRecord implements Record {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this.columns);
+        return Json.toJson(this.columns, null);
     }
 
     @Override
