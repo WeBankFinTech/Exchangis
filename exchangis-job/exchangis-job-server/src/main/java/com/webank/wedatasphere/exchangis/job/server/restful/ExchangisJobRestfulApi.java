@@ -112,7 +112,9 @@ public class ExchangisJobRestfulApi {
                 ProxyUserSSOUtils.getProxyUserUsername(request);
         String userName = SecurityFilter.getLoginUsername(request);
         List<String> executor = new ArrayList<>();
-        executor.add("hduser05");
+        if (proxyUserUsername.isDefined()) {
+            executor.add(proxyUserUsername.get());
+        }
         executor.add("hadoop");
         executor.add(userName);
         return Message.ok().data("result", executor);
