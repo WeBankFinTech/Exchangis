@@ -28,22 +28,27 @@ public class ExchangisMongoDbDataSource extends ExchangisBatchDataSource {
 
     @Override
     public String classifier() {
-        return "分布式全文索引";
+        return "非关系型数据库";
+    }
+
+    @Override
+    public String structClassifier() {
+        return "半结构";
     }
 
     @Override
     public String description() {
-        return "ES description";
+        return "MONGODB description";
     }
 
     @Override
     public String option() {
-        return "es无结构存储";
+        return "mongodb无结构存储";
     }
 
     @Override
     public String icon() {
-        return "icon-es";
+        return "icon-mongodb";
     }
 
     @Override
