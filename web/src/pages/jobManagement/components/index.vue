@@ -844,7 +844,7 @@ export default {
                         if (!i.value && i.required) {
                             isInsert = true;
                             res.push(<li>{i.label}不可为空</li>);
-                        } else if (i.validateType === "REGEX") {
+                        } else if (i.value && i.validateType === "REGEX") {
                             const num_reg = new RegExp(`${i.validateRange}`);
                             if (!num_reg.test(i.value)) {
                                 isInsert = true;
@@ -858,7 +858,7 @@ export default {
                     if (!i.value && i.required) {
                         isInsert = true;
                         res.push(<li>{i.label}不可为空</li>);
-                    } else if (i.validateType === "REGEX") {
+                    } else if (i.value && i.validateType === "REGEX") {
                         const num_reg = new RegExp(`${i.validateRange}`);
                         if (!num_reg.test(i.value)) {
                             isInsert = true;

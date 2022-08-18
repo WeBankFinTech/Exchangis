@@ -67,7 +67,7 @@
           :data-source="tableData"
           :pagination="pagination"
           @change="onChange"
-          :scroll="{ x: 2000, y: 600 }"
+          :scroll="{ x: 200, y: 600 }"
         >
           <template #operation="{ record }">
             <a-popconfirm
