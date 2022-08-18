@@ -43,13 +43,13 @@ public class DataxMetricConverter extends AbstractMetricConverter implements Abs
         String nodeResource = rawValue.getString("NodeResourceJson");
         if (StringUtils.isNotBlank(nodeResource)){
             JsonEntity nodeResourceJson = JsonEntity.from(nodeResource);
-            String memoryUnit = nodeResourceJson.getString("driver.memory");
+            String memoryUnit = nodeResourceJson.getString("memory");
             if (StringUtils.isNotBlank(memoryUnit)){
                 String[] memory = memoryUnit.split(" ");
                 resourceUsed.setMemory(memory.length >= 2 ?
                         MemUtils.convertToMB((long) Double.parseDouble(memory[0]), memory[1]) : (long) Double.parseDouble(memory[0]));
             }
-            String cpuVCores = nodeResourceJson.getString("driver.cpu");
+            String cpuVCores = nodeResourceJson.getString("cpu");
             if (StringUtils.isNotBlank(cpuVCores)){
                 resourceUsed.setCpu(Integer.parseInt(cpuVCores));
             }

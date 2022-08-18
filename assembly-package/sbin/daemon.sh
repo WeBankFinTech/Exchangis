@@ -41,7 +41,7 @@ stop(){
 restart(){
   launcher_stop $1 $2
   if [[ $? -eq 0 ]]; then
-    sleep 2
+    sleep 3
     launcher_start $1 $2
   fi
 }

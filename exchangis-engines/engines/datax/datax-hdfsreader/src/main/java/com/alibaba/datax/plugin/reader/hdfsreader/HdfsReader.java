@@ -11,8 +11,7 @@ import com.webank.wedatasphere.exchangis.datax.core.transport.stream.StreamMeta;
 import com.alibaba.datax.core.util.FrameworkErrorCode;
 import com.alibaba.datax.plugin.unstructuredstorage.PathMeta;
 import com.alibaba.datax.plugin.unstructuredstorage.reader.UnstructuredStorageReaderUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -360,7 +359,7 @@ public class HdfsReader extends Reader {
             LOG.info("Read start");
             hdfsReaderUtil.getUgi().doAs((PrivilegedAction<Object>) () -> {
                 for (Object sourceFile : sourceFiles) {
-                    PathMeta pathMeta = JSONObject.parseObject(JSON.toJSONString(sourceFile), PathMeta.class);
+                    PathMeta pathMeta = Json.fromJson(Json.toJson(sourceFile, null), PathMeta.class);
                     String fileName = pathMeta.getAbsolute();
                     LOG.info(String.format("Reading file : [%s]", fileName));
 
@@ -421,7 +420,7 @@ public class HdfsReader extends Reader {
             LOG.info("start read source HDFS files to stream channel...");
             hdfsReaderUtil.getUgi().doAs((PrivilegedAction<Object>) () ->{
                 for(Object sourceFile : sourceFiles){
-                    PathMeta pathMeta = JSONObject.parseObject(JSON.toJSONString(sourceFile), PathMeta.class);
+                    PathMeta pathMeta = Json.fromJson(Json.toJson(sourceFile, null), PathMeta.class);
                     String absolutePath = pathMeta.getAbsolute();
                     String relativePath = pathMeta.getRelative();
                     LOG.info(String.format("reading file : [%s]", absolutePath));
