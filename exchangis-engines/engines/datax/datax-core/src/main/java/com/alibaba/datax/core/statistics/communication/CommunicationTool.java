@@ -2,7 +2,7 @@ package com.alibaba.datax.core.statistics.communication;
 
 import com.alibaba.datax.common.statistics.PerfTrace;
 import com.alibaba.datax.common.util.StrUtil;
-import com.alibaba.fastjson.JSON;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang.Validate;
 
 import java.text.DecimalFormat;
@@ -220,7 +220,7 @@ public final class CommunicationTool {
             pair = getWaitWriterTime(communication);
             state.put((String) pair.getKey(), pair.getValue());
 
-            return JSON.toJSONString(state);
+            return Json.toJson(state, null);
         }
 
         private static Pair<String, Long> getTotalBytes(final Communication communication) {

@@ -1,8 +1,11 @@
 package org.apache.linkis.engineconnplugin.datax.plugin;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Define the plugin resource
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PluginResource {
 
     /**

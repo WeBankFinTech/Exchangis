@@ -1,8 +1,11 @@
 package org.apache.linkis.engineconnplugin.datax.plugin;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * BML resources
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PluginBmlResource extends PluginResource{
 
     /**
