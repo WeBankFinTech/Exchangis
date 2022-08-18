@@ -41,13 +41,13 @@ public class ExchangisDataSourceRestfulApi {
     // list all datasource types
     @RequestMapping( value = "/type", method = RequestMethod.GET)
     public Message listDataSourceTypes(HttpServletRequest request,
-                                       @RequestParam(value = "engine_type", required = false) String engineType,
+                                       @RequestParam(value = "engineType", required = false) String engineType,
                                        @RequestParam(value = "direct", required = false) String direct,
-                                       @RequestParam(value = "source_type", required = false) String sourceType) throws Exception {
+                                       @RequestParam(value = "sourceType", required = false) String sourceType) throws Exception {
         Message message = null;
         LOG.info("engineType:{}, direct:{}, sourceType:{}", engineType, direct, sourceType);
         try{
-            message = exchangisDataSourceService.listDataSources(request);
+            message = exchangisDataSourceService.listDataSources(request, engineType, direct, sourceType);
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while list datasource type";
             LOG.error(errorMessage, e);
