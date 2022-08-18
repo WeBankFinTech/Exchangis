@@ -76,7 +76,7 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
     /**
      * Data file name (prefix)
      */
-    private static final JobParamDefine<String> DATA_FILE_NAME = JobParams.define("fileName", "exch_hive_");
+    private static final JobParamDefine<String> DATA_FILE_NAME = JobParams.define("fileName", () -> "exch_hive_");
     /**
      * Encoding
      */
