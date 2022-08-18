@@ -18,7 +18,7 @@
 package com.webank.wedatasphere.exchangis.datax.plugin.writer.elasticsearchwriter.v6;
 
 import com.alibaba.datax.common.exception.DataXException;
-import com.alibaba.fastjson.JSON;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.auth.AuthScope;
@@ -200,7 +200,7 @@ public class ElasticRestClient {
         AcknowledgedResponse acknowledgedResponse = restClient.indices().putMapping(configureTimedRequest(request), optionsBuilder.build());
         if(!acknowledgedResponse.isAcknowledged()){
             throw DataXException.asDataXException(ElasticWriterErrorCode.PUT_MAPPINGS_ERROR,
-                    "can't put mapping, type:[" + typeName +"], properties:" +JSON.toJSONString(properties));
+                    "can't put mapping, type:[" + typeName +"], properties:" + Json.toJson(properties, null));
         }
     }
 
@@ -214,7 +214,7 @@ public class ElasticRestClient {
             CreateIndexResponse response = restClient.indices().create(configureTimedRequest(request), COMMON_OPTIONS);
             if(!response.isAcknowledged()){
                 throw DataXException.asDataXException(ElasticWriterErrorCode.CREATE_INDEX_ERROR, "can't create index:[" + indexName +
-                        "], settings:" + JSON.toJSONString(settings) + ", message:[acknowledged=false]");
+                        "], settings:" + Json.toJson(settings, null) + ", message:[acknowledged=false]");
             }
         }catch(ElasticsearchException e){
             if(e.status().getStatus()

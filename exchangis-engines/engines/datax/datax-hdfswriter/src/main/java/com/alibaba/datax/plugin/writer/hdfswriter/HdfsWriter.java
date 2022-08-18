@@ -432,4 +432,8 @@ public class HdfsWriter extends Writer {
 
         }
     }
+
+    public static void main(String[] args) {
+
+    }
 }

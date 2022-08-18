@@ -34,6 +34,7 @@ import org.apache.linkis.manager.engineplugin.common.creation.{ExecutorFactory, 
 import org.apache.linkis.manager.label.entity.engine.EngineType
 import org.apache.linkis.manager.label.entity.engine.EngineType.EngineType
 
+import java.util
 import scala.collection.JavaConverters._
 
 /**
@@ -77,7 +78,7 @@ class DataxEngineConnFactory extends MultiExecutorEngineConnFactory with Logging
     CORE_ARRAY_CONFIGS.foreach(config => config.getValue(options) match {
       case array: Array[String] => configuration.set(config.key, array)
       case str: String => if (StringUtils.isNotBlank(str))
-        configuration.set(config.key, str.split(","))
+        configuration.set(config.key, util.Arrays.asList(str.split(",")))
       case _ => //Ignore the unrecognized value
     })
     Option(DataxConfiguration.JOB_EXECUTION_ID.getValue(options)) match {
@@ -133,7 +134,7 @@ object DataxEngineConnFactory{
       CORE_CONTAINER_JOB_REPORT_INTERVAL, CORE_CONTAINER_JOB_SLEEP_INTERNAL, CORE_CONTAINER_TASK_GROUP_REPORT_INTERVAL,
       CORE_CONTAINER_TASK_GROUP_SLEEP_INTERNAL, CORE_CONTAINER_TASK_GROUP_CHANNEL, CORE_CONTAINER_TRACE_ENABLE,
       CORE_STATISTICS_COLLECTOR_PLUGIN_TASK_CLASS, CORE_STATISTICS_COLLECTOR_PLUGIN_MAX_DIRTY_NUMBER,
-      CORE_PROCESSOR_LOADER_PLUGIN_CLASS, CORE_PROCESSOR_LOADER_PLUGIN_PACKAGE, CORE_PROCESSOR_LOADER_PLUGIN_SOURCE_PATH
+      CORE_PROCESSOR_LOADER_PLUGIN_CLASS, CORE_PROCESSOR_LOADER_PLUGIN_PACKAGE, CORE_PROCESSOR_LOADER_PLUGIN_SOURCE_PATH, CORE_CONTAINER_MODEL
     )
 
   val CORE_ARRAY_CONFIGS: Array[CommonVars[_]] = Array(COMMON_COLUMN_EXTRA_FORMATS)

@@ -5,6 +5,7 @@ import com.alibaba.datax.common.util.Configuration;
 import com.alibaba.datax.plugin.rdbms.reader.Constant;
 import com.alibaba.datax.plugin.rdbms.reader.Key;
 import com.alibaba.datax.plugin.rdbms.util.DataBaseType;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public final class ReaderSplitUtil {
         for (int i = 0, len = conns.size(); i < len; i++) {
             Configuration sliceConfig = originalSliceConfig.clone();
 
-            Configuration connConf = Configuration.from(conns.get(i).toString());
+            Configuration connConf = Configuration.from(Json.toJson(conns.get(i), null));
             String jdbcUrl = connConf.getString(Key.JDBC_URL);
             sliceConfig.set(Key.JDBC_URL, jdbcUrl);
 
@@ -119,7 +120,7 @@ public final class ReaderSplitUtil {
         List<Object> conns = queryConfig.getList(Constant.CONN_MARK, Object.class);
 
         for (int i = 0, len = conns.size(); i < len; i++) {
-            Configuration connConf = Configuration.from(conns.get(i).toString());
+            Configuration connConf = Configuration.from(Json.toJson(conns.get(i), null));
             List<String> querys = new ArrayList<String>();
             List<String> splitPkQuerys = new ArrayList<String>();
             String connPath = String.format("connection[%d]", i);
