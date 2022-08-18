@@ -31,6 +31,7 @@ import com.webank.wedatasphere.exchangis.engine.domain.EngineSettings;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import org.apache.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
@@ -140,25 +141,32 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         Collection<ExchangisDataSource> all = this.context.all();
         List<ExchangisDataSourceDTO> dtos = new ArrayList<>();
 
-        List<EngineSettings> settingsList = this.settingsDao.getSettings();
-        EngineSettings engineSetting = new EngineSettings();
+        List<EngineSettings> settingsList = new ArrayList<>();
 
-        for (int i = 0; i<settingsList.size(); i++) {
-            if (settingsList.get(i).getName().equals(engineType.toLowerCase())) {
-                engineSetting = settingsList.get(i);
-                break;
+        if (StringUtils.isEmpty(engineType)) {
+            settingsList = this.settingsDao.getSettings();
+        } else {
+            EngineSettings engineSetting = new EngineSettings();
+            for (int i = 0; i < settingsList.size(); i++) {
+                if (StringUtils.equals(settingsList.get(i).getName(), engineType.toLowerCase())) {
+                    engineSetting = settingsList.get(i);
+                    break;
+                }
             }
+            settingsList.add(engineSetting);
         }
 
         List<String> directType = new ArrayList<>();
-        if (Objects.isNull(sourceType)) {
-            for (int i = 0; i<engineSetting.getDirectionRules().size(); i ++) {
-                directType.add(engineSetting.getDirectionRules().get(i).getSource());
-            }
-        } else {
-            for (int i = 0; i<engineSetting.getDirectionRules().size(); i ++) {
-                if (engineSetting.getDirectionRules().get(i).getSource().equals(sourceType.toLowerCase())) {
-                    directType.add(engineSetting.getDirectionRules().get(i).getSink());
+        for (EngineSettings engineSetting: settingsList) {
+            if (StringUtils.isEmpty(sourceType)) {
+                for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
+                    directType.add(engineSetting.getDirectionRules().get(i).getSource());
+                }
+            } else {
+                for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
+                    if (StringUtils.equals(engineSetting.getDirectionRules().get(i).getSource(), sourceType.toLowerCase())) {
+                        directType.add(engineSetting.getDirectionRules().get(i).getSink());
+                    }
                 }
             }
         }
