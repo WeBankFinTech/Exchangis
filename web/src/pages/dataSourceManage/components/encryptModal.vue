@@ -10,12 +10,15 @@
       <a-form ref="formRef" :model="formState" :label-col="{ span: 6 }">
         <a-form-item label="原始字符串">
           <div class="inline-group">
-            <a-input-password v-model:value="formState.originStr" placeholder="请输入" />
+            <a-input-password v-model:value="formState.originStr" allowClear placeholder="请输入" />
             <a-button type="primary" @click="handleEncrypt">加密</a-button>
           </div>
         </a-form-item>
         <a-form-item label="加密字符串">
-          <a-input v-model:value="formState.encryStr" disabled />
+           <div class="inline-group">
+            <a-input v-model:value="formState.encryStr" disabled />
+            <a-button type="primary" @click="onCopy">复制</a-button>
+          </div>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -76,15 +79,33 @@ export default {
       }
       this.confirmLoading = false;
     },
+
+    onCopy() {
+      let oInput = document.createElement('input')
+      oInput.value = this.formState?.encryStr || '';
+      document.body.appendChild(oInput)
+      oInput.select() // 选择对象
+      document.execCommand("Copy") // 执行浏览器复制命令
+      message.success("复制成功");
+      oInput.remove()
+    }
   },
 };
 </script>
 
 <style scoped lang="less">
 .inline-group {
+  :deep(.ant-input) {
+    width: calc(100% - 80px);
+    margin-right: 16px;
+  }
   :deep(.ant-input-password) {
     width: calc(100% - 80px);
     margin-right: 16px;
+    .ant-input {
+      width: 100%;
+      margin-right: 0px;
+    }
   }
 }
 </style>
