@@ -43,7 +43,7 @@
     </div>
 
     <!-- 弹窗 -->
-    <a-modal v-model:visible="visible" title="映射方式" @ok="handleOk" okText="保存">
+    <a-modal v-model:visible="visible" title="映射方式" @ok="handleOk" okText="保存" @cancel="handleCancel">
       <div class="tf-modal">
         <!-- top -->
         <div class="tf-modal-top">
@@ -97,7 +97,7 @@
                 style="width: 130px" size="small" />
               <!-- 编辑和新增判断param3的显示 -->
               <a-input
-                v-if="dynamicValidateForm.transf.value && (placeholder3 || dynamicValidateForm.transf.param3)"
+                v-if="placeholder3"
                 v-model:value="dynamicValidateForm.transf.param3" :placeholder="placeholder3"
                 style="width: 130px" size="small" />
               <span>)</span>
@@ -159,6 +159,7 @@ export default defineComponent({
     const showModal = () => {
       if (props.transformEnable) {
         visible.value = true;
+        changeDynamicValidateValue('new-open');
       }
     };
 
@@ -172,19 +173,19 @@ export default defineComponent({
       });
 
       if (dynamicValidateForm.transf.value) {
-        if (!transf.param1 || !transf.param2) {
-          return message.error('参数为必填');
+        if (!transf.param1 && placeholder1.value) {
+          return message.error(`${placeholder1.value}为必填`);
         }
-        const params = [];
-        params.push(transf.param1);
-        params.push(transf.param2);
-        if (!transf.param3 && placeholder3.value) { // placehodler用来判断编辑时是否必须
-          return message.error('参数为必填');
-        } else {
-          params.push(transf.param3);
+        if (!transf.param2  && placeholder2.value) {
+          return message.error(`${placeholder2.value}为必填`);
         }
+        if (!transf.param3 && placeholder3.value) {
+          return message.error(`${placeholder3.value}为必填`);
+        }
+        const { param1, param2, param3 } = transf || {}
+        const params = [ param1, param2, param3 ];
         transformer.name = transf.value;
-        transformer.params = params;
+        transformer.params = params.filter(v => !!v);
       }
       visible.value = false;
       context.emit('updateTransformer', {
@@ -194,6 +195,12 @@ export default defineComponent({
         deleteEnable: props.tfData.deleteEnable,
       });
     };
+
+    // 取消
+    const handleCancel = () => {
+      dynamicValidateForm.domains = transF(transformerMap.validator)
+      dynamicValidateForm.transf = createTransformFunc(transformerMap.transformer)
+    }
 
     // 校验函数生成
     const transF = (arr) => {
@@ -213,7 +220,7 @@ export default defineComponent({
     // 转换函数生成
     const createTransformFunc = (transformer) => {
       if (!transformer) return {};
-      let value = transformer.name && transformer.name;
+      let value = (transformer.name && transformer.name) || '';
       let param1 =
         transformer.params &&
         transformer.params.length &&
@@ -270,16 +277,16 @@ export default defineComponent({
       placeholder2 = ref(''),
       placeholder3 = ref('');
 
-    // 转换函数的change事件
-    const changeDynamicValidateValue = () => {
+    // 转换函数的change事件 open是否刚打开弹出窗 要判断有没有值
+    const changeDynamicValidateValue = (open) => {
       let curVal = dynamicValidateForm.transf.value;
-      const { paramNames } = transformFuncOptions.value.find(
+      const { paramNames = [] } = transformFuncOptions.value.find(
         (v) => v.value === curVal
       );
       let paramKeys = ['param1', 'param2', 'param3'];
       let placeholderKeys = [placeholder1, placeholder2, placeholder3];
       paramKeys.forEach((v, i) => {
-        dynamicValidateForm.transf[v] = '';
+        if (open !== 'new-open') dynamicValidateForm.transf[v] = '';
         placeholderKeys[i].value = paramNames[i] || '';
       });
     };
@@ -288,6 +295,7 @@ export default defineComponent({
       visible,
       showModal,
       handleOk,
+      handleCancel,
       transformFuncOptions,
       checkOptions,
       formRef,

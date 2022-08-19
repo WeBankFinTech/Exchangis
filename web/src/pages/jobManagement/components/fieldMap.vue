@@ -467,6 +467,11 @@ export default defineComponent({
           value: v.funcName,
           ...v,
         }));
+        transformFuncOptions.value.unshift({
+          value: "",
+          label: "--",
+          paramNames: []
+        })
       });
     });
 
@@ -608,16 +613,6 @@ export default defineComponent({
 }
 .field-map-wrap-r {
   flex: 1;
-}
-.field-map-wrap-mid {
-  width: 248px;
-  display: flex;
-  justify-content: center;
-  position: relative;
-  margin-top: 86px;
-  :deep(.ant-table-thead) {
-    display: none;
-  }
 }
 .field-map-label {
   font-size: 14px;
