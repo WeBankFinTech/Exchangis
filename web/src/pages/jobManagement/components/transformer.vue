@@ -3,8 +3,11 @@
     <!-- top -->
     <div class="tf-top">
       <span v-for="domain in dynamicValidateForm.domains" :key="domain.key">
-        <span>校验：</span>
-        {{ `${domain.optionVal} ${domain.value}` }}</span>
+        <a-tooltip>
+          <template #title>校验：{{ `${domain.optionVal} ${domain.value}` }}</template>
+          校验：{{ `${domain.optionVal} ${domain.value}` }}
+        </a-tooltip>
+      </span>
     </div>
     <!-- mid -->
     <div class="tf-mid" @click="showModal"
@@ -20,26 +23,10 @@
     </div>
     <!-- bottom -->
     <div class="tf-bottom">
-      <span v-if="
-          dynamicValidateForm.transf.value &&
-          dynamicValidateForm.transf.param1 &&
-          dynamicValidateForm.transf.param2 &&
-          !dynamicValidateForm.transf.param3
-        ">
-        <span>转换：</span>
-        {{
-          `${dynamicValidateForm.transf.value}(${dynamicValidateForm.transf.param1},${dynamicValidateForm.transf.param2})`
-        }}</span>
-      <span v-if="
-          dynamicValidateForm.transf.value &&
-          dynamicValidateForm.transf.param1 &&
-          dynamicValidateForm.transf.param2 &&
-          dynamicValidateForm.transf.param3
-        ">
-        <span>转换：</span>
-        {{
-          `${dynamicValidateForm.transf.value}(${dynamicValidateForm.transf.param1},${dynamicValidateForm.transf.param2},${dynamicValidateForm.transf.param3})`
-        }}</span>
+      <a-tooltip>
+        <template #title>{{ trandformStr }}</template>
+        {{ trandformStr }}
+      </a-tooltip>
     </div>
 
     <!-- 弹窗 -->
@@ -293,6 +280,12 @@ export default defineComponent({
       });
     };
 
+    const trandformStr = computed(() => {
+      const { value, param1, param2, param3 } = dynamicValidateForm.transf || {}
+      const params = [ param1, param2, param3 ].filter(v => !!v);
+      return value && params.length ? `转换：${value}(${params.join(',')})` : ''
+    })
+
     return {
       visible,
       showModal,
@@ -308,6 +301,7 @@ export default defineComponent({
       placeholder1,
       placeholder2,
       placeholder3,
+      trandformStr
     };
   },
 });
@@ -348,22 +342,29 @@ export default defineComponent({
   text-align: center;
   line-height: 22px;
   height: 22px;
-  > span {
+  :deep(span) {
     font-size: 12px;
+    display: inline-block;
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 }
 .tf-top {
   text-align: center;
   line-height: 27px;
   height: 27px;
-  > span {
+  :deep(span) {
     font-size: 12px;
+    display: inline-block;
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
   :nth-of-type(2) {
     margin: 0;
-  }
-  :nth-of-type(1) {
-    max-width: 0;
   }
 }
 .icon-symbol {
