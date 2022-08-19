@@ -352,8 +352,9 @@ export default {
         Object.assign(curItem, {
           type: 'group',
           props: {
-            rule: [{ type: 'input', field: 'field1', col: { span: 24 } }],
+            rule: [{ type: 'input', field: 'field1', class: 'inputStyle' }],
             field: 'field1',
+            fontSize: 22,
           },
           validate: [
             {
@@ -462,13 +463,23 @@ export default {
 }
 
 .table-warp {
-  :deep(.ant-col-2) {
-    display: block;
-    flex: 0 0 60px;
-    max-width: 60px;
-    margin-bottom: 24px;
-    span {
-      margin: 0 1px;
+  :deep(.ant-form) {
+    max-height: 660px;
+    overflow-y: auto;
+    overflow-X: hidden;
+    .ant-col-2 {
+      display: block;
+      flex: 0 0 60px;
+      max-width: 60px;
+      margin-bottom: 24px;
+      span {
+        margin: 0 3px;
+      }
+    }
+    .ant-form-item {
+      .inputStyle {
+        width: 340px;
+      }
     }
   }
 }

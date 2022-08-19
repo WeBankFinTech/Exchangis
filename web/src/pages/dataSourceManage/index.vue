@@ -20,7 +20,7 @@
                     :pagination="pagination"
                     class="data-source-manage-table"
                     @change="onChange"
-                    :scroll="{ x: 200, y: 600 }"
+                    :scroll="{ x: 200, y: 650 }"
                 >
                     <template #tags="{ text }">
                         <a-tag color="#2e92f7">{{text.labels}}</a-tag>
@@ -388,6 +388,12 @@ export default {
   box-sizing: border-box;
   background: #fff;
   min-height: 100vh;
+  :deep(.ant-table-thead > tr > th) {
+    height: 60px;
+  }
+  :deep(.ant-table-tbody > tr > td) {
+    height: 60px;
+  }
 }
 .top-line {
   display: flex;
