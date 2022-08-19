@@ -141,10 +141,12 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         Collection<ExchangisDataSource> all = this.context.all();
         List<ExchangisDataSourceDTO> dtos = new ArrayList<>();
 
-        List<EngineSettings> settingsList = new ArrayList<>();
+        List<EngineSettings> settingsList = this.settingsDao.getSettings();
+        List<EngineSettings> engineSettings = new ArrayList<>();
+
 
         if (StringUtils.isEmpty(engineType)) {
-            settingsList = this.settingsDao.getSettings();
+            engineSettings = settingsList;
         } else {
             EngineSettings engineSetting = new EngineSettings();
             for (int i = 0; i < settingsList.size(); i++) {
@@ -153,11 +155,11 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                     break;
                 }
             }
-            settingsList.add(engineSetting);
+            engineSettings.add(engineSetting);
         }
 
         Set<String> directType = new HashSet<>();
-        for (EngineSettings engineSetting: settingsList) {
+        for (EngineSettings engineSetting: engineSettings) {
             if (StringUtils.isEmpty(sourceType)) {
                 for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
                     directType.add(engineSetting.getDirectionRules().get(i).getSource());
