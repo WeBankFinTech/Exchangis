@@ -156,7 +156,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             settingsList.add(engineSetting);
         }
 
-        List<String> directType = new ArrayList<>();
+        Set<String> directType = new HashSet<>();
         for (EngineSettings engineSetting: settingsList) {
             if (StringUtils.isEmpty(sourceType)) {
                 for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
@@ -192,10 +192,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         }
 
         List<DataSourceType> allDataSourceType = new ArrayList<>();
-        List<DataSourceType> DataSourceTypes = result.getAllDataSourceType();
-        for ( int i = 0; i < DataSourceTypes.size(); i++) {
-            if (directType.contains(DataSourceTypes.get(i).getName())) {
-                allDataSourceType.add(DataSourceTypes.get(i));
+        List<DataSourceType> dataSourceTypes = result.getAllDataSourceType();
+        for ( int i = 0; i < dataSourceTypes.size(); i++) {
+            if (directType.contains(dataSourceTypes.get(i).getName())) {
+                allDataSourceType.add(dataSourceTypes.get(i));
             }
         }
         if (Objects.isNull(allDataSourceType)) allDataSourceType = Collections.emptyList();
