@@ -198,8 +198,8 @@ export default defineComponent({
 
     // 取消
     const handleCancel = () => {
-      dynamicValidateForm.domains = transF(transformerMap.validator)
-      dynamicValidateForm.transf = createTransformFunc(transformerMap.transformer)
+      dynamicValidateForm.domains = transF(newProps.value.validator);
+      dynamicValidateForm.transf = createTransformFunc(newProps.value.transformer);
     }
 
     // 校验函数生成
@@ -282,11 +282,13 @@ export default defineComponent({
       let curVal = dynamicValidateForm.transf.value;
       const { paramNames = [] } = transformFuncOptions.value.find(
         (v) => v.value === curVal
-      );
+      ) || {};
       let paramKeys = ['param1', 'param2', 'param3'];
       let placeholderKeys = [placeholder1, placeholder2, placeholder3];
       paramKeys.forEach((v, i) => {
-        if (open !== 'new-open') dynamicValidateForm.transf[v] = '';
+        if (open !== 'new-open') {
+          dynamicValidateForm.transf[v] = '';
+        }
         placeholderKeys[i].value = paramNames[i] || '';
       });
     };
