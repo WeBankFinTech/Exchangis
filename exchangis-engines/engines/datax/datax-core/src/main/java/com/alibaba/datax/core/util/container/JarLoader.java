@@ -96,39 +96,39 @@ public class JarLoader extends URLClassLoader {
         return jarURLs;
     }
 
-    /**
-     * change the order to load class
-     * @param name
-     * @param resolve
-     * @return
-     * @throws ClassNotFoundException
-     */
-    @Override
-    public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        synchronized (getClassLoadingLock(name)){
-            //First, check if the class has already been loaded
-            Class<?> c = findLoadedClass(name);
-            if(c == null){
-                long t0 = System.nanoTime();
-                try {
-                    //invoke findClass in this class
-                    c = findClass(name);
-                }catch(ClassNotFoundException e){
-                    // ClassNotFoundException thrown if class not found
-                }
-                if(c == null){
-                    return super.loadClass(name, resolve);
-                }
-                //For compatibility with higher versions > java 1.8.0_141
-//                sun.misc.PerfCounter.getFindClasses().addElapsedTimeFrom(t0);
-//                sun.misc.PerfCounter.getFindClasses().increment();
-            }
-            if(resolve){
-                resolveClass(c);
-            }
-            return c;
-        }
-    }
+//    /**
+//     * change the order to load class
+//     * @param name
+//     * @param resolve
+//     * @return
+//     * @throws ClassNotFoundException
+//     */
+//    @Override
+//    public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+//        synchronized (getClassLoadingLock(name)){
+//            //First, check if the class has already been loaded
+//            Class<?> c = findLoadedClass(name);
+//            if(c == null){
+//                long t0 = System.nanoTime();
+//                try {
+//                    //invoke findClass in this class
+//                    c = findClass(name);
+//                }catch(ClassNotFoundException e){
+//                    // ClassNotFoundException thrown if class not found
+//                }
+//                if(c == null){
+//                    return super.loadClass(name, resolve);
+//                }
+//                //For compatibility with higher versions > java 1.8.0_141
+////                sun.misc.PerfCounter.getFindClasses().addElapsedTimeFrom(t0);
+////                sun.misc.PerfCounter.getFindClasses().increment();
+//            }
+//            if(resolve){
+//                resolveClass(c);
+//            }
+//            return c;
+//        }
+//    }
 
     /**
      * defined class by bytes

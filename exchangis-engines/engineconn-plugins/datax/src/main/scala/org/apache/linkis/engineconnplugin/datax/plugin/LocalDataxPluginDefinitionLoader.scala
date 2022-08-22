@@ -12,6 +12,7 @@ import org.apache.linkis.manager.engineplugin.common.launch.process.Environment
 
 import java.io.File
 import java.util
+import java.util.Base64
 /**
  * Local plugin definition loader
  */
@@ -27,17 +28,21 @@ class LocalDataxPluginDefinitionLoader extends DataxPluginDefinitionLoader with 
     val plugins = new util.ArrayList[DataxPluginDefinition]()
     val pluginDefineSet: util.Set[String] = new util.HashSet[String]()
     DataxConfiguration.PLUGIN_RESOURCES.getValue(options) match {
-      case resources: String =>
-        val mapper = JsonUtils.jackson
-        val pluginResources: Array[PluginResource] = mapper.readValue(resources,
+      case encryptRes: String =>
+        if (StringUtils.isNotBlank(encryptRes)) {
+          // First to decode the resources
+          val resources = new String(Base64.getDecoder.decode(encryptRes), "utf-8");
+          val mapper = JsonUtils.jackson
+          val pluginResources: Array[PluginResource] = mapper.readValue(resources,
             mapper.getTypeFactory.constructArrayType(classOf[PluginResource]))
-        val workDir = CommonVars(Environment.PWD.toString, "").getValue
-        if (StringUtils.isBlank(workDir)){
+          val workDir = CommonVars(Environment.PWD.toString, "").getValue
+          if (StringUtils.isBlank(workDir)) {
             throw new DataxPluginLoadException(s"Cannot get the working directory from variable: 'PWD' in datax engine conn environment", null)
+          }
+          Option(pluginResources).foreach(resources => resources.foreach(
+            resource => Option(convertPluginResourceToDefine(pluginDefineSet, resource, workDir))
+              .foreach(definition => plugins.add(definition))))
         }
-        Option(pluginResources).foreach(resources => resources.foreach(
-          resource => Option(convertPluginResourceToDefine(pluginDefineSet, resource, workDir))
-            .foreach(definition => plugins.add(definition))))
       case _ =>
     }
     plugins
@@ -55,14 +60,14 @@ class LocalDataxPluginDefinitionLoader extends DataxPluginDefinitionLoader with 
         }
         pluginDefineSet.add(pluginName)
        if (StringUtils.isBlank(pluginPath)){
-         pluginPath = workDir
+         pluginPath = resLocalFile.getPath
          pluginConf.set(PLUGIN_PATH, pluginPath)
        }
        new DataxPluginDefinition(pluginName, pluginPath, pluginConf)
      } else {
        warn(s"Cannot find the plugin resource in path: [${resLocalFile.getPath}], please examine the working directory: [${workDir}]")
+       null
      }
-     null
   }
 }
 

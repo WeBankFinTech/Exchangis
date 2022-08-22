@@ -17,13 +17,13 @@
 
 package org.apache.linkis.engineconnplugin.datax.factory
 
+import com.alibaba.datax.core.util.container.CoreConstant
 import org.apache.linkis.engineconn.common.creation.EngineCreationContext
 import org.apache.linkis.engineconn.common.engineconn.EngineConn
 import org.apache.linkis.engineconn.once.executor.OnceExecutor
 import org.apache.linkis.engineconn.once.executor.creation.OnceExecutorFactory
-import org.apache.linkis.engineconnplugin.datax.config.DataxCoreConfiguration
 import org.apache.linkis.engineconnplugin.datax.context.DataxEngineConnContext
-import org.apache.linkis.engineconnplugin.datax.executor.DataxContainerOnceExecutor
+import org.apache.linkis.engineconnplugin.datax.executor.{DataxContainerOnceExecutor, DataxJobOnceExecutor, DataxTaskGroupOnceExecutor}
 import org.apache.linkis.manager.label.entity.Label
 import org.apache.linkis.manager.label.entity.engine.RunType
 import org.apache.linkis.manager.label.entity.engine.RunType.{JAVA, RunType, SCALA}
@@ -35,9 +35,13 @@ class DataxCodeExecutorFactory extends OnceExecutorFactory {
                                      labels: Array[Label[_]]): OnceExecutor = {
     engineConn.getEngineConnSession match {
       case context: DataxEngineConnContext =>
-//        new DataxContainerOnceExecutor(id, context)
+        val isJob = !("taskGroup".equalsIgnoreCase(context.getCoreConfig
+        .getString(CoreConstant.DATAX_CORE_CONTAINER_MODEL)))
+        if (isJob)
+          new DataxJobOnceExecutor(id, context)
+        else new DataxTaskGroupOnceExecutor(id, context)
+      case _ => null
     }
-    null
   }
 
   override protected def getSupportRunTypes: Array[String] = Array(SCALA.toString, JAVA.toString)

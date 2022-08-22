@@ -5,7 +5,7 @@ import com.alibaba.datax.common.element.Record;
 import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.core.util.ClassSize;
 import com.alibaba.datax.core.util.FrameworkErrorCode;
-import com.alibaba.fastjson.JSON;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +68,7 @@ public class DefaultRecord implements Record {
         Map<String, Object> json = new HashMap<String, Object>();
         json.put("size", this.getColumnNumber());
         json.put("data", this.columns);
-        return JSON.toJSONString(json);
+        return Json.toJson(json, null);
     }
 
     @Override

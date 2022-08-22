@@ -5,10 +5,8 @@ import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.common.plugin.RecordSender;
 import com.alibaba.datax.common.plugin.TaskPluginCollector;
 import com.alibaba.datax.common.util.Configuration;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import com.csvreader.CsvReader;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import io.airlift.compress.snappy.SnappyCodec;
 import io.airlift.compress.snappy.SnappyFramedInputStream;
 import org.anarres.lzo.LzoDecompressor1x_safe;
@@ -426,13 +424,13 @@ public class UnstructuredStorageReaderUtil {
 
     public static List<ColumnEntry> getListColumnEntry(
             Configuration configuration, final String path) {
-        List<JSONObject> lists = configuration.getList(path, JSONObject.class);
+        List<Object> lists = configuration.getList(path, Object.class);
         if (lists == null) {
             return null;
         }
         List<ColumnEntry> result = new ArrayList<ColumnEntry>();
-        for (final JSONObject object : lists) {
-            result.add(JSON.parseObject(object.toJSONString(),
+        for (final Object object : lists) {
+            result.add(Json.fromJson(Json.toJson(object, null),
                     ColumnEntry.class));
         }
         return result;
@@ -562,8 +560,7 @@ public class UnstructuredStorageReaderUtil {
         String csvReaderConfig = readerConfiguration.getString(Key.CSV_READER_CONFIG);
         if (StringUtils.isNotBlank(csvReaderConfig)) {
             try {
-                UnstructuredStorageReaderUtil.csvReaderConfigMap = JSON.parseObject(csvReaderConfig, new TypeReference<HashMap<String, Object>>() {
-                });
+                UnstructuredStorageReaderUtil.csvReaderConfigMap = Json.fromJson(csvReaderConfig, Map.class, String.class, Object.class);
             } catch (Exception e) {
                 LOG.info(String.format("WARN!!!!忽略csvReaderConfig配置! 配置错误,值只能为空或者为Map结构,您配置的值为: %s", csvReaderConfig));
             }
@@ -617,15 +614,15 @@ public class UnstructuredStorageReaderUtil {
         if (null != UnstructuredStorageReaderUtil.csvReaderConfigMap && !UnstructuredStorageReaderUtil.csvReaderConfigMap.isEmpty()) {
             try {
                 BeanUtils.populate(csvReader, UnstructuredStorageReaderUtil.csvReaderConfigMap);
-                LOG.info(String.format("csvReaderConfig设置成功,设置后CsvReader:%s", JSON.toJSONString(csvReader)));
+                LOG.info(String.format("csvReaderConfig设置成功,设置后CsvReader:%s", Json.toJson(csvReader, null)));
             } catch (Exception e) {
                 LOG.info(String.format("WARN!!!!忽略csvReaderConfig配置!通过BeanUtils.populate配置您的csvReaderConfig发生异常,您配置的值为: %s;请检查您的配置!CsvReader使用默认值[%s]",
-                        JSON.toJSONString(UnstructuredStorageReaderUtil.csvReaderConfigMap), JSON.toJSONString(csvReader)));
+                        Json.toJson(UnstructuredStorageReaderUtil.csvReaderConfigMap, null), Json.toJson(csvReader, null)));
             }
         } else {
             //默认关闭安全模式, 放开10W字节的限制
             csvReader.setSafetySwitch(false);
-            LOG.info(String.format("CsvReader使用默认值[%s],csvReaderConfig值为[%s]", JSON.toJSONString(csvReader), JSON.toJSONString(UnstructuredStorageReaderUtil.csvReaderConfigMap)));
+            LOG.info(String.format("CsvReader使用默认值[%s],csvReaderConfig值为[%s]", Json.toJson(csvReader, null), Json.toJson(UnstructuredStorageReaderUtil.csvReaderConfigMap, null)));
         }
     }
 

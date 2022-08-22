@@ -10,6 +10,7 @@ import com.alibaba.datax.plugin.rdbms.util.*;
 import com.alibaba.datax.plugin.rdbms.writer.util.OriginalConfPretreatmentUtil;
 import com.alibaba.datax.plugin.rdbms.writer.util.WriterUtil;
 import com.webank.wedatasphere.exchangis.datax.common.CryptoUtils;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class CommonRdbmsWriter {
                     Object.class);
 
             for (int i = 0, len = connections.size(); i < len; i++) {
-                Configuration connConf = Configuration.from(connections.get(i).toString());
+                Configuration connConf = Configuration.from(Json.toJson(connections.get(i), null));
                 String jdbcUrl = connConf.getString(Key.JDBC_URL);
                 List<String> expandedTables = connConf.getList(Key.TABLE, String.class);
                 boolean hasInsertPri = DBUtil.checkInsertPrivilege(dataBaseType, jdbcUrl, username, password,
@@ -99,8 +100,7 @@ public class CommonRdbmsWriter {
                 int proxyPort = originalConfig.getInt(Key.PROXY_PORT, DEFAULT_PROXY_SOCKS_PORT);
                 List<Object> conns = originalConfig.getList(Constant.CONN_MARK,
                         Object.class);
-                Configuration connConf = Configuration.from(conns.get(0)
-                        .toString());
+                Configuration connConf = Configuration.from(Json.toJson(conns.get(0), null));
 
                 // 这里的 jdbcUrl 已经 append 了合适后缀参数
                 String jdbcUrl = connConf.getString(Key.JDBC_URL);
