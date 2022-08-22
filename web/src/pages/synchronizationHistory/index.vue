@@ -49,7 +49,7 @@
       <!-- 表格 -->
       <div class="sh-b-table">
         <a-table :columns="columns" :data-source="tableData" :pagination="pagination"
-          @change="onChange" :scroll="{ x: 200, y: 650 }">
+          @change="onChange" :scroll="{ x: 1600, y: 650 }">
           <template #operation="{ record }">
             <a-popconfirm v-if="unfinishedStatusList.indexOf(record.status) === -1"
               title="确定要删除这条历史吗？" ok-text="确定" cancel-text="取消"
