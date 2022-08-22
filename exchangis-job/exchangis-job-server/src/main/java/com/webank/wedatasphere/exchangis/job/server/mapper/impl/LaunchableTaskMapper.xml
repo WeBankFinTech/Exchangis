@@ -49,7 +49,7 @@
     </insert>
 
     <delete id="deleteLaunchableTask">
-        delete * from
+        delete from
         <include refid="TableName"/>
         where id = #{taskId}
     </delete>
