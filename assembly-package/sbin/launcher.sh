@@ -247,7 +247,7 @@ launcher_stop(){
       *) kill -SIGTERM "${p}" ;;
     esac
     LOG INFO "Launcher: waiting [ $1 ] to stop complete ..."
-    wait_for_stop 20
+    wait_for_stop 20 $1 $2
     if [[ $? -eq 0 ]]; then
       LOG INFO "Launcher: [ $1 ] stop success"
     else
