@@ -3,6 +3,9 @@ package com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers;
 
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.server.builder.SpringExchangisJobBuilderContext;
 import org.apache.linkis.common.exception.ErrorException;
@@ -47,10 +50,19 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
     private void wrapFuncWithContext(ExchangisJobBuilderContext context, Runnable runnable){
         if (context instanceof SpringExchangisJobBuilderContext){
             springContext.set((SpringExchangisJobBuilderContext)context);
+            // Rest the default param set
+            JobParamSet storedParamSet = JobParamDefine.defaultParam.get();
+            JobParamDefine.defaultParam.set(new JobParamSet());
             try{
                 runnable.run();
             } finally {
                 springContext.remove();
+                // Restore the default param set
+                if (Objects.nonNull(storedParamSet)){
+                    JobParamDefine.defaultParam.set(storedParamSet);
+                } else {
+                    JobParamDefine.defaultParam.remove();
+                }
             }
         } else {
             runnable.run();
@@ -97,5 +109,9 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
 
     public static <T>T getBean(Class<T> clazz){
         return Objects.nonNull(springContext.get())? springContext.get().getBean(clazz) : null;
+    }
+
+    protected static SpringExchangisJobBuilderContext getJobBuilderContext(){
+        return springContext.get();
     }
 }
