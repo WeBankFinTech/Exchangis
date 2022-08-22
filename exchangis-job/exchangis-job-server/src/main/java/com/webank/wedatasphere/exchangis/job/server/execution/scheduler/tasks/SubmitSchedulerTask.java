@@ -11,6 +11,7 @@ import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisScheduler
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.execution.AbstractTaskManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
+import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskDequeueEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskExecutionEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskDeleteEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskStatusUpdateEvent;
@@ -96,6 +97,8 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                 info(jobExecutionId, "Launch task:[name:{} ,id:{}] fail, possible reason is: [{}]",
                         launchableExchangisTask.getName(), launchableExchangisTask.getId(), getActualCause(e).getMessage());
                 if (retryCnt.incrementAndGet() < getMaxRetryNum()) {
+                    // Remove the launched task stored
+                    onEvent(new TaskDeleteEvent(String.valueOf(launchableExchangisTask.getId())));
                     throw new ExchangisSchedulerRetryException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() +"]", e);
                 }else {
                     // Update the launched task status to fail
@@ -118,20 +121,30 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                     successAdd = false;
                     error(jobExecutionId, "Error occurred in adding running task: [{}] to taskManager, linkis_id: [{}], should kill the job in linkis!",
                             launchedExchangisTask.getId(), launchedExchangisTask.getLinkisJobId(), e);
+                    LaunchedExchangisTask finalLaunchedExchangisTask1 = launchedExchangisTask;
                     Optional.ofNullable(launchedExchangisTask.getLauncherTask()).ifPresent(launcherTask -> {
                         try {
                             launcherTask.kill();
                         } catch (ExchangisTaskLaunchException ex){
-                            LOG.error("Kill linkis_id: [{}] fail", launchedExchangisTask.getLinkisJobId(), e);
+                            LOG.error("Kill linkis_id: [{}] fail", finalLaunchedExchangisTask1.getLinkisJobId(), e);
                         }
                     });
                 }
-                if (successAdd && Objects.nonNull(this.loadBalancer)) {
-                    // Add the launchedExchangisTask to the load balance poller
-                    List<LoadBalanceSchedulerTask<LaunchedExchangisTask>> loadBalanceSchedulerTasks = this.loadBalancer.choose(launchedExchangisTask);
-                    Optional.ofNullable(loadBalanceSchedulerTasks).ifPresent(tasks -> tasks.forEach(loadBalanceSchedulerTask -> {
-                        loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(launchedExchangisTask);
-                    }));
+                if (successAdd){
+                    try {
+                        onEvent(new TaskDequeueEvent(launchableExchangisTask.getId() + ""));
+                    }catch (Exception e){
+                        // Ignore the exception
+                        LOG.warn("Fail to dequeue the launchable task [{}]", launchableExchangisTask.getId(), e);
+                    }
+                    if (Objects.nonNull(this.loadBalancer)){
+                        // Add the launchedExchangisTask to the load balance poller
+                        List<LoadBalanceSchedulerTask<LaunchedExchangisTask>> loadBalanceSchedulerTasks = this.loadBalancer.choose(launchedExchangisTask);
+                        LaunchedExchangisTask finalLaunchedExchangisTask = launchedExchangisTask;
+                        Optional.ofNullable(loadBalanceSchedulerTasks).ifPresent(tasks -> tasks.forEach(loadBalanceSchedulerTask -> {
+                            loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(finalLaunchedExchangisTask);
+                        }));
+                    }
                 }
             }
         }
@@ -183,7 +196,6 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
     public String getName() {
         return "Scheduler-SubmitTask-" + getId();
     }
-
 
     @Override
     public JobInfo getJobInfo() {
