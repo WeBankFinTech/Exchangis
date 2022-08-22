@@ -163,10 +163,13 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             if (StringUtils.isEmpty(sourceType)) {
                 for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
                     directType.add(engineSetting.getDirectionRules().get(i).getSource());
+                    directType.add(engineSetting.getDirectionRules().get(i).getSink());
                 }
             } else {
                 for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
-                    if (StringUtils.equals(engineSetting.getDirectionRules().get(i).getSource(), sourceType.toLowerCase())) {
+                    if ((StringUtils.equals(sourceType.toLowerCase(), "source"))) {
+                        directType.add(engineSetting.getDirectionRules().get(i).getSource());
+                    } else {
                         directType.add(engineSetting.getDirectionRules().get(i).getSink());
                     }
                 }
