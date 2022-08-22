@@ -223,7 +223,7 @@
             color: rgba(0, 0, 0, 0.45);
             font-size: 12px;
             position: absolute;
-            right: 24px;
+            right: 14px;
             top: 18px;
             cursor: pointer;
           "
@@ -1353,21 +1353,20 @@ export default {
 
   .fill-jd-bottom {
     width: calc(100% - 200px);
-    height: 35vh;
+    height: 0;
   }
 
   .jd-bottom {
     overflow: auto;
-    width: calc(100% - 200px);
-    position: fixed;
+    width: 100%;
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
     height: 30%;
     bottom: 0;
     background-color: white;
     .jd-bottom-top {
-      width: calc(100% - 200px);
+      width: 100%;
       height: 48px;
-      position: fixed;
-      bottom: 30%;
       background-color: #f8f9fc;
       padding: 12px 24px;
       font-family: PingFangSC-Medium;
@@ -1385,11 +1384,8 @@ export default {
 
     &-content {
       padding: 18px 24px;
+      margin: -45px 0px 0 0;
       .exec-info-tab {
-        >:deep(.ant-tabs-bar) {
-           position: fixed;
-           margin-top: -45px;
-         }
         :deep(.ant-tabs-content) {
           padding: 5px 10px;
         }
