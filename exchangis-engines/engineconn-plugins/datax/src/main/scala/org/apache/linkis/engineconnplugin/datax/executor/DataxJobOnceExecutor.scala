@@ -4,8 +4,12 @@ import com.alibaba.datax.common.util.Configuration
 import com.alibaba.datax.core.AbstractContainer
 import com.alibaba.datax.core.job.JobContainer
 import com.alibaba.datax.core.util.container.CoreConstant
+import org.apache.commons.lang3.StringUtils
 import org.apache.linkis.engineconn.common.creation.EngineCreationContext
 import org.apache.linkis.engineconnplugin.datax.context.DataxEngineConnContext
+
+import java.util
+import scala.collection.JavaConverters.asScalaSetConverter
 
 /**
  *

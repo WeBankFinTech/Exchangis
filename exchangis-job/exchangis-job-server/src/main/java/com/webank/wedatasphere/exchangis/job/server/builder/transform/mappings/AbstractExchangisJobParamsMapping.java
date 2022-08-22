@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.AbstractLoggingSubExchangisJobHandler;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.AuthEnabledSubExchangisJobHandler;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.SubExchangisJobHandler;
 import org.apache.linkis.common.exception.ErrorException;
 
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Implement "SubExchangisJobHandler", only handle the params of job
  */
-public abstract class AbstractExchangisJobParamsMapping extends AbstractLoggingSubExchangisJobHandler {
+public abstract class AbstractExchangisJobParamsMapping extends AuthEnabledSubExchangisJobHandler {
 
     @Override
     public void handleJobSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
@@ -30,7 +31,7 @@ public abstract class AbstractExchangisJobParamsMapping extends AbstractLoggingS
 //            info("SourceParamSet: {}", Json.toJson(paramSet.toList().stream().collect(
 //                    Collectors.toMap(JobParam::getStrKey, JobParam::getValue)), null));
             Optional.ofNullable(sourceMappings()).ifPresent(jobParamDefines ->
-                    Arrays.asList(jobParamDefines).forEach(define -> paramSet.add(define.get(paramSet))));
+                    Arrays.asList(jobParamDefines).forEach(define -> paramSet.addNonNull(define.get(paramSet))));
         }
     }
 
@@ -42,7 +43,7 @@ public abstract class AbstractExchangisJobParamsMapping extends AbstractLoggingS
 //            info("SinkParamSet: {}", Json.toJson(paramSet.toList().stream().collect(
 //                    Collectors.toMap(JobParam::getStrKey, JobParam::getValue)), null));
             Optional.ofNullable(sinkMappings()).ifPresent(jobParamDefines ->
-                    Arrays.asList(jobParamDefines).forEach(define -> paramSet.add(define.get(paramSet))));
+                    Arrays.asList(jobParamDefines).forEach(define -> paramSet.addNonNull(define.get(paramSet))));
         }
     }
 

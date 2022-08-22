@@ -11,8 +11,7 @@ import com.webank.wedatasphere.exchangis.datax.core.transport.stream.StreamMeta;
 import com.alibaba.datax.core.util.FrameworkErrorCode;
 import com.alibaba.datax.plugin.unstructuredstorage.PathMeta;
 import com.alibaba.datax.plugin.unstructuredstorage.reader.UnstructuredStorageReaderUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -354,7 +353,7 @@ public class FtpReader extends Reader {
         public void startRead(RecordSender recordSender) {
             LOG.info("start read source files...");
             for (Object sourceFile : this.sourceFiles) {
-                PathMeta pathMeta = JSONObject.parseObject(JSON.toJSONString(sourceFile), PathMeta.class);
+                PathMeta pathMeta = Json.fromJson(Json.toJson(sourceFile, null), PathMeta.class);
                 String fileName = pathMeta.getAbsolute();
                 LOG.info(String.format("reading file : [%s]", fileName));
                 InputStream inputStream = null;
@@ -372,7 +371,7 @@ public class FtpReader extends Reader {
         public void startRead(ChannelOutput channelOutput) {
             LOG.info("start read source files to stream channel...");
             for(Object sourceFile : this.sourceFiles){
-                PathMeta pathMeta = JSONObject.parseObject(JSON.toJSONString(sourceFile), PathMeta.class);
+                PathMeta pathMeta = Json.fromJson(Json.toJson(sourceFile, null), PathMeta.class);
                 String absolutePath = pathMeta.getAbsolute();
                 String relativePath = pathMeta.getRelative();
                 LOG.info(String.format("reading file: [%s]", absolutePath));

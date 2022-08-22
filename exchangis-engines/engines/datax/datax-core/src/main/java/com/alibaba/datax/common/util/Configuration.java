@@ -3,8 +3,7 @@ package com.alibaba.datax.common.util;
 import com.alibaba.datax.common.exception.CommonErrorCode;
 import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.common.spi.ErrorCode;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -210,7 +209,12 @@ public class Configuration {
         if (null == string) {
             return null;
         }
-        return String.valueOf(string);
+        Class<?> clazz = string.getClass();
+        if(clazz.equals(String.class) ||
+                clazz.isPrimitive() || isWrapClass(clazz)){
+            return String.valueOf(string);
+        }
+        return Json.toJson(string, null);
     }
 
     /**
@@ -576,8 +580,7 @@ public class Configuration {
      * 格式化Configuration输出
      */
     public String beautify() {
-        return JSON.toJSONString(this.getInternal(),
-                SerializerFeature.PrettyFormat);
+        return Json.toJson(this.getInternal(), null, true);
     }
 
     /**
@@ -1059,7 +1062,7 @@ public class Configuration {
 
     private Configuration(final String json) {
         try {
-            this.root = JSON.parse(json);
+            this.root = Json.fromJson(json, Object.class);
         } catch (Exception e) {
             throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR,
                     String.format("配置信息错误. 您提供的配置信息不是合法的JSON格式: %s . 请按照标准json格式提供配置信息. ", e.getMessage()));
@@ -1067,11 +1070,18 @@ public class Configuration {
     }
 
     private static String toJSONString(final Object object) {
-        return JSON.toJSONString(object);
+        return Json.toJson(object, null);
     }
 
     public Set<String> getSecretKeyPathSet() {
         return secretKeyPathSet;
     }
 
+    private static boolean isWrapClass(Class<?> clz){
+        try{
+            return ((Class<?>)clz.getField("TYPE").get(null)).isPrimitive();
+        }catch (Exception e){
+            return false;
+        }
+    }
 }

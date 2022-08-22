@@ -5,7 +5,7 @@ import com.alibaba.datax.common.util.Configuration;
 import com.alibaba.datax.plugin.rdbms.reader.Constant;
 import com.alibaba.datax.plugin.rdbms.reader.Key;
 import com.alibaba.datax.plugin.rdbms.util.*;
-import com.alibaba.fastjson.JSON;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -344,7 +344,7 @@ public class SingleTableSplitUtil {
         } finally {
             DBUtil.closeDBResources(rs, null, null);
         }
-        LOG.debug(JSON.toJSONString(splitedRange));
+        LOG.debug(Json.toJson(splitedRange, null));
         List<String> rangeSql = new ArrayList<String>();
         int splitedRangeSize = splitedRange.size();
         // warn: splitedRangeSize may be 0 or 1，切分规则为IS NULL以及 IS NOT NULL

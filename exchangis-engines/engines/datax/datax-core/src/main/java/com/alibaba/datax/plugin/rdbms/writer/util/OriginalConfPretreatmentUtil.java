@@ -7,6 +7,7 @@ import com.alibaba.datax.plugin.rdbms.util.*;
 import com.alibaba.datax.plugin.rdbms.writer.Key;
 import com.alibaba.datax.plugin.rdbms.writer.Constant;
 import com.webank.wedatasphere.exchangis.datax.common.CryptoUtils;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public final class OriginalConfPretreatmentUtil {
         int tableNum = 0;
 
         for (int i = 0, len = connections.size(); i < len; i++) {
-            Configuration connConf = Configuration.from(connections.get(i).toString());
+            Configuration connConf = Configuration.from(Json.toJson(connections.get(i), null));
 
             String jdbcUrl = "";
             if(DATABASE_TYPE.equals(DataBaseType.MySql)){
