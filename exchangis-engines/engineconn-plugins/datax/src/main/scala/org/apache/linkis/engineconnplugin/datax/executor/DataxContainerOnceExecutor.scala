@@ -22,11 +22,10 @@ import com.alibaba.datax.common.exception.DataXException
 import com.alibaba.datax.common.statistics.{PerfTrace, VMInfo}
 import com.alibaba.datax.common.util.Configuration
 import com.alibaba.datax.core.AbstractContainer
-import com.alibaba.datax.core.util.{ConfigurationValidate, ExceptionTracker, FrameworkErrorCode, SecretUtil}
 import com.alibaba.datax.core.util.container.{CoreConstant, LoadUtil}
-import com.webank.wedatasphere.exchangis.datax.core.ThreadLocalSecurityManager
+import com.alibaba.datax.core.util.{ConfigurationValidate, ExceptionTracker, FrameworkErrorCode, SecretUtil}
 import org.apache.commons.lang3.StringUtils
-import org.apache.linkis.common.utils.Utils
+import org.apache.linkis.common.utils.{ClassUtils, Utils}
 import org.apache.linkis.engineconn.common.creation.EngineCreationContext
 import org.apache.linkis.engineconn.once.executor.{OnceExecutorExecutionContext, OperableOnceExecutor}
 import org.apache.linkis.engineconnplugin.datax.config.DataxConfiguration
@@ -68,8 +67,10 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
   override def getId: String = "DataxOnceApp_" + getContainerName + "_" + id
 
   override def doSubmit(onceExecutorExecutionContext: OnceExecutorExecutionContext, options: Map[String, String]): Unit = {
-    // Set the security manager
-    System.setSecurityManager(new ThreadLocalSecurityManager)
+    if (StringUtils.isNotBlank(DataxConfiguration.SECURITY_MANAGER_CLASSES.getValue)) {
+      // Set the security manager
+      System.setSecurityManager(ClassUtils.getClassInstance(DataxConfiguration.SECURITY_MANAGER_CLASSES.getValue))
+    }
     // Init the report receiver
     if (Option(reportReceiver).isEmpty) reportReceiver = new BasicDataxReportReceiver()
     var isFailed = false
@@ -148,11 +149,11 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
   }
 
   override def isClosed: Boolean = {
-    isClosed || NodeStatus.isCompleted(getStatus)
+    NodeStatus.isCompleted(getStatus)
   }
 
   override def tryFailed(): Boolean = {
-    Option(this.container).foreach(_.shutdown())
+//    Option(this.container).foreach(_.shutdown())
     super.tryFailed()
   }
   /**
@@ -266,7 +267,7 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
     val keys = another.getKeys
     keys.asScala.foreach(key => {
       val combineKey: String = if (StringUtils.isNotBlank(pathPrefix))
-        StringUtils.join(Array(pathPrefix, key), ".") else key
+        StringUtils.join(util.Arrays.asList(pathPrefix, key), ".") else key
       if (updateWhenConflict){
         self.set(combineKey, another.get(key))
       } else {
@@ -322,4 +323,6 @@ object DataxContainerOnceExecutor{
   val CODE_NAME: String = "job"
 
   val JOB_CONTENT_NAME = "content"
+
+
 }

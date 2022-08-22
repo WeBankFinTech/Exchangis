@@ -23,8 +23,7 @@ import com.alibaba.datax.common.element.Column;
 import com.alibaba.datax.common.element.Record;
 import com.alibaba.datax.common.exception.DataXException;
 import com.webank.wedatasphere.exchangis.datax.plugin.writer.elasticsearchwriter.v6.ElasticWriterErrorCode;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -156,9 +155,9 @@ public class ElasticColumn {
     private static Object parseObject(String rawData){
         if(rawData.startsWith(ARRAY_PREFIX) &&
                 rawData.endsWith(ARRAY_SUFFIX)){
-            return JSON.parseObject(rawData, new TypeReference<List<Object>>(){});
+            return Json.fromJson(rawData, Object.class);
         }
-        return JSON.parseObject(rawData, Map.class);
+        return Json.fromJson(rawData, Map.class);
     }
 
     private static String parseDate(ElasticColumn config, Column column){

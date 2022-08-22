@@ -9,11 +9,10 @@ import com.alibaba.datax.common.util.Configuration;
 import com.webank.wedatasphere.exchangis.datax.core.job.meta.MetaSchema;
 import com.alibaba.datax.core.util.LdapUtil;
 import com.alibaba.datax.plugin.utils.HdfsUserGroupInfoLock;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.webank.wedatasphere.exchangis.datax.common.CryptoUtils;
 import com.webank.wedatasphere.exchangis.datax.common.ldap.LdapConnector;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import com.webank.wedatasphere.exchangis.datax.util.KerberosUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,11 +77,12 @@ public class HdfsWriterUtil {
         hadoopConf = new org.apache.hadoop.conf.Configuration();
         this.writerConfig = taskConfig;
         Configuration hadoopSiteParams = taskConfig.getConfiguration(Key.HADOOP_CONFIG);
-        JSONObject hadoopSiteParamsAsJsonObject = JSON.parseObject(taskConfig.getString(Key.HADOOP_CONFIG));
+        Map<String, Object> hadoopSiteParamsAsJsonObject = Json.fromJson(taskConfig.getString(Key.HADOOP_CONFIG), Map.class);
         if (null != hadoopSiteParams) {
             Set<String> paramKeys = hadoopSiteParams.getKeys();
             for (String each : paramKeys) {
-                hadoopConf.set(each, hadoopSiteParamsAsJsonObject.getString(each));
+                assert hadoopSiteParamsAsJsonObject != null;
+                hadoopConf.set(each, String.valueOf(hadoopSiteParamsAsJsonObject.get(each)));
             }
         }
         hadoopConf.set(HDFS_DEFAULT_FS_KEY, defaultFS);
@@ -465,7 +465,7 @@ public class HdfsWriterUtil {
             }
         }catch(Exception e){
             String message = String.format("occurred error while move srcPaths : %s to destPath: %s ,please check your network",
-                    JSON.toJSONString(srcPaths), destPath);
+                    Json.toJson(srcPaths, null), destPath);
             LOG.error(message);
             throw DataXException.asDataXException(HdfsWriterErrorCode.CONNECT_HDFS_IO_ERROR, e);
         }
@@ -880,7 +880,7 @@ public class HdfsWriterUtil {
                     for (int t = 0; t < items.length; t++){
                         items[t] = StringUtils.join(new String[]{"\"",items[t] ,"\""}, "");
                     }
-                    List<String> list = JSON.parseArray("[" + StringUtils.join(items, split) + "]", String.class);
+                    List<String> list = Json.fromJson("[" + StringUtils.join(items, split) + "]", String.class);
                     List<Text> listText = new ArrayList<>();
                     list.forEach(value -> listText.add(new Text(value)));
                     result.set(i, listText);
@@ -897,7 +897,7 @@ public class HdfsWriterUtil {
                                     (new String[]{"\"", attrs[0],"\":\"", attrs[1], "\""}, "");
                         }
                     }
-                    Map map1 = JSON.parseObject("{" + StringUtils.join(entries, split) + "}", Map.class);
+                    Map map1 = Json.fromJson("{" + StringUtils.join(entries, split) + "}", Map.class);
                     Map<Text, Text> mapText = new HashMap<>();
                     if(null != map1) {
                         map1.forEach((k, v) -> mapText.put(new Text((String) k), new Text((String) v)));

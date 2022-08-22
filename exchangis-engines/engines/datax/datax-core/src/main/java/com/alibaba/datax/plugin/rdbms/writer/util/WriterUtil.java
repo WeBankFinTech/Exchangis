@@ -9,6 +9,7 @@ import com.alibaba.datax.plugin.rdbms.util.RdbmsException;
 import com.alibaba.datax.plugin.rdbms.writer.Constant;
 import com.alibaba.datax.plugin.rdbms.writer.Key;
 import com.alibaba.druid.sql.parser.ParserException;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public final class WriterUtil {
         for (Object conn : conns) {
             Configuration sliceConfig = simplifiedConf.clone();
 
-            Configuration connConf = Configuration.from(conn.toString());
+            Configuration connConf = Configuration.from(Json.toJson(conn, null));
             jdbcUrl = connConf.getString(Key.JDBC_URL);
             sliceConfig.set(Key.JDBC_URL, jdbcUrl);
 
@@ -208,7 +209,7 @@ public final class WriterUtil {
 
     public static void preCheckPrePareSQL(Configuration originalConfig, DataBaseType type) {
         List<Object> conns = originalConfig.getList(Constant.CONN_MARK, Object.class);
-        Configuration connConf = Configuration.from(conns.get(0).toString());
+        Configuration connConf = Configuration.from(Json.toJson(conns.get(0), null));
         String table = connConf.getList(Key.TABLE, String.class).get(0);
 
         List<String> preSqls = originalConfig.getList(Key.PRE_SQL,
@@ -231,7 +232,7 @@ public final class WriterUtil {
 
     public static void preCheckPostSQL(Configuration originalConfig, DataBaseType type) {
         List<Object> conns = originalConfig.getList(Constant.CONN_MARK, Object.class);
-        Configuration connConf = Configuration.from(conns.get(0).toString());
+        Configuration connConf = Configuration.from(Json.toJson(conns.get(0), null));
         String table = connConf.getList(Key.TABLE, String.class).get(0);
 
         List<String> postSqls = originalConfig.getList(Key.POST_SQL,
