@@ -49,12 +49,14 @@ restart(){
 COMMAND=$1
 case $COMMAND in
   start|stop|restart)
+    load_env_definitions ${ENV_FILE}
     if [[ ! -z $2 ]]; then
-      MAIN_CLASS=${MODULE_MAIN_CLASS[${MODULE_DEFAULT_PREFIX}$2]}
+      SERVICE_NAME=${MODULE_DEFAULT_PREFIX}$2${MODULE_DEFAULT_SUFFIX}
+      MAIN_CLASS=${MODULE_MAIN_CLASS[${SERVICE_NAME}]}
       if [[ "x"${MAIN_CLASS} != "x" ]]; then
-        $COMMAND ${MODULE_DEFAULT_PREFIX}$2 ${MAIN_CLASS}
+        $COMMAND ${SERVICE_NAME} ${MAIN_CLASS}
       else
-        LOG ERROR "Cannot find the main class for [ ${MODULE_DEFAULT_PREFIX}$2 ]"
+        LOG ERROR "Cannot find the main class for [ ${SERVICE_NAME} ]"
       fi
     else
       usage
