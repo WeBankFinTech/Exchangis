@@ -69,6 +69,15 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
     private static final JobParamDefine<String> HIVE_TABLE = JobParams.define("hiveTable", JobParamConstraints.TABLE);
 
     /**
+     * Hive uris
+     */
+    private static final JobParamDefine<String> HIVE_URIS = JobParams.define("hiveMetastoreUris", "uris");
+
+    /**
+     * Data file name (prefix)
+     */
+    private static final JobParamDefine<String> DATA_FILE_NAME = JobParams.define("fileName", () -> "exch_hive_");
+    /**
      * Encoding
      */
     private static final JobParamDefine<String> ENCODING  = JobParams.define("encoding", paramSet -> {
@@ -110,14 +119,29 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
     });
 
     /**
+     * Partition keys
+     */
+    private static final JobParamDefine<List<String>> PARTITION_KEYS = JobParams.define("partitionKeys", paramSet -> {
+        JobParam<String> dataSourceId = paramSet.get(JobParamConstraints.DATA_SOURCE_ID);
+        List<String> partitionKeys = new ArrayList<>();
+        String database = HIVE_DATABASE.getValue(paramSet);
+        String table = HIVE_TABLE.getValue(paramSet);
+        try {
+            partitionKeys = Objects.requireNonNull(getBean(MetadataInfoService.class)).getPartitionKeys(getJobBuilderContext().getOriginalJob().getCreateUser(),
+                    Long.parseLong(dataSourceId.getValue()), database, table);
+        } catch (ExchangisDataSourceException e) {
+            throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());
+        }
+        return partitionKeys;
+    });
+    /**
      * Partition values
      */
     private static final JobParamDefine<String> PARTITION_VALUES = JobParams.define("partitionValues", paramSet -> {
-        Map<String, String> tableProps = HIVE_TABLE_PROPS.getValue(paramSet);
         Map<String, String> partitions = Optional.ofNullable(TABLE_PARTITION.getValue(paramSet)).orElse(new HashMap<>());
         //Try to find actual partition from table properties
-        String partitionStr = tableProps.getOrDefault("partition_columns", "");
-        String[] partitionColumns = StringUtils.isNotBlank(partitionStr)? partitionStr.split(",") : new String[0];
+        List<String> partitionKeys = PARTITION_KEYS.getValue(paramSet);
+        String[] partitionColumns = Objects.isNull(partitionKeys)? new String[0]: partitionKeys.toArray(new String[0]);
         if (partitionColumns.length > 0 && partitions.size() != partitionColumns.length){
             throw new ExchangisJobException.Runtime(-1, "Unmatched partition list: [" +
                     StringUtils.join(partitionColumns, ",") + "]", null);
@@ -162,7 +186,7 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
         String partitionValues = PARTITION_VALUES.getValue(paramSet);
         if (StringUtils.isNotBlank(partitionValues)){
             String[] values = partitionValues.split(",");
-            String[] keys = tableProps.getOrDefault("partition_columns", "").split(",");
+            String[] keys = PARTITION_KEYS.getValue(paramSet).toArray(new String[0]);
             // Escape the path and value of partition
             StringBuilder pathBuilder = new StringBuilder(path).append("/");
             for(int i = 0; i < keys.length; i++){
@@ -287,7 +311,7 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
     public JobParamDefine<?>[] sinkMappings() {
         return new JobParamDefine[]{HIVE_DATABASE, HIVE_TABLE, ENCODING,
                 NULL_FORMAT, PARTITION_VALUES, FIELD_DELIMITER, FILE_TYPE, DATA_PATH, HADOOP_CONF, DEFAULT_FS,
-                COMPRESS_NAME, IS_SINK_FILETYPE_SUPPORT};
+                COMPRESS_NAME, IS_SINK_FILETYPE_SUPPORT, HIVE_URIS, DATA_FILE_NAME};
     }
 
     @Override

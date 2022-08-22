@@ -22,7 +22,7 @@ import com.alibaba.datax.common.exception.CommonErrorCode;
 import com.alibaba.datax.common.exception.DataXException;
 import com.webank.wedatasphere.exchangis.datax.core.transport.channel.StreamChannel;
 import com.alibaba.datax.core.util.FrameworkErrorCode;
-import com.alibaba.fastjson.JSON;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +80,7 @@ public class ChannelInput{
     public StreamMeta streamMetaData(String encoding){
         try{
             String metaJson = new String(streamMeta, encoding);
-            return JSON.parseObject(metaJson, StreamMeta.class);
+            return Json.fromJson(metaJson, StreamMeta.class);
         }catch(Exception e){
             throw DataXException.asDataXException(FrameworkErrorCode.RUNTIME_ERROR, e);
         }

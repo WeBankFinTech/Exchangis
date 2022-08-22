@@ -59,6 +59,30 @@
             <directoryMode>0755</directoryMode>
             <outputDirectory>exchangis-extds</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>${basedir}/../extension-datasources/exchangis-datasource-ext-elasticsearch/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>*-javadoc.jar</exclude>
+            </excludes>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+            <outputDirectory>exchangis-extds</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../extension-datasources/exchangis-datasource-ext-mongodb/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>*-javadoc.jar</exclude>
+            </excludes>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+            <outputDirectory>exchangis-extds</outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>
 

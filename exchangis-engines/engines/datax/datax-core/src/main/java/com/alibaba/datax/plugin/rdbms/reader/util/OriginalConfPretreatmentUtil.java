@@ -7,6 +7,7 @@ import com.alibaba.datax.plugin.rdbms.reader.Constant;
 import com.alibaba.datax.plugin.rdbms.reader.Key;
 import com.alibaba.datax.plugin.rdbms.util.*;
 import com.webank.wedatasphere.exchangis.datax.common.CryptoUtils;
+import com.webank.wedatasphere.exchangis.datax.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,7 @@ public final class OriginalConfPretreatmentUtil {
 
         for (int i = 0, len = conns.size(); i < len; i++) {
             Configuration connConf = Configuration
-                    .from(conns.get(i).toString());
+                    .from(Json.toJson(conns.get(i), null));
 
             connConf.getNecessaryValue(Key.JDBC_URL,
                     DBUtilErrorCode.REQUIRED_VALUE);
@@ -265,7 +266,7 @@ public final class OriginalConfPretreatmentUtil {
         boolean isQuerySqlMode = false;
         for (int i = 0, len = conns.size(); i < len; i++) {
             Configuration connConf = Configuration
-                    .from(conns.get(i).toString());
+                    .from(Json.toJson(conns.get(i), null));
             table = connConf.getString(Key.TABLE, null);
             querySql = connConf.getString(Key.QUERY_SQL, null);
 

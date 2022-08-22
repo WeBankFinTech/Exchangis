@@ -95,8 +95,25 @@ public class JobParams {
      * @param <T>
      * @return
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T>JobParamDefine<T> define(String key, Supplier<T> operator){
-        return new JobParamDefine<>(key, (paramKey, source) -> operator.get());
+        return new JobParamDefine<>(key, (paramKey, source) -> {
+            T finalValue = null;
+            if (Objects.nonNull(source)) {
+                if (source instanceof JobParamSet) {
+                    JobParam<?> result = ((JobParamSet) source).get(key);
+                    if (Objects.nonNull(result)){
+                        finalValue = (T)result.getValue();
+                    }
+                } else if (source instanceof Map) {
+                    Object result = ((Map) source).get(key);
+                    if (Objects.nonNull(result)){
+                        return (T)result;
+                    }
+                }
+            }
+            return Objects.nonNull(finalValue) ? finalValue : operator.get();
+        });
     }
 
     public static <T>JobParam<T> newOne(String key, T value){
