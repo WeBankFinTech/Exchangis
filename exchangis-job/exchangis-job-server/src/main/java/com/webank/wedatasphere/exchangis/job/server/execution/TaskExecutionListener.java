@@ -25,6 +25,8 @@ public interface TaskExecutionListener extends ExchangisListener<TaskExecutionEv
             onDelete((TaskDeleteEvent)event);
         } else if (event instanceof TaskProgressUpdateEvent){
             onProgressUpdate((TaskProgressUpdateEvent)event);
+        } else if (event instanceof TaskDequeueEvent){
+            onDequeue((TaskDequeueEvent) event);
         }
     }
 
@@ -53,8 +55,16 @@ public interface TaskExecutionListener extends ExchangisListener<TaskExecutionEv
     void onDelete(TaskDeleteEvent deleteEvent) throws ExchangisOnEventException;
 
     /**
+     * Dequeue event
+     * @param dequeueEvent dequeue event
+     * @throws ExchangisOnEventException exception
+     */
+    void onDequeue(TaskDequeueEvent dequeueEvent) throws ExchangisOnEventException;
+
+    /**
      * Progress update
      * @param updateEvent update event
      */
     void onProgressUpdate(TaskProgressUpdateEvent updateEvent) throws ExchangisOnEventException;
+
 }
