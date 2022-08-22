@@ -150,6 +150,9 @@ public class DefaultJobInfoService implements JobInfoService {
     @Override
     public ExchangisJobVo getJob(Long id, boolean basic) {
         ExchangisJobEntity exchangisJob = basic ? this.jobEntityDao.getBasicInfo(id) : this.jobEntityDao.getDetail(id);
+        if (Objects.isNull(exchangisJob)) {
+            return null;
+        }
         ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
         jobVo.setProjectId(exchangisJob.getProjectId());
         if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
