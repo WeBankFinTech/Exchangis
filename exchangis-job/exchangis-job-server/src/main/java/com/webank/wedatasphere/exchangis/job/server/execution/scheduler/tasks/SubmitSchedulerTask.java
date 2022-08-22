@@ -11,6 +11,7 @@ import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisScheduler
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.execution.AbstractTaskManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
+import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskDequeueEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskExecutionEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskDeleteEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskStatusUpdateEvent;
@@ -107,13 +108,21 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                         }
                     });
                 }
-                if (successAdd && Objects.nonNull(this.loadBalancer)) {
-                    // Add the launchedExchangisTask to the load balance poller
-                    List<LoadBalanceSchedulerTask<LaunchedExchangisTask>> loadBalanceSchedulerTasks = this.loadBalancer.choose(launchedExchangisTask);
-                    LaunchedExchangisTask finalLaunchedExchangisTask = launchedExchangisTask;
-                    Optional.ofNullable(loadBalanceSchedulerTasks).ifPresent(tasks -> tasks.forEach(loadBalanceSchedulerTask -> {
-                        loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(finalLaunchedExchangisTask);
-                    }));
+                if (successAdd){
+                    try {
+                        onEvent(new TaskDequeueEvent(launchableExchangisTask.getId() + ""));
+                    }catch (Exception e){
+                        // Ignore the exception
+                        LOG.warn("Fail to dequeue the launchable task [{}]", launchableExchangisTask.getId(), e);
+                    }
+                    if (Objects.nonNull(this.loadBalancer)){
+                        // Add the launchedExchangisTask to the load balance poller
+                        List<LoadBalanceSchedulerTask<LaunchedExchangisTask>> loadBalanceSchedulerTasks = this.loadBalancer.choose(launchedExchangisTask);
+                        LaunchedExchangisTask finalLaunchedExchangisTask = launchedExchangisTask;
+                        Optional.ofNullable(loadBalanceSchedulerTasks).ifPresent(tasks -> tasks.forEach(loadBalanceSchedulerTask -> {
+                            loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(finalLaunchedExchangisTask);
+                        }));
+                    }
                 }
             }
         }
