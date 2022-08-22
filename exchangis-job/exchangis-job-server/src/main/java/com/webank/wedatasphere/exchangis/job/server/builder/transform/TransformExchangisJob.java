@@ -227,7 +227,9 @@ public class TransformExchangisJob extends GenericExchangisJob {
                 if (value instanceof String){
                     item.setConfigValue(JobUtils.renderDt((String)value, calendar));
                 } else if (value instanceof Map){
-
+                    for (Object key:((Map) value).keySet()) {
+                        ((Map) value).put(key, JobUtils.renderDt((String)((Map) value).get(key), calendar));
+                    }
                 }
             });
         }
