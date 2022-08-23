@@ -72,7 +72,8 @@ export default defineComponent({
     value = ref(value)
     //let tmlName = field.split(".").pop();
     const newProps = computed(() => JSON.parse(JSON.stringify(props.param)))
-    watch(newProps, (val, oldVal) => {
+    const newData = computed(() => JSON.parse(JSON.stringify(props.data || {})))
+    watch(() => [newProps.value, newData.value], ([val, data1], [oldVal, oldData1]) => {
       value.value = val.value
       if (type === 'OPTION'){
         checkOptions.value = []
@@ -83,27 +84,30 @@ export default defineComponent({
           })
         })
       }
-      /*if (type === 'MAP') {
-        value.value = value.value || {}
-        if (val.source === oldVal.source) {
-          partitionArr.value.forEach(partition => {
-            if (partition.type === 'OPTION') {
-              partition.value = value.value[partition.label] ? [value.value[partition.label]] : []
-            } else {
-              partition.value = value.value[partition.label] ? value.value[partition.label] : partition.defaultValue || ''
-            }
-          })
-        }
-      }*/
-    })
-    const newData = computed(() => JSON.parse(JSON.stringify(props.data || {})))
-    watch(newData, (val, oldVal) => {
       if (type === 'MAP') {
-        if (val.id != oldVal.id || val.db !== oldVal.db || val.table !== oldVal.table) {
+        if (data1.id != oldData1.id || data1.db !== oldData1.db || data1.table !== oldData1.table) {
           _buildMap()
+        } else {
+          value.value = value.value || {}
+          if (val.source === oldVal.source) {
+            partitionArr.value.forEach(partition => {
+              if (partition.type === 'OPTION') {
+                partition.value = value.value[partition.label] ? [value.value[partition.label]] : []
+              } else {
+                partition.value = value.value[partition.label] ? value.value[partition.label] : partition.defaultValue || ''
+              }
+            })
+          }
         }
       }
     })
+    // watch(newData, (val, oldVal) => {
+    //   if (type === 'MAP') {
+    //     if (val.id != oldVal.id || val.db !== oldVal.db || val.table !== oldVal.table) {
+    //       _buildMap()
+    //     }
+    //   }
+    // })
     let checkOptions = ref([])
     if (type === 'OPTION'){
       checkOptions.value = []

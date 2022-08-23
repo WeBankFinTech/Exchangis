@@ -213,7 +213,7 @@ export default defineComponent({
         }
         if (ui.refId) {
           ui.show = defShow.some(v => v.id === ui.refId);
-          if (ui.field === "nullCharacter") {
+          if (ui.field === "nullFormat") {
             ui.show = transferModeValue === ("记录" + ui.refId);
           }
           ui.value = ui.show ? ui.value : ''
@@ -243,8 +243,10 @@ export default defineComponent({
         sources: newVal.params.sources || [],
         sinks: newVal.params.sinks || []
       };
+      //test 代码调试中
+      console.log('%c%s','color: red; background: yellow; font-size: 24px;', '调试444', newVal.params.sinks)
       setParamSource(dataSource.params.sources);
-    });
+    }, { deep: true });
 
     const formRef = ref();
     // 选完
@@ -322,7 +324,7 @@ export default defineComponent({
           }
           if (ui.refId) {
             ui.show = defShow.some(v => v.id === ui.refId);
-            if (ui.field === "nullCharacter") {
+            if (ui.field === "nullFormat") {
               ui.show = transferModeValue === ("记录" + ui.refId);
             }
             ui.value = ui.show ? ui.value : ''
@@ -416,7 +418,7 @@ export default defineComponent({
         }
         if (item.refId) {
           item.show = defShow.some(v => v.id === item.refId);
-          if (item.field === "nullCharacter") {
+          if (item.field === "nullFormat") {
             item.show = transferModeValue === ("记录" + item.refId);
           }
           item.value = item.show ? item.value : ''
