@@ -37,7 +37,7 @@ public class LocalExchangisDataSourceLoader implements ExchangisDataSourceLoader
     public void init(MapperHook mapperHook) throws Exception {
         // 初始化磁盘扫描加载
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        String loadClassPath =  Objects.requireNonNull(currentClassLoader.getResource("")).getPath();
+        String loadClassPath =  Objects.requireNonNull(currentClassLoader.getResource(EXCHANGIS_DIR_NAME)).getPath();
 //        String libPathUrl = loadClassPath + ".." + File.separator + ".." + File.separator + EXCHANGIS_DIR_NAME;
         String libPathUrl = loadClassPath + ".." + File.separator + EXCHANGIS_DIR_NAME;
         LOGGER.info("libPath url is {}",  libPathUrl);
