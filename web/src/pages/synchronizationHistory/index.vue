@@ -2,22 +2,21 @@
   <div class="sync-history-wrap">
     <div class="sh-top">
       <!-- 表单搜索 -->
-
       <a-form :model="formState">
         <a-row :gutter="24">
-          <a-col :span="8">
+          <a-col :span="4">
             <a-form-item label="执行ID">
               <a-input v-model:value="formState.jobExecutionId" placeholder="请输入" />
             </a-form-item>
           </a-col>
 
-          <a-col :span="8">
+          <a-col :span="4">
             <a-form-item label="作业名称">
               <a-input v-model:value="formState.jobName" placeholder="请输入" />
             </a-form-item>
           </a-col>
 
-          <a-col :span="8">
+          <a-col :span="4">
             <a-form-item label="作业状态">
               <a-select v-model:value="formState.status" placeholder="请选择任务状态">
                 <a-select-option v-for="status in statusList" :value="status">{{statusMap[status]}}
@@ -25,16 +24,13 @@
               </a-select>
             </a-form-item>
           </a-col>
-        </a-row>
-
-        <a-row :gutter="24">
-          <a-col :span="8">
+          <a-col :span="4">
             <a-form-item label="开始时间">
               <a-range-picker v-model:value="formState.time" show-time type="date"
                 style="width: 100%" />
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="4">
             <a-form-item>
               <a-button @click="clearData"><span class="sh-top-txt">重置</span></a-button>
               <a-button type="primary" @click="search" style="margin-left: 8px"><span
@@ -71,7 +67,10 @@
             </div>
           </template>
           <template #jobExecutionId="{ record }">
-            <a @click="showInfoLog(record.jobExecutionId)">{{record.jobExecutionId}}</a>
+            <a-tooltip @click="showInfoLog(record.jobExecutionId)">
+              <template #title>{{record.jobExecutionId}}</template>
+              <span style="color: rgb(46, 146, 247);cursor: pointer;">{{record.jobExecutionId}}</span>
+            </a-tooltip>
           </template>
           <template #flow="{ record }">
             <span>{{record.flow}} Records/S</span>
@@ -119,7 +118,7 @@ import {
 } from '@/common/service';
 import { message } from 'ant-design-vue';
 import { dateFormat, dateFormatSeconds } from '@/common/utils';
-import bottomLog from '../jobManagement/components/bottomLog';
+import bottomLog from '../jobManagement/components/syncBottomLog';
 
 const columns = [
   {
@@ -415,7 +414,7 @@ export default {
           width: '150px',
         },
       },
-      killTask,
+      killTask
     };
   },
 };
@@ -423,10 +422,16 @@ export default {
 
 <style lang="less" scoped>
 @import '../../common/content.less';
+.sync-history-wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
 .sh-top {
-  height: 136px;
+  flex: 0 0 64px;
+  height: 64px;
   width: 100%;
-  padding: 24px;
+  padding: 16px 24px;
   box-sizing: border-box;
   border-bottom: 1px solid;
   border-color: #dee4ec;
@@ -444,7 +449,8 @@ export default {
 .sh-bottom {
   padding: 24px;
   background-color: #fff;
-  min-height: calc(100vh - 136px);
+  flex: 1;
+  overflow: auto;
   :deep(.ant-form-item-label > label) {
     width: 80px;
     text-align: right;
