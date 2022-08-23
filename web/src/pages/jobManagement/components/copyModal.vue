@@ -36,6 +36,7 @@ import { toRaw } from "vue";
 import { message } from "ant-design-vue";
 import { PlusOutlined } from "@ant-design/icons-vue";
 import { randomString } from '@/common/utils';
+import _, { merge, cloneDeep } from 'lodash-es';
 export default {
   name: "JobManagementConfigModal",
   components: {
@@ -81,8 +82,9 @@ export default {
   methods: {
     async handleOk() {
       await this.$refs.formRef.validate();
+      const _origin = cloneDeep(this.origin);
       const formatData = {
-        ...this.origin,
+        ..._origin,
         subJobName: this.formState.jobName
       };
       try {
