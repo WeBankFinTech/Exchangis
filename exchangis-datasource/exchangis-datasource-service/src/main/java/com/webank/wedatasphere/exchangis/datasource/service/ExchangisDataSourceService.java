@@ -1329,7 +1329,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         for (int i = 0; i < sourceFields.size(); i++) {
             DataSourceDbTableColumnDTO field = sourceFields.get(i);
             field.setFieldIndex(i);
-            field.setFieldEditable(!"HIVE".equals(vo.getSourceTypeId()));
+            field.setFieldEditable(!"HIVE".equals(vo.getSourceTypeId()) && !"ELASTICSEARCH".equals(vo.getSourceTypeId()));
         }
         message.data("sourceFields", sourceFields);
 
@@ -1338,7 +1338,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         for (int i = 0; i < sinkFields.size(); i++) {
             DataSourceDbTableColumnDTO field = sinkFields.get(i);
 //            field.setFieldIndex(i);
-            field.setFieldEditable(!"HIVE".equals(vo.getSinkTypeId()));
+            field.setFieldEditable(!"HIVE".equals(vo.getSinkTypeId()) && !"ELASTICSEARCH".equals(vo.getSinkTypeId()));
         }
         message.data("sinkFields", sinkFields);
         // field mapping deduction
