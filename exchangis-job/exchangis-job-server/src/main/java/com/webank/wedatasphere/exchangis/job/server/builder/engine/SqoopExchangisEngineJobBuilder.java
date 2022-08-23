@@ -151,15 +151,17 @@ public class SqoopExchangisEngineJobBuilder extends AbstractLoggingExchangisJobB
         JobParam<String> table = hadoopParamSet.get(JobParamConstraints.TABLE, String.class);
         Map<String, String> partition = PARTITION_MAP.getValue(job);
         try {
-            if (Objects.isNull(partition)) {
-                return getBean(MetadataInfoService.class).getTableProps(userName, Long.valueOf(dataSourceId.getValue()),
-                        database.getValue(), table.getValue());
-            } else {
-                return getBean(MetadataInfoService.class).getPartitionProps(userName, Long.valueOf(dataSourceId.getValue()),
+            if (Objects.nonNull(partition)) {
+                Map<String, String> props = getBean(MetadataInfoService.class).getPartitionProps(userName, Long.valueOf(dataSourceId.getValue()),
                         database.getValue(), table.getValue(), URLEncoder.encode(partition.entrySet().stream().map(entry ->
                                 entry.getKey() + "=" + entry.getValue()
                         ).collect(Collectors.joining(",")), "UTF-8"));
+                if (!props.isEmpty()){
+                    return props;
+                }
             }
+            return getBean(MetadataInfoService.class).getTableProps(userName, Long.valueOf(dataSourceId.getValue()),
+                    database.getValue(), table.getValue());
         } catch (ExchangisDataSourceException e) {
             throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());
         } catch (UnsupportedEncodingException e) {
