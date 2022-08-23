@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +78,7 @@ public class JobUtils {
             return null;
         }
         Date date =new Date();
+
         Matcher matcher= DateTool.TIME_REGULAR_PATTERN.matcher(template);
         while(matcher.find()){
             try {
@@ -88,20 +90,6 @@ public class JobUtils {
                 if (null != symbol) {
                     String startTime = null;
                     String tempTime = null;
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    if ("run_date".equals(symbol)) {
-                        int n = 1;
-                        if (m.split("-").length > 1) {
-                            List<String> days = Arrays.asList(m.split("-"));
-                            n = Integer.parseInt(days.get(1).substring(0, days.get(1).length()-1));
-                        }
-                        calendar.setTime(date);
-                        calendar.add(Calendar.DAY_OF_MONTH, -n);
-                        tempTime = format.format(calendar.getTime()).substring(0, 10) + " 00:00:00";
-                        startTime = template.replace(m, tempTime);
-                        return startTime;
-                    }
-
                     for(String specSymbol : DateTool.HOUR_SPEC_SYMBOLS){
                         if(specSymbol.equals(symbol)){
                             tempTime = dataTool.format(specSymbol);
@@ -109,25 +97,58 @@ public class JobUtils {
                             return startTime;
                         }
                     }
-                    if (DateTool.MONTH_BEGIN_SYMBOL.equals(symbol)) {
+                    if(!spec) {
+                        if (DateTool.MONTH_BEGIN_SYMBOL.equals(symbol)) {
                             dataTool.getMonthBegin(0);
-                            tempTime = dataTool.format("yyyy-MM-dd HH:mm:ss");
+                        } else if (DateTool.MONTH_END_SYMBOL.equals(symbol)) {
+                            dataTool.getMonthEnd(0);
+                        } else if (DateTool.TIME_PLACEHOLDER_TIMESTAMP.equals(symbol)){
+                            calendar.setTime(date);
+                            calendar.add(Calendar.DAY_OF_MONTH, -1);
+                            tempTime = String.valueOf(calendar.getTimeInMillis());
                             startTime = template.replace(m, tempTime);
                             return startTime;
-                        } else if (DateTool.MONTH_BEGIN_LAST_SYMBOL.equals(symbol)) {
-                            dataTool.getMonthBeginLastDay(0);
-                            tempTime = dataTool.format("yyyy-MM-dd HH:mm:ss");
-                            startTime = template.replace(m, tempTime);
-                            return startTime;
-                        } else if (DateTool.TIME_PLACEHOLDER_SYMBOL.equals(symbol)){
-                        calendar.setTime(date);
-                        calendar.add(Calendar.DAY_OF_MONTH, -1);
-                        tempTime = String.valueOf(calendar.getTimeInMillis());
-                        startTime = template.replace(m, tempTime);
-                        return startTime;
                         }
-                }
+                        else {
+                            dataTool.addDay(-1);
+                        }
+                    }
 
+                }
+                String calculate = matcher.group(3);
+                String number = matcher.group(4);
+                if (null != calculate && null != number) {
+                    if ("+".equals(calculate)) {
+                        if(spec){
+                            dataTool.addHour(Integer.parseInt(number));
+                        }else {
+                            dataTool.addDay(Integer.parseInt(number));
+                        }
+                    } else if ("-".equals(calculate)) {
+                        if(spec){
+                            dataTool.addHour(-Integer.parseInt(number));
+                        }else {
+                            dataTool.addDay(-Integer.parseInt(number));
+                        }
+                    }
+                }
+                String formatSymbol = matcher.group(2);
+                if(spec){
+                    sw.append(dataTool.format(symbol));
+                }else if(DateTool.FORMAT_STD_SYMBOL.equals(formatSymbol)){
+                    sw.append(dataTool.format("yyyy-MM-dd"));
+                }else if(DateTool.FORMAT_UTC_SYMBOL.equals(formatSymbol)) {
+                    // Set the hour as the beginning of day
+                    sw.append(dataTool.format("yyyy-MM-dd'T'HH:00:00.000'Z'", "UTC"));
+//                    sw.append(dataTool.format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "UTC"));
+                } else if(StringUtils.isNotBlank(formatSymbol) && formatSymbol.startsWith("_")){
+                    String format = formatSymbol.substring(1);
+                    sw.append(dataTool.format(format));
+                } else{
+                    sw.append(dataTool.format("yyyyMMdd"));
+                }
+                template=template.replace(m, sw.toString());
+                matcher= DateTool.TIME_REGULAR_PATTERN.matcher(template);
             }catch(Exception e){
                 logger.error("TASK_ERROR, cannot render job's configuration, message: {}", e.getMessage(), e);
                 break;
