@@ -20,19 +20,15 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ENV_FILE="${DIR}/env.properties"
 SHELL_LOG="${DIR}/command.log"
 USER_DIR="${DIR}/../"
-EXCHANGIS_CONF_PATH="${DIR}/../config"
 EXCHANGIS_LIB_PATH="${DIR}/../lib"
 EXCHANGIS_LOG_PATH="${DIR}/../logs"
 EXCHANGIS_PID_PATH="${DIR}/../runtime"
-MODULE_DEFAULT_PREFIX="exchangis-"
 # Default
 MAIN_CLASS=""
 DEBUG_MODE=False
 DEBUG_PORT="7006"
 SPRING_PROFILE="exchangis"
 SLEEP_TIMEREVAL_S=2
-
-CONF_PATH=${DIR}/../config
 
 function LOG(){
   currentTime=`date "+%Y-%m-%d %H:%M:%S.%3N"`
@@ -120,6 +116,7 @@ construct_java_command(){
     local classpath=${EXCHANGIS_CONF_PATH}":."
     local opts=""
     classpath=${EXCHANGIS_LIB_PATH}/$1/*":"${classpath}
+    LOG INFO "classpath:"${classpath}
     if [[ "x${EXCHANGIS_JAVA_OPTS}" == "x" ]]; then
       # Use G1 garbage collector
        local opts="-Xms${HEAP_SIZE} -Xmx${HEAP_SIZE} -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:+UseG1GC -Xloggc:${EXCHANGIS_LOG_PATH}/$1-gc.log"
@@ -199,7 +196,6 @@ wait_for_stop(){
 
 # Input: $1:module_name, $2:main class
 launcher_start(){
-    load_env_definitions ${ENV_FILE}
     LOG INFO "Launcher: launch to start server [ $1 ]"
     status_class $1 $2
     if [[ $? -eq 0 ]]; then
@@ -214,7 +210,7 @@ launcher_start(){
     wait_for_startup 20 $1 $2
     if [[ $? -eq 0 ]]; then
         LOG INFO "Launcher: [ $1 ] start success"
-        APPLICATION_YML="${CONF_PATH}/application-exchangis.yml"
+        APPLICATION_YML="${EXCHANGIS_CONF_PATH}/application-exchangis.yml"
         EUREKA_URL=`cat ${APPLICATION_YML} | grep Zone | sed -n '1p'`
         LOG INFO "Please check exchangis server in EUREKA_ADDRESS: ${EUREKA_URL#*:} "
     else
@@ -224,7 +220,6 @@ launcher_start(){
 
 # Input: $1:module_name, $2:main class
 launcher_stop(){
-    load_env_definitions ${ENV_FILE}
     LOG INFO "Launcher: stop the server [ $1 ]"
     local p=""
     local pid_file_path=${EXCHANGIS_PID_PATH}/$1.pid
