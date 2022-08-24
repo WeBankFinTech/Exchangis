@@ -102,7 +102,7 @@
               </a-form-item>
               <!-- 动态组件 -->
               <a-form-item
-                v-for="item in dataSource.params.sinks"
+                v-for="item in sinksParams"
                 :key="item.field"
                 :label="item.label"
                 :name="item.label"
@@ -177,6 +177,7 @@ export default defineComponent({
     let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source));
     let sinkTitle = ref(objToTitle(props.dsData.dataSourceIds.sink));
     let sourceType = ref(props.dsData.dataSourceIds.source.type) // 源数据的数据源类型
+    let sinkType = ref(props.dsData.dataSourceIds.sink.type) // 源数据的数据源类型
     let isFold = ref(true);
 
     const dataSource = reactive({
@@ -223,6 +224,18 @@ export default defineComponent({
 
     setParamSource(dataSource.params.sources)
 
+    const setParamSink = (arr) => {
+      arr.forEach(ui => {
+          ui.show = true;
+          if (ui.field === "nullFormat" && sinkType.value === 'ELASTICSEARCH') {
+            ui.show = false;
+          }
+          ui.value = ui.show ? ui.value : ''
+      })
+    }
+
+    setParamSink(dataSource.params.sinks)
+
     dataSource["params"]["sinks"].forEach((item) => {
       let key = item.key.split(".").pop();
       sinksHelpMsg[key] = "";
@@ -235,6 +248,7 @@ export default defineComponent({
       sourceTitle.value = objToTitle(newVal.dataSourceIds.source);
       sinkTitle.value = objToTitle(newVal.dataSourceIds.sink);
       sourceType.value = newVal.dataSourceIds.source.type; // 源数据源类型赋值
+      sinkType.value = newVal.dataSourceIds.sink.type; // 目的数据源类型赋值
       dataSource.dataSourceIds = {
         source: newVal.dataSourceIds.source || {},
         sink: newVal.dataSourceIds.sink || {}
@@ -243,8 +257,6 @@ export default defineComponent({
         sources: newVal.params.sources || [],
         sinks: newVal.params.sinks || []
       };
-      //test 代码调试中
-      console.log('%c%s','color: red; background: yellow; font-size: 24px;', '调试444', newVal.params.sinks)
       setParamSource(dataSource.params.sources);
     }, { deep: true });
 
@@ -348,6 +360,7 @@ export default defineComponent({
         });
         return message.error("SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择");
       }
+      sinkType.value = info[0];
       dataSource.dataSourceIds.sink.type = info[0];
       dataSource.dataSourceIds.sink.ds = info[1];
       dataSource.dataSourceIds.sink.db = info[2];
@@ -360,9 +373,14 @@ export default defineComponent({
         "sink"
       ).then((res) => {
         res.uis.forEach((ui) => {
+          ui.show = true
           if (!ui.value && ui.defaultValue) {
             ui.value = ui.defaultValue;
           }
+          if (ui.field === "nullFormat" && sinkType.value === 'ELASTICSEARCH') {
+            ui.show = false;
+          }
+          ui.value = ui.show ? ui.value : ''
         });
         dataSource.params.sinks = res.uis || [];
         context.emit("updateSinkInfo", dataSource);
@@ -479,6 +497,11 @@ export default defineComponent({
           break;
       }*/
       _sinkParams.forEach((item) => {
+        item.show = true
+        if (item.field === "nullFormat" && sinkType.value === 'ELASTICSEARCH') {
+          item.show = false;
+        }
+        item.value = item.show ? item.value : ''
         if (item.field === info.field) {
           return (item.value = info.value);
         }
@@ -492,6 +515,7 @@ export default defineComponent({
 
     // 源数据数组
     const sourceParams = computed(() => dataSource.params.sources.filter(v => v.show))
+    const sinksParams = computed(() => dataSource.params.sinks.filter(v => v.show))
     return {
       formRef,
       updateSourceInfo,
@@ -508,6 +532,7 @@ export default defineComponent({
       sinksHelpMsg,
       sinksHelpStatus,
       sourceParams,
+      sinksParams,
       labelCol: {
         style: {
           style: {
