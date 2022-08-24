@@ -301,7 +301,7 @@ export default defineComponent({
           transformerItem.validator = item.validator && item.validator;
           transformerItem.transformer = item.transformer && item.transformer;
           transformerItem.deleteEnable = item.deleteEnable;
-
+ 
           fieldMap.transformerList.push(transformerItem);
           fieldMap.sourceDS.push(sourceItem);
           fieldMap.sinkDS.push(sinkItem);
