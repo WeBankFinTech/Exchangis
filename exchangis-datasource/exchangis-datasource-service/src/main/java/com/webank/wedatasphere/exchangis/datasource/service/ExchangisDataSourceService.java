@@ -1346,14 +1346,15 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         List<DataSourceDbTableColumnDTO> left = sourceFields;
         List<DataSourceDbTableColumnDTO> right = sinkFields;
         boolean exchanged = false;
-        if (containHive && "HIVE".equals(vo.getSinkTypeId())) {
+        if (containHive && "HIVE".equals(vo.getSourceTypeId())) {
             left = sinkFields;
             right = sourceFields;
             exchanged = true;
         }
-        for (int i = 0; i < left.size(); i ++){
-            DataSourceDbTableColumnDTO leftElement = left.get(i);
-            DataSourceDbTableColumnDTO rightElement = right.get(i % right.size());
+        for (int i = 0; i < right.size(); i ++){
+            LOGGER.info("rightElement is:" + right.get(i).getName());
+            DataSourceDbTableColumnDTO leftElement = left.get(i % left.size());
+            DataSourceDbTableColumnDTO rightElement = right.get(i);
             Map<String, Object> deduction = new HashMap<>();
             deduction.put("source", exchanged ? rightElement : leftElement);
             deduction.put("sink", exchanged ? leftElement : rightElement);
