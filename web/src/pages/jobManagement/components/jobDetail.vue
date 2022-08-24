@@ -333,9 +333,12 @@
                             :scroll="{ y: 240 }"
                         >
                             <template #jobExecutionId="{ record }">
-                                <router-link :to="`/synchronizationHistory?jobExecutionId=${record.jobExecutionId}`">
-                                    {{record.jobExecutionId}}
-                                </router-link>
+                                <a-tooltip>
+                                    <template #title>{{record.jobExecutionId}}</template>
+                                    <router-link :to="`/synchronizationHistory?jobExecutionId=${record.jobExecutionId}`">
+                                      {{record.jobExecutionId}}
+                                    </router-link>
+                                </a-tooltip>
                             </template>
                             <template #status="{ record }">
                                 <span>{{statusMap[record.status]}}</span>
