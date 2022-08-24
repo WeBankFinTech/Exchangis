@@ -1223,7 +1223,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 82px);
+  height: calc(100vh - 22px);
   .tools-bar {
     width: 100%;
     border-bottom: 1px solid #dee4ec;
