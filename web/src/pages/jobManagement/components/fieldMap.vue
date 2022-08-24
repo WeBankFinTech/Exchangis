@@ -33,7 +33,14 @@
           <RightOutlined v-if="!isFold" />
           <DownOutlined v-else />
         </span>
-        <span>字段映射</span>
+        <span>
+          字段映射
+          <a-tooltip v-if="engineType === 'SQOOP'" placement="rightTop">
+            <template #title>使用sqoop引擎从hive导出到mysql时，均以hcatlog的方式按照字段名称去匹配导出，所以即使改变字段顺序也不会生效。
+使用sqoop引擎从mysql导入到hive的时候，导入text格式的hive表，设置overwrite写入方式可以改变字段映射并生效，为append时候会强制转换为hcatlog，hcatlog按照字段名去匹配，改变字段映射无效。</template>
+            <QuestionCircleOutlined style="color: #e6a23c;margin-left: 10px;"/> 操作须知
+          </a-tooltip>
+        </span>
       </div>
 
       <div class="main-content" v-show="isFold"
@@ -135,6 +142,7 @@ import {
   DeleteOutlined,
   RightOutlined,
   DownOutlined,
+  QuestionCircleOutlined
 } from '@ant-design/icons-vue';
 import { getFieldFunc } from '@/common/service';
 
@@ -154,6 +162,7 @@ export default defineComponent({
     DeleteOutlined,
     RightOutlined,
     DownOutlined,
+    QuestionCircleOutlined
   },
   setup(props, context) {
     const { type } = props.fmData;

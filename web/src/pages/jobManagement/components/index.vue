@@ -1205,8 +1205,13 @@ export default {
                 this.bottomStyle = "";
                 this.maxRows = 10;
             } else {
-                this.bottomStyle = "flex: 0 0 578px; height: 578px !important;";
-                this.maxRows = 20;
+                if (document.body.clientWidth > 1400) {
+                    this.bottomStyle = "flex: 0 0 578px; height: 578px !important;";
+                    this.maxRows = 20;
+                } else {
+                    this.bottomStyle = "flex: 0 0 464px; height: 464px !important;";
+                    this.maxRows = 15;
+                }
             }
         }
     }
@@ -1378,7 +1383,6 @@ export default {
     .jd-bottom-top {
       width: 100px;
       height: 48px;
-      bottom: 30%;
       background-color: #f8f9fc;
       padding: 12px 24px;
       font-family: PingFangSC-Medium;
