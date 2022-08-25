@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.utils;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.common.utils.VariableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,9 @@ import java.util.regex.Matcher;
 
 
 public class JobUtils {
+
+    private static final String MARKER_HEAD = "r";
+
     private static Logger logger = LoggerFactory.getLogger(JobUtils.class);
 
     /**
@@ -158,4 +162,20 @@ public class JobUtils {
         return template.replace("${yesterday}",new DateTool(time).addDay(-1).format("yyyyMMdd"));
     }
 
+    /**
+     * Replace source string with variable (use Linkis common module)
+     * @param source source
+     * @return string
+     */
+    public static String replaceVariable(String source, Map<String, Object> variables){
+        String result = source;
+        if (StringUtils.isNotBlank(result)){
+            result = VariableUtils.replace(MARKER_HEAD + source, variables).substring(MARKER_HEAD.length());
+            if (StringUtils.isNotBlank(result)){
+                // Render again
+                result = renderDt(result, Calendar.getInstance());
+            }
+        }
+        return result;
+    }
 }
