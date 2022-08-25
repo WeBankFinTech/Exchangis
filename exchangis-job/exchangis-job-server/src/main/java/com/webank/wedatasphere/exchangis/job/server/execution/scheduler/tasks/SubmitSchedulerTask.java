@@ -93,8 +93,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
 //                launchedExchangisTask = new LaunchedExchangisTask(launchableExchangisTask);
                 launchedExchangisTask.setLaunchTime(launchTime);
             } catch (Exception e) {
-                submitAble.set(false);
-                info("Launch task:[name:{} ,id:{}] fail, possible reason is: [{}]",
+                info(jobExecutionId, "Launch task:[name:{} ,id:{}] fail, possible reason is: [{}]",
                         launchableExchangisTask.getName(), launchableExchangisTask.getId(), getActualCause(e).getMessage());
                 if (retryCnt.incrementAndGet() < getMaxRetryNum()) {
                     throw new ExchangisSchedulerRetryException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() +"]", e);
