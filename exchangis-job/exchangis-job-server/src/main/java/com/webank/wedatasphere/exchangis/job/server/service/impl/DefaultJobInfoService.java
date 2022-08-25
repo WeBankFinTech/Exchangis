@@ -371,24 +371,38 @@ public class DefaultJobInfoService implements JobInfoService {
     }
 
     private void setDatax(Long projectId, Map<String, Set<Long>> moduleIdsMap, boolean partial, ExportedProject exportedProject, HttpServletRequest request) throws ExchangisJobServerException {
-        List<ExchangisJobVo> datax = new ArrayList<>();
+        List<ExchangisJobVo> dataxs = new ArrayList<>();
+        LOG.info("Request: {}", request);
         if (partial) {
             Set<Long> longs = moduleIdsMap.get(ModuleEnum.DATAX_IDS.getName());
             if (longs.size() > 0) {
                 for (Long id : longs) {
-                    ExchangisJobVo job = jobInfoService.getDecoratedJob(request, id);
-                    datax.add(job);
+                    LOG.info("id: {}", id);
+                    ExchangisJobVo job = jobInfoService.getJob(id, false);
+
+                    String dataxStr = null;
+                    try {
+                        dataxStr = BDPJettyServerHelper.jacksonJson().writeValueAsString(job);
+                    } catch (JsonProcessingException e) {
+                        LOG.error("Occur error while tranform class", e.getMessage());
+                    }
+
+                    LOG.info("dataxStr99999:{}", dataxStr);
+                    LOG.info("ExchangisJobVo sqoop: {}", job.getContent());
+                    LOG.info("getCreateTime: {}", job.getId());
+                    LOG.info("executorUser999: {}", job.getExecuteUser());
+                    dataxs.add(job);
                 }
-                exportedProject.setDataxes(datax);
+                exportedProject.setDataxes(dataxs);
             }
 
         } else {
-            LOG.info("Through request {} and projectId {} get datax", request, projectId);
-            datax = jobInfoService.getSubJobList(request, projectId);
-            exportedProject.setSqoops(datax);
-            //exportedProject.setDataxes(jobInfoService.getByProject(request, projectId));
+            LOG.info("Through request {} and projectId {} get Dataxjob", request, projectId);
+            dataxs = jobInfoService.getSubJobList(request, projectId);
+            exportedProject.setSqoops(dataxs);
         }
-        LOG.info("exporting project, export datax: {}", exportedProject);
+        LOG.info("exporting project, export dataxJob: {}", exportedProject);
+
     }
 
     /**
@@ -406,8 +420,8 @@ public class DefaultJobInfoService implements JobInfoService {
             sqoopIdsStr = params.get("sqoopIds").toString();
         }
         String dataxIdsStr = null;
-        if(params.get("dataxIds") != null) {
-            dataxIdsStr = params.get("dataxIds").toString();
+        if(params.get("dataXIds") != null) {
+            dataxIdsStr = params.get("dataXIds").toString();
         }
 
         Set<Long> sqoopIds = Sets.newHashSet();
@@ -422,7 +436,7 @@ public class DefaultJobInfoService implements JobInfoService {
                     .map(Long::parseLong).collect(Collectors.toSet());
         }
         map.put("sqoopIds", sqoopIds);
-        map.put("dataxIds", dataxIds);
+        map.put("dataXIds", dataxIds);
         LOG.info("The objects to be exported are: {}", map);
         return map;
     }

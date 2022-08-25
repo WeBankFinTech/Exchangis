@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author tikazhang
@@ -54,7 +51,7 @@ public class ProjectCopyServiceImpl implements IProjectCopyService {
         Boolean partial = (Boolean) params.get("partial");
         Map<String, Set<Long>> moduleIdsMap = defaultJobInfoService.getModuleIdsMap(params);
 
-        Set<Long> longs = moduleIdsMap.get(ModuleEnum.SQOOP_IDS.getName());
+        Set<Long> longs = moduleIdsMap.get(Objects.isNull(params.get("dataXIds")) ? ModuleEnum.SQOOP_IDS.getName() : ModuleEnum.DATAX_IDS.getName());
         List<Long> list1 = new ArrayList<Long>(longs);
         ExchangisJobEntity exchangisJob = this.jobEntityDao.getBasicInfo(list1.get(0));
         Long projectId = exchangisJob.getProjectId();
