@@ -36,6 +36,6 @@ public class DefaultTaskObserverService implements TaskObserverService {
     public boolean subscribe(LaunchableExchangisTask task) {
         LaunchedExchangisTaskEntity taskEntity = new LaunchedExchangisTaskEntity(task);
         int result = this.launchedTaskDao.insertLaunchedTaskOrUpdate(taskEntity);
-        return result <= 1;
+        return result == 1;
     }
 }
