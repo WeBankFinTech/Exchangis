@@ -10,7 +10,7 @@ public enum ModuleEnum {
 
     SQOOP_IDS("sqoopIds", "SQOOP ids"),
 
-    DATAX_IDS("dataxIds", "DATAX ids");
+    DATAX_IDS("dataXIds", "DATAX ids");
 
     private String name;
     private String desc;
