@@ -1,36 +1,38 @@
 package com.webank.wedatasphere.exchangis.extension.datasource.sftp;
 
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.Classifier;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceType;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.StructClassifier;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisBatchDataSource;
 
 import java.util.List;
 
 public class ExchangisSftpDataSource extends ExchangisBatchDataSource {
-    private static final String DATASOURCE_TYPE = "SFTP";
 
     @Override
     public String name() {
-        return DATASOURCE_TYPE;
+        return DataSourceType.SFTP.name;
+    }
+
+    @Override
+    public String classifier() {
+        return Classifier.SFTP.name;
+    }
+
+    @Override
+    public String structClassifier() {
+        return StructClassifier.NON_STRUCTURED.name;
     }
 
     @Override
     public String description() {
-        return "sftp连接";
+        return "This is Sftp";
     }
 
     @Override
     public String option() {
         return "SFTP";
-    }
-
-    @Override
-    public String classifier() {
-        return "SFTP";
-    }
-
-    @Override
-    public String structClassifier() {
-        return "无结构";
     }
 
     @Override
@@ -40,6 +42,6 @@ public class ExchangisSftpDataSource extends ExchangisBatchDataSource {
 
     @Override
     public List<ExchangisJobParamConfig> getDataSourceParamConfigs() {
-        return super.getDataSourceParamConfigs(DATASOURCE_TYPE);
+        return super.getDataSourceParamConfigs(DataSourceType.SFTP.name);
     }
 }
