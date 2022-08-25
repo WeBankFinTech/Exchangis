@@ -1,36 +1,33 @@
 package com.webank.wedatasphere.exchangis.extension.datasource.hive;
 
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.Classifier;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceType;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.StructClassifier;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisBatchDataSource;
 
 import java.util.List;
 
 public class ExchangisHiveDataSource extends ExchangisBatchDataSource {
-    private static final String DATASOURCE_TYPE = "HIVE";
-
-//    @Override
-//    public String id() {
-//        return null;
-//    }
 
     @Override
     public String name() {
-        return DATASOURCE_TYPE;
+        return DataSourceType.HIVE.name;
     }
 
     @Override
     public String classifier() {
-        return "大数据存储";
+        return Classifier.HIVE.name;
     }
 
     @Override
     public String structClassifier() {
-        return "半结构化";
+        return StructClassifier.SEMI_STRUCTURED.name;
     }
 
     @Override
     public String description() {
-        return "Hive Description";
+        return "This is Hive DataSource";
     }
 
     @Override
@@ -45,6 +42,6 @@ public class ExchangisHiveDataSource extends ExchangisBatchDataSource {
 
     @Override
     public List<ExchangisJobParamConfig> getDataSourceParamConfigs() {
-        return super.getDataSourceParamConfigs(DATASOURCE_TYPE);
+        return super.getDataSourceParamConfigs(DataSourceType.HIVE.name);
     }
 }
