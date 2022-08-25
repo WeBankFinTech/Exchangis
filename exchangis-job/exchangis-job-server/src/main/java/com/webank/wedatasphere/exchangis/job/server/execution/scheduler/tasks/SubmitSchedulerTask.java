@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -43,29 +44,45 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
     private Callable<Boolean> submitCondition;
 
     private AtomicInteger retryCnt = new AtomicInteger(0);
+
+    /**
+     * Submittable
+     */
+    private AtomicBoolean submitAble = new AtomicBoolean(false);
     /**
      * Each schedule task should has an id
      *
      */
     public SubmitSchedulerTask(LaunchableExchangisTask task, Callable<Boolean> submitCondition) {
-        super(String.valueOf(task.getId()));
-        this.launchableExchangisTask = task;
-        this.submitCondition = submitCondition;
+        this(task, submitCondition, false);
     }
 
     public SubmitSchedulerTask(LaunchableExchangisTask task){
-        this(task, null);
+        this(task, null, false);
+    }
+    public SubmitSchedulerTask(LaunchableExchangisTask task, Callable<Boolean> submitCondition, boolean checkCondition) {
+        super(String.valueOf(task.getId()));
+        this.launchableExchangisTask = task;
+        this.submitCondition = submitCondition;
+        if (checkCondition) {
+            try {
+                submitAble.set(submitCondition.call());
+            } catch (Exception e) {
+                // Ignore
+            }
+        }
     }
     @Override
     protected void schedule() throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
-        Boolean submitAble;
         String jobExecutionId = this.launchableExchangisTask.getJobExecutionId();
-        try {
-            submitAble = submitCondition.call();
-        } catch (Exception e){
-            throw new ExchangisSchedulerRetryException("Error occurred in examining submit condition for task: [" + launchableExchangisTask.getId() + "]", e);
+        if (!submitAble.get()) {
+            try {
+                submitAble.set(submitCondition.call());
+            } catch (Exception e) {
+                throw new ExchangisSchedulerRetryException("Error occurred in examining submit condition for task: [" + launchableExchangisTask.getId() + "]", e);
+            }
         }
-        if (submitAble) {
+        if (submitAble.get()) {
             info(jobExecutionId, "Submit the launchable task: [name:{} ,id:{} ] to launcher: [{}], retry_count: {}",
                     launchableExchangisTask.getName(), launchableExchangisTask.getId(), launcher.name(), retryCnt.get());
             LaunchedExchangisTask launchedExchangisTask;
@@ -76,16 +93,19 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
 //                launchedExchangisTask = new LaunchedExchangisTask(launchableExchangisTask);
                 launchedExchangisTask.setLaunchTime(launchTime);
             } catch (Exception e) {
+                info(jobExecutionId, "Launch task:[name:{} ,id:{}] fail, possible reason is: [{}]",
+                        launchableExchangisTask.getName(), launchableExchangisTask.getId(), getActualCause(e).getMessage());
                 if (retryCnt.incrementAndGet() < getMaxRetryNum()) {
-                    // Remove the launched task stored
-                    onEvent(new TaskDeleteEvent(String.valueOf(launchableExchangisTask.getId())));
                     throw new ExchangisSchedulerRetryException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() +"]", e);
                 }else {
                     // Update the launched task status to fail
-                    launchedExchangisTask = new LaunchedExchangisTask();
-                    launchedExchangisTask.setTaskId(String.valueOf(launchableExchangisTask.getId()));
-                    launchedExchangisTask.setJobExecutionId(launchableExchangisTask.getJobExecutionId());
-                    onEvent(new TaskStatusUpdateEvent(launchedExchangisTask, TaskStatus.Failed));
+                    // New be failed
+                    // Remove the launched task stored
+                    onEvent(new TaskDeleteEvent(String.valueOf(launchableExchangisTask.getId())));
+//                    launchedExchangisTask = new LaunchedExchangisTask();
+//                    launchedExchangisTask.setTaskId(String.valueOf(launchableExchangisTask.getId()));
+//                    launchedExchangisTask.setJobExecutionId(launchableExchangisTask.getJobExecutionId());
+//                    onEvent(new TaskStatusUpdateEvent(launchedExchangisTask, TaskStatus.Failed));
                 }
                 throw new ExchangisSchedulerException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() +"]", e);
             }
@@ -98,21 +118,19 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                     successAdd = false;
                     error(jobExecutionId, "Error occurred in adding running task: [{}] to taskManager, linkis_id: [{}], should kill the job in linkis!",
                             launchedExchangisTask.getId(), launchedExchangisTask.getLinkisJobId(), e);
-                    LaunchedExchangisTask finalLaunchedExchangisTask1 = launchedExchangisTask;
                     Optional.ofNullable(launchedExchangisTask.getLauncherTask()).ifPresent(launcherTask -> {
                         try {
                             launcherTask.kill();
                         } catch (ExchangisTaskLaunchException ex){
-                            LOG.error("Kill linkis_id: [{}] fail", finalLaunchedExchangisTask1.getLinkisJobId(), e);
+                            LOG.error("Kill linkis_id: [{}] fail", launchedExchangisTask.getLinkisJobId(), e);
                         }
                     });
                 }
                 if (successAdd && Objects.nonNull(this.loadBalancer)) {
                     // Add the launchedExchangisTask to the load balance poller
                     List<LoadBalanceSchedulerTask<LaunchedExchangisTask>> loadBalanceSchedulerTasks = this.loadBalancer.choose(launchedExchangisTask);
-                    LaunchedExchangisTask finalLaunchedExchangisTask = launchedExchangisTask;
                     Optional.ofNullable(loadBalanceSchedulerTasks).ifPresent(tasks -> tasks.forEach(loadBalanceSchedulerTask -> {
-                        loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(finalLaunchedExchangisTask);
+                        loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(launchedExchangisTask);
                     }));
                 }
             }
@@ -134,6 +152,18 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
         return new JobLogEvent(level, this.getTenancy(), executionId, message, args);
     }
 
+    /**
+     * Get actual cause
+     * @param throwable throwable
+     * @return Throwable
+     */
+    private Throwable getActualCause(Throwable throwable){
+        Throwable t = throwable;
+        while (Objects.nonNull(t.getCause())){
+            t = t.getCause();
+        }
+        return t;
+    }
     @Override
     public JobLogListener getJobLogListener() {
         if (Objects.nonNull(this.taskManager)){
@@ -146,6 +176,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
     public String getName() {
         return "Scheduler-SubmitTask-" + getId();
     }
+
 
     @Override
     public JobInfo getJobInfo() {
