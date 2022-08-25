@@ -224,14 +224,15 @@ public class TransformExchangisJob extends GenericExchangisJob {
             items.forEach(item -> {
                 Object value = item.getConfigValue();
                 if (value instanceof String){
-                    item.setConfigValue(VariableUtils.replace((String)value));
+                    item.setConfigValue(JobUtils.replaceVariable((String)value, new HashMap<>()));
                 } else if (value instanceof Map){
                     for (Object key:((Map) value).keySet()) {
-                        ((Map) value).put(key, VariableUtils.replace(((String)((Map) value).get(key))));
+                        ((Map) value).put(key, JobUtils.replaceVariable(((String)((Map) value).get(key)), new HashMap<>()));
                     }
                 }
             });
         }
+
     }
 
 }
