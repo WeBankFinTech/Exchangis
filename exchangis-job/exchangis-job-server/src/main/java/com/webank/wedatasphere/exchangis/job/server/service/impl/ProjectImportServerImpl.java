@@ -129,25 +129,31 @@ public class ProjectImportServerImpl implements IProjectImportService {
         }
     }
 
-    private void importDatax(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog, String userName, String importType) {
-        List<ExchangisJobVo> dataxes = exportedProject.getDataxes();
-        if (dataxes == null) {
+    private void importDatax(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog, String userName, String importType) throws ExchangisJobServerException {
+
+        List<ExchangisJobVo> dataxs = exportedProject.getDataxes();
+        if (dataxs == null) {
             return;
         }
-        for (ExchangisJobVo datax : dataxes) {
-            Long oldId = datax.getId();
-            datax.setProjectId(projectId);
-            datax.setJobName(updateName(datax.getJobName(), versionSuffix));
-            //Long existingId = (long) 66;
-            Long existingId = jobInfoService.getByNameWithProjectId(datax.getJobName(), projectId).get(0).getId();
-            //Long existingId = jobInfoService.getByNameWithProjectId(datax.getJobName(), projectId);
-            if (existingId != null) {
-                idCatalog.getSqoop().put(oldId, existingId);
-            } else {
-                jobInfoService.createJob(datax);
-                idCatalog.getSqoop().put(oldId, datax.getId());
-            }
+        List<ExchangisProject> projects = projectMapper.getDetailByName(exportedProject.getName());
+        if (projects.size() == 0) {
+            ExchangisProject project = new ExchangisProject();
+            project.setName(exportedProject.getName());
+            project.setCreateTime(Calendar.getInstance().getTime());
+            project.setCreateUser(userName);
+            Long newProjectId = projectMapper.insertOne(project);
+            List<ExchangisProject> newProjects = projectMapper.getDetailByName(exportedProject.getName());
+            addSqoopTask (dataxs, newProjects, versionSuffix, idCatalog, projectId, importType);
         }
+        else if (projects.size() == 1) {
+            addSqoopTask (dataxs, projects, versionSuffix, idCatalog, projectId, importType);
+        }
+        else {
+            throw new ExchangisJobServerException(31101, "Already exits duplicated project name(存在重复项目名称) projectName is:" + "[" + exportedProject.getName() + "]");
+        }
+
+
+
     }
 
     public void addSqoopTask (List<ExchangisJobVo> sqoops, List<ExchangisProject> projects, String versionSuffix, IdCatalog idCatalog, Long projectId, String importType) throws ExchangisJobServerException {
