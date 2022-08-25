@@ -108,7 +108,7 @@ public class JobUtils {
                             dataTool.getMonthEnd(0);
                         } else if (DateTool.TIME_PLACEHOLDER_TIMESTAMP.equals(symbol)){
                             calendar.setTime(date);
-                            calendar.add(Calendar.DAY_OF_MONTH, -1);
+                            calendar.add(Calendar.DAY_OF_MONTH, 0);
                             tempTime = String.valueOf(calendar.getTimeInMillis());
                             startTime = template.replace(m, tempTime);
                             return startTime;
