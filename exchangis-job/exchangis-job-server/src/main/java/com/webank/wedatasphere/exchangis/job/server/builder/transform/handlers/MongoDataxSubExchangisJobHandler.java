@@ -38,7 +38,7 @@ public class MongoDataxSubExchangisJobHandler extends AuthEnabledSubExchangisJob
     /**
      * Connect params
      */
-    private static final JobParamDefine<String> OPTION_PARAMS = JobParams.define("optionParams", JobParamConstraints.CONNECT_PARAMS,
+    private static final JobParamDefine<Map<String, Object>> OPTION_PARAMS = JobParams.define("optionParams", JobParamConstraints.CONNECT_PARAMS,
             connectParams -> Json.fromJson(connectParams, Map.class), String.class);
     /**
      * Collection name(table)
