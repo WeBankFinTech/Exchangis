@@ -21,7 +21,6 @@ ENV_FILE="${DIR}/env.properties"
 SHELL_LOG="${DIR}/command.log"
 USER_DIR="${DIR}/../"
 EXCHANGIS_LIB_PATH="${DIR}/../lib"
-EXCHANGIS_LOG_PATH="${DIR}/../logs"
 EXCHANGIS_PID_PATH="${DIR}/../runtime"
 # Default
 MAIN_CLASS=""
