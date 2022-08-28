@@ -342,35 +342,50 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
             }
             SchedulerTaskSegment[] newSegments = new SchedulerTaskSegment[newSize];
             System.arraycopy(segments, 0, newSegments, 0, newSize);
-            int offset = 0;
+            int offset = -1;
+            Map<String, List<LoadBalanceSchedulerTask<LaunchedExchangisTask>>> waitForCombine = new HashMap<>();
             for(int i = newSize; i < segments.length; i ++){
                 LoadBalanceSchedulerTask<LaunchedExchangisTask> schedulerTask = segments[i].loadBalanceSchedulerTask;
                 try {
-                    if (AbstractExchangisSchedulerTask.class.isAssignableFrom(schedulerTask.getClass())) {
-                        ((AbstractExchangisSchedulerTask) schedulerTask).kill();
-                    }
-                    // Merge the poller
-                    LoadBalancePoller<LaunchedExchangisTask> poller = schedulerTask.getOrCreateLoadBalancePoller();
-                    // Combine the poller
-                    int start = offset % newSize;
-                    int pos = start;
                     SchedulerTaskSegment newSegment = null;
+                    int count = 0;
                     do {
-                        newSegment = newSegments[pos];
-                        offset ++;
-                        pos = offset % newSize;
-                    }while (newSegment.loadBalanceSchedulerTask.getState() == SchedulerEventState.Running() || start == pos);
-                    if (newSegment.loadBalanceSchedulerTask.getState() != SchedulerEventState.Running()){
-                        LOG.warn("Unable to scale-out segments for tenancy: [{}], reason:" +
-                                " the scheduler task has still in state[ {}], scheduler_task_type: [{}]",
-                                tenancy, newSegment.loadBalanceSchedulerTask.getState(), taskName);
+                        offset = (offset + 1) % newSize;
+                        newSegment = newSegments[offset];
+                        count ++;
+                    }while (newSegment.loadBalanceSchedulerTask.getState() != SchedulerEventState.Running() && count <= newSize);
+                    if (offset != 0 && newSegment.loadBalanceSchedulerTask.getState() != SchedulerEventState.Running()){
+                        // Ignore the first load balance scheduler task
+                        LOG.error("Unable to scale-out segments for tenancy: [{}], reason:" +
+                                " the scheduler task has still in state[{}], scheduler_task_type: [{}], offset: [{}]",
+                                tenancy, newSegment.loadBalanceSchedulerTask.getState(), taskName, offset);
                         return;
                     }
-                    newSegments[offset++ % newSize].loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().combine(poller);
+                    waitForCombine.compute(offset + "", (key, value) -> {
+                        if (Objects.isNull(value)){
+                            value = new ArrayList<>();
+                        }
+                        value.add(schedulerTask);
+                        return value;
+                    });
                 } catch (Exception e){
                     LOG.warn("Scale-out segments for tenancy: [{}] wrong, index: [{}], scheduler_task_type: [{}]", tenancy, i, taskName, e);
                 }
             }
+            // Kill all
+            waitForCombine.forEach((key, tasks) -> {
+                SchedulerTaskSegment newSegment = newSegments[Integer.parseInt(key)];
+                tasks.forEach(task -> {
+                    // Kill task
+                    if (AbstractExchangisSchedulerTask.class.isAssignableFrom(task.getClass())) {
+                        ((AbstractExchangisSchedulerTask) task).kill();
+                    }
+                    // Merge/Combine the poller
+                    LoadBalancePoller<LaunchedExchangisTask> poller = task.getOrCreateLoadBalancePoller();
+                    LOG.info("Merge/combine [{}] poller form {} to {}", taskName, task.getId(), newSegment.loadBalanceSchedulerTask.getId());
+                    newSegment.loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().combine(poller);
+                });
+            });
             segments = newSegments;
         }
         /**
