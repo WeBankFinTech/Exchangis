@@ -250,9 +250,9 @@ public class ExchangisJobDssAppConnRestfulApi {
         String userName = SecurityFilter.getLoginUsername(request);
         try {
             LOG.info("param: {}", params);
-            if (!hasAuthority(userName, jobInfoService.getJob(((Integer) params.get("sqoopIds")).longValue(), true))) {
+            /*if (!hasAuthority(userName, jobInfoService.getJob(((Integer) params.get("sqoopIds")).longValue(), true))) {
                 return Message.error("You have no permission to import (没有导入权限)");
-            }
+            }*/
             response = projectImportServer.importProject(request, params);
             LOG.info("import job success");
         } catch (ExchangisJobServerException e){
@@ -271,9 +271,9 @@ public class ExchangisJobDssAppConnRestfulApi {
         LOG.info("export function params: {}", params);
         Message response = null;
         try {
-            if (!hasAuthority(userName, jobInfoService.getJob(((Integer) params.get("sqoopIds")).longValue(), true))) {
+            /*if (!hasAuthority(userName, jobInfoService.getJob(((Integer) params.get("sqoopIds")).longValue(), true))) {
                 return Message.error("You have no permission to export (没有导出权限)");
-            }
+            }*/
             response = jobInfoService.exportProject(params, userName, request);
             LOG.info("export job success");
         } catch (Exception e){
