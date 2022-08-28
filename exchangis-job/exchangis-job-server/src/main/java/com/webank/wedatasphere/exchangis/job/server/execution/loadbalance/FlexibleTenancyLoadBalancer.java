@@ -13,6 +13,7 @@ import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
 import org.apache.linkis.scheduler.queue.GroupFactory;
+import org.apache.linkis.scheduler.queue.SchedulerEventState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -333,7 +334,7 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
          */
         private void scaleOutSegment(int scaleOut){
             int newSize = segments.length - scaleOut;
-            LOG.info("Scale-out segments for tenancy: [{}]，scaleOut: [{}], newSize: [{}], scheduler task: [{}]",
+            LOG.info("Scale-out segments for tenancy: [{}]，scaleOut: [{}], newSize: [{}], scheduler_task_type: [{}]",
                     tenancy, scaleOut, newSize, taskName);
             if (newSize <= 0){
                 LOG.warn("Scale-out fail, the newSize cannot <= 0");
@@ -351,9 +352,23 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                     // Merge the poller
                     LoadBalancePoller<LaunchedExchangisTask> poller = schedulerTask.getOrCreateLoadBalancePoller();
                     // Combine the poller
-                    newSegments[offset % newSize].loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().combine(poller);
+                    int start = offset % newSize;
+                    int pos = start;
+                    SchedulerTaskSegment newSegment = null;
+                    do {
+                        newSegment = newSegments[pos];
+                        offset ++;
+                        pos = offset % newSize;
+                    }while (newSegment.loadBalanceSchedulerTask.getState() == SchedulerEventState.Running() || start == pos);
+                    if (newSegment.loadBalanceSchedulerTask.getState() != SchedulerEventState.Running()){
+                        LOG.warn("Unable to scale-out segments for tenancy: [{}], reason:" +
+                                " the scheduler task has still in state[ {}], scheduler_task_type: [{}]",
+                                tenancy, newSegment.loadBalanceSchedulerTask.getState(), taskName);
+                        return;
+                    }
+                    newSegments[offset++ % newSize].loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().combine(poller);
                 } catch (Exception e){
-                    LOG.warn("Scale-out segments for tenancy: [{}] wrong, index: [{}], scheduler task: [{}]", tenancy, i, taskName, e);
+                    LOG.warn("Scale-out segments for tenancy: [{}] wrong, index: [{}], scheduler_task_type: [{}]", tenancy, i, taskName, e);
                 }
             }
             segments = newSegments;
@@ -371,13 +386,24 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                 try {
                     LoadBalanceSchedulerTask<LaunchedExchangisTask> schedulerTask =
                             createLoadBalanceSchedulerTask(segments[0].loadBalanceSchedulerTask.getClass());
+                    //
+                    final SchedulerTaskSegment segment = new SchedulerTaskSegment(0, schedulerTask);
                     if (schedulerTask instanceof AbstractLoadBalanceSchedulerTask){
                         ((AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask>) schedulerTask)
                                 .setSchedulerLoadBalancer(FlexibleTenancyLoadBalancer.this);
+                        ((AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask>) schedulerTask).setScheduleListener( task -> {
+                            segmentLock.writeLock().lock();
+                            try{
+                                segment.setWeight(1);
+                                LOG.info("Init the weight of segment to 1, relate scheduler task: {}", task.getName());
+                            }finally {
+                                segmentLock.writeLock().unlock();
+                            }
+                        });
                     }
                     schedulerTask.setTenancy(tenancy);
+                    newSegments[i] = segment;
                     getScheduler().submit(schedulerTask);
-                    newSegments[i] = new SchedulerTaskSegment(1, schedulerTask);
                 } catch (Exception e){
                     LOG.warn("Scale-in segments for tenancy: [{}] wrong, index: [{}]", tenancy, i, e);
                 }
@@ -441,6 +467,11 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
             this.cwt = this.wt;
             this.loadBalanceSchedulerTask = task;
             this.schedulerId = task.getId();
+        }
+
+        public void setWeight(int weight){
+            this.wt = weight;
+            this.cwt = this.wt;
         }
     }
 

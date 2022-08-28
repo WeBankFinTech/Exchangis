@@ -138,6 +138,13 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
     }
 
     /**
+     * Check if it can be submitted
+     * @return boolean
+     */
+    public boolean isSubmitAble(){
+        return submitAble.get();
+    }
+    /**
      * Listen the execution event
      * @param event
      */

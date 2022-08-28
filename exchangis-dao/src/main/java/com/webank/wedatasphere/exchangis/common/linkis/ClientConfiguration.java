@@ -18,4 +18,9 @@ public class ClientConfiguration {
      */
     public static final CommonVars<String> LINKIS_TOKEN_VALUE = CommonVars.apply("wds.exchangis.client.linkis.token.value", "EXCHANGIS-TOKEN");
 
+    /**
+     * Linkis client max connections
+     */
+    public static final CommonVars<Integer> LINKIS_DEFAULT_MAX_CONNECTIONS = CommonVars.apply("wds.exchangis.client.linkis.max-connections.default", 70);
+
 }
