@@ -24,7 +24,7 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskObserver.class);
 
-    private static final int DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL = 30000;
+    private static final int DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL = 10000;
 
     private static final int DEFAULT_TASK_OBSERVER_PUBLISH_BATCH = 50;
 
