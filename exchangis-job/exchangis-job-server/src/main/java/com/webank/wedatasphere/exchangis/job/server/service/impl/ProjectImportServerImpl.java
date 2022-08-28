@@ -60,8 +60,9 @@ public class ProjectImportServerImpl implements IProjectImportService {
         //String resourceId = "99763d27-a35e-43f2-829b-100830bca538";
         String resourceId = (String) params.get("resourceId");
         String version = (String) params.get("version");
+        Long projectId = (Long) params.get("projectId");
         //Long projectId = Long.parseLong("1497870871035973669");
-        Long projectId = Long.parseLong("111111");
+        //Long projectId = Long.parseLong("111111");
         String projectVersion = (String) params.get("projectVersion");
         String flowVersion = (String) params.get("flowVersion");
         String versionSuffix = projectVersion + "_" + flowVersion;
@@ -161,17 +162,17 @@ public class ProjectImportServerImpl implements IProjectImportService {
             Long projectIdProd = projects.get(0).getId();
             Long oldId = sqoop.getId();
             if (importType.equals("import")) {
-                sqoop.setProjectId(projectIdProd);
+                sqoop.setProjectId(projectId);
             }
             sqoop.setJobName(updateName(sqoop.getJobName(), versionSuffix));
             //Long existingId = (long) 55;
             LOG.info("oldId: {}, projectid: {}, jobName: {}", sqoop.getId(), sqoop.getProjectId(), sqoop.getJobName());
-            LOG.info("jobByNameWithProjectId: {}", jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectIdProd));
+            LOG.info("jobByNameWithProjectId: {}", jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId));
             Long existingId;
-            if (jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectIdProd) == null || jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId).size() == 0) {
+            if (jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId) == null || jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId).size() == 0) {
                 existingId = null;
             } else {
-                existingId = jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectIdProd).get(0).getId();
+                existingId = jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId).get(0).getId();
             }
             //Long existingId = jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId);
             if (existingId != null) {
