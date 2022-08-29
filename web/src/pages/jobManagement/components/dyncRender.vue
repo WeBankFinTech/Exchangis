@@ -123,6 +123,7 @@ export default defineComponent({
     let partitionArr = ref([])
     const _buildMap = function () {
       partitionArr.value = []
+      if (props.data?.type !== 'HIVE') return; // 只有hive会执行分区
       let url
       const source_reg = new RegExp('^http');
       if (source_reg.test(source.value)) {
