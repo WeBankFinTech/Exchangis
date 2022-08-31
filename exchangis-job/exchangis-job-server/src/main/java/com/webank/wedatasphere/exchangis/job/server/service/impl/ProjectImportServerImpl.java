@@ -179,10 +179,9 @@ public class ProjectImportServerImpl implements IProjectImportService {
                 idCatalog.getSqoop().put(oldId, existingId);
                 throw new ExchangisJobServerException(31101, "Already exits duplicated job name(存在重复任务名称) jobName is:" + "[" + sqoop.getJobName() + "]");
             } else {
-                //sqoop.setJobName("hahaha");
                 LOG.info("Sqoop job content is: {}, Modify user is: {}, jobType is: {}", sqoop.getContent(), sqoop.getExecuteUser(), sqoop.getJobType());
                 ExchangisJobVo jobVo = jobInfoService.createJob(sqoop);
-                LOG.info("oldId: {}, newid: {}, jobName0000000: {}", sqoop.getId(), jobVo.getId(), jobVo.getJobName());
+                LOG.info("oldId: {}, newid: {}, jobName: {}", sqoop.getId(), jobVo.getId(), jobVo.getJobName());
                 idCatalog.getSqoop().put(oldId, jobVo.getId());
             }
         }
