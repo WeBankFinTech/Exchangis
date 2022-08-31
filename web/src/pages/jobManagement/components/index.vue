@@ -693,6 +693,9 @@ export default {
             const data = this.getFieldsParams(this.curTask);
             if (data) {
                 getFields(data).then((res) => {
+                    this.fieldsSource = res.sourceFields;
+                    this.fieldsSink = res.sinkFields;
+                    this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
                     this.transformEnable = res.transformEnable;
                 }).catch((err) => {
