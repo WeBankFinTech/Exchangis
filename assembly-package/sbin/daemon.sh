@@ -23,7 +23,6 @@ else
   source ./common.sh
 fi
 
-MODULE_NAME=""
 usage(){
   echo "Usage is [start|stop|restart {service}]"
 }
