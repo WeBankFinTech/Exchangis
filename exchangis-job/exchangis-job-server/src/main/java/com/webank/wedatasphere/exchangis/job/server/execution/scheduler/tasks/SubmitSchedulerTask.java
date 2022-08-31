@@ -121,12 +121,11 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                     successAdd = false;
                     error(jobExecutionId, "Error occurred in adding running task: [{}] to taskManager, linkis_id: [{}], should kill the job in linkis!",
                             launchedExchangisTask.getId(), launchedExchangisTask.getLinkisJobId(), e);
-                    LaunchedExchangisTask finalLaunchedExchangisTask1 = launchedExchangisTask;
                     Optional.ofNullable(launchedExchangisTask.getLauncherTask()).ifPresent(launcherTask -> {
                         try {
                             launcherTask.kill();
                         } catch (ExchangisTaskLaunchException ex){
-                            LOG.error("Kill linkis_id: [{}] fail", finalLaunchedExchangisTask1.getLinkisJobId(), e);
+                            LOG.error("Kill linkis_id: [{}] fail", launchedExchangisTask.getLinkisJobId(), e);
                         }
                     });
                 }
@@ -140,9 +139,8 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                     if (Objects.nonNull(this.loadBalancer)){
                         // Add the launchedExchangisTask to the load balance poller
                         List<LoadBalanceSchedulerTask<LaunchedExchangisTask>> loadBalanceSchedulerTasks = this.loadBalancer.choose(launchedExchangisTask);
-                        LaunchedExchangisTask finalLaunchedExchangisTask = launchedExchangisTask;
                         Optional.ofNullable(loadBalanceSchedulerTasks).ifPresent(tasks -> tasks.forEach(loadBalanceSchedulerTask -> {
-                            loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(finalLaunchedExchangisTask);
+                            loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(launchedExchangisTask);
                         }));
                     }
                 }
