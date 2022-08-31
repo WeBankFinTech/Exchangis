@@ -209,6 +209,7 @@ export default defineComponent({
           o.value = info.name;
           o.label = info.name;
           o.type = info.type;
+          o.fieldIndex = info.fieldIndex;
           fieldOptions.push(o);
         });
       }
@@ -372,6 +373,7 @@ export default defineComponent({
           fieldOptions.forEach((field) => {
             if (field.value === item.fieldName) {
               item.fieldType = field.type;
+              item.fieldIndex = field.fieldIndex;
             }
           });
           return;
@@ -394,6 +396,7 @@ export default defineComponent({
           fieldOptions.forEach((field) => {
             if (field.value === item.fieldName) {
               item.fieldType = field.type;
+              item.fieldIndex = field.fieldIndex;
             }
           });
           return;
