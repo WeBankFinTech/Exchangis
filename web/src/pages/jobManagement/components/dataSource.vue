@@ -208,16 +208,16 @@ export default defineComponent({
       let transferModeValue = ''
       let defShow  = arr.filter(v => !v.refId)
       arr.forEach(ui => {
-        ui.show = true
+        ui.show = '_true'
         if (ui.field === "transferMode") {
           transferModeValue = ui.value + ui.id;
         }
         if (ui.refId) {
-          ui.show = defShow.some(v => v.id === ui.refId);
+          ui.show = defShow.some(v => v.id === ui.refId) ? '_true' : '_false';
           if (ui.field === "nullFormat") {
-            ui.show = transferModeValue === ("记录" + ui.refId);
+            ui.show = transferModeValue === ("记录" + ui.refId) ? '_true' : '_false';
           }
-          ui.value = ui.show ? ui.value : ''
+          ui.value = ui.show !== '_false' ? ui.value : ''
         }
       })
     }
@@ -226,11 +226,11 @@ export default defineComponent({
 
     const setParamSink = (arr) => {
       arr.forEach(ui => {
-          ui.show = true;
+          ui.show = '_true';
           if (ui.field === "nullFormat" && sinkType.value === 'ELASTICSEARCH') {
-            ui.show = false;
+            ui.show = '_false';
           }
-          ui.value = ui.show ? ui.value : ''
+          ui.value = ui.show !== '_false' ? ui.value : ''
       })
     }
 
@@ -258,6 +258,8 @@ export default defineComponent({
         sinks: newVal.params.sinks || []
       };
       setParamSource(dataSource.params.sources);
+      setParamSink(dataSource.params.sinks);
+      console.log('数据源信息', newProps)
     }, { deep: true });
 
     const formRef = ref();
@@ -327,7 +329,7 @@ export default defineComponent({
           if (ui.source) {
             ui.source = ui.source + '?_=' + Math.random()
           }*/
-          ui.show = true
+          ui.show = '_true'
           if (!ui.value && ui.defaultValue) {
             ui.value = ui.defaultValue;
           }
@@ -335,11 +337,11 @@ export default defineComponent({
             transferModeValue = ui.value + ui.id;
           }
           if (ui.refId) {
-            ui.show = defShow.some(v => v.id === ui.refId);
+            ui.show = defShow.some(v => v.id === ui.refId) ? '_true' : '_false';
             if (ui.field === "nullFormat") {
-              ui.show = transferModeValue === ("记录" + ui.refId);
+              ui.show = transferModeValue === ("记录" + ui.refId)  ? '_true' : '_false';
             }
-            ui.value = ui.show ? ui.value : ''
+            ui.value = ui.show !== '_false' ? ui.value : ''
           }
         });
         dataSource.params.sources = res.uis || [];
@@ -373,14 +375,14 @@ export default defineComponent({
         "sink"
       ).then((res) => {
         res.uis.forEach((ui) => {
-          ui.show = true
+          ui.show = '_true';
           if (!ui.value && ui.defaultValue) {
             ui.value = ui.defaultValue;
           }
           if (ui.field === "nullFormat" && sinkType.value === 'ELASTICSEARCH') {
-            ui.show = false;
+            ui.show = '_false';
           }
-          ui.value = ui.show ? ui.value : ''
+          ui.value = ui.show !== '_false' ? ui.value : ''
         });
         dataSource.params.sinks = res.uis || [];
         context.emit("updateSinkInfo", dataSource);
@@ -430,16 +432,16 @@ export default defineComponent({
       let transferModeValue = ''
       let defShow = _sourceParams.filter(v => !v.refId); // 默认显示项
       _sourceParams.forEach((item) => {
-        item.show = true
+        item.show = '_true';
         if (item.field === "transferMode" && item.id) {
           transferModeValue = item.value + item.id
         }
         if (item.refId) {
-          item.show = defShow.some(v => v.id === item.refId);
+          item.show = defShow.some(v => v.id === item.refId) ? '_true' : '_false';
           if (item.field === "nullFormat") {
-            item.show = transferModeValue === ("记录" + item.refId);
+            item.show = transferModeValue === ("记录" + item.refId) ? '_true' : '_false';
           }
-          item.value = item.show ? item.value : ''
+          item.value = item.show !== '_false' ? item.value : ''
         }
         if (item.field === info.field) {
           return (item.value = info.value);
@@ -497,11 +499,11 @@ export default defineComponent({
           break;
       }*/
       _sinkParams.forEach((item) => {
-        item.show = true
+        item.show = '_true';
         if (item.field === "nullFormat" && sinkType.value === 'ELASTICSEARCH') {
-          item.show = false;
+          item.show = '_false';
         }
-        item.value = item.show ? item.value : ''
+        item.value = item.show !== '_false' ? item.value : ''
         if (item.field === info.field) {
           return (item.value = info.value);
         }
@@ -514,8 +516,8 @@ export default defineComponent({
     };
 
     // 源数据数组
-    const sourceParams = computed(() => dataSource.params.sources.filter(v => v.show))
-    const sinksParams = computed(() => dataSource.params.sinks.filter(v => v.show))
+    const sourceParams = computed(() => dataSource.params.sources.filter(v => v.show !== '_false'))
+    const sinksParams = computed(() => dataSource.params.sinks.filter(v => v.show !== '_false'))
     return {
       formRef,
       updateSourceInfo,
