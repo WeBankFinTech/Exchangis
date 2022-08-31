@@ -709,7 +709,11 @@ export default {
             console.log('当前任务切换后', this.curTask.transforms);
             const data = this.getFieldsParams(this.curTask);
             if (data) {
+                console.log('获取字段映射');
                 getFields(data).then((res) => {
+                    this.fieldsSource = res.sourceFields;
+                    this.fieldsSink = res.sinkFields;
+                    this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
                     this.transformEnable = res.transformEnable;
                 }).catch((err) => {
