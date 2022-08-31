@@ -8,6 +8,7 @@ import org.apache.linkis.scheduler.queue.fifoqueue.FIFOSchedulerContextImpl;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Contains the executorManager, consumerManager and groupFactory
@@ -17,22 +18,20 @@ public class ExchangisSchedulerContext extends FIFOSchedulerContextImpl {
     /**
      * Tenancy list
      */
-    private String tenancies;
+    private final List<String> tenancies;
 
     private int maxParallelismPerUser = 1;
-    public ExchangisSchedulerContext(int maxParallelismPerUser, String tenancies) {
+    public ExchangisSchedulerContext(int maxParallelismPerUser, List<String> tenancies) {
         super(Integer.MAX_VALUE);
         this.maxParallelismPerUser = maxParallelismPerUser;
-        if (StringUtils.isNotBlank(tenancies)){
-            this.tenancies = tenancies;
-        }
+        this.tenancies = tenancies;
     }
 
     @Override
     public GroupFactory createGroupFactory() {
         TenancyParallelGroupFactory parallelGroupFactory = new TenancyParallelGroupFactory();
         parallelGroupFactory.setParallelPerTenancy(maxParallelismPerUser);
-        parallelGroupFactory.setTenancies(StringUtils.isNotBlank(tenancies)? Arrays.asList(tenancies.split(",")) : Collections.emptyList());
+        parallelGroupFactory.setTenancies(this.tenancies);
         return parallelGroupFactory;
     }
 
@@ -41,4 +40,7 @@ public class ExchangisSchedulerContext extends FIFOSchedulerContextImpl {
         throw new ExchangisSchedulerException.Runtime("Must set the consumer manager before scheduling", null);
     }
 
+    public List<String> getTenancies() {
+        return tenancies;
+    }
 }
