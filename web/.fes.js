@@ -22,6 +22,9 @@ export default {
         meta: {
           name: "projectManage",
           title: "globalMenu.projectManage",
+          subs: [
+            '/jobManagement'
+          ]
         },
       },
       {

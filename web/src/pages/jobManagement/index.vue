@@ -13,7 +13,7 @@
 
     <!-- top nav -->
     <div class="job-management-tabs">
-      <div class="name" style="
+      <div class="name ant-tag ant-tag-blue" style="
         position: absolute;
         right: 15px;
         line-height: 33px;">{{ name }}</div>
@@ -40,7 +40,12 @@
           @click="choose(idx)"
         >
           <div>
-            <span class="iconfont icon-hive job-management-icon"></span>
+            <span class="job-item-icon" v-if="item.engineType === 'DATAX'">
+               <img src="../../images/datax-icon.png" alt="DATAX"/>
+            </span>
+            <span class="job-item-icon" v-else>
+              <img src="../../images/sqoop-icon.png" alt="SQOOP"/>
+            </span>
           </div>
           <div
             :title="item.title"
@@ -52,7 +57,7 @@
           </div>
           <div class="close-icon">
             <a-popconfirm
-              title="确定未保存就离开？"
+              title="是否离开？离开前请确认保存"
               @confirm="() => deleteTab(item)"
             >
               <template #icon
@@ -228,6 +233,19 @@ export default {
     }
     &:hover .close-icon{
       visibility: visible;
+    }
+
+    .job-item-icon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      overflow: hidden;
+      margin-top: 10px;
+      img {
+        width: 100%;
+        height: 100%;
+        vertical-align: top;
+      }
     }
   }
 

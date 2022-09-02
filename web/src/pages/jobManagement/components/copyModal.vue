@@ -35,6 +35,8 @@
 import { toRaw } from "vue";
 import { message } from "ant-design-vue";
 import { PlusOutlined } from "@ant-design/icons-vue";
+import { randomString } from '@/common/utils';
+import { cloneDeep } from 'lodash-es';
 export default {
   name: "JobManagementConfigModal",
   components: {
@@ -58,7 +60,7 @@ export default {
       confirmLoading: false,
       // 表单数据
       formState: {
-        jobName: "",
+        jobName: '',
         jobLabels: "",
         jobDesc: "",
       },
@@ -68,12 +70,21 @@ export default {
       },
     };
   },
-  watch: {},
+  watch: {
+    visible: function(val) {
+      if (val) {
+        this.formState.jobName = randomString(12); // 设置复制任务默认名称
+      } else {
+        this.formState.jobName = '';
+      }
+    }
+  },
   methods: {
     async handleOk() {
       await this.$refs.formRef.validate();
+      const _origin = cloneDeep(toRaw(this.origin));
       const formatData = {
-        ...this.origin,
+        ..._origin,
         subJobName: this.formState.jobName
       };
       try {
