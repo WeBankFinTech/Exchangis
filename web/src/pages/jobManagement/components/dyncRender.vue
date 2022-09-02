@@ -11,6 +11,9 @@
     >
     </a-select>
     <template v-if="type === 'MAP'">
+      <div style="margin-bottom: 5px" v-if="(sourceType ==='HIVE') && !partitionArr.length">
+        <a-input style="width: 400px;" disabled />
+      </div>
       <div style="margin-bottom: 5px" v-for="item in partitionArr">
         <a-input
           style="width: 30%"
@@ -60,15 +63,17 @@ export default defineComponent({
         return { width: '200px' }
       }
     },
-    data: Object
+    data: Object // 数据源参数包含数据类型， 数据源等参数{ db，ds，id，table，type }
   },
   emits: ["updateInfo"],
   setup(props, context) {
-    let { type, field, value, unit, source, description} = props.param;
+    let { type, field, value, unit, source, description } = props.param;
+    // console.log(props.param, 'asdadsad')
     value = ref(value)
     //let tmlName = field.split(".").pop();
     const newProps = computed(() => JSON.parse(JSON.stringify(props.param)))
-    watch(newProps, (val, oldVal) => {
+    const newData = computed(() => JSON.parse(JSON.stringify(props.data || {})))
+    watch(() => [newProps.value, newData.value], ([val, data1], [oldVal, oldData1]) => {
       value.value = val.value
       if (type === 'OPTION'){
         checkOptions.value = []
@@ -79,27 +84,30 @@ export default defineComponent({
           })
         })
       }
-      /*if (type === 'MAP') {
-        value.value = value.value || {}
-        if (val.source === oldVal.source) {
-          partitionArr.value.forEach(partition => {
-            if (partition.type === 'OPTION') {
-              partition.value = value.value[partition.label] ? [value.value[partition.label]] : []
-            } else {
-              partition.value = value.value[partition.label] ? value.value[partition.label] : partition.defaultValue || ''
-            }
-          })
-        }
-      }*/
-    })
-    const newData = computed(() => JSON.parse(JSON.stringify(props.data || {})))
-    watch(newData, (val, oldVal) => {
       if (type === 'MAP') {
-        if (val.id != oldVal.id || val.db !== oldVal.db || val.table !== oldVal.table) {
+        if (data1.id != oldData1.id || data1.db !== oldData1.db || data1.table !== oldData1.table) {
           _buildMap()
+        } else {
+          value.value = value.value || {}
+          if (val.source === oldVal.source) {
+            partitionArr.value.forEach(partition => {
+              if (partition.type === 'OPTION') {
+                partition.value = value.value[partition.label] ? [value.value[partition.label]] : []
+              } else {
+                partition.value = value.value[partition.label] ? value.value[partition.label] : partition.defaultValue || ''
+              }
+            })
+          }
         }
       }
     })
+    // watch(newData, (val, oldVal) => {
+    //   if (type === 'MAP') {
+    //     if (val.id != oldVal.id || val.db !== oldVal.db || val.table !== oldVal.table) {
+    //       _buildMap()
+    //     }
+    //   }
+    // })
     let checkOptions = ref([])
     if (type === 'OPTION'){
       checkOptions.value = []
@@ -110,9 +118,12 @@ export default defineComponent({
         })
       })
     }
+    // 数据源类型
+    const sourceType = computed(() => props.data.type)
     let partitionArr = ref([])
     const _buildMap = function () {
       partitionArr.value = []
+      if (props.data?.type !== 'HIVE') return; // 只有hive会执行分区
       let url
       const source_reg = new RegExp('^http');
       if (source_reg.test(source.value)) {
@@ -120,6 +131,7 @@ export default defineComponent({
       } else {
         url = window.location.origin + source.split('?')[0]
       }
+      // 获取分区信息
       getPartitionInfo({
         source: url,
         dataSourceId: props.data.id,
@@ -203,7 +215,9 @@ export default defineComponent({
       source,
       partitionArr,
       description,
-      handleChange
+      handleChange,
+      partitionArr,
+      sourceType
     }
   }
 });

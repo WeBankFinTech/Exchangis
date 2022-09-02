@@ -1,190 +1,193 @@
 <template>
     <div class="container jd-container">
         <div class="tools-bar">
-            <span @click="modalCfg.visible = true"><SettingOutlined />配置</span>
-            <div class="divider"></div>
-            <span v-if="!spinning" @click="executeTask"><CaretRightOutlined />执行</span>
-            <a-popconfirm
-                v-else
-                title="是否终止?"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="killTask"
-                @cancel="cancel"
-            >
-                <span><StopFilled style="color:#ff4d4f" />停止</span>
-            </a-popconfirm>
-            <div class="divider"></div>
-            <span @click="saveAll()"><SaveOutlined />保存</span>
-            <div class="divider"></div>
-            <span @click="executeHistory"><HistoryOutlined />执行历史</span>
+                <span @click="modalCfg.visible = true"><SettingOutlined />配置</span>
+                <div class="divider"></div>
+                <span v-if="!spinning" @click="executeTask"><CaretRightOutlined />执行</span>
+                <a-popconfirm
+                    v-else
+                    title="是否终止?"
+                    ok-text="确定"
+                    cancel-text="取消"
+                    @confirm="killTask"
+                    @cancel="cancel"
+                >
+                    <span><StopFilled style="color:#ff4d4f" />停止</span>
+                </a-popconfirm>
+                <div class="divider"></div>
+                <span @click="saveAll()"><SaveOutlined />保存</span>
+                <div class="divider"></div>
+                <span @click="executeHistory"><HistoryOutlined />执行历史</span>
         </div>
-        <div v-if="list.length !== 0" class="jd-content">
-            <a-spin size="large" :spinning="loading" wrapperClassName="wrap-spin">
-                <div class="jd_left">
-                    <div class="left-wrap">
-                        <div class="sub-title">
-                            <span>子任务列表</span>
-                        </div>
-                        <div v-for="(item, idx) in list" :key="idx" :class="getClass(idx)">
-                            <div class="task-title">
-                                <div
+        <div class="jd-outWrapper">
+            <div v-if="list.length !== 0" class="jd-content">
+                <a-spin size="large" :spinning="loading" wrapperClassName="wrap-spin">
+                    <div class="jd_left">
+                        <div class="left-wrap">
+                            <div class="sub-title">
+                                <span>子任务列表</span>
+                            </div>
+                            <div v-for="(item, idx) in list" :key="idx" :class="getClass(idx)">
+                                <div class="task-title">
+                                    <div
+                                        v-if="
+                                            activeIndex !== idx || (activeIndex === idx && !nameEditable)
+                                        "
+                                        class="subjobName"
+                                        :title="item.subJobName"
+                                        @click="changeCurTask(idx)"
+                                    >
+                                        {{item.subJobName}}
+                                    </div>
+                                    <a-input
+                                        v-if="activeIndex === idx && nameEditable"
+                                        ref="currentInput"
+                                        v-model:value="item.subJobName"
+                                        style="width: 115px"
+                                        @pressEnter="nameEditable = false"
+                                        @blur="nameEditable = false"
+                                    ></a-input>
+                                    <a-popconfirm
+                                        title="是否删除子任务?"
+                                        ok-text="确定"
+                                        cancel-text="取消"
+                                        @confirm="deleteSub(idx)"
+                                        @cancel="cancel"
+                                    >
+                                        <DeleteOutlined title="删除" class="delete-icon" />
+                                    </a-popconfirm>
+                                    <a-popconfirm
+                                        title="是否复制子任务?"
+                                        ok-text="确定"
+                                        cancel-text="取消"
+                                        @confirm="copySub(item)"
+                                        @cancel="cancel"
+                                    >
+                                        <CopyOutlined title="复制" class="copy-icon" />
+                                    </a-popconfirm>
+                                    <EditOutlined
+                                        v-if="activeIndex === idx && !nameEditable"
+                                        class="rename-icon"
+                                        @click="getEditableInput"
+                                    />
+                                </div>
+                                <template
                                     v-if="
-                                        activeIndex !== idx || (activeIndex === idx && !nameEditable)
+                                        item.dataSourceIds &&
+                                            item.dataSourceIds.source &&
+                                            item.dataSourceIds.source.db
                                     "
-                                    class="subjobName"
-                                    :title="item.subJobName"
-                                    @click="changeCurTask(idx)"
                                 >
-                                    {{item.subJobName}}
-                                </div>
-                                <a-input
-                                    v-if="activeIndex === idx && nameEditable"
-                                    ref="currentInput"
-                                    v-model:value="item.subJobName"
-                                    style="width: 115px"
-                                    @pressEnter="nameEditable = false"
-                                    @blur="nameEditable = false"
-                                ></a-input>
-                                <a-popconfirm
-                                    title="是否删除子任务?"
-                                    ok-text="确定"
-                                    cancel-text="取消"
-                                    @confirm="deleteSub(idx)"
-                                    @cancel="cancel"
-                                >
-                                    <DeleteOutlined title="删除" class="delete-icon" />
-                                </a-popconfirm>
-                                <a-popconfirm
-                                    title="是否复制子任务?"
-                                    ok-text="确定"
-                                    cancel-text="取消"
-                                    @confirm="copySub(item)"
-                                    @cancel="cancel"
-                                >
-                                    <CopyOutlined title="复制" class="copy-icon" />
-                                </a-popconfirm>
-                                <EditOutlined
-                                    v-if="activeIndex === idx && !nameEditable"
-                                    class="rename-icon"
-                                    @click="getEditableInput"
-                                />
+                                    <div
+                                        class="sub-table"
+                                        :title="
+                                            item.dataSourceIds.source.db +
+                                                '.' +
+                                                item.dataSourceIds.source.table
+                                        "
+                                        @click="changeCurTask(idx)"
+                                    >
+                                        {{item.dataSourceIds.source.db +
+                                            "." +
+                                            item.dataSourceIds.source.table}}
+                                    </div>
+                                    <div class="arrow-down-icon" @click="changeCurTask(idx)"><ArrowDownOutlined /></div>
+                                    <div
+                                        class="sub-table"
+                                        :title="
+                                            item.dataSourceIds.sink.db + '.' + item.dataSourceIds.sink.table
+                                        "
+                                        @click="changeCurTask(idx)"
+                                    >
+                                        {{item.dataSourceIds.sink.db + "." + item.dataSourceIds.sink.table}}
+                                    </div>
+                                </template>
                             </div>
-                            <template
-                                v-if="
-                                    item.dataSourceIds &&
-                                        item.dataSourceIds.source &&
-                                        item.dataSourceIds.source.db
-                                "
-                            >
-                                <div
-                                    class="sub-table"
-                                    :title="
-                                        item.dataSourceIds.source.db +
-                                            '.' +
-                                            item.dataSourceIds.source.table
-                                    "
-                                    @click="changeCurTask(idx)"
-                                >
-                                    {{item.dataSourceIds.source.db +
-                                        "." +
-                                        item.dataSourceIds.source.table}}
-                                </div>
-                                <div class="arrow-down-icon" @click="changeCurTask(idx)"><ArrowDownOutlined /></div>
-                                <div
-                                    class="sub-table"
-                                    :title="
-                                        item.dataSourceIds.sink.db + '.' + item.dataSourceIds.sink.table
-                                    "
-                                    @click="changeCurTask(idx)"
-                                >
-                                    {{item.dataSourceIds.sink.db + "." + item.dataSourceIds.sink.table}}
-                                </div>
-                            </template>
                         </div>
-                    </div>
-                    <a-button
-                        size="large"
-                        style="
-              width: 218px;
-              font-family: PingFangSC-Regular;
-              font-size: 14px;
-              line-height: 22px;
-              font-weight: 400;
-              border: 1px dashed #dee4ec;
-              margin: 0 15px;
-            "
-                        @click="addNewTask"
-                    >
-                        <template #icon> <PlusOutlined /></template>添加子任务
-                    </a-button>
-                </div>
-                <div class="jd_right">
-                    <div>
-                        <DataSource
-                            v-if="curTask"
-                            v-bind:dsData="curTask"
-                            v-bind:engineType="curTask.engineType"
-                            @updateSourceInfo="updateSourceInfo"
-                            @updateSinkInfo="updateSinkInfo"
-                            @updateSourceParams="updateSourceParams"
-                            @updateSinkParams="updateSinkParams"
-                        />
-                    </div>
-                    <div>
-                        <FieldMap
-                            v-if="curTask"
-                            v-bind:fmData="curTask.transforms"
-                            v-bind:fieldsSink="fieldsSink"
-                            v-bind:fieldsSource="fieldsSource"
-                            v-bind:deductions="deductions"
-                            v-bind:addEnabled="addEnable"
-                            v-bind:engineType="curTask.engineType"
-                            @updateFieldMap="updateFieldMap"
-                        />
-                    </div>
-                    <div>
-                        <ProcessControl
-                            v-if="curTask"
-                            v-bind:psData="curTask.settings"
-                            v-bind:engineType="curTask.engineType"
-                            @updateProcessControl="updateProcessControl"
-                        />
-                    </div>
-                </div>
-            </a-spin>
-        </div>
-        <div v-if="list.length === 0" class="cardWrap">
-            <a-spin :spinning="loading">
-                <div class="emptyTab">
-                    <div class="void-page-wrap">
-                        <div class="void-page-main">
-                            <div class="void-page-main-img">
-                                <img src="../../../assets/img/void_page.png" alt="空页面" />
-                            </div>
-                            <div class="void-page-main-title">
-                                <span>该任务下没有子任务，请先创建一个子任务</span>
-                            </div>
-                            <div class="void-page-main-button">
-                                <a-button
-                                    type="primary"
-                                    size="large"
-                                    style="
-                  font-family: PingFangSC-Regular;
-                  font-size: 14px;
-                  line-height: 22px;
-                  font-weight: 400;
+                        <a-button
+                            size="large"
+                            style="
+                width: 218px;
+                font-family: PingFangSC-Regular;
+                font-size: 14px;
+                line-height: 22px;
+                font-weight: 400;
+                border: 1px dashed #dee4ec;
+                margin: 0 15px;
                 "
-                                    @click="addNewTask"
-                                >
-                                    <template #icon> <PlusOutlined /></template>{{t("job.action.createJob")}}
-                                </a-button>
+                            @click="addNewTask"
+                        >
+                            <template #icon> <PlusOutlined /></template>添加子任务
+                        </a-button>
+                    </div>
+                    <div class="jd_right">
+                        <div>
+                            <DataSource
+                                v-if="curTask"
+                                v-bind:dsData="curTask"
+                                v-bind:engineType="curTask.engineType"
+                                @updateSourceInfo="updateSourceInfo"
+                                @updateSinkInfo="updateSinkInfo"
+                                @updateSourceParams="updateSourceParams"
+                                @updateSinkParams="updateSinkParams"
+                            />
+                        </div>
+                        <div>
+                            <FieldMap
+                                v-if="curTask"
+                                v-bind:fmData="curTask.transforms"
+                                v-bind:fieldsSink="fieldsSink"
+                                v-bind:fieldsSource="fieldsSource"
+                                v-bind:deductions="deductions"
+                                v-bind:addEnabled="addEnable"
+                                v-bind:transformEnable="transformEnable"
+                                v-bind:engineType="curTask.engineType"
+                                @updateFieldMap="updateFieldMap"
+                            />
+                        </div>
+                        <div>
+                            <ProcessControl
+                                v-if="curTask"
+                                v-bind:psData="curTask.settings"
+                                v-bind:engineType="curTask.engineType"
+                                @updateProcessControl="updateProcessControl"
+                            />
+                        </div>
+                    </div>
+                </a-spin>
+            </div>
+            <div v-if="list.length === 0" class="cardWrap">
+                <a-spin :spinning="loading">
+                    <div class="emptyTab">
+                        <div class="void-page-wrap">
+                            <div class="void-page-main">
+                                <div class="void-page-main-img">
+                                    <img src="../../../assets/img/void_page.png" alt="空页面" />
+                                </div>
+                                <div class="void-page-main-title">
+                                    <span>该任务下没有子任务，请先创建一个子任务</span>
+                                </div>
+                                <div class="void-page-main-button">
+                                    <a-button
+                                        type="primary"
+                                        size="large"
+                                        style="
+                    font-family: PingFangSC-Regular;
+                    font-size: 14px;
+                    line-height: 22px;
+                    font-weight: 400;
+                    "
+                                        @click="addNewTask"
+                                    >
+                                        <template #icon> <PlusOutlined /></template>{{t("job.action.createJob")}}
+                                    </a-button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </a-spin>
-        </div>
+                </a-spin>
+            </div>
+         </div>
         <!-- 执行历史  jd-bottom -->
         <div v-show="visibleDrawer" class="jd-bottom">
             <div class="jd-bottom-top">
@@ -211,18 +214,25 @@
                 </a-table>
             </div>
         </div>
-
+    
         <!-- 执行日志  jd-bottom -->
-        <div v-show="visibleLog" class="jd-bottom jd-bottom-log">
+        <div v-show="visibleLog" class="jd-bottom jd-bottom-log" :style="bottomStyle">
             <div class="jd-bottom-top jd-bottom-log-top">
+                <!-- 放大 -->
+                <ExpandOutlined 
+                v-if="activeKey === '2'"
+                style="
+            color: rgba(0, 0, 0, 0.45);
+            font-size: 12px;
+            cursor: pointer;
+            margin-right: 10px;
+          "
+                    @click="expandLog"/>
                 <!--<span>执行日志</span>-->
                 <CloseOutlined
                     style="
             color: rgba(0, 0, 0, 0.45);
             font-size: 12px;
-            position: absolute;
-            right: 24px;
-            top: 18px;
             cursor: pointer;
           "
                     @click="onCloseLog"
@@ -312,7 +322,7 @@
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="实时日志" force-render>
-                        <execution-log :param="logParams" :isShow="visibleLog"></execution-log>
+                        <execution-log :param="logParams" :isShow="visibleLog" :maxRows="maxRows"></execution-log>
                     </a-tab-pane>
                     <a-tab-pane key="3" tab="执行历史" force-render>
                         <a-table
@@ -323,9 +333,12 @@
                             :scroll="{ y: 240 }"
                         >
                             <template #jobExecutionId="{ record }">
-                                <router-link :to="`/synchronizationHistory?jobExecutionId=${record.jobExecutionId}`">
-                                    {{record.jobExecutionId}}
-                                </router-link>
+                                <a-tooltip>
+                                    <template #title>{{record.jobExecutionId}}</template>
+                                    <router-link :to="`/synchronizationHistory?jobExecutionId=${record.jobExecutionId}`">
+                                      {{record.jobExecutionId}}
+                                    </router-link>
+                                </a-tooltip>
                             </template>
                             <template #status="{ record }">
                                 <span>{{statusMap[record.status]}}</span>
@@ -339,10 +352,11 @@
             </div>
         </div>
 
-        <config-modal
+        <config-drawer
             :id="modalCfg.id"
             v-model:visible="modalCfg.visible"
             :formData="configModalData"
+            :dialogStyle="dialogStyle"
             @finish="handleModalFinish"
         />
         <copy-modal
@@ -371,7 +385,8 @@ import {
     CloseOutlined,
     StopFilled,
     DownOutlined,
-    RightOutlined
+    RightOutlined,
+    ExpandOutlined
 } from '@ant-design/icons-vue';
 import { message, notification } from 'ant-design-vue';
 import { useI18n } from '@fesjs/fes';
@@ -470,7 +485,8 @@ export default {
         PlusOutlined,
         DownOutlined,
         RightOutlined,
-        'config-modal': defineAsyncComponent(() => import('./configModal.vue')),
+        ExpandOutlined,
+        'config-drawer': defineAsyncComponent(() => import('./configDrawer.vue')),
         'copy-modal': defineAsyncComponent(() => import('./copyModal.vue')),
         DataSource: defineAsyncComponent(() => import('./dataSource.vue')),
         FieldMap: defineAsyncComponent(() => import('./fieldMap.vue')),
@@ -506,8 +522,8 @@ export default {
             fieldsSource: [],
             fieldsSink: [],
             deductions: [],
-            addEnable: false,
-
+            addEnable: false, // 控制添加字段映射
+            transformEnable: false, // 控制是否可以编辑转换函数
             configModalData: {},
 
             visibleDrawer: false,
@@ -548,7 +564,12 @@ export default {
                 Timeout: '超时'
             },
             activeKey: '1',
-            dateFormat
+            dateFormat,
+            dialogStyle: {
+                right: 0,
+            },
+            bottomStyle: '', //底部样式
+            maxRows: 10,
         };
     },
     computed: {
@@ -563,6 +584,12 @@ export default {
         curTab(val, oldVal) {
             if (val && oldVal && val.id !== oldVal.id) {
                 this.init();
+            }
+        },
+        activeKey(val, oldVal) {
+            if (val !== '2') {
+                this.bottomStyle = "";
+                this.maxRows = 10;
             }
         }
     },
@@ -606,8 +633,10 @@ export default {
                 if (this.list.length) {
                     this.activeIndex = 0;
                     this.curTask = this.list[this.activeIndex];
+                    // test 
+                    console.log('当前任务详情', this.curTask)
                     this.addEnable = this.curTask.transforms.addEnable;
-
+                    this.transformEnable = this.curTask.transforms.transformEnable;
                     this.updateSourceInfo(this.curTask, true)
 
                     // this.updateSinkInfo(this.curTask); 当sink和source都有值的时候,请求的结果是一致的,所以省去一次多余重复请求
@@ -651,16 +680,17 @@ export default {
             this.copyObj = item;
             this.modalCopy.visible = true;
         },
+        // 删除子任务
         deleteSub(index) {
             this.jobData.content.subJobs.splice(index, 1);
-            if (this.activeIndex === index && this.list.length) {
-                this.activeIndex = 0;
-                this.curTask = this.list[this.activeIndex];
-                this.addEnable = this.curTask.transforms.addEnable;
+            if (this.list.length) {
+                this.activeIndex = this.activeIndex > index ? this.activeIndex - 1 : this.activeIndex;
+                this.changeCurTask(this.activeIndex);
             } else {
                 this.activeIndex = -1;
                 this.curTask = null;
                 this.addEnable = false;
+                this.transformEnable = false;
             }
         },
         cancel() {},
@@ -671,12 +701,21 @@ export default {
             return 'sub-content';
         },
         changeCurTask(index) {
-            this.activeIndex = index;
-            this.curTask = this.list[this.activeIndex];
+            if (this.activeIndex === index) return
+            this.activeIndex = index
+            this.curTask = this.list[index];
             this.addEnable = this.curTask.transforms.addEnable;
+            this.transformEnable = this.curTask.transforms.transformEnable;
+            console.log('当前任务切换后', this.curTask.transforms);
             const data = this.getFieldsParams(this.curTask);
             if (data) {
+                console.log('获取字段映射');
                 getFields(data).then((res) => {
+                    this.fieldsSource = res.sourceFields;
+                    this.fieldsSink = res.sinkFields;
+                    this.deductions = res.deductions;
+                    this.addEnable = res.addEnable;
+                    this.transformEnable = res.transformEnable;
                 }).catch((err) => {
                     console.log(err);
                 });
@@ -725,6 +764,7 @@ export default {
                     this.activeIndex = this.jobData.content.subJobs.length - 1;
                     this.curTask = this.list[this.activeIndex];
                     this.addEnable = false;
+                    this.transformEnable = false;
                     this.deductions = [];
                 });
             });
@@ -781,6 +821,7 @@ export default {
                     this.fieldsSink = res.sinkFields;
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
+                    this.transformEnable = res.transformEnable;
                     // 不在使用deductions 直接将deductions作为值使用
                     if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
                         this.curTask.transforms.mapping = this.convertDeductions(res.deductions);
@@ -792,6 +833,7 @@ export default {
                 this.fieldsSink = [];
                 this.deductions = [];
                 this.addEnable = false;
+                this.transformEnable = false;
                 this.curTask.transforms.mapping = [];
             }
         },
@@ -803,6 +845,7 @@ export default {
                     this.fieldsSink = res.sinkFields;
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
+                    this.transformEnable = res.transformEnable;
                     // 不在使用deductions 直接将deductions作为值使用
                     if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
                         this.curTask.transforms.mapping = this.convertDeductions(res.deductions);
@@ -814,6 +857,7 @@ export default {
                 this.fieldsSink = [];
                 this.deductions = [];
                 this.addEnable = false;
+                this.transformEnable = false;
                 this.curTask.transforms.mapping = [];
             }
         },
@@ -831,28 +875,48 @@ export default {
             const { proxyUser, content } = data;
             const jobs = content.subJobs.slice();
             if (!proxyUser) {
-                res.push('配置任务中执行用户不可为空');
+                res.push(<li style="list-style: none;"><span style="margin-left: -30px;">配置任务中执行用户不可为空</span></li>);
             }
             jobs.forEach((job) => {
                 const { params, settings } = job;
+                let isInsert = false
+                res.push(<li style="list-style: none;"><span style="margin-left: -30px;">{job.subJobName}:</span></li>);
                 for (const key in params) {
                     params[key].forEach((i) => {
                         if (!i.value && i.required) {
-                            res.push(`${i.label}不可为空`);
+                            isInsert = true;
+                            res.push(<li>{i.label}不可为空</li>);
+                        } else if (i.value && i.validateType === "REGEX") {
+                            const num_reg = new RegExp(`${i.validateRange}`);
+                            if (!num_reg.test(i.value)) {
+                                isInsert = true;
+                                res.push(<li>{i.label}格式不正确</li>);
+                            }
                         }
                     });
                 }
 
                 settings.forEach((i) => {
                     if (!i.value && i.required) {
-                        res.push(`${i.label}不可为空`);
+                        isInsert = true;
+                        res.push(<li>{i.label}不可为空</li>);
+                    } else if (i.value && i.validateType === "REGEX") {
+                        const num_reg = new RegExp(`${i.validateRange}`);
+                        if (!num_reg.test(i.value)) {
+                            isInsert = true;
+                            res.push(<li>{i.label}格式不正确</li>);
+                        }
                     }
                 });
+
+                if (!isInsert) {
+                    res.splice(res.length - 1, 1)
+                }
             });
 
             return res;
         },
-        saveAll(cb) {
+        saveAll(type = 'save', cb) {
             const saveContent = [];
             const data = toRaw(this.jobData);
             const tips = this.checkPostData(data);
@@ -862,7 +926,7 @@ export default {
                     description: h(
                         'ul',
                         {},
-                        tips.map(tip => h('li', {}, tip))
+                        tips.map(tip => tip)
                     ),
                     duration: 5
                 });
@@ -870,10 +934,15 @@ export default {
             if (!data.content || !data.content.subJobs) {
                 return message.error('缺失保存对象');
             }
+            let subJobNames = []
             for (let i = 0; i < data.content.subJobs.length; i++) {
                 const jobData = toRaw(data.content.subJobs[i]);
                 const cur = {};
                 cur.subJobName = jobData.subJobName;
+                if (subJobNames.includes(cur.subJobName)) {
+                    return message.error('子任务名重复');
+                }
+                subJobNames.push(cur.subJobName);
                 if (
                     !jobData.dataSourceIds
                     || objectValueEmpty(jobData.dataSourceIds.source)
@@ -914,11 +983,12 @@ export default {
                 });
                 cur.transforms = jobData.transforms;
                 cur.transforms.addEnable = this.addEnable;
+                cur.transforms.transformEnable = this.transformEnable;
                 cur.settings = [];
                 if (jobData.settings && jobData.settings.length) {
                     jobData.settings.forEach((setting) => {
                         cur.settings.push({
-                            config_key: setting.field, // UI中field
+                            config_key: setting.key, // UI中field
                             config_name: setting.label, // UI中label
                             config_value: setting.value, // UI中value
                             sort: setting.sort
@@ -927,9 +997,11 @@ export default {
                 }
                 saveContent.push(cur);
             }
+            // test
+            console.log(saveContent)
             saveProject(this.jobData.id, {
                 content: JSON.stringify(saveContent)
-            }).then((res) => {
+            }, type).then((res) => {
                 cb && cb();
                 message.success('保存成功');
             });
@@ -939,7 +1011,7 @@ export default {
             if (!this.list.length) {
                 return message.error('没有子任务');
             }
-            this.saveAll(() => {
+            this.saveAll('execute', () => {
                 const { id } = this.curTab;
                 this.tasklist = [];
                 this.spinning = true;
@@ -947,7 +1019,7 @@ export default {
                     .then((res) => {
                         this.jobExecutionId = res.jobExecutionId;
                         this.visibleLog = true;
-                        moveUpDown('.jd-bottom-log', '.jd-container', '.jd-bottom-log-top');
+                        // moveUpDown('.jd-bottom-log', '.jd-container', '.jd-bottom-log-top');
                         this.getStatus(res.jobExecutionId);
 
                         // 新增执行历史
@@ -1145,6 +1217,8 @@ export default {
             // clearInterval(this.jobStatusTimer)
             clearInterval(this.progressTimer);
             this.visibleLog = false;
+            this.bottomStyle = "";
+            this.maxRows = 10;
         },
         getEditableInput() {
             this.nameEditable = true;
@@ -1153,6 +1227,20 @@ export default {
                     this.$refs.currentInput.focus();
                 }
             });
+        },
+        expandLog() {
+            if (this.bottomStyle) {
+                this.bottomStyle = "";
+                this.maxRows = 10;
+            } else {
+                if (document.body.clientWidth > 1400) {
+                    this.bottomStyle = "flex: 0 0 578px; height: 578px !important;";
+                    this.maxRows = 20;
+                } else {
+                    this.bottomStyle = "flex: 0 0 464px; height: 464px !important;";
+                    this.maxRows = 15;
+                }
+            }
         }
     }
 };
@@ -1161,6 +1249,9 @@ export default {
 @import "../../../common/content.less";
 .container {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 82px);
   .tools-bar {
     width: 100%;
     border-bottom: 1px solid #dee4ec;
@@ -1189,7 +1280,7 @@ export default {
     overflow: hidden;
     width: 100%;
     .wrap-spin {
-      height: calc(100vh - 82px)
+      height: calc(100vh - 34px)
     }
     .jd_left {
       float: left;
@@ -1296,47 +1387,48 @@ export default {
       }
     }
     .jd_right {
-      overflow-x: auto;
+      overflow: auto;
       float: right;
       width: calc(100% - 250px);
       background: white;
     }
   }
 
+  .jd-outWrapper {
+    flex: 1;
+    max-height: 100vh;
+    overflow: auto;
+  } 
+
   .jd-bottom {
     overflow: auto;
-    width: calc(100% - 200px);
-    position: fixed;
-    height: 30%;
-    bottom: 0;
+    width: 100%;
     background-color: white;
+    flex: 0 0 350px;
+    height: 350px !important;
+    position: relative;
+    top: 0 !important;
     .jd-bottom-top {
-      width: calc(100% - 200px);
+      width: 100px;
       height: 48px;
-      position: fixed;
-      bottom: 30%;
       background-color: #f8f9fc;
       padding: 12px 24px;
       font-family: PingFangSC-Medium;
       font-size: 16px;
       color: rgba(0, 0, 0, 0.85);
       font-weight: 500;
-    }
-    &.jd-bottom-log {
-      height: 350px;
-     .jd-bottom-top {
-       bottom: 350px;
-     }
+      position: absolute;
+      top: 0 !important;
+      right: 24px;
+      z-index: 99;
+      text-align: right;
     }
 
 
     &-content {
       padding: 18px 24px;
+      margin: 0 0;
       .exec-info-tab {
-        >:deep(.ant-tabs-bar) {
-           position: fixed;
-           margin-top: -45px;
-         }
         :deep(.ant-tabs-content) {
           padding: 5px 10px;
         }
