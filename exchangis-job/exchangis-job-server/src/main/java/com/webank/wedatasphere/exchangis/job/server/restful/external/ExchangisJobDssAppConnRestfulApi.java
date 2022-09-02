@@ -90,7 +90,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             Long id = null;
             id = jobInfoService.createJob(exchangisJobVo).getId();
             response.data("id", id);
-            LOG.info("id6666: {}", id);
+            LOG.info("job id is: {}", id);
         } catch (Exception e){
             String message = "Fail to create dss job: " + exchangisJobVo.getJobName() +" (创建DSS任务失败)";
             LOG.error(message, e);
@@ -177,9 +177,9 @@ public class ExchangisJobDssAppConnRestfulApi {
     @RequestMapping( value = "/execute/{id}", method = RequestMethod.POST)
     public Message executeJob(@PathVariable("id") Long id, HttpServletRequest request, @RequestBody Map<String, Object> params) {
         try {
-            LOG.info("start to parse params8909");
+            LOG.info("start to parse params");
             String paramString = BDPJettyServerHelper.jacksonJson().writeValueAsString(params);
-            LOG.error("paramString999879: {}", paramString);
+            LOG.error("paramString: {}", paramString);
         } catch (JsonProcessingException e) {
             LOG.error("parse execute content error: {}", e.getMessage());
         }
