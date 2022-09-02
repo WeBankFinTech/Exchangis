@@ -6,6 +6,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLau
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchableTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.*;
@@ -32,6 +33,9 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
 
     @Resource
     private LaunchedJobDao launchedJobDao;
+
+    @Resource
+    private LaunchableTaskDao launchableTaskDao;
 
     private TaskExecuteService selfService;
 
@@ -90,6 +94,12 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     @Override
     public void onDelete(TaskDeleteEvent deleteEvent) {
         this.launchedTaskDao.deleteLaunchedTask(deleteEvent.getTaskId());
+    }
+
+    @Override
+    public void onDequeue(TaskDequeueEvent dequeueEvent) throws ExchangisOnEventException {
+        // Delete task in table
+        this.launchableTaskDao.deleteLaunchableTask(dequeueEvent.getTaskId());
     }
 
     @Override
