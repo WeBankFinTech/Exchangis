@@ -1341,6 +1341,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             field.setFieldEditable(!"HIVE".equals(vo.getSinkTypeId()) && !"ELASTICSEARCH".equals(vo.getSinkTypeId()));
         }
         message.data("sinkFields", sinkFields);
+
         // field mapping deduction
         List<Map<String, Object>> deductions = new ArrayList<>();
         List<DataSourceDbTableColumnDTO> left = sourceFields;
@@ -1351,16 +1352,20 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             right = sourceFields;
             exchanged = true;
         }
-        for (int i = 0; i < right.size(); i ++){
-            LOGGER.info("rightElement is:" + right.get(i).getName());
-            DataSourceDbTableColumnDTO leftElement = left.get(i % left.size());
-            DataSourceDbTableColumnDTO rightElement = right.get(i);
-            Map<String, Object> deduction = new HashMap<>();
-            deduction.put("source", exchanged ? rightElement : leftElement);
-            deduction.put("sink", exchanged ? leftElement : rightElement);
-            deduction.put("deleteEnable", true);
-            deductions.add(deduction);
+
+        // source size and sink size must not be null
+        if (!Objects.isNull(left) && left.size() > 0) {
+            for (int i = 0; i < right.size(); i ++){
+                DataSourceDbTableColumnDTO leftElement = left.get(i % left.size());
+                DataSourceDbTableColumnDTO rightElement = right.get(i);
+                Map<String, Object> deduction = new HashMap<>();
+                deduction.put("source", exchanged ? rightElement : leftElement);
+                deduction.put("sink", exchanged ? leftElement : rightElement);
+                deduction.put("deleteEnable", true);
+                deductions.add(deduction);
+            }
         }
+
         message.data("deductions", deductions);
         message.data("transformEnable", true);
 

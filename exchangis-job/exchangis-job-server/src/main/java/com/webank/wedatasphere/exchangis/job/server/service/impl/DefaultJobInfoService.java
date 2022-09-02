@@ -352,10 +352,10 @@ public class DefaultJobInfoService implements JobInfoService {
                         LOG.error("Occur error while tranform class", e.getMessage());
                     }
 
-                    LOG.info("sqoopStr99999:{}", sqoopStr);
+                    LOG.info("sqoopStr:{}", sqoopStr);
                     LOG.info("ExchangisJobVo sqoop: {}", job.getContent());
                     LOG.info("getCreateTime: {}", job.getId());
-                    LOG.info("executorUser999: {}", job.getExecuteUser());
+                    LOG.info("executorUser: {}", job.getExecuteUser());
                     sqoops.add(job);
                 }
                 exportedProject.setSqoops(sqoops);
@@ -390,7 +390,7 @@ public class DefaultJobInfoService implements JobInfoService {
                     LOG.info("dataxStr:{}", dataxStr);
                     LOG.info("ExchangisJobVo sqoop: {}", job.getContent());
                     LOG.info("getCreateTime: {}", job.getId());
-                    LOG.info("executorUser999: {}", job.getExecuteUser());
+                    LOG.info("executorUser: {}", job.getExecuteUser());
                     dataxs.add(job);
                 }
                 exportedProject.setDataxes(dataxs);
