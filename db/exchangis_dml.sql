@@ -22,6 +22,7 @@ INSERT INTO exchangis_job_param_config (config_key,config_name,config_direction,
 ;
 
 
+-- 插入 job_func 记录
 INSERT INTO exchangis_job_func (func_type,func_name,tab_name,name_dispaly,param_num,ref_name,description,modify_time,create_time) VALUES
 ('TRANSFORM','dx_substr','DATAX',NULL,2,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
 ,('TRANSFORM','dx_pad','DATAX',NULL,3,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
@@ -38,6 +39,8 @@ INSERT INTO exchangis_job_func (func_type,func_name,tab_name,name_dispaly,param_
 ('TRANSFORM','dx_precision','DATAX',NULL,1,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
 ;
 
+
+-- 插入 job_func_params 记录
 INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`, `order`) VALUES(1, 'startIndex', 'startIndex', 0) ON DUPLICATE KEY UPDATE `name_display` = 'startIndex';
 INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`, `order`) VALUES(1, 'length', 'length', 1) ON DUPLICATE KEY UPDATE `name_display` = 'length';
 INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`, `order`) VALUES(2, 'padType', 'padType(r or l)', 0) ON DUPLICATE KEY UPDATE `name_display` = 'padType(r or l)';
@@ -53,3 +56,9 @@ INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`)
 INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`) VALUES(8, 'value', 'value') ON DUPLICATE KEY UPDATE `name_display` = 'value';
 INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`) VALUES(9, 'value', 'value') ON DUPLICATE KEY UPDATE `name_display` = 'value';
 INSERT INTO `exchangis_job_func_params`(`func_id`, `param_name`, `name_display`) VALUES(10, 'value', 'value') ON DUPLICATE KEY UPDATE `name_display` = 'value';
+
+
+-- 插入 engine_settings 记录
+INSERT INTO `exchangis_engine_settings` (id, engine_name, engine_desc, engine_settings_value, engine_direction, res_loader_class, res_uploader_class, modify_time, create_time) VALUES
+(1, 'datax', 'datax sync engine', '{}', 'mysql->hive,hive->mysql,mongodb->hive,hive->mongodb,mysql->elasticsearch,mysql->elasticsearch,mongodb->elasticsearch,mongodb->mysql,mysql->mongodb', 'com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngineResourceLoader', NULL, NULL, '2022-08-09 18:20:51.0'),
+(2, 'sqoop', 'hadoop tool', '{}', 'mysql->hive,hive->mysql', '', NULL, NULL, '2022-08-09 18:20:51.0');
