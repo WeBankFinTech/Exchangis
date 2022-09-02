@@ -11,6 +11,7 @@ import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.Lo
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.scheduler.Scheduler;
+import org.apache.linkis.scheduler.SchedulerContext;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
 import org.apache.linkis.scheduler.queue.GroupFactory;
 import org.apache.linkis.scheduler.queue.SchedulerEventState;
@@ -55,7 +56,6 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
     @Override
     protected LoadBalanceSchedulerTask<LaunchedExchangisTask> choose(LaunchedExchangisTask launchedExchangisTask, Class<?> schedulerTaskClass, boolean unchecked) {
         if( !unchecked  || isSuitableClass(schedulerTaskClass)){
-            String schedulerTaskName = schedulerTaskClass.getSimpleName();
             // Fetch the latest info
             launchedExchangisTask = getTaskManager().getRunningTask(launchedExchangisTask.getTaskId());
             // If the value is None means that the task is ended
@@ -71,29 +71,8 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                 if (StringUtils.isBlank(tenancy)) {
                     tenancy = TenancyParallelGroupFactory.DEFAULT_TENANCY;
                 }
-                String finalTenancy = tenancy;
-                SchedulerTaskContainer schedulerTaskContainer =tenancySchedulerTasks.compute(tenancy + "_" + schedulerTaskName,(key, taskContainer) -> {
-                    if (Objects.isNull(taskContainer)){
-                        LoadBalanceSchedulerTask<LaunchedExchangisTask> headSchedulerTask = createLoadBalanceSchedulerTask(schedulerTaskClass);
-                        if (headSchedulerTask instanceof AbstractLoadBalanceSchedulerTask){
-                            ((AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask>) headSchedulerTask)
-                                    .setSchedulerLoadBalancer(FlexibleTenancyLoadBalancer.this);
-                        }
-                        headSchedulerTask.setTenancy(finalTenancy);
-                        try {
-                            getScheduler().submit(headSchedulerTask);
-                        } catch (Exception e){
-                            // Only if not enough reserved threads in scheduler
-                            throw new ExchangisTaskExecuteException.Runtime("If there is no enough reserved threads in scheduler for tenancy: [" + finalTenancy
-                                    + "], load balance scheduler task: [" + schedulerTaskName + "]? please invoke setInitResidentThreads(num) method in consumerManager", e);
-                        }
-                        taskContainer = new SchedulerTaskContainer(headSchedulerTask);
-                        taskContainer.tenancy = finalTenancy;
-                    }
-                    return taskContainer;
-                });
                 // Select one
-                return schedulerTaskContainer.select();
+                return geOrCreateSchedulerTaskContainer(tenancy, schedulerTaskClass).select();
             }
 
         }
@@ -137,6 +116,7 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
     public void run() {
         Thread.currentThread().setName("Balancer-Thread" + getName());
         LOG.info("Thread:[ {} ] is started. ", Thread.currentThread().getName());
+        initLoadBalancerSchedulerTasks();
         ConsumerManager consumerManager = getScheduler().getSchedulerContext().getOrCreateConsumerManager();
         Map<String, ExecutorService> tenancyExecutorServices = new HashMap<>();
         int residentThreads = 0;
@@ -273,6 +253,53 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
         return this.getClass().getSimpleName();
     }
 
+    /**
+     * Get or create scheduler task container
+     * @return container
+     */
+    private SchedulerTaskContainer geOrCreateSchedulerTaskContainer(String tenancy, Class<?> schedulerTaskClass){
+        String schedulerTaskName = schedulerTaskClass.getSimpleName();
+        return tenancySchedulerTasks.compute(tenancy + "_" + schedulerTaskName,(key, taskContainer) -> {
+            if (Objects.isNull(taskContainer)){
+                LoadBalanceSchedulerTask<LaunchedExchangisTask> headSchedulerTask = createLoadBalanceSchedulerTask(schedulerTaskClass);
+                if (headSchedulerTask instanceof AbstractLoadBalanceSchedulerTask){
+                    ((AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask>) headSchedulerTask)
+                            .setSchedulerLoadBalancer(FlexibleTenancyLoadBalancer.this);
+                }
+                headSchedulerTask.setTenancy(tenancy);
+                try {
+                    getScheduler().submit(headSchedulerTask);
+                } catch (Exception e){
+                    // Only if not enough reserved threads in scheduler
+                    throw new ExchangisTaskExecuteException.Runtime("If there is no enough reserved threads in scheduler for tenancy: [" + tenancy
+                            + "], load balance scheduler task: [" + schedulerTaskName + "]? please invoke setInitResidentThreads(num) method in consumerManager", e);
+                }
+                taskContainer = new SchedulerTaskContainer(headSchedulerTask);
+                taskContainer.tenancy = tenancy;
+                LOG.info("Create scheduler task container[ tenancy: {}, load balance scheduler task: {} ]", tenancy, schedulerTaskName);
+            }
+            return taskContainer;
+        });
+    }
+
+    /**
+     * Init to pre create task container for load balancer scheduler tasks
+     */
+    private void initLoadBalancerSchedulerTasks(){
+        SchedulerContext schedulerContext = getScheduler().getSchedulerContext();
+        if (schedulerContext instanceof ExchangisSchedulerContext){
+            Optional.ofNullable(((ExchangisSchedulerContext)schedulerContext).getTenancies()).ifPresent(tenancies -> {
+                tenancies.forEach(tenancy -> {
+                    // Skip the system tenancy
+                    if (!tenancy.startsWith(".")) {
+                        for (Class<?> registeredTaskClass : registeredTaskClasses) {
+                            geOrCreateSchedulerTaskContainer(tenancy, registeredTaskClass);
+                        }
+                    }
+                });
+            });
+        }
+    }
     static class LoopCounter {
 
         AtomicInteger containers = new AtomicInteger(0);
@@ -283,6 +310,7 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
 
         List<SchedulerTaskContainer> taskContainers = new ArrayList<>();
     }
+
     /**
      * Scheduler
      */
