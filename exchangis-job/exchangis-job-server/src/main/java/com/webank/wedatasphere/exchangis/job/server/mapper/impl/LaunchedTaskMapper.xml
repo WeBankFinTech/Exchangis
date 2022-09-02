@@ -60,7 +60,7 @@
         #{metrics},
         #{status}
         ) ON DUPLICATE KEY UPDATE
-        name = #{name};
+        name = #{name}, `status` = #{status};
     </insert>
 
     <insert id="insertLaunchedTask" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">

@@ -1,4 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.utils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,9 +8,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
-
+/**
+ * Created by devendeng on 2018/10/22.
+ */
 public class DateTool {
     private static final String TIME_PLACEHOLDER_DATE_0 = "${yyyyMMdd}";
     private static final String TIME_PLACEHOLDER_DATE_1 = "${yyyy-MM-dd}";
@@ -23,18 +27,17 @@ public class DateTool {
     public static final String TIME_PLACEHOLDER_DATE_HOUR_1 = "${yyyy-MM-dd-HH}";
     public static final String TIME_PLACEHOLDER_DATE_HOUR_2 = "${HH}";
 
-    private static final String TIME_PLACEHOLDER_TIMESTAMP = "${timestamp}";
+    static final String TIME_PLACEHOLDER_TIMESTAMP = "timestamp";
     static final String MONTH_BEGIN_SYMBOL = "run_month_begin";
     static final String MONTH_END_SYMBOL = "run_month_end";
-    static final String TIME_PLACEHOLDER_SYMBOL = "timestamp";
-    static final String MONTH_BEGIN_LAST_SYMBOL = "run_month_begin-1";
     static final String[] HOUR_SPEC_SYMBOLS = new String[]{"yyyyMMdd", "yyyy-MM-dd", "HH"};
-    static final String LINE_SYMBOL = "_std";
+    static final String FORMAT_STD_SYMBOL = "_std";
+    static final String FORMAT_UTC_SYMBOL = "_utc";
     public static final String[] TIME_PLACEHOLDER = new String[]{
             TIME_PLACEHOLDER_DATE_0, TIME_PLACEHOLDER_DATE_1, TIME_PLACEHOLDER_DATE_TIME, TIME_PLACEHOLDER_TIMESTAMP,
             TIME_PLACEHOLDER_DATE_HOUR_0, TIME_PLACEHOLDER_DATE_HOUR_1, TIME_PLACEHOLDER_DATE_HOUR_2};
 
-    private static final String TIME_REGULAR_EXPRESSION = "\\$\\{(run_date|run_month_begin|run_month_end|HH|yyyyMMdd|yyyy-MM-dd|timestamp)(_std)?\\s*([+-])?\\s*([0-9])?\\}";
+    private static final String TIME_REGULAR_EXPRESSION = "\\$\\{(run_date|run_month_begin|run_month_end|HH|yyyyMMddHH|yyyy-MM-dd-HH|yyyyMMdd|yyyy-MM-dd|timestamp)(_std|_utc|_y|_M|_d)?\\s*([+-])?\\s*([0-9])?\\}";
     public static final Pattern TIME_REGULAR_PATTERN = Pattern.compile(TIME_REGULAR_EXPRESSION);
 
     private static Logger log = LoggerFactory.getLogger(DateTool.class);
@@ -185,18 +188,15 @@ public class DateTool {
         return this;
     }
 
-    public DateTool getMonthBeginLastDay(int amount){
-        calendar.set(Calendar.DATE, 1);
-        calendar.add(Calendar.MONTH, amount);
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        return this;
-    }
-
     public String format(String pattern){
         SimpleDateFormat format=new SimpleDateFormat(pattern);
         return format.format(calendar.getTime());
     }
-
+    public String format(String pattern, String timeZone){
+        SimpleDateFormat format=new SimpleDateFormat(pattern);
+        format.setTimeZone(TimeZone.getTimeZone(timeZone));
+        return format.format(calendar.getTime());
+    }
     public String format(String pattern, long time){
         SimpleDateFormat format = new SimpleDateFormat(pattern);
         return format.format(new Date(time));

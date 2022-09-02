@@ -48,18 +48,21 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
             LaunchableExchangisTask launchableExchangisTask = iterator.next();
             if (Objects.nonNull(launchableExchangisTask)){
                 try {
+                    // Check the submittable condition first in order to avoid the duplicate scheduler tasks
                     SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(launchableExchangisTask,
                             () -> {
                                 // check the status of launchedTask
                                 // insert or update launched task, status as TaskStatus.Scheduler
                                 return taskObserverService.subscribe(launchableExchangisTask);
-                    });
-                    submitSchedulerTask.setTenancy(launchableExchangisTask.getExecuteUser());
-                    try {
-                        taskExecution.submit(submitSchedulerTask);
-                    } catch (Exception e) {
-                        LOG.warn("Fail to async submit launchable task: [ id: {}, name: {}, job_execution_id: {} ]"
-                                , launchableExchangisTask.getId(), launchableExchangisTask.getName(), launchableExchangisTask.getJobExecutionId(), e);
+                    }, true);
+                    if (submitSchedulerTask.isSubmitAble()) {
+                        submitSchedulerTask.setTenancy(launchableExchangisTask.getExecuteUser());
+                        try {
+                            taskExecution.submit(submitSchedulerTask);
+                        } catch (Exception e) {
+                            LOG.warn("Fail to async submit launchable task: [ id: {}, name: {}, job_execution_id: {} ]"
+                                    , launchableExchangisTask.getId(), launchableExchangisTask.getName(), launchableExchangisTask.getJobExecutionId(), e);
+                        }
                     }
                 } catch (Exception e){
                     LOG.error("Exception in subscribing launchable tasks, please check your status of database and network", e);
