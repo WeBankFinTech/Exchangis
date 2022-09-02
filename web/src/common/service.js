@@ -59,9 +59,14 @@ export const getDataSourceList = (params) => {
 };
 
 // 数据源管理 获取数据源
-export const getDataSourceTypes = () => {
+export const getDataSourceTypes = (param) => {
+  let extra = ''
+  if (param) {
+    const { engineType, direct, sourceType } = param
+    extra = `&engineType=${engineType}&direct=${direct}${sourceType ? '&sourceType=' + sourceType : ''}`
+  }
   return request(
-    `/datasources/type?labels=${getEnvironment()}&t=_${new Date().getTime()}`,
+    `/datasources/type?labels=${getEnvironment()}&t=_${new Date().getTime()}${extra}`,
     {},
     { method: "GET" }
   );
@@ -282,13 +287,14 @@ export const getJobs = (id, jobType, name, current, size) => {
   });
 };
 
-export const saveProject = (id, body) => {
+export const saveProject = (id, body, type = 'save') => {
   return request(`/job/${id}/content`, {
     ...body,
     labels: {
       route: getEnvironment()
     }
   }, {
+    headers: { 'save-from': type },
     method: "PUT",
   });
 };
@@ -534,4 +540,38 @@ export const getPartitionInfo = (params) => {
       method: "GET",
     }
   );
+}
+
+// 获取字段映射转换函数
+export const getFieldFunc = (funcType) => {
+  if (!funcType) return
+  return request(
+    `/job/func/${funcType}?labels=${getEnvironment()}&_=${Math.random()}`,
+    {},
+    {
+      method: "GET",
+    }
+  );
+}
+
+// 获取字段映射转换函数
+export const encryptFunc = (param) => {
+  return request(
+    `/datasources/tools/encrypt?labels=${getEnvironment()}`,
+    param,
+    {
+      method: "POST",
+    }
+  );
+}
+
+// 获取执行用户
+export const getExecutor = () => {
+  return request(
+    `/job/Executor?labels=${getEnvironment()}`,
+    {},
+    {
+      method: "GET",
+    }
+  )
 }

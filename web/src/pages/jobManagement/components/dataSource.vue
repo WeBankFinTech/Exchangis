@@ -46,18 +46,20 @@
                 <SelectDataSource
                   @updateDsInfo="updateSourceInfo"
                   :title="sourceTitle"
+                  :engineType="engineType"
+                  direct="source"
                 />
               </a-form-item>
               <!-- 动态组件 -->
               <a-form-item
-                v-for="item in dataSource.params.sources"
+                v-for="item in sourceParams"
                 :key="item.field"
                 :label="item.label"
                 :name="item.label"
                 :help="sourcesHelpMsg[item.key.split('.').pop()]"
                 :validate-status="sourcesHelpStatus[item.key.split('.').pop()]"
                 :required="item.required"
-              >
+              > 
                 <dync-render
                   v-bind:param="item"
                   @updateInfo="updateSourceParams"
@@ -93,11 +95,14 @@
                   @updateDsInfo="updateSinkInfo"
                   :title="sinkTitle"
                   :style="styleObject"
+                  :engineType="engineType"
+                  direct="sink"
+                  :sourceType="sourceType"
                 />
               </a-form-item>
               <!-- 动态组件 -->
               <a-form-item
-                v-for="item in dataSource.params.sinks"
+                v-for="item in sinksParams"
                 :key="item.field"
                 :label="item.label"
                 :name="item.label"
@@ -171,6 +176,8 @@ export default defineComponent({
 
     let sourceTitle = ref(objToTitle(props.dsData.dataSourceIds.source));
     let sinkTitle = ref(objToTitle(props.dsData.dataSourceIds.sink));
+    let sourceType = ref(props.dsData.dataSourceIds.source.type) // 源数据的数据源类型
+    let sinkType = ref(props.dsData.dataSourceIds.sink.type) // 源数据的数据源类型
     let isFold = ref(true);
 
     const dataSource = reactive({
@@ -196,17 +203,52 @@ export default defineComponent({
       sourcesHelpStatus[key] = "success";
     });
 
+    // 
+    const setParamSource = (arr) => {
+      let transferModeValue = ''
+      let defShow  = arr.filter(v => !v.refId)
+      arr.forEach(ui => {
+        ui.show = '_true'
+        if (ui.field === "transferMode") {
+          transferModeValue = ui.value + ui.id;
+        }
+        if (ui.refId) {
+          ui.show = defShow.some(v => v.id === ui.refId) ? '_true' : '_false';
+          if (ui.field === "nullFormat") {
+            ui.show = transferModeValue === ("记录" + ui.refId) ? '_true' : '_false';
+          }
+          ui.value = ui.show !== '_false' ? ui.value : ''
+        }
+      })
+    }
+
+    setParamSource(dataSource.params.sources)
+
+    const setParamSink = (arr) => {
+      arr.forEach(ui => {
+          ui.show = '_true';
+          if (ui.field === "nullFormat" && sinkType.value === 'ELASTICSEARCH') {
+            ui.show = '_false';
+          }
+          ui.value = ui.show !== '_false' ? ui.value : ''
+      })
+    }
+
+    setParamSink(dataSource.params.sinks)
+
     dataSource["params"]["sinks"].forEach((item) => {
       let key = item.key.split(".").pop();
       sinksHelpMsg[key] = "";
       sinksHelpStatus[key] = "success";
     });
-
+  
     const newProps = computed(() => JSON.parse(JSON.stringify(props.dsData)))
     watch(newProps, (val, oldVal) => {
       const newVal = typeof val === "string" ? JSON.parse(val) : val;
       sourceTitle.value = objToTitle(newVal.dataSourceIds.source);
       sinkTitle.value = objToTitle(newVal.dataSourceIds.sink);
+      sourceType.value = newVal.dataSourceIds.source.type; // 源数据源类型赋值
+      sinkType.value = newVal.dataSourceIds.sink.type; // 目的数据源类型赋值
       dataSource.dataSourceIds = {
         source: newVal.dataSourceIds.source || {},
         sink: newVal.dataSourceIds.sink || {}
@@ -215,9 +257,13 @@ export default defineComponent({
         sources: newVal.params.sources || [],
         sinks: newVal.params.sinks || []
       };
-    });
+      setParamSource(dataSource.params.sources);
+      setParamSink(dataSource.params.sinks);
+      console.log('数据源信息', newProps)
+    }, { deep: true });
 
     const formRef = ref();
+    // 选完
     const updateSourceInfo = (dsInfo, id) => {
       const info = dsInfo.split(".");
 
@@ -249,6 +295,7 @@ export default defineComponent({
         });
         return message.error("SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择");
       }*/
+      sourceType.value = info[0];
       dataSource.dataSourceIds.source.type = info[0];
       dataSource.dataSourceIds.source.ds = info[1];
       dataSource.dataSourceIds.source.db = info[2];
@@ -259,6 +306,8 @@ export default defineComponent({
         dataSource.dataSourceIds.source.type,
         "source"
       ).then((res) => {
+        let transferModeValue = '';
+        let defShow = res.uis.filter(v => !v.refId);
         res.uis.forEach((ui, index) => {
           /*if (ui.type && ui.type === 'MAP') {
             res.uis[index] = ui = {
@@ -280,8 +329,19 @@ export default defineComponent({
           if (ui.source) {
             ui.source = ui.source + '?_=' + Math.random()
           }*/
+          ui.show = '_true'
           if (!ui.value && ui.defaultValue) {
             ui.value = ui.defaultValue;
+          }
+          if (ui.field === "transferMode" && ui.id ) {
+            transferModeValue = ui.value + ui.id;
+          }
+          if (ui.refId) {
+            ui.show = defShow.some(v => v.id === ui.refId) ? '_true' : '_false';
+            if (ui.field === "nullFormat") {
+              ui.show = transferModeValue === ("记录" + ui.refId)  ? '_true' : '_false';
+            }
+            ui.value = ui.show !== '_false' ? ui.value : ''
           }
         });
         dataSource.params.sources = res.uis || [];
@@ -302,6 +362,7 @@ export default defineComponent({
         });
         return message.error("SQOOP引擎输入/输出数据源必须包含HIVE,请重新选择");
       }
+      sinkType.value = info[0];
       dataSource.dataSourceIds.sink.type = info[0];
       dataSource.dataSourceIds.sink.ds = info[1];
       dataSource.dataSourceIds.sink.db = info[2];
@@ -314,9 +375,14 @@ export default defineComponent({
         "sink"
       ).then((res) => {
         res.uis.forEach((ui) => {
+          ui.show = '_true';
           if (!ui.value && ui.defaultValue) {
             ui.value = ui.defaultValue;
           }
+          if (ui.field === "nullFormat" && sinkType.value === 'ELASTICSEARCH') {
+            ui.show = '_false';
+          }
+          ui.value = ui.show !== '_false' ? ui.value : ''
         });
         dataSource.params.sinks = res.uis || [];
         context.emit("updateSinkInfo", dataSource);
@@ -363,13 +429,24 @@ export default defineComponent({
           }
           break;
       }*/
-
+      let transferModeValue = ''
+      let defShow = _sourceParams.filter(v => !v.refId); // 默认显示项
       _sourceParams.forEach((item) => {
+        item.show = '_true';
+        if (item.field === "transferMode" && item.id) {
+          transferModeValue = item.value + item.id
+        }
+        if (item.refId) {
+          item.show = defShow.some(v => v.id === item.refId) ? '_true' : '_false';
+          if (item.field === "nullFormat") {
+            item.show = transferModeValue === ("记录" + item.refId) ? '_true' : '_false';
+          }
+          item.value = item.show !== '_false' ? item.value : ''
+        }
         if (item.field === info.field) {
           return (item.value = info.value);
         }
       });
-
       dataSource.params.sources = _sourceParams;
       context.emit("updateSourceParams", dataSource);
     };
@@ -422,6 +499,11 @@ export default defineComponent({
           break;
       }*/
       _sinkParams.forEach((item) => {
+        item.show = '_true';
+        if (item.field === "nullFormat" && sinkType.value === 'ELASTICSEARCH') {
+          item.show = '_false';
+        }
+        item.value = item.show !== '_false' ? item.value : ''
         if (item.field === info.field) {
           return (item.value = info.value);
         }
@@ -432,6 +514,10 @@ export default defineComponent({
     const showInfo = () => {
       isFold.value = !isFold.value;
     };
+
+    // 源数据数组
+    const sourceParams = computed(() => dataSource.params.sources.filter(v => v.show !== '_false'))
+    const sinksParams = computed(() => dataSource.params.sinks.filter(v => v.show !== '_false'))
     return {
       formRef,
       updateSourceInfo,
@@ -443,12 +529,12 @@ export default defineComponent({
       updateSinkParams,
       showInfo,
       isFold,
-
       sourcesHelpMsg,
       sourcesHelpStatus,
       sinksHelpMsg,
       sinksHelpStatus,
-
+      sourceParams,
+      sinksParams,
       labelCol: {
         style: {
           style: {
@@ -465,6 +551,7 @@ export default defineComponent({
       styleObject: {
         width: "400px",
       },
+      sourceType
     };
   },
   watch: {},
@@ -526,8 +613,8 @@ export default defineComponent({
 }
 .data-source-warp-mid {
   width: 74px;
-  height: 46px;
-  line-height: 46px;
+  height: 128px;
+  line-height: 128px;
   text-align: center;
 }
 .data-source-label {

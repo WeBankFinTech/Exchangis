@@ -45,10 +45,10 @@
               >
                 <a-form-item
                   :label="item.label"
-                  :name="item.label"
+                  :name="value"
                   :model="formState"
                   :help="helpMsg[item.key]"
-                  :validate-status="helpStatus[item.key]"
+                  :validateStatus="helpStatus[item.key]"
                   :required="item.required"
                   class="process-control-label"
                 >
@@ -112,7 +112,7 @@ export default defineComponent({
       if (info.required && !info.value) {
         helpMsg[info.key] = `请输入${info.label}`;
         helpStatus[info.key] = "error";
-      } else if (info.validateType === "REGEX") {
+      } else if (info.value && info.validateType === "REGEX") {
         const num_reg = new RegExp(`${info.validateRange}`);
         if (!num_reg.test(info.value)) {
           helpMsg[info.key] = info.validateMsg;
