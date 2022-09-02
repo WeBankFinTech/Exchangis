@@ -15,5 +15,4 @@ public interface LoadBalanceSchedulerTask<T> extends ExchangisSchedulerTask {
      * @return
      */
     LoadBalancePoller<T> getOrCreateLoadBalancePoller();
-
 }

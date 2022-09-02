@@ -11,6 +11,7 @@ import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.GenericSubExchangisJobHandler;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.common.utils.VariableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -219,18 +220,19 @@ public class TransformExchangisJob extends GenericExchangisJob {
          * @param items
          * @return 用于转换时间分区
          */
-
         private void timePlaceHolderConvert(List<ExchangisJobParamsContent.ExchangisJobParamsItem> items) {
-            Calendar calendar = Calendar.getInstance();
             items.forEach(item -> {
                 Object value = item.getConfigValue();
                 if (value instanceof String){
-                    item.setConfigValue(JobUtils.renderDt((String)value, calendar));
+                    item.setConfigValue(JobUtils.replaceVariable((String)value, new HashMap<>()));
                 } else if (value instanceof Map){
-
+                    for (Object key:((Map) value).keySet()) {
+                        ((Map) value).put(key, JobUtils.replaceVariable(((String)((Map) value).get(key)), new HashMap<>()));
+                    }
                 }
             });
         }
 
     }
+
 }
