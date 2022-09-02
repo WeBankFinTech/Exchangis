@@ -108,7 +108,7 @@ public class JobUtils {
                             dataTool.getMonthEnd(0);
                         } else if (DateTool.TIME_PLACEHOLDER_TIMESTAMP.equals(symbol)){
                             calendar.setTime(date);
-                            calendar.add(Calendar.DAY_OF_MONTH, -1);
+                            calendar.add(Calendar.DAY_OF_MONTH, 0);
                             tempTime = String.valueOf(calendar.getTimeInMillis());
                             startTime = template.replace(m, tempTime);
                             return startTime;
@@ -168,9 +168,14 @@ public class JobUtils {
      * @return string
      */
     public static String replaceVariable(String source, Map<String, Object> variables){
-        if (StringUtils.isNotBlank(source)){
-            return VariableUtils.replace(MARKER_HEAD + source, variables).substring(MARKER_HEAD.length());
+        String result = source;
+        if (StringUtils.isNotBlank(result)){
+            result = VariableUtils.replace(MARKER_HEAD + source, variables).substring(MARKER_HEAD.length());
+            if (StringUtils.isNotBlank(result)){
+                // Render again
+                result = renderDt(result, Calendar.getInstance());
+            }
         }
-        return source;
+        return result;
     }
 }

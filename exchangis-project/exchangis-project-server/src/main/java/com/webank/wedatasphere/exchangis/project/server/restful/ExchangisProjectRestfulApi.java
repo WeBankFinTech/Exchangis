@@ -220,7 +220,7 @@ public class ExchangisProjectRestfulApi {
                 return Message.error("Cannot delete the outer project (无法删除来自 " + domain + " 的外部项目)");
             }
             projectService.deleteProject(id);
-            return ExchangisProjectRestfulUtils.dealOk("删除工程成功888");
+            return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
             return Message.error("Failed to delete project (删除工程失败)");

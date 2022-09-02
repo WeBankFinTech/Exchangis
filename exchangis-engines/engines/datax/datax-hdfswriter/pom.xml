@@ -100,6 +100,10 @@
                     <artifactId>geronimo-jaspic_1.0_spec</artifactId>
                     <groupId>org.apache.geronimo.specs</groupId>
                 </exclusion>
+                <exclusion>
+                	<groupId>org.pentaho</groupId>
+                	<artifactId>pentaho-aggdesigner-algorithm</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -111,6 +115,12 @@
             <groupId>org.apache.hive.hcatalog</groupId>
             <artifactId>hive-hcatalog-core</artifactId>
             <version>${hive.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.pentaho</groupId>
+                    <artifactId>pentaho-aggdesigner-algorithm</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>xalan</groupId>

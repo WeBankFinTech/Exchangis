@@ -91,6 +91,10 @@
                     <artifactId>zookeeper</artifactId>
                     <groupId>org.apache.zookeeper</groupId>
                 </exclusion>
+                <exclusion>
+                	<groupId>org.pentaho</groupId>
+                	<artifactId>pentaho-aggdesigner-algorithm</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

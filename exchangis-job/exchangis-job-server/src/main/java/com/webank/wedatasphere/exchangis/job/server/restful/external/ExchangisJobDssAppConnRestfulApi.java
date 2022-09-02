@@ -90,7 +90,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             Long id = null;
             id = jobInfoService.createJob(exchangisJobVo).getId();
             response.data("id", id);
-            LOG.info("id6666: {}", id);
+            LOG.info("job id is: {}", id);
         } catch (Exception e){
             String message = "Fail to create dss job: " + exchangisJobVo.getJobName() +" (创建DSS任务失败)";
             LOG.error(message, e);
@@ -177,9 +177,9 @@ public class ExchangisJobDssAppConnRestfulApi {
     @RequestMapping( value = "/execute/{id}", method = RequestMethod.POST)
     public Message executeJob(@PathVariable("id") Long id, HttpServletRequest request, @RequestBody Map<String, Object> params) {
         try {
-            LOG.info("start to parse params8909");
+            LOG.info("start to parse params");
             String paramString = BDPJettyServerHelper.jacksonJson().writeValueAsString(params);
-            LOG.error("paramString999879: {}", paramString);
+            LOG.error("paramString: {}", paramString);
         } catch (JsonProcessingException e) {
             LOG.error("parse execute content error: {}", e.getMessage());
         }
@@ -250,9 +250,9 @@ public class ExchangisJobDssAppConnRestfulApi {
         String userName = SecurityFilter.getLoginUsername(request);
         try {
             LOG.info("param: {}", params);
-            if (!hasAuthority(userName, jobInfoService.getJob((Long) params.get("sqoopIds"), true))) {
+            /*if (!hasAuthority(userName, jobInfoService.getJob(((Integer) params.get("sqoopIds")).longValue(), true))) {
                 return Message.error("You have no permission to import (没有导入权限)");
-            }
+            }*/
             response = projectImportServer.importProject(request, params);
             LOG.info("import job success");
         } catch (ExchangisJobServerException e){
@@ -271,9 +271,9 @@ public class ExchangisJobDssAppConnRestfulApi {
         LOG.info("export function params: {}", params);
         Message response = null;
         try {
-            if (!hasAuthority(userName, jobInfoService.getJob((Long) params.get("sqoopIds"), true))) {
+            /*if (!hasAuthority(userName, jobInfoService.getJob(((Integer) params.get("sqoopIds")).longValue(), true))) {
                 return Message.error("You have no permission to export (没有导出权限)");
-            }
+            }*/
             response = jobInfoService.exportProject(params, userName, request);
             LOG.info("export job success");
         } catch (Exception e){
