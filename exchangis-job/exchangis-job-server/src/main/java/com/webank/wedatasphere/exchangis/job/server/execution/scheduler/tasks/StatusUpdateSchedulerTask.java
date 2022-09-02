@@ -31,7 +31,7 @@ public class StatusUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
     }
     @Override
     protected void onPoll(LaunchedExchangisTask launchedExchangisTask) throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
-        LOG.trace("Status update task: [{}] in scheduler: [{}]", launchedExchangisTask.getId(), getName());
+        LOG.info("Status update task: [{}] in scheduler: [{}]", launchedExchangisTask.getId(), getName());
         AccessibleLauncherTask launcherTask = launchedExchangisTask.getLauncherTask();
         try{
             TaskProgressInfo progressInfo = launcherTask.getProgressInfo();
