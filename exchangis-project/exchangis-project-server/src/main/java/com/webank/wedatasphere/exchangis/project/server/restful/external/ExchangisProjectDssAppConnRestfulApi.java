@@ -1,14 +1,10 @@
 package com.webank.wedatasphere.exchangis.project.server.restful.external;
 
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
-import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
-import com.webank.wedatasphere.exchangis.project.server.utils.AuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.linkis.common.utils.JsonUtils;
 import org.apache.linkis.server.Message;
@@ -27,6 +23,7 @@ import java.util.Objects;
 /**
  * Restful class for dss project
  */
+@Deprecated
 @RestController
 @RequestMapping(value = "/dss/exchangis/main/appProject", produces = {"application/json;charset=utf-8"})
 public class ExchangisProjectDssAppConnRestfulApi {
