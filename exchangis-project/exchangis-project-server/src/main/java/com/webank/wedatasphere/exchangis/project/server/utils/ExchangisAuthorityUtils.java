@@ -31,16 +31,20 @@ public class ExchangisAuthorityUtils {
         if (org.apache.commons.lang3.StringUtils.isNotEmpty(username) &&
                 Objects.nonNull(project) &&
                 Objects.nonNull(operationType)) {
+            // Create users have all rights to the project.
             switch (operationType) {
                 case VIEW:
                     List<String> viewUsers = Arrays.stream(project.getViewUsers().split(",")).distinct().collect(Collectors.toList());
-                    return viewUsers.contains(username);
+                    return org.apache.commons.lang3.StringUtils.equals(username, project.getCreateUser()) ||
+                            viewUsers.contains(username);
                 case EDIT:
                     List<String> editUsers = Arrays.stream(project.getEditUsers().split(",")).distinct().collect(Collectors.toList());
-                    return editUsers.contains(username);
+                    return org.apache.commons.lang3.StringUtils.equals(username, project.getCreateUser()) ||
+                            editUsers.contains(username);
                 case EXEC:
                     List<String> execUsers = Arrays.stream(project.getExecUsers().split(",")).distinct().collect(Collectors.toList());
-                    return execUsers.contains(username);
+                    return org.apache.commons.lang3.StringUtils.equals(username, project.getCreateUser()) ||
+                            execUsers.contains(username);
                 case DELETE:
                     return org.apache.commons.lang3.StringUtils.equals(username, project.getCreateUser());
                 default:

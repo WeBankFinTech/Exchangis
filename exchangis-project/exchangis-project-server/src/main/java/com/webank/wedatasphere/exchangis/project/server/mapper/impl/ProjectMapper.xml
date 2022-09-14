@@ -32,27 +32,24 @@
 
     <!--where condition-->
     <sql id="pageCondition">
-            <if test="name != '' and name != null">
-                AND dp.name like concat('%', #{name}, '%')
-            </if>
-            <if test="createUser != '' and createUser != null">
-                AND dp.create_user = #{createUser}
-            </if>
-            <if test="domain != '' and domain != null">
-                AND dp.domain = #{domain}
-            </if>
+        <if test="name != '' and name != null">
+            AND dp.name like concat('%', #{name}, '%')
+        </if>
+        <if test="domain != '' and domain != null">
+            AND dp.domain = #{domain}
+        </if>
     </sql>
 
     <!--queryPageList-->
     <select id="queryPageList" resultMap="projectResult">
-        select DISTINCT dp.id, dp.name, dp.description,
+        SELECT DISTINCT dp.id, dp.name, dp.description,
         dp.create_user, dp.create_time, dp.last_update_user,dp.last_update_time, dp.project_labels,dp.domain,
         dp.view_users, dp.exec_users, dp.edit_users, du.priv_user
-        from exchangis_project_info dp
-        inner join exchangis_project_user du on dp.id = du.project_id
-        where du.priv_user = #{createUser} and view_users like concat('%',#{createUser},'%')
+        FROM exchangis_project_info dp
+        INNER JOIN exchangis_project_user du on dp.id = du.project_id
+        WHERE (du.priv_user = #{createUser} OR view_users like concat('%',#{createUser},'%'))
         <include refid="pageCondition"/>
-        ORDER BY create_time DESC
+        ORDER BY dp.create_time DESC
     </select>
 
     <!--getDetailById-->
