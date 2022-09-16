@@ -6,13 +6,18 @@ package com.webank.wedatasphere.exchangis.project.server.domain;
  **/
 public enum OperationType {
 
-    VIEW("view"),
+    /**
+     * project operation:
+     *      query project
+     */
+    PROJECT_QUERY("PROJECT_QUERY"),
 
-    EDIT("edit"),
-
-    EXEC("exec"),
-
-    DELETE("delete");
+    /**
+     * project operation:
+     *      update project
+     *      delete project
+     */
+    PROJECT_ALTER("PROJECT_ALTER");
 
     private String type;
 

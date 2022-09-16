@@ -61,44 +61,48 @@ public class ProjectServiceImpl implements ProjectService {
         project.setCreateTime(Calendar.getInstance().getTime());
         this.projectMapper.insertOne(project);
 
-        List<ExchangisProjectUser> projectUsers = new ArrayList<>();
-        if (project.getViewUsers() != null && project.getViewUsers().length()!=0) {
-            for (String view : project.getViewUsers().split(",")) {
+        Map<String, ExchangisProjectUser> projectUserMap = new HashMap<>();
+        if (Objects.nonNull(project.getViewUsers()) && project.getViewUsers().length() != 0) {
+            for (String viewUser : project.getViewUsers().split(",")) {
                 ExchangisProjectUser projectUser = new ExchangisProjectUser();
                 projectUser.setProjectId(project.getId());
-                projectUser.setPrivUser(view);
-                projectUser.setPriv(1);
+                projectUser.setPrivUser(viewUser);
+                projectUser.setPriv(4);
                 projectUser.setUpdateTime(project.getLastUpdateTime());
-                projectUsers.add(projectUser);
+                projectUserMap.put(viewUser ,projectUser);
             }
         }
-        if (project.getEditUsers() != null && project.getEditUsers().length()!=0) {
-            for (String edit : project.getEditUsers().split(",")) {
-                ExchangisProjectUser projectUser = new ExchangisProjectUser();
-                projectUser.setProjectId(project.getId());
-                projectUser.setPrivUser(edit);
-                projectUser.setPriv(3);
-                projectUser.setUpdateTime(project.getLastUpdateTime());
-                projectUsers.add(projectUser);
+        if (Objects.nonNull(project.getEditUsers()) && project.getEditUsers().length() != 0) {
+            for (String editUser : project.getEditUsers().split(",")) {
+                ExchangisProjectUser exchangisProjectUser = projectUserMap.get(editUser);
+                if (Objects.nonNull(exchangisProjectUser)) {
+                    exchangisProjectUser.setPriv(exchangisProjectUser.getPriv() + 2);
+                } else {
+                    ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                    projectUser.setProjectId(project.getId());
+                    projectUser.setPrivUser(editUser);
+                    projectUser.setPriv(2);
+                    projectUser.setUpdateTime(project.getLastUpdateTime());
+                    projectUserMap.put(editUser ,projectUser);
+                }
             }
         }
-        if (project.getExecUsers() != null && project.getExecUsers().length()!=0) {
-            for (String exec : project.getExecUsers().split(",")) {
-                ExchangisProjectUser projectUser = new ExchangisProjectUser();
-                projectUser.setProjectId(project.getId());
-                projectUser.setPrivUser(exec);
-                projectUser.setPriv(2);
-                projectUser.setUpdateTime(project.getLastUpdateTime());
-                projectUsers.add(projectUser);
+        if (Objects.nonNull(project.getExecUsers()) && project.getExecUsers().length() != 0) {
+            for (String execUser : project.getExecUsers().split(",")) {
+                ExchangisProjectUser exchangisProjectUser = projectUserMap.get(execUser);
+                if (Objects.nonNull(exchangisProjectUser)) {
+                    exchangisProjectUser.setPriv(exchangisProjectUser.getPriv() + 1);
+                } else {
+                    ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                    projectUser.setProjectId(project.getId());
+                    projectUser.setPrivUser(execUser);
+                    projectUser.setPriv(2);
+                    projectUser.setUpdateTime(project.getLastUpdateTime());
+                    projectUserMap.put(execUser ,projectUser);
+                }
             }
         }
-        ExchangisProjectUser projectUser = new ExchangisProjectUser();
-        projectUser.setProjectId(project.getId());
-        projectUser.setPrivUser(project.getCreateUser());
-        projectUser.setPriv(0);
-        projectUser.setUpdateTime(project.getLastUpdateTime());
-        projectUsers.add(projectUser);
-        this.projectUserMapper.addProjectUser(projectUsers);
+        this.projectUserMapper.addProjectUser((List<ExchangisProjectUser>)projectUserMap.values());
         return project.getId();
     }
 
