@@ -74,14 +74,13 @@ public class ProjectServiceImpl implements ProjectService {
         }
         if (Objects.nonNull(project.getEditUsers()) && project.getEditUsers().length() != 0) {
             for (String editUser : project.getEditUsers().split(",")) {
-                ExchangisProjectUser exchangisProjectUser = projectUserMap.get(editUser);
-                if (Objects.nonNull(exchangisProjectUser)) {
-                    exchangisProjectUser.setPriv(exchangisProjectUser.getPriv() + 2);
+                if (Objects.nonNull(projectUserMap.get(editUser))) {
+                    projectUserMap.get(editUser).setPriv(6);
                 } else {
                     ExchangisProjectUser projectUser = new ExchangisProjectUser();
                     projectUser.setProjectId(project.getId());
                     projectUser.setPrivUser(editUser);
-                    projectUser.setPriv(2);
+                    projectUser.setPriv(6);
                     projectUser.setUpdateTime(project.getLastUpdateTime());
                     projectUserMap.put(editUser ,projectUser);
                 }
@@ -89,14 +88,13 @@ public class ProjectServiceImpl implements ProjectService {
         }
         if (Objects.nonNull(project.getExecUsers()) && project.getExecUsers().length() != 0) {
             for (String execUser : project.getExecUsers().split(",")) {
-                ExchangisProjectUser exchangisProjectUser = projectUserMap.get(execUser);
-                if (Objects.nonNull(exchangisProjectUser)) {
-                    exchangisProjectUser.setPriv(exchangisProjectUser.getPriv() + 1);
+                if (Objects.nonNull(projectUserMap.get(execUser))) {
+                    projectUserMap.get(execUser).setPriv(7);
                 } else {
                     ExchangisProjectUser projectUser = new ExchangisProjectUser();
                     projectUser.setProjectId(project.getId());
                     projectUser.setPrivUser(execUser);
-                    projectUser.setPriv(2);
+                    projectUser.setPriv(7);
                     projectUser.setUpdateTime(project.getLastUpdateTime());
                     projectUserMap.put(execUser ,projectUser);
                 }
