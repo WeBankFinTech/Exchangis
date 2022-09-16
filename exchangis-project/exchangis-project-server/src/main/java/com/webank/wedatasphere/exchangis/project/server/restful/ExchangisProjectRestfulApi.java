@@ -6,7 +6,7 @@ import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
-import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisAuthorityUtils;
+import com.webank.wedatasphere.exchangis.project.server.utils.ProjectAuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectConfiguration;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
@@ -87,7 +87,7 @@ public class ExchangisProjectRestfulApi {
             if (Objects.isNull(project)){
                 return Message.error("Not found the project (找不到对应项目)");
             }
-            if (!ExchangisAuthorityUtils.hasAuthority(username, project, OperationType.VIEW)){
+            if (!ProjectAuthorityUtils.hasProjectAuthority(username, project, OperationType.PROJECT_QUERY)){
                 return Message.error("You have no permission to query (没有项目查看权限)");
             }
             return Message.ok().data("item", project);
@@ -139,7 +139,7 @@ public class ExchangisProjectRestfulApi {
         String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.selectByName(name);
-            if (!ExchangisAuthorityUtils.hasAuthority(username, projectInfo, OperationType.VIEW)){
+            if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_QUERY)){
                 return Message.error("You have no permission to query (没有项目查看权限)");
             }
             return ExchangisProjectRestfulUtils.dealOk("根据名字获取项目成功",
@@ -169,7 +169,7 @@ public class ExchangisProjectRestfulApi {
         String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
-            if (!ExchangisAuthorityUtils.hasAuthority(username, projectStored, OperationType.EDIT)) {
+            if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
                 return Message.error("You have no permission to update (没有项目的更新权限)");
             }
 
@@ -203,7 +203,7 @@ public class ExchangisProjectRestfulApi {
         String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.getProjectById(id);
-            if (!ExchangisAuthorityUtils.hasAuthority(username, projectInfo, OperationType.DELETE)) {
+            if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_ALTER)) {
                 return Message.error("You have no permission to delete (删除项目失败)");
             }
 
