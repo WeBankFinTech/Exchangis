@@ -47,7 +47,9 @@
         dp.view_users, dp.exec_users, dp.edit_users, du.priv_user
         FROM exchangis_project_info dp
         INNER JOIN exchangis_project_user du on dp.id = du.project_id
-        WHERE (du.priv_user = #{createUser} OR view_users like concat('%',#{createUser},'%'))
+        WHERE (du.priv_user = #{createUser} OR view_users like concat('%',#{createUser},'%')
+        OR edit_users like concat('%',#{createUser},'%')
+        OR exec_users like concat('%',#{createUser},'%'))
         <include refid="pageCondition"/>
         ORDER BY dp.create_time DESC
     </select>
