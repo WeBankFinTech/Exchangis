@@ -59,6 +59,11 @@ public class TransformExchangisJob extends GenericExchangisJob {
          */
         private ExchangisJobInfoContent jobInfoContent;
 
+        /**
+         * Resource uri string list
+         */
+        private final List<String> resourceUris = new ArrayList<>();
+
         public SubExchangisJobAdapter(ExchangisJobInfoContent jobInfoContent){
             if(Objects.nonNull(jobInfoContent)) {
                 this.jobInfoContent = jobInfoContent;
@@ -66,6 +71,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
                 this.name = jobInfoContent.getSubJobName();
                 convertContentToParams(jobInfoContent);
                 convertContentToColumnDefine(jobInfoContent);
+//                convertContentToResources(jobInfoContent);
             }
         }
 
