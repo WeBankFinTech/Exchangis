@@ -22,6 +22,7 @@ public class ExchangisEngineJob extends GenericExchangisJob {
             getJobContent().putAll(engineJob.getJobContent());
             getRuntimeParams().putAll(engineJob.getRuntimeParams());
             setMemoryUsed(engineJob.getMemoryUsed());
+            getResources().addAll(engineJob.getResources());
         }
     }
     /**

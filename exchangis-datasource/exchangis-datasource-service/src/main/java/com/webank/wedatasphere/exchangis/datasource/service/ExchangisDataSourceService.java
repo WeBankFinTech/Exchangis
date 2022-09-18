@@ -119,6 +119,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String[] engineDirect = engineAndDirection.split("-");
         String direction = engineDirect[1];
         for (ExchangisJobParamConfig paramConfig : paramConfigs) {
+            //skip the
             Optional.ofNullable(paramConfig.getConfigDirection()).ifPresent(configDirection -> {
                 if (configDirection.equalsIgnoreCase(engineAndDirection) || configDirection.equalsIgnoreCase(direction)){
                     filteredConfigs.add(paramConfig);
