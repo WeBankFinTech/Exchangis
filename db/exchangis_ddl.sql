@@ -244,7 +244,7 @@ CREATE TABLE `exchangis_job_transform_processor` (
   `job_id` bigint(20) NOT NULL,
   `code_content` text DEFAULT NULL,
   `code_language` varchar(32) NOT NULL DEFAULT 'java',
-  `code_bml_resourceId` varchar(32) COMMENT 'BML resource id',
+  `code_bml_resourceId` varchar(255) COMMENT 'BML resource id',
   `code_bml_version` varchar(255) COMMENT 'BML version',
   `creator` varchar(50) NOT NULL COMMENT 'Owner of processor',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
