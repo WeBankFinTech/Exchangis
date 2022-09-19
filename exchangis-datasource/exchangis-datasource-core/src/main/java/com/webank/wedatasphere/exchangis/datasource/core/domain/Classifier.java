@@ -10,7 +10,9 @@ public enum Classifier {
 
     MYSQL("关系型数据库"),
 
-    SFTP("sftp连接");
+    SFTP("sftp连接"),
+
+    ORACLE("关系型数据库");
 
     public String name;
 
