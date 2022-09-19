@@ -20,6 +20,14 @@
         exchangis_project_user
     </sql>
 
+    <select id="queryProjectUser" resultMap ="projectUserResult">
+        select
+        <include refid="BaseColumnList"/>
+        from
+        <include refid="TableName" />
+        where project_id = #{projectId} and priv_user = #{privUser} limit 1
+    </select>
+
     <insert id="addProjectUser" >
         <foreach collection="projectUsers" item="projectUser">
             insert into

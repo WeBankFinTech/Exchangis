@@ -3,15 +3,14 @@ package com.webank.wedatasphere.exchangis.job.server.restful.external;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.IProjectCopyService;
-import com.webank.wedatasphere.exchangis.job.server.service.IProjectImportService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.ProjectImportServerImpl;
-import com.webank.wedatasphere.exchangis.job.server.utils.AuthorityUtils;
+import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectMapper;
@@ -75,18 +74,19 @@ public class ExchangisJobDssAppConnRestfulApi {
             BindingResult result,
             HttpServletRequest request) {
         if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
-            return Message.error("You have no permission to create (没有创建项目权力)");
+            return Message.error("You have no permission to create (没有创建任务权限)");
         }
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String userName = SecurityFilter.getLoginUsername(request);
-        exchangisJobVo.setCreateUser(userName);
+        String loginUser = SecurityFilter.getLoginUsername(request);
+        exchangisJobVo.setCreateUser(loginUser);
         Message response = Message.ok();
-        /*if (!AuthorityUtils.hasOwnAuthority(exchangisJobVo.getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(exchangisJobVo.getProjectId(), userName)) {
-            return Message.error("You have no permission to create (没有编辑权限，无法创建任务)");
-        }*/
+
         try{
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+                return Message.error("You have no permission to create Job (没有创建任务权限)");
+            }
             Long id = null;
             id = jobInfoService.createJob(exchangisJobVo).getId();
             response.data("id", id);
@@ -108,17 +108,17 @@ public class ExchangisJobDssAppConnRestfulApi {
     @RequestMapping( value = "/{id:\\d+}", method = RequestMethod.POST)
     public Message deleteJob(@PathVariable("id") Long id, HttpServletRequest request) {
         if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
-            return Message.error("You have no permission to update (没有删除权限)");
+            return Message.error("You have no permission to update (没有删除任务权限)");
         }
-        String userName = SecurityFilter.getLoginUsername(request);
+        String loginUser = SecurityFilter.getLoginUsername(request);
         Message response = Message.ok("dss job deleted");
         try {
-            //LOG.info("delete job bean: {}, jobid: {}", jobInfoService.getJob(id, true), jobInfoService.getJob(id, true).getId());
-            if (Objects.isNull(jobInfoService.getJob(id, true)) || jobInfoService.getJob(id, true).getId() == null){
+            ExchangisJobVo exchangisJob = jobInfoService.getJob(id, true);
+            if (Objects.isNull(exchangisJob)){
                 return response;
             }
-            else if (!hasAuthority(userName, jobInfoService.getJob(id, true))) {
-                return Message.error("You have no permission to update (没有删除权限)");
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, exchangisJob.getProjectId(), OperationType.JOB_ALTER)) {
+                return Message.error("You have no permission to delete (没有删除任务权限)");
             }
             jobInfoService.deleteJob(id);
         } catch (Exception e){
@@ -140,26 +140,24 @@ public class ExchangisJobDssAppConnRestfulApi {
                              @Validated @RequestBody ExchangisJobVo exchangisJobVo,
                              BindingResult result, HttpServletRequest request) {
         if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
-            return Message.error("You have no permission to update (没有更新权限)");
+            return Message.error("You have no permission to update (没有更新任务权限)");
         }
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String userName = SecurityFilter.getLoginUsername(request);
+        String loginUser = SecurityFilter.getLoginUsername(request);
         exchangisJobVo.setId(id);
-        exchangisJobVo.setModifyUser(userName);
+        exchangisJobVo.setModifyUser(loginUser);
         Message response = Message.ok();
         try{
             LOG.info("update job bean: {}, jobid: {}", jobInfoService.getJob(id, true), jobInfoService.getJob(id, true).getId());
-            if (Objects.isNull(jobInfoService.getJob(id, true)) || jobInfoService.getJob(id, true).getId() == null){
+            ExchangisJobVo exchangisJob = jobInfoService.getJob(id, true);
+            if (Objects.isNull(exchangisJob)){
                 return Message.error("You have no job in exchangis,please delete this job (该节点在exchangis端不存在，请删除该节点)");
             }
-            else if (!hasAuthority(userName, jobInfoService.getJob(id , true))) {
-                return Message.error("You have no permission to update (没有更新权限)");
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, exchangisJob.getProjectId(), OperationType.JOB_ALTER)) {
+                return Message.error("You have no permission to update (没有更新任务权限)");
             }
-            /*else if (!AuthorityUtils.hasOwnAuthority(exchangisJobVo.getProjectId(), userName) && !AuthorityUtils.hasEditAuthority(exchangisJobVo.getProjectId(), userName)) {
-                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
-            }*/
             response.data("id", jobInfoService.updateJob(exchangisJobVo).getId());
         } catch (Exception e){
             String message = "Fail to update dss job: " + exchangisJobVo.getJobName() +" (更新DSS任务失败)";
@@ -282,9 +280,6 @@ public class ExchangisJobDssAppConnRestfulApi {
             response = Message.error(message);
         }
         return response;
-
-        //return jobInfoService.exportProject(params, userName, request);
-
     }
 
     @RequestMapping( value = "/copy", method = RequestMethod.POST)
@@ -305,27 +300,5 @@ public class ExchangisJobDssAppConnRestfulApi {
 
         //return jobInfoService.exportProject(params, userName, request);
 
-    }
-
-    /**
-     * TODO complete the authority strategy
-     * @param username username
-     * @param job job
-     * @return
-     */
-    private boolean hasAuthority(String username, ExchangisJobVo job){
-        return Objects.nonNull(job) && username.equals(job.getCreateUser());
-    }
-
-    /**
-     * @param username username
-     * @param project project
-     * @return
-     */
-    private boolean hasExecuteAuthority(String username, ExchangisProject project){
-        if(project.getEditUsers().contains(username)||project.getExecUsers().contains(username)){
-            return true;
-        }
-        return false;
     }
 }
