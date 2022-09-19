@@ -121,7 +121,6 @@ public class DefaultJobExecuteService implements JobExecuteService {
             ExchangisJobProgressVo finalJobProgressVo = jobProgressVo;
             launchedExchangisTaskEntity.forEach(taskEntity -> {
                 finalJobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), taskEntity.getStatus(), taskEntity.getProgress()));
-                //jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), taskEntity.getStatus(), taskEntity.getProgress()));
             });
         } catch (Exception e){
             LOG.error("Get job and task progress happen execption ," +  "[jobExecutionId =" + jobExecutionId + "]", e);
@@ -161,11 +160,8 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public ExchangisLaunchedTaskMetricsVo getLaunchedTaskMetrics(String taskId, String jobExecutionId, String userName) throws ExchangisJobServerException {
+    public ExchangisLaunchedTaskMetricsVo getLaunchedTaskMetrics(String taskId, String jobExecutionId) throws ExchangisJobServerException {
         LaunchedExchangisTaskEntity launchedExchangisTaskEntity = launchedTaskDao.getLaunchedTaskMetrics(jobExecutionId, taskId);
-        if (Objects.isNull(launchedExchangisTaskEntity) || !hasExecuteJobAuthority(jobExecutionId, userName)) {
-            throw new ExchangisJobServerException(METRICS_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
-        }
         ExchangisLaunchedTaskMetricsVo exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVo();
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
@@ -183,36 +179,14 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public boolean hasExecuteJobAuthority(String jobExecutionId, String userName) {
-        LaunchedExchangisJobEntity jobEntity = this.launchedJobDao.searchLaunchedJob(jobExecutionId);
-        String jobUser = jobEntity.getCreateUser();
-        LOG.info("Job user is:{}, reuquest user is: {}", jobUser, userName);
-        return hasExecuteJobAuthority(jobEntity , userName);
-    }
-
-    /**
-     * Check if has the authority of accessing execution job
-     * @param launchedExchangisJob launched job
-     * @param userName userName
-     * @return
-     */
-    public boolean hasExecuteJobAuthority(LaunchedExchangisJobEntity launchedExchangisJob, String userName){
-        return Objects.nonNull(launchedExchangisJob) && launchedExchangisJob.getCreateUser().equals(userName);
-        //return true;
-    }
-
-    @Override
-    public ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, LogQuery logQuery, String userName) throws ExchangisJobServerException {
+    public ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, LogQuery logQuery) throws ExchangisJobServerException {
         LaunchedExchangisJobEntity launchedExchangisJob = this.launchedJobDao.searchLogPathInfo(jobExecutionId);
-        if (Objects.isNull(launchedExchangisJob) || !hasExecuteJobAuthority(jobExecutionId, userName)){
-            throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
-        }
         LogResult logResult = jobLogService.logsFromPageAndPath(launchedExchangisJob.getLogPath(), logQuery);
         return resultToCategoryLog(logQuery, logResult, launchedExchangisJob.getStatus());
     }
 
     @Override
-    public ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, LogQuery logQuery, String userName)
+    public ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, LogQuery logQuery)
             throws ExchangisJobServerException, ExchangisTaskLaunchException {
         LaunchedExchangisTaskEntity launchedTaskEntity = this.launchedTaskDao.getLaunchedTaskEntity(taskId);
         if (Objects.isNull(launchedTaskEntity)){
@@ -223,9 +197,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
             // Means that the task is not ready or task submit failed
             return resultToCategoryLog(logQuery, new LogResult(0, TaskStatus.isCompleted(status), new ArrayList<>()), status);
         }
-        if (!hasExecuteJobAuthority(jobExecutionId, userName)){
-            throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Not have permission of accessing task [" + taskId + "]", null);
-        }
+
         // Construct the launchedExchangisTask
         LaunchedExchangisTask launchedTask = new LaunchedExchangisTask();
         launchedTask.setLinkisJobId(launchedTaskEntity.getLinkisJobId());
