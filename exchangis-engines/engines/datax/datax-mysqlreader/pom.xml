@@ -9,7 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>${datax.engine.version}</version>
+    <version>3.0.0-Plus-2</version>
     <artifactId>datax-mysqlreader</artifactId>
     <packaging>jar</packaging>
     <dependencies>
