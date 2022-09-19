@@ -6,7 +6,11 @@ import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceS
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
+import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
+import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
 import org.apache.linkis.server.Message;
+import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,6 +160,7 @@ public class ExchangisDataSourceRestfulApi {
     @RequestMapping( value = "", method = RequestMethod.POST)
     public Message create(/*@PathParam("type") String type, */@Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult, HttpServletRequest request ) throws Exception {
         Message message = new Message();
+        String loginUser = SecurityFilter.getLoginUsername(request);
         LOG.info("dataSourceName:   " + dataSourceCreateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceCreateVO.getDataSourceDesc() + "label:   " + dataSourceCreateVO.getLabels());
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
@@ -180,6 +185,7 @@ public class ExchangisDataSourceRestfulApi {
                 }
             }
         }
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.DATASOURCE,"0", dataSourceCreateVO.getDataSourceName(), OperateTypeEnum.CREATE,request);
         return message;
     }
 
@@ -225,6 +231,7 @@ public class ExchangisDataSourceRestfulApi {
     public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, @Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult) throws Exception {
         Message message = new Message();
 
+        String loginUser = SecurityFilter.getLoginUsername(request);
         LOG.info("dataSourceName:   " + dataSourceCreateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceCreateVO.getDataSourceDesc() + "label:   " + dataSourceCreateVO.getLabels());
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
@@ -250,6 +257,7 @@ public class ExchangisDataSourceRestfulApi {
                 }
             }
         }
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.DATASOURCE,"0", dataSourceCreateVO.getDataSourceName(), OperateTypeEnum.UPDATE,request);
         return message;
 
     }
