@@ -2,13 +2,14 @@ package com.webank.wedatasphere.exchangis.job.server.restful.execute;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
-import com.webank.wedatasphere.exchangis.job.server.utils.AuthorityUtils;
+import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobProgressVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobTaskVo;
@@ -25,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.LOG_OP_ERROR;
 
 /**
  *
@@ -61,12 +64,10 @@ public class ExchangisJobExecuteRestfulApi {
             // Convert to the job info
             jobInfo = new ExchangisJobInfo(jobVo);
 
-            if (!hasAuthority(loginUser, jobInfo)){
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, jobVo.getProjectId(), OperationType.JOB_EXECUTE)){
                 return Message.error("You have no permission to execute job (没有执行任务权限)");
             }
-            /*if (!AuthorityUtils.hasOwnAuthority(jobVo.getProjectId(), loginUser) && !AuthorityUtils.hasExecAuthority(jobVo.getProjectId(), loginUser)) {
-                return Message.error("You have no permission to execute job (没有执行任务权限)");
-            }*/
+
             // Send to execute service
             String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
                     jobInfo.getExecuteUser() : loginUser);
@@ -89,9 +90,9 @@ public class ExchangisJobExecuteRestfulApi {
     @RequestMapping( value = "/execution/{jobExecutionId}/taskList", method = RequestMethod.GET)
     public Message getExecutedJobTaskList(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) {
         Message message = Message.ok("Submitted succeed(提交成功)！");
-        String userName = SecurityFilter.getLoginUsername(request);
+        String loginUser = SecurityFilter.getLoginUsername(request);
         try {
-            if(!executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+            if(JobAuthorityUtils.hasJobExecuteSituationAuthority(loginUser, jobExecutionId, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to get taskList (没有获取任务列表权限)");
             }
             List<ExchangisJobTaskVo> jobTaskList = executeService.getExecutedJobTaskList(jobExecutionId);
@@ -108,10 +109,9 @@ public class ExchangisJobExecuteRestfulApi {
     @RequestMapping( value = "/execution/{jobExecutionId}/progress", method = RequestMethod.GET)
     public Message getExecutedJobAndTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) {
         ExchangisJobProgressVo jobAndTaskStatus;
-        String userName = SecurityFilter.getLoginUsername(request);
+        String loginUser = SecurityFilter.getLoginUsername(request);
         try {
-
-            if(!executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+            if(JobAuthorityUtils.hasJobExecuteSituationAuthority(loginUser, jobExecutionId, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to get task progress (没有获取任务进度权限)");
             }
             jobAndTaskStatus = executeService.getExecutedJobProgressInfo(jobExecutionId);
@@ -128,9 +128,9 @@ public class ExchangisJobExecuteRestfulApi {
     @RequestMapping( value = "/execution/{jobExecutionId}/status", method = RequestMethod.GET)
     public Message getExecutedJobStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) {
         Message message = Message.ok("Submitted succeed(提交成功)！");
-        String userName = SecurityFilter.getLoginUsername(request);
+        String loginUser = SecurityFilter.getLoginUsername(request);
         try {
-            if(!executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+            if(JobAuthorityUtils.hasJobExecuteSituationAuthority(loginUser, jobExecutionId, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to get tastStatus (没有权限去获取任务状态)");
             }
             ExchangisJobProgressVo jobStatus = executeService.getJobStatus(jobExecutionId);
@@ -157,13 +157,17 @@ public class ExchangisJobExecuteRestfulApi {
         Message result = Message.ok("Submitted succeed(提交成功)！");
         LogQuery logQuery = new LogQuery(fromLine, pageSize,
                 ignoreKeywords, onlyKeywords, lastRows);
-        String userName = SecurityFilter.getLoginUsername(request);
+        String loginUser = SecurityFilter.getLoginUsername(request);
         try {
-            if(!executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+            if(JobAuthorityUtils.hasJobExecuteSituationAuthority(loginUser, jobExecutionId, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to get logs (没有获取任务日志权限)");
             }
+            if (!JobAuthorityUtils.hasJobExecuteSituationAuthority(loginUser, jobExecutionId, OperationType.JOB_QUERY)) {
+                throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
+            }
+
             ExchangisCategoryLogVo categoryLogVo = this.executeService
-                    .getJobLogInfo(jobExecutionId, logQuery, SecurityFilter.getLoginUsername(request));
+                    .getJobLogInfo(jobExecutionId, logQuery);
             result.setData(Json.convert(categoryLogVo, Map.class, String.class, Object.class));
         } catch (ExchangisJobServerException e) {
             String message = "Error occur while querying job log: [job_execution_id: " + jobExecutionId  +"]";
@@ -177,10 +181,9 @@ public class ExchangisJobExecuteRestfulApi {
     @RequestMapping( value = "/execution/{jobExecutionId}/kill", method = RequestMethod.POST)
     public Message ExecutedJobKill(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) throws ExchangisJobServerException {
         ExchangisJobProgressVo jobStatus = executeService.getJobStatus(jobExecutionId);
-        String status = jobStatus.getStatus().toString();
         Message message = null;
-        String userName = SecurityFilter.getLoginUsername(request);
-        if(!executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+        String loginUser = SecurityFilter.getLoginUsername(request);
+        if(JobAuthorityUtils.hasJobExecuteSituationAuthority(loginUser, jobExecutionId, OperationType.JOB_EXECUTE)) {
             return Message.error("You have no permission to get kill job (没有权限去杀死任务)");
         }
         if (!TaskStatus.isCompleted(jobStatus.getStatus()))
@@ -226,26 +229,15 @@ public class ExchangisJobExecuteRestfulApi {
         return message;
     }
 
-    /**
-     * TODO complete the authority strategy
-     * @param username username
-     * @param jobInfo job info
-     * @return
-     */
-    private boolean hasAuthority(String username, ExchangisJobInfo jobInfo){
-        return username.equals(jobInfo.getCreateUser());
-    }
-
     @RequestMapping( value = "/{jobExecutionId}/deleteJob", method = RequestMethod.POST)
     public Message ExecutedJobDelete(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) throws ExchangisJobServerException {
-        //ExchangisLaunchedJobEntity jobAndTaskStatus = exchangisExecutionService.getExecutedJobAndTaskStatus(jobExecutionId);
         if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
             return Message.error("You have no permission to delete this record (没有删除历史记录权限)");
         }
         Message message = Message.ok("Kill succeed(停止成功)！");
-        String userName = SecurityFilter.getLoginUsername(request);
+        String loginUser = SecurityFilter.getLoginUsername(request);
         try {
-            if(!executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+            if(JobAuthorityUtils.hasJobExecuteSituationAuthority(loginUser, jobExecutionId, OperationType.JOB_EXECUTE)) {
                 return Message.error("You have no permission to delete this record (没有删除历史记录权限)");
             }
             executeService.deleteJob(jobExecutionId);
@@ -263,9 +255,9 @@ public class ExchangisJobExecuteRestfulApi {
     public Message allTaskStatus(@PathVariable(value = "jobExecutionId") String jobExecutionId, HttpServletRequest request) throws ExchangisJobServerException {
         //ExchangisLaunchedJobEntity jobAndTaskStatus = exchangisExecutionService.getExecutedJobAndTaskStatus(jobExecutionId);
         Message message = Message.ok("所有任务状态");
-        String userName = SecurityFilter.getLoginUsername(request);
+        String loginUser = SecurityFilter.getLoginUsername(request);
         try {
-            if(!executeService.hasExecuteJobAuthority(jobExecutionId, userName)) {
+            if(JobAuthorityUtils.hasJobExecuteSituationAuthority(loginUser, jobExecutionId, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to get tastStatus (没有权限去获取任务状态)");
             }
             List<String> allStatus = executeService.allTaskStatus(jobExecutionId);
