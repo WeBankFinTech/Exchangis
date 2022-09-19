@@ -126,21 +126,21 @@
             <artifactId>dm</artifactId>
             <version>16</version>
             <scope>system</scope>
-            <systemPath>${basedir}/src/main/lib/Dm7JdbcDriver16.jar</systemPath>
+            <systemPath>${pom.basedir}/src/main/lib/Dm7JdbcDriver16.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.sybase</groupId>
             <artifactId>jconn3</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${basedir}/src/main/lib/jconn3-1.0.0-SNAPSHOT.jar</systemPath>
+            <systemPath>${pom.basedir}/src/main/lib/jconn3-1.0.0-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>ppas</groupId>
             <artifactId>ppas</artifactId>
             <version>16</version>
             <scope>system</scope>
-            <systemPath>${basedir}/src/main/lib/edb-jdbc16.jar</systemPath>
+            <systemPath>${pom.basedir}/src/main/lib/edb-jdbc16.jar</systemPath>
         </dependency>
         <!--hadoop dependency-->
         <dependency>
