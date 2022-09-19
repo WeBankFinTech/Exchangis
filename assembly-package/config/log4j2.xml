@@ -31,6 +31,12 @@
             <SizeBasedTriggeringPolicy size="100MB"/>
             <DefaultRolloverStrategy max="20"/>
         </RollingFile>
+        <RollingFile name="AuditLog" fileName="${sys:log.path}/${sys:serviceName}-audit.log"
+                     filePattern="${sys:log.path}/$${date:yyyy-MM}/${sys:serviceName}/exchangis-log-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-40t] %c{1.} (%L) [%M] - %msg%xEx%n"/>
+            <SizeBasedTriggeringPolicy size="1GB"/>
+            <DefaultRolloverStrategy max="100"/>
+        </RollingFile>
     </appenders>
     <loggers>
         <root level="INFO" additivity="false">
@@ -39,6 +45,9 @@
         </root>
         <logger name="com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger$" level="INFO" additivity="true">
             <appender-ref ref="RpcLog"/>
+        </logger>
+        <logger name="com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils" level="INFO" additivity="false">
+            <appender-ref ref="AuditLog"/>
         </logger>
     </loggers>
 </configuration>
