@@ -3,6 +3,8 @@ package com.webank.wedatasphere.exchangis.job.server.restful;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
+import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
@@ -11,6 +13,7 @@ import com.webank.wedatasphere.exchangis.job.server.service.JobFuncService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.server.vo.JobFunction;
+import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.server.exception.ExchangisProjectErrorException;
@@ -184,6 +187,7 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,"0", exchangisJobVo.getJobName(), OperateTypeEnum.CREATE,request);
         return response;
     }
 
@@ -253,6 +257,7 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,exchangisJobVo.getId().toString(), exchangisJobVo.getJobName(), OperateTypeEnum.UPDATE,request);
         return response;
     }
 
@@ -270,8 +275,9 @@ public class ExchangisJobRestfulApi {
         }
         String loginUser = SecurityFilter.getLoginUsername(request);
         Message response = Message.ok("job deleted");
+        ExchangisJobVo jobVo = null;
         try {
-            ExchangisJobVo jobVo = jobInfoService.getJob(id, true);
+            jobVo = jobInfoService.getJob(id, true);
             if (!JobAuthorityUtils.hasJobAuthority(loginUser, jobVo.getProjectId(), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to delete (没有删除任务权限)");
             }
@@ -281,6 +287,7 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString().toString(), jobVo.getJobName(), OperateTypeEnum.UPDATE,request);
         return response;
     }
 
@@ -404,6 +411,7 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString(), jobVo.getJobName(), OperateTypeEnum.UPDATE,request);
         return response;
     }
 
@@ -432,6 +440,7 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString(), jobVo.getJobName(), OperateTypeEnum.UPDATE,request);
         return response;
     }
 }
