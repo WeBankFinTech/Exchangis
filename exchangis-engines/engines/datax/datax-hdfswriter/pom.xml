@@ -12,7 +12,7 @@
 
     <artifactId>datax-hdfswriter</artifactId>
     <packaging>jar</packaging>
-    <version>${datax.engine.version}</version>
+    <version>3.0.0-Plus-2</version>
     <properties>
         <hive.version>1.2.1</hive.version>
         <hadoop.version>2.7.2</hadoop.version>

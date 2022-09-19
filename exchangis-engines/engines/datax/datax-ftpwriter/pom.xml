@@ -10,7 +10,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
-    <version>${datax.engine.version}</version>
+    <version>3.0.0-Plus-2</version>
     <artifactId>datax-ftpwriter</artifactId>
     <dependencies>
         <dependency>
