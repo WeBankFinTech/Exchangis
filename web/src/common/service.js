@@ -575,3 +575,15 @@ export const getExecutor = () => {
     }
   )
 }
+
+
+// 获取dss用户
+export const getAllUsers = () => {
+  return request(
+    `/workspace/listAllUsers?labels=${getEnvironment()}`,
+    {},
+    {
+      method: "GET",
+    }
+  )
+}

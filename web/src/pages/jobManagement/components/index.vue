@@ -646,6 +646,7 @@ export default {
                 });
                 _config.jobParams = JSON.stringify(jobParams);
             }
+            _config.projectId = _this.$route.query.id
             updateTaskConfiguration(id, _config)
                 .then((res) => {
                     message.success('更新/保存成功');
@@ -979,6 +980,7 @@ export default {
             // test
             console.log(saveContent)
             saveProject(this.jobData.id, {
+                projectId:  this.$route.query.id,
                 content: JSON.stringify(saveContent)
             }, type).then((res) => {
                 cb && cb();

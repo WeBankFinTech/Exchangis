@@ -1,3 +1,8 @@
+/*
+ * @Description: 
+ * @Author: sueRim
+ * @Date: 2022-05-13 10:19:27
+ */
 import { pum as pumApi, request as ajax, access as accessInstance, getRouter } from "@fesjs/fes";
 import { message, Modal, ConfigProvider } from "ant-design-vue";
 import zhCN from "ant-design-vue/es/locale/zh_CN";
@@ -37,6 +42,14 @@ export const request = {
     data.code = String(data.status);
     return data;
   },
+  requestInterceptors: [
+    function (config) {
+      if (config.url.indexOf('/workspace/listAllUsers') > -1) {
+        config.baseURL = '/api/rest_j/v1/dss/framework'
+      }
+      return config;
+    }
+  ],
   errorHandler: {
     default(error) {
       if (error.message && error.message.indexOf('timeout of') > -1) {
