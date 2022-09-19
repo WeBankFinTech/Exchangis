@@ -61,7 +61,7 @@
       </router-link>
     </div>
     <div class="card-buttton-group">
-      <div @click="$emit('edit', id)">
+      <div @click="$emit('edit', {id, domain})">
         <span class="iconfont icon-need-fault-tolerance project_view_card_icon"></span>
       </div>
       <a-divider type="horizontal" style="width: 16px" />
@@ -112,6 +112,11 @@ export default {
       type: Array,
       default: [],
     },
+    // 来源
+    domain: {
+      type: String,
+      default: ''
+    }
   },
   setup(props) {
     const { tags } = toRefs(props);
