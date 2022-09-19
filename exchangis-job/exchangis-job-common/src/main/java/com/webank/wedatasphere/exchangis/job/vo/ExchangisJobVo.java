@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.vo;
 
 
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
-import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
+import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
@@ -115,20 +115,21 @@ public class ExchangisJobVo {
 
     }
 
-    public ExchangisJobVo(ExchangisJobInfo jobInfo){
-        if (Objects.nonNull(jobInfo)) {
-            this.id = jobInfo.getId();
-            this.engineType = jobInfo.getEngineType();
-            this.jobDesc = jobInfo.getJobDesc();
-            this.jobLabels = jobInfo.getJobLabel();
-            this.jobName = jobInfo.getName();
-            this.jobType = jobInfo.getJobType();
-            this.createTime = jobInfo.getCreateTime();
-            this.createUser = jobInfo.getCreateUser();
-            this.modifyTime = jobInfo.getLastUpdateTime();
-            this.jobParams = jobInfo.getJobParams();
-            this.executeUser = jobInfo.getExecuteUser();
-            this.proxyUser = jobInfo.getExecuteUser();
+    public ExchangisJobVo(ExchangisJobEntity jobEntity){
+        if (Objects.nonNull(jobEntity)) {
+            this.id = jobEntity.getId();
+            this.projectId = jobEntity.getProjectId();
+            this.engineType = jobEntity.getEngineType();
+            this.jobDesc = jobEntity.getJobDesc();
+            this.jobLabels = jobEntity.getJobLabel();
+            this.jobName = jobEntity.getName();
+            this.jobType = jobEntity.getJobType();
+            this.createTime = jobEntity.getCreateTime();
+            this.createUser = jobEntity.getCreateUser();
+            this.modifyTime = jobEntity.getLastUpdateTime();
+            this.jobParams = jobEntity.getJobParams();
+            this.executeUser = jobEntity.getExecuteUser();
+            this.proxyUser = jobEntity.getExecuteUser();
         }
     }
 

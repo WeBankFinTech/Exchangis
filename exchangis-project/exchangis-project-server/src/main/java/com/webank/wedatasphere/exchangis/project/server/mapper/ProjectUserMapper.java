@@ -12,6 +12,12 @@ import java.util.List;
 public interface ProjectUserMapper {
 
     /**
+     * query projectUser
+     * @param projectUser
+     */
+    ExchangisProjectUser queryProjectUser(ExchangisProjectUser projectUser);
+
+    /**
      * add projectUsers
      * @param projectUsers
      */
