@@ -132,18 +132,37 @@
                                 @updateSinkParams="updateSinkParams"
                             />
                         </div>
-                        <div>
-                            <FieldMap
-                                v-if="curTask"
-                                v-bind:fmData="curTask.transforms"
-                                v-bind:fieldsSink="fieldsSink"
-                                v-bind:fieldsSource="fieldsSource"
-                                v-bind:deductions="deductions"
-                                v-bind:addEnabled="addEnable"
-                                v-bind:transformEnable="transformEnable"
-                                v-bind:engineType="curTask.engineType"
-                                @updateFieldMap="updateFieldMap"
-                            />
+                        <div style="position: relative;">
+                            <a-select v-model:value="curType"
+                                style="width: 140px;position: absolute;left: 46px;top: 20px;"
+                                class="top-line-select"
+                                :allowClear="true"
+                                :placeholder="$t('请选择')">
+                                <a-select-option 
+                                    v-for="item of defProcessOptions" 
+                                    :value="item.value" 
+                                    :key="item.value">
+                                    {{ item.label }}
+                                </a-select-option>
+                            </a-select>
+                            <template v-if="curType === 'MAPPING'"> 
+                                <!-- 字段映射 -->
+                                <FieldMap
+                                    v-if="curTask"
+                                    v-bind:fmData="curTask.transforms"
+                                    v-bind:fieldsSink="fieldsSink"
+                                    v-bind:fieldsSource="fieldsSource"
+                                    v-bind:deductions="deductions"
+                                    v-bind:addEnabled="addEnable"
+                                    v-bind:transformEnable="transformEnable"
+                                    v-bind:engineType="curTask.engineType"
+                                    @updateFieldMap="updateFieldMap"
+                                />
+                            </template>
+                            <template v-else>
+                                <!-- 后置控制器 -->
+                                <processor />
+                            </template>
                         </div>
                         <div>
                             <ProcessControl
@@ -409,6 +428,7 @@ import {
 import { randomString, moveUpDown, dateFormat } from '../../../common/utils';
 import executionLog from './executionLog';
 import metrics from './metricsInfo';
+import processor from './processor.vue';
 
 /**
  * 用于判断一个对象是否有空 value,如果有返回 true
@@ -495,7 +515,8 @@ export default {
         CloseOutlined,
         StopFilled,
         executionLog,
-        metrics
+        metrics,
+        processor
     },
     props: {
         curTab: Object
@@ -570,6 +591,12 @@ export default {
             },
             bottomStyle: '', //底部样式
             maxRows: 10,
+            processTypes: ['MAPPING', 'PROCESSOR'], // MAPPING字段映射 | PROCESSOR后置控制器
+            defProcessOptions: [
+                { label: '字段映射', value: 'MAPPING' },
+                { label: '后置控制器', value: 'PROCESSOR'}
+            ],
+            curType: 'MAPPING'
         };
     },
     computed: {
@@ -578,7 +605,7 @@ export default {
                 list: this.tasklist,
                 id: this.jobExecutionId
             };
-        }
+        },
     },
     watch: {
         curTab(val, oldVal) {
@@ -661,6 +688,7 @@ export default {
                 });
                 _config.jobParams = JSON.stringify(jobParams);
             }
+            _config.projectId = _this.$route.query.id
             updateTaskConfiguration(id, _config)
                 .then((res) => {
                     message.success('更新/保存成功');
@@ -716,6 +744,7 @@ export default {
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
                     this.transformEnable = res.transformEnable;
+                    this.processTypes = res.processTypes;
                 }).catch((err) => {
                     console.log(err);
                 });
@@ -822,6 +851,7 @@ export default {
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
                     this.transformEnable = res.transformEnable;
+                    this.processTypes = res.processTypes;
                     // 不在使用deductions 直接将deductions作为值使用
                     if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
                         this.curTask.transforms.mapping = this.convertDeductions(res.deductions);
@@ -846,6 +876,7 @@ export default {
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
                     this.transformEnable = res.transformEnable;
+                    this.processTypes = res.processTypes;
                     // 不在使用deductions 直接将deductions作为值使用
                     if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
                         this.curTask.transforms.mapping = this.convertDeductions(res.deductions);
@@ -1000,6 +1031,7 @@ export default {
             // test
             console.log(saveContent)
             saveProject(this.jobData.id, {
+                projectId:  this.$route.query.id,
                 content: JSON.stringify(saveContent)
             }, type).then((res) => {
                 cb && cb();

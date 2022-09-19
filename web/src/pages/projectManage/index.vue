@@ -85,6 +85,7 @@
                     :describe="item.describe"
                     :id="item.id"
                     :tags="item.tags"
+                    :domain="item.domain"
                   />
                 </a-col>
                 <!-- 分页行 -->
@@ -113,6 +114,7 @@
       v-model:visible="modalCfg.visible"
       :mode="modalCfg.mode"
       :id="modalCfg.id"
+      :isDss="isDss"
       @finish="handleModalFinish"
     />
   </div>
@@ -148,6 +150,7 @@ export default {
         mode: "",
         id: "",
         visible: false,
+        isDss: false
       },
       // 项目列表
       projectList: [],
@@ -177,6 +180,7 @@ export default {
           name: item.name,
           describe: item.description,
           tags: item.tags.split(","),
+          domain: item.domain
         }))
     },
     // 模态框操作完成
@@ -189,6 +193,7 @@ export default {
       this.modalCfg = {
         visible: true,
         mode: "create",
+        isDss: false
       };
     },
     // 处理搜索
@@ -207,11 +212,13 @@ export default {
       this.getDataList(this.projectName);
     },
     // 编辑项目
-    handleOnEditProject(id) {
+    handleOnEditProject({ id, domain }) {
+      console.log(domain, domain === 'DSS')
       this.modalCfg = {
         visible: true,
         mode: "edit",
         id: id,
+        isDss: domain === 'DSS'
       };
     },
     handleChangePage(current) {
