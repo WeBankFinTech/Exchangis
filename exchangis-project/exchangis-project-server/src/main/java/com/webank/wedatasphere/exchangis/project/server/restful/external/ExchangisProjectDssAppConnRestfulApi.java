@@ -128,9 +128,6 @@ public class ExchangisProjectDssAppConnRestfulApi {
         String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.selectByName(name);
-            if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_QUERY)){
-                return Message.error("You have no permission to query (没有项目查看权限)");
-            }
             return ExchangisProjectRestfulUtils.dealOk("根据名字获取工程成功",
                     new Pair<>("projectInfo",projectInfo));
         } catch (Exception t) {
