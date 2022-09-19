@@ -184,9 +184,10 @@ public class DefaultJobExecuteService implements JobExecuteService {
 
     @Override
     public boolean hasExecuteJobAuthority(String jobExecutionId, String userName) {
-        String jobUser = this.launchedJobDao.searchLaunchedJob(jobExecutionId).getCreateUser();
+        LaunchedExchangisJobEntity jobEntity = this.launchedJobDao.searchLaunchedJob(jobExecutionId);
+        String jobUser = jobEntity.getCreateUser();
         LOG.info("Job user is:{}, reuquest user is: {}", jobUser, userName);
-        return hasExecuteJobAuthority(this.launchedJobDao.searchLaunchedJob(jobExecutionId) , userName);
+        return hasExecuteJobAuthority(jobEntity , userName);
     }
 
     /**
