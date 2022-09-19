@@ -18,7 +18,9 @@ public enum ExchangisJobExceptionCode {
     TASK_GENERATE_ERROR(31997),
     JOB_EXCEPTION_CODE(31999),
     ENGINE_JOB_ERROR(31998),
-    TRANSFORM_JOB_ERROR(31998);
+    TRANSFORM_JOB_ERROR(31998),
+
+    UNSUPPORTED_OPERATION(31999);
     private int code;
 
     ExchangisJobExceptionCode(int code) {
