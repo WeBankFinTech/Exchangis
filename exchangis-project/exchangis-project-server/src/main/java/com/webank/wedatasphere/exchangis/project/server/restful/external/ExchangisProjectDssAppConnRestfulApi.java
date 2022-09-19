@@ -44,6 +44,11 @@ public class ExchangisProjectDssAppConnRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
+        if (Objects.isNull(projectVo.getViewUsers()) &&
+                Objects.isNull(projectVo.getEditUsers()) &&
+                Objects.isNull(projectVo.getExecUsers())) {
+            return Message.error("You must specify a user who has permissions on the project (必须指定具有权限的用户)");
+        }
         String username = SecurityFilter.getLoginUsername(request);
         try {
             LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
