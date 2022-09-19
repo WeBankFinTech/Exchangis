@@ -5,12 +5,12 @@
     <parent>
         <artifactId>exchangis-engine-datax</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
-        <version>1.1.0</version>
+        <version>1.1.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <version>${datax.engine.version}</version>
+    <version>3.0.0-Plus-2</version>
     <artifactId>datax-oraclewriter</artifactId>
     <packaging>jar</packaging>
 
@@ -46,7 +46,7 @@
             <artifactId>ojdbc6</artifactId>
             <version>11.2.0.3</version>
             <scope>system</scope>
-            <systemPath>${basedir}/src/main/lib/ojdbc6-11.2.0.3.jar</systemPath>
+            <systemPath>${pom.basedir}/src/main/lib/ojdbc6-11.2.0.3.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -70,7 +70,7 @@
                     <appendAssemblyId>false</appendAssemblyId>
                     <attach>false</attach>
                     <descriptors>
-                        <descriptor>${basedir}/src/main/assembly/package.xml</descriptor>
+                        <descriptor>${pom.basedir}/src/main/assembly/package.xml</descriptor>
                     </descriptors>
                     <finalName>plugin</finalName>
                 </configuration>

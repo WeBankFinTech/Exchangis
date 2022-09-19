@@ -5,12 +5,12 @@
     <parent>
         <artifactId>exchangis-engine-datax</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
-        <version>1.1.0</version>
+        <version>1.1.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
-    <version>${datax.engine.version}</version>
+    <version>3.0.0-Plus-2</version>
     <artifactId>datax-ftpwriter</artifactId>
     <dependencies>
         <dependency>
