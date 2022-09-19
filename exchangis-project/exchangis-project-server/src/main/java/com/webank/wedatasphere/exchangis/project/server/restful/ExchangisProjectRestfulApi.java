@@ -3,9 +3,10 @@ package com.webank.wedatasphere.exchangis.project.server.restful;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
+import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
-import com.webank.wedatasphere.exchangis.project.server.utils.AuthorityUtils;
+import com.webank.wedatasphere.exchangis.project.server.utils.ProjectAuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectConfiguration;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
@@ -67,7 +68,7 @@ public class ExchangisProjectRestfulApi {
             return pageResult.toMessage();
         } catch (Exception t) {
             LOG.error("Failed to query project list for user {}", username, t);
-            return Message.error("Failed to query project list (获取工程列表失败)");
+            return Message.error("Failed to query project list (获取项目列表失败)");
         }
     }
 
@@ -84,15 +85,15 @@ public class ExchangisProjectRestfulApi {
         try {
             ExchangisProjectInfo project = projectService.getProjectDetailById(projectId);
             if (Objects.isNull(project)){
-                return Message.error("Not found the project (找不到对应工程)");
+                return Message.error("Not found the project (找不到对应项目)");
             }
-            if (!hasAuthority(username, project)){
-                return Message.error("You have no permission to query (没有工程查看权限)");
+            if (!ProjectAuthorityUtils.hasProjectAuthority(username, project, OperationType.PROJECT_QUERY)){
+                return Message.error("You have no permission to query (没有项目查看权限)");
             }
             return Message.ok().data("item", project);
         } catch (Exception t) {
             LOG.error("failed to get project detail for user {}", username, t);
-            return Message.error("Fail to get project detail (获取工程详情失败)");
+            return Message.error("Fail to get project detail (获取项目详情失败)");
         }
     }
 
@@ -107,7 +108,7 @@ public class ExchangisProjectRestfulApi {
     public Message createProject(@Validated @RequestBody ExchangisProjectInfo projectVo,
                                  BindingResult result, HttpServletRequest request) {
         if (ExchangisProjectConfiguration.LIMIT_INTERFACE.getValue()) {
-            return Message.error("You have no permission to create (没有创建项目权限)");
+            return Message.error("You have no permission to create (没有项目创建权限)");
         }
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
@@ -115,16 +116,16 @@ public class ExchangisProjectRestfulApi {
         String username = SecurityFilter.getLoginUsername(request);
         try {
             if (projectService.existsProject(null, projectVo.getName())){
-                return Message.error("Have the same name project (存在同名工程)");
+                return Message.error("Have the same name project (存在同名项目)");
             }
             LOG.info("CreateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             long projectId = projectService.createProject(projectVo, username);
-            return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
+            return ExchangisProjectRestfulUtils.dealOk("创建项目成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectId));
         } catch (Exception t) {
             LOG.error("Failed to create project for user {}", username, t);
-            return Message.error("Fail to create project (创建工程失败)");
+            return Message.error("Fail to create project (创建项目失败)");
         }
     }
     /**
@@ -138,14 +139,15 @@ public class ExchangisProjectRestfulApi {
         String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.selectByName(name);
-            return ExchangisProjectRestfulUtils.dealOk("根据名字获取工程成功",
+            if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_QUERY)){
+                return Message.error("You have no permission to query (没有项目查看权限)");
+            }
+            return ExchangisProjectRestfulUtils.dealOk("根据名字获取项目成功",
                     new Pair<>("projectInfo",projectInfo));
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
-            return Message.error("Failed to delete project (根据名字获取工程失败)");
+            return Message.error("Failed to delete project (根据名字获取项目失败)");
         }
-
-
     }
 
 
@@ -159,22 +161,17 @@ public class ExchangisProjectRestfulApi {
     public Message updateProject(@Validated({UpdateGroup.class, Default.class}) @RequestBody ExchangisProjectInfo projectVo
             , BindingResult result, HttpServletRequest request) {
         if (ExchangisProjectConfiguration.LIMIT_INTERFACE.getValue()) {
-            return Message.error("You have no permission to update (没有项目的更新权限)");
+            return Message.error("You have no permission to update (没有项目更新权限)");
         }
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
         String username = SecurityFilter.getLoginUsername(request);
         try {
-            ExchangisProjectInfo projectStored = projectService.getProjectById(Long.valueOf(projectVo.getId()));
-
-            if (!hasAuthority(username, projectStored)) {
+            ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
+            if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
                 return Message.error("You have no permission to update (没有项目的更新权限)");
             }
-
-            /*if (!AuthorityUtils.hasOwnAuthority(Long.parseLong(projectVo.getId()), username) && !AuthorityUtils.hasEditAuthority(Long.parseLong(projectVo.getId()), username)) {
-                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
-            }*/
 
             String domain = projectStored.getDomain();
             if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
@@ -183,12 +180,12 @@ public class ExchangisProjectRestfulApi {
             }
             LOG.info("UpdateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             projectService.updateProject(projectVo, username);
-            return ExchangisProjectRestfulUtils.dealOk("更新工程成功",
+            return ExchangisProjectRestfulUtils.dealOk("更新项目成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectVo.getId()));
         } catch (Exception t) {
             LOG.error("Failed to update project for user {}", username, t);
-            return Message.error("Fail to update project (更新工程失败)");
+            return Message.error("Fail to update project (更新项目失败)");
         }
     }
 
@@ -206,34 +203,21 @@ public class ExchangisProjectRestfulApi {
         String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.getProjectById(id);
-
-            if (!hasAuthority(username, projectInfo)) {
-                return Message.error("You have no permission to delete (删除工程失败)");
+            if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_ALTER)) {
+                return Message.error("You have no permission to delete (删除项目失败)");
             }
 
-           /* if (!AuthorityUtils.hasOwnAuthority(id, username) && !AuthorityUtils.hasEditAuthority(id, username)) {
-                return Message.error("You have no permission to update (没有编辑权限，无法删除项目)");
-            }*/
             String domain = projectInfo.getDomain();
             if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
                     .equalsIgnoreCase(domain)){
                 return Message.error("Cannot delete the outer project (无法删除来自 " + domain + " 的外部项目)");
             }
             projectService.deleteProject(id);
-            return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
+            return ExchangisProjectRestfulUtils.dealOk("删除项目成功");
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
-            return Message.error("Failed to delete project (删除工程失败)");
+            return Message.error("Failed to delete project (删除项目失败)");
         }
     }
 
-    /**
-     * TODO complete the authority strategy
-     * @param username username
-     * @param project project
-     * @return
-     */
-    private boolean hasAuthority(String username, ExchangisProjectInfo project){
-        return Objects.nonNull(project) && username.equals(project.getCreateUser());
-    }
 }

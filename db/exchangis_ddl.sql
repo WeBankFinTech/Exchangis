@@ -65,22 +65,23 @@ CREATE TABLE `exchangis_job_param_config` (
 
 -- exchangis_project_info definition
 DROP TABLE IF EXISTS `exchangis_project_info`;
+-- exchangis.exchangis_project_info definition
 CREATE TABLE `exchangis_project_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `create_time` datetime DEFAULT NULL,
-  `last_update_time` datetime(3) DEFAULT NULL,
+  `create_time` datetime DEFAULT DEFAULT CURRENT_TIMESTAMP,
+  `last_update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_user` varchar(64) DEFAULT NULL,
   `last_update_user` varchar(64) DEFAULT NULL,
   `project_labels` varchar(255) DEFAULT NULL,
   `domain` varchar(32) DEFAULT NULL,
-  `exec_users` varchar(255) DEFAULT NULL,
-  `view_users` varchar(255) DEFAULT NULL,
-  `edit_users` varchar(255) DEFAULT NULL,
+  `exec_users` varchar(255) DEFAULT '',
+  `view_users` varchar(255) DEFAULT '',
+  `edit_users` varchar(255) DEFAULT '',
   `source` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1497870871035973934 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1497870871035974171 DEFAULT CHARSET=utf8;
 
 -- exchangis_project_user definition
 DROP TABLE IF EXISTS `exchangis_project_user`;
@@ -89,9 +90,10 @@ CREATE TABLE `exchangis_project_user` (
   `project_id` bigint(20) NOT NULL,
   `priv_user` varchar(32) COLLATE utf8_bin DEFAULT NULL,
   `priv` int(20) DEFAULT NULL,
-  `last_update_time` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT;
+  `last_update_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `exchangis_project_user_un` (`project_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=844 DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT;
 
 -- exchangis_launchable_task definition
 DROP TABLE IF EXISTS `exchangis_launchable_task`;
