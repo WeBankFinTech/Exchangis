@@ -17,6 +17,24 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="" >
+<mapper namespace="com.webank.wedatasphere.exchangis.job.server.mapper.JobTransformRuleDao" >
+    <resultMap id="ruleMap" type="com.webank.wedatasphere.exchangis.job.server.render.transform.TransformRule">
+        <result column="id" property="id"/>
+        <result column="rule_name" property="ruleName"/>
+        <result column="rule_type" property="ruleType"/>
+        <result column="rule_source" property="ruleSource"/>
+        <result column="data_source_type" property="dataSourceType"/>
+        <result column="engine_type" property="engineType"/>
+        <result column="direction" property="direction"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
 
+    <sql id="TableName">
+        exchangis_job_transform_rule
+    </sql>
+
+    <select id="getTransformRules" resultMap="ruleMap">
+        SELECT * FROM <include refid="TableName"/>
+        WHERE `rule_type` = #{ruleType} AND `data_source_type` = #{dataSourceType};
+    </select>
 </mapper>
