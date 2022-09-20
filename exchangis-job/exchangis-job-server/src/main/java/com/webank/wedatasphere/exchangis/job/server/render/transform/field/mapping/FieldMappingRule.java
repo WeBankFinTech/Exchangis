@@ -10,11 +10,6 @@ import java.util.Map;
  * Field mapping rule
  */
 public abstract class FieldMappingRule extends TransformRule {
-
-    static {
-        // Register type
-        TransformRule.typeClasses.put(TransformRule.Types.MAPPING.name(), FieldMappingRule.class);
-    }
     /**
      * Field add enable
      */
@@ -54,7 +49,7 @@ public abstract class FieldMappingRule extends TransformRule {
         this.ruleType = TransformRule.Types.MAPPING.name();
     }
 
-    public FieldMappingRule(Types type, String ruleSource) {
+    public FieldMappingRule(TransformRule.Types type, String ruleSource) {
         super(type, ruleSource);
     }
 
