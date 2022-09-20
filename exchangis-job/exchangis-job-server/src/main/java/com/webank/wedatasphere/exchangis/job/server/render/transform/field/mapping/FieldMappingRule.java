@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Field mapping rule
  */
-public class FieldMappingRule extends TransformRule {
+public abstract class FieldMappingRule extends TransformRule {
 
     static {
         // Register type
@@ -18,17 +18,17 @@ public class FieldMappingRule extends TransformRule {
     /**
      * Field add enable
      */
-    protected boolean fieldAddEnable;
+    protected boolean fieldAddEnable = true;
 
     /**
      * Field delete enable
      */
-    protected boolean fieldDeleteEnable;
+    protected boolean fieldDeleteEnable = true;
 
     /**
      * Field transform enable
      */
-    protected boolean fieldTransformEnable;
+    protected boolean fieldTransformEnable = true;
 
     /**
      * Rule item of field edit enable
@@ -45,16 +45,17 @@ public class FieldMappingRule extends TransformRule {
      */
     protected FieldMatchStrategy fieldMatchStrategy;
 
+    /**
+     * If ignore the unMatch field
+     */
+    protected boolean fieldUnMatchIgnore;
+
     public FieldMappingRule(){
-        this.type = TransformRule.Types.MAPPING.name();
+        this.ruleType = TransformRule.Types.MAPPING.name();
     }
 
     public FieldMappingRule(Types type, String ruleSource) {
         super(type, ruleSource);
-    }
-
-    public enum Storage {
-        DEF_SOURCE, DEF_SINK
     }
 
 
@@ -104,5 +105,13 @@ public class FieldMappingRule extends TransformRule {
 
     public void setFieldMatchStrategy(FieldMatchStrategy fieldMatchStrategy) {
         this.fieldMatchStrategy = fieldMatchStrategy;
+    }
+
+    public boolean isFieldUnMatchIgnore() {
+        return fieldUnMatchIgnore;
+    }
+
+    public void setFieldUnMatchIgnore(boolean fieldUnMatchIgnore) {
+        this.fieldUnMatchIgnore = fieldUnMatchIgnore;
     }
 }

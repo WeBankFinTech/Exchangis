@@ -232,7 +232,22 @@ CREATE TABLE `exchangis_job_transform_rule` (
   `rule_source` varchar(600) DEFAULT '{}',
   `data_source_type` varchar(64) NOT NULL,
   `engine_type` varchar(32),
-  `direction` varchar(32),
+  `direction` varchar(32) NOT NULL DEFAULT 'NONE',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- exchangis_job_transform_processor
+DROP TABLE IF EXISTS `exchangis_job_transform_processor`;
+CREATE TABLE `exchangis_job_transform_processor` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `job_id` bigint(20) NOT NULL,
+  `code_content` text DEFAULT NULL,
+  `code_language` varchar(32) NOT NULL DEFAULT 'java',
+  `code_bml_resourceId` varchar(32) COMMENT 'BML resource id',
+  `code_bml_version` varchar(255) COMMENT 'BML version',
+  `creator` varchar(50) NOT NULL COMMENT 'Owner of processor',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
