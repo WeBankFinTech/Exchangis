@@ -11,6 +11,10 @@ public enum  OperateTypeEnum {
     COPY("copy"),
     EXPORT("export"),
     IMPORT("import"),
+    PUBLISH("publish"),
+    EXPIRE("expire"),
+    EXECUTE("execute"),
+    KILL("kill"),
     ;
     private String name;
     OperateTypeEnum(String name) {

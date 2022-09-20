@@ -28,7 +28,9 @@ public class AuditLogUtils {
      */
     public static void printLog(String user, TargetTypeEnum targetType,
                                 String targetId, String targetName, OperateTypeEnum operateType, Object params) {
-        String detailInfo=new Gson().toJson(params);
+        //String detailInfo=new Gson().toJson(params);
+        LOGGER.info("AuditLog print test");
+        String detailInfo=params.toString();
         LOGGER.info("[{}],[{}],[{}],[{}],[{}],[{}],[{}]",
                 new Date(),user, targetType.getName(),
                 targetId,targetName,operateType.getName(), detailInfo);

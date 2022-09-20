@@ -187,7 +187,8 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,"0", exchangisJobVo.getJobName(), OperateTypeEnum.CREATE,request);
+        LOG.info("start to print audit log");
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,"0", "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.CREATE,request);
         return response;
     }
 
@@ -257,7 +258,7 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,exchangisJobVo.getId().toString(), exchangisJobVo.getJobName(), OperateTypeEnum.UPDATE,request);
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,exchangisJobVo.getId().toString(), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.UPDATE,request);
         return response;
     }
 
@@ -287,7 +288,7 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString().toString(), jobVo.getJobName(), OperateTypeEnum.UPDATE,request);
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString().toString(), "Job name is: " + jobVo.getJobName(), OperateTypeEnum.UPDATE,request);
         return response;
     }
 
@@ -411,7 +412,7 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString(), jobVo.getJobName(), OperateTypeEnum.UPDATE,request);
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString(), "Job name is: " + jobVo.getJobName(), OperateTypeEnum.UPDATE,request);
         return response;
     }
 
@@ -440,7 +441,7 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString(), jobVo.getJobName(), OperateTypeEnum.UPDATE,request);
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString(), "Job name is: " + jobVo.getJobName(), OperateTypeEnum.UPDATE,request);
         return response;
     }
 }

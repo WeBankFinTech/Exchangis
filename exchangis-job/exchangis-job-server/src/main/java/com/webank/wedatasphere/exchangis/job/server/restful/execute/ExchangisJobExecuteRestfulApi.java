@@ -1,6 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.server.restful.execute;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
@@ -14,6 +16,7 @@ import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobProgressVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobTaskVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedJobListVo;
+import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
@@ -84,6 +87,8 @@ public class ExchangisJobExecuteRestfulApi {
             LOG.error(message, e);
         }
         result.setMethod("/api/rest_j/v1/dss/exchangis/main/job/{id}/execute");
+        assert jobInfo != null;
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB, id.toString(), "Execute task is: " + jobInfo.getName(), OperateTypeEnum.EXECUTE, request);
         return result;
     }
 
@@ -201,6 +206,7 @@ public class ExchangisJobExecuteRestfulApi {
             message = Message.error("Kill failed(停止失败)！,job 已经到终态");
         }
         message.setMethod("/api/rest_j/v1/dss/exchangis/main/job/execution/" + jobExecutionId + "/kill");
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB, jobExecutionId, "Kill job: ", OperateTypeEnum.KILL, request);
         return message;
     }
 
