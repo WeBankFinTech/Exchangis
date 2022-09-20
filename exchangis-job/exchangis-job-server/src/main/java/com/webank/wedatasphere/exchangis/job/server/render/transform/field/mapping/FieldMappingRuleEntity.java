@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapp
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformRule;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
@@ -13,12 +14,17 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class FieldMappingRuleEntity extends FieldMappingRule{
 
+    static {
+        // Register type
+        TransformRule.typeClasses.put(TransformRule.Types.MAPPING.name(), FieldMappingRuleEntity.class);
+    }
+
     private String id;
 
     /**
      * Field edit enable
      */
-    private boolean fieldEditEnable;
+    private boolean fieldEditEnable = true;
 
     /**
      * Field add enable
@@ -40,7 +46,7 @@ public class FieldMappingRuleEntity extends FieldMappingRule{
     public FieldMappingRuleEntity(){
         super();
     }
-    public FieldMappingRuleEntity(Types type, String ruleSource) {
+    public FieldMappingRuleEntity(TransformRule.Types type, String ruleSource) {
         super(type, ruleSource);
         if (StringUtils.isNotBlank(ruleSource)){
             FieldMappingRuleEntity ruleEntity = Json.fromJson(ruleSource, FieldMappingRuleEntity.class);
@@ -54,4 +60,21 @@ public class FieldMappingRuleEntity extends FieldMappingRule{
         }
     }
 
+    public boolean isFieldEditEnable() {
+        return fieldEditEnable;
+    }
+
+    public void setFieldEditEnable(boolean fieldEditEnable) {
+        this.fieldEditEnable = fieldEditEnable;
+    }
+
+    @Override
+    public boolean isFieldAddEnable() {
+        return fieldAddEnable;
+    }
+
+    @Override
+    public void setFieldAddEnable(boolean fieldAddEnable) {
+        this.fieldAddEnable = fieldAddEnable;
+    }
 }

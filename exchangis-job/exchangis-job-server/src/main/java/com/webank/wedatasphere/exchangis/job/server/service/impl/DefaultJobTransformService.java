@@ -192,6 +192,10 @@ public class DefaultJobTransformService implements JobTransformService {
         this.transformRuleDao.getTransformRules(TransformRule.Types.DEF.name(), dataSourceType)
                 .stream().filter(rule -> rule.matchInFraction(dataSourceType, engine, direction) > 0)
                 .forEach(rule -> Optional.ofNullable(rule.toRule(TransformDefine.class)).ifPresent(define -> resultDefine.getTypes().addAll(define.getTypes())));
+        if (resultDefine.getTypes().isEmpty()){
+            // Add MAPPING type default
+            resultDefine.getTypes().add(TransformTypes.MAPPING.name());
+        }
         return resultDefine;
     }
     /**
