@@ -98,7 +98,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                         launchableExchangisTask.getName(), launchableExchangisTask.getId(), getActualCause(e).getMessage());
                 if (retryCnt.incrementAndGet() < getMaxRetryNum()) {
                     // Remove the launched task stored
-                    onEvent(new TaskDeleteEvent(String.valueOf(launchableExchangisTask.getId())));
+//                    onEvent(new TaskDeleteEvent(String.valueOf(launchableExchangisTask.getId())));
                     throw new ExchangisSchedulerRetryException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() +"]", e);
                 }else {
                     // Update the launched task status to fail
