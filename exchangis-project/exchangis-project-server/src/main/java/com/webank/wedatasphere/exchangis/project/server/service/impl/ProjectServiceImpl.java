@@ -100,7 +100,9 @@ public class ProjectServiceImpl implements ProjectService {
                 }
             }
         }
-        this.projectUserMapper.addProjectUser((List<ExchangisProjectUser>)projectUserMap.values());
+        if(projectUserMap.size() > 0) {
+            this.projectUserMapper.addProjectUser(projectUserMap.values().stream().collect(Collectors.toList()));
+        }
         return project.getId();
     }
 
