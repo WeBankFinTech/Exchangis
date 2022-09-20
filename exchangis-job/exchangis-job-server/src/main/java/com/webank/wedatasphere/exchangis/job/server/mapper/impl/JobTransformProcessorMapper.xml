@@ -38,13 +38,13 @@
     </insert>
 
     <select id="getProcDetail" resultMap="processorMap">
-        SELECT `job_id`, `code_content`, `code_language`, `code_bml_resourceId`, `code_bml_version`, `creator`
+        SELECT `id`, `job_id`, `code_content`, `code_language`, `code_bml_resourceId`, `code_bml_version`, `creator`
         FROM <include refid="TableName"/>
         WHERE `id` = #{id};
     </select>
 
     <select id="getProcInfo" resultMap="processorMap">
-        SELECT `job_id`, `code_language`, `code_bml_resourceId`, `code_bml_version`, `creator`
+        SELECT `id`, `job_id`, `code_language`, `code_bml_resourceId`, `code_bml_version`, `creator`
         FROM <include refid="TableName"/>
         WHERE `id` = #{id};
     </select>
