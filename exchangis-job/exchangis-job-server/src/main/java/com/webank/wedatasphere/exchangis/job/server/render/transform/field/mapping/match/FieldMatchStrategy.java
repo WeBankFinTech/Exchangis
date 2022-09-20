@@ -16,11 +16,12 @@ public interface FieldMatchStrategy {
     String name();
     /**
      * Match entrance
-     * @param sourceColumns source columns
-     * @param sinkColumns sink columns
-     * @return
+     * @param dependColumns depend columns
+     * @param searchColumns search columns
+     * @param ignoreUnMatch ignore the unMatch element
+     * @return match column list
      */
-    List<FieldMappingColumn> match(List<FieldColumn> sourceColumns, List<FieldColumn> sinkColumns);
+    List<FieldColumnMatch> match(List<FieldColumn> dependColumns, List<FieldColumn> searchColumns, boolean ignoreUnMatch);
 
     default int getPriority(){
         return 1;
