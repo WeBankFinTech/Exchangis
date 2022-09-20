@@ -12,7 +12,7 @@ public class DefaultFieldMappingRulesFusion implements FieldMappingRulesFusion{
     /**
      * Strategy factory
      */
-    private FieldMatchStrategyFactory matchStrategyFactory;
+    private final FieldMatchStrategyFactory matchStrategyFactory;
 
     public DefaultFieldMappingRulesFusion(FieldMatchStrategyFactory matchStrategyFactory){
         this.matchStrategyFactory = matchStrategyFactory;
