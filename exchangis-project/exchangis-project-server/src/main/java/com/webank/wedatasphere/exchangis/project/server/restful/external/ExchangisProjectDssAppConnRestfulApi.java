@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRe
 import com.webank.wedatasphere.exchangis.project.server.utils.ProjectAuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.linkis.common.utils.JsonUtils;
 import org.apache.linkis.server.Message;
@@ -44,12 +45,17 @@ public class ExchangisProjectDssAppConnRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        if (Objects.isNull(projectVo.getViewUsers()) &&
-                Objects.isNull(projectVo.getEditUsers()) &&
-                Objects.isNull(projectVo.getExecUsers())) {
-            return Message.error("You must specify a user who has permissions on the project (必须指定具有权限的用户)");
-        }
         String username = SecurityFilter.getLoginUsername(request);
+        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
+            projectVo.setViewUsers(username + projectVo.getViewUsers());
+        }
+        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
+            projectVo.setEditUsers(username + projectVo.getEditUsers());
+        }
+        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
+            projectVo.setExecUsers(username + projectVo.getExecUsers());
+        }
+
         try {
             LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             if (projectService.existsProject(null, projectVo.getName())){
@@ -81,7 +87,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
         }
         String username = SecurityFilter.getLoginUsername(request);
         try {
-            ExchangisProjectInfo projectStored = projectService.getProjectById(Long.valueOf(projectVo.getId()));
+            ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
                 return Message.error("You have no permission to update (没有项目的更新权限)");
             }
