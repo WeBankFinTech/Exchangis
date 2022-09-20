@@ -122,7 +122,7 @@ public class TransformRule {
         }
         if (fraction > 0){
             if (Objects.nonNull(this.direction) && !this.direction.equals(Direction.NONE.name())){
-                if (this.engineType.equals(engineType)) {
+                if (this.direction.equals(direction)) {
                     fraction ++;
                 } else {
                     fraction = 0;
