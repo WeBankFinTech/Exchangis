@@ -35,7 +35,7 @@ public class ExchangisJobTransformRestfulApi {
     @Resource
     private TransformerContainer transformerContainer;
 
-    @RequestMapping(value = "/settings", method = RequestMethod.GET)
+    @RequestMapping(value = "/settings", method = RequestMethod.POST)
     public Message settings(@Validated @RequestBody TransformRequestVo params,
                             BindingResult result, HttpServletRequest request){
         if (result.hasErrors()){
