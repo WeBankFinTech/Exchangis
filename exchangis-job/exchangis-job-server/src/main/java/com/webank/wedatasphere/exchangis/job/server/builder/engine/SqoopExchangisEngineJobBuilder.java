@@ -576,7 +576,7 @@ public class SqoopExchangisEngineJobBuilder extends AbstractLoggingExchangisJobB
             engineJob.setCreateUser(inputJob.getCreateUser());
             return engineJob;
         } catch (Exception e) {
-            throw new ExchangisJobException(ExchangisJobExceptionCode.ENGINE_JOB_ERROR.getCode(),
+            throw new ExchangisJobException(ExchangisJobExceptionCode.BUILDER_ENGINE_ERROR.getCode(),
                     "Fail to build sqoop engine job, message:[" + e.getMessage() + "]", e);
         }
     }

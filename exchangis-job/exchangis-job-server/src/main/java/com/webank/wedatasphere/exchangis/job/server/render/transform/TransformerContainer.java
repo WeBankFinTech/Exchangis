@@ -3,19 +3,19 @@ package com.webank.wedatasphere.exchangis.job.server.render.transform;
 /**
  * Transform container
  */
-public interface TransformContainer {
+public interface TransformerContainer {
 
     /**
      * Register transform
      * @param type type
      * @param transform transform
      */
-    void registerTransform(String type, Transform transform);
+    void registerTransformer(String type, Transformer transform);
 
     /**
      * Get transform
      * @param type type
      * @return transform
      */
-    Transform getTransform(String type);
+    Transformer getTransformer(String type);
 }
