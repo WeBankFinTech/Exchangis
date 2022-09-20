@@ -117,9 +117,10 @@ public class ExchangisJobRestfulApi {
         List<String> executor = new ArrayList<>();
         if (proxyUserUsername.isDefined()) {
             executor.add(proxyUserUsername.get());
+        } else {
+            executor.add(loginUser);
         }
         executor.add("hadoop");
-        executor.add(loginUser);
         return Message.ok().data("result", executor);
     }
 
