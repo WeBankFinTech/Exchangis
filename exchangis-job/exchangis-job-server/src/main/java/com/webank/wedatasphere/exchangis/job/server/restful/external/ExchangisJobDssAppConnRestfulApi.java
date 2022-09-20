@@ -84,7 +84,7 @@ public class ExchangisJobDssAppConnRestfulApi {
         Message response = Message.ok();
 
         try{
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to create Job (没有创建任务权限)");
             }
             Long id = null;
@@ -117,7 +117,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             if (Objects.isNull(exchangisJob)){
                 return response;
             }
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, exchangisJob.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJob.getProjectId(), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to delete (没有删除任务权限)");
             }
             jobInfoService.deleteJob(id);
@@ -155,7 +155,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             if (Objects.isNull(exchangisJob)){
                 return Message.error("You have no job in exchangis,please delete this job (该节点在exchangis端不存在，请删除该节点)");
             }
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, exchangisJob.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to update (没有更新任务权限)");
             }
             response.data("id", jobInfoService.updateJob(exchangisJobVo).getId());
