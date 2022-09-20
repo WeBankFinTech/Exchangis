@@ -1,8 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.render.transform;
 
-/**
- * Transform settings
- */
-public class TransformSettings {
-
+public enum TransformTypes {
+    NONE, MAPPING, PROCESSOR
 }

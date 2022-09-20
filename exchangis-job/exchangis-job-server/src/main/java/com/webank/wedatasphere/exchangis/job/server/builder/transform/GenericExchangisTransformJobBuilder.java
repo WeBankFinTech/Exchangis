@@ -3,7 +3,6 @@ package com.webank.wedatasphere.exchangis.job.server.builder.transform;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
-import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
@@ -119,14 +118,14 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                         }
                     }
                 }else{
-                    throw new ExchangisJobException(ExchangisJobExceptionCode.TRANSFORM_JOB_ERROR.getCode(),
+                    throw new ExchangisJobException(ExchangisJobExceptionCode.BUILDER_TRANSFORM_ERROR.getCode(),
                             "Illegal content string: [" + inputJob.getJobContent() + "] in job, please check", null);
                 }
             }else{
                 LOG.warn("It looks like an empty job ? id: [{}], name: [{}]", inputJob.getId(), inputJob.getName());
             }
         }catch(Exception e){
-            throw new ExchangisJobException(ExchangisJobExceptionCode.TRANSFORM_JOB_ERROR.getCode(),
+            throw new ExchangisJobException(ExchangisJobExceptionCode.BUILDER_TRANSFORM_ERROR.getCode(),
                     "Fail to build transformJob from input job, message: [" + e.getMessage() + "]", e);
         }
         return outputJob;
