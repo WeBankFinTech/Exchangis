@@ -5,20 +5,20 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Default implement
  */
-public class DefaultTransformContainer implements TransformContainer{
+public class DefaultTransformContainer implements TransformerContainer {
 
     /**
      * Transforms
      */
-    private ConcurrentHashMap<String, Transform> transforms = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Transformer> transforms = new ConcurrentHashMap<>();
 
     @Override
-    public void registerTransform(String type, Transform transform) {
+    public void registerTransformer(String type, Transformer transform) {
         this.transforms.put(type, transform);
     }
 
     @Override
-    public Transform getTransform(String type) {
+    public Transformer getTransformer(String type) {
         return this.transforms.get(type);
     }
 }

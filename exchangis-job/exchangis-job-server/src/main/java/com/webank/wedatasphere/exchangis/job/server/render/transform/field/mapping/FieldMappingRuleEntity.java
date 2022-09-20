@@ -20,6 +20,11 @@ public class FieldMappingRuleEntity extends FieldMappingRule{
      */
     private boolean fieldEditEnable;
 
+    /**
+     * Field add enable
+     */
+    protected boolean fieldAddEnable = true;
+
     @Override
     public Map<String, Boolean> getFieldEditEnableRuleItem() {
         Map<String, Boolean> ruleItem = super.getFieldEditEnableRuleItem();
@@ -32,7 +37,9 @@ public class FieldMappingRuleEntity extends FieldMappingRule{
         return ruleItem;
     }
 
-
+    public FieldMappingRuleEntity(){
+        super();
+    }
     public FieldMappingRuleEntity(Types type, String ruleSource) {
         super(type, ruleSource);
         if (StringUtils.isNotBlank(ruleSource)){
@@ -42,6 +49,7 @@ public class FieldMappingRuleEntity extends FieldMappingRule{
                 this.fieldDeleteEnable = rule.fieldDeleteEnable;
                 this.fieldTransformEnable = rule.fieldTransformEnable;
                 this.fieldMatchStrategyName = rule.fieldMatchStrategyName;
+                this.fieldEditEnable = rule.fieldEditEnable;
             });
         }
     }

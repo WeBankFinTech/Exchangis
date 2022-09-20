@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.mapper;
 
-import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformDefine;
-import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.FieldMappingRule;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformRule;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -11,16 +11,12 @@ import java.util.List;
 public interface JobTransformRuleDao {
 
     /**
-     * Get transform rule definition list
+     * Get transform rule list
+     * @param ruleType rule type
      * @param dataSourceType data source type
      * @return rule list
      */
-    List<TransformDefine> getTransformDefines(String dataSourceType);
+    List<TransformRule> getTransformRules(@Param("ruleType") String ruleType,
+                                          @Param("dataSourceType") String dataSourceType);
 
-    /**
-     * Get mapping rules
-     * @param dataSourceType data source type
-     * @return rule list
-     */
-    List<FieldMappingRule> getMappingRules(String dataSourceType);
 }
