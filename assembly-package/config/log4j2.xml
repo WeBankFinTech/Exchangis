@@ -46,7 +46,7 @@
         <logger name="com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger$" level="INFO" additivity="true">
             <appender-ref ref="RpcLog"/>
         </logger>
-        <logger name="com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils" level="INFO" additivity="false">
+        <logger name="com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils" level="INFO" additivity="true">
             <appender-ref ref="AuditLog"/>
         </logger>
     </loggers>
