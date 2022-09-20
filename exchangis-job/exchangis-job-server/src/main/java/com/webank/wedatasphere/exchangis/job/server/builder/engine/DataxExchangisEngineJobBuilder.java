@@ -13,12 +13,10 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode
 import com.webank.wedatasphere.exchangis.job.server.utils.JsonEntity;
 import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Datax engine job builder
@@ -139,7 +137,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
             return engineJob;
 
         } catch (Exception e) {
-            throw new ExchangisJobException(ExchangisJobExceptionCode.ENGINE_JOB_ERROR.getCode(),
+            throw new ExchangisJobException(ExchangisJobExceptionCode.BUILDER_ENGINE_ERROR.getCode(),
                     "Fail to build datax engine job, message:[" + e.getMessage() + "]", e);
         }
     }
