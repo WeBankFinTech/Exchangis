@@ -14,11 +14,15 @@ import java.util.Optional;
 public class TransformDefine extends TransformRule{
 
     static{
-        TransformRule.typeClasses.put(Types.DEF.name(), TransformDefine.class);
+        TransformRule.typeClasses.put(TransformRule.Types.DEF.name(), TransformDefine.class);
     }
 
     private List<String> types = new ArrayList<>();
-    public TransformDefine(Types type, String ruleSource) {
+
+    public TransformDefine(){
+
+    }
+    public TransformDefine(TransformRule.Types type, String ruleSource) {
         super(type, ruleSource);
         if (StringUtils.isNotBlank(ruleSource)){
             TransformDefine definition = Json.fromJson(ruleSource, TransformDefine.class);
@@ -35,4 +39,5 @@ public class TransformDefine extends TransformRule{
     public void setTypes(List<String> types) {
         this.types = types;
     }
+
 }
