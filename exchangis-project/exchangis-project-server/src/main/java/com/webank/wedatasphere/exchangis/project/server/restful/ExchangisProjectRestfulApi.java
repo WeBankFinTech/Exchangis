@@ -11,7 +11,7 @@ import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectCo
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.linkis.common.utils.JsonUtils;
 import org.apache.linkis.server.Message;
@@ -114,6 +114,16 @@ public class ExchangisProjectRestfulApi {
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
         String username = SecurityFilter.getLoginUsername(request);
+        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
+            projectVo.setViewUsers(username + projectVo.getViewUsers());
+        }
+        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
+            projectVo.setEditUsers(username + projectVo.getEditUsers());
+        }
+        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
+            projectVo.setExecUsers(username + projectVo.getExecUsers());
+        }
+
         try {
             if (projectService.existsProject(null, projectVo.getName())){
                 return Message.error("Have the same name project (存在同名项目)");
@@ -142,8 +152,8 @@ public class ExchangisProjectRestfulApi {
             return ExchangisProjectRestfulUtils.dealOk("根据名字获取项目成功",
                     new Pair<>("projectInfo",projectInfo));
         } catch (Exception t) {
-            LOG.error("Failed to delete project for user {}", username, t);
-            return Message.error("Failed to delete project (根据名字获取项目失败)");
+            LOG.error("Failed to get project for user {}", username, t);
+            return Message.error("Failed to get project (根据名字获取项目失败)");
         }
     }
 
@@ -199,7 +209,7 @@ public class ExchangisProjectRestfulApi {
         }
         String username = SecurityFilter.getLoginUsername(request);
         try {
-            ExchangisProjectInfo projectInfo = projectService.getProjectById(id);
+            ExchangisProjectInfo projectInfo = projectService.getProjectDetailById(id);
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_ALTER)) {
                 return Message.error("You have no permission to delete (删除项目失败)");
             }

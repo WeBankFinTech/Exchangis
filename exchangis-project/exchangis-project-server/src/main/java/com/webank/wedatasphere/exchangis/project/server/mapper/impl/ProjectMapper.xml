@@ -96,7 +96,7 @@
         </where>
     </update>
     <!--existsOne-->
-    <select id="existsOne" resultType="Integer">
+    <select id="existsOne" resultType="java.lang.Integer">
         <![CDATA[ SELECT 1 FROM `exchangis_project_info`]]>
         <where>
             <if test="projectId != null and projectId != ''">
