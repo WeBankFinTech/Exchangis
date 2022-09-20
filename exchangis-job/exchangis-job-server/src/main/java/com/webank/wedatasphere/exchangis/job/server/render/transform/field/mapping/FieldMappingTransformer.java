@@ -83,6 +83,7 @@ public class FieldMappingTransformer implements Transformer {
     private FieldMappingSettings getFieldMappingSettings(FieldMappingRule rule, TransformRequestVo requestVo) {
         FieldMappingSettings settings = new FieldMappingSettings();
         settings.setAddEnable(rule.isFieldAddEnable());
+        settings.setTransformEnable(rule.isFieldTransformEnable());
         // Get raw meta columns
         List<FieldColumn> sourceColumns = new ArrayList<>();
         try {
@@ -148,7 +149,7 @@ public class FieldMappingTransformer implements Transformer {
                         maxFraction.set(fraction);
                     }
                 });
-        return Objects.nonNull(fieldMappingRule.get())? fieldMappingRule.get().toRule(FieldMappingRule.class) : null;
+        return Objects.nonNull(fieldMappingRule.get())? fieldMappingRule.get().toRule(FieldMappingRuleEntity.class) : null;
     }
 
     private MetadataInfoService getOrLoadMetadataInfoService(){

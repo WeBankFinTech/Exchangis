@@ -25,7 +25,7 @@ public class ProcessorTransformer implements Transformer {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProcessorTransformer.class);
 
-    public static final CommonVars<String> CODE_TEMPLATE_PATH = CommonVars.apply("wds.exchangis.job.render.transform.processor.code-template.path", "transform-processor");
+    public static final CommonVars<String> CODE_TEMPLATE_PATH = CommonVars.apply("wds.exchangis.job.render.transform.processor.code-template.path", "transform-processor-templates");
 
     public static final CommonVars<String> CODE_TEMPLATE_NAME = CommonVars.apply("wds.exchangis.job.render.transform.processor.code-template.name", "${engine}-processor.${type}");
 
