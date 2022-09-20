@@ -2,6 +2,8 @@ package com.webank.wedatasphere.exchangis.job.server.restful.external;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
+import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
@@ -11,6 +13,7 @@ import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.ProjectImportServerImpl;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
+import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectMapper;
@@ -83,11 +86,11 @@ public class ExchangisJobDssAppConnRestfulApi {
         exchangisJobVo.setCreateUser(loginUser);
         Message response = Message.ok();
 
+        Long id = null;
         try{
             if (!JobAuthorityUtils.hasJobAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to create Job (没有创建任务权限)");
             }
-            Long id = null;
             id = jobInfoService.createJob(exchangisJobVo).getId();
             response.data("id", id);
             LOG.info("job id is: {}", id);
@@ -96,6 +99,8 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
+        assert id != null;
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB, id.toString(), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.CREATE, request);
         return response;
     }
 
@@ -126,6 +131,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB, id.toString(), "Job", OperateTypeEnum.DELETE, request);
         return response;
     }
 
@@ -164,6 +170,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB, id.toString(), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.UPDATE, request);
         return response;
     }
 
@@ -238,6 +245,8 @@ public class ExchangisJobDssAppConnRestfulApi {
             }
             LOG.error(message, e);
         }
+        assert jobInfo != null;
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB, id.toString(), "Execute task is: " + jobInfo.getName(), OperateTypeEnum.EXECUTE, request);
         return result;
     }
 
@@ -258,6 +267,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
+        AuditLogUtils.printLog(userName, TargetTypeEnum.JOB, "", "Export parameter is: " + params.toString(), OperateTypeEnum.IMPORT, request);
         return response;
 
     }
@@ -279,6 +289,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
+        AuditLogUtils.printLog(userName, TargetTypeEnum.JOB, "", "Export parameter is: " + params.toString(), OperateTypeEnum.EXPORT, request);
         return response;
     }
 
@@ -296,6 +307,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
+        AuditLogUtils.printLog(userName, TargetTypeEnum.JOB, "", "Copy parameter is: " + params.toString(), OperateTypeEnum.COPY, request);
         return response;
 
         //return jobInfoService.exportProject(params, userName, request);

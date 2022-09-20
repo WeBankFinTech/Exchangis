@@ -3,6 +3,9 @@ package com.webank.wedatasphere.exchangis.project.server.restful;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
+import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
+import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
@@ -120,6 +123,7 @@ public class ExchangisProjectRestfulApi {
             }
             LOG.info("CreateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             long projectId = projectService.createProject(projectVo, username);
+            AuditLogUtils.printLog(username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectVo.getName(), OperateTypeEnum.CREATE, request);
             return ExchangisProjectRestfulUtils.dealOk("创建项目成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectId));
@@ -177,6 +181,7 @@ public class ExchangisProjectRestfulApi {
             }
             LOG.info("UpdateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             projectService.updateProject(projectVo, username);
+            AuditLogUtils.printLog(username, TargetTypeEnum.PROJECT, projectVo.getId(), "Project name is: " + projectVo.getName(), OperateTypeEnum.UPDATE, request);
             return ExchangisProjectRestfulUtils.dealOk("更新项目成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectVo.getId()));
@@ -210,6 +215,7 @@ public class ExchangisProjectRestfulApi {
                 return Message.error("Cannot delete the outer project (无法删除来自 " + domain + " 的外部项目)");
             }
             projectService.deleteProject(id);
+            AuditLogUtils.printLog(username, TargetTypeEnum.PROJECT, id.toString(), "Project", OperateTypeEnum.DELETE, request);
             return ExchangisProjectRestfulUtils.dealOk("删除项目成功");
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
