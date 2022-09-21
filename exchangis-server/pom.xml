@@ -26,6 +26,12 @@
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-engine-server</artifactId>
             <version>${exchangis.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>linkis-module</artifactId>
+                    <groupId>org.apache.linkis</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
@@ -46,10 +52,14 @@
             <artifactId>exchangis-project-server</artifactId>
             <version>1.1.1</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.linkis</groupId>-->
+<!--            <artifactId>linkis-storage</artifactId>-->
+<!--            <version>${linkis.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.linkis</groupId>
-            <artifactId>linkis-storage</artifactId>
-            <version>${linkis.version}</version>
+            <artifactId>linkis-module</artifactId>
         </dependency>
     </dependencies>
 
