@@ -26,11 +26,6 @@ public class FieldMappingRuleEntity extends FieldMappingRule{
      */
     private boolean fieldEditEnable = true;
 
-    /**
-     * Field add enable
-     */
-    protected boolean fieldAddEnable = true;
-
     @Override
     public Map<String, Boolean> getFieldEditEnableRuleItem() {
         Map<String, Boolean> ruleItem = super.getFieldEditEnableRuleItem();
@@ -68,13 +63,4 @@ public class FieldMappingRuleEntity extends FieldMappingRule{
         this.fieldEditEnable = fieldEditEnable;
     }
 
-    @Override
-    public boolean isFieldAddEnable() {
-        return fieldAddEnable;
-    }
-
-    @Override
-    public void setFieldAddEnable(boolean fieldAddEnable) {
-        this.fieldAddEnable = fieldAddEnable;
-    }
 }
