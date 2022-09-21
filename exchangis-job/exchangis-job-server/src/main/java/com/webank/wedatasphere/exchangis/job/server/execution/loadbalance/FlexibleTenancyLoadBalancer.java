@@ -298,6 +298,10 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                     }
                 });
             });
+            // init scheduler task container for default tenancy
+            for (Class<?> registeredTaskClass : registeredTaskClasses) {
+                geOrCreateSchedulerTaskContainer(TenancyParallelGroupFactory.DEFAULT_TENANCY, registeredTaskClass);
+            }
         }
     }
     static class LoopCounter {
