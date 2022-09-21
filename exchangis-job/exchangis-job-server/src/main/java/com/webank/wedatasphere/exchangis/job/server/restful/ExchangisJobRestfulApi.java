@@ -79,7 +79,7 @@ public class ExchangisJobRestfulApi {
         );
         String loginUser = SecurityFilter.getLoginUsername(request);
         try {
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, projectId, OperationType.JOB_QUERY)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, projectId, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to create Job (没有查询任务权限)");
             }
 
@@ -179,7 +179,7 @@ public class ExchangisJobRestfulApi {
         Message response = Message.ok();
 
         try {
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to create Job (没有创建任务权限)");
             }
             response.data("result", jobInfoService.createJob(exchangisJobVo));
@@ -215,7 +215,7 @@ public class ExchangisJobRestfulApi {
         exchangisJobVo.setModifyUser(loginUser);
         Message response = Message.ok();
         try {
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to update (没有作业复制权限)");
             }
             response.data("result", jobInfoService.copyJob(exchangisJobVo));
@@ -250,7 +250,7 @@ public class ExchangisJobRestfulApi {
         exchangisJobVo.setModifyUser(loginUser);
         Message response = Message.ok();
         try {
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to update (没有更新任务权限)");
             }
             response.data("result", jobInfoService.updateJob(exchangisJobVo));
@@ -279,8 +279,7 @@ public class ExchangisJobRestfulApi {
         Message response = Message.ok("job deleted");
         ExchangisJobVo jobVo = null;
         try {
-            jobVo = jobInfoService.getJob(id, true);
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, jobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to delete (没有删除任务权限)");
             }
             jobInfoService.deleteJob(id);
@@ -310,7 +309,7 @@ public class ExchangisJobRestfulApi {
             String loginUser = SecurityFilter.getLoginUsername(request);
 
             ExchangisJobVo job = jobInfoService.getJob(id, true);
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, job.getProjectId(), OperationType.JOB_QUERY)) {
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to get job (没有获取任务权限)");
             }
             job = jobInfoService.getDecoratedJob(request, id);
@@ -368,7 +367,7 @@ public class ExchangisJobRestfulApi {
         Message response = Message.ok();
         String loginUser = SecurityFilter.getLoginUsername(request);
         try {
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, projectId, OperationType.JOB_QUERY)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, projectId, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to create Job (没有查询任务权限)");
             }
 
@@ -403,7 +402,7 @@ public class ExchangisJobRestfulApi {
         Message response = Message.ok();
         String loginUser = SecurityFilter.getLoginUsername(request);
         try {
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, jobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to update (没有更新任务权限)");
             }
             ExchangisJobVo exchangisJob = jobInfoService.updateJobConfig(jobVo);
@@ -413,7 +412,7 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString(), "Job name is: " + jobVo.getJobName(), OperateTypeEnum.UPDATE,request);
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString(), "Job id is: " + id.toString(), OperateTypeEnum.UPDATE,request);
         return response;
     }
 
@@ -428,7 +427,7 @@ public class ExchangisJobRestfulApi {
         String loginUser = SecurityFilter.getLoginUsername(request);
         Message response = Message.ok();
         try {
-            if (!JobAuthorityUtils.hasJobAuthority(loginUser, jobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to save content (没有保存任务权限)");
             }
             ExchangisJobVo exchangisJob = jobInfoService.updateJobContent(jobVo);
@@ -442,7 +441,7 @@ public class ExchangisJobRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString(), "Job name is: " + jobVo.getJobName(), OperateTypeEnum.UPDATE,request);
+        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB,id.toString(), "Job id is: " + id.toString(), OperateTypeEnum.UPDATE,request);
         return response;
     }
 }
