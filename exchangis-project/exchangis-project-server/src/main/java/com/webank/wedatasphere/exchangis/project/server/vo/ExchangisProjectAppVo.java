@@ -3,8 +3,8 @@ package com.webank.wedatasphere.exchangis.project.server.vo;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
+import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
