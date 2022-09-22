@@ -16,6 +16,7 @@ import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectUserMapper;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectUserVo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -252,5 +253,11 @@ public class ProjectServiceImpl implements ProjectService {
             return new ExchangisProjectInfo(project);
         }
         return null;
+    }
+
+    @Override
+    public ExchangisProjectUser queryProjectUser(ExchangisProjectUserVo exchangisProjectUserVo) {
+        ExchangisProjectUser projectUser = new ExchangisProjectUser(exchangisProjectUserVo.getProjectId(), exchangisProjectUserVo.getPrivUser());
+        return this.projectUserMapper.queryProjectUser(projectUser);
     }
 }
