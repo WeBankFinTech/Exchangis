@@ -32,7 +32,7 @@
             <DefaultRolloverStrategy max="20"/>
         </RollingFile>
         <RollingFile name="AuditLog" fileName="${sys:log.path}/${sys:serviceName}-audit.log"
-                     filePattern="${sys:log.path}/$${date:yyyy-MM}/${sys:serviceName}/exchangis-log-%d{yyyy-MM-dd}-%i.log">
+                     filePattern="${sys:log.path}/$${date:yyyy-MM-dd}/${sys:serviceName}/exchangis-audit-log-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-40t] %c{1.} (%L) [%M] - %msg%xEx%n"/>
             <SizeBasedTriggeringPolicy size="1GB"/>
             <DefaultRolloverStrategy max="100"/>
