@@ -115,13 +115,13 @@ public class ExchangisProjectRestfulApi {
         }
         String username = SecurityFilter.getLoginUsername(request);
         if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
-            projectVo.setViewUsers(username + projectVo.getViewUsers());
+            projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
         }
         if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
-            projectVo.setEditUsers(username + projectVo.getEditUsers());
+            projectVo.setEditUsers(username + "," + projectVo.getEditUsers());
         }
         if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
-            projectVo.setExecUsers(username + projectVo.getExecUsers());
+            projectVo.setExecUsers(username + "," + projectVo.getExecUsers());
         }
 
         try {
@@ -174,6 +174,16 @@ public class ExchangisProjectRestfulApi {
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
         String username = SecurityFilter.getLoginUsername(request);
+        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
+            projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
+        }
+        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
+            projectVo.setEditUsers(username + "," + projectVo.getEditUsers());
+        }
+        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
+            projectVo.setExecUsers(username + "," + projectVo.getExecUsers());
+        }
+
         try {
             ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
