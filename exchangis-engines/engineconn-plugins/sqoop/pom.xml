@@ -20,10 +20,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>linkis</artifactId>
-        <groupId>org.apache.linkis</groupId>
+        <artifactId>exchangis-engines</artifactId>
+        <groupId>com.webank.wedatasphere.exchangis</groupId>
         <version>1.1.1</version>
-        <relativePath/>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -31,6 +30,7 @@
     <properties>
         <sqoop.version>1.4.6</sqoop.version>
         <hive.version>3.1.2</hive.version>
+        <linkis.version>1.1.6-webank</linkis.version>
     </properties>
 
     <dependencies>
