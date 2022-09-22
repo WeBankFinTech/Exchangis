@@ -247,15 +247,20 @@ public class DefaultJobExecuteService implements JobExecuteService {
                     if (launchedExchangisTaskEntities == null) {
                         exchangisJobVo.setFlow((long) 0);
                     } else {
-                        int flows = 0;
+                        double flows = 0;
                         int taskNum = launchedExchangisTaskEntities.size();
                         for (LaunchedExchangisTaskEntity launchedExchangisTaskEntity : launchedExchangisTaskEntities) {
-                            if (launchedExchangisTaskEntity.getMetricsMap() == null || launchedExchangisTaskEntity.getMetricsMap().get("traffic") == null) {
+                            MetricsConverter<ExchangisMetricsVo> metricsConverter = metricConverterFactory.getOrCreateMetricsConverter(launchedExchangisTaskEntity.getEngineType());
+                            ExchangisLaunchedTaskMetricsVo exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVo();
+                            if (launchedExchangisTaskEntity.getMetricsMap() == null) {
                                 flows += 0;
                                 continue;
                             }
+                            exchangisLaunchedTaskVo.setMetrics(metricsConverter.convert(launchedExchangisTaskEntity.getMetricsMap()));
                             Map<String, Object> flowMap = (Map<String, Object>) launchedExchangisTaskEntity.getMetricsMap().get("traffic");
-                            flows += flowMap == null ? 0 : Integer.parseInt(flowMap.get("flow").toString());
+                            //Map<String, Object> flowMap = (Map<String, Object>) launchedExchangisTaskEntity.getMetricsMap().get("traffic");
+                            //flows += flowMap == null ? 0 : Integer.parseInt(flowMap.get("flow").toString());
+                            flows += exchangisLaunchedTaskVo.getMetrics().getTraffic().getFlow();
                         }
                         exchangisJobVo.setFlow(taskNum == 0 ? 0 : (long) (flows / taskNum));
                     }
