@@ -3,12 +3,10 @@ package com.webank.wedatasphere.exchangis.project.server.service;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
-import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
+import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProjectUser;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectUserVo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * Project query
@@ -35,7 +33,7 @@ public interface ProjectService {
       * @param projectVo project vo
       * @param userName userName
       */
-     void   updateProject(ExchangisProjectInfo projectVo, String userName);
+     void updateProject(ExchangisProjectInfo projectVo, String userName);
 
      /**
       * Query the page result
@@ -66,5 +64,7 @@ public interface ProjectService {
      ExchangisProjectInfo getProjectById(Long projectId);
 
      ExchangisProjectInfo selectByName(String name);
+
+     ExchangisProjectUser queryProjectUser(ExchangisProjectUserVo exchangisProjectUserVo);
 
 }

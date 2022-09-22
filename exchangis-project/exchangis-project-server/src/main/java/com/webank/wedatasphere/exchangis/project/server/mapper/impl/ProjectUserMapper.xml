@@ -19,6 +19,11 @@
     <sql id="TableName">
         exchangis_project_user
     </sql>
+    <delete id="deleteProjectUser" parameterType="java.lang.Long">
+        delete from
+        <include refid="TableName" />
+        where project_id = #{projectId};
+    </delete>
 
     <select id="queryProjectUser" resultMap ="projectUserResult">
         select
