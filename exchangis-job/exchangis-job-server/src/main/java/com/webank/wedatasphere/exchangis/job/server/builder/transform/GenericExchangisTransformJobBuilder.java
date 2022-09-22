@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform;
 
+import com.webank.wedatasphere.exchangis.common.linkis.bml.BmlResource;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
@@ -9,6 +10,10 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.server.builder.AbstractLoggingExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.SubExchangisJobHandler;
+import com.webank.wedatasphere.exchangis.job.server.mapper.JobTransformProcessorDao;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformTypes;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.TransformProcessor;
+import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.common.utils.ClassUtils;
@@ -31,6 +36,11 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
      * Handlers
      */
     private static final Map<String, SubExchangisJobHandlerChain> handlerHolders = new ConcurrentHashMap<>();
+
+    /**
+     * Transform dao
+     */
+    private JobTransformProcessorDao transformProcessorDao;
 
     public synchronized void initHandlers() {
         //Should define wds.linkis.reflect.scan.package in properties
@@ -78,10 +88,11 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                             inputJob.getId(), inputJob.getName(), contents.size());
                     //Second to new SubExchangisJob instances
                     List<SubExchangisJob> subExchangisJobs = contents.stream().map(job -> {
-                                TransformExchangisJob.SubExchangisJobAdapter jobAdapter = new TransformExchangisJob.SubExchangisJobAdapter(job);
-                                jobAdapter.setId(inputJob.getId());
-                                jobAdapter.setCreateUser(outputJob.getCreateUser());
-                                return jobAdapter;
+                                TransformExchangisJob.TransformSubExchangisJob transformSubJob = new TransformExchangisJob.TransformSubExchangisJob(job);
+                                transformSubJob.setId(inputJob.getId());
+                                transformSubJob.setCreateUser(outputJob.getCreateUser());
+                                setTransformCodeResource(transformSubJob);
+                                return transformSubJob;
                             })
                             .collect(Collectors.toList());
                     outputJob.setSubJobSet(subExchangisJobs);
@@ -131,6 +142,32 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
         return outputJob;
     }
 
+    /**
+     * Set the code resource to transform job
+     * @param subExchangisJob sub transform job
+     */
+    private void setTransformCodeResource(TransformExchangisJob.TransformSubExchangisJob subExchangisJob){
+        if (subExchangisJob.getTransformType() == TransformTypes.PROCESSOR){
+            TransformProcessor processor = getTransformProcessorDao().getProcInfo(
+                    Long.valueOf(subExchangisJob.getJobInfoContent().getTransforms().getCodeId()));
+            if (Objects.nonNull(processor)){
+                // TODO maybe the content of processor doesn't store in bml
+                subExchangisJob.addCodeResource(new
+                        BmlResource(processor.getCodeBmlResourceId(), processor.getCodeBmlVersion()));
+            }
+        }
+    }
+
+    /**
+     * Processor dao
+     * @return dao
+     */
+    private JobTransformProcessorDao getTransformProcessorDao(){
+        if (null == transformProcessorDao) {
+            this.transformProcessorDao = SpringContextHolder.getBean(JobTransformProcessorDao.class);
+        }
+        return this.transformProcessorDao;
+    }
     /**
      * Chain
      */
