@@ -31,8 +31,8 @@ public class AuditLogUtils {
         //String detailInfo=new Gson().toJson(params);
         LOGGER.info("AuditLog print test");
         String detailInfo=params.toString();
-        LOGGER.info("[{}],[{}],[{}],[{}],[{}],[{}],[{}]",
-                new Date(),user, targetType.getName(),
+        LOGGER.info("[{}],[{}],[{}],[{}],[{}],[{}],[{}],[{}]",
+                new Date(),user, "Exchangis-1.1.1", targetType.getName(),
                 targetId,targetName,operateType.getName(), detailInfo);
     }
 
