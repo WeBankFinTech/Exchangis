@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform;
 
+import com.webank.wedatasphere.exchangis.common.linkis.bml.BmlResource;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.*;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
@@ -9,9 +10,9 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.GenericSubExchangisJobHandler;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformTypes;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.linkis.common.utils.VariableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,13 @@ public class TransformExchangisJob extends GenericExchangisJob {
     /**
      * Wrap entity of 'ExchangisJobInfoContent'
      */
-    public static class SubExchangisJobAdapter extends SubExchangisJob{
+    public static class TransformSubExchangisJob extends SubExchangisJob{
+
+        private static final String CODE_RESOURCE_NAME = ".code";
+        /**
+         * Transform type
+         */
+        private TransformTypes transformType;
 
         /**
          * Content VO
@@ -60,18 +67,23 @@ public class TransformExchangisJob extends GenericExchangisJob {
         private ExchangisJobInfoContent jobInfoContent;
 
         /**
-         * Resource uri string list
+         * Resource map
          */
-        private final List<String> resourceUris = new ArrayList<>();
+        private final Map<String, BmlResource> resources = new HashMap<>();
 
-        public SubExchangisJobAdapter(ExchangisJobInfoContent jobInfoContent){
+        public TransformSubExchangisJob(ExchangisJobInfoContent jobInfoContent){
             if(Objects.nonNull(jobInfoContent)) {
                 this.jobInfoContent = jobInfoContent;
                 this.engineType = jobInfoContent.getEngine();
                 this.name = jobInfoContent.getSubJobName();
                 convertContentToParams(jobInfoContent);
-                convertContentToColumnDefine(jobInfoContent);
-//                convertContentToResources(jobInfoContent);
+                Optional.ofNullable(jobInfoContent.getTransforms()).ifPresent(transforms -> {
+                    if (StringUtils.isNotBlank(transforms.getType())) {
+                        this.transformType = TransformTypes.valueOf(transforms.getType().toUpperCase(Locale.ROOT));
+                        // TODO define different transform sub jobs
+                        convertTransformToColumnDefine(transforms);
+                    }
+                });
             }
         }
 
@@ -85,30 +97,27 @@ public class TransformExchangisJob extends GenericExchangisJob {
 
         /**
          * Convert content to column definitions
-         * @param content content
+         * @param transforms transform
          */
-        private void convertContentToColumnDefine(ExchangisJobInfoContent content){
-            Optional.ofNullable(content.getTransforms()).ifPresent(transforms -> {
-                List<ExchangisJobTransformsItem> items = transforms.getMapping();
-                if (Objects.nonNull(items)){
-                    for(int i = 0; i < items.size(); i++){
-                        final int index = i;
-                        ExchangisJobTransformsItem item = items.get(i);
-                        ColumnDefine srcColumn = new ColumnDefine(item.getSourceFieldName(),
-                                item.getSourceFieldType(), item.getSourceFieldIndex());
-                        ColumnDefine sinkColumn = new ColumnDefine(item.getSinkFieldName(),
-                                item.getSinkFieldType(), item.getSinkFieldIndex());
-                        Optional.ofNullable(item.getValidator()).ifPresent(validator ->
-                                convertValidatorFunction(index, validator));
-                        Optional.ofNullable(item.getTransformer()).ifPresent(transformer ->
-                                convertTransformFunction(index, transformer));
-                        getSourceColumns().add(srcColumn);
-                        getSinkColumns().add(sinkColumn);
-                    };
-                }
-            });
+        private void convertTransformToColumnDefine(ExchangisJobTransformsContent transforms){
+            List<ExchangisJobTransformsItem> items = transforms.getMapping();
+            if (Objects.nonNull(items)){
+                for(int i = 0; i < items.size(); i++){
+                    final int index = i;
+                    ExchangisJobTransformsItem item = items.get(i);
+                    ColumnDefine srcColumn = new ColumnDefine(item.getSourceFieldName(),
+                            item.getSourceFieldType(), item.getSourceFieldIndex());
+                    ColumnDefine sinkColumn = new ColumnDefine(item.getSinkFieldName(),
+                            item.getSinkFieldType(), item.getSinkFieldIndex());
+                    Optional.ofNullable(item.getValidator()).ifPresent(validator ->
+                            convertValidatorFunction(index, validator));
+                    Optional.ofNullable(item.getTransformer()).ifPresent(transformer ->
+                            convertTransformFunction(index, transformer));
+                    getSourceColumns().add(srcColumn);
+                    getSinkColumns().add(sinkColumn);
+                };
+            }
         }
-
         /**
          * Convert to validator function
          * @param index index
@@ -239,6 +248,30 @@ public class TransformExchangisJob extends GenericExchangisJob {
             });
         }
 
+        /**
+         * Transform type
+         * @return type string
+         */
+        public TransformTypes getTransformType() {
+            return transformType;
+        }
+
+        /**
+         * Add code resource
+         * @param bmlResource bml resource
+         */
+        void addCodeResource(BmlResource bmlResource){
+            this.resources.put(CODE_RESOURCE_NAME, bmlResource);
+        }
+
+        /**
+         * Get code resource
+         * @return bml resource
+         */
+        public BmlResource getCodeResource(){
+            return this.resources.get(CODE_RESOURCE_NAME);
+        }
     }
+
 
 }
