@@ -30,6 +30,7 @@ import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricConv
 import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricsConverter;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
+import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.modelmapper.ModelMapper;
@@ -228,7 +229,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         List<ExchangisLaunchedJobListVo> jobList = new ArrayList<>();
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
-        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, start, size, SecurityFilter.getLoginUsername(request));
+        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, start, size, UserUtils.getLoginUser(request));
         //LOG.info("ExecutedJobList information: " + jobExecutionId + jobName + status + launchStartTime + launchEndTime + current + size);
         if(jobEntitylist != null) {
             try {
@@ -278,7 +279,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
 
-        return launchedJobDao.count(jobExecutionId, jobName, status, startTime, endTime, SecurityFilter.getLoginUsername(request));
+        return launchedJobDao.count(jobExecutionId, jobName, status, startTime, endTime, UserUtils.getLoginUser(request));
     }
 
     @Override
