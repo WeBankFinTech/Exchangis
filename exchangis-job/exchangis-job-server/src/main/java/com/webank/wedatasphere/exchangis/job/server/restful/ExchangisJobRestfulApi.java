@@ -277,7 +277,7 @@ public class ExchangisJobRestfulApi {
         }
         String loginUser = SecurityFilter.getLoginUsername(request);
         Message response = Message.ok("job deleted");
-        ExchangisJobVo jobVo = null;
+        ExchangisJobVo jobVo = jobInfoService.getJob(id, true);
         try {
             if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to delete (没有删除任务权限)");
