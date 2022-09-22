@@ -35,7 +35,7 @@ public interface ProjectService {
       * @param projectVo project vo
       * @param userName userName
       */
-     void   updateProject(ExchangisProjectInfo projectVo, String userName);
+     void updateProject(ExchangisProjectInfo projectVo, String userName);
 
      /**
       * Query the page result
