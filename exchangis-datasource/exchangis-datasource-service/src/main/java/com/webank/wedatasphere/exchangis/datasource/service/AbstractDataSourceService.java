@@ -19,6 +19,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsCo
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
 import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
+import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import org.apache.linkis.datasource.client.request.GetInfoByDataSourceIdAction;
@@ -64,7 +65,7 @@ public class AbstractDataSourceService {
     }
 
     private ExchangisDataSourceIdsUI buildDataSourceIdsUI(HttpServletRequest request, ExchangisJobInfoContent content) {
-        String loginUser = Optional.ofNullable(request).isPresent() ? SecurityFilter.getLoginUsername(request) : null;
+        String loginUser = Optional.ofNullable(request).isPresent() ? UserUtils.getLoginUser(request) : null;
         ExchangisJobDataSourcesContent dataSources = content.getDataSources();
         if (Objects.isNull(dataSources)) {
             return null;
