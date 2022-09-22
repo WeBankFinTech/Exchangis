@@ -14,6 +14,7 @@ import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecu
 import com.webank.wedatasphere.exchangis.job.server.service.impl.ProjectImportServerImpl;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
+import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectMapper;
@@ -82,7 +83,8 @@ public class ExchangisJobDssAppConnRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String loginUser = SecurityFilter.getLoginUsername(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String loginUser = UserUtils.getLoginUser(request);
         exchangisJobVo.setCreateUser(loginUser);
         Message response = Message.ok();
 
@@ -100,7 +102,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             response = Message.error(message);
         }
         assert id != null;
-        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB, id.toString(), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.CREATE, request);
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, id.toString(), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.CREATE, request);
         return response;
     }
 
@@ -115,7 +117,8 @@ public class ExchangisJobDssAppConnRestfulApi {
         if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
             return Message.error("You have no permission to update (没有删除任务权限)");
         }
-        String loginUser = SecurityFilter.getLoginUsername(request);
+        String loginUser = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
         Message response = Message.ok("dss job deleted");
         try {
             ExchangisJobVo exchangisJob = jobInfoService.getJob(id, true);
@@ -131,7 +134,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB, id.toString(), "Job", OperateTypeEnum.DELETE, request);
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, id.toString(), "Job", OperateTypeEnum.DELETE, request);
         return response;
     }
 
@@ -151,7 +154,8 @@ public class ExchangisJobDssAppConnRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String loginUser = SecurityFilter.getLoginUsername(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String loginUser = UserUtils.getLoginUser(request);
         exchangisJobVo.setId(id);
         exchangisJobVo.setModifyUser(loginUser);
         Message response = Message.ok();
@@ -170,7 +174,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB, id.toString(), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.UPDATE, request);
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, id.toString(), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.UPDATE, request);
         return response;
     }
 
@@ -189,7 +193,8 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error("parse execute content error: {}", e.getMessage());
         }
         String submitUser = params.get("submitUser").toString();
-        String loginUser = SecurityFilter.getLoginUsername(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String loginUser = UserUtils.getLoginUser(request);
         Message result = Message.ok();
         ExchangisJobInfo jobInfo = null;
         LOG.info("wds execute user: {}", loginUser);
@@ -246,7 +251,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
         }
         assert jobInfo != null;
-        AuditLogUtils.printLog(loginUser, TargetTypeEnum.JOB, id.toString(), "Execute task is: " + jobInfo.getName(), OperateTypeEnum.EXECUTE, request);
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, id.toString(), "Execute task is: " + jobInfo.getName(), OperateTypeEnum.EXECUTE, request);
         return result;
     }
 
@@ -254,7 +259,8 @@ public class ExchangisJobDssAppConnRestfulApi {
     public Message importJob(@Context HttpServletRequest request, @RequestBody Map<String, Object> params) throws ServerException, ExchangisJobServerException{
 
         Message response = null;
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
         try {
             LOG.info("param: {}", params);
             /*if (!hasAuthority(userName, jobInfoService.getJob(((Integer) params.get("sqoopIds")).longValue(), true))) {
@@ -267,16 +273,17 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(userName, TargetTypeEnum.JOB, "", "Export parameter is: " + params.toString(), OperateTypeEnum.IMPORT, request);
+        AuditLogUtils.printLog(oringinUser, userName, TargetTypeEnum.JOB, "", "Export parameter is: " + params.toString(), OperateTypeEnum.IMPORT, request);
         return response;
 
     }
 
     @RequestMapping( value = "/export", method = RequestMethod.POST)
     public Message exportJob(@Context HttpServletRequest request, @RequestBody Map<String, Object> params) throws ServerException, ExchangisJobServerException {
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
 
         LOG.info("export function params: {}", params);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
         Message response = null;
         try {
             /*if (!hasAuthority(userName, jobInfoService.getJob(((Integer) params.get("sqoopIds")).longValue(), true))) {
@@ -289,13 +296,14 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(userName, TargetTypeEnum.JOB, "", "Export parameter is: " + params.toString(), OperateTypeEnum.EXPORT, request);
+        AuditLogUtils.printLog(oringinUser, userName, TargetTypeEnum.JOB, "", "Export parameter is: " + params.toString(), OperateTypeEnum.EXPORT, request);
         return response;
     }
 
     @RequestMapping( value = "/copy", method = RequestMethod.POST)
     public Message copy(@Context HttpServletRequest request, @RequestBody Map<String, Object> params) throws ServerException {
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
 
         LOG.info("copy function params: {}", params);
         Message response = null;
@@ -307,7 +315,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             LOG.error(message, e);
             response = Message.error(message);
         }
-        AuditLogUtils.printLog(userName, TargetTypeEnum.JOB, "", "Copy parameter is: " + params.toString(), OperateTypeEnum.COPY, request);
+        AuditLogUtils.printLog(oringinUser, userName, TargetTypeEnum.JOB, "", "Copy parameter is: " + params.toString(), OperateTypeEnum.COPY, request);
         return response;
 
         //return jobInfoService.exportProject(params, userName, request);
