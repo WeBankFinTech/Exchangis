@@ -100,8 +100,9 @@ public class ProjectServiceImpl implements ProjectService {
                 }
             }
         }
+
         if(projectUserMap.size() > 0) {
-            this.projectUserMapper.addProjectUser(projectUserMap.values().stream().collect(Collectors.toList()));
+            this.projectUserMapper.addProjectUser(new ArrayList<>(projectUserMap.values()));
         }
         return project.getId();
     }
@@ -171,7 +172,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         this.projectUserMapper.deleteProjectUser(Long.valueOf(projectVo.getId()));
         if(projectUserMap.size() > 0) {
-            this.projectUserMapper.addProjectUser(projectUserMap.values().stream().collect(Collectors.toList()));
+            this.projectUserMapper.addProjectUser(new ArrayList<>(projectUserMap.values()));
         }
     }
 
