@@ -28,4 +28,10 @@ public interface ProjectUserMapper {
      * @param projectUsers
      */
     void updateProjectUser(@Param("projectUsers") List<ExchangisProjectUser> projectUsers);
+
+    /**
+     * delete projectUsers
+     * @param projectId
+     */
+    void deleteProjectUser(Long projectId);
 }
