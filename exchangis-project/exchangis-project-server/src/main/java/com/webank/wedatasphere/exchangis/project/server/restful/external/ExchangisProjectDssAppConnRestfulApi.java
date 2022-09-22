@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
+import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
@@ -48,7 +49,8 @@ public class ExchangisProjectDssAppConnRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String username = SecurityFilter.getLoginUsername(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
         if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
             projectVo.setViewUsers(username + projectVo.getViewUsers());
         }
@@ -66,7 +68,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
             }
             long projectIdd = projectService.createProject(projectVo, username);
             String projectId = String.valueOf(projectIdd);
-            AuditLogUtils.printLog(username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectVo.getName(), OperateTypeEnum.CREATE, request);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectVo.getName(), OperateTypeEnum.CREATE, request);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectId));
@@ -89,7 +91,8 @@ public class ExchangisProjectDssAppConnRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String username = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
@@ -98,7 +101,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
 
             LOG.info("UpdateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             projectService.updateProject(projectVo, username);
-            AuditLogUtils.printLog(username, TargetTypeEnum.PROJECT, id.toString(), "Project name is: " + projectVo.getName(), OperateTypeEnum.UPDATE, request);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, id.toString(), "Project name is: " + projectVo.getName(), OperateTypeEnum.UPDATE, request);
             return ExchangisProjectRestfulUtils.dealOk("更新工程成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectVo.getId()));
@@ -116,7 +119,8 @@ public class ExchangisProjectDssAppConnRestfulApi {
      */
     @RequestMapping( value = "/{name}", method = RequestMethod.POST)
     public Message deleteProject(HttpServletRequest request, @PathVariable("name") String name) {
-        String username = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.selectByName(name);
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_ALTER)) {
@@ -124,7 +128,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
             }
 
             projectService.deleteProjectByName(name);
-            AuditLogUtils.printLog(username, TargetTypeEnum.PROJECT, "", "Project name is: " + name, OperateTypeEnum.DELETE, request);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, "", "Project name is: " + name, OperateTypeEnum.DELETE, request);
             return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
@@ -142,7 +146,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
      */
     @RequestMapping( value = "/check/{name}", method = RequestMethod.POST)
     public Message getProjectByName(HttpServletRequest request, @PathVariable("name") String name) {
-        String username = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.selectByName(name);
             return ExchangisProjectRestfulUtils.dealOk("根据名字获取工程成功",
