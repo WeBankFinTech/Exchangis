@@ -8,11 +8,13 @@ import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
+import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProjectUser;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ProjectAuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectConfiguration;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectUserVo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
@@ -142,6 +144,7 @@ public class ExchangisProjectRestfulApi {
             return Message.error("Fail to create project (创建项目失败)");
         }
     }
+
     /**
      * check project name
      * @param request http request
@@ -160,7 +163,6 @@ public class ExchangisProjectRestfulApi {
             return Message.error("Failed to get project (根据名字获取项目失败)");
         }
     }
-
 
     /**
      * Update project
@@ -240,6 +242,26 @@ public class ExchangisProjectRestfulApi {
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
             return Message.error("Failed to delete project (删除项目失败)");
+        }
+    }
+
+    /**
+     * get project permission
+     * @param request http request
+     * @param id project id
+     * @return
+     */
+    @RequestMapping( value = "/getProjectPermission/{id:\\d+}", method = RequestMethod.GET)
+    public Message getProjectPermission(HttpServletRequest request, @PathVariable("id") Long id) {
+        String username = SecurityFilter.getLoginUsername(request);
+        try {
+            ExchangisProjectUserVo exchangisProjectUserVo = new ExchangisProjectUserVo(id, username);
+            ExchangisProjectUser exchangisProjectUser = projectService.queryProjectUser(exchangisProjectUserVo);
+            return ExchangisProjectRestfulUtils.dealOk("根据项目ID和用户获取项目权限信息成功",
+                    new Pair<>("exchangisProjectUser",exchangisProjectUser));
+        } catch (Exception t) {
+            LOG.error("Failed to get exchangisProjectUser for project {} and privUser {}", id, username);
+            return Message.error("Failed to get project (根据项目ID和用户获取项目权限信息失败)");
         }
     }
 
