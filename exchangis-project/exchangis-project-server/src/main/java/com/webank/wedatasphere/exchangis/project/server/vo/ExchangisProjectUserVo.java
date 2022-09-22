@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.project.server.vo;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -17,7 +16,7 @@ public class ExchangisProjectUserVo {
     /**
      * Project name
      */
-    @NotBlank(message = "PrivUser cannot be null (用户名不能为空)")
+    @NotNull(message = "PrivUser cannot be null (用户名不能为空)")
     private String privUser;
 
     public ExchangisProjectUserVo() {
