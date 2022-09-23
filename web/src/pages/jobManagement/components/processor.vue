@@ -9,7 +9,8 @@
         <span style="display: inline-block;width: 140px;"></span>
       </div>
       <div class="main-content" v-show="isFold">
-        <monaco ref="monaco" :opts="opts" @change="changeValue"></monaco>
+        <monaco ref="monaco" :opts="opts" :jobId="jobId" :monacoVal="originVal"
+          @change="changeValue"></monaco>
       </div>
     </div>
   </div>
@@ -17,15 +18,29 @@
 <script>
 import monaco from './monacoEditor.vue';
 import { message } from 'ant-design-vue';
+import { RightOutlined, DownOutlined } from '@ant-design/icons-vue';
 import {
-  RightOutlined,
-  DownOutlined,
-} from '@ant-design/icons-vue';
+  getProcessor,
+  getTemplate,
+  saveProcessor,
+  updateProcessor,
+} from '@/common/service';
+
 export default {
   components: {
     monaco,
     RightOutlined,
     DownOutlined,
+  },
+  props: {
+    procCodeId: {
+      type: String,
+      default: '',
+    },
+    jobId: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -73,70 +88,169 @@ export default {
         renderLineHighlight: 'gutter', // 当前行突出显示方式
         roundedSelection: false, // 选区是否有圆角
         scrollBeyondLastLine: false, // 设置编辑器是否可以滚动到最后一行之后
+        fontSize: 14,
       },
+      monacoVal: '',
+      originVal: '', // 原始值
+      timeOut: '',
+      isSaving: false,
     };
   },
+  mounted() {
+    this.isFold = true;
+    if (this.procCodeId) {
+      this.getProcessor(this.procCodeId); // 有则获取内容
+    } else {
+      this.getTemplate(); // 否则获取模板
+    }
+    this.intervalSave();
+  },
   methods: {
-    // 手动获取值
-    getValue() {
-      message.success(this.$refs.monaco.getVal());
-    },
     // 内容改变自动获取值
     changeValue(val) {
-      // console.log(val)
+      this.monacoVal = val;
     },
 
-    handleOk() {
-
-    },
+    // 折叠内容
     showInfo() {
       this.isFold = !this.isFold;
-    }
+    },
+
+    // 获取模板
+    async getTemplate() {
+      const res = await getTemplate();
+      this.originVal = res.code;
+      this.monacoVal = res.code;
+    },
+
+    // 获取processor内容
+    async getProcessor(procCodeId) {
+      const res = await getProcessor(procCodeId);
+      this.originVal = res.code;
+      this.monacoVal = res.code;
+    },
+
+    // 任务保存前执行
+    beforeSave() {
+      return new Promise(async (resolve, reject) => {
+        try {
+          this.isSaving = true;
+          // 更新前先保存
+          const res = await this.saveProcessor();
+          this.originVal = this.monacoVal;
+          const param1 = {
+            type: 'PROCESSOR',
+            code_id: res.proc_code_id,
+          };
+          const updateParam = {
+            proc_code_id: res.proc_code_id,
+            code: this.monacoVal,
+          };
+          this.$emit('updateProMap', param1);
+          // 然后调用更新接口
+          const ret = await updateProcessor(updateParam);
+          const param2 = {
+            type: 'PROCESSOR',
+            code_id: ret.proc_code_id || res.proc_code_id,
+          };
+          this.$emit('updateProMap', param2);
+          this.isSaving = false;
+          resolve(true)
+        } catch (err) {
+          this.isSaving = false;
+          console.log(err);
+          reject(false)
+        }
+      });
+    },
+
+    // 保存
+    saveProcessor() {
+      const param = {
+        code: this.monacoVal,
+        jobId: this.jobId,
+      };
+      return saveProcessor(param);
+    },
+
+    // 定时更新processor
+    intervalSave() {
+      console.log('定时任务', this.timeOut);
+      clearTimeout(this.timeOut);
+      if (
+        this.monacoVal &&
+        !this.isSaving &&
+        this.originVal !== this.monacoVal
+      ) {
+        this.isSaving = true;
+        this.saveProcessor()
+          .then((res) => {
+            this.originVal = this.monacoVal;
+            const param = {
+              type: 'PROCESSOR',
+              code_id: res.proc_code_id,
+            };
+            this.$emit('updateProMap', param);
+          })
+          .finally(() => {
+            this.isSaving = false;
+            this.timeOut = setTimeout(() => {
+              this.intervalSave();
+            }, 10000);
+          });
+      } else {
+        this.timeOut = setTimeout(() => {
+          this.intervalSave();
+        }, 10000);
+      }
+    },
+  },
+  beforeUnmount() {
+    clearTimeout(this.timeOut);
   },
 };
 </script>
 <style lang="less" scoped>
-  @import '../../../common/content.less';
-  .field-map-wrap {
-    display: flex;
-    border-bottom: 1px solid #dee4ec;
-    border-top: 1px solid #dee4ec;
-    min-height: 68px;
+@import '../../../common/content.less';
+.field-map-wrap {
+  display: flex;
+  border-bottom: 1px solid #dee4ec;
+  border-top: 1px solid #dee4ec;
+  min-height: 68px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+.fm-l {
+  width: 122px;
+  .main-header {
+    height: 20px;
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
+  }
+}
+.fm-r {
+  flex: 1;
+  display: flex;
+  background: inherit;
+  background-color: rgba(255, 255, 255, 1);
+  box-sizing: border-box;
+  border-top: none;
+  flex-direction: column;
+  .main-header {
+    height: 20px;
+    font-family: PingFangSC-Medium;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 500;
+  }
+  .main-content {
     padding: 24px;
-    box-sizing: border-box;
-  }
-  .fm-l {
-    width: 122px;
-    .main-header {
-      height: 20px;
-      font-family: PingFangSC-Medium;
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.85);
-      font-weight: 500;
-    }
-  }
-  .fm-r {
-    flex: 1;
+    min-width: 950px;
+    max-width: 950px;
     display: flex;
-    background: inherit;
-    background-color: rgba(255, 255, 255, 1);
-    box-sizing: border-box;
-    border-top: none;
     flex-direction: column;
-    .main-header {
-      height: 20px;
-      font-family: PingFangSC-Medium;
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.85);
-      font-weight: 500;
-    }
-    .main-content {
-      padding: 24px;
-      min-width: 950px;
-      max-width: 950px;
-      display: flex;
-      flex-direction: column;
-    }
   }
-
+}
 </style>

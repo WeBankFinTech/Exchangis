@@ -30,6 +30,7 @@
             line-height: 22px;
             font-weight: 400;
           "
+          :disabled="hasPermission"
           @click="addJob"
         >
           <template #icon> <PlusOutlined /></template
@@ -247,7 +248,7 @@ import {
 import { defineAsyncComponent } from "vue";
 import { message } from "ant-design-vue";
 import { useI18n } from "@fesjs/fes";
-import { getJobs } from "@/common/service";
+import { getJobs, getProjectPermission } from "@/common/service";
 
 export default {
   components: {
@@ -286,12 +287,14 @@ export default {
         size: 10,
       },
       total: 0,
-      total2: 0
+      total2: 0,
+      hasPermission: true, // 是否有添加
     };
   },
   mounted() {
     this.getJobs("OFFLINE");
     this.getJobs("STREAM");
+    this.getPermission(this.projectId);
   },
   methods: {
     async getJobs(type, current=1, size=10) {
@@ -377,6 +380,13 @@ export default {
       } else {
         this.pageCfg2.current = current
         this.getJobs('STREAM', current, this.pageCfg2.size)
+      }
+    },
+    // 获取用户权限
+    async getPermission(projectId) {
+      const { exchangisProjectUser } = await getProjectPermission(projectId) || {};
+      if (exchangisProjectUser?.projectId === this.projectId) {
+        this.hasPermission = false;
       }
     }
   },
