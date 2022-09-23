@@ -110,10 +110,10 @@ export const getTables = (type, id, dbName) => {
     { method: "GET" }
   );
 };*/
-
+// /datasources/fieldsmaping
 export const getFields = (params) => {
   return request(
-    `/datasources/fieldsmapping`,
+    `/job/transform/settings`,
     {
       ...params,
       labels: {
@@ -586,4 +586,60 @@ export const getAllUsers = () => {
       method: "GET",
     }
   )
+}
+
+
+// processor的内容保存
+export const saveProcessor = (param) => {
+  return request(
+    `/job/transform/processor/code_content?labels=${getEnvironment()}`,
+    param,
+    {
+      method: "POST",
+    }
+  );
+}
+
+// processor的内容更新
+export const updateProcessor = ({ proc_code_id, ...param }) => {
+  return request(
+    `/job/transform/processor/code_content/${proc_code_id}?labels=${getEnvironment()}`,
+    param,
+    {
+      method: "PUT",
+    }
+  );
+}
+
+// processor的内容更新
+export const getTemplate = () => {
+  return request(
+    `/job/transform/processor/code_template?labels=${getEnvironment()}`,
+    {},
+    {
+      method: "GET",
+    }
+  );
+}
+
+// processor的内容更新
+export const getProcessor = (proc_code_id) => {
+  return request(
+    `/job/transform/processor/code_content/${proc_code_id}?labels=${getEnvironment()}`,
+    {},
+    {
+      method: "GET",
+    }
+  );
+}
+
+// 获取项目权限
+export const getProjectPermission = (projectId) => {
+  return request(
+    `/getProjectPermission/${projectId}?labels=${getEnvironment()}`,
+    {},
+    {
+      method: "GET",
+    }
+  );
 }

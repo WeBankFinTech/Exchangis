@@ -24,42 +24,30 @@
 
         <a-form-item :label="$t(`projectManage.editModal.form.fields.editUsers.label`)"
           name="editUsers">
-          <a-select 
-            mode="multiple" 
-            v-model:value="formState.editUsers"
-            :placeholder="$t(`projectManage.editModal.form.fields.editUsers.placeholder`)" :disabled="isDss">
-            <a-select-option 
-              v-for="item of allUsers" 
-              :value="item.username" 
-              :key="item.id">{{ item.username}}
+          <a-select mode="multiple" v-model:value="formState.editUsers"
+            :placeholder="$t(`projectManage.editModal.form.fields.editUsers.placeholder`)" disabled>
+            <a-select-option v-for="item of allUsers" :value="item.username" :key="item.id">
+              {{ item.username}}
             </a-select-option>
           </a-select>
         </a-form-item>
 
         <a-form-item :label="$t(`projectManage.editModal.form.fields.viewUsers.label`)"
           name="viewUsers">
-          <a-select 
-            mode="multiple" 
-            v-model:value="formState.viewUsers"
-            :placeholder="$t(`projectManage.editModal.form.fields.viewUsers.placeholder`)" :disabled="isDss">
-            <a-select-option 
-              v-for="item of allUsers" 
-              :value="item.username" 
-              :key="item.id">{{ item.username}}
+          <a-select mode="multiple" v-model:value="formState.viewUsers"
+            :placeholder="$t(`projectManage.editModal.form.fields.viewUsers.placeholder`)" disabled>
+            <a-select-option v-for="item of allUsers" :value="item.username" :key="item.id">
+              {{ item.username}}
             </a-select-option>
           </a-select>
         </a-form-item>
 
         <a-form-item :label="$t(`projectManage.editModal.form.fields.execUsers.label`)"
           name="execUsers">
-          <a-select 
-            mode="multiple" 
-            v-model:value="formState.execUsers"
-            :placeholder="$t(`projectManage.editModal.form.fields.execUsers.placeholder`)" :disabled="isDss">
-            <a-select-option 
-              v-for="item of allUsers" 
-              :value="item.username" 
-              :key="item.id">{{ item.username}}
+          <a-select mode="multiple" v-model:value="formState.execUsers"
+            :placeholder="$t(`projectManage.editModal.form.fields.execUsers.placeholder`)" disabled>
+            <a-select-option v-for="item of allUsers" :value="item.username" :key="item.id">
+              {{ item.username}}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -94,10 +82,6 @@ export default {
       type: String,
       default: '',
     },
-    isDss: {
-      type: Boolean,
-      default: false
-    }
   },
   emits: ['finish', 'cancel', 'update:visible'],
   data() {
@@ -141,6 +125,15 @@ export default {
       } else {
         this.helpMsg = '';
         this.helpStatus = 'success';
+      }
+    },
+    visible(cur, pre) {
+      if (!cur) { // 弹窗关闭时
+        Object.assign(this.formState, {
+          viewUsers: [],
+          execUsers: [],
+          editUsers: [],
+        })
       }
     },
   },

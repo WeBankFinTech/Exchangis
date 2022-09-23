@@ -57,7 +57,7 @@
                 :pagination="pagination" v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
                 bordered>
                 <template #fieldName="{ record }">
-                  <a-select ref="select" :value="record.fieldName" style="width: 150px"
+                  <a-select ref="select" :disabled="!record.fieldEditable" :value="record.fieldName" style="width: 150px"
                     :options="record.fieldOptions" @change="updateSourceFieldName(record, $event)">
                   </a-select>
                 </template>
@@ -468,6 +468,7 @@ export default defineComponent({
     const transformFuncOptions = ref([]);
 
     onMounted(() => {
+      isFold.value = !!(toRaw(props.fmData.mapping) || []).length;
       // 获取检验列表
       getFieldFunc('verify').then((res) => {
         checkOptions.value = (res?.data || []).map((v) => ({
