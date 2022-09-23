@@ -9,11 +9,13 @@ import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
+import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProjectUser;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ProjectAuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectConfiguration;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectUserVo;
 import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
@@ -85,7 +87,7 @@ public class ExchangisProjectRestfulApi {
     @RequestMapping( value = "projects/{projectId:\\d+}", method = RequestMethod.GET)
     public Message queryProjectDetail(HttpServletRequest request,
                                  @PathVariable("projectId") Long projectId) {
-        String username = UserUtils.getLoginUser(request);
+        String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo project = projectService.getProjectDetailById(projectId);
             if (Objects.isNull(project)){
@@ -120,13 +122,13 @@ public class ExchangisProjectRestfulApi {
         String username = UserUtils.getLoginUser(request);
         String oringinUser = SecurityFilter.getLoginUsername(request);
         if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
-            projectVo.setViewUsers(username + projectVo.getViewUsers());
+            projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
         }
         if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
-            projectVo.setEditUsers(username + projectVo.getEditUsers());
+            projectVo.setEditUsers(username + "," + projectVo.getEditUsers());
         }
         if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
-            projectVo.setExecUsers(username + projectVo.getExecUsers());
+            projectVo.setExecUsers(username + "," + projectVo.getExecUsers());
         }
 
         try {
@@ -181,6 +183,17 @@ public class ExchangisProjectRestfulApi {
         }
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String username = UserUtils.getLoginUser(request);
+        //String username = SecurityFilter.getLoginUsername(request);
+        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
+            projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
+        }
+        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
+            projectVo.setEditUsers(username + "," + projectVo.getEditUsers());
+        }
+        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
+            projectVo.setExecUsers(username + "," + projectVo.getExecUsers());
+        }
+
         try {
             ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
@@ -234,6 +247,26 @@ public class ExchangisProjectRestfulApi {
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
             return Message.error("Failed to delete project (删除项目失败)");
+        }
+    }
+
+    /**
+     * get project permission
+     * @param request http request
+     * @param id project id
+     * @return
+     */
+    @RequestMapping( value = "/getProjectPermission/{id:\\d+}", method = RequestMethod.GET)
+    public Message getProjectPermission(HttpServletRequest request, @PathVariable("id") Long id) {
+        String username = SecurityFilter.getLoginUsername(request);
+        try {
+            ExchangisProjectUserVo exchangisProjectUserVo = new ExchangisProjectUserVo(id, username);
+            ExchangisProjectUser exchangisProjectUser = projectService.queryProjectUser(exchangisProjectUserVo);
+            return ExchangisProjectRestfulUtils.dealOk("根据项目ID和用户获取项目权限信息成功",
+                    new Pair<>("exchangisProjectUser",exchangisProjectUser));
+        } catch (Exception t) {
+            LOG.error("Failed to get exchangisProjectUser for project {} and privUser {}", id, username);
+            return Message.error("Failed to get project (根据项目ID和用户获取项目权限信息失败)");
         }
     }
 
