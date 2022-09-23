@@ -6,6 +6,7 @@ import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
+import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProjectUser;
@@ -63,7 +64,7 @@ public class ExchangisProjectRestfulApi {
                                  @RequestParam(value = "current", required = false) Integer current,
                                  @RequestParam(value = "size", required = false) Integer size,
                                  @RequestParam(value = "name", required = false) String name) {
-        String username = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
         Optional.ofNullable(current).ifPresent(queryVo::setCurrent);
         Optional.ofNullable(size).ifPresent(queryVo::setSize);
         Optional.ofNullable(name).ifPresent(queryVo::setName);
@@ -118,7 +119,8 @@ public class ExchangisProjectRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String username = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
         if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
             projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
         }
@@ -135,7 +137,7 @@ public class ExchangisProjectRestfulApi {
             }
             LOG.info("CreateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             long projectId = projectService.createProject(projectVo, username);
-            AuditLogUtils.printLog(username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectVo.getName(), OperateTypeEnum.CREATE, request);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectVo.getName(), OperateTypeEnum.CREATE, request);
             return ExchangisProjectRestfulUtils.dealOk("创建项目成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectId));
@@ -144,7 +146,6 @@ public class ExchangisProjectRestfulApi {
             return Message.error("Fail to create project (创建项目失败)");
         }
     }
-
     /**
      * check project name
      * @param request http request
@@ -153,7 +154,7 @@ public class ExchangisProjectRestfulApi {
      */
     @RequestMapping( value = "/check/{name}", method = RequestMethod.POST)
     public Message getProjectByName(HttpServletRequest request, @PathVariable("name") String name) {
-        String username = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.selectByName(name);
             return ExchangisProjectRestfulUtils.dealOk("根据名字获取项目成功",
@@ -163,6 +164,7 @@ public class ExchangisProjectRestfulApi {
             return Message.error("Failed to get project (根据名字获取项目失败)");
         }
     }
+
 
     /**
      * Update project
@@ -179,7 +181,9 @@ public class ExchangisProjectRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String username = SecurityFilter.getLoginUsername(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
+        //String username = SecurityFilter.getLoginUsername(request);
         if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
             projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
         }
@@ -203,7 +207,7 @@ public class ExchangisProjectRestfulApi {
             }
             LOG.info("UpdateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             projectService.updateProject(projectVo, username);
-            AuditLogUtils.printLog(username, TargetTypeEnum.PROJECT, projectVo.getId(), "Project name is: " + projectVo.getName(), OperateTypeEnum.UPDATE, request);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, projectVo.getId(), "Project name is: " + projectVo.getName(), OperateTypeEnum.UPDATE, request);
             return ExchangisProjectRestfulUtils.dealOk("更新项目成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectVo.getId()));
@@ -224,7 +228,8 @@ public class ExchangisProjectRestfulApi {
         if (ExchangisProjectConfiguration.LIMIT_INTERFACE.getValue()) {
             return Message.error("You have no permission to update (没有编辑权限，无法删除项目)");
         }
-        String username = SecurityFilter.getLoginUsername(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.getProjectDetailById(id);
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_ALTER)) {
@@ -237,7 +242,7 @@ public class ExchangisProjectRestfulApi {
                 return Message.error("Cannot delete the outer project (无法删除来自 " + domain + " 的外部项目)");
             }
             projectService.deleteProject(id);
-            AuditLogUtils.printLog(username, TargetTypeEnum.PROJECT, id.toString(), "Project", OperateTypeEnum.DELETE, request);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, id.toString(), "Project", OperateTypeEnum.DELETE, request);
             return ExchangisProjectRestfulUtils.dealOk("删除项目成功");
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);

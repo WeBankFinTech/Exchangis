@@ -26,13 +26,13 @@ public class AuditLogUtils {
      * @param operateType 操作类型
      * @param params 操作相关的参数
      */
-    public static void printLog(String user, TargetTypeEnum targetType,
+    public static void printLog(String user, String proxyUser, TargetTypeEnum targetType,
                                 String targetId, String targetName, OperateTypeEnum operateType, Object params) {
         //String detailInfo=new Gson().toJson(params);
         LOGGER.info("AuditLog print test");
         String detailInfo=params.toString();
-        LOGGER.info("[{}],[{}],[{}],[{}],[{}],[{}],[{}],[{}]",
-                new Date(),user, "Exchangis-1.1.1", targetType.getName(),
+        LOGGER.info("[{}],[{}],[{}],[{}],[{}],[{}],[{}],[{}],[{}]",
+                new Date(),user, "proxyUser is: " + proxyUser, "Exchangis-1.1.1", targetType.getName(),
                 targetId,targetName,operateType.getName(), detailInfo);
     }
 
