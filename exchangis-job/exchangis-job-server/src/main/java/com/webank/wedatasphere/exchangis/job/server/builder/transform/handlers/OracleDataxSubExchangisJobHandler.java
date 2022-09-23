@@ -58,17 +58,6 @@ public class OracleDataxSubExchangisJobHandler extends AbstractLoggingSubExchang
     });
 
     /**
-     * Database
-     */
-    private static final JobParamDefine<String> SOURCE_DATABASE = JobParams.define("connection[0].jdbcUrl[0].database", JobParamConstraints.DATABASE);
-    private static final JobParamDefine<String> SINK_DATABASE = JobParams.define("connection[0].jdbcUrl.database", JobParamConstraints.DATABASE);
-
-    /**
-     * Table
-     */
-    private static final JobParamDefine<String> SINK_TABLE = JobParams.define("connection[0].table[0]", JobParamConstraints.TABLE);
-
-    /**
      * Host
      */
     private static final JobParamDefine<String> SOURCE_HOST = JobParams.define("connection[0].jdbcUrl[0].host", JobParamConstraints.HOST);
@@ -81,23 +70,42 @@ public class OracleDataxSubExchangisJobHandler extends AbstractLoggingSubExchang
     private static final JobParamDefine<String> SINK_PORT = JobParams.define("connection[0].jdbcUrl.port", JobParamConstraints.PORT);
 
     /**
+     * ServiceName
+     */
+    private static final JobParamDefine<String> SOURCE_SERVICE_NAME = JobParams.define("connection[0].jdbcUrl[0].serviceName", JobParamConstraints.SERVICE_NAME);
+    private static final JobParamDefine<String> SINK_SERVICE_NAME = JobParams.define("connection[0].jdbcUrl.serviceName", JobParamConstraints.SERVICE_NAME);
+
+    /**
+     * Database
+     */
+    private static final JobParamDefine<String> SOURCE_DATABASE = JobParams.define("connection[0].jdbcUrl[0].database", JobParamConstraints.DATABASE);
+    private static final JobParamDefine<String> SINK_DATABASE = JobParams.define("connection[0].jdbcUrl.database", JobParamConstraints.DATABASE);
+
+    /**
+     * Table
+     */
+    private static final JobParamDefine<String> SOURCE_TABLE = JobParams.define("table", JobParamConstraints.TABLE);
+    private static final JobParamDefine<String> SINK_TABLE = JobParams.define("connection[0].table[0]", JobParamConstraints.TABLE);
+
+    /**
      * Connect params
      */
     private static final JobParamDefine<Map<String, String>> SOURCE_PARAMS_MAP = JobParams.define("connection[0].jdbcUrl[0].connParams", JobParamConstraints.CONNECT_PARAMS,
             connectParams -> Json.fromJson(connectParams, Map.class), String.class);
     private static final JobParamDefine<Map<String, String>> SINK_PARAMS_MAP = JobParams.define("connection[0].jdbcUrl.connParams", JobParamConstraints.CONNECT_PARAMS,
             connectParams -> Json.fromJson(connectParams, Map.class), String.class);
+
     /**
      * Where condition
      */
-    private static final JobParamDefine<String> WHERE_CONDITION = JobParams.define(JobParamConstraints.WHERE);
+    private static final JobParamDefine<String> SOURCE_WHERE_CONDITION = JobParams.define(JobParamConstraints.WHERE);
 
     /**
      * Query sql
      */
     private static final JobParamDefine<String> QUERY_SQL = JobParams.define("connection[0].querySql[0]", job -> {
         JobParamSet sourceParams = job.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
-        String where = WHERE_CONDITION.getValue(sourceParams);
+        String where = SOURCE_WHERE_CONDITION.getValue(sourceParams);
         List<String> columns = job.getSourceColumns().stream().map(SubExchangisJob.ColumnDefine::getName).collect(Collectors.toList());
         if (columns.isEmpty()) {
             columns.add("*");
@@ -145,13 +153,13 @@ public class OracleDataxSubExchangisJobHandler extends AbstractLoggingSubExchang
         return "datax".equalsIgnoreCase(engineType);
     }
 
-    private JobParamDefine<?>[] sourceMappings() {//todo
-        return new JobParamDefine[]{USERNAME, PASSWORD, SOURCE_DATABASE,
-                SOURCE_HOST, SOURCE_PORT, SOURCE_PARAMS_MAP};
+    private JobParamDefine<?>[] sourceMappings() {
+        return new JobParamDefine[]{USERNAME, PASSWORD, SOURCE_TABLE, SOURCE_WHERE_CONDITION,
+                SOURCE_HOST, SOURCE_PORT, SOURCE_SERVICE_NAME, SOURCE_DATABASE, SOURCE_PARAMS_MAP};
     }
 
-    public JobParamDefine<?>[] sinkMappings() {//todo
-        return new JobParamDefine[]{USERNAME, PASSWORD, SINK_DATABASE, SINK_TABLE,
-                SINK_HOST, SINK_PORT, SINK_PARAMS_MAP};
+    public JobParamDefine<?>[] sinkMappings() {
+        return new JobParamDefine[]{USERNAME, PASSWORD, SINK_TABLE,
+                SINK_HOST, SINK_PORT, SINK_SERVICE_NAME, SINK_DATABASE, SINK_PARAMS_MAP};
     }
 }
