@@ -257,7 +257,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ExchangisProjectUser queryProjectUser(ExchangisProjectUserVo exchangisProjectUserVo) {
-        ExchangisProjectUser projectUser = new ExchangisProjectUser(exchangisProjectUserVo.getProjectId(), exchangisProjectUserVo.getPrivUser());
+        ExchangisProjectUser projectUser = new ExchangisProjectUser(Long.valueOf(exchangisProjectUserVo.getProjectId()), exchangisProjectUserVo.getPrivUser());
         return this.projectUserMapper.queryProjectUser(projectUser);
     }
 }
