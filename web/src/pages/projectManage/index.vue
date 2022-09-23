@@ -114,7 +114,6 @@
       v-model:visible="modalCfg.visible"
       :mode="modalCfg.mode"
       :id="modalCfg.id"
-      :isDss="isDss"
       @finish="handleModalFinish"
     />
   </div>
@@ -150,7 +149,6 @@ export default {
         mode: "",
         id: "",
         visible: false,
-        isDss: false
       },
       // 项目列表
       projectList: [],
@@ -193,7 +191,6 @@ export default {
       this.modalCfg = {
         visible: true,
         mode: "create",
-        isDss: false
       };
     },
     // 处理搜索
@@ -212,13 +209,11 @@ export default {
       this.getDataList(this.projectName);
     },
     // 编辑项目
-    handleOnEditProject({ id, domain }) {
-      console.log(domain, domain === 'DSS')
+    handleOnEditProject(id) {
       this.modalCfg = {
         visible: true,
         mode: "edit",
         id: id,
-        isDss: domain === 'DSS'
       };
     },
     handleChangePage(current) {
