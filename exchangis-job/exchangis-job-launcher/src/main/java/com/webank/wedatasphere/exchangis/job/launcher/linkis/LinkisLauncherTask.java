@@ -157,6 +157,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                     Map<String, Object> metrics = (Map<String, Object>)this.metricsOperator.apply();
                     // Init the error count
                     this.reqError.set(0);
+                    return metrics;
                 }
             }catch(Exception e){
                 dealException(e);
