@@ -8,10 +8,13 @@
 </template>
 
 <script>
-import * as monaco from 'monaco-editor';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import 'monaco-editor/esm/vs/basic-languages/java/java.contribution';
 import { language } from 'monaco-editor/esm/vs/basic-languages/java/java';
+// import 'monaco-editor/esm/vs/editor/contrib/suggest/suggestController.js'; // 引入建议控件
 
 const { keywords } = language;
+
 export default {
   name: 'Monaco',
   props: {
@@ -25,11 +28,15 @@ export default {
       type: Number,
       default: 400,
     },
+    monacoVal: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
-      monacoObj: monaco,
-      // 主要配置 这里的配置只是 默认基础配置 , 一般在父组件的 data 里配置就可以了  ,子组件这里不配置都可以
+      monacoInstance: monaco,
+      // 主要配置 这里的配置只是 默认基础配置
       defaultOpts: {
         folding: true, // 是否启用代码折叠
         links: true, // 是否点击链接
@@ -49,19 +56,25 @@ export default {
       },
       deep: true,
     },
+    monacoVal: {
+      handler(cur) {
+        if (this.monacoEditor) {
+         this.monacoEditor.setValue(cur)
+        }
+      },
+    },
   },
   mounted() {
     this.init();
   },
   methods: {
     // 编辑器初始化
-    init() {
-      this.setSuggestions();
+    async init() {
       // 初始化container的内容，销毁之前生成的编辑器
       this.$refs.container.innerHTML = '';
       this.editorOptions = Object.assign(this.defaultOpts, this.opts);
       // 生成编辑器对象 this.$refs.container
-      this.monacoEditor = this.monacoObj.editor.create(
+      this.monacoEditor = this.monacoInstance.editor.create(
         this.$refs.container,
         this.editorOptions
       );
@@ -69,15 +82,16 @@ export default {
       this.monacoEditor.onDidChangeModelContent(() => {
         this.$emit('change', this.monacoEditor.getValue());
       });
+      // 建议方法
+      this.setSuggestions();
     },
 
     // 设置自定义提示
     setSuggestions() {
       const _that = this;
-      _that.monacoObj.languages.registerCompletionItemProvider('java', {
+      _that.monacoInstance.languages.registerCompletionItemProvider('java', {
         provideCompletionItems: (model, position) => {
           let suggestions = [..._that.getJavaSuggest()];
-          console.log(9999)
           return {
             suggestions,
           };
@@ -93,11 +107,11 @@ export default {
         insertText: key,
       }));
     },
-
-    // 供父组件调用手动获取值
-    getVal() {
-      return this.monacoEditor.getValue();
-    },
+  },
+  beforeDestroy() {
+    if (this.monacoInstance) {
+      this.monacoInstance.dispose();
+    }
   },
 };
 </script>
