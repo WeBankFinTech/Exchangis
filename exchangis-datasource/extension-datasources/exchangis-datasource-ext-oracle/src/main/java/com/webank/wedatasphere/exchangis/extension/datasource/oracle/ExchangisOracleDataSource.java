@@ -45,7 +45,7 @@ public class ExchangisOracleDataSource extends ExchangisBatchDataSource {
 
     @Override
     public List<ExchangisJobParamConfig> getDataSourceParamConfigs() {
-        return null;
+        return super.getDataSourceParamConfigs(DataSourceType.ORACLE.name);
     }
 
 }
