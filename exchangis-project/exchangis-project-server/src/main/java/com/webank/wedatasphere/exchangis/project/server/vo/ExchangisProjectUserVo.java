@@ -1,6 +1,9 @@
 package com.webank.wedatasphere.exchangis.project.server.vo;
 
+import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProjectUser;
+
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * @author tikazhang
@@ -11,7 +14,7 @@ public class ExchangisProjectUserVo {
      * ID
      */
     @NotNull(message = "Project id cannot be null (项目ID不能为空)")
-    private Long projectId;
+    private String projectId;
 
     /**
      * Project name
@@ -19,20 +22,29 @@ public class ExchangisProjectUserVo {
     @NotNull(message = "PrivUser cannot be null (用户名不能为空)")
     private String privUser;
 
+    @NotNull(message = "Priv cannot be null (用户项目权限不能为空)")
+    private int priv;
+
     public ExchangisProjectUserVo() {
     }
 
     public ExchangisProjectUserVo(Long projectId, String privUser) {
-        this.projectId = projectId;
+        this.projectId = String.valueOf(projectId);
         this.privUser = privUser;
     }
 
-    public Long getProjectId() {
+    public ExchangisProjectUserVo(ExchangisProjectUser exchangisProjectUser) {
+        this.projectId = String.valueOf(exchangisProjectUser.getProjectId());
+        this.privUser = exchangisProjectUser.getPrivUser();
+        this.priv = exchangisProjectUser.getPriv();
+    }
+
+    public String getProjectId() {
         return projectId;
     }
 
     public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+        this.projectId = String.valueOf(projectId);
     }
 
     public String getPrivUser() {

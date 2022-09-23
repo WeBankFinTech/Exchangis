@@ -262,8 +262,9 @@ public class ExchangisProjectRestfulApi {
         try {
             ExchangisProjectUserVo exchangisProjectUserVo = new ExchangisProjectUserVo(id, username);
             ExchangisProjectUser exchangisProjectUser = projectService.queryProjectUser(exchangisProjectUserVo);
+
             return ExchangisProjectRestfulUtils.dealOk("根据项目ID和用户获取项目权限信息成功",
-                    new Pair<>("exchangisProjectUser",exchangisProjectUser));
+                    new Pair<>("exchangisProjectUser", new ExchangisProjectUserVo(exchangisProjectUser)));
         } catch (Exception t) {
             LOG.error("Failed to get exchangisProjectUser for project {} and privUser {}", id, username);
             return Message.error("Failed to get project (根据项目ID和用户获取项目权限信息失败)");
