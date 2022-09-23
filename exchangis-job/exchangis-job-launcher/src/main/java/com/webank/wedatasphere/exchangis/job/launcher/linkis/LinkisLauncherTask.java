@@ -129,10 +129,13 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 } else {
                     this.status = TaskStatus.Running;
                 }
+                // Init the error count
+                this.reqError.set(0);
             } catch (Exception e){
                 try {
                     dealException(e);
                 } catch (ExchangisTaskNotExistException ne){
+                    LOG.warn("Not find the launcher task in exchangis", e);
                     this.status = TaskStatus.Failed;
                 }
             }
@@ -151,7 +154,9 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
             try{
                 // Invoke getStatus() to get real time status
                 if(!TaskStatus.isCompleted(getStatus())){
-                    return (Map<String, Object>)this.metricsOperator.apply();
+                    Map<String, Object> metrics = (Map<String, Object>)this.metricsOperator.apply();
+                    // Init the error count
+                    this.reqError.set(0);
                 }
             }catch(Exception e){
                 dealException(e);
@@ -184,6 +189,8 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                     }
                     this.progressInfo.setProgress(1.0f);
                 }
+                // Init the error count
+                this.reqError.set(0);
             } catch(Exception e){
                 dealException(e);
             }
@@ -197,6 +204,8 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
             try{
                 this.onceJob.kill();
                 this.status = TaskStatus.Cancelled;
+                // Init the error count
+                this.reqError.set(0);
             }catch(Exception e){
                 dealException(e);
             }
@@ -223,6 +232,8 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 if (isEnd){
                     isEnd = TaskStatus.isCompleted(getStatus());
                 }
+                // Init the error count
+                this.reqError.set(0);
                 return new LogResult(logs.endLine(), isEnd, logs.logs());
             } catch (Exception e){
                 dealException(e);
