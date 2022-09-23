@@ -25,6 +25,8 @@ public class JobParamConstraints {
 
     public static final String PORT = "port";
 
+    public static final String SERVICE_NAME = "serviceName";
+
     public static final String WHERE = "where";
 
     public static final String WRITE_MODE = "writeMode";
