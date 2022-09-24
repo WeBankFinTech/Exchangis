@@ -45,5 +45,5 @@ object DataxSettingConfiguration {
   /**
    * If use processor
    */
-  val SETTING_USE_PROCESSOR: CommonVars[String] = CommonVars("setting.useProcessor", false)
+  val SETTING_USE_PROCESSOR: CommonVars[Boolean] = CommonVars("setting.useProcessor", false)
 }
