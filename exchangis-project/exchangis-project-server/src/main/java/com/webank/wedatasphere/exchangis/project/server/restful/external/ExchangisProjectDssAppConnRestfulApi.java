@@ -1,10 +1,10 @@
 package com.webank.wedatasphere.exchangis.project.server.restful.external;
 
+import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
+import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
-import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
-import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
-import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
-import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
-import java.util.Objects;
 
 /**
  * Restful class for dss project
