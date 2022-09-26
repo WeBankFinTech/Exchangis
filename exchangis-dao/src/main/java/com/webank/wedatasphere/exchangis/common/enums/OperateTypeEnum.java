@@ -1,10 +1,10 @@
-package com.webank.wedatasphere.exchangis.job.auditlog;
+package com.webank.wedatasphere.exchangis.common.enums;
 
 /**
  * @author tikazhang
  * @Date 2022/9/19 20:16
  */
-public enum  OperateTypeEnum {
+public enum OperateTypeEnum {
     CREATE("create"),
     UPDATE("update"),
     DELETE("delete"),
