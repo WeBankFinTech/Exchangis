@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.utils;
+package com.webank.wedatasphere.exchangis.common;
 
 import org.apache.linkis.server.security.ProxyUserSSOUtils;
 import org.apache.linkis.server.security.SecurityFilter;

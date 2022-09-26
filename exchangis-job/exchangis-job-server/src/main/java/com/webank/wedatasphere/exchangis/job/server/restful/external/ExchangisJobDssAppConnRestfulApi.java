@@ -1,9 +1,11 @@
 package com.webank.wedatasphere.exchangis.job.server.restful.external;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
+import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
-import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
-import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
@@ -13,8 +15,6 @@ import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.ProjectImportServerImpl;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
-import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
-import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectMapper;
