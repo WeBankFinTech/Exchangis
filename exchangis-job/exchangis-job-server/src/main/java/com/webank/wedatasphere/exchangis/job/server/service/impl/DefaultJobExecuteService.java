@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
+import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
@@ -30,9 +31,7 @@ import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricConv
 import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricsConverter;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
-import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.linkis.server.security.SecurityFilter;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
