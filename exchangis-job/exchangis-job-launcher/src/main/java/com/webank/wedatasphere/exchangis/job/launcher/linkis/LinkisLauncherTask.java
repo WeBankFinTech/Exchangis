@@ -124,7 +124,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 String linkisJobStatus = this.onceJob.getStatus(this.jobInfo);
                 if ("success".equalsIgnoreCase(linkisJobStatus)) {
                     this.status = TaskStatus.Success;
-                } else if ("failed".equalsIgnoreCase(linkisJobStatus)) {
+                } else if ("failed".equalsIgnoreCase(linkisJobStatus) || "shuttingdown".equalsIgnoreCase(linkisJobStatus)) {
                     this.status = TaskStatus.Failed;
                 } else {
                     this.status = TaskStatus.Running;
