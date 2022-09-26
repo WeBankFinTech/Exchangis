@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.auditlog;
+package com.webank.wedatasphere.exchangis.common.enums;
 
 /**
  * @author tikazhang
