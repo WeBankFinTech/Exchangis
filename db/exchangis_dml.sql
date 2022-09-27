@@ -71,3 +71,11 @@ INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_directio
 INSERT INTO `exchangis_engine_settings` (id, engine_name, engine_desc, engine_settings_value, engine_direction, res_loader_class, res_uploader_class, modify_time, create_time) VALUES
 (1, 'datax', 'datax sync engine', '{}', 'mysql->hive,hive->mysql,oracle->hive,hive->oracle,mongodb->hive,hive->mongodb,mysql->elasticsearch,oracle->elasticsearch,mongodb->elasticsearch,mysql->mongodb,mongodb->mysql,oracle->mongodb,mongodb->oracle', 'com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngineResourceLoader', NULL, NULL, '2022-08-09 18:20:51.0'),
 (2, 'sqoop', 'hadoop tool', '{}', 'mysql->hive,hive->mysql', '', NULL, NULL, '2022-08-09 18:20:51.0');
+
+INSERT INTO `exchangis_job_transform_rule` (rule_name,rule_type,rule_source,data_source_type,engine_type,direction,create_time) VALUES
+('es_with_post_processor','DEF','{"types": ["MAPPING", "PROCESSOR"]}','ELASTICSEARCH',NULL,'SINK','2022-09-18 23:36:42.000')
+,('es_fields_not_editable','MAPPING','{"fieldEditEnable": false, "fieldDeleteEnable": false}','ELASTICSEARCH',NULL,'SINK','2022-09-20 16:27:18.000')
+,('hive_sink_not_access','MAPPING','{"fieldEditEnable": false, "fieldDeleteEnable": false, "fieldAddEnable": false}','HIVE',NULL,'SINK','2022-09-20 21:46:05.000')
+,('mongo_field_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH"}','MONGODB',NULL,'SINK','2022-09-20 21:55:05.000')
+,('mysql_field_source_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH","fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": false}','MYSQL',NULL,'SOURCE','2022-09-21 21:55:05.000')
+;
