@@ -1,12 +1,12 @@
 package com.webank.wedatasphere.exchangis.project.server.restful;
 
 
+import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
+import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
-import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
-import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
-import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
-import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProjectUser;

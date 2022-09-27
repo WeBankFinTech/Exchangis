@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.restful.execute;
 
+import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
@@ -10,10 +11,8 @@ import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecu
 import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedTaskMetricsVo;
-import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
-import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
