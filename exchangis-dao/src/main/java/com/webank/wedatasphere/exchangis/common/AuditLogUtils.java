@@ -1,8 +1,8 @@
-package com.webank.wedatasphere.exchangis.job.utils;
+package com.webank.wedatasphere.exchangis.common;
 
-import com.google.gson.Gson;
-import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
-import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
+
+import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

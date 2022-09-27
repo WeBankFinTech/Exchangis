@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.restful.configuration;
 
+import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
@@ -9,9 +10,7 @@ import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.P
 import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.ProcessorTransformer;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.TransformProcessor;
 import com.webank.wedatasphere.exchangis.job.server.service.JobTransformService;
-import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import org.apache.linkis.server.Message;
-import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
