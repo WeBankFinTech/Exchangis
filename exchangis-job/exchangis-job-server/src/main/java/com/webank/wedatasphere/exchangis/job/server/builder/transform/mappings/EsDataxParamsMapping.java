@@ -2,10 +2,8 @@ package com.webank.wedatasphere.exchangis.job.server.builder.transform.mappings;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
-import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
-import com.webank.wedatasphere.exchangis.job.server.utils.JsonEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
