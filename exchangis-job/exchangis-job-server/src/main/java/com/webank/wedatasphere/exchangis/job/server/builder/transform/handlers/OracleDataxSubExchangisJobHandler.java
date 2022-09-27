@@ -76,12 +76,6 @@ public class OracleDataxSubExchangisJobHandler extends AbstractLoggingSubExchang
     private static final JobParamDefine<String> SINK_SERVICE_NAME = JobParams.define("connection[0].jdbcUrl.serviceName", JobParamConstraints.SERVICE_NAME);
 
     /**
-     * Database
-     */
-    private static final JobParamDefine<String> SOURCE_DATABASE = JobParams.define("connection[0].jdbcUrl[0].database", JobParamConstraints.DATABASE);
-    private static final JobParamDefine<String> SINK_DATABASE = JobParams.define("connection[0].jdbcUrl.database", JobParamConstraints.DATABASE);
-
-    /**
      * Table
      */
     private static final JobParamDefine<String> SOURCE_TABLE = JobParams.define("table", JobParamConstraints.TABLE);
@@ -155,11 +149,11 @@ public class OracleDataxSubExchangisJobHandler extends AbstractLoggingSubExchang
 
     private JobParamDefine<?>[] sourceMappings() {
         return new JobParamDefine[]{USERNAME, PASSWORD, SOURCE_TABLE, SOURCE_WHERE_CONDITION,
-                SOURCE_HOST, SOURCE_PORT, SOURCE_SERVICE_NAME, SOURCE_DATABASE, SOURCE_PARAMS_MAP};
+                SOURCE_HOST, SOURCE_PORT, SOURCE_SERVICE_NAME, SOURCE_PARAMS_MAP};
     }
 
     public JobParamDefine<?>[] sinkMappings() {
         return new JobParamDefine[]{USERNAME, PASSWORD, SINK_TABLE,
-                SINK_HOST, SINK_PORT, SINK_SERVICE_NAME, SINK_DATABASE, SINK_PARAMS_MAP};
+                SINK_HOST, SINK_PORT, SINK_SERVICE_NAME, SINK_PARAMS_MAP};
     }
 }
