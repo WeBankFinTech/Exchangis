@@ -1,15 +1,15 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
+import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
+import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
-import com.webank.wedatasphere.exchangis.job.auditlog.OperateTypeEnum;
-import com.webank.wedatasphere.exchangis.job.auditlog.TargetTypeEnum;
-import com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils;
-import com.webank.wedatasphere.exchangis.job.utils.UserUtils;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
