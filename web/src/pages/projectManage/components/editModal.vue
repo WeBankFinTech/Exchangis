@@ -112,9 +112,9 @@ export default {
           projectName: item.name,
           tags: item.tags.split(','),
           description: item.description,
-          viewUsers: item.viewUsers.split(','),
-          execUsers: item.execUsers.split(','),
-          editUsers: item.editUsers.split(','),
+          viewUsers: item.viewUsers.split(',').filter(v => v),
+          execUsers: item.execUsers.split(',').filter(v => v),
+          editUsers: item.editUsers.split(',').filter(v => v),
         };
       }
     },
@@ -128,8 +128,11 @@ export default {
       }
     },
     visible(cur, pre) {
-      if (!cur) { // 弹窗关闭时
+      if (cur && this.mode === 'create') { // 新增时
         Object.assign(this.formState, {
+          projectName: '',
+          tags: [],
+          description: '',
           viewUsers: [],
           execUsers: [],
           editUsers: [],

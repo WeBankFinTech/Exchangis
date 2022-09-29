@@ -130,6 +130,7 @@
                   @handleJobCopy="handleJobCopy"
                   @handleJobModify="handleJobModify"
                   @refreshList="getJobs"
+                  @handleDel="handleDel"
                 />
               </div>
               <div class="pagination-line">
@@ -212,6 +213,7 @@
                   @handleJobCopy="handleJobCopy"
                   @handleJobModify="handleJobModify"
                   @refreshList="getJobs"
+                  @handleDel="handleDel"
                 />
               </div>
               <div class="pagination-line">
@@ -388,6 +390,9 @@ export default {
       if (exchangisProjectUser?.projectId === this.projectId) {
         this.hasPermission = false;
       }
+    },
+    handleDel(id) {
+      this.$emit('updateTabs', id)
     }
   },
   watch: {

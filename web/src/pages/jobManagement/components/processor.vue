@@ -41,10 +41,15 @@ export default {
       type: String,
       default: '',
     },
+    copyCodeId: {
+      type: String,
+      default: '',
+    }
   },
   data() {
     return {
       isFold: false,
+      proId: this.procCodeId,
       opts: {
         value: '',
         readOnly: false, // 是否可编辑 // 是否为只读模式
@@ -91,6 +96,7 @@ export default {
         fontSize: 14,
       },
       monacoVal: '',
+      backupVal: '', // 备份值
       originVal: '', // 原始值
       timeOut: '',
       isSaving: false,
@@ -98,8 +104,10 @@ export default {
   },
   mounted() {
     this.isFold = true;
-    if (this.procCodeId) {
-      this.getProcessor(this.procCodeId); // 有则获取内容
+    if (this.proId) { // 编辑任务
+      this.getProcessor(this.proId); 
+    } else if (this.copyCodeId) { // 复制任务才有
+      this.getProcessor(this.copyCodeId); 
     } else {
       this.getTemplate(); // 否则获取模板
     }
@@ -108,6 +116,7 @@ export default {
   methods: {
     // 内容改变自动获取值
     changeValue(val) {
+      console.log('获取编辑内容', val)
       this.monacoVal = val;
     },
 
@@ -120,13 +129,15 @@ export default {
     async getTemplate() {
       const res = await getTemplate();
       this.originVal = res.code;
+      this.backupVal = res.code;
       this.monacoVal = res.code;
     },
 
     // 获取processor内容
-    async getProcessor(procCodeId) {
-      const res = await getProcessor(procCodeId);
+    async getProcessor(proId) {
+      const res = await getProcessor(proId);
       this.originVal = res.code;
+      this.backupVal = res.code;
       this.monacoVal = res.code;
     },
 
@@ -135,42 +146,33 @@ export default {
       return new Promise(async (resolve, reject) => {
         try {
           this.isSaving = true;
-          // 更新前先保存
-          const res = await this.saveProcessor();
-          this.originVal = this.monacoVal;
-          const param1 = {
+          if (!this.proId) {
+            let param = {
+              code: this.monacoVal,
+              jobId: this.jobId,
+            };
+            const res = await saveProcessor(param);
+            this.proId = res.proc_code_id;
+          } else {
+            let param = {
+              proc_code_id: this.proId,
+              code: this.monacoVal,
+            };
+            await updateProcessor(param);
+          }
+          const updateProMap = {
             type: 'PROCESSOR',
-            code_id: res.proc_code_id,
+            code_id: this.proId,
           };
-          const updateParam = {
-            proc_code_id: res.proc_code_id,
-            code: this.monacoVal,
-          };
-          this.$emit('updateProMap', param1);
-          // 然后调用更新接口
-          const ret = await updateProcessor(updateParam);
-          const param2 = {
-            type: 'PROCESSOR',
-            code_id: ret.proc_code_id || res.proc_code_id,
-          };
-          this.$emit('updateProMap', param2);
+          this.$emit('updateProMap', updateProMap);
           this.isSaving = false;
-          resolve(true)
+          resolve(true);
         } catch (err) {
           this.isSaving = false;
           console.log(err);
-          reject(false)
+          resolve(false);
         }
       });
-    },
-
-    // 保存
-    saveProcessor() {
-      const param = {
-        code: this.monacoVal,
-        jobId: this.jobId,
-      };
-      return saveProcessor(param);
     },
 
     // 定时更新processor
@@ -180,17 +182,12 @@ export default {
       if (
         this.monacoVal &&
         !this.isSaving &&
-        this.originVal !== this.monacoVal
+        this.backupVal !== this.monacoVal
       ) {
         this.isSaving = true;
-        this.saveProcessor()
+        this.beforeSave()
           .then((res) => {
-            this.originVal = this.monacoVal;
-            const param = {
-              type: 'PROCESSOR',
-              code_id: res.proc_code_id,
-            };
-            this.$emit('updateProMap', param);
+            this.backupVal = this.monacoVal;
           })
           .finally(() => {
             this.isSaving = false;
