@@ -69,5 +69,7 @@ public interface ExchangisJobEntityDao {
      */
     void deleteBatch(@Param("ids") List<Long> ids);
 
+    List<ExchangisJobEntity> getByNameAndProjectId(@Param("jobName") String jobName, @Param("projectId") Long projectId);
+
     List<ExchangisJobEntity> getByNameWithProjectId(@Param("jobName") String jobName, @Param("projectId") Long projectId);
 }
