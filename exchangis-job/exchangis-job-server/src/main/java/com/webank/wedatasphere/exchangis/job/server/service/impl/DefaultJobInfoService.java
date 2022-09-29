@@ -164,6 +164,23 @@ public class DefaultJobInfoService implements JobInfoService {
     }
 
     @Override
+    public  List<ExchangisJobVo> getByNameAndProjectId(String jobName, Long projectId) {
+        List<ExchangisJobEntity> exchangisJobs = this.jobEntityDao.getByNameAndProjectId(jobName, projectId);
+        List<ExchangisJobVo> exchangisJobVos = new ArrayList<>();
+        for(ExchangisJobEntity exchangisJob : exchangisJobs){
+            ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
+            if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
+                jobVo.setContent(exchangisJob.getJobContent());
+                jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
+                        Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
+            }
+            exchangisJobVos.add(jobVo);
+        }
+
+        return exchangisJobVos;
+    }
+
+    @Override
     public  List<ExchangisJobVo> getByNameWithProjectId(String jobName, Long projectId) {
         List<ExchangisJobEntity> exchangisJobs = this.jobEntityDao.getByNameWithProjectId(jobName, projectId);
         List<ExchangisJobVo> exchangisJobVos = new ArrayList<>();
@@ -179,6 +196,7 @@ public class DefaultJobInfoService implements JobInfoService {
 
         return exchangisJobVos;
     }
+
     @Override
     public ExchangisJobVo getDecoratedJob(HttpServletRequest request, Long id) throws ExchangisJobServerException {
         ExchangisJobEntity exchangisJob = this.jobEntityDao.getDetail(id);
