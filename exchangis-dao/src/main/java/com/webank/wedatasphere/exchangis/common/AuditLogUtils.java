@@ -29,7 +29,6 @@ public class AuditLogUtils {
     public static void printLog(String user, String proxyUser, TargetTypeEnum targetType,
                                 String targetId, String targetName, OperateTypeEnum operateType, Object params) {
         //String detailInfo=new Gson().toJson(params);
-        LOGGER.info("AuditLog print test");
         String detailInfo=params.toString();
         LOGGER.info("[{}],[{}],[{}],[{}],[{}],[{}],[{}],[{}],[{}]",
                 new Date(),user, "proxyUser is: " + proxyUser, "Exchangis-1.1.1", targetType.getName(),
