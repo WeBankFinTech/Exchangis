@@ -93,6 +93,8 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                 launchedExchangisTask = launcher.launch(this.launchableExchangisTask);
 //                launchedExchangisTask = new LaunchedExchangisTask(launchableExchangisTask);
                 launchedExchangisTask.setLaunchTime(launchTime);
+                info("Success to submit task:[name:{}, id:{}] to Linkis {}",
+                        launchedExchangisTask.getName(), launchedExchangisTask.getId(), launchedExchangisTask.getLinkisJobInfo());
             } catch (Exception e) {
                 info(jobExecutionId, "Launch task:[name:{} ,id:{}] fail, possible reason is: [{}]",
                         launchableExchangisTask.getName(), launchableExchangisTask.getId(), getActualCause(e).getMessage());
