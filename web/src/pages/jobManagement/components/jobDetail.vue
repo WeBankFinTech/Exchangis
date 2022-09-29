@@ -164,11 +164,13 @@
                                 />
                             </template>
                             <template v-else-if="curType === 'PROCESSOR'">
-                                <!-- 后置控制器 -->
+                                <!-- 后置控制器 key用来刷新-->
                                 <processor 
                                     ref="processorRef"
+                                    :key="activeIndex" 
                                     v-bind:jobId="curTab.id"
                                     v-bind:procCodeId="curTask.transforms.code_id" 
+                                    v-bind:copyCodeId="curTask.transforms.copy_code_id"
                                     @updateProMap="updateProMap"/>
                             </template>
                         </div>
@@ -722,8 +724,13 @@ export default {
                 this.jobData.content.subJobs.push(data);
             }
         },
+        // 复制子任务 注意控制器的id
         copySub(item) {
-            this.copyObj = item;
+            this.copyObj = cloneDeep(item, 1);
+            if (this.copyObj.transforms.type === 'PROCESSOR') {
+                this.copyObj.transforms.copy_code_id = this.copyObj.transforms.code_id;
+                this.copyObj.transforms.code_id = ''
+            }
             this.modalCopy.visible = true;
         },
         // 删除子任务
@@ -747,16 +754,20 @@ export default {
             }
             return 'sub-content';
         },
-        changeCurTask(index, isFresh) {
-            console.log(this.activeIndex, index)
+        async changeCurTask(index, isFresh) {
             if (this.activeIndex === index && !isFresh) return
+            if (this.curType === 'PROCESSOR') {
+                const valid = await this.$refs.processorRef.beforeSave();
+                console.log('保存控制器', valid);
+                if (!valid) return;
+            }
             this.activeIndex = index
             this.curTask = this.list[index];
             this.curTask._transforms = cloneDeep(this.curTask.transforms, 1)
             this.curType = this.curTask.transforms.type;
             this.addEnable = this.curTask.transforms.addEnable;
             this.transformEnable = this.curTask.transforms.transformEnable;
-            console.log('当前任务切换后', this.curTask.transforms);
+            console.log('当前任务切换后', this.curTask);
             const data = this.getFieldsParams(this.curTask);
             if (data) {
                 console.log('获取字段映射');
@@ -985,11 +996,15 @@ export default {
             return res;
         },
         async saveAll(type = 'save', cb) {
+            message.destroy();
             this.loading = true
             if (this.curType === 'PROCESSOR') {
                 const valid = await this.$refs.processorRef.beforeSave();
                 console.log('保存控制器', valid);
-                if (!valid) return this.loading =false;
+                if (!valid) {
+                    message.error('后置控制器保存失败');
+                    return this.loading = false;
+                }
             }
             const saveContent = [];
             const data = toRaw(this.jobData);

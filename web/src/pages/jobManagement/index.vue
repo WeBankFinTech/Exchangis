@@ -97,7 +97,7 @@
         </div>
       </div>
     </div> -->
-    <job-list v-show="!activeTabId" @showJobDetail="showJobDetail" />
+    <job-list v-show="!activeTabId" @showJobDetail="showJobDetail" @updateTabs="updateTabs"/>
     <template v-for="job in tabs">
       <job-detail v-show="activeTabId == job.id" :curTab="job"></job-detail>
     </template>
@@ -182,6 +182,13 @@ export default {
     choose(idx) {
       this.active  = idx
     },
+    // 任务删除时更新tabs
+    updateTabs(id) {
+      let index = this.tabs.findIndex(v => v.id === id);
+      if (index > -1) {
+        this.tabs.splice(index, 1);
+      }
+    }
   },
 };
 </script>

@@ -166,8 +166,10 @@
                                 <!-- 后置控制器 -->
                                 <processor 
                                     ref="processorRef"
+                                    :key="activeIndex"
                                     v-bind:jobId="curTab.id"
                                     v-bind:procCodeId="curTask.transforms.code_id" 
+                                    v-bind:copyCodeId="curTask.transforms.copy_code_id"
                                     @updateProMap="updateProMap"/>
                             </template>
                         </div>
@@ -706,7 +708,11 @@ export default {
             }
         },
         copySub(item) {
-            this.copyObj = item;
+            this.copyObj = cloneDeep(item, 1);
+            if (this.copyObj.transforms.type === 'PROCESSOR') {
+                this.copyObj.transforms.copy_code_id = this.copyObj.transforms.code_id;
+                this.copyObj.transforms.code_id = ''
+            }
             this.modalCopy.visible = true;
         },
         deleteSub(index) {
@@ -729,8 +735,13 @@ export default {
             }
             return 'sub-content';
         },
-        changeCurTask(index, isFresh) {
+        async changeCurTask(index, isFresh) {
             if (this.activeIndex === index && !isFresh) return
+            if (this.curType === 'PROCESSOR') {
+                const valid = await this.$refs.processorRef.beforeSave();
+                console.log('保存控制器', valid);
+                if (!valid) return;
+            }
             this.activeIndex = index;
             this.curTask = this.list[this.activeIndex];
             this.curTask._transforms = cloneDeep(this.curTask.transforms, 1)
@@ -967,11 +978,15 @@ export default {
             return res;
         },
         async saveAll(type = 'save', cb) {
+            message.destroy();
             this.loading = true;
             if (this.curType === 'PROCESSOR') {
                 const valid = await this.$refs.processorRef.beforeSave();
                 console.log('保存控制器', valid);
-                if (!valid) return this.loading = false;
+                if (!valid) {
+                    message.error('后置控制器保存失败');
+                    return this.loading = false;
+                }
             }
             const saveContent = [];
             const data = toRaw(this.jobData);
