@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -178,6 +179,13 @@ public class ExchangisJobRestfulApi {
             if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to create Job (没有创建任务权限)");
             }
+
+            //Check whether the job with the same name exists in current project
+            List<ExchangisJobVo> jobs = jobInfoService.getByNameAndProjectId(exchangisJobVo.getJobName(), exchangisJobVo.getProjectId());
+            if (!Objects.isNull(jobs) && jobs.size() > 0) {
+                return Message.error("A task with the same name exists under the current project (当前项目下存在同名任务)");
+            }
+
             response.data("result", jobInfoService.createJob(exchangisJobVo));
         } catch (Exception e) {
             String message = "Fail to create job: " + exchangisJobVo.getJobName() + " (创建任务失败)";
