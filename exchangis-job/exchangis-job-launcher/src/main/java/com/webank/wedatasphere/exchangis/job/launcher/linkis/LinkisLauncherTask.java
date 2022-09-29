@@ -124,8 +124,12 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 String linkisJobStatus = this.onceJob.getStatus(this.jobInfo);
                 if ("success".equalsIgnoreCase(linkisJobStatus)) {
                     this.status = TaskStatus.Success;
-                } else if ("failed".equalsIgnoreCase(linkisJobStatus)) {
+                } else if ("failed".equalsIgnoreCase(linkisJobStatus)){
                     this.status = TaskStatus.Failed;
+                } else if ("shuttingdown".equalsIgnoreCase(linkisJobStatus)) {
+                    LOG.warn("Will retry on linkis job status: [{}]", linkisJobStatus);
+                    // Retry on shutting down status
+                    this.status = TaskStatus.WaitForRetry;
                 } else {
                     this.status = TaskStatus.Running;
                 }
@@ -251,6 +255,10 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
         }
         try {
             ((SubmittableOnceJob) this.onceJob).submit();
+            TaskStatus status = getStatus();
+            if (status == TaskStatus.Undefined || status == TaskStatus.WaitForRetry){
+                throw new ExchangisTaskLaunchException("Fail to submit to linkis server with unexpected final status： [" + status + "]", null);
+            }
             // New the operators for job
             prepareOperators(this.onceJob);
             Map<String, Object> jobInfo = getJobInfo(false);

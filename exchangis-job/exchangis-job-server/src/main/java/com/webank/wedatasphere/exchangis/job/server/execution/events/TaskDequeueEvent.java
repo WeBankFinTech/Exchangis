@@ -17,6 +17,11 @@ public class TaskDequeueEvent extends TaskExecutionEvent{
         this.taskId = taskId;
     }
 
+    @Override
+    public String eventId() {
+        return "_TaskExecution_" + this.taskId;
+    }
+
     public String getTaskId() {
         return taskId;
     }
