@@ -42,14 +42,6 @@ export const request = {
     data.code = String(data.status);
     return data;
   },
-  requestInterceptors: [
-    function (config) {
-      if (config.url.indexOf('/workspace/listAllUsers') > -1) {
-        config.baseURL = '/api/rest_j/v1/dss/framework'
-      }
-      return config;
-    }
-  ],
   errorHandler: {
     default(error) {
       if (error.message && error.message.indexOf('timeout of') > -1) {
