@@ -140,7 +140,7 @@
                 AND job_type = #{jobType}
             </if>
             <if test="jobName != null and jobName != ''">
-                AND name like concat('%', #{jobName}, '%')
+                AND name like concat('%', #{jobName}, '%') escape '/'
             </if>
         </where>
         ORDER BY create_time DESC
