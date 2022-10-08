@@ -83,7 +83,8 @@ public class DefaultJobTransformService implements JobTransformService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long saveProcessorInfo(TransformProcessor processor) {
-        return processorDao.saveOne(processor);
+        processorDao.saveOne(processor);
+        return processor.getId();
     }
 
     @Override
