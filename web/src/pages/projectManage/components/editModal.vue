@@ -66,7 +66,6 @@ import {
   createProject,
   getProjectById,
   updateProject,
-  getAllUsers,
 } from '@/common/service';
 export default {
   name: 'ProjectEditModal',
@@ -131,10 +130,6 @@ export default {
       }
     },
   },
-  created() {
-    // 获取dss用户
-    this.getAllUsers();
-  },
   methods: {
     async handleOk() {
       await this.$refs.formRef.validate();
@@ -161,17 +156,7 @@ export default {
       this.confirmLoading = false;
       this.$emit('update:visible', false);
       this.$emit('finish');
-    },
-
-    // 获取所有用户
-    async getAllUsers() {
-      try {
-        const { users } = (await getAllUsers()) || {};
-        this.allUsers = users;
-      } catch (err) {
-        console.log(err);
-      }
-    },
+    }
   },
 };
 </script>
