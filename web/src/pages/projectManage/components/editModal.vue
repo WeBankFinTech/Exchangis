@@ -4,7 +4,10 @@
     <a-spin :spinning="confirmLoading">
       <a-form ref="formRef" :model="formState" :label-col="{ span: 4 }">
         <a-form-item :label="$t(`projectManage.editModal.form.fields.projectName.label`)"
-          name="projectName" required :help="helpMsg" :validate-status="helpStatus">
+          name="projectName" :rules="[
+            { required: true, message: '项目名必须填写!' },
+            { pattern: /^[a-zA-Z]/, message: '项目名请以字母开头进行填写!', trigger: 'change' }
+          ]">
           <a-input v-model:value="formState.projectName" :maxLength="100" :placeholder="
               $t(`projectManage.editModal.form.fields.projectName.placeholder`)
             " />
@@ -97,46 +100,34 @@ export default {
         execUsers: [],
         editUsers: [],
       },
-      helpMsg: '',
-      helpStatus: 'success',
       allUsers: [],
     };
   },
+  computed: {
+    // 确保弹窗显示且id存在
+    bothParams() {
+      return this.id && this.visible;
+    },
+  },
   watch: {
-    async id(newVlaue) {
+    async bothParams(newVlaue) {
       if (newVlaue && this.mode === 'edit') {
         this.confirmLoading = true;
-        const { item } = await getProjectById(newVlaue);
+        const { item } = await getProjectById(this.id);
         this.confirmLoading = false;
         this.formState = {
           projectName: item.name,
           tags: item.tags.split(','),
           description: item.description,
-          viewUsers: item.viewUsers.split(',').filter(v => v),
-          execUsers: item.execUsers.split(',').filter(v => v),
-          editUsers: item.editUsers.split(',').filter(v => v),
+          viewUsers: item.viewUsers.split(',').filter((v) => v),
+          execUsers: item.execUsers.split(',').filter((v) => v),
+          editUsers: item.editUsers.split(',').filter((v) => v),
         };
       }
     },
-    'formState.projectName'(newval, oldVal) {
-      if (!/^[a-zA-Z]/.test(newval)) {
-        this.helpMsg = '项目名请以字母开头进行填写';
-        this.helpStatus = 'error';
-      } else {
-        this.helpMsg = '';
-        this.helpStatus = 'success';
-      }
-    },
     visible(cur, pre) {
-      if (cur && this.mode === 'create') { // 新增时
-        Object.assign(this.formState, {
-          projectName: '',
-          tags: [],
-          description: '',
-          viewUsers: [],
-          execUsers: [],
-          editUsers: [],
-        })
+      if (!cur) {
+        this.$refs.formRef.resetFields();
       }
     },
   },
@@ -147,9 +138,6 @@ export default {
   methods: {
     async handleOk() {
       await this.$refs.formRef.validate();
-      if (!/^[a-zA-Z]/.test(this.formState.projectName)) {
-        return message.error('项目名请以字母开头进行填写');
-      }
       const formatData = {
         id: this.id ? this.id : undefined,
         projectName: this.formState.projectName,
