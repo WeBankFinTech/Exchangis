@@ -63,9 +63,10 @@ public class ExchangisProjectRestfulApi {
                                  @RequestParam(value = "size", required = false) Integer size,
                                  @RequestParam(value = "name", required = false) String name) {
         String username = UserUtils.getLoginUser(request);
+        String newName = name.replaceAll("_", "/_");
         Optional.ofNullable(current).ifPresent(queryVo::setCurrent);
         Optional.ofNullable(size).ifPresent(queryVo::setSize);
-        Optional.ofNullable(name).ifPresent(queryVo::setName);
+        Optional.ofNullable(newName).ifPresent(queryVo::setName);
         queryVo.setCreateUser(username);
         try {
             PageResult<ExchangisProjectInfo> pageResult = projectService.queryProjects(queryVo);
