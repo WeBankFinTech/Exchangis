@@ -33,7 +33,7 @@
     <!--where condition-->
     <sql id="pageCondition">
         <if test="name != '' and name != null">
-            AND dp.name like concat('%', #{name}, '%')
+            AND dp.name like concat('%', #{name}, '%') escape '/'
         </if>
         <if test="domain != '' and domain != null">
             AND dp.domain = #{domain}
