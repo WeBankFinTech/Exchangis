@@ -76,8 +76,9 @@ public class ExchangisJobRestfulApi {
                               @RequestParam(value = "current", required = false) int current,
                               @RequestParam(value = "size", required = false) int size,
                               HttpServletRequest request) {
+        String newName = name.replaceAll("_", "/_");
         ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo(
-                projectId, jobType, name, current, size
+                projectId, jobType, newName, current, size
         );
         String loginUser = UserUtils.getLoginUser(request);
         try {
