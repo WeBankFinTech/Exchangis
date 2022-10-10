@@ -1,0 +1,40 @@
+<!--
+  ~
+  ~  Copyright 2020 WeBank
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.job.server.mapper.JobTransformRuleDao" >
+    <resultMap id="ruleMap" type="com.webank.wedatasphere.exchangis.job.server.render.transform.TransformRule">
+        <result column="id" property="id"/>
+        <result column="rule_name" property="ruleName"/>
+        <result column="rule_type" property="ruleType"/>
+        <result column="rule_source" property="ruleSource"/>
+        <result column="data_source_type" property="dataSourceType"/>
+        <result column="engine_type" property="engineType"/>
+        <result column="direction" property="direction"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="TableName">
+        exchangis_job_transform_rule
+    </sql>
+
+    <select id="getTransformRules" resultMap="ruleMap">
+        SELECT * FROM <include refid="TableName"/>
+        WHERE `rule_type` = #{ruleType} AND `data_source_type` = #{dataSourceType};
+    </select>
+</mapper>

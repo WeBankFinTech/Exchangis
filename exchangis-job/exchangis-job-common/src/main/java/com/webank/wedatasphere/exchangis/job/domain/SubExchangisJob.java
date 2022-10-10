@@ -30,7 +30,6 @@ public class SubExchangisJob extends GenericExchangisJob {
 
 //    public static final String REALM_JOB_COLUMN_MAPPING = "job.realm.column-mappings";
 
-
     /**
      * Realm params set
      */
@@ -66,7 +65,6 @@ public class SubExchangisJob extends GenericExchangisJob {
     public void setSinkType(String sinkType) {
         this.sinkType = sinkType;
     }
-
 
     /**
      * Add
