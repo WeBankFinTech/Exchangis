@@ -222,3 +222,32 @@ CREATE TABLE `exchangis_engine_settings` (
    PRIMARY KEY (`id`),
    UNIQUE KEY `engine_setting_idx` (`engine_name`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- exchangis_job_transform_rule
+DROP TABLE IF EXISTS `exchangis_job_transform_rule`;
+CREATE TABLE `exchangis_job_transform_rule` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `rule_name` varchar(100) NOT NULL DEFAULT 'transform_rule',
+  `rule_type` varchar(64) NOT NULL DEFAULT 'DEF',
+  `rule_source` varchar(600) DEFAULT '{}',
+  `data_source_type` varchar(64) NOT NULL,
+  `engine_type` varchar(32),
+  `direction` varchar(32) NOT NULL DEFAULT 'NONE',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- exchangis_job_transform_processor
+DROP TABLE IF EXISTS `exchangis_job_transform_processor`;
+CREATE TABLE `exchangis_job_transform_processor` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `job_id` bigint(20) NOT NULL,
+  `code_content` text DEFAULT NULL,
+  `code_language` varchar(32) NOT NULL DEFAULT 'java',
+  `code_bml_resourceId` varchar(255) COMMENT 'BML resource id',
+  `code_bml_version` varchar(255) COMMENT 'BML version',
+  `creator` varchar(50) NOT NULL COMMENT 'Owner of processor',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

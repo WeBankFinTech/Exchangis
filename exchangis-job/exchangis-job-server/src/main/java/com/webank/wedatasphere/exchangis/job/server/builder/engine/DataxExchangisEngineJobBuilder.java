@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.builder.engine;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.engine.domain.EngineBmlResource;
 import com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngineResourceConf;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
@@ -10,15 +11,15 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformTypes;
 import com.webank.wedatasphere.exchangis.job.server.utils.JsonEntity;
 import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Datax engine job builder
@@ -28,6 +29,10 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
     private static final Logger LOG = LoggerFactory.getLogger(DataxExchangisEngineJob.class);
 
     private static final String BYTE_SPEED_SETTING_PARAM = "setting.speed.byte";
+
+    private static final String PROCESSOR_SWITCH = "setting.useProcessor";
+
+    private static final String PROCESSOR_BASE_PATH = "core.processor.loader.plugin.sourcePath";
 
     private static final Map<String, String> PLUGIN_NAME_MAPPER = new HashMap<>();
 
@@ -124,6 +129,13 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
             // engine resources
             engineJob.getResources().addAll(
                     getResources(inputJob.getEngineType().toLowerCase(Locale.ROOT), getResourcesPaths(inputJob)));
+            if (inputJob instanceof TransformExchangisJob.TransformSubExchangisJob){
+                TransformExchangisJob.TransformSubExchangisJob transformJob = ((TransformExchangisJob.TransformSubExchangisJob) inputJob);
+                TransformTypes type = transformJob.getTransformType();
+                if (type == TransformTypes.PROCESSOR){
+                    settingProcessorInfo(transformJob, engineJob);
+                }
+            }
             engineJob.setName(inputJob.getName());
             //Unit MB
             Optional.ofNullable(engineJob.getRuntimeParams().get(BYTE_SPEED_SETTING_PARAM)).ifPresent(byteLimit -> {
@@ -139,7 +151,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
             return engineJob;
 
         } catch (Exception e) {
-            throw new ExchangisJobException(ExchangisJobExceptionCode.ENGINE_JOB_ERROR.getCode(),
+            throw new ExchangisJobException(ExchangisJobExceptionCode.BUILDER_ENGINE_ERROR.getCode(),
                     "Fail to build datax engine job, message:[" + e.getMessage() + "]", e);
         }
     }
@@ -171,6 +183,20 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
         return dataxJob.toMap();
     }
 
+    /**
+     * Setting processor info into engine job
+     * @param transformJob transform job
+     * @param engineJob engine job
+     */
+    private void settingProcessorInfo(TransformExchangisJob.TransformSubExchangisJob transformJob, ExchangisEngineJob engineJob){
+        Optional.ofNullable(transformJob.getCodeResource()).ifPresent(codeResource ->{
+            engineJob.getRuntimeParams().put(PROCESSOR_SWITCH, true);
+            Object basePath = engineJob.getRuntimeParams().computeIfAbsent(PROCESSOR_BASE_PATH, key -> "proc/src");
+            engineJob.getResources().add(new EngineBmlResource(engineJob.getEngineType(), ".",
+                    String.valueOf(basePath) + IOUtils.DIR_SEPARATOR_UNIX + "code_" + transformJob.getId(),
+                    codeResource.getResourceId(), codeResource.getVersion(), transformJob.getCreateUser()));
+        });
+    }
     private String[] getResourcesPaths(SubExchangisJob inputJob){
         return new String[]{
                 DataxEngineResourceConf.RESOURCE_PATH_PREFIX.getValue() + IOUtils.DIR_SEPARATOR_UNIX + "reader" + IOUtils.DIR_SEPARATOR_UNIX +
@@ -179,7 +205,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
                         PLUGIN_SINK_NAME.getValue(inputJob)
         };
     }
-
+    // core.processor.loader.plugin.sourcePath
     /**
      * Plugin name
      * @param typeName type name
