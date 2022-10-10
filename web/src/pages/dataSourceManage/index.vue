@@ -331,6 +331,7 @@ export default {
         },
         // 测试链接
         async handleTestConnect(row) {
+            message.destroy();
             await testDataSourceConnect(row.text.id, row.text.versionId);
             message.success('连接成功');
         },
