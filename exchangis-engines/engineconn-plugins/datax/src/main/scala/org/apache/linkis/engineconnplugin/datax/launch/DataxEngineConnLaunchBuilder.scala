@@ -62,8 +62,13 @@ class DataxEngineConnLaunchBuilder extends JavaProcessEngineConnLaunchBuilder {
             bmlResource.setResourceId(pluginBmlResource.getResourceId)
             bmlResource.setVersion(pluginBmlResource.getVersion)
             bmlResource.setOwner(pluginBmlResource.getCreator)
-            // Import: must be a public bml resource
-            bmlResource.setVisibility(BmlResource.BmlResourceVisibility.Public)
+            pluginBmlResource.getPath match {
+              case "." =>
+                bmlResource.setVisibility(BmlResource.BmlResourceVisibility.Private)
+              case _ =>
+                // Importance: major module must be a public bml resource
+                bmlResource.setVisibility(BmlResource.BmlResourceVisibility.Public)
+            }
             bmlResources.add(bmlResource)
           }))
           // Encoding the resources json
