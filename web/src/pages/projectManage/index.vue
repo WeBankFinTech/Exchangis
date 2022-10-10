@@ -85,6 +85,7 @@
                     :describe="item.describe"
                     :id="item.id"
                     :tags="item.tags"
+                    :domain="item.domain"
                   />
                 </a-col>
                 <!-- 分页行 -->
@@ -177,6 +178,7 @@ export default {
           name: item.name,
           describe: item.description,
           tags: item.tags.split(","),
+          domain: item.domain
         }))
     },
     // 模态框操作完成
