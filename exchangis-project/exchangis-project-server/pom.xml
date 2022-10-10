@@ -19,12 +19,6 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.linkis</groupId>
-            <artifactId>linkis-module</artifactId>
-            <version>${linkis.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.linkis</groupId>
             <artifactId>linkis-mybatis</artifactId>
             <version>${linkis.version}</version>
         </dependency>
@@ -38,7 +32,7 @@
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-dao</artifactId>
             <version>1.1.1</version>
-            <scope>compile</scope>
+<!--            <scope>compile</scope>-->
         </dependency>
         <!--Job common module-->
         <dependency>
