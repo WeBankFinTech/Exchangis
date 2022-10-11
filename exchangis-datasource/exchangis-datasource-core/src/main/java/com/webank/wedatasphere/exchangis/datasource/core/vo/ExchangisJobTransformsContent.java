@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.core.vo;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public class ExchangisJobTransformsContent {
     private String type;
     private String sql;
 
-    @JsonAlias("code_id")
+    @JsonProperty("code_id")
     private String codeId;
 
     private List<ExchangisJobTransformsItem> mapping;

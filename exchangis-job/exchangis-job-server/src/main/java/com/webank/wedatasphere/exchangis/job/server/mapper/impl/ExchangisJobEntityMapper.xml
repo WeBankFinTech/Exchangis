@@ -168,6 +168,14 @@
         </if>
     </select>
 
+    <select id="getByNameAndProjectId"  resultMap ="BaseResultMap">
+        select
+        <include refid="detail_column"/>
+        from
+        <include refid="TableName" />
+        where project_id = #{projectId}
+        AND name = #{jobName}
+    </select>
 
     <select id="getByNameWithProjectId"  resultMap ="BaseResultMap">
         select
