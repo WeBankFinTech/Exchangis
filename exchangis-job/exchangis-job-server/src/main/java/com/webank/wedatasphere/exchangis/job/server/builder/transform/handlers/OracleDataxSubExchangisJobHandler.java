@@ -3,70 +3,21 @@ package com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
-import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
+
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
-import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
 import com.webank.wedatasphere.exchangis.job.server.utils.SQLCommandUtils;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Mysql in datax
+ * Oracle in datax
  */
-public class OracleDataxSubExchangisJobHandler extends AbstractLoggingSubExchangisJobHandler {
-
-    /**
-     * Disable encrypt
-     */
-    private static final JobParamDefine<Boolean> ENCRYPT_DISABLE = JobParams.define("encrypt.disable");
-
-    /**
-     * User name
-     */
-    private static final JobParamDefine<String> USERNAME = JobParams.define(JobParamConstraints.USERNAME);
-
-    /**
-     * Password
-     */
-    private static final JobParamDefine<String> PASSWORD = JobParams.define(JobParamConstraints.PASSWORD, paramSet -> {
-        JobParam<String> password = paramSet.get(JobParamConstraints.PASSWORD);
-        if (Objects.nonNull(password) && StringUtils.isNotBlank(password.getValue())) {
-            Boolean encrypt = ENCRYPT_DISABLE.getValue(paramSet);
-            if (Objects.isNull(encrypt) || !encrypt) {
-                try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-                    try (ObjectOutputStream oos = new ObjectOutputStream(bos)) {
-                        oos.writeObject(password.getValue());
-                        oos.flush();
-                    }
-                    return new String(new Base64().encode(bos.toByteArray()));
-                } catch (Exception e) {
-                    throw new ExchangisJobException.Runtime(-1, "Fail to encrypt password", e);
-                }
-            }
-            return password.getValue();
-        }
-        return null;
-    });
-
-    /**
-     * Database
-     */
-    private static final JobParamDefine<String> SOURCE_DATABASE = JobParams.define("connection[0].jdbcUrl[0].database", JobParamConstraints.DATABASE);
-    private static final JobParamDefine<String> SINK_DATABASE = JobParams.define("connection[0].jdbcUrl.database", JobParamConstraints.DATABASE);
-
-    /**
-     * Table
-     */
-    private static final JobParamDefine<String> SINK_TABLE = JobParams.define("connection[0].table[0]", JobParamConstraints.TABLE);
+public class OracleDataxSubExchangisJobHandler extends AuthEnabledSubExchangisJobHandler {
 
     /**
      * Host
@@ -81,23 +32,37 @@ public class OracleDataxSubExchangisJobHandler extends AbstractLoggingSubExchang
     private static final JobParamDefine<String> SINK_PORT = JobParams.define("connection[0].jdbcUrl.port", JobParamConstraints.PORT);
 
     /**
+     * ServiceName
+     */
+    private static final JobParamDefine<String> SOURCE_SERVICE_NAME = JobParams.define("connection[0].jdbcUrl[0].serviceName", JobParamConstraints.SERVICE_NAME);
+    private static final JobParamDefine<String> SINK_SERVICE_NAME = JobParams.define("connection[0].jdbcUrl.serviceName", JobParamConstraints.SERVICE_NAME);
+
+    /**
+     * Table
+     */
+    private static final JobParamDefine<String> SOURCE_TABLE = JobParams.define("table", JobParamConstraints.TABLE);
+    private static final JobParamDefine<String> SINK_TABLE = JobParams.define("connection[0].table[0]", JobParamConstraints.TABLE);
+
+    /**
      * Connect params
      */
     private static final JobParamDefine<Map<String, String>> SOURCE_PARAMS_MAP = JobParams.define("connection[0].jdbcUrl[0].connParams", JobParamConstraints.CONNECT_PARAMS,
             connectParams -> Json.fromJson(connectParams, Map.class), String.class);
     private static final JobParamDefine<Map<String, String>> SINK_PARAMS_MAP = JobParams.define("connection[0].jdbcUrl.connParams", JobParamConstraints.CONNECT_PARAMS,
             connectParams -> Json.fromJson(connectParams, Map.class), String.class);
+
     /**
      * Where condition
      */
-    private static final JobParamDefine<String> WHERE_CONDITION = JobParams.define(JobParamConstraints.WHERE);
+    private static final JobParamDefine<String> SOURCE_WHERE_CONDITION = JobParams.define(JobParamConstraints.WHERE);
+
 
     /**
      * Query sql
      */
     private static final JobParamDefine<String> QUERY_SQL = JobParams.define("connection[0].querySql[0]", job -> {
         JobParamSet sourceParams = job.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
-        String where = WHERE_CONDITION.getValue(sourceParams);
+        String where = SOURCE_WHERE_CONDITION.getValue(sourceParams);
         List<String> columns = job.getSourceColumns().stream().map(SubExchangisJob.ColumnDefine::getName).collect(Collectors.toList());
         if (columns.isEmpty()) {
             columns.add("*");
@@ -145,13 +110,13 @@ public class OracleDataxSubExchangisJobHandler extends AbstractLoggingSubExchang
         return "datax".equalsIgnoreCase(engineType);
     }
 
-    private JobParamDefine<?>[] sourceMappings() {//todo
-        return new JobParamDefine[]{USERNAME, PASSWORD, SOURCE_DATABASE,
-                SOURCE_HOST, SOURCE_PORT, SOURCE_PARAMS_MAP};
+    private JobParamDefine<?>[] sourceMappings() {
+        return new JobParamDefine[]{USERNAME, PASSWORD, SOURCE_TABLE, SOURCE_WHERE_CONDITION,
+                SOURCE_HOST, SOURCE_PORT, SOURCE_SERVICE_NAME, SOURCE_PARAMS_MAP};
     }
 
-    public JobParamDefine<?>[] sinkMappings() {//todo
-        return new JobParamDefine[]{USERNAME, PASSWORD, SINK_DATABASE, SINK_TABLE,
-                SINK_HOST, SINK_PORT, SINK_PARAMS_MAP};
+    public JobParamDefine<?>[] sinkMappings() {
+        return new JobParamDefine[]{USERNAME, PASSWORD, SINK_TABLE,
+                SINK_HOST, SINK_PORT, SINK_SERVICE_NAME, SINK_PARAMS_MAP};
     }
 }

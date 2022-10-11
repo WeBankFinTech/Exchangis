@@ -48,6 +48,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
+
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String username = UserUtils.getLoginUser(request);
         if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
@@ -58,6 +59,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
         }
         if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
             projectVo.setExecUsers(username + projectVo.getExecUsers());
+
         }
 
         try {

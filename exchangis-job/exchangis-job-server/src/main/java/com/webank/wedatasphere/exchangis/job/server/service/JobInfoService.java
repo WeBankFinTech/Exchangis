@@ -69,6 +69,14 @@ public interface JobInfoService {
      * @param projectId
      * @return
      */
+    List<ExchangisJobVo> getByNameAndProjectId(String jobName, Long projectId);
+
+    /**
+     * Get job by name and projectId
+     * @param jobName
+     * @param projectId
+     * @return
+     */
     List<ExchangisJobVo> getByNameWithProjectId(String jobName, Long projectId);
 
     ExchangisJobVo getDecoratedJob(HttpServletRequest request, Long id)  throws ExchangisJobServerException;

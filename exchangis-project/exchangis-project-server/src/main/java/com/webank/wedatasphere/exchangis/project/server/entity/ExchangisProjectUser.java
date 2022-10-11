@@ -18,6 +18,21 @@ public class ExchangisProjectUser {
 
     private Date updateTime;
 
+    public ExchangisProjectUser() {
+    }
+
+    public ExchangisProjectUser(Long projectId, String privUser) {
+        this.projectId = projectId;
+        this.privUser = privUser;
+    }
+
+    public ExchangisProjectUser(Long id, Long projectId, String privUser, int priv, Date updateTime) {
+        this.id = id;
+        this.projectId = projectId;
+        this.privUser = privUser;
+        this.priv = priv;
+        this.updateTime = updateTime;
+    }
 
     public Long getId() {
         return id;
