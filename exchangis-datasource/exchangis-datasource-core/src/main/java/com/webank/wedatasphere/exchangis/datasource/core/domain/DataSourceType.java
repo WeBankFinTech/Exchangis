@@ -10,7 +10,9 @@ public enum DataSourceType {
 
     MYSQL("MYSQL"),
 
-    SFTP("SFTP");
+    SFTP("SFTP"),
+
+    ORACLE("ORACLE");
 
     public String name;
 

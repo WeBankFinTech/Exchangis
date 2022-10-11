@@ -1,7 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform.mappings;
 
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
-import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 
 public class MySQLSqoopParamsMapping extends AbstractExchangisJobParamsMapping{
     @Override
