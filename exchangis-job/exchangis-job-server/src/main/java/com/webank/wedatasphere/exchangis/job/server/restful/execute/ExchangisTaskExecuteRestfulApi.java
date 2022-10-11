@@ -54,7 +54,7 @@ public class ExchangisTaskExecuteRestfulApi {
             return Message.error("Required params 'jobExecutionId' is missing");
         }
         try {
-            if (JobAuthorityUtils.hasJobExecuteSituationAuthority(SecurityFilter.getLoginUsername(request), jobExecutionId, OperationType.JOB_EXECUTE)) {
+            if (!JobAuthorityUtils.hasJobExecuteSituationAuthority(SecurityFilter.getLoginUsername(request), jobExecutionId, OperationType.JOB_EXECUTE)) {
                 throw new ExchangisJobServerException(METRICS_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
             }
             ExchangisLaunchedTaskMetricsVo taskMetrics = this.jobExecuteService.getLaunchedTaskMetrics(taskId, jobExecutionId);
@@ -81,7 +81,7 @@ public class ExchangisTaskExecuteRestfulApi {
                 ignoreKeywords, onlyKeywords, lastRows);
         String userName = SecurityFilter.getLoginUsername(request);
         try {
-            if (JobAuthorityUtils.hasJobExecuteSituationAuthority(userName, jobExecutionId, OperationType.JOB_QUERY)) {
+            if (!JobAuthorityUtils.hasJobExecuteSituationAuthority(userName, jobExecutionId, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to get logs(没有查看日志权限)");
             }
 
