@@ -49,25 +49,30 @@ class LocalDataxPluginDefinitionLoader extends DataxPluginDefinitionLoader with 
   }
 
   private def convertPluginResourceToDefine(pluginDefineSet: util.Set[String], resource: PluginResource, workDir: String): DataxPluginDefinition = {
-     // Search and load the resource definition at work directory
-     val resLocalFile = new File(workDir, new File(resource.getPath).getName)
-     if (resLocalFile.isDirectory){
-        val pluginConf: Configuration = Configuration.from(new File(resLocalFile.getPath, PLUGIN_JSON_NAME))
-        val pluginName: String = pluginConf.getString(PLUGIN_NAME)
-        var pluginPath: String = pluginConf.getString(PLUGIN_PATH)
-        if (pluginDefineSet.contains(pluginName)){
-          throw new DataxPluginLoadException(s"Fail to load plugin [name: ${pluginName}, path: ${pluginPath}], duplicated plugin exists", null)
+    // Skip the path has value '.'
+    resource.getPath match {
+      case "." => null
+      case _ =>
+        // Search and load the resource definition at work directory
+        val resLocalFile = new File(workDir, new File(resource.getPath).getName)
+        if (resLocalFile.isDirectory) {
+          val pluginConf: Configuration = Configuration.from(new File(resLocalFile.getPath, PLUGIN_JSON_NAME))
+          val pluginName: String = pluginConf.getString(PLUGIN_NAME)
+          var pluginPath: String = pluginConf.getString(PLUGIN_PATH)
+          if (pluginDefineSet.contains(pluginName)) {
+            throw new DataxPluginLoadException(s"Fail to load plugin [name: ${pluginName}, path: ${pluginPath}], duplicated plugin exists", null)
+          }
+          pluginDefineSet.add(pluginName)
+          if (StringUtils.isBlank(pluginPath)) {
+            pluginPath = resLocalFile.getPath
+            pluginConf.set(PLUGIN_PATH, pluginPath)
+          }
+          new DataxPluginDefinition(pluginName, pluginPath, pluginConf)
+        } else {
+          warn(s"Cannot find the plugin resource in path: [${resLocalFile.getPath}], please examine the working directory: [${workDir}]")
+          null
         }
-        pluginDefineSet.add(pluginName)
-       if (StringUtils.isBlank(pluginPath)){
-         pluginPath = resLocalFile.getPath
-         pluginConf.set(PLUGIN_PATH, pluginPath)
-       }
-       new DataxPluginDefinition(pluginName, pluginPath, pluginConf)
-     } else {
-       warn(s"Cannot find the plugin resource in path: [${resLocalFile.getPath}], please examine the working directory: [${workDir}]")
-       null
-     }
+    }
   }
 }
 

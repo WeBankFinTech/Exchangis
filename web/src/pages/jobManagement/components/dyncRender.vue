@@ -163,6 +163,9 @@ export default defineComponent({
               })
             }
           }
+          if (partitionArr.value.length > 0) {
+            emitData({}, true)
+          }
         })
         .catch(err => {
           message.error("获取分区信息失败");
@@ -171,9 +174,13 @@ export default defineComponent({
     if (type === 'MAP') {
       _buildMap()
     }
-    const emitData = (value) => {
+    const emitData = (value, isCan) => {
       let res = toRaw(props.param)
-      res.value = value
+      if (isCan) {
+        res.value = res.value || value
+      } else {
+        res.value = value
+      }
       context.emit("updateInfo", res)
     }
 
@@ -193,13 +200,13 @@ export default defineComponent({
           if (part.value && part.value.length) {
             res.value[part.label] = part.value.join()
           } else {
-            delete res.value[part.label]
+            res.value[part.label] = ''
           }
         } else {
           if (part.value) {
             res.value[part.label] = part.value
           } else {
-            delete res.value[part.label]
+            res.value[part.label] = ''
           }
         }
       })
@@ -216,7 +223,6 @@ export default defineComponent({
       partitionArr,
       description,
       handleChange,
-      partitionArr,
       sourceType
     }
   }
