@@ -34,7 +34,7 @@
           <DownOutlined v-else />
         </span>
         <span>
-          字段映射
+          <span style="display: inline-block;width: 140px;"></span>
           <a-tooltip v-if="engineType === 'SQOOP'" placement="rightTop">
             <template #title>使用sqoop引擎从hive导出到mysql时，均以hcatlog的方式按照字段名称去匹配导出，所以即使改变字段顺序也不会生效。
 使用sqoop引擎从mysql导入到hive的时候，导入text格式的hive表，设置overwrite写入方式可以改变字段映射并生效，为append时候会强制转换为hcatlog，hcatlog按照字段名去匹配，改变字段映射无效。</template>
@@ -57,7 +57,7 @@
                 :pagination="pagination" v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
                 bordered>
                 <template #fieldName="{ record }">
-                  <a-select ref="select" :value="record.fieldName" style="width: 150px"
+                  <a-select ref="select" :disabled="!record.fieldEditable" :value="record.fieldName" style="width: 150px"
                     :options="record.fieldOptions" @change="updateSourceFieldName(record, $event)">
                   </a-select>
                 </template>
@@ -116,10 +116,15 @@
           </div>
         </div>
 
-        <a-pagination v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
-          v-model:current="pagination.current" v-model:page-size="pagination.pageSize"
-          :page-size-options="pagination.pageSizeOptions" :total="fieldMap.sourceDS.length"
-          :show-total="total => `总共 ${fieldMap.sourceDS.length}条`" show-size-changer
+        <a-pagination
+          style="margin-top: 15px;"
+          v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
+          v-model:current="pagination.current" 
+          v-model:page-size="pagination.pageSize"
+          :page-size-options="pagination.pageSizeOptions" 
+          :total="fieldMap.sourceDS.length"
+          :show-total="total => `总共 ${fieldMap.sourceDS.length}条`" 
+          show-size-changer
           @change="changeEvents" />
       </div>
     </div>
@@ -463,6 +468,7 @@ export default defineComponent({
     const transformFuncOptions = ref([]);
 
     onMounted(() => {
+      isFold.value = !!(toRaw(props.fmData.mapping) || []).length;
       // 获取检验列表
       getFieldFunc('verify').then((res) => {
         checkOptions.value = (res?.data || []).map((v) => ({
