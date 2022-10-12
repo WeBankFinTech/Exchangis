@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.restful.execute;
 
+import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
@@ -12,7 +13,6 @@ import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisCategoryLogVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedTaskMetricsVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.Message;
-import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,9 @@ public class ExchangisTaskExecuteRestfulApi {
             return Message.error("Required params 'jobExecutionId' is missing");
         }
         try {
-            if (!JobAuthorityUtils.hasJobExecuteSituationAuthority(SecurityFilter.getLoginUsername(request), jobExecutionId, OperationType.JOB_EXECUTE)) {
+
+            if (!JobAuthorityUtils.hasJobExecuteSituationAuthority(UserUtils.getLoginUser(request), jobExecutionId, OperationType.JOB_EXECUTE)) {
+
                 throw new ExchangisJobServerException(METRICS_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
             }
             ExchangisLaunchedTaskMetricsVo taskMetrics = this.jobExecuteService.getLaunchedTaskMetrics(taskId, jobExecutionId);
@@ -79,7 +81,7 @@ public class ExchangisTaskExecuteRestfulApi {
         Message result = Message.ok("Submitted succeed(提交成功)！");
         LogQuery logQuery = new LogQuery(fromLine, pageSize,
                 ignoreKeywords, onlyKeywords, lastRows);
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         try {
             if (!JobAuthorityUtils.hasJobExecuteSituationAuthority(userName, jobExecutionId, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to get logs(没有查看日志权限)");
