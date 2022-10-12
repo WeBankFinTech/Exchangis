@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
+import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
@@ -31,7 +32,6 @@ import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricsCon
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.linkis.server.security.SecurityFilter;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -228,7 +228,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         List<ExchangisLaunchedJobListVo> jobList = new ArrayList<>();
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
-        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, start, size, SecurityFilter.getLoginUsername(request));
+        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, start, size, UserUtils.getLoginUser(request));
         //LOG.info("ExecutedJobList information: " + jobExecutionId + jobName + status + launchStartTime + launchEndTime + current + size);
         if(jobEntitylist != null) {
             try {
@@ -247,15 +247,20 @@ public class DefaultJobExecuteService implements JobExecuteService {
                     if (launchedExchangisTaskEntities == null) {
                         exchangisJobVo.setFlow((long) 0);
                     } else {
-                        int flows = 0;
+                        double flows = 0;
                         int taskNum = launchedExchangisTaskEntities.size();
                         for (LaunchedExchangisTaskEntity launchedExchangisTaskEntity : launchedExchangisTaskEntities) {
-                            if (launchedExchangisTaskEntity.getMetricsMap() == null || launchedExchangisTaskEntity.getMetricsMap().get("traffic") == null) {
+                            MetricsConverter<ExchangisMetricsVo> metricsConverter = metricConverterFactory.getOrCreateMetricsConverter(launchedExchangisTaskEntity.getEngineType());
+                            ExchangisLaunchedTaskMetricsVo exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVo();
+                            if (launchedExchangisTaskEntity.getMetricsMap() == null) {
                                 flows += 0;
                                 continue;
                             }
+                            exchangisLaunchedTaskVo.setMetrics(metricsConverter.convert(launchedExchangisTaskEntity.getMetricsMap()));
                             Map<String, Object> flowMap = (Map<String, Object>) launchedExchangisTaskEntity.getMetricsMap().get("traffic");
-                            flows += flowMap == null ? 0 : Integer.parseInt(flowMap.get("flow").toString());
+                            //Map<String, Object> flowMap = (Map<String, Object>) launchedExchangisTaskEntity.getMetricsMap().get("traffic");
+                            //flows += flowMap == null ? 0 : Integer.parseInt(flowMap.get("flow").toString());
+                            flows += exchangisLaunchedTaskVo.getMetrics().getTraffic().getFlow();
                         }
                         exchangisJobVo.setFlow(taskNum == 0 ? 0 : (long) (flows / taskNum));
                     }
@@ -273,7 +278,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
 
-        return launchedJobDao.count(jobExecutionId, jobName, status, startTime, endTime, SecurityFilter.getLoginUsername(request));
+        return launchedJobDao.count(jobExecutionId, jobName, status, startTime, endTime, UserUtils.getLoginUser(request));
     }
 
     @Override

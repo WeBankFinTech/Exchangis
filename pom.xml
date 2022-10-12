@@ -39,7 +39,8 @@
 	<properties>
 		<exchangis.version>1.1.1</exchangis.version>
 		<dss.version>1.1.0</dss.version>
-		<linkis.version>1.1.1</linkis.version>
+		<linkis.version>1.1.6-webank</linkis.version>
+		<linkis.datasource.version>1.1.1</linkis.datasource.version>
 		<streamis.version>0.1.0-SNAPSHOT</streamis.version>
 		<scala.version>2.11.8</scala.version>
 		<jdk.compile.version>1.8</jdk.compile.version>
@@ -165,7 +166,7 @@
 			<dependency>
 				<groupId>org.apache.linkis</groupId>
 				<artifactId>linkis-datasource-client</artifactId>
-				<version>${linkis.version}</version>
+				<version>${linkis.datasource.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

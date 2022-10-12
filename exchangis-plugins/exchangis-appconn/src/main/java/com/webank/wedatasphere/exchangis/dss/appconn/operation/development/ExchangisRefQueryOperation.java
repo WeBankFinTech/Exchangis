@@ -23,7 +23,8 @@ public class ExchangisRefQueryOperation extends
     @Override
     public QueryJumpUrlResponseRef query(ThirdlyRequestRef.QueryJumpUrlRequestRefImpl openRequestRef) throws ExternalOperationFailedException {
         Integer id = (Integer) openRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID);
-        String labels = ExchangisHttpUtils.serializeDssLabel(openRequestRef.getDSSLabels());
+        //String labels = ExchangisHttpUtils.serializeDssLabel(openRequestRef.getDSSLabels());
+        String labels = openRequestRef.getDSSLabels().get(0).getValue().get("DSSEnv");
         String jumpUrl = mergeBaseUrl(Constraints.REF_JUMP_URL_FORMAT + "?id=" + id + "&labels=" + labels);
         return QueryJumpUrlResponseRef.newBuilder().setJumpUrl(jumpUrl).success();
     }
