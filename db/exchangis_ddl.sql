@@ -70,7 +70,7 @@ CREATE TABLE `exchangis_project_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `create_time` datetime DEFAULT DEFAULT CURRENT_TIMESTAMP,
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `last_update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_user` varchar(64) DEFAULT NULL,
   `last_update_user` varchar(64) DEFAULT NULL,
@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `exchangis_job_func_params`(
 )Engine=InnoDB DEFAULT CHARSET=utf8;
 
 -- exchangis_engine_resources definition
-DROP TABLE IF EXISTS `exchangis_engine_resources`
+DROP TABLE IF EXISTS `exchangis_engine_resources`;
 CREATE TABLE `exchangis_engine_resources` (
    `id` bigint(20) NOT NULL AUTO_INCREMENT,
    `engine_type` varchar(50) NOT NULL,

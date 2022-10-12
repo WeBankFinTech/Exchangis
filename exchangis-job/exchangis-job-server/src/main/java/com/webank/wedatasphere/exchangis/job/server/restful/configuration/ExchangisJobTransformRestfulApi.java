@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.restful.configuration;
 
+import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
@@ -10,7 +11,6 @@ import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.P
 import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.TransformProcessor;
 import com.webank.wedatasphere.exchangis.job.server.service.JobTransformService;
 import org.apache.linkis.server.Message;
-import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
@@ -41,7 +41,7 @@ public class ExchangisJobTransformRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         params.setOperator(userName);
         Message response = Message.ok();
         try{
@@ -79,7 +79,7 @@ public class ExchangisJobTransformRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         // TODO validate the authority
         TransformProcessor processor = new TransformProcessor();
         processor.setJobId(Long.valueOf(requestVo.getJobId()));
@@ -110,7 +110,7 @@ public class ExchangisJobTransformRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         // TODO validate the authority
         TransformProcessor processor = this.transformService.getProcessorInfo(procCodeId);
         if (Objects.isNull(processor)){
@@ -130,7 +130,7 @@ public class ExchangisJobTransformRestfulApi {
 
     @RequestMapping(value = "/processor/code_content/{proc_code_id:\\w+}", method = RequestMethod.GET)
     public Message getProcessor(@PathVariable("proc_code_id")String procCodeId, HttpServletRequest request){
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         // TODO validate the authority
         Message response = Message.ok();
         try {

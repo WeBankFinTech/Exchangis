@@ -1,12 +1,9 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
-import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
+import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
-import com.webank.wedatasphere.exchangis.datasource.core.ui.builder.ElementUIFactory;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceRenderService;
-import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import org.apache.linkis.server.Message;
-import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +30,7 @@ public class ExchangisDataSourceRenderRestfulApi {
                              @RequestParam("dataSourceId") Long dataSourceId,
                              @RequestParam("database") String database,
                              @RequestParam("table") String table, HttpServletRequest request){
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         ElementUI.Type uiType;
         try {
             uiType = ElementUI.Type.valueOf(type.toUpperCase(Locale.ROOT));
