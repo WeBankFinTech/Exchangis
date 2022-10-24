@@ -218,6 +218,7 @@ public class ExchangisJobExecuteRestfulApi {
                              @RequestParam(value = "size", required = false) int size,
                             HttpServletRequest request) {
         Message message = Message.ok("Submitted succeed(提交成功)！");
+        jobName = jobName.replace("_", "\\_");
         try {
             List<ExchangisLaunchedJobListVo> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
                     launchStartTime, launchEndTime, current, size, request);
