@@ -630,7 +630,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         Integer page = Objects.isNull(vo.getPage()) ? 1 : vo.getPage();
         Integer pageSize = Objects.isNull(vo.getPageSize()) ? 100 : vo.getPageSize();
 
-        String dataSourceName = Objects.isNull(vo.getName()) ? "" : vo.getName();
+        String dataSourceName = Objects.isNull(vo.getName()) ? "" : vo.getName().replace("_", "\\_");
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         QueryDataSourceResult result;
         int totalPage = 0;
