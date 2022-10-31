@@ -55,17 +55,18 @@ public class ExchangisProjectRestfulApi {
      * @param queryVo query vo
      * @param current current page
      * @param size size
-     * @param name name
      * @return message
      */
     @RequestMapping( value = "projects", method = {RequestMethod.POST, RequestMethod.GET})
     public Message queryProjects(HttpServletRequest request,
                                  @RequestBody ProjectQueryVo queryVo,
                                  @RequestParam(value = "current", required = false) Integer current,
-                                 @RequestParam(value = "size", required = false) Integer size,
-                                 @RequestParam(value = "name", required = false) String name) {
+                                 @RequestParam(value = "size", required = false) Integer size) {
         String username = UserUtils.getLoginUser(request);
-        name = name.replace("_", "\\_");
+        String name = queryVo.getName();
+        if (StringUtils.isNotBlank(name)) {
+            name = name.replaceAll("_", "/_");
+        }
         Optional.ofNullable(current).ifPresent(queryVo::setCurrent);
         Optional.ofNullable(size).ifPresent(queryVo::setSize);
         Optional.ofNullable(name).ifPresent(queryVo::setName);
