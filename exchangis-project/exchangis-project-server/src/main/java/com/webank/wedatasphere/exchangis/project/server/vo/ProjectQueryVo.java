@@ -31,4 +31,9 @@ public class ProjectQueryVo extends ProjectPageQuery {
         this.size = Optional.ofNullable(size).orElse(10);
     }
 
+    public ProjectQueryVo(Map<String, Object> labels, String name){
+        this.labels = labels;
+        this.name = name;
+    }
+
 }
