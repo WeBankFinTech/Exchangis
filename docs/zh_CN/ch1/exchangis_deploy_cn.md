@@ -15,11 +15,11 @@ Exchangis 的安装，主要分为以下四步：
 |---------------------------------------| ------ | --------------- |
 | MySQL (5.5+)                          | 必装  | [如何安装mysql](https://www.runoob.com/mysql/mysql-install.html) |
 | JDK (1.8.0_141)                       | 必装 | [如何安装JDK](https://www.runoob.com/java/java-environment-setup.html) |
-| Hadoop(2.7.2，Hadoop 其他版本需自行编译 Linkis) | 必装 | [Hadoop单机部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) ；[Hadoop分布式部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
-| Hive(2.3.3，Hive 其他版本需自行编译 Linkis)     | 必装 | [Hive快速安装](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
+| Hadoop(2.7.2，Hadoop 其他版本需自行编译 Linkis) | 必装 | [Hadoop单机部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/deploy-quick/) ；[Hadoop分布式部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/deploy-quick/) |
+| Hive(2.3.3，Hive 其他版本需自行编译 Linkis)     | 必装 | [Hive快速安装](https://linkis.apache.org/zh-CN/docs/latest/deployment/deploy-quick/) |
 | SQOOP (1.4.6)                         | 必装 | [如何安装Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
-| DSS1.1.0                              | 必装 | [如何安装DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/DSS%26Linkis%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3%E5%8D%95%E6%9C%BA%E7%89%88.md) |
-| Linkis1.1.1                           | 必装 | [如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
+| DSS1.1.0                              | 必装 | [如何安装DSS](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_appconn_deploy_cn.md) |
+| Linkis1.1.1                           | 必装 | [如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/deploy-quick/) |
 | Nginx                                 | 必装 | [如何安装 Nginx](http://nginx.org/en/linux_packages.html) |
 
 底层依赖组件检查
@@ -32,7 +32,7 @@ $\color{#FF0000}{注意：一定要使用最新版的dss1.1.0，及linkis1.1.1}$
 
 datasource启用
 
-linkis的启动脚本中默认不会启动数据源相关的服务两个服务（ps-data-source-manager，ps-metadatamanager）， 如果想使用数据源服务，可以通过如下方式进行开启: 修改$LINKIS_CONF_DIR/linkis-env.sh中的 export ENABLE_METADATA_MANAGER=true值为true。 通过linkis-start-all.sh/linkis-stop-all.sh 进行服务启停时，会进行数据源服务的启动与停止。关于数据源更多详情可参考[数据源功能使用](https://linkis.apache.org/zh-CN/docs/1.1.0/deployment/start_metadatasource) 
+linkis的启动脚本中默认不会启动数据源相关的服务两个服务（ps-data-source-manager，ps-metadatamanager）， 如果想使用数据源服务，可以通过如下方式进行开启: 修改$LINKIS_CONF_DIR/linkis-env.sh中的 export ENABLE_METADATA_MANAGER=true值为true。 通过linkis-start-all.sh/linkis-stop-all.sh 进行服务启停时，会进行数据源服务的启动与停止。关于数据源更多详情可参考[数据源功能使用](https://linkis.apache.org/zh-CN/docs/1.1.0/deployment/start-metadatasource) 
 
 #### 1.2 创建 Linux 用户
 
@@ -57,7 +57,7 @@ INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_t
 INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境UAT', '开发环境UAT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
 ```
 
-如果hive数据源在部署时设置了需要进行kerberos方式认证，则需要在linkis_ps_dm_datasource_env表的parameter字段指定一个参数keyTab，其值的获取方式可见：[在Linkis中设置并认证hive数据源](https://linkis.apache.org/zh-CN/docs/1.1.1/deployment/start_metadatasource)
+如果hive数据源在部署时设置了需要进行kerberos方式认证，则需要在linkis_ps_dm_datasource_env表的parameter字段指定一个参数keyTab，其值的获取方式可见：[在Linkis中设置并认证hive数据源](https://linkis.apache.org/zh-CN/docs/1.1.0/deployment/start-metadatasource)
 
 #### 1.4 底层依赖组件检查
 
@@ -188,7 +188,7 @@ DATABASE={dbName}
 
 #### 2.7.1 获取前端安装包
 
-Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://github.com/WeBankFinTech/Exchangis/releases/download/release-1.0.0/web-dist.zip)
+Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0/dist.zip)
 
 您也可以自行编译 Exchangis 前端，在 Exchangis 根目录下执行如下命令：
 
