@@ -18,7 +18,7 @@ Exchangis 的安装，主要分为以下四步：
 | Hadoop(2.7.2，Hadoop 其他版本需自行编译 Linkis) | 必装 | [Hadoop单机部署](https://hadoop.apache.org/releases.html) ；[Hadoop分布式部署](https://hadoop.apache.org/releases.html) |
 | Hive(2.3.3，Hive 其他版本需自行编译 Linkis)     | 必装 | [Hive快速安装](https://hive.apache.org/downloads.html) |
 | SQOOP (1.4.6)                         | 必装 | [如何安装Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
-| DSS1.1.0                              | 必装 | [如何安装DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/DSS%26Linkis%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3%E5%8D%95%E6%9C%BA%E7%89%88.md) |
+| DSS1.1.0                              | 必装 | [如何安装DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/en_US/Installation_and_Deployment/DSS%26Linkis_one-click_deployment_document_stand-alone_version.md) |
 | Linkis1.1.1                           | 必装 | [如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/deploy-quick) |
 | Nginx                                 | 必装 | [如何安装 Nginx](http://nginx.org/en/linux_packages.html) |
 
