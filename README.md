@@ -63,5 +63,5 @@ If you want to get the fastest response, please mention issue to us, or scan the
 
 ## License
 
-Exchangis is under the Apache 2.0 License. See the [License](../../../LICENSE) file for details.
+Exchangis is under the Apache 2.0 License. See the [License](./LICENSE) file for details.
 
