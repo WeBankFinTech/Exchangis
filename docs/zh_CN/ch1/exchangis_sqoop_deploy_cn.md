@@ -73,4 +73,4 @@ cd {LINKIS_INSTALL_HOME}/links/sbin/
 待服务启动成功，至此，sqoop安装部署就完成了。
 
 engineplugin更详细的介绍可以参看下面的文章。  
-https://linkis.apache.org/zh-CN/docs/latest/deployment/engine_conn_plugin_installation
+https://linkis.apache.org/zh-CN/docs/latest/architecture/computation-governance-services/engine/engine-conn
