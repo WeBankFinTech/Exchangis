@@ -227,8 +227,8 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
             server_name  localhost;
             #charset koi8-r;
             #access_log  /var/log/nginx/host.access.log  main;
-            location /dist {
-            root   /appcom/Install/exchangis/web; # Exchangis 前端部署目录
+            location / {
+            root   /appcom/Install/exchangis/web/dist; # Exchangis 前端部署目录
             autoindex on;
             }
 
