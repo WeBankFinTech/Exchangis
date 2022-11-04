@@ -64,4 +64,4 @@ Exchangis 抽象了一套统一的数据源和同步作业定义插件，允许�
 
 ## License
 
-Exchangis is under the Apache 2.0 License. See the [License](../../../LICENSE) file for details.
+Exchangis is under the Apache 2.0 License. See the [License](./LICENSE) file for details.
