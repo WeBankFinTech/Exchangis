@@ -15,11 +15,11 @@ Exchangis installation is mainly divided into the following four steps ：
 |------------------------------------------------------------------------------| ------ | --------------- |
 | MySQL (5.5+)                                                                 | yes | [How to install mysql](https://www.runoob.com/mysql/mysql-install.html) |
 | JDK (1.8.0_141)                                                              | yes | [How to install JDK](https://www.runoob.com/java/java-environment-setup.html) |
-| Hadoop(2.7.2，Other versions of Hadoop need to compile Linkis by themselves.) | yes | [Hadoop stand-alone deployment](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) ；[Hadoop distributed deployment](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
-| Hive(2.3.3，Other versions of Hive need to compile Linkis by themselves.)     | yes | [Hive quick installation](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
+| Hadoop(2.7.2，Other versions of Hadoop need to compile Linkis by themselves.) | yes | [Hadoop stand-alone deployment](https://linkis.apache.org/docs/latest/deployment/deploy-quick) ；[Hadoop distributed deployment](https://linkis.apache.org/docs/latest/deployment/deploy-quick/) |
+| Hive(2.3.3，Other versions of Hive need to compile Linkis by themselves.)     | yes | [Hive quick installation](https://linkis.apache.org/docs/latest/deployment/deploy-quick/) |
 | SQOOP (1.4.6)                                                                | yes | [How to install Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
-| DSS1.1.0                                                                     | yes | [How to install DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/DSS%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3.md) |
-| Linkis1.1.1                                                                  | yes | [How to install Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick_deploy) |
+| DSS1.1.0                                                                     | yes | [How to install DSS](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_appconn_deploy_en.md) |
+| Linkis1.1.1                                                                  | yes | [How to install Linkis](https://linkis.apache.org/docs/latest/deployment/deploy-quick/) |
 | Nginx                                                                        | yes | [How to install Nginx](http://nginx.org/en/linux_packages.html) |
 
 Underlying component checking 
@@ -32,7 +32,7 @@ $\color{#FF0000}{Note: be sure to reinstall dss1.1.0, and the linkis version mus
 
 datasource enabled 
 
-By default, two services related to datasources (ps-data-source-manager, ps-metadatamanager) will not be started in the startup script of linkis. If you want to use datasource services, you can start them by modifying the export enable _ metadata _ manager = true value in $ linkis_conf_dir/linkis-env.sh. When the service is started and stopped through linkis-start-all.sh/linkis-stop-all.sh, the datasource service will be started and stopped. For more details about data sources, please refer to [Data Source Function Usage](https://linkis.apache.org/zh-CN/docs/1.1.0/deployment/start_metadatasource) 
+By default, two services related to datasources (ps-data-source-manager, ps-metadatamanager) will not be started in the startup script of linkis. If you want to use datasource services, you can start them by modifying the export enable _ metadata _ manager = true value in $ linkis_conf_dir/linkis-env.sh. When the service is started and stopped through linkis-start-all.sh/linkis-stop-all.sh, the datasource service will be started and stopped. For more details about data sources, please refer to [Data Source Function Usage](https://linkis.apache.org/docs/1.1.0/deployment/start-metadatasource/) 
 
 #### 1.2 Create Linux users 
 
@@ -55,7 +55,7 @@ INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_t
 INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境UAT', '开发环境UAT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
 ```
 
-If the hive data source needs kerberos authentication when deployed, you need to specify a parameter keyTab in the parameter field of the Linkis_ps_dm_datasource_env table, and the way to obtain its value can be seen: [Setting and authenticating hive data source in linkis](https://linkis.apache.org/zh-CN/docs/1.1.1/deployment/start_metadatasource). 
+If the hive data source needs kerberos authentication when deployed, you need to specify a parameter keyTab in the parameter field of the Linkis_ps_dm_datasource_env table, and the way to obtain its value can be seen: [Setting and authenticating hive data source in linkis](https://linkis.apache.org/docs/1.1.0/deployment/start-metadatasource/). 
 
 #### 1.4  Underlying component checking 
 
@@ -191,7 +191,7 @@ As shown in the figure below:
 
 #### 2.7.1  Get the front-end installation package 
 
-Exchangis has provided compiled front-end installation package by default, which can be downloaded and used directly ：[Click to jump to the Release interface](https://github.com/WeBankFinTech/Exchangis/releases/download/release-1.0.0/web-dist.zip)
+Exchangis has provided compiled front-end installation package by default, which can be downloaded and used directly ：[Click to jump to the Release interface](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0/dist.zip)
 
 You can also compile the exchange front-end by yourself and execute the following command in the exchanise root directory:
 
@@ -277,7 +277,7 @@ If you want to use Exchangis1.0.0 front-end, you also need to install the DSS Ex
 
 ## 4. Linkis Sqoop engine installation and deployment 
 
-If you want to execute the Sqoop operation of Exchangis1.0.0 normally, you also need to install the Linkis Sqoop engine. Please refer to: : [Linkis Sqoop engine installation documentation ](https://linkis.staged.apache.org/zh-CN/docs/1.1.2/engine_usage/sqoop)
+If you want to execute the Sqoop operation of Exchangis1.0.0 normally, you also need to install the Linkis Sqoop engine. Please refer to: : [Linkis Sqoop engine installation documentation ](https://linkis.apache.org/docs/1.1.2/engine-usage/sqoop/)
 
 ## 5.  How to log in and use Exchangis
 
