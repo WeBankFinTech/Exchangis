@@ -1,3 +1,3 @@
 # Exchangis Web
 
-基于[FES](https://winixt.gitee.io/fesjs/zh/)打造的管理系统
+基于[FES](https://webank.gitee.io/fes.js/)打造的管理系统
