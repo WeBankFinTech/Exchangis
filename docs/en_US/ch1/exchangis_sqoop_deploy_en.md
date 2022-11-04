@@ -74,4 +74,4 @@ cd {LINKIS_INSTALL_HOME}/links/sbin/
 After the service is successfully started, the installation and deployment of sqoop will be completed. 
 
 For a more detailed introduction of engineplugin, please refer to the following article.   
-https://linkis.apache.org/zh-CN/docs/latest/deployment/engine_conn_plugin_installation
+https://linkis.apache.org/zh-CN/docs/latest/architecture/computation-governance-services/engine/engine-conn
