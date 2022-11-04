@@ -18,7 +18,7 @@ Exchangis installation is mainly divided into the following four steps ：
 | Hadoop(2.7.2，Other versions of Hadoop need to compile Linkis by themselves.) | yes | [Hadoop stand-alone deployment](https://hadoop.apache.org/releases.html) ；[Hadoop distributed deployment](https://hadoop.apache.org/releases.html) |
 | Hive(2.3.3，Other versions of Hive need to compile Linkis by themselves.)     | yes | [Hive quick installation](https://hive.apache.org/downloads.html) |
 | SQOOP (1.4.6)                                                                | yes | [How to install Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
-| DSS1.1.0                                                                     | yes | [How to install DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/DSS%26Linkis%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3%E5%8D%95%E6%9C%BA%E7%89%88.md) |
+| DSS1.1.0                                                                     | yes | [How to install DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/blob/main/en_US/Installation_and_Deployment/DSS%26Linkis_one-click_deployment_document_stand-alone_version.md) |
 | Linkis1.1.1                                                                  | yes | [How to install Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/deploy-quick) |
 | Nginx                                                                        | yes | [How to install Nginx](http://nginx.org/en/linux_packages.html) |
 
