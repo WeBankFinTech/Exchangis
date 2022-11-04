@@ -188,7 +188,7 @@ DATABASE={dbName}
 
 #### 2.7.1 获取前端安装包
 
-Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://github.com/WeBankFinTech/Exchangis/releases/download/release-1.0.0/web-dist.zip)
+Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0/dist.zip)
 
 您也可以自行编译 Exchangis 前端，在 Exchangis 根目录下执行如下命令：
 
@@ -227,8 +227,8 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
             server_name  localhost;
             #charset koi8-r;
             #access_log  /var/log/nginx/host.access.log  main;
-            location /dist {
-            root   /appcom/Install/exchangis/web; # Exchangis 前端部署目录
+            location / {
+            root   /appcom/Install/exchangis/web/dist; # Exchangis 前端部署目录
             autoindex on;
             }
 
