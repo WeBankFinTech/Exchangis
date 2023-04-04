@@ -35,7 +35,7 @@
     </insert>
 
     <update id="updateProjectUser">
-        <foreach collection="projectUsers" item="projectUsers">
+        <foreach collection="projectUsers" item="projectUser">
             UPDATE <include refid="TableName"/>
             SET
             project_id = #{projectUser.projectId},
