@@ -14,7 +14,7 @@ In order to build a common data source module, the data source module is mainly 
 Figure 2-1 Overall Architecture Design
  </div>
 
-## 3、Detailed explanation of modules 
+## 3、Detailed explanation of modules  
 
 ### 3.1 datasource-server
 

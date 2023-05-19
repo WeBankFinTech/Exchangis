@@ -54,7 +54,9 @@ public class ExchangisTaskExecuteRestfulApi {
             return Message.error("Required params 'jobExecutionId' is missing");
         }
         try {
+
             if (!JobAuthorityUtils.hasJobExecuteSituationAuthority(UserUtils.getLoginUser(request), jobExecutionId, OperationType.JOB_EXECUTE)) {
+
                 throw new ExchangisJobServerException(METRICS_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
             }
             ExchangisLaunchedTaskMetricsVo taskMetrics = this.jobExecuteService.getLaunchedTaskMetrics(taskId, jobExecutionId);

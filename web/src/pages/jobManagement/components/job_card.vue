@@ -99,6 +99,7 @@ export default defineComponent({
       if (result) {
         message.success(t("job.action.deleteJobSuccess"));
         context.emit("refreshList", props.type);
+        context.emit("handleDel", id);
         changeManagement();
       }
     };

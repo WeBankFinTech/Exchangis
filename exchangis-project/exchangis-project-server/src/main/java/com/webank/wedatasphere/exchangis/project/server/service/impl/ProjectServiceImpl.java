@@ -104,6 +104,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         if(projectUserMap.size() > 0) {
             this.projectUserMapper.addProjectUser(new ArrayList<>(projectUserMap.values()));
+
         }
         return project.getId();
     }

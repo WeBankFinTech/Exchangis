@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
+
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
@@ -54,6 +55,7 @@ public class OracleDataxSubExchangisJobHandler extends AuthEnabledSubExchangisJo
      * Where condition
      */
     private static final JobParamDefine<String> SOURCE_WHERE_CONDITION = JobParams.define(JobParamConstraints.WHERE);
+
 
     /**
      * Query sql
