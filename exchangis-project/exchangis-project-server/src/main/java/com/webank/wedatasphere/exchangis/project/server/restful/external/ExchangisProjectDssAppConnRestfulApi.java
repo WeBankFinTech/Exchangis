@@ -48,16 +48,18 @@ public class ExchangisProjectDssAppConnRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
+
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String username = UserUtils.getLoginUser(request);
         if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
-            projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
+            projectVo.setViewUsers(username + projectVo.getViewUsers());
         }
         if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
-            projectVo.setEditUsers(username + "," + projectVo.getEditUsers());
+            projectVo.setEditUsers(username + projectVo.getEditUsers());
         }
         if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
-            projectVo.setExecUsers(username + "," + projectVo.getExecUsers());
+            projectVo.setExecUsers(username + projectVo.getExecUsers());
+
         }
 
         try {
