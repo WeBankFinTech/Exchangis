@@ -132,18 +132,46 @@
                                 @updateSinkParams="updateSinkParams"
                             />
                         </div>
-                        <div>
-                            <FieldMap
-                                v-if="curTask"
-                                v-bind:fmData="curTask.transforms"
-                                v-bind:fieldsSink="fieldsSink"
-                                v-bind:fieldsSource="fieldsSource"
-                                v-bind:deductions="deductions"
-                                v-bind:addEnabled="addEnable"
-                                v-bind:transformEnable="transformEnable"
-                                v-bind:engineType="curTask.engineType"
-                                @updateFieldMap="updateFieldMap"
-                            />
+                        <div style="position: relative;">
+                            <a-select
+                                v-if="curType"
+                                v-model:value="curType"
+                                style="width: 140px;position: absolute;left: 46px;top: 20px;"
+                                class="top-line-select"
+                                :allowClear="true"
+                                :placeholder="$t('请选择')"
+                                @select="selectTranforms"
+                                >
+                                <a-select-option 
+                                    v-for="item of processOptions" 
+                                    :value="item.value" 
+                                    :key="item.value">
+                                    {{ item.label }}
+                                </a-select-option>
+                            </a-select>
+                            <template v-if="curType === 'MAPPING'"> 
+                                <FieldMap
+                                    v-if="curTask"
+                                    v-bind:fmData="curTask.transforms"
+                                    v-bind:fieldsSink="fieldsSink"
+                                    v-bind:fieldsSource="fieldsSource"
+                                    v-bind:deductions="deductions"
+                                    v-bind:addEnabled="addEnable"
+                                    v-bind:transformEnable="transformEnable"
+                                    v-bind:engineType="curTask.engineType"
+                                    @updateFieldMap="updateFieldMap"
+                                />
+                            </template>
+                            <template v-else-if="curType === 'PROCESSOR'">
+                                <!-- 后置控制器 -->
+                                <processor 
+                                    ref="processorRef"
+                                    :key="activeIndex"
+                                    v-bind:jobId="curTab.id"
+                                    v-bind:procCodeId="curTask.transforms.code_id" 
+                                    v-bind:copyCodeId="curTask.transforms.copy_code_id"
+                                    @updateProMap="updateProMap"/>
+                            </template>
                         </div>
                         <div>
                             <ProcessControl
@@ -390,6 +418,9 @@ import {
 import { randomString, moveUpDown, dateFormat } from '../../../common/utils';
 import executionLog from './executionLog';
 import metrics from './metricsInfo';
+import processor from './processor.vue';
+import { cloneDeep } from "lodash-es";
+/**
 
 /**
  * 用于判断一个对象是否有空 value,如果有返回 true
@@ -450,6 +481,11 @@ const ehColumns = [
     }
 ];
 
+const DEF_OPTIONS = [
+    { label: '字段映射', value: 'MAPPING' },
+    { label: '后置控制器', value: 'PROCESSOR'}
+]
+
 export default {
     components: {
         SettingOutlined,
@@ -474,7 +510,8 @@ export default {
         CloseOutlined,
         StopFilled,
         executionLog,
-        metrics
+        metrics,
+        processor
     },
     data() {
         const { t } = useI18n({ useScope: 'global' });
@@ -549,6 +586,8 @@ export default {
             },
             bottomStyle: '', //底部样式
             maxRows: 10,
+            processTypes: [], // MAPPING字段映射 | PROCESSOR后置控制器
+            curType: ''
         };
     },
     computed: {
@@ -557,6 +596,10 @@ export default {
                 list: this.tasklist,
                 id: this.jobExecutionId
             };
+        },
+        processOptions() {
+            const filters = DEF_OPTIONS.filter(v => this.processTypes.includes(v.value));
+            return filters;
         }
     },
     watch: {
@@ -619,6 +662,8 @@ export default {
                 if (this.list.length) {
                     this.activeIndex = 0;
                     this.curTask = this.list[this.activeIndex];
+                    this.curTask._transforms = cloneDeep(this.curTask.transforms, 1)
+                    this.curType = this.curTask.transforms.type;
                     // test
                     console.log('初始获取详情', this.curTask)
                     this.addEnable = this.curTask.transforms.addEnable;
@@ -646,6 +691,7 @@ export default {
                 });
                 _config.jobParams = JSON.stringify(jobParams);
             }
+            _config.projectId = _this.$route.query.id
             updateTaskConfiguration(id, _config)
                 .then((res) => {
                     message.success('更新/保存成功');
@@ -662,14 +708,19 @@ export default {
             }
         },
         copySub(item) {
-            this.copyObj = item;
+            this.copyObj = cloneDeep(item, 1);
+            if (this.copyObj.transforms.type === 'PROCESSOR') {
+                this.copyObj.transforms.copy_code_id = this.copyObj.transforms.code_id;
+                this.copyObj.transforms.code_id = ''
+            }
             this.modalCopy.visible = true;
         },
         deleteSub(index) {
             this.jobData.content.subJobs.splice(index, 1);
             if (this.list.length) {
-                this.activeIndex = this.activeIndex > index ? this.activeIndex - 1 : this.activeIndex;
-                this.changeCurTask(this.activeIndex);
+                let bool1 = (this.activeIndex === index) && index >= (this.list.length - 1)// 当前选项在末尾
+                let activeIndex = (this.activeIndex > index ||bool1)  ? this.activeIndex - 1 : this.activeIndex;
+                this.changeCurTask(activeIndex, true);
             } else {
                 this.activeIndex = -1;
                 this.curTask = null;
@@ -684,9 +735,17 @@ export default {
             }
             return 'sub-content';
         },
-        changeCurTask(index) {
+        async changeCurTask(index, isFresh) {
+            if (this.activeIndex === index && !isFresh) return
+            if (this.curType === 'PROCESSOR') {
+                const valid = await this.$refs.processorRef.beforeSave();
+                console.log('保存控制器', valid);
+                if (!valid) return;
+            }
             this.activeIndex = index;
             this.curTask = this.list[this.activeIndex];
+            this.curTask._transforms = cloneDeep(this.curTask.transforms, 1)
+            this.curType = this.curTask.transforms.type;
             this.addEnable = this.curTask.transforms.addEnable;
             this.transformEnable = this.curTask.transforms.transformEnable;
             console.log('当前任务切换后', this.curTask.transforms);
@@ -698,6 +757,7 @@ export default {
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
                     this.transformEnable = res.transformEnable;
+                    this.processTypes = res.types;
                 }).catch((err) => {
                     console.log(err);
                 });
@@ -729,7 +789,7 @@ export default {
                     sinks: []
                 },
                 transforms: {
-                    type: 'MAPPING',
+                    type: '',
                     mapping: []
                 },
                 settings: []
@@ -745,6 +805,8 @@ export default {
                 this.$nextTick(() => {
                     this.activeIndex = this.jobData.content.subJobs.length - 1;
                     this.curTask = this.list[this.activeIndex];
+                    this.curTask._transforms = cloneDeep(this.curTask.transforms, 1)
+                    this.curType = '';
                     this.addEnable = false;
                     this.transformEnable = false;
                     this.deductions = [];
@@ -755,6 +817,11 @@ export default {
         updateFieldMap(transforms) {
             console.log('update field map', transforms);
             this.curTask.transforms = transforms;
+        },
+        // 更新控制器
+        updateProMap(processor) {
+            this.curTask.transforms = processor;
+            console.log('更新控制器', this.curTask.transforms)
         },
         updateProcessControl(settings) {
             this.curTask.settings = settings;
@@ -806,9 +873,12 @@ export default {
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
                     this.transformEnable = res.transformEnable;
+                    this.processTypes = res.types;
+                    this.curType = res.types.includes(this.curType) ? this.curType : (res.types[0] || '');
                     // 不在使用deductions 直接将deductions作为值使用
                     if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
                         this.curTask.transforms.mapping = this.convertDeductions(res.deductions);
+                        this.curTask.transforms.type = this.curType;
                     }
                 });
             } else {
@@ -830,9 +900,12 @@ export default {
                     this.deductions = res.deductions;
                     this.addEnable = res.addEnable;
                     this.transformEnable = res.transformEnable;
+                    this.processTypes = res.types;
+                    this.curType = res.types.includes(this.curType) ? this.curType : (res.types[0] || '');
                     // 不在使用deductions 直接将deductions作为值使用
                     if (!(firstInit && this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
                         this.curTask.transforms.mapping = this.convertDeductions(res.deductions);
+                        this.curTask.transforms.type = this.curType;
                     }
                 });
             } else {
@@ -867,9 +940,13 @@ export default {
                 res.push(<li style="list-style: none;"><span style="margin-left: -30px;">{job.subJobName}:</span></li>);
                 for (const key in params) {
                     params[key].forEach((i) => {
-                        if (!i.value && i.required) {
-                            isInsert = true;
-                            res.push(<li>{i.label}不可为空</li>);
+                        let judePartition = i.value && i.field === "partition" &&
+                            (!Object.keys(i.value).length || Object.values(i.value).filter(v => v).length < Object.keys(i.value).length)
+                        if ((!i.value || judePartition) && i.required ) {
+                            if (!(i.field === "partition" && !i.value)) {
+                                isInsert = true;
+                                res.push(<li>{i.label}不可为空</li>);
+                            }
                         } else if (i.value && i.validateType === "REGEX") {
                             const num_reg = new RegExp(`${i.validateRange}`);
                             if (!num_reg.test(i.value)) {
@@ -900,11 +977,22 @@ export default {
 
             return res;
         },
-        saveAll(type = 'save', cb) {
+        async saveAll(type = 'save', cb) {
+            message.destroy();
+            this.loading = true;
+            if (this.curType === 'PROCESSOR') {
+                const valid = await this.$refs.processorRef.beforeSave();
+                console.log('保存控制器', valid);
+                if (!valid) {
+                    message.error('后置控制器保存失败');
+                    return this.loading = false;
+                }
+            }
             const saveContent = [];
             const data = toRaw(this.jobData);
             const tips = this.checkPostData(data);
             if (tips.length > 0) {
+                this.loading = false;
                 return notification.warning({
                     message: '任务信息未完整填写',
                     description: h(
@@ -916,6 +1004,7 @@ export default {
                 });
             }
             if (!data.content || !data.content.subJobs) {
+                this.loading = false;
                 return message.error('缺失保存对象');
             }
             for (let i = 0; i < data.content.subJobs.length; i++) {
@@ -927,6 +1016,7 @@ export default {
                     || objectValueEmpty(jobData.dataSourceIds.source)
                     || objectValueEmpty(jobData.dataSourceIds.sink)
                 ) {
+                    this.loading = false;
                     return message.error('未选择数据源库表');
                 }
                 cur.dataSources = {
@@ -945,24 +1035,30 @@ export default {
                     sinks: []
                 };
                 jobData.params.sources.forEach((source) => {
-                    cur.params.sources.push({
-                        config_key: source.field, // UI中field
-                        config_name: source.label, // UI中label
-                        config_value: source.value, // UI中value
-                        sort: source.sort
-                    });
+                    if (!(source.field === "partition" && !source.value)) {
+                        cur.params.sources.push({
+                            config_key: source.field, // UI中field
+                            config_name: source.label, // UI中label
+                            config_value: source.value, // UI中value
+                            sort: source.sort
+                        });
+                    }
                 });
                 jobData.params.sinks.forEach((source) => {
-                    cur.params.sinks.push({
-                        config_key: source.field, // UI中field
-                        config_name: source.label, // UI中label
-                        config_value: source.value, // UI中value
-                        sort: source.sort
-                    });
+                    if (!(source.field === "partition" && !source.value)) {
+                        cur.params.sinks.push({
+                            config_key: source.field, // UI中field
+                            config_name: source.label, // UI中label
+                            config_value: source.value, // UI中value
+                            sort: source.sort
+                        });
+                    }
                 });
                 cur.transforms = jobData.transforms;
-                cur.transforms.addEnable = this.addEnable;
-                cur.transforms.transformEnable = this.transformEnable;
+                if (this.curType === 'MAPPING') { // 为字段映射时才需要
+                    cur.transforms.addEnable = this.addEnable;
+                    cur.transforms.transformEnable = this.transformEnable;
+                }
                 cur.settings = [];
                 if (jobData.settings && jobData.settings.length) {
                     jobData.settings.forEach((setting) => {
@@ -979,10 +1075,13 @@ export default {
             // test
             console.log(saveContent)
             saveProject(this.jobData.id, {
+                projectId:  this.$route.query.id,
                 content: JSON.stringify(saveContent)
             }, type).then((res) => {
                 cb && cb();
                 message.success('保存成功');
+            }).finally(() => {
+                this.loading = false;
             });
         },
         // 执行任务
@@ -1214,6 +1313,46 @@ export default {
                 } else {
                     this.bottomStyle = "flex: 0 0 464px; height: 464px !important;";
                     this.maxRows = 15;
+                }
+            }
+        },
+        // 切换控制器和映射
+        selectTranforms(val) {
+            let _tranforms = cloneDeep(this.curTask._transforms, 1)
+            console.log('切换控制器', val, _tranforms.type!== 'MAPPING' && this.curType === 'MAPPING')
+            const MAPS = {
+                'MAPPING': {
+                    type: 'MAPPING',
+                    mapping: []
+                },
+                'PROCESSOR': {
+                    type: 'PROCESSOR',
+                   code_id: ''
+                }
+            }
+            if (this.curType === _tranforms.type) { // 恢复默认配置
+                this.curTask.transforms = _tranforms;
+            } else {
+                this.curTask.transforms = MAPS[this.curType];
+            }
+
+            // 如果默认值不是MAPPING, 则需要重新获取
+            if (_tranforms.type!== 'MAPPING' && this.curType === 'MAPPING') {
+                const data = this.getFieldsParams(this.curTask);
+                if (data) {
+                    getFields(data).then((res) => {
+                        this.fieldsSource = res.sourceFields;
+                        this.fieldsSink = res.sinkFields;
+                        this.deductions = res.deductions;
+                        this.addEnable = res.addEnable;
+                        this.transformEnable = res.transformEnable;
+                        this.processTypes = res.types;
+                        if (!(this.curTask.transforms.mapping && this.curTask.transforms.mapping.length)) {
+                           this.curTask.transforms.mapping = this.convertDeductions(res.deductions);
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                    });
                 }
             }
         }

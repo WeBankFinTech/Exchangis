@@ -120,6 +120,7 @@ public class ExchangisProjectRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
+
         String username = UserUtils.getLoginUser(request);
         String oringinUser = SecurityFilter.getLoginUsername(request);
         if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
