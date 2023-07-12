@@ -38,7 +38,7 @@ public abstract class CacheInTaskObserver<T extends ExchangisTask> extends Abstr
         }
         int fetchTaskSize = cacheTasks.size();
         int restBatchSize = batchSize - fetchTaskSize;
-        if (restBatchSize > 0 && (this.lastPublishTime + this.publishInterval < System.currentTimeMillis())) {
+        if (restBatchSize > 0 && (this.lastPublishTime + this.publishInterval <= System.currentTimeMillis())) {
             Optional.ofNullable(onPublishNext(restBatchSize)).ifPresent(cacheTasks::addAll);
         }
         return cacheTasks;
