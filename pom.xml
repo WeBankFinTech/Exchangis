@@ -63,7 +63,7 @@
 		<reflections.version>0.9.10</reflections.version>
 		<jersey-bean-validation.version>2.21</jersey-bean-validation.version>
 		<aspectj.version>1.9.5</aspectj.version>
-		<xstream.version>1.4.15</xstream.version>
+		<xstream.version>1.4.19</xstream.version>
 		<jobmanager.version>0.1.0-SNAPSHOT</jobmanager.version>
 	</properties>
 

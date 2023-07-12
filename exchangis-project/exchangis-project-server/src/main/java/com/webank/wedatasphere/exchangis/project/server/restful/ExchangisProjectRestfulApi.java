@@ -88,7 +88,7 @@ public class ExchangisProjectRestfulApi {
     @RequestMapping( value = "projects/{projectId:\\d+}", method = RequestMethod.GET)
     public Message queryProjectDetail(HttpServletRequest request,
                                  @PathVariable("projectId") Long projectId) {
-        String username = UserUtils.getLoginUser(request);
+        String username = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo project = projectService.getProjectDetailById(projectId);
             if (Objects.isNull(project)){
@@ -124,14 +124,13 @@ public class ExchangisProjectRestfulApi {
         String username = UserUtils.getLoginUser(request);
         String oringinUser = SecurityFilter.getLoginUsername(request);
         if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
-            projectVo.setViewUsers(username + projectVo.getViewUsers());
+            projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
         }
         if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
-            projectVo.setEditUsers(username + projectVo.getEditUsers());
+            projectVo.setEditUsers(username + "," + projectVo.getEditUsers());
         }
         if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
-            projectVo.setExecUsers(username + projectVo.getExecUsers());
-
+            projectVo.setExecUsers(username + "," + projectVo.getExecUsers());
         }
 
         try {
@@ -149,7 +148,6 @@ public class ExchangisProjectRestfulApi {
             return Message.error("Fail to create project (创建项目失败)");
         }
     }
-
     /**
      * check project name
      * @param request http request
@@ -169,6 +167,7 @@ public class ExchangisProjectRestfulApi {
         }
     }
 
+
     /**
      * Update project
      * @param request request
@@ -184,10 +183,9 @@ public class ExchangisProjectRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String username = UserUtils.getLoginUser(request);
-
+        //String username = SecurityFilter.getLoginUsername(request);
         if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
             projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
         }
