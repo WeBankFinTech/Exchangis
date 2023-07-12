@@ -3,16 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>linkis</artifactId>
-        <groupId>org.apache.linkis</groupId>
+        <artifactId>exchangis-engines</artifactId>
+        <groupId>com.webank.wedatasphere.exchangis</groupId>
         <version>1.1.1</version>
-        <relativePath/>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>linkis-engineplugin-datax</artifactId>
 
     <properties>
+        <linkis.version>1.1.6-webank</linkis.version>
         <datax.engine.version>3.0.0-Plus-2</datax.engine.version>
         <datax.version>3.0.0</datax.version>
         <hadoop.version>2.7.2</hadoop.version>
@@ -104,6 +105,18 @@
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>

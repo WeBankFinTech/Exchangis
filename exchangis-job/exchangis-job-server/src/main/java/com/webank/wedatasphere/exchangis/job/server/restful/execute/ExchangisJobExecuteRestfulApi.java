@@ -185,6 +185,7 @@ public class ExchangisJobExecuteRestfulApi {
         ExchangisJobProgressVo jobStatus = executeService.getJobStatus(jobExecutionId);
         Message message = null;
         String loginUser = SecurityFilter.getLoginUsername(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
         if(!JobAuthorityUtils.hasJobExecuteSituationAuthority(loginUser, jobExecutionId, OperationType.JOB_EXECUTE)) {
             return Message.error("You have no permission to get kill job (没有权限去杀死任务)");
         }
