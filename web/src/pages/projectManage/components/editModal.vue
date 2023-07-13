@@ -10,7 +10,7 @@
           ]">
           <a-input v-model:value="formState.projectName" :maxLength="100" :placeholder="
               $t(`projectManage.editModal.form.fields.projectName.placeholder`)
-            " />
+            " :disabled="mode === 'edit'"/>
         </a-form-item>
         <!--<a-form-item :label="$t(`projectManage.editModal.form.fields.tags.label`)" name="tags">-->
         <!--<a-select mode="multiple" v-model:value="formState.tags" :placeholder="$t(`projectManage.editModal.form.fields.tags.placeholder`)">-->
