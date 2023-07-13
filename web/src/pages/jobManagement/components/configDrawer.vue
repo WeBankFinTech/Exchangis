@@ -212,6 +212,9 @@ export default {
         const list = res?.result || [];
         if (!formState['proxyUser']) {
           formState['proxyUser'] = list[0] || '';
+          if (formState['proxyUser']) {
+            context.emit('finish', cloneDeep(formState));
+          }
         }
         proxyUsers.value = list;
       })
