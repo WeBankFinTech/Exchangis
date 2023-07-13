@@ -19,12 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
-            <artifactId>exchangis-project-server</artifactId>
-            <version>1.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.webank.wedatasphere.exchangis</groupId>
-            <artifactId>exchangis-job-common</artifactId>
+            <artifactId>exchangis-project-provider</artifactId>
             <version>1.1.2</version>
         </dependency>
         <dependency>
@@ -53,12 +48,6 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.49</version>
-        </dependency>
-        <dependency>
-            <groupId>com.webank.wedatasphere.exchangis</groupId>
-            <artifactId>exchangis-project-server</artifactId>
-            <version>1.1.1</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
