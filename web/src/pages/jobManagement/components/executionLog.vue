@@ -164,6 +164,7 @@ export default defineComponent({
           .catch((err) => {
             console.log(err)
             //message.error("获取日志失败")
+            pauseFetchingLog(true);
           })
       } else {
         getTaskExecLog({
@@ -180,6 +181,7 @@ export default defineComponent({
           .catch((err) => {
             console.log(err)
             message.error("获取日志失败")
+            pauseFetchingLog(true);
           })
       }
     }
