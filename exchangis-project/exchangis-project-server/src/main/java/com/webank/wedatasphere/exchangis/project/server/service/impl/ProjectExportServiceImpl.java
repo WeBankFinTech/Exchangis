@@ -19,6 +19,7 @@ import org.apache.linkis.server.BDPJettyServerHelper;
 import org.apache.linkis.server.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
  * @author jefftlin
  * @date 2023/7/13
  */
+@Service
 public class ProjectExportServiceImpl implements ProjectExportService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProjectExportServiceImpl.class);

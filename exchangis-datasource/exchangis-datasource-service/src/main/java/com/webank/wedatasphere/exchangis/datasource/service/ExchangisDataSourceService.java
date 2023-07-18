@@ -43,7 +43,7 @@ import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
 import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
 import org.apache.linkis.datasourcemanager.common.util.json.Json;
 import org.apache.linkis.httpclient.response.Result;
-import org.apache.linkis.metadatamanager.common.domain.MetaColumnInfo;
+import org.apache.linkis.metadata.query.common.domain.MetaColumnInfo;
 import org.apache.linkis.server.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -401,7 +401,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         QueryWrapper<ExchangisJobDsBind> condition = new QueryWrapper<>();
         condition.eq("source_ds_id", id).or().eq("sink_ds_id", id);
-        Integer inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
+        Long inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
         if (inUseCount > 0) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "目前存在引用依赖");
         }

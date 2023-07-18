@@ -28,8 +28,12 @@
             <version>${exchangis.version}</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>linkis-module</artifactId>
                     <groupId>org.apache.linkis</groupId>
+                    <artifactId>linkis-module</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-jdbc</artifactId>
+                    <groupId>org.springframework</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -60,7 +64,6 @@
             <groupId>com.fasterxml</groupId>
             <artifactId>classmate</artifactId>
             <version>1.5.1</version>
-
         </dependency>
     </dependencies>
 
