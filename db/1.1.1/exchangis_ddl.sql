@@ -14,7 +14,7 @@ CREATE TABLE `exchangis_job_ds_bind` (
 DROP TABLE IF EXISTS `exchangis_job_entity`;
 CREATE TABLE `exchangis_job_entity` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(100) NOT NULL,
   `create_time` datetime DEFAULT NULL,
   `last_update_time` datetime(3) DEFAULT NULL,
   `engine_type` varchar(45) DEFAULT '',
@@ -70,7 +70,7 @@ CREATE TABLE `exchangis_project_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `create_time` datetime DEFAULT DEFAULT CURRENT_TIMESTAMP,
   `last_update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `create_user` varchar(64) DEFAULT NULL,
   `last_update_user` varchar(64) DEFAULT NULL,
@@ -178,7 +178,7 @@ CREATE TABLE `exchangis_job_func` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `job_func_tab_name_idx` (`tab_name`,`func_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8
 
 -- exchangis_job_func_params definition
 DROP TABLE IF EXISTS `exchangis_job_func_params`;
@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `exchangis_job_func_params`(
 )Engine=InnoDB DEFAULT CHARSET=utf8;
 
 -- exchangis_engine_resources definition
-DROP TABLE IF EXISTS `exchangis_engine_resources`;
+DROP TABLE IF EXISTS `exchangis_engine_resources`
 CREATE TABLE `exchangis_engine_resources` (
    `id` bigint(20) NOT NULL AUTO_INCREMENT,
    `engine_type` varchar(50) NOT NULL,
