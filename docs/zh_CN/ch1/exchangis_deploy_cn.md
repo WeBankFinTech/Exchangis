@@ -19,21 +19,21 @@ Exchangis 的安装，主要分为以下四步：
 | Hadoop(2.7.2，Hadoop 其他版本需自行编译 Linkis) | 必装 | [Hadoop单机部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) ；[Hadoop分布式部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) |
 | Hive(2.3.3，Hive 其他版本需自行编译 Linkis)     | 必装 | [Hive快速安装](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) |
 | SQOOP (1.4.6)                         | 必装 | [如何安装Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
-| DSS1.1.0                              | 必装 | [如何安装DSS](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_appconn_deploy_cn.md) |
-| Linkis1.1.1                           | 必装 | [如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) |
+| DSS1.1.2                              | 必装 | [如何安装DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/tree/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2) |
+| Linkis1.4.0                           | 必装 | [如何安装Linkis](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) |
 | Nginx                                 | 必装 | [如何安装 Nginx](http://nginx.org/en/linux_packages.html) |
 
 底层依赖组件检查
 
-$\color{#FF0000}{注意：一定要使用最新版的dss1.1.0，及linkis1.1.1}$。
+注意：一定要使用最新版的dss1.1.2，及linkis1.4.0。
 
-[linkis1.1.1代码地址](https://github.com/apache/incubator-linkis/tree/release-1.1.1)    
+[linkis1.4.0代码地址](https://github.com/apache/incubator-linkis/tree/release-1.4.0)
 
-[DSS1.1.0代码地址](https://github.com/WeBankFinTech/DataSphereStudio/tree/dev-1.1.0)
+[DSS1.1.2代码地址    ](https://github.com/WeBankFinTech/DataSphereStudio/tree/dev-1.1.2)
 
 datasource启用
 
-linkis的启动脚本中默认不会启动数据源相关的服务两个服务（ps-data-source-manager，ps-metadatamanager）， 如果想使用数据源服务，可以通过如下方式进行开启: 修改$LINKIS_CONF_DIR/linkis-env.sh中的 export ENABLE_METADATA_MANAGER=true值为true。 通过linkis-start-all.sh/linkis-stop-all.sh 进行服务启停时，会进行数据源服务的启动与停止。关于数据源更多详情可参考[数据源功能使用](https://linkis.apache.org/zh-CN/docs/1.1.0/deployment/start-metadatasource) 
+linkis的启动脚本中默认不会启动数据源相关的服务两个服务（ps-data-source-manager，ps-metadatamanager）， 如果想使用数据源服务，可以通过如下方式进行开启: 修改$LINKIS_CONF_DIR/linkis-env.sh中的 export ENABLE_METADATA_MANAGER=true值为true。 通过linkis-start-all.sh/linkis-stop-all.sh 进行服务启停时，会进行数据源服务的启动与停止。关于数据源更多详情可参考[数据源功能使用](https://linkis.apache.org/zh-CN/docs/1.4.0/user-guide/datasource-manual) 
 
 #### 1.2 创建 Linux 用户
 
@@ -58,11 +58,11 @@ INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_t
 INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_type_id`, `parameter`, `create_time`, `create_user`, `modify_time`, `modify_user`) VALUES ('开发环境UAT', '开发环境UAT', 4, '{"uris":"thrift://${HIVE_METADATA_IP}:${HIVE_METADATA_PORT}", "hadoopConf":{"hive.metastore.execute.setugi":"true"}}',  now(), NULL,  now(), NULL);
 ```
 
-如果hive数据源在部署时设置了需要进行kerberos方式认证，则需要在linkis_ps_dm_datasource_env表的parameter字段指定一个参数keyTab，其值的获取方式可见：[在Linkis中设置并认证hive数据源](https://linkis.apache.org/zh-CN/docs/1.1.1/deployment/start-metadatasource)
+如果hive数据源在部署时设置了需要进行kerberos方式认证，则需要在linkis_ps_dm_datasource_env表的parameter字段指定一个参数keyTab，其值的获取方式可见：[在Linkis中设置并认证hive数据源](https://linkis.apache.org/zh-CN/docs/1.4.0/deployment/start-metadatasource)
 
 #### 1.4 底层依赖组件检查
 
-**请确保 DSS1.1.0 与 Linkis1.1.1 基本可用，可在 DSS 前端界面执行 HiveQL 脚本，可正常创建并执行 DSS 工作流。**
+**请确保 DSS1.1.2 与 Linkis1.4.0 基本可用，可在 DSS 前端界面执行 HiveQL 脚本，可正常创建并执行 DSS 工作流。**
 
 
 ## 2. Exchangis 安装部署
@@ -71,7 +71,7 @@ INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_t
 
 #### 2.1.1下载二进制包
 
-从 Exchangis 已发布的 release 中 [点击下载exchangis安装包](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.0.0)，下载最新的安装包。
+从 Exchangis 已发布的 release 中 [点击下载exchangis安装包](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.1.2)，下载最新的安装包。
 
 #### 2.1.2 编译打包
 
@@ -157,7 +157,27 @@ DATABASE={dbName}
 
 输入 `y` 初始化数据库表，输入 `n` 跳过数据库表初始化步骤。
 
-#### 2.5.3 启动服务
+#### 2.5.3 修改配置文件路径和日志文件路径
+
+在sbin目录下的`env.properties`文件，设置配置文件路径和日志文件路径
+
+```yaml
+EXCHANGIS_CONF_PATH="/appcom/config/exchangis-config/background"
+EXCHANGIS_LOG_PATH="/appcom/logs/exchangis-log"
+MODULE_DEFAULT_PREFIX="exchangis-server"
+MODULE_DEFAULT_SUFFIX=""
+```
+
+EXCHANGIS_CONF_PATH为配置文件路径，EXCHANGIS_LOG_PATH为日志文件路径，若为以上配置，则作如下操作：
+
+```shell
+cp config/* /appcom/config/exchangis-config/background
+mkdir -p /appcom/logs/exchangis-log
+```
+
+则在服务启动时，将会使用对应路径下的配置文件，以及将日志写到对应的路径下
+
+#### 2.5.4 启动服务
 
 第一次启动，可以sbin目录下执行以下命令，启动 Exchangis Server：
 
@@ -189,7 +209,7 @@ DATABASE={dbName}
 
 #### 2.7.1 获取前端安装包
 
-Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://github.com/WeBankFinTech/Exchangis/releases/download/release-1.0.0-rc1/web-dist.zip)
+Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://github.com/WeBankFinTech/Exchangis/releases/download/release-1.1.2/web-dist.zip)
 
 您也可以自行编译 Exchangis 前端，在 Exchangis 根目录下执行如下命令：
 
@@ -199,7 +219,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
   npm run build
 ```
 
-从 `web/` 路径获取编译好的 dist.zip 前端包。
+从 `web/` 路径获取编译好的 exchangis-ui.zip 前端包。
 
 获取到的前端包，您可以放在服务器上的任意位置，这里建议您与后端安装地址目录保持一致，在同一目录下放置并解压。
 
@@ -207,14 +227,13 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 1. 解压前端安装包
 
-如您打算将 Exchangis 前端包部署到 `/appcom/Install/exchangis/web` 目录，请先将 `dist.zip` 拷贝到该目录并执行解压，注意，**请在安装dss的机器上安装exchangis前端**：
+如您打算将 Exchangis 前端包部署到 `/appcom/Install/ExchangisInstall/exchangis-ui` 目录，请先将 `exchangis-ui.zip` 拷贝到该目录并执行解压，注意，**请在安装dss的机器上安装exchangis前端**：
 
 ```shell script
-  # 请先将 Exchangis 前端包拷贝到 `/appcom/Install/exchangis/web` 目录
-  cd /appcom/Install/exchangis/web
-  unzip dist.zip
+  # 请先将 Exchangis 前端包拷贝到 `/appcom/Install/ExchangisInstall` 目录
+  cd /appcom/Install/ExchangisInstall
+  unzip exchangis-ui.zip
 ```
-
 
 执行如下命令：
 
@@ -228,8 +247,8 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
             server_name  localhost;
             #charset koi8-r;
             #access_log  /var/log/nginx/host.access.log  main;
-            location /dist {
-            root   /appcom/Install/exchangis/web; # Exchangis 前端部署目录
+            location / {
+            root   /appcom/Install/ExchangisInstall/exchangis-ui; # Exchangis 前端部署目录
             autoindex on;
             }
 
@@ -272,16 +291,16 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 ## 3. DSS ExchangisAppConn 安装部署
 
-如您想正常使用 Exchangis1.0.0 前端，还需安装 DSS ExchangisAppConn 插件，请参考: [ExchangisAppConn 插件安装文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_appconn_deploy_cn.md)
+如您想正常使用 Exchangis1.1.2 前端，还需安装 DSS ExchangisAppConn 插件，请参考: [ExchangisAppConn 插件安装文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_appconn_deploy_cn.md)
 
 ## 4. Linkis Sqoop 引擎安装部署
 
-如您想正常执行 Exchangis1.0.0 的 Sqoop作业，还需安装 Linkis Sqoop 引擎，请参考: [Linkis Sqoop 引擎插件安装文档](https://linkis.staged.apache.org/zh-CN/docs/1.1.2/engine_usage/sqoop)
+如您想正常执行 Exchangis1.1.2 的 Sqoop作业，还需安装 Linkis Sqoop 引擎，请参考: [Linkis Sqoop 引擎插件安装文档](https://linkis.staged.apache.org/zh-CN/docs/1.4.0/engine_usage/sqoop)
 
 ## 5. Linkis DataX 引擎安装部署
 
-如您想正常执行 Exchangis1.0.0 的 DataX作业，还需安装 Linkis DataX 引擎，请参考: [Linkis DataX 引擎插件安装文档](https://linkis.staged.apache.org/zh-CN/docs/1.1.2/engine_usage/datax)（TODO：待Linkis确认）
+如您想正常执行 Exchangis1.0.0 的 DataX作业，还需安装 Linkis DataX 引擎，请参考: [Linkis DataX 引擎插件安装文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_datax_deploy_cn.md)
 
 ## 6. 如何登录使用 Exchangis
 
-Exchangis1.0更多使用说明，请参考用户使用手册[Exchangis1.0 用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
+Exchangis更多使用说明，请参考用户使用手册[Exchangis 用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
