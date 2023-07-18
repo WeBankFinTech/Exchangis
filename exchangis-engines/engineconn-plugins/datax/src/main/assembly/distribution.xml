@@ -33,7 +33,7 @@
         <dependencySet>
             <!-- Enable access to all projects in the current multimodule build! <useAllReactorProjects>true</useAllReactorProjects> -->
             <!-- Now, select which projects to include in this module-set. -->
-            <outputDirectory>/dist/v${datax.version}/lib</outputDirectory>
+            <outputDirectory>/dist/${datax.version}/lib</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveDependencies>true</useTransitiveDependencies>
             <unpack>false</unpack>
