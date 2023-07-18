@@ -236,7 +236,7 @@ public class ExchangisProjectRestfulApi {
      * @param id project id
      * @return
      */
-    @RequestMapping( value = "/projects/{id:\\d+}", method = RequestMethod.DELETE)
+    @DeleteMapping( value = "/projects/{id:\\d+}")
     public Message deleteProject(HttpServletRequest request, @PathVariable("id") Long id) {
         if (ExchangisProjectConfiguration.LIMIT_INTERFACE.getValue()) {
             return Message.error("You have no permission to update (没有编辑权限，无法删除项目)");
@@ -246,12 +246,11 @@ public class ExchangisProjectRestfulApi {
         try {
             ExchangisProjectInfo projectInfo = projectService.getProjectDetailById(id);
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_ALTER)) {
-                return Message.error("You have no permission to delete (没有权限删除项目)");
+                return Message.error("You have no permission to delete (没有权限删除项目!)");
             }
 
             // 校验是否有任务
-            ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo(
-                    id, null, null, null, null);
+            ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo(id, null, null);
             PageResult<ExchangisJobVo> exchangisJobVoPageResult = jobInfoService.queryJobList(queryVo);
             if (Objects.nonNull(exchangisJobVoPageResult) && Objects.nonNull(exchangisJobVoPageResult.getList())
                 && exchangisJobVoPageResult.getList().size() > 0) {
