@@ -6,7 +6,7 @@ delete from  `dss_workspace_menu_appconn` where `appconn_id` in (select `id` fro
 
 delete from `dss_appconn`  where `appconn_name`='exchangis';
 INSERT INTO `dss_appconn` (`appconn_name`, `is_user_need_init`, `level`, `if_iframe`, `is_external`, `reference`, `class_name`, `appconn_class_path`, `resource`)
-VALUES ('exchangis', 0, 1, 1, 1, NULL, 'com.webank.wedatasphere.exchangis.dss.appconn.ExchangisAppConn', 'DSS_INSTALL_HOME_VAL/dss-appconns/exchangis/lib', '');
+VALUES ('exchangis', 0, 1, 1, 1, NULL, 'com.webank.wedatasphere.exchangis.dss.appconn.ExchangisAppConn', 'DSS_INSTALL_HOME_VAL/dss-appconns/exchangis', '');
 select @dss_appconn_exchangis_id:=id from `dss_appconn` where `appconn_name` = "exchangis";
 
 INSERT INTO `dss_appconn_instance` (`appconn_id`, `label`, `url`, `enhance_json`, `homepage_uri`)
@@ -30,7 +30,7 @@ insert into `dss_workflow_node` (`name`, `appconn_name`, `node_type`, `jump_type
 values('sqoop','exchangis','linkis.appconn.exchangis.sqoop',1,'1','1','0','1','icons/sqoop.icon');
 select @dss_exchangis_sqoopId:=id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop';
 insert into `dss_workflow_node` (`name`, `appconn_name`, `node_type`, `jump_type`, `support_jump`, `submit_to_scheduler`, `enable_copy`, `should_creation_before_node`, `icon_path`)
-values('exchangis','exchangis','linkis.appconn.exchangis.datax',1,'1','1','0','1','icons/datax.icon');
+values('datax','exchangis','linkis.appconn.exchangis.datax',1,'1','1','0','1','icons/datax.icon');
 select @dss_exchangis_dataxId:=id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax';
 
 -- 节点组表dss_workflow_node_to_group
