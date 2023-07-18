@@ -37,12 +37,12 @@ Exchangis1.0.0和Linkis 1.1.1支持的主流Sqoop版本1.4.6与1.4.7，更高版
 
 2.在exchangis-plugins模块下，找到sqoop引擎，单独编译sqoop，操作如下
 ```
-cd {EXCHANGIS_CODE_HOME}/exchangis-plugins/engine/sqoop
+cd {EXCHANGIS_CODE_HOME}/exchangis-engines/engine-plugins/sqoop
 mvn clean install
 ```
 然后会在该路径下找到sqoop引擎安装包
 ```
-{EXCHANGIS_CODE_HOME}/exchangis-plugins/sqoop/target/out
+{EXCHANGIS_CODE_HOME}/exchangis-engines/engine-plugins/sqoop/target/out
 ```
 
 
@@ -59,9 +59,9 @@ sqoop
 2.放置到linkis安装路径的如下目录
 
 ```shell
-cd {LINKIS_HOME}/linkis/lib/linkis-engineconn-plugins
+cd {LINKIS_HOME}/linkis-engineconn-plugins
 ```
-(注意，看当前sqoop引擎对哪些用户有权限，不一定是root)
+（注意，看当前sqoop引擎对哪些用户有权限，不一定是root）
 
 
 #### 2）重启linkis-engineplugin服务使sqoop引擎生效
@@ -70,7 +70,13 @@ cd {LINKIS_HOME}/linkis/lib/linkis-engineconn-plugins
 cd {LINKIS_INSTALL_HOME}/links/sbin/
 ./linkis-daemon.sh restart cg-engineplugin
 ```
-待服务启动成功，至此，sqoop安装部署就完成了。
+待服务启动成功，在linkis数据库中校验sqoop引擎是否安装完毕
+
+```yaml
+select * from linkis_cg_engine_conn_plugin_bml_resources;
+```
+
+至此，sqoop安装部署就完成了。
 
 engineplugin更详细的介绍可以参看下面的文章。  
 https://linkis.apache.org/zh-CN/docs/latest/deployment/engine-conn-plugin-installation/
