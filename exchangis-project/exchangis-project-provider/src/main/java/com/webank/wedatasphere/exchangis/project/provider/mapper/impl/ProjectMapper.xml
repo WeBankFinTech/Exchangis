@@ -118,7 +118,7 @@
 
 
     <select id="selectByName" resultMap="projectResult">
-        select * from exchangis_project_info WHERE name = #{name}
+        select * from exchangis_project_info WHERE name = #{name} limit 1
     </select>
 
 

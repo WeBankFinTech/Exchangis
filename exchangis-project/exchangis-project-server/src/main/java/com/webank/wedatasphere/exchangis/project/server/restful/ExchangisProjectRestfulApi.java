@@ -249,19 +249,20 @@ public class ExchangisProjectRestfulApi {
                 return Message.error("You have no permission to delete (没有权限删除项目!)");
             }
 
-            // 校验是否有任务
-            ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo(id, null, null);
-            PageResult<ExchangisJobVo> exchangisJobVoPageResult = jobInfoService.queryJobList(queryVo);
-            if (Objects.nonNull(exchangisJobVoPageResult) && Objects.nonNull(exchangisJobVoPageResult.getList())
-                && exchangisJobVoPageResult.getList().size() > 0) {
-                return Message.error("Jobs already exist under this project and the project cannot be deleted (该项目下已存在子任务，无法删除)");
-            }
-
             String domain = projectInfo.getDomain();
             if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
                     .equalsIgnoreCase(domain)){
                 return Message.error("Cannot delete the outer project (无法删除来自 " + domain + " 的外部项目)");
             }
+
+            // 校验是否有任务
+            ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo(id, null, null);
+            PageResult<ExchangisJobVo> exchangisJobVoPageResult = jobInfoService.queryJobList(queryVo);
+            if (Objects.nonNull(exchangisJobVoPageResult) && Objects.nonNull(exchangisJobVoPageResult.getList())
+                    && exchangisJobVoPageResult.getList().size() > 0) {
+                return Message.error("Jobs already exist under this project and the project cannot be deleted (该项目下已存在子任务，无法删除)");
+            }
+
             projectService.deleteProject(id);
             AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, id.toString(), "Project", OperateTypeEnum.DELETE, request);
             return ExchangisProjectRestfulUtils.dealOk("删除项目成功");
