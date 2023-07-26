@@ -150,9 +150,6 @@ public class ProjectImportServerImpl implements ProjectImportService {
         else {
             throw new ExchangisJobServerException(31101, "Already exits duplicated project name(存在重复项目名称) projectName is:" + "[" + exportedProject.getName() + "]");
         }
-
-
-
     }
 
     public void addSqoopTask (List<ExchangisJobVo> sqoops, List<ExchangisProject> projects, String versionSuffix, IdCatalog idCatalog, Long projectId, String importType) throws ExchangisJobServerException {
