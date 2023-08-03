@@ -27,12 +27,12 @@ Exchangis1.1.2和Linkis 1.4.0支持的主流DataX版本1.4.6与1.4.7，更高版
 2、在exchangis-plugins模块下，找到datax引擎，单独编译datax，操作如下
 
 ```
-cd {EXCHANGIS_CODE_HOME}/exchangis-engines/engine-plugins/datax
+cd {EXCHANGIS_CODE_HOME}/exchangis-plugins/engine/datax
 mvn clean install
 ```
 然后会在该路径下找到datax引擎安装包
 ```
-{EXCHANGIS_CODE_HOME}/exchangis-engines/engine-plugins/target/out
+{EXCHANGIS_CODE_HOME}/exchangis-plugins/datax/target/out
 ```
 
 
@@ -49,7 +49,7 @@ datax
 2、放置到linkis安装路径的如下目录
 
 ```shell
-cd {LINKIS_HOME}/linkis-engineconn-plugins
+cd {LINKIS_HOME}/linkis/lib/linkis-engineconn-plugins
 ```
 （注意，看当前datax引擎对哪些用户有权限，一般都为hadoop用户组和hadoop用户）
 
@@ -60,9 +60,9 @@ cd {LINKIS_HOME}/linkis-engineconn-plugins
 cd {LINKIS_INSTALL_HOME}/links/sbin/
 ./linkis-daemon.sh restart cg-engineplugin
 ```
-待服务启动成功，，在linkis数据库中校验datax引擎是否安装完毕
+待服务启动成功，在linkis数据库中校验datax引擎是否安装完毕
 
-```yaml
+```shell
 select * from linkis_cg_engine_conn_plugin_bml_resources where engine_conn_type='datax';
 ```
 

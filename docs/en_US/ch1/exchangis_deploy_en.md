@@ -15,7 +15,7 @@ Exchangis installation is mainly divided into the following four steps ：
 |------------------------------------------------------------------------------| ------ | --------------- |
 | MySQL (5.5+)                                                                 | yes | [How to install mysql](https://www.runoob.com/mysql/mysql-install.html) |
 | JDK (1.8.0_141)                                                              | yes | [How to install JDK](https://www.runoob.com/java/java-environment-setup.html) |
-| Hadoop(2.7.2，Other versions of Hadoop need to compile Linkis by themselves.) | yes | [Hadoop stand-alone deployment](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) ；[Hadoop distributed deployment](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) |
+| Hadoop(3.3.4，Other versions of Hadoop need to compile Linkis by themselves.) | yes | [Hadoop stand-alone deployment](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) ；[Hadoop distributed deployment](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) |
 | Hive(2.3.3，Other versions of Hive need to compile Linkis by themselves.)     | yes | [Hive quick installation](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) |
 | SQOOP (1.4.6)                                                                | yes | [How to install Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
 | DSS1.1.2                                                                     | yes | [How to install DSS](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_appconn_deploy_cn.md) |
@@ -205,7 +205,7 @@ Get the compiled dist.zip front-end package from the `web/` path.
 
 The acquired front-end package can be placed anywhere on the server. Here, it is recommended that you keep the same directory as the back-end installation address, place it in the same directory and unzip it. 
 
-#### 2.7.2  Front-end installation deployment 
+#### 3.3.4  Front-end installation deployment 
 
 1.  Decompress front-end installation package 
 

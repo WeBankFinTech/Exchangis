@@ -73,7 +73,7 @@ cd {LINKIS_INSTALL_HOME}/links/sbin/
 待服务启动成功，在linkis数据库中校验sqoop引擎是否安装完毕
 
 ```yaml
-select * from linkis_cg_engine_conn_plugin_bml_resources;
+select * from linkis_cg_engine_conn_plugin_bml_resources where engine_conn_type='sqoop';
 ```
 
 至此，sqoop安装部署就完成了。
