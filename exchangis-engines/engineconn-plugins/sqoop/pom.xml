@@ -30,8 +30,8 @@
     <artifactId>linkis-engineplugin-sqoop</artifactId>
     <properties>
         <sqoop.version>1.4.6</sqoop.version>
-        <hive.version>3.1.2</hive.version>
-        <hadoop.version>2.7.2</hadoop.version>
+        <hive.version>3.1.3</hive.version>
+        <hadoop.version>3.3.4</hadoop.version>
         <linkis.version>1.4.0-SNAPSHOT</linkis.version>
     </properties>
 
@@ -179,6 +179,10 @@
                 <exclusion>
                     <artifactId>hadoop-hdfs</artifactId>
                     <groupId>org.apache.hadoop</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.hadoop</groupId>
+                    <artifactId>hadoop-hdfs</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
