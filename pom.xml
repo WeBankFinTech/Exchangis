@@ -42,7 +42,7 @@
 		<linkis.version>1.4.0-SNAPSHOT</linkis.version>
 		<linkis.datasource.version>1.4.0-SNAPSHOT</linkis.datasource.version>
 		<streamis.version>0.1.0-SNAPSHOT</streamis.version>
-		<scala.version>2.12.17</scala.version>
+		<scala.version>2.12.12</scala.version>
 		<scala-maven-plugin.version>4.7.1</scala-maven-plugin.version>
 		<jdk.compile.version>1.8</jdk.compile.version>
 		<maven.version>3.3.3</maven.version>
