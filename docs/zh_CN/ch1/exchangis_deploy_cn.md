@@ -16,7 +16,7 @@ Exchangis 的安装，主要分为以下四步：
 |---------------------------------------| ------ | --------------- |
 | MySQL (5.5+)                          | 必装  | [如何安装mysql](https://www.runoob.com/mysql/mysql-install.html) |
 | JDK (1.8.0_141)                       | 必装 | [如何安装JDK](https://www.runoob.com/java/java-environment-setup.html) |
-| Hadoop(2.7.2，Hadoop 其他版本需自行编译 Linkis) | 必装 | [Hadoop单机部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) ；[Hadoop分布式部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) |
+| Hadoop(3.3.4，Hadoop 其他版本需自行编译 Linkis) | 必装 | [Hadoop单机部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) ；[Hadoop分布式部署](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) |
 | Hive(2.3.3，Hive 其他版本需自行编译 Linkis)     | 必装 | [Hive快速安装](https://linkis.apache.org/zh-CN/docs/latest/deployment/quick-deploy) |
 | SQOOP (1.4.6)                         | 必装 | [如何安装Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
 | DSS1.1.2                              | 必装 | [如何安装DSS](https://github.com/WeBankFinTech/DataSphereStudio-Doc/tree/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2) |
@@ -223,7 +223,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 获取到的前端包，您可以放在服务器上的任意位置，这里建议您与后端安装地址目录保持一致，在同一目录下放置并解压。
 
-#### 2.7.2 前端安装部署
+#### 3.3.4 前端安装部署
 
 1. 解压前端安装包
 
