@@ -178,7 +178,7 @@ CREATE TABLE `exchangis_job_func` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `job_func_tab_name_idx` (`tab_name`,`func_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- exchangis_job_func_params definition
 DROP TABLE IF EXISTS `exchangis_job_func_params`;
