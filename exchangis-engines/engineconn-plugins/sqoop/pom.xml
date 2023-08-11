@@ -32,7 +32,7 @@
         <sqoop.version>1.4.6</sqoop.version>
         <hive.version>3.1.3</hive.version>
         <hadoop.version>3.3.4</hadoop.version>
-        <linkis.version>1.4.0-SNAPSHOT</linkis.version>
+        <linkis.version>1.4.0</linkis.version>
     </properties>
 
     <dependencies>
