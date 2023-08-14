@@ -3,10 +3,10 @@ package com.webank.wedatasphere.exchangis.project.server.service;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
-import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProjectUser;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectUserVo;
-import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
+import com.webank.wedatasphere.exchangis.project.entity.domain.ExchangisProjectUser;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectUserVo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectQueryVo;
 
 /**
  * Project query

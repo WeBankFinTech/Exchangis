@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
         <artifactId>exchangis</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.2</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
@@ -25,8 +25,8 @@
         <commons-configuration-version>1.10</commons-configuration-version>
         <commons-cli-version>1.2</commons-cli-version>
         <commons-beanutils>1.9.4</commons-beanutils>
-        <hadoop.version>2.7.2</hadoop.version>
-        <hive.version>1.2.1</hive.version>
+        <hadoop.version>3.3.4</hadoop.version>
+        <hive.version>3.1.3</hive.version>
         <es.version>6.7.1</es.version>
         <commons-codec>1.11</commons-codec>
         <datax.engine.version>3.0.0-Plus-2</datax.engine.version>
