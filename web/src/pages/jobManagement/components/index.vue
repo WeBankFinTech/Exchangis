@@ -676,7 +676,7 @@ export default {
             }
         },
         // 更新保存任务配置
-        handleModalFinish(config) {
+        handleModalFinish(config, type = 'config') {
             const _this = this;
             const { id } = this.curTab;
             const _config = Object.assign(
@@ -694,11 +694,11 @@ export default {
             _config.projectId = _this.$route.query.id
             updateTaskConfiguration(id, _config)
                 .then((res) => {
-                    message.success('更新/保存成功');
+                    if(type !== 'init') message.success('更新/保存成功');
                     _this.jobData.proxyUser = _config.proxyUser;
                 })
                 .catch((err) => {
-                    message.error('更新/保存失败');
+                    if(type !== 'init') message.error('更新/保存失败');
                     console.log('updateTaskConfiguration error', err);
                 });
         },
