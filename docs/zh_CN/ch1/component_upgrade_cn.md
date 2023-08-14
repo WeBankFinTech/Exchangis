@@ -1,8 +1,8 @@
 Exchangis 升级文档
-本文主要介绍在原有安装Exchangis服务的基础上适配DSS1.1.0和Linkis1.1.1的升级步骤，Exchangis1.0.0相对与Exchangis1.0.0-rc1版本最大的区别在于ExchangisAppconn的安装，需要对整个Exchangisappconn进行重新替换和加载
+本文主要介绍在原有安装Exchangis服务的基础上适配DSS1.1.2和Linkis1.4.0的升级步骤，Exchangis1.1.2相对与Exchangis1.0.0-rc1版本最大的区别在于ExchangisAppconn的安装，需要对整个Exchangisappconn进行重新替换和加载
 ### 1.升级Exchangis前的工作
-您在升级Exchangis之前，请按照[DSS1.1.0安装部署文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)
-和[Linkis1.1.1安装部署文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)完成DSS和Linkis的安装升级
+您在升级Exchangis之前，请按照[DSS1.1.2安装部署文档](https://github.com/WeBankFinTech/DataSphereStudio-Doc/tree/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2)
+和[Linkis1.4.0安装部署文档](https://linkis.staged.apache.org/zh-CN/docs/1.4.0/deployment/deploy-quick)完成DSS和Linkis的安装升级
 
 ### 2.Exchangis升级步骤
 
@@ -14,7 +14,7 @@ Exchangis 升级文档
 ```
 
 #### 2）下载二进制包
-我们提供ExchangisAppconn的升级物料包，您可直接下载使用。[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/exchangis-appconn.zip)
+我们提供ExchangisAppconn的升级物料包，您可直接下载使用。[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/exchangis-appconn.zip)（TODO：待发版时更新）
 
 #### 3） 编译打包
 
@@ -73,7 +73,7 @@ lib/exchangis-server
 ```
 
 再通过以下命令完成 Exchangis Server 的更新重启：
-   
+
    ```shell script
    ./sbin/daemon.sh restart server
    ```
@@ -94,4 +94,4 @@ wds.linkis-session.ticket.key=bdp-user-ticket-id
 ![image](https://user-images.githubusercontent.com/27387830/169782337-678f2df0-080a-495a-b59f-a98c5a427cf8.png)
 
 
- 更多使用操作可参照[Exchangis1.0用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
+ 更多使用操作可参照[Exchangis用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_user_manual_cn.md)

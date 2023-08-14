@@ -199,7 +199,7 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
             }
             path = pathBuilder.toString();
         }
-        return path;
+        return path.replaceAll(" ", "%20");
     });
 
     /**

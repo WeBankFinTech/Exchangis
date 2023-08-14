@@ -7,16 +7,19 @@ import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
-import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
-import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
-import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProjectUser;
+import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
+import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
+import com.webank.wedatasphere.exchangis.project.entity.domain.ExchangisProjectUser;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ProjectAuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectConfiguration;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectUserVo;
-import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectUserVo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectQueryVo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.linkis.common.utils.JsonUtils;
@@ -50,25 +53,32 @@ public class ExchangisProjectRestfulApi {
     private ProjectService projectService;
 
     /**
+     * JobInfo service
+     */
+    @Resource
+    private JobInfoService jobInfoService;
+
+    /**
      * Project query
      * @param request http request
      * @param queryVo query vo
      * @param current current page
      * @param size size
-     * @param name name
      * @return message
      */
     @RequestMapping( value = "projects", method = {RequestMethod.POST, RequestMethod.GET})
     public Message queryProjects(HttpServletRequest request,
                                  @RequestBody ProjectQueryVo queryVo,
                                  @RequestParam(value = "current", required = false) Integer current,
-                                 @RequestParam(value = "size", required = false) Integer size,
-                                 @RequestParam(value = "name", required = false) String name) {
+                                 @RequestParam(value = "size", required = false) Integer size) {
         String username = UserUtils.getLoginUser(request);
-        String newName = name.replaceAll("_", "/_");
+        String name = queryVo.getName();
+        if (StringUtils.isNotBlank(name)) {
+            name = name.replaceAll("_", "/_");
+        }
         Optional.ofNullable(current).ifPresent(queryVo::setCurrent);
         Optional.ofNullable(size).ifPresent(queryVo::setSize);
-        Optional.ofNullable(newName).ifPresent(queryVo::setName);
+        Optional.ofNullable(name).ifPresent(queryVo::setName);
         queryVo.setCreateUser(username);
         try {
             PageResult<ExchangisProjectInfo> pageResult = projectService.queryProjects(queryVo);
@@ -207,6 +217,7 @@ public class ExchangisProjectRestfulApi {
                     .equalsIgnoreCase(domain)){
                 return Message.error("Cannot update the outer project (无法更新来自 " + domain + " 的外部项目)");
             }
+
             LOG.info("UpdateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             projectService.updateProject(projectVo, username);
             AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, projectVo.getId(), "Project name is: " + projectVo.getName(), OperateTypeEnum.UPDATE, request);
@@ -225,7 +236,7 @@ public class ExchangisProjectRestfulApi {
      * @param id project id
      * @return
      */
-    @RequestMapping( value = "/projects/{id:\\d+}", method = RequestMethod.DELETE)
+    @DeleteMapping( value = "/projects/{id:\\d+}")
     public Message deleteProject(HttpServletRequest request, @PathVariable("id") Long id) {
         if (ExchangisProjectConfiguration.LIMIT_INTERFACE.getValue()) {
             return Message.error("You have no permission to update (没有编辑权限，无法删除项目)");
@@ -235,7 +246,7 @@ public class ExchangisProjectRestfulApi {
         try {
             ExchangisProjectInfo projectInfo = projectService.getProjectDetailById(id);
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_ALTER)) {
-                return Message.error("You have no permission to delete (删除项目失败)");
+                return Message.error("You have no permission to delete (没有权限删除项目!)");
             }
 
             String domain = projectInfo.getDomain();
@@ -243,6 +254,15 @@ public class ExchangisProjectRestfulApi {
                     .equalsIgnoreCase(domain)){
                 return Message.error("Cannot delete the outer project (无法删除来自 " + domain + " 的外部项目)");
             }
+
+            // 校验是否有任务
+            ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo(id, null, null);
+            PageResult<ExchangisJobVo> exchangisJobVoPageResult = jobInfoService.queryJobList(queryVo);
+            if (Objects.nonNull(exchangisJobVoPageResult) && Objects.nonNull(exchangisJobVoPageResult.getList())
+                    && exchangisJobVoPageResult.getList().size() > 0) {
+                return Message.error("Jobs already exist under this project and the project cannot be deleted (该项目下已存在子任务，无法删除)");
+            }
+
             projectService.deleteProject(id);
             AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, id.toString(), "Project", OperateTypeEnum.DELETE, request);
             return ExchangisProjectRestfulUtils.dealOk("删除项目成功");

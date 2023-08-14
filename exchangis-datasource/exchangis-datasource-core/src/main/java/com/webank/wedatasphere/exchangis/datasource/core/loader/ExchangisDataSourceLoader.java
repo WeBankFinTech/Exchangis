@@ -10,7 +10,6 @@ import java.util.Objects;
 
 public interface ExchangisDataSourceLoader {
 
-//    String EXCHANGIS_DIR_NAME = "exchangis-extds";
     String EXCHANGIS_DIR_NAME = Objects.isNull(CommonVars.apply("wds.exchangis.datasource.extension.dir").getValue()) ? "exchangis-extds" : CommonVars.apply("wds.exchangis.datasource.extension.dir").getValue().toString();
 
     String PROPERTIES_NAME = "extds.properties";

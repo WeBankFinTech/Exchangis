@@ -123,57 +123,36 @@ interact_echo(){
   done
 }
 
+# Initalize database
 init_database(){
-BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
-# Start to initalize database
-if [ "x${SQL_SOURCE_PATH}" != "x" ] && [ -f "${SQL_SOURCE_PATH}" ]; then
-   `mysql --version >/dev/null 2>&1`
-   interact_echo "Do you want to initalize database with sql?"
-   if [ $? == 0 ]; then
-      LOG INFO "\033[1m Scan out mysql command, so begin to initalize the database\033[0m"
-      #interact_echo "Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?"
-      #if [ $? == 0 ]; then
+    BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
+    if [ "x${SQL_SOURCE_PATH}" != "x" ] && [ -f "${SQL_SOURCE_PATH}" ]; then
+        `mysql --version >/dev/null 2>&1`
         DATASOURCE_URL="jdbc:mysql:\/\/${MYSQL_HOST}:${MYSQL_PORT}\/${DATABASE}\?useSSL=false\&characterEncoding=UTF-8\&allowMultiQueries=true"
-        mysql -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USERNAME} -p${MYSQL_PASSWORD}  --default-character-set=utf8 -e \
-        "CREATE DATABASE IF NOT EXISTS ${DATABASE}; USE ${DATABASE}; source ${SQL_SOURCE_PATH};"
-        #sed -ri "s![#]?(DB_HOST=)\S*!\1${HOST}!g" ${BOOTSTRAP_PROP_FILE}
-        #sed -ri "s![#]?(DB_PORT=)\S*!\1${PORT}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.username=)\S*!\1${MYSQL_USERNAME}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.password=)\S*!\1${MYSQL_PASSWORD}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.url=)\S*!\1${DATASOURCE_URL}!g" ${BOOTSTRAP_PROP_FILE}
-      #fi
-   fi
-fi
+        interact_echo "Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?"
+        if [ $? == 0 ]; then
+          LOG INFO "\033[1m Scan out mysql command, so begin to initalize the database\033[0m"
+          mysql -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USERNAME} -p${MYSQL_PASSWORD}  --default-character-set=utf8 -e \
+          "CREATE DATABASE IF NOT EXISTS ${DATABASE}; USE ${DATABASE}; source ${SQL_SOURCE_PATH};"
+        fi
+    fi
 }
 
 init_properties(){
-BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
-APPLICATION_YML="${CONF_PATH}/application-exchangis.yml"
-# Start to initalize propertis
-      #interact_echo "Do you want to initalize exchangis-server.properties?"
-      #if [ $? == 0 ]; then
+    BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
+    APPLICATION_YML="${CONF_PATH}/application-exchangis.yml"
+    LINKIS_GATEWAY_URL="http:\/\/${LINKIS_GATEWAY_HOST}:${LINKIS_GATEWAY_PORT}\/"
+    if [ "x${LINKIS_SERVER_URL}" == "x" ]; then
+      LINKIS_SERVER_URL="http://127.0.0.1:9001"
+    fi
 
-        LINKIS_GATEWAY_URL="http:\/\/${LINKIS_GATEWAY_HOST}:${LINKIS_GATEWAY_PORT}\/"
-
-        if [ "x${LINKIS_SERVER_URL}" == "x" ]; then
-          LINKIS_SERVER_URL="http://127.0.0.1:3306"
-        fi
-        if [ "x${LINKIS_SERVER_URL}" == "x" ]; then
-          LINKIS_SERVER_URL="http://127.0.0.1:3306"
-        fi
-
-        sed -ri "s![#]?(wds.linkis.gateway.ip=)\S*!\1${LINKIS_GATEWAY_HOST}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_GATEWAY_PORT}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.linkis.gateway.url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.exchangis.datasource.client.serverurl=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.exchangis.client.linkis.server-url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
-        #sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.key=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
-        #sed -ri "s![#]?(wds.exchangis.datasource.client.authtoken.value=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
-        #sed -ri "s![#]?(wds.exchangis.client.linkis.token.value=)\S*!\1${LINKIS_TOKEN}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(wds.linkis.gateway.port=)\S*!\1${LINKIS_GATEWAY_PORT}!g" ${BOOTSTRAP_PROP_FILE}
-        sed -ri "s![#]?(port: )\S*!\1${EXCHANGIS_PORT}!g" ${APPLICATION_YML}
-        sed -ri "s![#]?(defaultZone: )\S*!\1${EUREKA_URL}!g" ${APPLICATION_YML}
-      #fi
+    sed -ri "s![#]?(wds.exchangis.datasource.client.serverurl=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
+    sed -ri "s![#]?(wds.exchangis.client.linkis.server-url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
+    sed -ri "s![#]?(port: )\S*!\1${EXCHANGIS_PORT}!g" ${APPLICATION_YML}
+    sed -ri "s![#]?(defaultZone: )\S*!\1${EUREKA_URL}!g" ${APPLICATION_YML}
 }
 
 install_modules(){

@@ -17,14 +17,14 @@ public interface EngineResourceLoader<T extends EngineResource> {
     String engineType();
     /**
      * Accept uri
-     * @param uri uri
+     * @param baseUri uri
      * @return boolean
      */
     boolean accept(URI baseUri, String path);
 
     /**
      * Load resources from uri
-     * @param uri uri
+     * @param baseUri uri
      * @return resource array
      */
     T[] loadResource(URI baseUri, String path) throws ExchangisEngineResLoadException;
