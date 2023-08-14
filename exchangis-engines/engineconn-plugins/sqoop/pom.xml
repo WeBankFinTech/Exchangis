@@ -22,7 +22,7 @@
     <parent>
         <artifactId>exchangis-engines</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
-        <version>1.1.1</version>
+        <version>1.1.2</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -30,9 +30,9 @@
     <artifactId>linkis-engineplugin-sqoop</artifactId>
     <properties>
         <sqoop.version>1.4.6</sqoop.version>
-        <hive.version>3.1.2</hive.version>
-        <hadoop.version>2.7.2</hadoop.version>
-        <linkis.version>1.1.6-webank</linkis.version>
+        <hive.version>3.1.3</hive.version>
+        <hadoop.version>3.3.4</hadoop.version>
+        <linkis.version>1.4.0</linkis.version>
     </properties>
 
     <dependencies>
@@ -180,6 +180,10 @@
                     <artifactId>hadoop-hdfs</artifactId>
                     <groupId>org.apache.hadoop</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.apache.hadoop</groupId>
+                    <artifactId>hadoop-hdfs</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -187,28 +191,24 @@
             <artifactId>linkis-engineconn-plugin-core</artifactId>
             <version>${linkis.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.linkis</groupId>
             <artifactId>linkis-rpc</artifactId>
             <version>${linkis.version}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.linkis</groupId>
             <artifactId>linkis-storage</artifactId>
             <version>${linkis.version}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.linkis</groupId>
             <artifactId>linkis-common</artifactId>
             <version>${linkis.version}</version>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -217,7 +217,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
             </plugin>
-
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>

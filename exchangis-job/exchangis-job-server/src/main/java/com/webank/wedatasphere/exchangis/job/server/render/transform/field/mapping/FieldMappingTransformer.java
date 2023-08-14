@@ -17,11 +17,9 @@ import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mappi
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match.FieldMatchStrategy;
 import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectUserMapper">
+
+    <resultMap id="projectUserResult" type="com.webank.wedatasphere.exchangis.project.entity.domain.ExchangisProjectUser">
+        <result column="id" property="id"/>
+        <result column="project_id" property="projectId"/>
+        <result column="priv_user" property="privUser"/>
+        <result column="priv" property="priv"/>
+        <result column="last_update_time" property="updateTime"/>
+    </resultMap>
+
+    <!--columns-->
+    <sql id="BaseColumnList">
+        id, project_id, priv_user, priv, last_update_time
+    </sql>
+
+    <sql id="TableName">
+        exchangis_project_user
+    </sql>
+    <delete id="deleteProjectUser" parameterType="java.lang.Long">
+        delete from
+        <include refid="TableName" />
+        where project_id = #{projectId}
+    </delete>
+
+    <select id="queryProjectUser" resultMap ="projectUserResult">
+        select
+        <include refid="BaseColumnList"/>
+        from
+        <include refid="TableName" />
+        where project_id = #{projectId} and priv_user = #{privUser} limit 1
+    </select>
+
+    <insert id="addProjectUser" >
+        <foreach collection="projectUsers" item="projectUser">
+            insert into
+            <include refid="TableName"/>
+            (project_id, priv_user, priv, last_update_time)
+            values(
+            #{projectUser.projectId},
+            #{projectUser.privUser},
+            #{projectUser.priv},
+            #{projectUser.updateTime}
+            );
+        </foreach>
+    </insert>
+
+    <update id="updateProjectUser">
+        <foreach collection="projectUsers" item="projectUsers">
+            UPDATE <include refid="TableName"/>
+            SET
+            project_id = #{projectUser.projectId},
+            priv_user = #{projectUser.privUser},
+            priv = #{projectUser.priv},
+            last_update_time = #{projectUser.updateTime}
+        </foreach>
+    </update>
+</mapper>
