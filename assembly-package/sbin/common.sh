@@ -16,4 +16,4 @@
 #
 
 declare -A MODULE_MAIN_CLASS
-MODULE_MAIN_CLASS["exchangis-server"]="com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication"
+MODULE_MAIN_CLASS["dss-exchangis-main-server-dev"]="com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication"

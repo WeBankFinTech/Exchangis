@@ -24,7 +24,7 @@ else
 fi
 
 usage(){
-  echo "Usage is [start|stop|restart {service}]"
+  echo "Usage is [start|stop|restart {server}]"
 }
 
 start(){

@@ -17,8 +17,6 @@ import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.server.vo.JobFunction;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
-import com.webank.wedatasphere.exchangis.project.server.exception.ExchangisProjectErrorException;
-import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.ProxyUserSSOUtils;
 import org.apache.linkis.server.security.SecurityFilter;
@@ -36,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
 /**
  * The basic controller of Exchangis job
  */
@@ -51,9 +48,6 @@ public class ExchangisJobRestfulApi {
      */
     @Resource
     private JobInfoService jobInfoService;
-
-    @Resource
-    private ProjectService projectService;
 
     @Resource
     private JobFuncService jobFuncService;
@@ -170,7 +164,7 @@ public class ExchangisJobRestfulApi {
     public Message createJob(
             @Validated({InsertGroup.class, Default.class}) @RequestBody ExchangisJobVo exchangisJobVo,
             BindingResult result,
-            HttpServletRequest request) throws ExchangisProjectErrorException {
+            HttpServletRequest request) {
         if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
             return Message.error("You have no permission to create Job (没有创建任务权限)");
         }
