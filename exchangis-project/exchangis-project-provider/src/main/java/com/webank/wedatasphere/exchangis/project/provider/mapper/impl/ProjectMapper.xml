@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectMapper">
+
+    <resultMap id="projectResult" type="com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="last_update_user" property="lastUpdateUser"/>
+        <result column="last_update_time" property="lastUpdateTime"/>
+        <result column="project_labels" property="labels"/>
+        <result column="edit_users" property="editUsers"/>
+        <result column="view_users" property="viewUsers"/>
+        <result column="exec_users" property="execUsers"/>
+        <result column="domain" property="domain"/>
+        <result column="source" property="source"/>
+        <result column="priv_user" property="privUser"/>
+    </resultMap>
+
+    <!--columns-->
+    <sql id="detail_columns">
+        id, name, description, create_user, create_time, last_update_user,
+        last_update_time, project_labels, edit_users, view_users, exec_users, domain, source
+    </sql>
+    <sql id="basic_columns">
+        id, name, description, create_user, create_time, last_update_user,
+        last_update_time, project_labels, domain
+    </sql>
+
+    <!--where condition-->
+    <sql id="pageCondition">
+        <if test="name != '' and name != null">
+            AND dp.name like concat('%', #{name}, '%')
+        </if>
+        <if test="domain != '' and domain != null">
+            AND dp.domain = #{domain}
+        </if>
+    </sql>
+
+    <!--queryPageList-->
+    <select id="queryPageList" resultMap="projectResult">
+        SELECT DISTINCT dp.id, dp.name, dp.description,
+        dp.create_user, dp.create_time, dp.last_update_user,dp.last_update_time, dp.project_labels,dp.domain,
+        dp.view_users, dp.exec_users, dp.edit_users, du.priv_user
+        FROM exchangis_project_info dp
+        INNER JOIN exchangis_project_user du
+        on dp.id = du.project_id and du.priv_user = #{createUser}
+        <include refid="pageCondition"/>
+        ORDER BY dp.create_time DESC
+    </select>
+
+    <!--getDetailById-->
+    <select id="getDetailById" resultMap="projectResult">
+        SELECT
+        <include refid="detail_columns"/>
+        FROM `exchangis_project_info` WHERE id = #{id};
+    </select>
+
+    <!--getBasicById-->
+    <select id="getBasicById" resultMap="projectResult">
+        SELECT
+        <include refid="basic_columns"/>
+        FROM `exchangis_project_info` WHERE id = #{id};
+    </select>
+
+    <!--insertOne-->
+    <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
+        <![CDATA[INSERT INTO `exchangis_project_info`
+        (`name`, `description`, `create_time`, `create_user`, `project_labels`,
+         `domain`, `exec_users`, `view_users`, `edit_users`, `source`) VALUES
+        (#{name}, #{description,jdbcType=VARCHAR}, #{createTime}, #{createUser}, #{labels,jdbcType=VARCHAR},
+        #{domain}, #{execUsers,jdbcType=VARCHAR}, #{viewUsers,jdbcType=VARCHAR},
+         #{editUsers,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR});]]>
+    </insert>
+
+    <!--updateOne-->
+    <update id="updateOne">
+        <![CDATA[ UPDATE `exchangis_project_info`]]>
+        <set>
+            <![CDATA[ `name` = #{name},]]>
+            <![CDATA[ `description` = #{description,jdbcType=VARCHAR},]]>
+            <![CDATA[ `project_labels` = #{labels,jdbcType=VARCHAR},]]>
+            <![CDATA[ `exec_users` = #{execUsers,jdbcType=VARCHAR},]]>
+            <![CDATA[ `view_users` = #{viewUsers,jdbcType=VARCHAR},]]>
+            <![CDATA[ `edit_users` = #{editUsers,jdbcType=VARCHAR},]]>
+            <![CDATA[ `last_update_time` = #{lastUpdateTime},]]>
+            <![CDATA[ `last_update_user` = #{lastUpdateUser}]]>
+        </set>
+        <where>
+            `id` = #{id};
+        </where>
+    </update>
+    <!--existsOne-->
+    <select id="existsOne" resultType="java.lang.Integer">
+        <![CDATA[ SELECT 1 FROM `exchangis_project_info`]]>
+        <where>
+            <if test="projectId != null and projectId != ''">
+                AND id = #{projectId}
+            </if>
+            <if test="projectName != null and projectName != ''">
+                AND name = #{projectName}
+            </if>
+        </where>
+        <![CDATA[ LIMIT 1;]]>
+    </select>
+
+    <!--deleteOne-->
+    <delete id="deleteOne">
+        <![CDATA[DELETE FROM `exchangis_project_info` WHERE id = #{id};]]>
+    </delete>
+
+    <delete id="deleteByName">
+        DELETE FROM exchangis_project_info WHERE name = #{name}
+    </delete>
+
+
+    <select id="selectByName" resultMap="projectResult">
+        select * from exchangis_project_info WHERE name = #{name} limit 1
+    </select>
+
+
+    <select id="getDetailByName" resultMap="projectResult">
+        <![CDATA[ SELECT * FROM `exchangis_project_info`]]>
+        <where>
+            <if test="projectName != null and projectName != ''">
+                name = #{projectName}
+            </if>
+        </where>
+    </select>
+
+    <select id="getAuthoritis" resultType="java.lang.String">
+        select priv from exchangis_project_user where priv_user = #{loginUser} and project_id = #{projectId}
+    </select>
+</mapper>
