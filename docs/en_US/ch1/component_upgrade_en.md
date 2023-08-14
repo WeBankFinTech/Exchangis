@@ -1,7 +1,7 @@
 # Exchangis Component Upgrade Documentation
-This article mainly introduces the upgrade steps for adapting DSS1.1.0 and Linkis1.1.1 on the basis of the original installation of the Exchangis service. The biggest difference between the Exchangis1.0.0 and the Exchangis1.0.0-rc1 version is the installation of the ExchangisAppconn, which needs to be replaced by the entire Exchangisappconn. and load### 1.升级Exchangis前的工作
-Before you upgrade Exchangis, please follow the[DSS1.1.0Install and deploy documentation](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)
-and [Linkis1.1.1Install and deploy documentation](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/zh_CN/ch1/exchangis_deploy_cn.md)Complete the installation and upgrade of DSS and Linkis
+This article mainly introduces the upgrade steps for adapting DSS1.1.2 and Linkis1.4.0 on the basis of the original installation of the Exchangis service. The biggest difference between the Exchangis1.0.0 and the Exchangis1.0.0-rc1 version is the installation of the ExchangisAppconn, which needs to be replaced by the entire Exchangisappconn. and load### 1.升级Exchangis前的工作
+Before you upgrade Exchangis, please follow the[DSS1.1.2Install and deploy documentation](https://github.com/WeBankFinTech/DataSphereStudio-Doc/tree/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2)
+and [Linkis1.4.0Install and deploy documentation](https://linkis.staged.apache.org/zh-CN/docs/1.4.0/deployment/deploy-quick)Complete the installation and upgrade of DSS and Linkis
 
 ### 2.Exchangis upgrade steps
 

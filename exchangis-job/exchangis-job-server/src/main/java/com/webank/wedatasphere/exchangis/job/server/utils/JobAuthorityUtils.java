@@ -7,8 +7,8 @@ import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJo
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao;
-import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProjectUser;
-import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectUserMapper;
+import com.webank.wedatasphere.exchangis.project.entity.domain.ExchangisProjectUser;
+import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectUserMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
