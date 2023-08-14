@@ -1,18 +1,16 @@
 -- job_func records
-INSERT INTO exchangis_job_func (func_type,func_name,tab_name,name_dispaly,param_num,ref_name,description,modify_time,create_time) VALUES
-('TRANSFORM','dx_substr','DATAX',NULL,2,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
-,('TRANSFORM','dx_pad','DATAX',NULL,3,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
-,('TRANSFORM','dx_replace','DATAX',NULL,3,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
-,('VERIFY','like','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
-,('VERIFY','not like','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
-,('VERIFY','>','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
-,('VERIFY','<','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
-,('VERIFY','=','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
-,('VERIFY','!=','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
-,('VERIFY','>=','DATAX',NULL,1,'dx_filter',NULL,NULL,'2020-04-21 17:35:06.000')
-;
-INSERT INTO exchangis_job_func (func_type,func_name,tab_name,name_dispaly,param_num,ref_name,description,modify_time,create_time) VALUES
-('TRANSFORM','dx_precision','DATAX',NULL,1,NULL,NULL,NULL,'2020-04-21 17:35:06.000')
+INSERT INTO `exchangis_job_func`(func_type,func_name,tab_name,name_dispaly,param_num,ref_name,description,modify_time) VALUES
+('TRANSFORM','dx_substr','DATAX',NULL,2,NULL,NULL,NULL)
+,('TRANSFORM','dx_pad','DATAX',NULL,3,NULL,NULL,NULL)
+,('TRANSFORM','dx_replace','DATAX',NULL,3,NULL,NULL,NULL)
+,('VERIFY','like','DATAX',NULL,1,'dx_filter',NULL,NULL)
+,('VERIFY','not like','DATAX',NULL,1,'dx_filter',NULL,NULL)
+,('VERIFY','>','DATAX',NULL,1,'dx_filter',NULL,NULL)
+,('VERIFY','<','DATAX',NULL,1,'dx_filter',NULL,NULL)
+,('VERIFY','=','DATAX',NULL,1,'dx_filter',NULL,NULL)
+,('VERIFY','!=','DATAX',NULL,1,'dx_filter',NULL,NULL)
+,('VERIFY','>=','DATAX',NULL,1,'dx_filter',NULL,NULL)
+,('TRANSFORM','dx_precision','DATAX',NULL,1,NULL,NULL,NULL)
 ;
 
 -- job_func_params records
@@ -61,7 +59,6 @@ INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_directio
 ('nullFormat','空值字符','DATAX-SINK','HIVE','INPUT','nullFormat','空值字符','',0,'VARCHAR','','','REGEX','^[sS]{0,50}$','空值字符输入错误',0,0,'',1,'',2,'',1,49)
 ,('nullFormat','空值字符','DATAX-SINK','ELASTICSEARCH','INPUT','nullFormat','空值字符','',0,'VARCHAR','','','REGEX','^[sS]{0,50}$','空值字符输入错误',0,0,'',1,'',2,'',1,49)
 ;
-
 INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
 ('where','WHERE条件','SOURCE','ORACLE','INPUT','where','WHERE条件',NULL,0,'VARCHAR',NULL,NULL,'REGEX','^[\\s\\S]{0,500}$','WHERE条件输入过长',0,0,NULL,1,'',2,NULL,1,NULL)
 ,('writeMode','写入方式','DATAX-SINK','ORACLE','OPTION','writeMode','写入方式',NULL,1,'OPTION','["INSERT","UPDATE"]','INSERT',NULL,NULL,'写入方式输入错误',0,0,NULL,1,NULL,1,NULL,1,NULL)
@@ -72,10 +69,11 @@ INSERT INTO `exchangis_engine_settings` (id, engine_name, engine_desc, engine_se
 (1, 'datax', 'datax sync engine', '{}', 'mysql->hive,hive->mysql,mysql->oracle,oracle->mysql,oracle->hive,hive->oracle,mongodb->hive,hive->mongodb,mysql->elasticsearch,oracle->elasticsearch,mongodb->elasticsearch,mysql->mongodb,mongodb->mysql,oracle->mongodb,mongodb->oracle', 'com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngineResourceLoader', NULL, NULL, '2022-08-09 18:20:51.0'),
 (2, 'sqoop', 'hadoop tool', '{}', 'mysql->hive,hive->mysql', '', NULL, NULL, '2022-08-09 18:20:51.0');
 
-INSERT INTO `exchangis_job_transform_rule` (rule_name,rule_type,rule_source,data_source_type,engine_type,direction,create_time) VALUES
-('es_with_post_processor','DEF','{"types": ["MAPPING", "PROCESSOR"]}','ELASTICSEARCH',NULL,'SINK','2022-09-18 23:36:42.000')
-,('es_fields_not_editable','MAPPING','{"fieldEditEnable": false, "fieldDeleteEnable": false}','ELASTICSEARCH',NULL,'SINK','2022-09-20 16:27:18.000')
-,('hive_sink_not_access','MAPPING','{"fieldEditEnable": false, "fieldDeleteEnable": false, "fieldAddEnable": false}','HIVE',NULL,'SINK','2022-09-20 21:46:05.000')
-,('mongo_field_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH"}','MONGODB',NULL,'SINK','2022-09-20 21:55:05.000')
-,('mysql_field_source_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH","fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": false}','MYSQL',NULL,'SOURCE','2022-09-21 21:55:05.000')
+-- exchangis_job_transform_rule records
+INSERT INTO `exchangis_job_transform_rule` (rule_name,rule_type,rule_source,data_source_type,engine_type,direction) VALUES
+('es_with_post_processor','DEF','{"types": ["MAPPING", "PROCESSOR"]}','ELASTICSEARCH',NULL,'SINK')
+,('es_fields_not_editable','MAPPING','{"fieldEditEnable": false, "fieldDeleteEnable": false}','ELASTICSEARCH',NULL,'SINK')
+,('hive_sink_not_access','MAPPING','{"fieldEditEnable": false, "fieldDeleteEnable": false, "fieldAddEnable": false}','HIVE',NULL,'SINK')
+,('mongo_field_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH"}','MONGODB',NULL,'SINK')
+,('mysql_field_source_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH","fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": false}','MYSQL',NULL,'SOURCE')
 ;
