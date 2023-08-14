@@ -9,22 +9,16 @@ import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
-import com.webank.wedatasphere.exchangis.job.server.service.IProjectCopyService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
-import com.webank.wedatasphere.exchangis.job.server.service.impl.ProjectImportServerImpl;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
-import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
-import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.BDPJettyServerHelper;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +26,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
-import javax.ws.rs.core.Context;
-import java.rmi.ServerException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -56,15 +48,6 @@ public class ExchangisJobDssAppConnRestfulApi {
      */
     @Resource
     private DefaultJobExecuteService executeService;
-
-    @Resource
-    private ProjectImportServerImpl projectImportServer;
-
-    @Resource
-    private IProjectCopyService projectCopyService;
-
-    @Autowired
-    private ProjectMapper projectMapper;
 
     /**
      * Create job
@@ -213,9 +196,6 @@ public class ExchangisJobDssAppConnRestfulApi {
             jobInfo.setId(jobVo.getId());
             LOG.info("jobInfo: name{},executerUser{},createUser{},id{}",jobInfo.getName(),jobInfo.getExecuteUser(),jobInfo.getCreateUser(),jobInfo.getId());
             LOG.info("loginUser: {}, jobVo:{}",loginUser,jobVo);
-            //find project info
-            ExchangisProject project = projectMapper.getDetailById(jobVo.getProjectId());
-            LOG.info("project: {}, getProjectId:{}",project,jobVo.getProjectId());
             //find project user authority
             /*if (!hasAuthority(submitUser, jobVo)){
                 return Message.error("You have no permission to execute job (没有执行DSS任务权限)");
@@ -253,72 +233,5 @@ public class ExchangisJobDssAppConnRestfulApi {
         assert jobInfo != null;
         AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, id.toString(), "Execute task is: " + jobInfo.getName(), OperateTypeEnum.EXECUTE, request);
         return result;
-    }
-
-    @RequestMapping( value = "/import", method = RequestMethod.POST)
-    public Message importJob(@Context HttpServletRequest request, @RequestBody Map<String, Object> params) throws ServerException, ExchangisJobServerException{
-
-        Message response = null;
-        String userName = UserUtils.getLoginUser(request);
-        String oringinUser = SecurityFilter.getLoginUsername(request);
-        try {
-            LOG.info("param: {}", params);
-            /*if (!hasAuthority(userName, jobInfoService.getJob(((Integer) params.get("sqoopIds")).longValue(), true))) {
-                return Message.error("You have no permission to import (没有导入权限)");
-            }*/
-            response = projectImportServer.importProject(request, params);
-            LOG.info("import job success");
-        } catch (ExchangisJobServerException e){
-            String message = "Fail import job [ id: " + params + "] (导入任务失败)";
-            LOG.error(message, e);
-            response = Message.error(message);
-        }
-        AuditLogUtils.printLog(oringinUser, userName, TargetTypeEnum.JOB, "", "Export parameter is: " + params.toString(), OperateTypeEnum.IMPORT, request);
-        return response;
-
-    }
-
-    @RequestMapping( value = "/export", method = RequestMethod.POST)
-    public Message exportJob(@Context HttpServletRequest request, @RequestBody Map<String, Object> params) throws ServerException, ExchangisJobServerException {
-        String userName = UserUtils.getLoginUser(request);
-
-        LOG.info("export function params: {}", params);
-        String oringinUser = SecurityFilter.getLoginUsername(request);
-        Message response = null;
-        try {
-            /*if (!hasAuthority(userName, jobInfoService.getJob(((Integer) params.get("sqoopIds")).longValue(), true))) {
-                return Message.error("You have no permission to export (没有导出权限)");
-            }*/
-            response = jobInfoService.exportProject(params, userName, request);
-            LOG.info("export job success");
-        } catch (Exception e){
-            String message = "Fail Export job [ id: " + params + "] (导出任务失败)";
-            LOG.error(message, e);
-            response = Message.error(message);
-        }
-        AuditLogUtils.printLog(oringinUser, userName, TargetTypeEnum.JOB, "", "Export parameter is: " + params.toString(), OperateTypeEnum.EXPORT, request);
-        return response;
-    }
-
-    @RequestMapping( value = "/copy", method = RequestMethod.POST)
-    public Message copy(@Context HttpServletRequest request, @RequestBody Map<String, Object> params) throws ServerException {
-        String userName = UserUtils.getLoginUser(request);
-        String oringinUser = SecurityFilter.getLoginUsername(request);
-
-        LOG.info("copy function params: {}", params);
-        Message response = null;
-        try {
-            response = projectCopyService.copy(params, userName, request);
-            LOG.info("copy node success");
-        } catch (Exception e){
-            String message = "Fail Copy project [ id: " + params + "] (导出任务失败)";
-            LOG.error(message, e);
-            response = Message.error(message);
-        }
-        AuditLogUtils.printLog(oringinUser, userName, TargetTypeEnum.JOB, "", "Copy parameter is: " + params.toString(), OperateTypeEnum.COPY, request);
-        return response;
-
-        //return jobInfoService.exportProject(params, userName, request);
-
     }
 }

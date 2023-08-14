@@ -3,11 +3,9 @@ package com.webank.wedatasphere.exchangis.datasource.linkis.service;
 import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
-import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisServiceRpcException;
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
 import com.webank.wedatasphere.exchangis.datasource.core.service.rpc.ServiceRpcClient;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
-//import com.webank.wedatasphere.exchangis.datasource.linkis.partition.MetadataGetPartitionsResult;
 import com.webank.wedatasphere.exchangis.datasource.linkis.request.MetadataGetConnInfoAction;
 import com.webank.wedatasphere.exchangis.datasource.linkis.request.MetadataGetPartitionPropsAction;
 import com.webank.wedatasphere.exchangis.datasource.linkis.response.MetadataGetConnInfoResult;
@@ -21,7 +19,7 @@ import org.apache.linkis.datasource.client.request.MetadataGetTablePropsAction;
 import org.apache.linkis.datasource.client.response.MetadataGetColumnsResult;
 import org.apache.linkis.datasource.client.response.MetadataGetPartitionsResult;
 import org.apache.linkis.datasource.client.response.MetadataGetTablePropsResult;
-import org.apache.linkis.metadatamanager.common.domain.MetaColumnInfo;
+import org.apache.linkis.metadata.query.common.domain.MetaColumnInfo;
 
 import java.util.*;
 

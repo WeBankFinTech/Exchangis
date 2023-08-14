@@ -132,7 +132,6 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void updateTaskProgress(LaunchedExchangisTask task, float progress) throws ExchangisOnEventException {
         task.setLastUpdateTime(Calendar.getInstance().getTime());
         this.launchedTaskDao.upgradeLaunchedTaskProgress(task.getTaskId(), progress, task.getLastUpdateTime());

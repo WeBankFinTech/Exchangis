@@ -33,7 +33,7 @@
         <dependencySet>
             <!-- Enable access to all projects in the current multimodule build! <useAllReactorProjects>true</useAllReactorProjects> -->
             <!-- Now, select which projects to include in this module-set. -->
-            <outputDirectory>/dist/v${datax.version}/lib</outputDirectory>
+            <outputDirectory>/dist/${datax.version}/lib</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveDependencies>true</useTransitiveDependencies>
             <unpack>false</unpack>
@@ -294,7 +294,6 @@
     </dependencySets>
 
     <fileSets>
-
         <fileSet>
             <directory>${basedir}/src/main/resources</directory>
             <includes>
@@ -302,10 +301,9 @@
             </includes>
             <fileMode>0777</fileMode>
             <directoryMode>0755</directoryMode>
-            <outputDirectory>/dist/v${datax.version}/conf</outputDirectory>
+            <outputDirectory>/dist/${datax.version}/conf</outputDirectory>
             <lineEnding>unix</lineEnding>
         </fileSet>
-
         <fileSet>
             <directory>${basedir}/target</directory>
             <includes>
@@ -317,9 +315,7 @@
             <fileMode>0777</fileMode>
             <outputDirectory>/plugin/${datax.version}</outputDirectory>
         </fileSet>
-
     </fileSets>
-
 
 </assembly>
 

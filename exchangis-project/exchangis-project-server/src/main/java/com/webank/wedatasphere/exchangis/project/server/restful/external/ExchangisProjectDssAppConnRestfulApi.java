@@ -4,13 +4,17 @@ import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
-import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
+import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectAppVo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ProjectAuthorityUtils;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.linkis.common.utils.JsonUtils;
@@ -25,11 +29,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
+import java.util.Objects;
 
 /**
  * Restful class for dss project
  */
-@Deprecated
 @RestController
 @RequestMapping(value = "/dss/exchangis/main/appProject", produces = {"application/json;charset=utf-8"})
 public class ExchangisProjectDssAppConnRestfulApi {
@@ -40,6 +44,12 @@ public class ExchangisProjectDssAppConnRestfulApi {
      */
     @Resource
     private ProjectService projectService;
+
+    /**
+     * JobInfo service
+     */
+    @Resource
+    private JobInfoService jobInfoService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public Message createProject(@Validated @RequestBody ExchangisProjectAppVo project,
@@ -126,6 +136,14 @@ public class ExchangisProjectDssAppConnRestfulApi {
             ExchangisProjectInfo projectInfo = projectService.selectByName(name);
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_ALTER)) {
                 return Message.error("You have no permission to delete (删除项目失败)");
+            }
+
+            // 校验是否有任务
+            ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo(Long.parseLong(projectInfo.getId()), null, null);
+            PageResult<ExchangisJobVo> exchangisJobVoPageResult = jobInfoService.queryJobList(queryVo);
+            if (Objects.nonNull(exchangisJobVoPageResult) && Objects.nonNull(exchangisJobVoPageResult.getList())
+                    && exchangisJobVoPageResult.getList().size() > 0) {
+                return Message.error("Jobs already exist under this project and the project cannot be deleted (该项目下已存在子任务，无法删除)");
             }
 
             projectService.deleteProjectByName(name);

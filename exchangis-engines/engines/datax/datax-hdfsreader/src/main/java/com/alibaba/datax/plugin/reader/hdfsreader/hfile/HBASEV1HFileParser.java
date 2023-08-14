@@ -47,19 +47,18 @@ public class HBASEV1HFileParser implements HFileParser{
         org.apache.hadoop.conf.Configuration configuration = fileSystem.getConf();
         LOG.info("Start to parse HFile: [" + inputPath + "] in HBASEV1HFileParser");
         try (HFile.Reader reader = HFile.createReader(fileSystem, new Path(inputPath),
-                new CacheConfig(configuration), configuration)) {
-            HFileScanner scanner = reader.getScanner(true, true);
+                new CacheConfig(configuration), false, configuration)) {
+            HFileScanner scanner = reader.getScanner(configuration, true, true);
             if(null == parseConf){
                 parseConf = Configuration.from("{}");
                 for(String parseColumn : PARSE_COLUMNS){
                     parseConf.set(parseColumn, true);
                 }
             }
-            reader.loadFileInfo();
             if(scanner.seekTo()) {
                 do {
                     //Cell entity
-                    Cell cell = scanner.getKeyValue();
+                    Cell cell = scanner.getCell();
                     List<String> sourceList = new ArrayList<>();
                     parseConf.getKeys().forEach(configKey -> {
                         switch(configKey){

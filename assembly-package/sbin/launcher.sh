@@ -86,8 +86,6 @@ load_env_definitions(){
   fi
 }
 
-
-
 construct_java_command(){
     verify_java_env
     if [[ "x${EXCHANGIS_CONF_PATH}" == "x" ]]; then
@@ -114,7 +112,7 @@ construct_java_command(){
     mkdir -p ${EXCHANGIS_PID_PATH}
     local classpath=${EXCHANGIS_CONF_PATH}":."
     local opts=""
-    classpath=${EXCHANGIS_LIB_PATH}/exchangis-server/*":"${classpath}
+    classpath=${EXCHANGIS_LIB_PATH}/"exchangis-server/*:"${classpath}
     LOG INFO "classpath:"${classpath}
     if [[ "x${EXCHANGIS_JAVA_OPTS}" == "x" ]]; then
       # Use G1 garbage collector
@@ -175,7 +173,7 @@ wait_for_startup(){
             return 0
         fi
         sleep ${SLEEP_TIMEREVAL_S}
-        now_s=`date '+%s'`  #计算当前时间时间戳
+        now_s=`date '+%s'`
     done
     return 1
 }
@@ -204,14 +202,17 @@ launcher_start(){
     fi
     construct_java_command $1 $2
     # Execute
+    echo ${EXEC_JAVA}
     LOG INFO ${EXEC_JAVA}
     nohup ${EXEC_JAVA}  >/dev/null 2>&1 &
     LOG INFO "Launcher: waiting [ $1 ] to start complete ..."
     wait_for_startup 20 $1 $2
     if [[ $? -eq 0 ]]; then
         LOG INFO "Launcher: [ $1 ] start success"
+        LOG INFO ${EXCHANGIS_CONF_PATH}
         APPLICATION_YML="${EXCHANGIS_CONF_PATH}/application-exchangis.yml"
         EUREKA_URL=`cat ${APPLICATION_YML} | grep Zone | sed -n '1p'`
+        echo "${EUREKA_URL}"
         LOG INFO "Please check exchangis server in EUREKA_ADDRESS: ${EUREKA_URL#*:} "
     else
         LOG ERROR "Launcher: [ $1 ] start fail over 20 seconds, please retry it"
