@@ -26,7 +26,8 @@ import org.apache.linkis.manager.engineplugin.common.launch.EngineConnLaunchBuil
 import org.apache.linkis.manager.engineplugin.common.resource.EngineResourceFactory
 import org.apache.linkis.manager.label.entity.Label
 
-import java.util
+import java.util.List
+import java.util.ArrayList
 
 class DataxEngineConnPlugin extends EngineConnPlugin {
 
@@ -36,7 +37,7 @@ class DataxEngineConnPlugin extends EngineConnPlugin {
   private var engineConnFactory: EngineConnFactory = _
   private val engineConnFactoryLocker = new Array[Byte](0)
 
-  override def init(params: util.Map[String, Any]): Unit = {}
+  override def init(params: java.util.Map[_root_.scala.Predef.String, scala.AnyRef]): Unit = {}
 
   override def getEngineResourceFactory: EngineResourceFactory = {
     if (null == engineResourceFactory) engineResourceFactoryLocker.synchronized {
@@ -60,7 +61,7 @@ class DataxEngineConnPlugin extends EngineConnPlugin {
     engineConnFactory
   }
 
-  override def getDefaultLabels: util.List[Label[_]] = {
-    new util.ArrayList[Label[_]]()
+  override def getDefaultLabels: List[Label[_]] = {
+    new ArrayList[Label[_]]()
   }
 }

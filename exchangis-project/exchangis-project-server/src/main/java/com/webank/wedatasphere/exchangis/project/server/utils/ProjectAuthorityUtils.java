@@ -1,9 +1,9 @@
 package com.webank.wedatasphere.exchangis.project.server.utils;
 
-import com.webank.wedatasphere.exchangis.project.server.domain.OperationType;
+import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.server.exception.ExchangisProjectErrorException;
 import com.webank.wedatasphere.exchangis.project.server.exception.ExchangisProjectExceptionCode;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
