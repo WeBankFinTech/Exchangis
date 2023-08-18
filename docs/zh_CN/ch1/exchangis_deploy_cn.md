@@ -29,7 +29,7 @@ Exchangis 的安装，主要分为以下四步：
 
 [linkis1.4.0代码地址](https://github.com/apache/incubator-linkis/tree/release-1.4.0)
 
-[DSS1.1.2代码地址    ](https://github.com/WeBankFinTech/DataSphereStudio/tree/dev-1.1.2)
+[DSS1.1.2代码地址    ](https://github.com/WeBankFinTech/DataSphereStudio)
 
 datasource启用
 
@@ -211,7 +211,7 @@ mkdir -p /appcom/logs/exchangis/background
 
 #### 2.7.1 获取前端安装包
 
-Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://github.com/WeBankFinTech/Exchangis/releases/download/release-1.1.2/web-dist.zip)
+Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.1.2/Exchangis1.1.2_install_package.zip)
 
 您也可以自行编译 Exchangis 前端，在 Exchangis 根目录下执行如下命令：
 
@@ -297,7 +297,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 ## 4. Linkis Sqoop 引擎安装部署
 
-如您想正常执行 Exchangis1.1.2 的 Sqoop作业，还需安装 Linkis Sqoop 引擎，请参考: [Linkis Sqoop 引擎插件安装文档](https://linkis.staged.apache.org/zh-CN/docs/1.4.0/engine_usage/sqoop)
+如您想正常执行 Exchangis1.1.2 的 Sqoop作业，还需安装 Linkis Sqoop 引擎，请参考: [Linkis Sqoop 引擎插件安装文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_sqoop_deploy_cn.md)
 
 ## 5. Linkis DataX 引擎安装部署
 
