@@ -1,5 +1,5 @@
 # Exchangis Component Upgrade Documentation
-This article mainly introduces the upgrade steps for adapting DSS1.1.2 and Linkis1.4.0 on the basis of the original installation of the Exchangis service. The biggest difference between the Exchangis1.0.0 and the Exchangis1.0.0-rc1 version is the installation of the ExchangisAppconn, which needs to be replaced by the entire Exchangisappconn. and load### 1.升级Exchangis前的工作
+This article mainly introduces the upgrade steps for adapting DSS1.1.2 and Linkis1.4.0 on the basis of the original installation of the Exchangis service. The biggest difference between the Exchangis1.1.2 and the Exchangis1.0.0 version is the installation of the ExchangisAppconn, which needs to be replaced by the entire Exchangisappconn. and load### 1.升级Exchangis前的工作
 Before you upgrade Exchangis, please follow the[DSS1.1.2Install and deploy documentation](https://github.com/WeBankFinTech/DataSphereStudio-Doc/tree/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2)
 and [Linkis1.4.0Install and deploy documentation](https://linkis.staged.apache.org/zh-CN/docs/1.4.0/deployment/deploy-quick)Complete the installation and upgrade of DSS and Linkis
 
@@ -13,7 +13,7 @@ Go to the following directory and find exchangis appconn folder and delete:
 ```
 
 #### 2）Download binary package
-We provide the upgrade material package of ExchangisAppconn, which you can download and use directly.[Click to jump Release interface](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/exchangis-appconn.zip)
+We provide the upgrade material package of ExchangisAppconn, which you can download and use directly.[Click to jump Release interface](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.1.2/Exchangis1.1.2_install_package.zip)
 
 #### 3） Compile and package
 
