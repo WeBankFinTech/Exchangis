@@ -69,4 +69,4 @@ select * from linkis_cg_engine_conn_plugin_bml_resources where engine_conn_type=
 至此，datax安装部署就完成了。
 
 engineplugin更详细的介绍可以参看下面的文章。  
-https://linkis.apache.org/zh-CN/docs/latest/deployment/engine-conn-plugin-installation/
+https://linkis.apache.org/zh-CN/docs/latest/deployment/install-engineconn
