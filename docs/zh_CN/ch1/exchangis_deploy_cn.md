@@ -301,7 +301,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 ## 5. Linkis DataX 引擎安装部署
 
-如您想正常执行 Exchangis1.0.0 的 DataX作业，还需安装 Linkis DataX 引擎，请参考: [Linkis DataX 引擎插件安装文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_datax_deploy_cn.md)
+如您想正常执行 Exchangis1.1.2 的 DataX作业，还需安装 Linkis DataX 引擎，请参考: [Linkis DataX 引擎插件安装文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_datax_deploy_cn.md)
 
 ## 6. 如何登录使用 Exchangis
 

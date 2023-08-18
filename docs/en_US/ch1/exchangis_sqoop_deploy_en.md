@@ -2,7 +2,7 @@
 ### Prepare the environment 
 Sqoop engine is an indispensable component to perform Exchange IS data synchronization task, and only after the installation and deployment of Sqoop engine can it successfully perform data synchronization task. At the same time, make sure sqoop is installed on the deployed machine. 
 
-Before you install and deploy Sqoop engine,  Please complete the installation of Exchangis 1.0.0 and related components according to the [Exchangis 1.0.0 installation and deployment document](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_deploy_en.md), and ensure that the basic functions of the project are available. 
+Before you install and deploy Sqoop engine,  Please complete the installation of Exchangis 1.1.2 and related components according to the [Exchangis 1.1.2 installation and deployment document](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/en_US/ch1/exchangis_deploy_en.md), and ensure that the basic functions of the project are available. 
 
 Sqoop engine mainly depends on Hadoop basic environment. If this node needs to deploy Sqoop engine, it needs to deploy Hadoop client environment. 
 
