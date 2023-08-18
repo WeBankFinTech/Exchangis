@@ -14,7 +14,7 @@ Exchangis installation is mainly divided into the following four steps ：
 | Dependent components                                                         | Must be installed | Install through train |
 |------------------------------------------------------------------------------| ------ | --------------- |
 | JDK (1.8.0_141)                                                  | yes | [How to install JDK](https://www.oracle.com/java/technologies/downloads/) |
-| MySQL (5.5+)                                                  | yes | [How to install mysql](https://www.mysql.com/downloads/) |
+| MySQL (5.5+)                                                  | yes | [How to install mysql](https://mysql.net.cn/) |
 | Hadoop(3.3.4，Other versions of Hadoop need to compile Linkis by themselves.) | yes | [Hadoop deployment](https://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-3.3.4/hadoop-3.3.4.tar.gz) |
 | Hive(2.3.3，Other versions of Hive need to compile Linkis by themselves.)     | yes | [Hive quick installation](https://www.apache.org/dyn/closer.cgi/hive/) |
 | SQOOP (1.4.6)                                                                | yes | [How to install Sqoop](https://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html) |
@@ -28,7 +28,7 @@ $\color{#FF0000}{Note: be sure to reinstall dss1.1.2, and linkis1.4.0. Please re
 
 [linkis1.4.0 code address ](https://github.com/apache/incubator-linkis/tree/release-1.4.0)    
 
-[DSS1.1.2 code address ](https://github.com/WeBankFinTech/DataSphereStudio/tree/dev-1.1.2)
+[DSS1.1.2 code address ](https://github.com/WeBankFinTech/DataSphereStudio)
 
 datasource enabled 
 
