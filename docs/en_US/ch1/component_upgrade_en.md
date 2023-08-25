@@ -72,4 +72,4 @@ After the installation and deployment of exchangis-appconn is completed, you can
 2.	Check whether the project is created synchronously on the exchange side. If the creation is successful, the appconn installation is successful.
 ![image](https://user-images.githubusercontent.com/27387830/169782337-678f2df0-080a-495a-b59f-a98c5a427cf8.png)
 
-For more usage, please refer to[Exchangis1.0 User Manual](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.1-rc/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
+For more usage, please refer to[Exchangis User Manual](docs/zh_CN/ch1/exchangis_user_manual_cn.md)
