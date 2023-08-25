@@ -125,7 +125,7 @@ interact_echo(){
 
 # Initalize database
 init_database(){
-    BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
+    BOOTSTRAP_PROP_FILE="${CONF_PATH}/dss-exchangis-server.properties"
     if [ "x${SQL_SOURCE_PATH}" != "x" ] && [ -f "${SQL_SOURCE_PATH}" ]; then
         `mysql --version >/dev/null 2>&1`
         DATASOURCE_URL="jdbc:mysql:\/\/${MYSQL_HOST}:${MYSQL_PORT}\/${DATABASE}\?useSSL=false\&characterEncoding=UTF-8\&allowMultiQueries=true"
@@ -142,7 +142,7 @@ init_database(){
 }
 
 init_properties(){
-    BOOTSTRAP_PROP_FILE="${CONF_PATH}/exchangis-server.properties"
+    BOOTSTRAP_PROP_FILE="${CONF_PATH}/dss-exchangis-server.properties"
     APPLICATION_YML="${CONF_PATH}/application-exchangis.yml"
     LINKIS_GATEWAY_URL="http:\/\/${LINKIS_GATEWAY_HOST}:${LINKIS_GATEWAY_PORT}\/"
     if [ "x${LINKIS_SERVER_URL}" == "x" ]; then
