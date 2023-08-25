@@ -71,7 +71,7 @@ INSERT INTO `linkis_ps_dm_datasource_env` (`env_name`, `env_desc`, `datasource_t
 
 #### 2.1.1下载二进制包
 
-从 Exchangis 已发布的 release 中 [点击下载exchangis安装包](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.1.2)，下载最新的安装包。
+从 Exchangis 已发布的 release 中 [点击下载exchangis安装包](https://github.com/WeBankFinTech/Exchangis/releases)，下载最新的安装包。
 
 #### 2.1.2 编译打包
 
@@ -211,7 +211,7 @@ mkdir -p /appcom/logs/exchangis/background
 
 #### 2.7.1 获取前端安装包
 
-Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.1.2/Exchangis1.1.2_install_package.zip)
+Exchangis 已默认提供了编译好的前端安装包，可直接下载使用：[点击下载前端安装包](https://github.com/WeBankFinTech/Exchangis/releases)
 
 您也可以自行编译 Exchangis 前端，在 Exchangis 根目录下执行如下命令：
 
@@ -293,7 +293,7 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 ## 3. DSS ExchangisAppConn 安装部署
 
-如您想正常使用 Exchangis1.1.2 前端，还需安装 DSS ExchangisAppConn 插件，请参考: [ExchangisAppConn 插件安装文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_appconn_deploy_cn.md)
+如您想正常使用 Exchangis1.1.2 前端，还需安装 DSS ExchangisAppConn 插件，请参考: [ExchangisAppConn 插件安装文档](docs/zh_CN/ch1/exchangis_appconn_deploy_cn.md)
 
 ## 4. Linkis Sqoop 引擎安装部署
 
@@ -305,4 +305,4 @@ Exchangis 已默认提供了编译好的前端安装包，可直接下载使用�
 
 ## 6. 如何登录使用 Exchangis
 
-Exchangis更多使用说明，请参考用户使用手册[Exchangis 用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
+Exchangis更多使用说明，请参考用户使用手册[Exchangis 用户手册](docs/zh_CN/ch1/exchangis_user_manual_cn.md)

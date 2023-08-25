@@ -2,7 +2,7 @@
 ### 环境准备
 DataX引擎是执行Exchangis数据同步任务不可或缺的组件，只有安装部署完成DataX引擎才能够成功执行数据同步任务。同时，确保所部署的机器上有安装DataX。
 
-您在安装部署DataX引擎之前，请按照[Exchangis1.1.2安装部署文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_deploy_cn.md)（TODO 待修改连接地址）安装完成Exchangis1.1.2及相关组件的安装，并确保工程基本功能可用。
+您在安装部署DataX引擎之前，请按照[Exchangis安装部署文档](docs/zh_CN/ch1/exchangis_deploy_cn.md)安装完成Exchangis及相关组件的安装，并确保工程基本功能可用。
 
 强烈建议您在执行DataX任务之前，先在该节点使用原生的DataX执行测试任务，以检测该节点环境是否正常。
 
@@ -17,7 +17,7 @@ DataX引擎是执行Exchangis数据同步任务不可或缺的组件，只有安
 
 Exchangis1.1.2和Linkis 1.4.0支持的主流DataX版本1.4.6与1.4.7，更高版本可能需要修改部分代码重新编译。
 
-[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.1.2)（TODO 待修改连接地址）
+[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.1.2)
 
 #### 2） 编译打包
 如果您想自己开发和编译datax引擎，具体编译步骤如下：

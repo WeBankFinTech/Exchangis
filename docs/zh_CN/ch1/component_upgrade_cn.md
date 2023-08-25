@@ -14,7 +14,7 @@ Exchangis 升级文档
 ```
 
 #### 2）下载二进制包
-我们提供ExchangisAppconn的升级物料包，您可直接下载使用。[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.1.2/Exchangis1.1.2_install_package.zip)（TODO：待发版时更新）
+我们提供ExchangisAppconn的升级物料包，您可直接下载使用。[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.1.2/Exchangis1.1.2_install_package.zip)
 
 #### 3） 编译打包
 
@@ -77,9 +77,9 @@ lib/exchangis-server
    ```shell script
    ./sbin/daemon.sh restart server
    ```
-# 4.3）更新exchangis-server.propertis文件
+# 4.3）更新dss-exchangis-server.propertis文件
 
-将exchangis-server.propertis文件中的最后一行进行替换，替换内容如下
+将dss-exchangis-server.propertis文件中的最后一行进行替换，替换内容如下
 
 ```$xslt
 wds.linkis-session.ticket.key=bdp-user-ticket-id
@@ -94,4 +94,4 @@ wds.linkis-session.ticket.key=bdp-user-ticket-id
 ![image](https://user-images.githubusercontent.com/27387830/169782337-678f2df0-080a-495a-b59f-a98c5a427cf8.png)
 
 
- 更多使用操作可参照[Exchangis用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
+ 更多使用操作可参照[Exchangis用户手册](docs/zh_CN/ch1/exchangis_user_manual_cn.md)

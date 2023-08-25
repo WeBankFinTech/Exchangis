@@ -67,7 +67,7 @@ Please ensure that DSS1.1.2 and Linkis1.4.0 are basically available. HiveQL scri
 
 #### 2.1.1  Download binary package 
 
-Download the latest installation package from the Released release of Exchangis [click to jump to the release interface](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.1.2).
+Download the latest installation package from the Released release of Exchangis [click to jump to the release interface](https://github.com/WeBankFinTech/Exchangis/releases).
 
 #### 2.1.2  Compile and package 
 
@@ -214,7 +214,7 @@ As shown in the figure below:
 
 #### 2.7.1  Get the front-end installation package 
 
-Exchangis has provided compiled front-end installation package by default, which can be downloaded and used directly ：[Click to jump to the Release interface](https://github.com/WeBankFinTech/Exchangis/releases/download/release-1.0.0-rc1/web-dist.zip)
+Exchangis has provided compiled front-end installation package by default, which can be downloaded and used directly ：[Click to jump to the Release interface](https://github.com/WeBankFinTech/Exchangis/releases)
 
 You can also compile the exchange front-end by yourself and execute the following command in the exchanise root directory:
 
@@ -296,7 +296,7 @@ Please visit the Exchange front-end page at  http://${EXCHANGIS_INSTALL_IP}:8098
 
 ## 3. DSS ExchangisAppConn installation and deployment 
 
-If you want to use Exchangis1.0.0 front-end, you also need to install the DSS ExchangisAppConn plugin. Please refer to: [ExchangisAppConn installation documentation for plugins ](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_appconn_deploy_en.md)
+If you want to use Exchangis1.0.0 front-end, you also need to install the DSS ExchangisAppConn plugin. Please refer to: [ExchangisAppConn installation documentation for plugins ](docs/en_US/ch1/exchangis_appconn_deploy_en.md)
 
 ## 4. Linkis Sqoop engine installation and deployment 
 
@@ -304,4 +304,4 @@ If you want to execute the Sqoop operation of Exchangis1.0.0 normally, you also 
 
 ## 5.  How to log in and use Exchangis
 
-Exchangis1.0 for more instructions, please refer to the user manual.[Exchangis1.0 user manual](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_user_manual_en.md)
+Exchangis1.0 for more instructions, please refer to the user manual.[Exchangis user manual](docs/en_US/ch1/exchangis_user_manual_en.md)
