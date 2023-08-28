@@ -1,3 +1,8 @@
+/*
+ * @Description: 
+ * @Author: sueRim
+ * @Date: 2022-05-13 10:19:27
+ */
 import { pum as pumApi, request as ajax, access as accessInstance, getRouter } from "@fesjs/fes";
 import { message, Modal, ConfigProvider } from "ant-design-vue";
 import zhCN from "ant-design-vue/es/locale/zh_CN";
@@ -46,6 +51,7 @@ export const request = {
         return message.error(error.response.data.data.errorMsg.desc);
       }
       console.log(error, error?.response)
+      if (error?.type === 'REPEAT') return // 重复请求不进行提示
       message.error(error?.response?.data?.message || error?.data?.message ||  "系统异常");
     },
   },

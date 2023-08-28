@@ -15,14 +15,11 @@ public interface JobExecuteService {
     /**
      * Check if the user has the authority of execution job
      * @param jobExecutionId job execution id
-     * @param userName user name
      * @return bool
      */
-    boolean hasExecuteJobAuthority(String jobExecutionId, String userName);
+    ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, LogQuery logQuery) throws ExchangisJobServerException;
 
-    ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, LogQuery logQuery, String userName) throws ExchangisJobServerException;
-
-    ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, LogQuery logQuery, String userName) throws ExchangisJobServerException, ExchangisTaskLaunchException;
+    ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, LogQuery logQuery) throws ExchangisJobServerException, ExchangisTaskLaunchException;
 
     /**
      * Gets task Metrics
@@ -31,7 +28,7 @@ public interface JobExecuteService {
      * @param jobExecutionId      the job ExecutionId
      * @return the task launched metrics
      */
-    ExchangisLaunchedTaskMetricsVo getLaunchedTaskMetrics(String taskid, String jobExecutionId, String userName) throws ExchangisJobServerException;
+    ExchangisLaunchedTaskMetricsVo getLaunchedTaskMetrics(String taskid, String jobExecutionId) throws ExchangisJobServerException;
 
     /**
      * Gets job progress info

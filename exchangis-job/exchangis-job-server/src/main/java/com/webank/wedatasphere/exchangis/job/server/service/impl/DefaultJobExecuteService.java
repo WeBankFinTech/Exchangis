@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
+import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
@@ -31,7 +32,6 @@ import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricsCon
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.linkis.server.security.SecurityFilter;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +121,6 @@ public class DefaultJobExecuteService implements JobExecuteService {
             ExchangisJobProgressVo finalJobProgressVo = jobProgressVo;
             launchedExchangisTaskEntity.forEach(taskEntity -> {
                 finalJobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), taskEntity.getStatus(), taskEntity.getProgress()));
-                //jobProgressVo.addTaskProgress(new ExchangisJobProgressVo.ExchangisTaskProgressVo(taskEntity.getTaskId(), taskEntity.getName(), taskEntity.getStatus(), taskEntity.getProgress()));
             });
         } catch (Exception e){
             LOG.error("Get job and task progress happen execption ," +  "[jobExecutionId =" + jobExecutionId + "]", e);
@@ -161,11 +160,8 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public ExchangisLaunchedTaskMetricsVo getLaunchedTaskMetrics(String taskId, String jobExecutionId, String userName) throws ExchangisJobServerException {
+    public ExchangisLaunchedTaskMetricsVo getLaunchedTaskMetrics(String taskId, String jobExecutionId) throws ExchangisJobServerException {
         LaunchedExchangisTaskEntity launchedExchangisTaskEntity = launchedTaskDao.getLaunchedTaskMetrics(jobExecutionId, taskId);
-        if (Objects.isNull(launchedExchangisTaskEntity) || !hasExecuteJobAuthority(jobExecutionId, userName)) {
-            throw new ExchangisJobServerException(METRICS_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
-        }
         ExchangisLaunchedTaskMetricsVo exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVo();
         exchangisLaunchedTaskVo.setTaskId(launchedExchangisTaskEntity.getTaskId());
         exchangisLaunchedTaskVo.setName(launchedExchangisTaskEntity.getName());
@@ -183,33 +179,14 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public boolean hasExecuteJobAuthority(String jobExecutionId, String userName) {
-        return hasExecuteJobAuthority(this.launchedJobDao.searchLaunchedJob(jobExecutionId) , userName);
-    }
-
-    /**
-     * Check if has the authority of accessing execution job
-     * @param launchedExchangisJob launched job
-     * @param userName userName
-     * @return
-     */
-    public boolean hasExecuteJobAuthority(LaunchedExchangisJobEntity launchedExchangisJob, String userName){
-//        return Objects.nonNull(launchedExchangisJob) && launchedExchangisJob.getExecuteUser().equals(userName);
-        return true;
-    }
-
-    @Override
-    public ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, LogQuery logQuery, String userName) throws ExchangisJobServerException {
+    public ExchangisCategoryLogVo getJobLogInfo(String jobExecutionId, LogQuery logQuery) throws ExchangisJobServerException {
         LaunchedExchangisJobEntity launchedExchangisJob = this.launchedJobDao.searchLogPathInfo(jobExecutionId);
-        if (Objects.isNull(launchedExchangisJob) || !hasExecuteJobAuthority(launchedExchangisJob, userName)){
-            throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Unable to find the launched job by [" + jobExecutionId + "]", null);
-        }
         LogResult logResult = jobLogService.logsFromPageAndPath(launchedExchangisJob.getLogPath(), logQuery);
         return resultToCategoryLog(logQuery, logResult, launchedExchangisJob.getStatus());
     }
 
     @Override
-    public ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, LogQuery logQuery, String userName)
+    public ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, LogQuery logQuery)
             throws ExchangisJobServerException, ExchangisTaskLaunchException {
         LaunchedExchangisTaskEntity launchedTaskEntity = this.launchedTaskDao.getLaunchedTaskEntity(taskId);
         if (Objects.isNull(launchedTaskEntity)){
@@ -220,9 +197,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
             // Means that the task is not ready or task submit failed
             return resultToCategoryLog(logQuery, new LogResult(0, TaskStatus.isCompleted(status), new ArrayList<>()), status);
         }
-        if (!hasExecuteJobAuthority(jobExecutionId, userName)){
-            throw new ExchangisJobServerException(LOG_OP_ERROR.getCode(), "Not have permission of accessing task [" + taskId + "]", null);
-        }
+
         // Construct the launchedExchangisTask
         LaunchedExchangisTask launchedTask = new LaunchedExchangisTask();
         launchedTask.setLinkisJobId(launchedTaskEntity.getLinkisJobId());
@@ -253,7 +228,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         List<ExchangisLaunchedJobListVo> jobList = new ArrayList<>();
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
-        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, start, size, SecurityFilter.getLoginUsername(request));
+        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, start, size, UserUtils.getLoginUser(request));
         //LOG.info("ExecutedJobList information: " + jobExecutionId + jobName + status + launchStartTime + launchEndTime + current + size);
         if(jobEntitylist != null) {
             try {
@@ -272,15 +247,20 @@ public class DefaultJobExecuteService implements JobExecuteService {
                     if (launchedExchangisTaskEntities == null) {
                         exchangisJobVo.setFlow((long) 0);
                     } else {
-                        int flows = 0;
+                        double flows = 0;
                         int taskNum = launchedExchangisTaskEntities.size();
                         for (LaunchedExchangisTaskEntity launchedExchangisTaskEntity : launchedExchangisTaskEntities) {
-                            if (launchedExchangisTaskEntity.getMetricsMap() == null || launchedExchangisTaskEntity.getMetricsMap().get("traffic") == null) {
+                            MetricsConverter<ExchangisMetricsVo> metricsConverter = metricConverterFactory.getOrCreateMetricsConverter(launchedExchangisTaskEntity.getEngineType());
+                            ExchangisLaunchedTaskMetricsVo exchangisLaunchedTaskVo = new ExchangisLaunchedTaskMetricsVo();
+                            if (launchedExchangisTaskEntity.getMetricsMap() == null) {
                                 flows += 0;
                                 continue;
                             }
+                            exchangisLaunchedTaskVo.setMetrics(metricsConverter.convert(launchedExchangisTaskEntity.getMetricsMap()));
                             Map<String, Object> flowMap = (Map<String, Object>) launchedExchangisTaskEntity.getMetricsMap().get("traffic");
-                            flows += flowMap == null ? 0 : Integer.parseInt(flowMap.get("flow").toString());
+                            //Map<String, Object> flowMap = (Map<String, Object>) launchedExchangisTaskEntity.getMetricsMap().get("traffic");
+                            //flows += flowMap == null ? 0 : Integer.parseInt(flowMap.get("flow").toString());
+                            flows += exchangisLaunchedTaskVo.getMetrics().getTraffic().getFlow();
                         }
                         exchangisJobVo.setFlow(taskNum == 0 ? 0 : (long) (flows / taskNum));
                     }
@@ -298,7 +278,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
 
-        return launchedJobDao.count(jobExecutionId, jobName, status, startTime, endTime, SecurityFilter.getLoginUsername(request));
+        return launchedJobDao.count(jobExecutionId, jobName, status, startTime, endTime, UserUtils.getLoginUser(request));
     }
 
     @Override
@@ -332,6 +312,13 @@ public class DefaultJobExecuteService implements JobExecuteService {
     private ExchangisCategoryLogVo resultToCategoryLog(LogQuery logQuery, LogResult logResult, TaskStatus status){
         ExchangisCategoryLogVo categoryLogVo = new ExchangisCategoryLogVo();
         boolean noLogs = logResult.getLogs().isEmpty();
+        for (int i = 0; i < logResult.getLogs().size(); i++) {
+            if (logResult.getLogs().get(i).contains("password")) {
+                LOG.info("Sensitive information in there: {}", logResult.getLogs().get(i));
+                logResult.getLogs().set(i, "----");
+                LOG.info("Change line is: {}", logResult.getLogs().get(i));
+            }
+        }
         if (Objects.nonNull(logQuery.getLastRows())){
             logResult.setEnd(true);
         }else if (noLogs){

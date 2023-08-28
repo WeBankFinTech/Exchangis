@@ -7,7 +7,7 @@
              @cancel="$emit('update:visible', false)"
     >
         <a-spin :spinning="confirmLoading">
-            <DatasourceForm ref="datasourceForm" :data="modalCfg" @connect="handleConnect" @submit="handleOk" @cancel="$emit('update:visible', false)" />
+            <DatasourceForm v-if="visible" ref="datasourceForm" :data="modalCfg" @connect="handleConnect" @submit="handleOk" @cancel="$emit('update:visible', false)" />
             <div v-if="mode === 'read'" class="mark-layer"></div>
             <!--<a-form ref="formRef" :model="formState" :label-col="{ span: 6 }">-->
         <!--<a-form-item :label="$t(`dataSource.editModal.form.fields.dataSourceName.label`)" name="dataSourceName">-->
@@ -180,7 +180,7 @@ export default {
                     ...connectParams
                 }
             });
-            //     message.success('连接成功');
+            message.success('连接成功');
             //     this.modalCfg.isTested = false;
             // } catch (error) {
             //     console.log('error: ', error);

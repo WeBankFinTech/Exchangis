@@ -11,8 +11,10 @@ import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.Lo
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.scheduler.Scheduler;
+import org.apache.linkis.scheduler.SchedulerContext;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
 import org.apache.linkis.scheduler.queue.GroupFactory;
+import org.apache.linkis.scheduler.queue.SchedulerEventState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +56,6 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
     @Override
     protected LoadBalanceSchedulerTask<LaunchedExchangisTask> choose(LaunchedExchangisTask launchedExchangisTask, Class<?> schedulerTaskClass, boolean unchecked) {
         if( !unchecked  || isSuitableClass(schedulerTaskClass)){
-            String schedulerTaskName = schedulerTaskClass.getSimpleName();
             // Fetch the latest info
             launchedExchangisTask = getTaskManager().getRunningTask(launchedExchangisTask.getTaskId());
             // If the value is None means that the task is ended
@@ -70,29 +71,8 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                 if (StringUtils.isBlank(tenancy)) {
                     tenancy = TenancyParallelGroupFactory.DEFAULT_TENANCY;
                 }
-                String finalTenancy = tenancy;
-                SchedulerTaskContainer schedulerTaskContainer =tenancySchedulerTasks.compute(tenancy + "_" + schedulerTaskName,(key, taskContainer) -> {
-                    if (Objects.isNull(taskContainer)){
-                        LoadBalanceSchedulerTask<LaunchedExchangisTask> headSchedulerTask = createLoadBalanceSchedulerTask(schedulerTaskClass);
-                        if (headSchedulerTask instanceof AbstractLoadBalanceSchedulerTask){
-                            ((AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask>) headSchedulerTask)
-                                    .setSchedulerLoadBalancer(FlexibleTenancyLoadBalancer.this);
-                        }
-                        headSchedulerTask.setTenancy(finalTenancy);
-                        try {
-                            getScheduler().submit(headSchedulerTask);
-                        } catch (Exception e){
-                            // Only if not enough reserved threads in scheduler
-                            throw new ExchangisTaskExecuteException.Runtime("If there is no enough reserved threads in scheduler for tenancy: [" + finalTenancy
-                                    + "], load balance scheduler task: [" + schedulerTaskName + "]? please invoke setInitResidentThreads(num) method in consumerManager", e);
-                        }
-                        taskContainer = new SchedulerTaskContainer(headSchedulerTask);
-                        taskContainer.tenancy = finalTenancy;
-                    }
-                    return taskContainer;
-                });
                 // Select one
-                return schedulerTaskContainer.select();
+                return geOrCreateSchedulerTaskContainer(tenancy, schedulerTaskClass).select();
             }
 
         }
@@ -136,6 +116,7 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
     public void run() {
         Thread.currentThread().setName("Balancer-Thread" + getName());
         LOG.info("Thread:[ {} ] is started. ", Thread.currentThread().getName());
+        initLoadBalancerSchedulerTasks();
         ConsumerManager consumerManager = getScheduler().getSchedulerContext().getOrCreateConsumerManager();
         Map<String, ExecutorService> tenancyExecutorServices = new HashMap<>();
         int residentThreads = 0;
@@ -272,6 +253,57 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
         return this.getClass().getSimpleName();
     }
 
+    /**
+     * Get or create scheduler task container
+     * @return container
+     */
+    private SchedulerTaskContainer geOrCreateSchedulerTaskContainer(String tenancy, Class<?> schedulerTaskClass){
+        String schedulerTaskName = schedulerTaskClass.getSimpleName();
+        return tenancySchedulerTasks.compute(tenancy + "_" + schedulerTaskName,(key, taskContainer) -> {
+            if (Objects.isNull(taskContainer)){
+                LoadBalanceSchedulerTask<LaunchedExchangisTask> headSchedulerTask = createLoadBalanceSchedulerTask(schedulerTaskClass);
+                if (headSchedulerTask instanceof AbstractLoadBalanceSchedulerTask){
+                    ((AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask>) headSchedulerTask)
+                            .setSchedulerLoadBalancer(FlexibleTenancyLoadBalancer.this);
+                }
+                headSchedulerTask.setTenancy(tenancy);
+                try {
+                    getScheduler().submit(headSchedulerTask);
+                } catch (Exception e){
+                    // Only if not enough reserved threads in scheduler
+                    throw new ExchangisTaskExecuteException.Runtime("If there is no enough reserved threads in scheduler for tenancy: [" + tenancy
+                            + "], load balance scheduler task: [" + schedulerTaskName + "]? please invoke setInitResidentThreads(num) method in consumerManager", e);
+                }
+                taskContainer = new SchedulerTaskContainer(headSchedulerTask);
+                taskContainer.tenancy = tenancy;
+                LOG.info("Create scheduler task container[ tenancy: {}, load balance scheduler task: {} ]", tenancy, schedulerTaskName);
+            }
+            return taskContainer;
+        });
+    }
+
+    /**
+     * Init to pre create task container for load balancer scheduler tasks
+     */
+    private void initLoadBalancerSchedulerTasks(){
+        SchedulerContext schedulerContext = getScheduler().getSchedulerContext();
+        if (schedulerContext instanceof ExchangisSchedulerContext){
+            Optional.ofNullable(((ExchangisSchedulerContext)schedulerContext).getTenancies()).ifPresent(tenancies -> {
+                tenancies.forEach(tenancy -> {
+                    // Skip the system tenancy
+                    if (!tenancy.startsWith(".")) {
+                        for (Class<?> registeredTaskClass : registeredTaskClasses) {
+                            geOrCreateSchedulerTaskContainer(tenancy, registeredTaskClass);
+                        }
+                    }
+                });
+            });
+            // init scheduler task container for default tenancy
+            for (Class<?> registeredTaskClass : registeredTaskClasses) {
+                geOrCreateSchedulerTaskContainer(TenancyParallelGroupFactory.DEFAULT_TENANCY, registeredTaskClass);
+            }
+        }
+    }
     static class LoopCounter {
 
         AtomicInteger containers = new AtomicInteger(0);
@@ -282,6 +314,7 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
 
         List<SchedulerTaskContainer> taskContainers = new ArrayList<>();
     }
+
     /**
      * Scheduler
      */
@@ -333,7 +366,7 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
          */
         private void scaleOutSegment(int scaleOut){
             int newSize = segments.length - scaleOut;
-            LOG.info("Scale-out segments for tenancy: [{}]，scaleOut: [{}], newSize: [{}], scheduler task: [{}]",
+            LOG.info("Scale-out segments for tenancy: [{}]，scaleOut: [{}], newSize: [{}], scheduler_task_type: [{}]",
                     tenancy, scaleOut, newSize, taskName);
             if (newSize <= 0){
                 LOG.warn("Scale-out fail, the newSize cannot <= 0");
@@ -341,21 +374,50 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
             }
             SchedulerTaskSegment[] newSegments = new SchedulerTaskSegment[newSize];
             System.arraycopy(segments, 0, newSegments, 0, newSize);
-            int offset = 0;
+            int offset = -1;
+            Map<String, List<LoadBalanceSchedulerTask<LaunchedExchangisTask>>> waitForCombine = new HashMap<>();
             for(int i = newSize; i < segments.length; i ++){
                 LoadBalanceSchedulerTask<LaunchedExchangisTask> schedulerTask = segments[i].loadBalanceSchedulerTask;
                 try {
-                    if (AbstractExchangisSchedulerTask.class.isAssignableFrom(schedulerTask.getClass())) {
-                        ((AbstractExchangisSchedulerTask) schedulerTask).kill();
+                    SchedulerTaskSegment newSegment = null;
+                    int count = 0;
+                    do {
+                        offset = (offset + 1) % newSize;
+                        newSegment = newSegments[offset];
+                        count ++;
+                    }while (newSegment.loadBalanceSchedulerTask.getState() != SchedulerEventState.Running() && count <= newSize);
+                    if (offset != 0 && newSegment.loadBalanceSchedulerTask.getState() != SchedulerEventState.Running()){
+                        // Ignore the first load balance scheduler task
+                        LOG.error("Unable to scale-out segments for tenancy: [{}], reason:" +
+                                " the scheduler task has still in state[{}], scheduler_task_type: [{}], offset: [{}]",
+                                tenancy, newSegment.loadBalanceSchedulerTask.getState(), taskName, offset);
+                        return;
                     }
-                    // Merge the poller
-                    LoadBalancePoller<LaunchedExchangisTask> poller = schedulerTask.getOrCreateLoadBalancePoller();
-                    // Combine the poller
-                    newSegments[offset % newSize].loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().combine(poller);
+                    waitForCombine.compute(offset + "", (key, value) -> {
+                        if (Objects.isNull(value)){
+                            value = new ArrayList<>();
+                        }
+                        value.add(schedulerTask);
+                        return value;
+                    });
                 } catch (Exception e){
-                    LOG.warn("Scale-out segments for tenancy: [{}] wrong, index: [{}], scheduler task: [{}]", tenancy, i, taskName, e);
+                    LOG.warn("Scale-out segments for tenancy: [{}] wrong, index: [{}], scheduler_task_type: [{}]", tenancy, i, taskName, e);
                 }
             }
+            // Kill all
+            waitForCombine.forEach((key, tasks) -> {
+                SchedulerTaskSegment newSegment = newSegments[Integer.parseInt(key)];
+                tasks.forEach(task -> {
+                    // Kill task
+                    if (AbstractExchangisSchedulerTask.class.isAssignableFrom(task.getClass())) {
+                        ((AbstractExchangisSchedulerTask) task).kill();
+                    }
+                    // Merge/Combine the poller
+                    LoadBalancePoller<LaunchedExchangisTask> poller = task.getOrCreateLoadBalancePoller();
+                    LOG.info("Merge/combine [{}] poller form {} to {}", taskName, task.getId(), newSegment.loadBalanceSchedulerTask.getId());
+                    newSegment.loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().combine(poller);
+                });
+            });
             segments = newSegments;
         }
         /**
@@ -371,13 +433,24 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
                 try {
                     LoadBalanceSchedulerTask<LaunchedExchangisTask> schedulerTask =
                             createLoadBalanceSchedulerTask(segments[0].loadBalanceSchedulerTask.getClass());
+                    //
+                    final SchedulerTaskSegment segment = new SchedulerTaskSegment(0, schedulerTask);
                     if (schedulerTask instanceof AbstractLoadBalanceSchedulerTask){
                         ((AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask>) schedulerTask)
                                 .setSchedulerLoadBalancer(FlexibleTenancyLoadBalancer.this);
+                        ((AbstractLoadBalanceSchedulerTask<LaunchedExchangisTask>) schedulerTask).setScheduleListener( task -> {
+                            segmentLock.writeLock().lock();
+                            try{
+                                segment.setWeight(1);
+                                LOG.info("Init the weight of segment to 1, relate scheduler task: {}", task.getName());
+                            }finally {
+                                segmentLock.writeLock().unlock();
+                            }
+                        });
                     }
                     schedulerTask.setTenancy(tenancy);
+                    newSegments[i] = segment;
                     getScheduler().submit(schedulerTask);
-                    newSegments[i] = new SchedulerTaskSegment(1, schedulerTask);
                 } catch (Exception e){
                     LOG.warn("Scale-in segments for tenancy: [{}] wrong, index: [{}]", tenancy, i, e);
                 }
@@ -441,6 +514,11 @@ public class FlexibleTenancyLoadBalancer extends AbstractTaskSchedulerLoadBalanc
             this.cwt = this.wt;
             this.loadBalanceSchedulerTask = task;
             this.schedulerId = task.getId();
+        }
+
+        public void setWeight(int weight){
+            this.wt = weight;
+            this.cwt = this.wt;
         }
     }
 

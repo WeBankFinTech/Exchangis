@@ -51,6 +51,7 @@ public class ExchangisHttpUtils {
         }
         LOG.info("User {} try to request Exchangis with url {} and labels {}.", httpAction.getUser(), httpAction.getURL(), requestRef.getDSSLabels().get(0).getValue().get("DSSEnv"));
         HttpResult httpResult = ssoRequestOperation.requestWithSSO(ssoUrlBuilderOperation, httpAction);
+        LOG.info("responseBody:{}", httpResult.getResponseBody());
         InternalResponseRef responseRef = ResponseRef.newInternalBuilder().setResponseBody(httpResult.getResponseBody()).build();
         if (responseRef.isFailed()){
             throw new ExternalOperationFailedException(95011, responseRef.getErrorMsg());

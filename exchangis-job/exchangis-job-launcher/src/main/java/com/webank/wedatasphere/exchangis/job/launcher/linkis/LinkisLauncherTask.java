@@ -17,6 +17,8 @@ import org.apache.linkis.computation.client.once.simple.SimpleOnceJob;
 import org.apache.linkis.computation.client.once.simple.SubmittableSimpleOnceJob;
 import org.apache.linkis.computation.client.operator.impl.*;
 import org.apache.linkis.computation.client.utils.LabelKeyUtils;
+import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
+import org.apache.linkis.datasourcemanager.common.util.PatternInjectUtils;
 import org.apache.linkis.protocol.engine.JobProgressInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,15 +124,22 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 String linkisJobStatus = this.onceJob.getStatus(this.jobInfo);
                 if ("success".equalsIgnoreCase(linkisJobStatus)) {
                     this.status = TaskStatus.Success;
-                } else if ("failed".equalsIgnoreCase(linkisJobStatus)) {
+                } else if ("failed".equalsIgnoreCase(linkisJobStatus)){
                     this.status = TaskStatus.Failed;
+                } else if ("shuttingdown".equalsIgnoreCase(linkisJobStatus)) {
+                    LOG.warn("Will retry on linkis job status: [{}]", linkisJobStatus);
+                    // Retry on shutting down status
+                    this.status = TaskStatus.WaitForRetry;
                 } else {
                     this.status = TaskStatus.Running;
                 }
+                // Init the error count
+                this.reqError.set(0);
             } catch (Exception e){
                 try {
                     dealException(e);
                 } catch (ExchangisTaskNotExistException ne){
+                    LOG.warn("Not find the launcher task in exchangis", e);
                     this.status = TaskStatus.Failed;
                 }
             }
@@ -149,7 +158,10 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
             try{
                 // Invoke getStatus() to get real time status
                 if(!TaskStatus.isCompleted(getStatus())){
-                    return (Map<String, Object>)this.metricsOperator.apply();
+                    Map<String, Object> metrics = (Map<String, Object>)this.metricsOperator.apply();
+                    // Init the error count
+                    this.reqError.set(0);
+                    return metrics;
                 }
             }catch(Exception e){
                 dealException(e);
@@ -182,6 +194,8 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                     }
                     this.progressInfo.setProgress(1.0f);
                 }
+                // Init the error count
+                this.reqError.set(0);
             } catch(Exception e){
                 dealException(e);
             }
@@ -195,6 +209,8 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
             try{
                 this.onceJob.kill();
                 this.status = TaskStatus.Cancelled;
+                // Init the error count
+                this.reqError.set(0);
             }catch(Exception e){
                 dealException(e);
             }
@@ -221,6 +237,8 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 if (isEnd){
                     isEnd = TaskStatus.isCompleted(getStatus());
                 }
+                // Init the error count
+                this.reqError.set(0);
                 return new LogResult(logs.endLine(), isEnd, logs.logs());
             } catch (Exception e){
                 dealException(e);
@@ -237,6 +255,10 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
         }
         try {
             ((SubmittableOnceJob) this.onceJob).submit();
+            TaskStatus status = getStatus();
+            if (status == TaskStatus.Undefined || status == TaskStatus.WaitForRetry){
+                throw new ExchangisTaskLaunchException("Fail to submit to linkis server with unexpected final status： [" + status + "]", null);
+            }
             // New the operators for job
             prepareOperators(this.onceJob);
             Map<String, Object> jobInfo = getJobInfo(false);
@@ -272,6 +294,12 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 jobBuilder.setStartupParams((Map<String, Object>) startupParams);
             }
         });
+        try {
+            jobBuilder.addStartupParam(PatternInjectUtils.inject(LAUNCHER_LINKIS_EXEC_ID,
+                    new String[]{task.getEngineType().toLowerCase(Locale.ROOT)}), task.getId());
+        } catch (JsonErrorException e) {
+            //Ignore
+        }
         return jobBuilder.build();
     }
 
