@@ -7,6 +7,7 @@
                     :sourceTypeList="sourceTypeList"
                     @create="handleCreate"
                     @search="handleSearch"
+                    @encrypt="showEncrypt"
                 />
             </a-col>
             <a-col :span="24"><div class="line"></div></a-col>
@@ -19,6 +20,7 @@
                     :pagination="pagination"
                     class="data-source-manage-table"
                     @change="onChange"
+                    :scroll="{ x: 1600, y: 650 }"
                 >
                     <template #tags="{ text }">
                         <a-tag color="#2e92f7">{{text.labels}}</a-tag>
@@ -119,6 +121,9 @@
             :zIndex="1002"
             @finish="handleModalFinish"
         />
+        <encrypt-modal
+            v-model:visible="encryptVisible"
+        />
     </div>
 </template>
 
@@ -130,6 +135,7 @@ import TopLine from './components/topLine.vue';
 import SelectTypeModal from './components/selectTypeModal.vue';
 import EditModal from './components/editModal.vue';
 import VersionModal from './components/versionModal.vue';
+import EncryptModal from './components/encryptModal.vue';
 import {
     getDataSourceList,
     deleteDataSource,
@@ -145,7 +151,8 @@ export default {
         TopLine,
         SelectTypeModal,
         EditModal,
-        VersionModal
+        VersionModal,
+        EncryptModal
     },
     setup() {
         const { t } = useI18n({ useScope: 'global' });
@@ -250,9 +257,12 @@ export default {
                 current: 1,
                 pageSize: 10,
                 showQuickJumper: true,
-                showSizeChanger: true
+                showSizeChanger: true,
+                showTotal: total => `总计 ${total} 条`
             },
-            searchData: {}
+            searchData: {},
+            // 加密弹窗
+            encryptVisible: false,
         };
     },
     mounted() {
@@ -273,6 +283,7 @@ export default {
             };
             this.getDataSourceList();
         },
+
         // 打开版本弹框
         handleOpenVersionModal(text) {
             this.versionModalCfg = {
@@ -320,6 +331,7 @@ export default {
         },
         // 测试链接
         async handleTestConnect(row) {
+            message.destroy();
             await testDataSourceConnect(row.text.id, row.text.versionId);
             message.success('连接成功');
         },
@@ -362,6 +374,10 @@ export default {
                 page: current,
                 pageSize
             });
+        },
+        // 显示加密弹窗
+        showEncrypt() {
+            this.encryptVisible = true
         }
     }
 };
@@ -372,7 +388,13 @@ export default {
   padding: 16px 24px;
   box-sizing: border-box;
   background: #fff;
-  min-height: calc(100vh - 48px);
+  min-height: 100vh;
+  :deep(.ant-table-thead > tr > th) {
+    height: 60px;
+  }
+  :deep(.ant-table-tbody > tr > td) {
+    height: 60px;
+  }
 }
 .top-line {
   display: flex;
@@ -386,10 +408,8 @@ export default {
   background-color: #dee4ec;
   margin-left: -24px;
 }
-:deep(.ant-table-pagination.ant-pagination) {
-  float: left;
-}
 .data-source-manage-table {
+  min-width: 1000px;
   :deep(.ant-tag) {
     overflow: hidden;
     white-space: nowrap;

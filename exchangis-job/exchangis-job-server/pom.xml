@@ -5,7 +5,7 @@
     <parent>
         <artifactId>exchangis-job</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
-        <version>1.0.0</version>
+        <version>1.1.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -17,22 +17,25 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
-            <artifactId>exchangis-job-common</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.webank.wedatasphere.exchangis</groupId>
-            <artifactId>exchangis-datasource-service</artifactId>
-            <version>1.0.0</version>
+            <artifactId>exchangis-project-provider</artifactId>
+            <version>1.1.2</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-launcher</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-datasource-service</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-engine-core</artifactId>
+            <version>${exchangis.version}</version>
         </dependency>
         <!-- scheduler module -->
         <dependency>
@@ -45,12 +48,6 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.49</version>
-        </dependency>
-        <dependency>
-            <groupId>com.webank.wedatasphere.exchangis</groupId>
-            <artifactId>exchangis-project-server</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

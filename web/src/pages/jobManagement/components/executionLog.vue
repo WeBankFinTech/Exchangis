@@ -9,17 +9,17 @@
     >
     </a-select>
     <a-tabs type="card" default-active-key="all" size="small">
-      <a-tab-pane key="all" tab="All" class="log-textarea">
-        <a-textarea id="t1" :auto-size="{ minRows: 10, maxRows: 20 }" v-bind:value="curLog.all"></a-textarea>
+      <a-tab-pane key="all" tab="All" class="log-textarea" :key="maxRows">
+        <a-textarea id="t1" :auto-size="{ minRows: 10, maxRows: maxRows }" v-bind:value="curLog.all" :key="maxRows"></a-textarea>
       </a-tab-pane>
-      <a-tab-pane key="error" tab="Error" class="log-textarea">
-        <a-textarea id="t2" :auto-size="{ minRows: 10, maxRows: 20 }" v-bind:value="curLog.error"></a-textarea>
+      <a-tab-pane key="error" tab="Error" class="log-textarea" :key="maxRows">
+        <a-textarea id="t2" :auto-size="{ minRows: 10, maxRows: maxRows }" v-bind:value="curLog.error" :key="maxRows"></a-textarea>
       </a-tab-pane>
-      <a-tab-pane key="warn" tab="Warning" class="log-textarea">
-        <a-textarea id="t3" :auto-size="{ minRows: 10, maxRows: 20 }" v-bind:value="curLog.warn"></a-textarea>
+      <a-tab-pane key="warn" tab="Warning" class="log-textarea" :key="maxRows">
+        <a-textarea id="t3" :auto-size="{ minRows: 10, maxRows: maxRows }" v-bind:value="curLog.warn" :key="maxRows"></a-textarea>
       </a-tab-pane>
-      <a-tab-pane key="info" tab="Info" class="log-textarea">
-        <a-textarea id="t4" :auto-size="{ minRows: 10, maxRows: 20 }" v-bind:value="curLog.info"></a-textarea>
+      <a-tab-pane key="info" tab="Info" class="log-textarea" :key="maxRows">
+        <a-textarea id="t4" :auto-size="{ minRows: 10, maxRows: maxRows }" v-bind:value="curLog.info" :key="maxRows"></a-textarea>
       </a-tab-pane>
     </a-tabs>
     <a-input-search v-model:value="searchKeyword" placeholder="关键字" style="position: absolute;width: 120px;left:420px;z-index: 1;top: 5px" @search="onSearch"></a-input-search>
@@ -49,7 +49,11 @@ import { message, notification } from "ant-design-vue";
 export default defineComponent({
   props: {
     param: Object,
-    isShow: Boolean
+    isShow: Boolean,
+    maxRows: {
+      type: [String, Number],
+      default: 20
+    }
   },
   emits: ["updateInfo"],
   setup(props, context) {
@@ -160,6 +164,7 @@ export default defineComponent({
           .catch((err) => {
             console.log(err)
             //message.error("获取日志失败")
+            pauseFetchingLog(true);
           })
       } else {
         getTaskExecLog({
@@ -176,6 +181,7 @@ export default defineComponent({
           .catch((err) => {
             console.log(err)
             message.error("获取日志失败")
+            pauseFetchingLog(true);
           })
       }
     }
@@ -252,7 +258,11 @@ export default defineComponent({
     onBeforeUnmount(() => {
       clearInterval(showLogTimer)
     })
-
+ 
+    const maxRows = ref(10)
+    watch(() => props.maxRows, (cur, pre) => {
+       maxRows.value = cur
+    }, {immediate: true})
     return {
       curLogId: ref(curLogId),
       changeData,
@@ -267,7 +277,8 @@ export default defineComponent({
       onSearch3,
       logs,
       pauseFetchingLog,
-      resetData
+      resetData,
+      maxRows
     }
   }
 })

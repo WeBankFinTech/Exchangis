@@ -1,16 +1,16 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform;
 
+import com.webank.wedatasphere.exchangis.common.linkis.bml.BmlResource;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.*;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.GenericExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
-import com.webank.wedatasphere.exchangis.job.server.builder.engine.DataxExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.GenericSubExchangisJobHandler;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformTypes;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -53,19 +53,37 @@ public class TransformExchangisJob extends GenericExchangisJob {
     /**
      * Wrap entity of 'ExchangisJobInfoContent'
      */
-    public static class SubExchangisJobAdapter extends SubExchangisJob{
+    public static class TransformSubExchangisJob extends SubExchangisJob{
+
+        private static final String CODE_RESOURCE_NAME = ".code";
+        /**
+         * Transform type
+         */
+        private TransformTypes transformType;
 
         /**
          * Content VO
          */
         private ExchangisJobInfoContent jobInfoContent;
 
-        public SubExchangisJobAdapter(ExchangisJobInfoContent jobInfoContent){
+        /**
+         * Resource map
+         */
+        private final Map<String, BmlResource> resources = new HashMap<>();
+
+        public TransformSubExchangisJob(ExchangisJobInfoContent jobInfoContent){
             if(Objects.nonNull(jobInfoContent)) {
                 this.jobInfoContent = jobInfoContent;
                 this.engineType = jobInfoContent.getEngine();
                 this.name = jobInfoContent.getSubJobName();
                 convertContentToParams(jobInfoContent);
+                Optional.ofNullable(jobInfoContent.getTransforms()).ifPresent(transforms -> {
+                    if (StringUtils.isNotBlank(transforms.getType())) {
+                        this.transformType = TransformTypes.valueOf(transforms.getType().toUpperCase(Locale.ROOT));
+                        // TODO define different transform sub jobs
+                        convertTransformToColumnDefine(transforms);
+                    }
+                });
             }
         }
 
@@ -77,9 +95,66 @@ public class TransformExchangisJob extends GenericExchangisJob {
             this.jobInfoContent = jobInfoContent;
         }
 
+        /**
+         * Convert content to column definitions
+         * @param transforms transform
+         */
+        private void convertTransformToColumnDefine(ExchangisJobTransformsContent transforms){
+            List<ExchangisJobTransformsItem> items = transforms.getMapping();
+            if (Objects.nonNull(items)){
+                for(int i = 0; i < items.size(); i++){
+                    final int index = i;
+                    ExchangisJobTransformsItem item = items.get(i);
+                    ColumnDefine srcColumn = new ColumnDefine(item.getSourceFieldName(),
+                            item.getSourceFieldType(), item.getSourceFieldIndex());
+                    ColumnDefine sinkColumn = new ColumnDefine(item.getSinkFieldName(),
+                            item.getSinkFieldType(), item.getSinkFieldIndex());
+                    Optional.ofNullable(item.getValidator()).ifPresent(validator ->
+                            convertValidatorFunction(index, validator));
+                    Optional.ofNullable(item.getTransformer()).ifPresent(transformer ->
+                            convertTransformFunction(index, transformer));
+                    getSourceColumns().add(srcColumn);
+                    getSinkColumns().add(sinkColumn);
+                };
+            }
+        }
+        /**
+         * Convert to validator function
+         * @param index index
+         * @param validator validator
+         */
+        private void convertValidatorFunction(int index, List<String> validator){
+            if (validator.size() > 0) {
+                ColumnFunction function = new ColumnFunction();
+                function.setIndex(index);
+                // TODO abstract the name
+                function.setName("dx_filter");
+                function.setParams(new ArrayList<>(validator));
+                getColumnFunctions().add(function);
+            }
+        }
+
+        /**
+         * Convert to transform function
+         * @param index index
+         * @param transformer transformer
+         */
+        private void convertTransformFunction(int index, ExchangisJobTransformer transformer){
+            if (StringUtils.isNotBlank(transformer.getName())) {
+                ColumnFunction function = new ColumnFunction();
+                function.setIndex(index);
+                function.setName(transformer.getName());
+                function.setParams(transformer.getParams());
+                getColumnFunctions().add(function);
+            }
+        }
+        /**
+         * Convert content to params
+         * @param content content
+         */
         private void convertContentToParams(ExchangisJobInfoContent content){
             setIntoParams(REALM_JOB_DATA_SOURCE, () -> Json.convert(content.getDataSources(), Map.class, String.class, String.class));
-            setIntoParams(REALM_JOB_COLUMN_MAPPING, () -> Json.convert(content.getTransforms(), Map.class, String.class, Object.class));
+//            setIntoParams(REALM_JOB_COLUMN_MAPPING, () -> Json.convert(content.getTransforms(), Map.class, String.class, Object.class));
             if(Objects.nonNull(content.getParams())){
                 if(Objects.nonNull(content.getParams().getSources())) {
                     List<ExchangisJobParamsContent.ExchangisJobParamsItem> items = content.getParams().getSources();
@@ -160,29 +235,43 @@ public class TransformExchangisJob extends GenericExchangisJob {
          * @param items
          * @return 用于转换时间分区
          */
-
         private void timePlaceHolderConvert(List<ExchangisJobParamsContent.ExchangisJobParamsItem> items) {
-            for (ExchangisJobParamsContent.ExchangisJobParamsItem exchangisJobParamsItem : items) {
-                if (("partition".equals(exchangisJobParamsItem.getConfigKey()) ) && exchangisJobParamsItem.getConfigValue() != null) {
-                    Map<String, String> partitionValue = (Map<String, String>) exchangisJobParamsItem.getConfigValue();
-                    assert partitionValue != null;
-                    Calendar calendar = Calendar.getInstance();
-                    if (!partitionValue.get("ds").isEmpty()) {
-                        partitionValue.put("ds", JobUtils.renderDt(partitionValue.get("ds"), calendar));
+            items.forEach(item -> {
+                Object value = item.getConfigValue();
+                if (value instanceof String){
+                    item.setConfigValue(JobUtils.replaceVariable((String)value, new HashMap<>()));
+                } else if (value instanceof Map){
+                    for (Object key:((Map) value).keySet()) {
+                        ((Map) value).put(key, JobUtils.replaceVariable(((String)((Map) value).get(key)), new HashMap<>()));
                     }
-                    LOG.info("Time placeholder transform value: {}", partitionValue.get("ds"));
-                    exchangisJobParamsItem.setConfigValue(partitionValue);
                 }
-                else if ("where".equals(exchangisJobParamsItem.getConfigKey())) {
-                    String partitionValue = exchangisJobParamsItem.getConfigValue().toString();
-                    assert partitionValue != null;
-                    Calendar calendar = Calendar.getInstance();
-                    partitionValue = JobUtils.renderDt(partitionValue, calendar);
-                    LOG.info("Time placeholder transform value: {}", partitionValue);
-                    exchangisJobParamsItem.setConfigValue(partitionValue);
-                }
-            }
+            });
         }
 
+        /**
+         * Transform type
+         * @return type string
+         */
+        public TransformTypes getTransformType() {
+            return transformType;
+        }
+
+        /**
+         * Add code resource
+         * @param bmlResource bml resource
+         */
+        void addCodeResource(BmlResource bmlResource){
+            this.resources.put(CODE_RESOURCE_NAME, bmlResource);
+        }
+
+        /**
+         * Get code resource
+         * @return bml resource
+         */
+        public BmlResource getCodeResource(){
+            return this.resources.get(CODE_RESOURCE_NAME);
+        }
     }
+
+
 }
