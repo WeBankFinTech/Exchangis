@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.domain.params;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Definition of job params
@@ -20,6 +21,16 @@ public class JobParamDefine<T>{
     <U>JobParamDefine(String key, BiFunction<String, U, T> valueLoader){
         this.key = key;
         this.valueLoader = (BiFunction<String, Object, T>)valueLoader;
+    }
+    JobParamDefine(String key, Function<JobParamSet, T> valueLoader){
+        this.key = key;
+        this.valueLoader = (s, paramSet) -> valueLoader.apply((JobParamSet) paramSet);
+    }
+
+    @SuppressWarnings("unchecked")
+    <U>JobParamDefine(String key, Function<U, T> valueLoader, Class<U> clazz){
+        this.key = key;
+        this.valueLoader = (s, paramSet) -> valueLoader.apply((U) paramSet);
     }
 
     public String getKey() {

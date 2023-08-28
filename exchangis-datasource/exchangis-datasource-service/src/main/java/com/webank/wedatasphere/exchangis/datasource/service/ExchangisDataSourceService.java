@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.base.Strings;
+import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
 import com.webank.wedatasphere.exchangis.datasource.GetDataSourceInfoByIdAndVersionIdAction;
+import com.webank.wedatasphere.exchangis.datasource.Utils.RSAUtil;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
@@ -25,9 +27,12 @@ import com.webank.wedatasphere.exchangis.datasource.linkis.response.ParamsTestCo
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
+import com.webank.wedatasphere.exchangis.engine.dao.EngineSettingsDao;
+import com.webank.wedatasphere.exchangis.engine.domain.EngineSettings;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import org.apache.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
@@ -38,9 +43,8 @@ import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
 import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
 import org.apache.linkis.datasourcemanager.common.util.json.Json;
 import org.apache.linkis.httpclient.response.Result;
-import org.apache.linkis.metadatamanager.common.domain.MetaColumnInfo;
+import org.apache.linkis.metadata.query.common.domain.MetaColumnInfo;
 import org.apache.linkis.server.Message;
-import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +53,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.*;
 
 import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.*;
@@ -56,13 +62,16 @@ import static com.webank.wedatasphere.exchangis.datasource.core.exception.Exchan
 @Service
 public class ExchangisDataSourceService extends AbstractDataSourceService implements DataSourceUIGetter{
 
+    private final EngineSettingsDao settingsDao;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ExchangisDataSourceService.class);
 
 
     @Autowired
     public ExchangisDataSourceService(ExchangisDataSourceContext context,
-                                      ExchangisJobParamConfigMapper exchangisJobParamConfigMapper) {
+                                      ExchangisJobParamConfigMapper exchangisJobParamConfigMapper, EngineSettingsDao settingsDao) {
         super(context, exchangisJobParamConfigMapper);
+        this.settingsDao = settingsDao;
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
@@ -109,6 +118,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         String[] engineDirect = engineAndDirection.split("-");
         String direction = engineDirect[1];
         for (ExchangisJobParamConfig paramConfig : paramConfigs) {
+            //skip the
             Optional.ofNullable(paramConfig.getConfigDirection()).ifPresent(configDirection -> {
                 if (configDirection.equalsIgnoreCase(engineAndDirection) || configDirection.equalsIgnoreCase(direction)){
                     filteredConfigs.add(paramConfig);
@@ -127,11 +137,46 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
      * 根据 LocalExchangisDataSourceLoader 加载到的本地的数据源与 Linkis 支持的数据源
      * 做比较，筛选出可以给前端展示的数据源类型
      */
-    public Message listDataSources(HttpServletRequest request) throws Exception {
+    public Message listDataSources(HttpServletRequest request, String engineType, String direct, String sourceType) throws Exception {
         Collection<ExchangisDataSource> all = this.context.all();
         List<ExchangisDataSourceDTO> dtos = new ArrayList<>();
 
-        String userName = SecurityFilter.getLoginUsername(request);
+        List<EngineSettings> settingsList = this.settingsDao.getSettings();
+        List<EngineSettings> engineSettings = new ArrayList<>();
+
+
+        if (StringUtils.isEmpty(engineType)) {
+            engineSettings = settingsList;
+        } else {
+            EngineSettings engineSetting = new EngineSettings();
+            for (int i = 0; i < settingsList.size(); i++) {
+                if (StringUtils.equals(settingsList.get(i).getName(), engineType.toLowerCase())) {
+                    engineSetting = settingsList.get(i);
+                    break;
+                }
+            }
+            engineSettings.add(engineSetting);
+        }
+
+        Set<String> directType = new HashSet<>();
+        for (EngineSettings engineSetting: engineSettings) {
+            if (StringUtils.isEmpty(direct)) {
+                for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
+                    directType.add(engineSetting.getDirectionRules().get(i).getSource());
+                    directType.add(engineSetting.getDirectionRules().get(i).getSink());
+                }
+            } else {
+                for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
+                    if ((StringUtils.equals(direct.toLowerCase(), "source"))) {
+                        directType.add(engineSetting.getDirectionRules().get(i).getSource());
+                    } else {
+                        directType.add(engineSetting.getDirectionRules().get(i).getSink());
+                    }
+                }
+            }
+        }
+
+        String userName = UserUtils.getLoginUser(request);
         LOGGER.info("listDataSources userName: {}" + userName);
         // 通过 datasourcemanager 获取的数据源类型和context中的数据源通过 type 和 name 比较
         // 以 exchangis 中注册了的数据源集合为准
@@ -151,17 +196,25 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_TYPES_ERROR.getCode(), "datasource get types null or empty");
         }
 
-        List<DataSourceType> allDataSourceType = result.getAllDataSourceType();
+        List<DataSourceType> allDataSourceType = new ArrayList<>();
+        List<DataSourceType> dataSourceTypes = result.getAllDataSourceType();
+        for ( int i = 0; i < dataSourceTypes.size(); i++) {
+            if (directType.contains(dataSourceTypes.get(i).getName())) {
+                allDataSourceType.add(dataSourceTypes.get(i));
+            }
+        }
         if (Objects.isNull(allDataSourceType)) allDataSourceType = Collections.emptyList();
 
         for (DataSourceType type : allDataSourceType) {
+            LOGGER.info("Current datasource Type is :{}", type.getName());
             for (ExchangisDataSource item : all) {
                 if (item.name().equalsIgnoreCase(type.getName())) {
                     ExchangisDataSourceDTO dto = new ExchangisDataSourceDTO(
                             type.getId(),
                             type.getClassifier(),
 //                            item.classifier(),
-                            item.name()
+                            item.name(),
+                            item.structClassifier()
                     );
 //                    dto.setDescription(item.description());
 //                    dto.setIcon(item.icon());
@@ -170,7 +223,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                     dto.setIcon(type.getIcon());
                     dto.setDescription(type.getDescription());
                     dto.setOption(type.getOption());
-                    dtos.add(dto);
+                    if (sourceType == null || !sourceType.toLowerCase().equals(type.getName())) {
+                        //LOGGER.info("sourceType:{}, typename: {}", sourceType.toLowerCase(), type.getName());
+                        dtos.add(dto);
+                    }
                 }
             }
         }
@@ -199,7 +255,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         }
 
 
-        String user = SecurityFilter.getLoginUsername(request);
+        String user = UserUtils.getLoginUser(request);
         LOGGER.info("createDatasource userName:" + user);
 
         ExchangisDataSource exchangisDataSource = context.getExchangisDataSource(vo.getDataSourceTypeId());
@@ -281,7 +337,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         if (Strings.isNullOrEmpty(createSystem)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter createSystem should not be empty");
         }
-        String user = SecurityFilter.getLoginUsername(request);
+        String user = UserUtils.getLoginUser(request);
         LOGGER.info("updateDataSource userName:" + user);
 
         LOGGER.info("DataSourceTypeId:" + vo.getDataSourceTypeId());
@@ -345,7 +401,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         QueryWrapper<ExchangisJobDsBind> condition = new QueryWrapper<>();
         condition.eq("source_ds_id", id).or().eq("sink_ds_id", id);
-        Integer inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
+        Long inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
         if (inUseCount > 0) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "目前存在引用依赖");
         }
@@ -355,7 +411,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         String responseBody;
         try {
-            String user = SecurityFilter.getLoginUsername(request);
+            String user = UserUtils.getLoginUser(request);
             LOGGER.info("deleteDataSource userName:" + user);
 //            result = dataSourceRemoteClient.deleteDataSource(
 //                    new DeleteDataSourceAction.Builder().setUser(user).setResourceId(id+"").builder()
@@ -388,7 +444,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         ExchangisDataSource exchangisDataSource = context.getExchangisDataSource(type);
         LinkisMetaDataRemoteClient metaDataRemoteClient = exchangisDataSource.getMetaDataRemoteClient();
 
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         LOGGER.info("queryDataSourceDBs userName:" + userName);
         MetadataGetDatabasesResult databases;
         try {
@@ -412,7 +468,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     }
 
     public Message queryDataSourceDBTables(HttpServletRequest request, String type, Long id, String dbName) throws Exception {
-        String user = SecurityFilter.getLoginUsername(request);
+        String user = UserUtils.getLoginUser(request);
         LOGGER.info("queryDataSourceDBTables userName:" + user);
 
         ExchangisDataSource exchangisDataSource = context.getExchangisDataSource(type);
@@ -533,7 +589,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         ExchangisDataSource exchangisDataSource = context.getExchangisDataSource(type);
         LinkisMetaDataRemoteClient metaDataRemoteClient = exchangisDataSource.getMetaDataRemoteClient();
 
-        String user = SecurityFilter.getLoginUsername(request);
+        String user = UserUtils.getLoginUser(request);
         LOGGER.info("queryDataSourceDBTableFields userName:" + user);
         List<MetaColumnInfo> allColumns;
         try {
@@ -569,14 +625,15 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         if (null == vo) {
             vo = new DataSourceQueryVO();
         }
-        String username = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
         LOGGER.info("queryDataSources userName:" + username);
         Integer page = Objects.isNull(vo.getPage()) ? 1 : vo.getPage();
         Integer pageSize = Objects.isNull(vo.getPageSize()) ? 100 : vo.getPageSize();
 
-        String dataSourceName = Objects.isNull(vo.getName()) ? "" : vo.getName();
+        String dataSourceName = Objects.isNull(vo.getName()) ? "" : vo.getName().replace("_", "\\_");
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         QueryDataSourceResult result;
+        int totalPage = 0;
         try {
             QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
                     .setSystem("system")
@@ -599,6 +656,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
             QueryDataSourceAction action = builder.build();
             result = linkisDataSourceRemoteClient.queryDataSource(action);
+            totalPage = result.getTotalPage();
         } catch (Exception e) {
             if (e instanceof ErrorException) {
                 ErrorException ee = (ErrorException) e;
@@ -613,35 +671,61 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         List<DataSource> allDataSource = result.getAllDataSource();
 
+        List<DataSourceDTO> originDataSources = new ArrayList<>();
         List<DataSourceDTO> dataSources = new ArrayList<>();
         allDataSource.forEach(ds -> {
-            DataSourceDTO item = new DataSourceDTO();
-            item.setId(ds.getId());
-            item.setCreateIdentify(ds.getCreateIdentify());
-            item.setName(ds.getDataSourceName());
-            item.setType(ds.getCreateSystem());
-            item.setCreateSystem(ds.getCreateSystem());
-            item.setDataSourceTypeId(ds.getDataSourceTypeId());
-            item.setLabels(ds.getLabels());
-            item.setLabel(ds.getLabels());
-            item.setDesc(ds.getDataSourceDesc());
-            item.setCreateUser(ds.getCreateUser());
-            item.setModifyUser(ds.getModifyUser());
-            item.setModifyTime(ds.getModifyTime());
-            item.setVersionId(ds.getVersionId());
-            item.setExpire(ds.isExpire());
-            dataSources.add(item);
-        });
+                DataSourceDTO item = new DataSourceDTO();
+                item.setId(ds.getId());
+                item.setCreateIdentify(ds.getCreateIdentify());
+                item.setName(ds.getDataSourceName());
+                item.setType(ds.getCreateSystem());
+                item.setCreateSystem(ds.getCreateSystem());
+                item.setDataSourceTypeId(ds.getDataSourceTypeId());
+                item.setLabels(ds.getLabels());
+                item.setLabel(ds.getLabels());
+                item.setDesc(ds.getDataSourceDesc());
+                item.setCreateUser(ds.getCreateUser());
+                item.setModifyUser(ds.getModifyUser());
+                item.setModifyTime(ds.getModifyTime());
+                item.setVersionId(ds.getVersionId());
+                item.setExpire(ds.isExpire());
+                item.setReadAble(true);
+                item.setWriteAble(true);
+                item.setAuthDbs("");
+                item.setAuthTbls("");
+                originDataSources.add(item);
+                });
 
+        String direct = vo.getDirect();
+        LOGGER.info("direct is: {}", direct);
+        LOGGER.info("originDatasource is: {}", originDataSources);
+        if (direct!=null) {
+            if ("source".equals(direct)) {
+                for (DataSourceDTO originDataSource : originDataSources) {
+                    if (originDataSource.isReadAble()) {
+                        dataSources.add(originDataSource);
+                    }
+                }
+            } else if ("sink".equals(direct)) {
+                for (DataSourceDTO originDataSource : originDataSources) {
+                    if (originDataSource.isReadAble()) {
+                        dataSources.add(originDataSource);
+                    }
+                }
+            }
+        }
+        else {
+            dataSources.addAll(originDataSources);
+        }
         Message message = Message.ok();
         message.data("list", dataSources);
-        message.data("total", result.getTotalPage());
+        message.data("total", totalPage);
         return message;
         //return Message.ok().data("list", dataSources);
     }
 
     public Message listAllDataSources(HttpServletRequest request, String typeName, Long typeId, Integer page, Integer pageSize) throws ExchangisDataSourceException {
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         LOGGER.info("listAllDataSources userName:" + userName);
 
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
@@ -699,7 +783,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     }
 
     public Message getDataSource(HttpServletRequest request, Long id, String versionId) throws ErrorException {
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         LOGGER.info("getDataSource userName:" + userName);
         GetDataSourceInfoResultDTO result;
         if (Strings.isNullOrEmpty(versionId)) {
@@ -894,7 +978,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     public Message getDataSourceVersionsById(HttpServletRequest request, Long id) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         LOGGER.info("getDataSourceVersionsById userName:" + userName);
 //        GetInfoByDataSourceIdResult result;
         GetDataSourceInfoResultDTO result;
@@ -998,7 +1082,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     public Message testConnect(HttpServletRequest request, Long id, Long version) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         LOGGER.info("testConnect userName:" + userName);
         DataSourceTestConnectResult result;
         try {
@@ -1027,7 +1111,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     public Message testConnectByVo(HttpServletRequest request, DataSourceCreateVO vo) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         LOGGER.info("testConnect userName:" + userName);
 
         Map<String, Object> json;
@@ -1065,7 +1149,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     public Message publishDataSource(HttpServletRequest request, Long id, Long version) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
 
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         LOGGER.info("publishDataSource userName:" + userName);
         PublishDataSourceVersionResult result;
         try {
@@ -1092,7 +1176,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
     }
 
     public Message getDataSourceConnectParamsById(HttpServletRequest request, Long id) throws ErrorException {
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         LOGGER.info("getDataSourceConnectParamsById userName:" + userName);
         GetConnectParamsByDataSourceIdResult result =  getDataSourceConnectParamsById(userName, id);
         return Message.ok().data("info", Objects.isNull(result.getConnectParams()) ? null : result.getConnectParams());
@@ -1103,7 +1187,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
 
         String responseBody;
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         LOGGER.info("getDataSourceConnectParamsById userName:" + userName);
 //        ExpireDataSourceResult result;
         try {
@@ -1166,9 +1250,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         if (Objects.isNull(dataSourceTypeId)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "dataSourceType id should not be null");
         }
+        Message message = Message.ok();
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
 
-        String userName = SecurityFilter.getLoginUsername(request);
+        String userName = UserUtils.getLoginUser(request);
         LOGGER.info("getDataSourceKeyDefine userName:" + userName);
         GetKeyTypeDatasourceResult result;
         try {
@@ -1191,7 +1276,10 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
             throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
         }
 
-        return Message.ok().data("list", Objects.isNull(result.getKeyDefine()) ? null : result.getKeyDefine());
+        message.data("list", Objects.isNull(result.getKeyDefine()) ? null : result.getKeyDefine());
+        //message.data("list", result.getDataSourceParamKeyDefinitions());
+        return message;
+        //return Message.ok().data("list", Objects.isNull(result.getKeyDefine()) ? null : result.getKeyDefine());
     }
 
     public void checkDSSupportDegree(String engine, String sourceDsType, String sinkDsType) throws ExchangisDataSourceException {
@@ -1241,7 +1329,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         for (int i = 0; i < sourceFields.size(); i++) {
             DataSourceDbTableColumnDTO field = sourceFields.get(i);
             field.setFieldIndex(i);
-            field.setFieldEditable(!"HIVE".equals(vo.getSourceTypeId()));
+            field.setFieldEditable(!"HIVE".equals(vo.getSourceTypeId()) && !"ELASTICSEARCH".equals(vo.getSourceTypeId()));
         }
         message.data("sourceFields", sourceFields);
 
@@ -1250,31 +1338,72 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         for (int i = 0; i < sinkFields.size(); i++) {
             DataSourceDbTableColumnDTO field = sinkFields.get(i);
 //            field.setFieldIndex(i);
-            field.setFieldEditable(!"HIVE".equals(vo.getSinkTypeId()));
+            field.setFieldEditable(!"HIVE".equals(vo.getSinkTypeId()) && !"ELASTICSEARCH".equals(vo.getSinkTypeId()));
         }
         message.data("sinkFields", sinkFields);
+
         // field mapping deduction
         List<Map<String, Object>> deductions = new ArrayList<>();
         List<DataSourceDbTableColumnDTO> left = sourceFields;
         List<DataSourceDbTableColumnDTO> right = sinkFields;
         boolean exchanged = false;
-        if (containHive && "HIVE".equals(vo.getSinkTypeId())) {
+        if (containHive && "HIVE".equals(vo.getSourceTypeId())) {
             left = sinkFields;
             right = sourceFields;
             exchanged = true;
         }
-        for (int i = 0; i < left.size(); i ++){
-            DataSourceDbTableColumnDTO leftElement = left.get(i);
-            DataSourceDbTableColumnDTO rightElement = right.get(i % right.size());
-            Map<String, Object> deduction = new HashMap<>();
-            deduction.put("source", exchanged ? rightElement : leftElement);
-            deduction.put("sink", exchanged ? leftElement : rightElement);
-            deduction.put("deleteEnable", true);
-            deductions.add(deduction);
+
+        // source size and sink size must not be null
+        if (!Objects.isNull(left) && left.size() > 0) {
+            for (int i = 0; i < right.size(); i ++){
+                DataSourceDbTableColumnDTO leftElement = left.get(i % left.size());
+                DataSourceDbTableColumnDTO rightElement = right.get(i);
+                Map<String, Object> deduction = new HashMap<>();
+                deduction.put("source", exchanged ? rightElement : leftElement);
+                deduction.put("sink", exchanged ? leftElement : rightElement);
+                deduction.put("deleteEnable", true);
+                deductions.add(deduction);
+            }
         }
+
         message.data("deductions", deductions);
+        message.data("transformEnable", true);
 
         return message;
     }
 
+    public Message encryptConnectInfo(String encryStr) throws Exception {
+        if (Objects.isNull(encryStr)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "dataSourceType connect parameter show not be null");
+        }
+
+        String publicKeyStr = RSAUtil.PUBLIC_KEY_STR.getValue();
+
+        LOGGER.info("publicKeyStr is :{}", publicKeyStr);
+        PublicKey publicKey = RSAUtil.string2PublicKey(publicKeyStr);
+        //用公钥加密
+        byte[] publicEncrypt = RSAUtil.publicEncrypt(encryStr.getBytes(), publicKey);
+        //加密后的内容Base64编码
+        String byte2Base64 = RSAUtil.byte2Base64(publicEncrypt);
+        Message message = new Message();
+        message.data("encryStr", byte2Base64);
+        return message;
+    }
+
+    public Message decryptConnectInfo(String sinkStr) throws Exception {
+        if (Objects.isNull(sinkStr)) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "dataSourceType connect parameter show not be null");
+        }
+
+        String privateKeyStr = RSAUtil.PRIVATE_KEY_STR.getValue();
+        PrivateKey privateKey = RSAUtil.string2PrivateKey(privateKeyStr);
+        //加密后的内容Base64解码
+        byte[] base642Byte = RSAUtil.base642Byte(sinkStr);
+        //用私钥解密
+        byte[] privateDecrypt = RSAUtil.privateDecrypt(base642Byte, privateKey);
+        String decryptStr = new String(privateDecrypt);
+        Message message = new Message();
+        message.data("decryptStr", decryptStr);
+        return message;
+    }
 }

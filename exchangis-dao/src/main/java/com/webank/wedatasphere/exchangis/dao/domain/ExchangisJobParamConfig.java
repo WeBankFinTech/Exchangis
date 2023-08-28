@@ -63,6 +63,9 @@ public class ExchangisJobParamConfig {
     @TableField(value = "is_advanced")
     private Boolean advanced;
 
+    @TableField(value = "ref_id")
+    private Long refId;
+
     /**
      * store url exa. http://127.0.0.1/api/v1/dss/exchangis/main/xxx
      */
@@ -264,5 +267,13 @@ public class ExchangisJobParamConfig {
 
     public void setRequired(Boolean required) {
         this.required = required;
+    }
+
+    public Long getRefId() {
+        return refId;
+    }
+
+    public void setRefId(Long refId) {
+        this.refId = refId;
     }
 }

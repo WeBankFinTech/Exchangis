@@ -1,11 +1,17 @@
 package com.webank.wedatasphere.exchangis.datasource.core.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class ExchangisJobTransformsContent {
     private boolean addEnable;
     private String type;
     private String sql;
+
+    @JsonProperty("code_id")
+    private String codeId;
+
     private List<ExchangisJobTransformsItem> mapping;
 
     public boolean isAddEnable() {
@@ -38,5 +44,13 @@ public class ExchangisJobTransformsContent {
 
     public void setMapping(List<ExchangisJobTransformsItem> mapping) {
         this.mapping = mapping;
+    }
+
+    public String getCodeId() {
+        return codeId;
+    }
+
+    public void setCodeId(String codeId) {
+        this.codeId = codeId;
     }
 }

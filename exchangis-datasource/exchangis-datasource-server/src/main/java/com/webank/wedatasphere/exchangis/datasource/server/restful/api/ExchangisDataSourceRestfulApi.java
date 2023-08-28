@@ -1,5 +1,9 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
+import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
+import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
@@ -7,12 +11,12 @@ import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
 import org.apache.linkis.server.Message;
+import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,10 +44,14 @@ public class ExchangisDataSourceRestfulApi {
 
     // list all datasource types
     @RequestMapping( value = "/type", method = RequestMethod.GET)
-    public Message listDataSourceTypes(HttpServletRequest request) throws Exception {
+    public Message listDataSourceTypes(HttpServletRequest request,
+                                       @RequestParam(value = "engineType", required = false) String engineType,
+                                       @RequestParam(value = "direct", required = false) String direct,
+                                       @RequestParam(value = "sourceType", required = false) String sourceType) throws Exception {
         Message message = null;
+        LOG.info("engineType:{}, direct:{}, sourceType:{}", engineType, direct, sourceType);
         try{
-            message = exchangisDataSourceService.listDataSources(request);
+            message = exchangisDataSourceService.listDataSources(request, engineType, direct, sourceType);
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while list datasource type";
             LOG.error(errorMessage, e);
@@ -152,6 +160,8 @@ public class ExchangisDataSourceRestfulApi {
     @RequestMapping( value = "", method = RequestMethod.POST)
     public Message create(/*@PathParam("type") String type, */@Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult, HttpServletRequest request ) throws Exception {
         Message message = new Message();
+        String loginUser = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
         LOG.info("dataSourceName:   " + dataSourceCreateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceCreateVO.getDataSourceDesc() + "label:   " + dataSourceCreateVO.getLabels());
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
@@ -176,6 +186,7 @@ public class ExchangisDataSourceRestfulApi {
                 }
             }
         }
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.DATASOURCE,"0", "DataSource name is: " + dataSourceCreateVO.getDataSourceName(), OperateTypeEnum.CREATE,request);
         return message;
     }
 
@@ -221,6 +232,8 @@ public class ExchangisDataSourceRestfulApi {
     public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, @Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult) throws Exception {
         Message message = new Message();
 
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String loginUser = UserUtils.getLoginUser(request);
         LOG.info("dataSourceName:   " + dataSourceCreateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceCreateVO.getDataSourceDesc() + "label:   " + dataSourceCreateVO.getLabels());
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
@@ -246,6 +259,7 @@ public class ExchangisDataSourceRestfulApi {
                 }
             }
         }
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource name is: " + dataSourceCreateVO.getDataSourceName(), OperateTypeEnum.UPDATE,request);
         return message;
 
     }
@@ -255,6 +269,8 @@ public class ExchangisDataSourceRestfulApi {
     public Message publishDataSource(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id,
                                      @PathVariable("version") Long version) throws Exception {
         Message message = null;
+        String loginUser = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
         try{
             message = exchangisDataSourceService.publishDataSource(request, /*type, */id, version);
         } catch (ExchangisDataSourceException e) {
@@ -270,6 +286,7 @@ public class ExchangisDataSourceRestfulApi {
                 message = Message.error("Publish datasource failed (发布数据源失败)");
             }
         }
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource publish", OperateTypeEnum.PUBLISH, request);
         return message;
 
     }
@@ -278,6 +295,8 @@ public class ExchangisDataSourceRestfulApi {
     @RequestMapping( value = "/{id}/expire", method = RequestMethod.PUT)
     public Message expireDataSource(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id) throws Exception {
         Message message = null;
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String loginUser = UserUtils.getLoginUser(request);
         try{
             message = exchangisDataSourceService.expireDataSource(request, /*type, */id);
         } catch (ExchangisDataSourceException e) {
@@ -285,6 +304,7 @@ public class ExchangisDataSourceRestfulApi {
             LOG.error(errorMessage, e);
             message = Message.error("过期数据源失败");
         }
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource expire", OperateTypeEnum.PUBLISH, request);
         return message;
 
     }
@@ -338,6 +358,8 @@ public class ExchangisDataSourceRestfulApi {
     @RequestMapping( value = "/{id}", method = RequestMethod.DELETE)
     public Message delete(HttpServletRequest request, /*@PathParam("type") String type, */@PathVariable("id") Long id) throws Exception {
         Message message = null;
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String loginUser = UserUtils.getLoginUser(request);
         try{
             message = exchangisDataSourceService.deleteDataSource(request, /*type, */id);
         } catch (ExchangisDataSourceException e) {
@@ -345,6 +367,7 @@ public class ExchangisDataSourceRestfulApi {
             LOG.error(errorMessage, e);
             message = Message.error("删除数据源失败，存在引用依赖");
         }
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource delete", OperateTypeEnum.DELETE, request);
         return message;
     }
 
@@ -401,6 +424,35 @@ public class ExchangisDataSourceRestfulApi {
             String errorMessage = "Error occur while getting field List Information";
             LOG.error(errorMessage, e);
             message = Message.error("获取表字段列表信息失败，请检查数据源配置或更换数据源");
+        }
+        return message;
+    }
+
+    @RequestMapping( value = "/tools/encrypt", method = RequestMethod.POST)
+    public Message sourceStrEncrypt(HttpServletRequest request, @RequestBody Map<String, Object> params, @QueryParam(value = "encryStr") String encryStr) throws Exception {
+        Message message = null;
+        try{
+            LOG.info("Encrypt params is: {}", params);
+            message = exchangisDataSourceService.encryptConnectInfo((String) params.get("encryStr"));
+            //message = Message.ok().data("encryStr", "owwonowoww");
+        } catch (Exception e) {
+            String errorMessage = "Encrypted string failed";
+            LOG.error(errorMessage, e);
+            message = Message.error("加密字符串失败");
+        }
+        return message;
+    }
+
+    @RequestMapping( value = "/tools/decrypt", method = RequestMethod.POST)
+    public Message sinkStrDecrypt(HttpServletRequest request, @RequestBody Map<String, Object> params, @QueryParam(value = "sinkStr") String sinkStr) throws Exception {
+        Message message = null;
+        try{
+            message = exchangisDataSourceService.decryptConnectInfo((String) params.get("sinkStr"));
+            //message = Message.ok().data("encryStr", "owwonowoww");
+        } catch (Exception e) {
+            String errorMessage = "Encrypted string failed";
+            LOG.error(errorMessage, e);
+            message = Message.error("加密字符串失败");
         }
         return message;
     }

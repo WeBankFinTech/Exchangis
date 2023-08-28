@@ -3,7 +3,7 @@
 This paper mainly introduces the deployment, configuration and installation of ExchangisAppConn in DSS(DataSphere Studio)1.0.1.
 
 ### 1. Preparations for the deployment of ExchangisAppConn 
-Before you deploy ExchangisAppConn, please follow the [Exchangis1.0.0 to install the deployment document](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_deploy_en.md) to complete the installation of Exchangis1.0.0 and other related components, and ensure that the basic functions of the project are available. 
+Before you deploy ExchangisAppConn, please follow the [Exchangis to install the deployment document](docs/en_US/ch1/exchangis_deploy_en.md) to complete the installation of Exchangis and other related components, and ensure that the basic functions of the project are available. 
 
 ### 2. Download and compilation of the ExchangisAppConn plugin 
 #### 1） Download binary package 
@@ -67,7 +67,7 @@ After the exchangis-appconn is installed and deployed, the following steps can b
 2.	 Check whether the project is created synchronously on Exchangis. Successful creation means successful installation of appconn 
 ![image](https://user-images.githubusercontent.com/27387830/169782337-678f2df0-080a-495a-b59f-a98c5a427cf8.png)
 
-For more operation, please refer to [Exchangis 1.0 User Manual](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_user_manual_en.md)
+For more operation, please refer to [Exchangis User Manual](docs/zh_CN/ch1/exchangis_user_manual_cn.md)
 
 ### 5.Exchangis AppConn installation principle 
 

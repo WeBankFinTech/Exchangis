@@ -4,8 +4,15 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobPageQuery;
 
 public class ExchangisJobQueryVo extends ExchangisJobPageQuery {
 
-    public ExchangisJobQueryVo(){
+    private static final Integer defaultCurrentPage = 1;
 
+    private static final Integer defaultPageSize = 10;
+
+    public ExchangisJobQueryVo(){
+    }
+
+    public ExchangisJobQueryVo(Long projectId, String jobType, String name) {
+        this(projectId, jobType, name, defaultCurrentPage, defaultPageSize);
     }
 
     public ExchangisJobQueryVo(Long projectId, String jobType,

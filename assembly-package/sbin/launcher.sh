@@ -20,19 +20,14 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ENV_FILE="${DIR}/env.properties"
 SHELL_LOG="${DIR}/command.log"
 USER_DIR="${DIR}/../"
-EXCHANGIS_CONF_PATH="${DIR}/../config"
 EXCHANGIS_LIB_PATH="${DIR}/../lib"
-EXCHANGIS_LOG_PATH="${DIR}/../logs"
 EXCHANGIS_PID_PATH="${DIR}/../runtime"
-MODULE_DEFAULT_PREFIX="exchangis-"
 # Default
 MAIN_CLASS=""
 DEBUG_MODE=False
 DEBUG_PORT="7006"
 SPRING_PROFILE="exchangis"
 SLEEP_TIMEREVAL_S=2
-
-CONF_PATH=${DIR}/../config
 
 function LOG(){
   currentTime=`date "+%Y-%m-%d %H:%M:%S.%3N"`
@@ -91,8 +86,6 @@ load_env_definitions(){
   fi
 }
 
-
-
 construct_java_command(){
     verify_java_env
     if [[ "x${EXCHANGIS_CONF_PATH}" == "x" ]]; then
@@ -119,7 +112,8 @@ construct_java_command(){
     mkdir -p ${EXCHANGIS_PID_PATH}
     local classpath=${EXCHANGIS_CONF_PATH}":."
     local opts=""
-    classpath=${EXCHANGIS_LIB_PATH}/$1/*":"${classpath}
+    classpath=${EXCHANGIS_LIB_PATH}/"exchangis-server/*:"${classpath}
+    LOG INFO "classpath:"${classpath}
     if [[ "x${EXCHANGIS_JAVA_OPTS}" == "x" ]]; then
       # Use G1 garbage collector
        local opts="-Xms${HEAP_SIZE} -Xmx${HEAP_SIZE} -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:+UseG1GC -Xloggc:${EXCHANGIS_LOG_PATH}/$1-gc.log"
@@ -139,6 +133,7 @@ construct_java_command(){
     opts=${opts}" -Dlogging.level.reactor.ipc.netty.channel.CloseableContextHandler=off"
     opts=${opts}" -Duser.dir=${USER_DIR}"
     opts=${opts}" -classpath "${classpath}
+    LOG INFO "opts:"${opts}
     if [[ "x${JAVA_HOME}" != "x" ]]; then
         EXEC_JAVA=${JAVA_HOME}"/bin/java "${opts}" "$2
     else
@@ -178,7 +173,7 @@ wait_for_startup(){
             return 0
         fi
         sleep ${SLEEP_TIMEREVAL_S}
-        now_s=`date '+%s'`  #计算当前时间时间戳
+        now_s=`date '+%s'`
     done
     return 1
 }
@@ -199,7 +194,6 @@ wait_for_stop(){
 
 # Input: $1:module_name, $2:main class
 launcher_start(){
-    load_env_definitions ${ENV_FILE}
     LOG INFO "Launcher: launch to start server [ $1 ]"
     status_class $1 $2
     if [[ $? -eq 0 ]]; then
@@ -208,14 +202,17 @@ launcher_start(){
     fi
     construct_java_command $1 $2
     # Execute
+    echo ${EXEC_JAVA}
     LOG INFO ${EXEC_JAVA}
     nohup ${EXEC_JAVA}  >/dev/null 2>&1 &
     LOG INFO "Launcher: waiting [ $1 ] to start complete ..."
     wait_for_startup 20 $1 $2
     if [[ $? -eq 0 ]]; then
         LOG INFO "Launcher: [ $1 ] start success"
-        APPLICATION_YML="${CONF_PATH}/application-exchangis.yml"
+        LOG INFO ${EXCHANGIS_CONF_PATH}
+        APPLICATION_YML="${EXCHANGIS_CONF_PATH}/application-exchangis.yml"
         EUREKA_URL=`cat ${APPLICATION_YML} | grep Zone | sed -n '1p'`
+        echo "${EUREKA_URL}"
         LOG INFO "Please check exchangis server in EUREKA_ADDRESS: ${EUREKA_URL#*:} "
     else
         LOG ERROR "Launcher: [ $1 ] start fail over 20 seconds, please retry it"
@@ -224,7 +221,6 @@ launcher_start(){
 
 # Input: $1:module_name, $2:main class
 launcher_stop(){
-    load_env_definitions ${ENV_FILE}
     LOG INFO "Launcher: stop the server [ $1 ]"
     local p=""
     local pid_file_path=${EXCHANGIS_PID_PATH}/$1.pid
@@ -247,7 +243,7 @@ launcher_stop(){
       *) kill -SIGTERM "${p}" ;;
     esac
     LOG INFO "Launcher: waiting [ $1 ] to stop complete ..."
-    wait_for_stop 20
+    wait_for_stop 20 $1 $2
     if [[ $? -eq 0 ]]; then
       LOG INFO "Launcher: [ $1 ] stop success"
     else

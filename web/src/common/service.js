@@ -59,9 +59,14 @@ export const getDataSourceList = (params) => {
 };
 
 // 数据源管理 获取数据源
-export const getDataSourceTypes = () => {
+export const getDataSourceTypes = (param) => {
+  let extra = ''
+  if (param) {
+    const { engineType, direct, sourceType } = param
+    extra = `&engineType=${engineType}&direct=${direct}${sourceType ? '&sourceType=' + sourceType : ''}`
+  }
   return request(
-    `/datasources/type?labels=${getEnvironment()}&t=_${new Date().getTime()}`,
+    `/datasources/type?labels=${getEnvironment()}&t=_${new Date().getTime()}${extra}`,
     {},
     { method: "GET" }
   );
@@ -105,10 +110,10 @@ export const getTables = (type, id, dbName) => {
     { method: "GET" }
   );
 };*/
-
+// /datasources/fieldsmaping
 export const getFields = (params) => {
   return request(
-    `/datasources/fieldsmapping`,
+    `/job/transform/settings`,
     {
       ...params,
       labels: {
@@ -282,13 +287,14 @@ export const getJobs = (id, jobType, name, current, size) => {
   });
 };
 
-export const saveProject = (id, body) => {
+export const saveProject = (id, body, type = 'save') => {
   return request(`/job/${id}/content`, {
     ...body,
     labels: {
       route: getEnvironment()
     }
   }, {
+    headers: { 'save-from': type },
     method: "PUT",
   });
 };
@@ -529,6 +535,95 @@ export const getPartitionInfo = (params) => {
   const url = params.source.split(BASE_URL)[1]
   return request(
     `${url}?labels=${getEnvironment()}&dataSourceId=${params.dataSourceId}&database=${params.database}&table=${params.table}&_=${Math.random()}`,
+    {},
+    {
+      method: "GET",
+    }
+  );
+}
+
+// 获取字段映射转换函数
+export const getFieldFunc = (funcType) => {
+  if (!funcType) return
+  return request(
+    `/job/func/${funcType}?labels=${getEnvironment()}&_=${Math.random()}`,
+    {},
+    {
+      method: "GET",
+    }
+  );
+}
+
+// 获取字段映射转换函数
+export const encryptFunc = (param) => {
+  return request(
+    `/datasources/tools/encrypt?labels=${getEnvironment()}`,
+    param,
+    {
+      method: "POST",
+    }
+  );
+}
+
+// 获取执行用户
+export const getExecutor = () => {
+  return request(
+    `/job/Executor?labels=${getEnvironment()}`,
+    {},
+    {
+      method: "GET",
+    }
+  )
+}
+
+// processor的内容保存
+export const saveProcessor = (param) => {
+  return request(
+    `/job/transform/processor/code_content?labels=${getEnvironment()}`,
+    param,
+    {
+      method: "POST",
+    }
+  );
+}
+
+// processor的内容更新
+export const updateProcessor = ({ proc_code_id, ...param }) => {
+  return request(
+    `/job/transform/processor/code_content/${proc_code_id}?labels=${getEnvironment()}`,
+    param,
+    {
+      method: "PUT",
+    }
+  );
+}
+
+// processor的内容更新
+export const getTemplate = () => {
+  return request(
+    `/job/transform/processor/code_template?labels=${getEnvironment()}`,
+    {},
+    {
+      method: "GET",
+    }
+  );
+}
+
+// processor的内容更新
+export const getProcessor = (proc_code_id) => {
+  return request(
+    `/job/transform/processor/code_content/${proc_code_id}?labels=${getEnvironment()}`,
+    {},
+    {
+      method: "GET",
+    }
+  );
+}
+
+// 获取项目权限
+export const getProjectPermission = (projectId) => {
+  return request(
+    `/getProjectPermission/${projectId}?labels=${getEnvironment()}`,
     {},
     {
       method: "GET",

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>exchangis</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
-        <version>1.0.0</version>
+        <version>1.1.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,31 +20,50 @@
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-datasource-server</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-engine-server</artifactId>
+            <version>${exchangis.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.linkis</groupId>
+                    <artifactId>linkis-module</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-jdbc</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-server</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.2</version>
         </dependency>
         <!--
         metrics interface, wait for audit
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-metrics</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.2</version>
         </dependency>
         -->
-
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-project-server</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.linkis</groupId>
-            <artifactId>linkis-storage</artifactId>
-            <version>${linkis.version}</version>
+            <artifactId>linkis-module</artifactId>
+        </dependency>
+        <!--classmate-->
+        <dependency>
+            <groupId>com.fasterxml</groupId>
+            <artifactId>classmate</artifactId>
+            <version>1.5.1</version>
         </dependency>
     </dependencies>
 

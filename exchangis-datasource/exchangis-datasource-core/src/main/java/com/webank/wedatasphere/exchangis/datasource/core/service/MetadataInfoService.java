@@ -57,4 +57,11 @@ public interface MetadataInfoService extends ServiceRpcInf {
      * @throws ExchangisDataSourceException
      */
     List<MetaColumn> getColumns(String userName, Long dataSourceId, String database, String table) throws ExchangisDataSourceException;
+
+    /**
+     * Get the default(local) hdfs information
+     * @param uri uri
+     * @return
+     */
+    Map<String, String> getLocalHdfsInfo(String uri) throws ExchangisDataSourceException;
 }

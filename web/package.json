@@ -55,12 +55,14 @@
     "@fesjs/plugin-model": "^2.0.0",
     "@fesjs/plugin-request": "^2.0.2",
     "@form-create/ant-design-vue": "^3.0.0-alpha.2",
-    "@vue/compiler-sfc": "3.2.20",
+    "@vue/compiler-sfc": "3.1.4",
     "ant-design-vue": "^2.2.7",
     "echarts": "^5.2.1",
     "lodash-es": "4.17.21",
-    "moment": "2.29.1",
-    "vue": "^3.1.0",
+    "moment": "^2.29.4",
+    "monaco-editor": "^0.34.0",
+    "monaco-editor-webpack-plugin": "^7.0.1",
+    "vue": "3.1.4",
     "vue-request": "^1.2.0"
   },
   "private": true

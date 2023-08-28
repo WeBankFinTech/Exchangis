@@ -24,7 +24,7 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskObserver.class);
 
-    private static final int DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL = 30000;
+    private static final int DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL = 10000;
 
     private static final int DEFAULT_TASK_OBSERVER_PUBLISH_BATCH = 50;
 
@@ -76,12 +76,16 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     public void run() {
         Thread.currentThread().setName("Observe-Thread-" + getName());
         LOG.info("Thread: [ {} ] is started. ", Thread.currentThread().getName());
+        this.lastPublishTime = System.currentTimeMillis();
         while (!isShutdown) {
             try {
                 List<T> publishedTasks;
                 try {
                     publishedTasks = onPublish(publishBatch);
-                    this.lastPublishTime = System.currentTimeMillis();
+                    // If list of publish tasks is not empty
+                    if (publishedTasks.size() > 0) {
+                        this.lastPublishTime = System.currentTimeMillis();
+                    }
                 } catch (ExchangisTaskObserverException e){
                     e.setMethodName("call_on_publish");
                     throw e;

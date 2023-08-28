@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.engine.dao.EngineSettingsDao">
+    <resultMap id="settings" type="com.webank.wedatasphere.exchangis.engine.domain.EngineSettings">
+        <id column="id" property="id"/>
+        <result column="engine_name" property="name"/>
+        <result column="engine_desc" property="description"/>
+        <result column="engine_settings_value" property="settings" />
+        <result column="engine_direction" property="direction"/>
+        <result column="res_loader_class" property="resourceLoaderClass"/>
+        <result column="res_uploader_class" property="resourceUploaderClass"/>
+    </resultMap>
+    <!--All settings-->
+    <select id="getSettings" resultMap="settings">
+        <![CDATA[SELECT * FROM `exchangis_engine_settings`;]]>
+    </select>
+
+</mapper>

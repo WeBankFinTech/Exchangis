@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSou
 import com.webank.wedatasphere.exchangis.datasource.loader.clazzloader.ExchangisDataSourceClassLoader;
 import com.webank.wedatasphere.exchangis.datasource.loader.utils.ExceptionHelper;
 import com.webank.wedatasphere.exchangis.datasource.loader.utils.ExtDsUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +38,10 @@ public class LocalExchangisDataSourceLoader implements ExchangisDataSourceLoader
     public void init(MapperHook mapperHook) throws Exception {
         // 初始化磁盘扫描加载
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        String loadClassPath =  Objects.requireNonNull(currentClassLoader.getResource("")).getPath();
-//        String libPathUrl = loadClassPath + ".." + File.separator + ".." + File.separator + EXCHANGIS_DIR_NAME;
+        String loadClassPath =  Objects.requireNonNull(currentClassLoader.getResource(EXCHANGIS_DIR_NAME)).getPath();
+        if (StringUtils.endsWith(loadClassPath, File.separator)) {
+            loadClassPath = loadClassPath + File.separator;
+        }
         String libPathUrl = loadClassPath + ".." + File.separator + EXCHANGIS_DIR_NAME;
         LOGGER.info("libPath url is {}",  libPathUrl);
         List<URL> jars = ExtDsUtils.getJarsUrlsOfPath(libPathUrl);
