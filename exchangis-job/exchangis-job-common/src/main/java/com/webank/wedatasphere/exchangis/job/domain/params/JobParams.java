@@ -1,10 +1,10 @@
 package com.webank.wedatasphere.exchangis.job.domain.params;
 
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -24,6 +24,14 @@ public class JobParams {
         return new JobParamDefine<>(key, valueLoader);
     }
 
+    public static <T>JobParamDefine<T> define(String key, Function<JobParamSet, T> valueLoader){
+        return new JobParamDefine<>(key, valueLoader);
+    }
+
+    public static <U, T>JobParamDefine<T> define(String key, Function<U, T> valueLoader, Class<U> type){
+        return new JobParamDefine<>(key, valueLoader, type);
+    }
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <U>JobParamDefine<U> define(String key){
         return new JobParamDefine<>(key, (paramKey, source) -> {
@@ -39,50 +47,41 @@ public class JobParams {
         });
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static <T>JobParamDefine<T> define(String key, Class<T> valueType){
-        return new JobParamDefine<>(key,(paramKey, source) -> {
-            if(Objects.nonNull(source)){
-                if(source instanceof JobParamSet) {
-                    JobParam<?> result = ((JobParamSet)source).get(key);
-                    return Objects.nonNull(result)? (T)result.getValue() : null;
-                }else if (source instanceof Map){
-                    return (T) ((Map)source).get(key);
-                }
-            }
-            return null;
-        });
-    }
+
     /**
      * Use default value loader: (string, JobParamSet) -> ?
      * @param key key
      * @param mappingKey mapping key
      * @return
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static <U>JobParamDefine<U> define(String key, String mappingKey){
-        return new JobParamDefine<>(key, (paramKey, source) -> {
-            if(Objects.nonNull(source)){
-                if(source instanceof JobParamSet) {
-                    JobParam<?> result = ((JobParamSet)source).remove(mappingKey);
-                    return Objects.nonNull(result)? (U)result.getValue() : null;
-                }else if (source instanceof Map){
-                    return (U) ((Map)source).remove(mappingKey);
-                }
-            }
-            return null;
-        });
+    public static <T>JobParamDefine<T> define(String key, String mappingKey){
+        return define(key, new String[]{mappingKey}, result-> result, (Class<T>)null);
+    }
+
+    public static <T, U>JobParamDefine<T> define(String key, String mappingKey, Function<U, T> transform, Class<U> inputType){
+        return define(key, new String[]{mappingKey}, transform, inputType);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static <T>JobParamDefine<T> define(String key, String mappingKey, Class<T> valueType){
-        return new JobParamDefine<T>(key, (paramKey, source) -> {
-            if(Objects.nonNull(source)){
-                if(source instanceof JobParamSet) {
-                    JobParam<?> result = ((JobParamSet)source).remove(mappingKey);
-                    return Objects.nonNull(result)? (T)result.getValue() : null;
-                }else if (source instanceof Map){
-                    return (T) ((Map)source).remove(mappingKey);
+    private static <T, U>JobParamDefine<T> define(String key, String[] mappingKeys, Function<U, T> transform, Class<U> inputType){
+        return new JobParamDefine<>(key, (paramKey, source) -> {
+            if (Objects.nonNull(source)) {
+                if (source instanceof JobParamSet) {
+                    for (String mappingKey : mappingKeys) {
+                        JobParam<?> result = ((JobParamSet) source).remove(mappingKey);
+                        if (Objects.nonNull(result)) {
+                            return transform.apply((U)result.getValue());
+                        }
+                    }
+                    return null;
+                } else if (source instanceof Map) {
+                    for (String mappingKey : mappingKeys) {
+                        Object result = ((Map) source).remove(mappingKey);
+                        if (Objects.nonNull(result)) {
+                            return transform.apply((U)result);
+                        }
+                    }
+                    return null;
                 }
             }
             return null;
@@ -96,8 +95,25 @@ public class JobParams {
      * @param <T>
      * @return
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T>JobParamDefine<T> define(String key, Supplier<T> operator){
-        return new JobParamDefine<>(key, (paramKey, source) -> operator.get());
+        return new JobParamDefine<>(key, (paramKey, source) -> {
+            T finalValue = null;
+            if (Objects.nonNull(source)) {
+                if (source instanceof JobParamSet) {
+                    JobParam<?> result = ((JobParamSet) source).get(key);
+                    if (Objects.nonNull(result)){
+                        finalValue = (T)result.getValue();
+                    }
+                } else if (source instanceof Map) {
+                    Object result = ((Map) source).get(key);
+                    if (Objects.nonNull(result)){
+                        return (T)result;
+                    }
+                }
+            }
+            return Objects.nonNull(finalValue) ? finalValue : operator.get();
+        });
     }
 
     public static <T>JobParam<T> newOne(String key, T value){

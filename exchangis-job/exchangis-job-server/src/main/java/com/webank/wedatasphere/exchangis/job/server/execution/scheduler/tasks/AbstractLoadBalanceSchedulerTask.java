@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ScheduleListener;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbalance.LoadBalancePoller;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbalance.SchedulerLoadBalancer;
 import org.slf4j.Logger;
@@ -27,6 +28,11 @@ public abstract class AbstractLoadBalanceSchedulerTask<T> extends AbstractExchan
 
     private boolean pollFinish = false;
 
+    /**
+     * Schedule listener
+     */
+    private ScheduleListener<AbstractLoadBalanceSchedulerTask<T>> listener;
+
     public AbstractLoadBalanceSchedulerTask() {
         super("");
     }
@@ -37,6 +43,10 @@ public abstract class AbstractLoadBalanceSchedulerTask<T> extends AbstractExchan
         if (Objects.isNull(loadBalancePoller)) {
             LOG.warn("LoadBalancePoller is empty in load balance scheduler task [{}]", getName());
             return;
+        }
+        if (!pollFinish && Objects.nonNull(listener)){
+            // Invoke listener
+            listener.onSchedule(this);
         }
         List<T> pollElements = new ArrayList<>();
         LOG.info("Start to iterate the poller in load balance scheduler task [{}]", getName());
@@ -95,6 +105,10 @@ public abstract class AbstractLoadBalanceSchedulerTask<T> extends AbstractExchan
         this.schedulerLoadBalancer = schedulerLoadBalancer;
     }
 
+    public void setScheduleListener(ScheduleListener<AbstractLoadBalanceSchedulerTask<T>> listener){
+        this.listener = listener;
+    }
+
     /**
      * Re push the element into poller with balancer
      * @param element element
@@ -118,4 +132,5 @@ public abstract class AbstractLoadBalanceSchedulerTask<T> extends AbstractExchan
      * @return
      */
     protected abstract LoadBalancePoller<T> createLoadBalancePoller();
+
 }

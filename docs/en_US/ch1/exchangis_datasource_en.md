@@ -14,7 +14,7 @@ In order to build a common data source module, the data source module is mainly 
 Figure 2-1 Overall Architecture Design
  </div>
 
-## 3、Detailed explanation of modules 
+## 3、Detailed explanation of modules  
 
 ### 3.1 datasource-server
 
@@ -106,7 +106,7 @@ Batch import and export of datasource configuration.
 
 Description: 
 
-The background needs to integrate it with the labeling function of Linkis1.1.1, and give the datasource a labeling relationship.
+The background needs to integrate it with the labeling function of Linkis1.4.0, and give the datasource a labeling relationship.
 
 Process design: 
 

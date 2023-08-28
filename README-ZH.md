@@ -6,7 +6,7 @@
 
 ## 介绍
 
-Exchangis 1.0.0 是微众银行大数据平台 WeDataSphere 与社区用户共同研发的的新版数据交换工具，支持异构数据源之间的结构化和非结构化数据传输同步。
+Exchangis是微众银行大数据平台 WeDataSphere 与社区用户共同研发的的新版数据交换工具，支持异构数据源之间的结构化和非结构化数据传输同步。
 
 Exchangis 抽象了一套统一的数据源和同步作业定义插件，允许用户快速接入新的数据源，并只需在数据库中简单配置即可在页面中使用。
 
@@ -16,7 +16,7 @@ Exchangis 抽象了一套统一的数据源和同步作业定义插件，允许�
 
 ### 界面预览
 
-![image](https://user-images.githubusercontent.com/27387830/171488936-2cea3ee9-4ef7-4309-93e1-e3b697bd3be1.png)
+![image](images/zh_CN/ch1/frontend_view.png)
 
 ## 核心特点
 
@@ -42,19 +42,22 @@ Exchangis 抽象了一套统一的数据源和同步作业定义插件，允许�
 ### 3.  与DSS工作流打通，一站式大数据开发的门户
 
 - 实现DSS AppConn包括一级 SSO 规范，二级组织结构规范，三级开发流程规范在内的三级规范；
-
 - 作为DSS工作流的数据交换节点，是整个工作流链路中的门户流程，为后续的工作流节点运行提供稳固的数据基础；
+
+### 4.  支持多种导数引擎
+
+- 支持Sqoop和DataX引擎进行多种异构数据源之间的导数
 
 ## 整体设计
 
 ### 架构设计
 
-![架构设计](https://user-images.githubusercontent.com/27387830/173026793-f1475803-9f85-4478-b566-1ad1d002cd8a.png)
+![架构设计](images/zh_CN/ch1/home_page_zh.png)
 
 
 ## 相关文档
-[安装部署文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_deploy_cn.md)  
-[用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
+[安装部署文档](docs/zh_CN/ch1/exchangis_deploy_cn.md)  
+[用户手册](docs/zh_CN/ch1/exchangis_user_manual_cn.md)
 
 ## 交流贡献
 

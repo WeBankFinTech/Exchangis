@@ -2,7 +2,7 @@
 ### 环境准备
 Sqoop引擎是执行Exchangis数据同步任务不可或缺的组件，只有安装部署完成Sqoop引擎才能够成功执行数据同步任务。同时，确保所部署的机器上有安装sqoop。
 
-您在安装部署Sqoop引擎之前，请按照[Exchangis1.0.0安装部署文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_deploy_cn.md)安装完成Exchangis1.0.0及相关组件的安装，并确保工程基本功能可用。
+您在安装部署Sqoop引擎之前，请按照[Exchangis安装部署文档](docs/zh_CN/ch1/exchangis_deploy_cn.md)安装完成Exchangis及相关组件的安装，并确保工程基本功能可用。
 
 Sqoop引擎主要依赖Hadoop基础环境，如果该节点需要部署Sqoop引擎，需要部署Hadoop客户端环境。
 
@@ -26,9 +26,9 @@ Sqoop引擎主要依赖Hadoop基础环境，如果该节点需要部署Sqoop引�
 ### 安装包准备
 #### 1）下载二进制包
 
-Exchangis1.0.0和Linkis 1.1.1支持的主流Sqoop版本1.4.6与1.4.7，更高版本可能需要修改部分代码重新编译。
+Exchangis1.1.2和Linkis 1.4.0支持的主流Sqoop版本1.4.6与1.4.7，更高版本可能需要修改部分代码重新编译。
 
-[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.0.0)
+[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
 
 #### 2） 编译打包
 如果您想自己开发和编译sqoop引擎，具体编译步骤如下：
@@ -37,12 +37,12 @@ Exchangis1.0.0和Linkis 1.1.1支持的主流Sqoop版本1.4.6与1.4.7，更高版
 
 2.在exchangis-plugins模块下，找到sqoop引擎，单独编译sqoop，操作如下
 ```
-cd {EXCHANGIS_CODE_HOME}/exchangis-plugins/engine/sqoop
+cd {EXCHANGIS_CODE_HOME}/exchangis-engines/engine-plugins/sqoop
 mvn clean install
 ```
 然后会在该路径下找到sqoop引擎安装包
 ```
-{EXCHANGIS_CODE_HOME}/exchangis-plugins/sqoop/target/out
+{EXCHANGIS_CODE_HOME}/exchangis-engines/engine-plugins/sqoop/target/out
 ```
 
 
@@ -59,9 +59,9 @@ sqoop
 2.放置到linkis安装路径的如下目录
 
 ```shell
-cd {LINKIS_HOME}/linkis/lib/linkis-engineconn-plugins
+cd {LINKIS_HOME}/linkis-engineconn-plugins
 ```
-(注意，看当前sqoop引擎对哪些用户有权限，不一定是root)
+（注意，看当前sqoop引擎对哪些用户有权限，不一定是root）
 
 
 #### 2）重启linkis-engineplugin服务使sqoop引擎生效
@@ -70,7 +70,13 @@ cd {LINKIS_HOME}/linkis/lib/linkis-engineconn-plugins
 cd {LINKIS_INSTALL_HOME}/links/sbin/
 ./linkis-daemon.sh restart cg-engineplugin
 ```
-待服务启动成功，至此，sqoop安装部署就完成了。
+待服务启动成功，在linkis数据库中校验sqoop引擎是否安装完毕
+
+```yaml
+select * from linkis_cg_engine_conn_plugin_bml_resources where engine_conn_type='sqoop';
+```
+
+至此，sqoop安装部署就完成了。
 
 engineplugin更详细的介绍可以参看下面的文章。  
-https://linkis.apache.org/zh-CN/docs/latest/architecture/computation-governance-services/engine/engine-conn
+https://linkis.apache.org/zh-CN/docs/latest/deployment/install-engineconn

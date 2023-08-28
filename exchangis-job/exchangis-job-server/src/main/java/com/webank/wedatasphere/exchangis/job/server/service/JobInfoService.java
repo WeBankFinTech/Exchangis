@@ -2,20 +2,13 @@ package com.webank.wedatasphere.exchangis.job.server.service;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExportedProject;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
-import org.apache.linkis.server.Message;
 
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
-
-import java.rmi.ServerException;
-import java.util.Map;
-import java.util.Set;
-
 
 /**
  * The interface Exchangis job service.
@@ -69,6 +62,14 @@ public interface JobInfoService {
      * @param projectId
      * @return
      */
+    List<ExchangisJobVo> getByNameAndProjectId(String jobName, Long projectId);
+
+    /**
+     * Get job by name and projectId
+     * @param jobName
+     * @param projectId
+     * @return
+     */
     List<ExchangisJobVo> getByNameWithProjectId(String jobName, Long projectId);
 
     ExchangisJobVo getDecoratedJob(HttpServletRequest request, Long id)  throws ExchangisJobServerException;
@@ -97,18 +98,6 @@ public interface JobInfoService {
      * @return the exchangis job
      */
     ExchangisJobVo updateJobContent(ExchangisJobVo jobVo) throws ExchangisJobServerException, ExchangisDataSourceException;
-
-    /**
-     * Export exchangis job to BML.
-     *
-     * @param username params
-     * @return
-     */
-    Message exportProject(Map<String, Object> params, String username, HttpServletRequest request) throws ExchangisJobServerException, ServerException;
-
-    ExportedProject export(Long projectId, Map<String, Set<Long>> moduleIdsMap, boolean partial, HttpServletRequest request) throws ExchangisJobServerException;
-
-    Map<String, Set<Long>> getModuleIdsMap(Map<String, Object> params);
 
     /**
      * Copy job exchangis job basic info.

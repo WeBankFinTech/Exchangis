@@ -1,27 +1,16 @@
 <template>
-  <a-modal
-    :title="$t(`projectManage.editModal.title.${mode}`)"
-    :visible="visible"
-    :confirm-loading="confirmLoading"
-    @ok="handleOk"
-    @cancel="$emit('update:visible', false)"
-  >
+  <a-modal :title="$t(`projectManage.editModal.title.${mode}`)" :visible="visible"
+    :confirm-loading="confirmLoading" @ok="handleOk" @cancel="$emit('update:visible', false)">
     <a-spin :spinning="confirmLoading">
       <a-form ref="formRef" :model="formState" :label-col="{ span: 4 }">
-        <a-form-item
-          :label="$t(`projectManage.editModal.form.fields.projectName.label`)"
-          name="projectName"
-          required
-          :help="helpMsg"
-          :validate-status="helpStatus"
-        >
-          <a-input
-            v-model:value="formState.projectName"
-            :maxLength="100"
-            :placeholder="
+        <a-form-item :label="$t(`projectManage.editModal.form.fields.projectName.label`)"
+          name="projectName" :rules="[
+            { required: true, message: '项目名必须填写!' },
+            { pattern: /^[a-zA-Z]/, message: '项目名请以字母开头进行填写!', trigger: 'change' }
+          ]">
+          <a-input v-model:value="formState.projectName" :maxLength="100" :placeholder="
               $t(`projectManage.editModal.form.fields.projectName.placeholder`)
-            "
-          />
+            " :disabled="mode === 'edit'"/>
         </a-form-item>
         <!--<a-form-item :label="$t(`projectManage.editModal.form.fields.tags.label`)" name="tags">-->
         <!--<a-select mode="multiple" v-model:value="formState.tags" :placeholder="$t(`projectManage.editModal.form.fields.tags.placeholder`)">-->
@@ -29,42 +18,41 @@
         <!--<a-select-option value="标签2">标签2</a-select-option>-->
         <!--</a-select>-->
         <!--</a-form-item>-->
-        <!--<a-row :gutter="16">-->
-        <!--<a-col :span="12">-->
-        <!--<a-form-item :label="$t(`projectManage.editModal.form.fields.editUsers.label`)" name="editUsers" :label-col="{ span: 8 }">-->
-        <!--<a-select mode="multiple" v-model:value="formState.editUsers" :placeholder="$t(`projectManage.editModal.form.fields.editUsers.placeholder`)">-->
-        <!--<a-select-option value="用户1">用户1</a-select-option>-->
-        <!--<a-select-option value="用户2">用户2</a-select-option>-->
-        <!--</a-select>-->
-        <!--</a-form-item>-->
-        <!--</a-col>-->
-        <!--<a-col :span="12">-->
-        <!--<a-form-item :label="$t(`projectManage.editModal.form.fields.viewUsers.label`)" name="viewUsers" :label-col="{ span: 8 }">-->
-        <!--<a-select mode="multiple" v-model:value="formState.viewUsers" :placeholder="$t(`projectManage.editModal.form.fields.viewUsers.placeholder`)">-->
-        <!--<a-select-option value="用户1">用户1</a-select-option>-->
-        <!--<a-select-option value="用户2">用户2</a-select-option>-->
-        <!--</a-select>-->
-        <!--</a-form-item>-->
-        <!--</a-col>-->
-        <!--<a-col :span="12">-->
-        <!--<a-form-item :label="$t(`projectManage.editModal.form.fields.execUsers.label`)" name="execUsers" :label-col="{ span: 8 }">-->
-        <!--<a-select mode="multiple" v-model:value="formState.execUsers" :placeholder="$t(`projectManage.editModal.form.fields.execUsers.placeholder`)">-->
-        <!--<a-select-option value="用户1">用户1</a-select-option>-->
-        <!--<a-select-option value="用户2">用户2</a-select-option>-->
-        <!--</a-select>-->
-        <!--</a-form-item>-->
-        <!--</a-col>-->
-        <!--</a-row>-->
-        <a-form-item
-          :label="$t(`projectManage.editModal.form.fields.description.label`)"
-          name="description"
-        >
-          <a-textarea
-            v-model:value="formState.description"
-            :placeholder="
+        <a-form-item :label="$t(`projectManage.editModal.form.fields.description.label`)"
+          name="description">
+          <a-textarea v-model:value="formState.description" :placeholder="
               $t(`projectManage.editModal.form.fields.description.placeholder`)
-            "
-          />
+            " />
+        </a-form-item>
+
+        <a-form-item :label="$t(`projectManage.editModal.form.fields.editUsers.label`)"
+          name="editUsers">
+          <a-select mode="multiple" v-model:value="formState.editUsers"
+            :placeholder="$t(`projectManage.editModal.form.fields.editUsers.placeholder`)" disabled>
+            <a-select-option v-for="item of allUsers" :value="item.username" :key="item.id">
+              {{ item.username}}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item :label="$t(`projectManage.editModal.form.fields.viewUsers.label`)"
+          name="viewUsers">
+          <a-select mode="multiple" v-model:value="formState.viewUsers"
+            :placeholder="$t(`projectManage.editModal.form.fields.viewUsers.placeholder`)" disabled>
+            <a-select-option v-for="item of allUsers" :value="item.username" :key="item.id">
+              {{ item.username}}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item :label="$t(`projectManage.editModal.form.fields.execUsers.label`)"
+          name="execUsers">
+          <a-select mode="multiple" v-model:value="formState.execUsers"
+            :placeholder="$t(`projectManage.editModal.form.fields.execUsers.placeholder`)" disabled>
+            <a-select-option v-for="item of allUsers" :value="item.username" :key="item.id">
+              {{ item.username}}
+            </a-select-option>
+          </a-select>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -72,11 +60,15 @@
 </template>
 
 <script>
-import { toRaw } from "vue";
-import { message } from "ant-design-vue";
-import { createProject, getProjectById, updateProject } from "@/common/service";
+import { toRaw } from 'vue';
+import { message } from 'ant-design-vue';
+import {
+  createProject,
+  getProjectById,
+  updateProject,
+} from '@/common/service';
 export default {
-  name: "ProjectEditModal",
+  name: 'ProjectEditModal',
   props: {
     // 是否可见
     visible: {
@@ -90,59 +82,57 @@ export default {
     },
     id: {
       type: String,
-      default: "",
+      default: '',
     },
   },
-  emits: ["finish", "cancel", "update:visible"],
+  emits: ['finish', 'cancel', 'update:visible'],
   data() {
     return {
       // 是否加载中
       confirmLoading: false,
       // 表单数据
       formState: {
-        projectName: "",
+        projectName: '',
         tags: [],
-        description: "",
+        description: '',
         viewUsers: [],
         execUsers: [],
         editUsers: [],
       },
-      helpMsg: "",
-      helpStatus: "success",
+      allUsers: [],
     };
   },
+  computed: {
+    // 确保弹窗显示且id存在
+    bothParams() {
+      return this.id && this.visible;
+    },
+  },
   watch: {
-    async id(newVlaue) {
-      if (newVlaue && this.mode === "edit") {
+    async bothParams(newVlaue) {
+      if (newVlaue && this.mode === 'edit') {
         this.confirmLoading = true;
-        const { item } = await getProjectById(newVlaue);
+        const { item } = await getProjectById(this.id);
         this.confirmLoading = false;
         this.formState = {
           projectName: item.name,
-          tags: item.tags.split(","),
+          tags: item.tags.split(','),
           description: item.description,
-          viewUsers: item.viewUsers.split(","),
-          execUsers: item.execUsers.split(","),
-          editUsers: item.editUsers.split(","),
+          viewUsers: item.viewUsers.split(',').filter((v) => v),
+          execUsers: item.execUsers.split(',').filter((v) => v),
+          editUsers: item.editUsers.split(',').filter((v) => v),
         };
       }
     },
-    "formState.projectName"(newval, oldVal) {
-      if (!/^[a-zA-Z]/.test(newval)) {
-        this.helpMsg = "项目名请以字母开头进行填写";
-        this.helpStatus = "error";
-      } else {
-        this.helpMsg = "";
-        this.helpStatus = "success";
+    visible(cur, pre) {
+      if (!cur) {
+        this.$refs.formRef.resetFields();
       }
     },
   },
   methods: {
     async handleOk() {
       await this.$refs.formRef.validate();
-      if (!/^[a-zA-Z]/.test(this.formState.projectName)) {
-        return message.error("项目名请以字母开头进行填写")
-      }
       const formatData = {
         id: this.id ? this.id : undefined,
         projectName: this.formState.projectName,
@@ -154,19 +144,19 @@ export default {
       };
       this.confirmLoading = true;
       try {
-        if (this.mode === "create") {
+        if (this.mode === 'create') {
           await createProject(formatData);
-          message.success("创建成功");
+          message.success('创建成功');
         }
-        if (this.mode === "edit") {
+        if (this.mode === 'edit') {
           await updateProject(formatData);
-          message.success("修改成功");
+          message.success('修改成功');
         }
       } catch (error) {}
       this.confirmLoading = false;
-      this.$emit("update:visible", false);
-      this.$emit("finish");
-    },
+      this.$emit('update:visible', false);
+      this.$emit('finish');
+    }
   },
 };
 </script>

@@ -2,7 +2,7 @@
 ### Prepare the environment 
 Sqoop engine is an indispensable component to perform Exchange IS data synchronization task, and only after the installation and deployment of Sqoop engine can it successfully perform data synchronization task. At the same time, make sure sqoop is installed on the deployed machine. 
 
-Before you install and deploy Sqoop engine,  Please complete the installation of Exchangis 1.0.0 and related components according to the [Exchangis 1.0.0 installation and deployment document](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/en_US/ch1/exchangis_deploy_en.md), and ensure that the basic functions of the project are available. 
+Before you install and deploy Sqoop engine,  Please complete the installation of Exchangis and related components according to the [Exchangis installation and deployment document](docs/en_US/ch1/exchangis_deploy_en.md), and ensure that the basic functions of the project are available. 
 
 Sqoop engine mainly depends on Hadoop basic environment. If this node needs to deploy Sqoop engine, it needs to deploy Hadoop client environment. 
 
@@ -26,9 +26,9 @@ It is strongly recommended that you use the native Sqoop to perform the test tas
 ### Prepare installation package 
 #### 1）Download binary package 
 
-Exchangis1.0.0 and Linkis 1.1.1 support the mainstream Sqoop versions 1.4.6 and 1.4.7, and later versions may need to modify some codes for recompilation. 
+Exchangis1.1.2 and Linkis 1.4.0 support the mainstream Sqoop versions 1.4.6 and 1.4.7, and later versions may need to modify some codes for recompilation. 
 
-[Click to jump to Release interface](https://github.com/WeBankFinTech/Exchangis/releases/tag/release-1.0.0)
+[Click to jump to Release interface](https://github.com/WeBankFinTech/Exchangis/releases)
 
 #### 2）Compile and package 
 If you want to develop and compile sqoop engine yourself, the specific compilation steps are as follows: 
@@ -74,4 +74,4 @@ cd {LINKIS_INSTALL_HOME}/links/sbin/
 After the service is successfully started, the installation and deployment of sqoop will be completed. 
 
 For a more detailed introduction of engineplugin, please refer to the following article.   
-https://linkis.apache.org/zh-CN/docs/latest/architecture/computation-governance-services/engine/engine-conn
+https://linkis.apache.org/zh-CN/docs/latest/deployment/install-engineconn

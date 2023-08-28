@@ -1,14 +1,21 @@
 package com.webank.wedatasphere.exchangis.project.server.restful.external;
 
+import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
+import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
+import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
-import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
+import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectAppVo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
-import com.webank.wedatasphere.exchangis.project.server.utils.AuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectAppVo;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
-import org.apache.commons.lang.StringUtils;
+import com.webank.wedatasphere.exchangis.project.server.utils.ProjectAuthorityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.linkis.common.utils.JsonUtils;
 import org.apache.linkis.server.Message;
@@ -38,6 +45,12 @@ public class ExchangisProjectDssAppConnRestfulApi {
     @Resource
     private ProjectService projectService;
 
+    /**
+     * JobInfo service
+     */
+    @Resource
+    private JobInfoService jobInfoService;
+
     @RequestMapping(value = "", method = RequestMethod.POST)
     public Message createProject(@Validated @RequestBody ExchangisProjectAppVo project,
                                  BindingResult result, HttpServletRequest request){
@@ -45,7 +58,20 @@ public class ExchangisProjectDssAppConnRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String username = SecurityFilter.getLoginUsername(request);
+
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
+        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
+            projectVo.setViewUsers(username + projectVo.getViewUsers());
+        }
+        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
+            projectVo.setEditUsers(username + projectVo.getEditUsers());
+        }
+        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
+            projectVo.setExecUsers(username + projectVo.getExecUsers());
+
+        }
+
         try {
             LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             if (projectService.existsProject(null, projectVo.getName())){
@@ -53,6 +79,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
             }
             long projectIdd = projectService.createProject(projectVo, username);
             String projectId = String.valueOf(projectIdd);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectVo.getName(), OperateTypeEnum.CREATE, request);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectId));
@@ -75,24 +102,17 @@ public class ExchangisProjectDssAppConnRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String username = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
         try {
-            ExchangisProjectInfo projectStored = projectService.getProjectById(Long.valueOf(projectVo.getId()));
-
-            if (!hasAuthority(username, projectStored)) {
+            ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
+            if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
                 return Message.error("You have no permission to update (没有项目的更新权限)");
             }
 
-//            if (!AuthorityUtils.hasOwnAuthority(Long.parseLong(projectVo.getId()), username) && !AuthorityUtils.hasEditAuthority(Long.parseLong(projectVo.getId()), username)) {
-//                return Message.error("You have no permission to update (没有编辑权限，无法更新项目)");
-//            }
-            String domain = projectStored.getDomain();
-            if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
-                    .equalsIgnoreCase(domain)){
-                return Message.error("Cannot update the outer project (无法更新来自 " + domain + " 的外部项目)");
-            }
             LOG.info("UpdateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             projectService.updateProject(projectVo, username);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, id.toString(), "Project name is: " + projectVo.getName(), OperateTypeEnum.UPDATE, request);
             return ExchangisProjectRestfulUtils.dealOk("更新工程成功",
                     new Pair<>("projectName", projectVo.getName()),
                     new Pair<>("projectId", projectVo.getId()));
@@ -110,19 +130,25 @@ public class ExchangisProjectDssAppConnRestfulApi {
      */
     @RequestMapping( value = "/{name}", method = RequestMethod.POST)
     public Message deleteProject(HttpServletRequest request, @PathVariable("name") String name) {
-        String username = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.selectByName(name);
-//            if (!hasAuthority(username, projectInfo)){
-//                return Message.error("You have no permission to delete (删除工程失败)");
-//            }
-//            String domain = projectInfo.getDomain();
-//            if (StringUtils.isNotBlank(domain) && !ExchangisProject.Domain.STANDALONE.name()
-//                    .equalsIgnoreCase(domain)){
-//                return Message.error("Cannot delete the outer project (无法删除来自 " + domain + " 的外部项目)");
-//            }
+            if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectInfo, OperationType.PROJECT_ALTER)) {
+                return Message.error("You have no permission to delete (删除项目失败)");
+            }
+
+            // 校验是否有任务
+            ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo(Long.parseLong(projectInfo.getId()), null, null);
+            PageResult<ExchangisJobVo> exchangisJobVoPageResult = jobInfoService.queryJobList(queryVo);
+            if (Objects.nonNull(exchangisJobVoPageResult) && Objects.nonNull(exchangisJobVoPageResult.getList())
+                    && exchangisJobVoPageResult.getList().size() > 0) {
+                return Message.error("Jobs already exist under this project and the project cannot be deleted (该项目下已存在子任务，无法删除)");
+            }
+
             projectService.deleteProjectByName(name);
-            return ExchangisProjectRestfulUtils.dealOk("删除工程成功777");
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, "", "Project name is: " + name, OperateTypeEnum.DELETE, request);
+            return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
             return Message.error("Failed to delete project (删除工程失败)");
@@ -139,7 +165,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
      */
     @RequestMapping( value = "/check/{name}", method = RequestMethod.POST)
     public Message getProjectByName(HttpServletRequest request, @PathVariable("name") String name) {
-        String username = SecurityFilter.getLoginUsername(request);
+        String username = UserUtils.getLoginUser(request);
         try {
             ExchangisProjectInfo projectInfo = projectService.selectByName(name);
             return ExchangisProjectRestfulUtils.dealOk("根据名字获取工程成功",
@@ -148,17 +174,6 @@ public class ExchangisProjectDssAppConnRestfulApi {
             LOG.error("Failed to delete project for user {}", username, t);
             return Message.error("Failed to delete project (根据名字获取工程失败)");
         }
-
-
     }
 
-
-    /**
-     * @param username username
-     * @param project project
-     * @return
-     */
-    private boolean hasAuthority(String username, ExchangisProjectInfo project){
-        return Objects.nonNull(project) && username.equals(project.getCreateUser());
-    }
 }

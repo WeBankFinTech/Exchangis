@@ -10,13 +10,14 @@ import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
-import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProjectUser;
-import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectMapper;
-import com.webank.wedatasphere.exchangis.project.server.entity.ExchangisProject;
-import com.webank.wedatasphere.exchangis.project.server.mapper.ProjectUserMapper;
+import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectMapper;
+import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectUserMapper;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
-import com.webank.wedatasphere.exchangis.project.server.vo.ExchangisProjectInfo;
-import com.webank.wedatasphere.exchangis.project.server.vo.ProjectQueryVo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectUserVo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectQueryVo;
+import com.webank.wedatasphere.exchangis.project.entity.domain.ExchangisProjectUser;
+import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,44 +62,50 @@ public class ProjectServiceImpl implements ProjectService {
         project.setCreateTime(Calendar.getInstance().getTime());
         this.projectMapper.insertOne(project);
 
-        List<ExchangisProjectUser> projectUsers = new ArrayList<>();
-        if (project.getViewUsers() != null && project.getViewUsers().length()!=0) {
-            for (String view : project.getViewUsers().split(",")) {
+        Map<String, ExchangisProjectUser> projectUserMap = new HashMap<>();
+        if (Objects.nonNull(project.getViewUsers()) && project.getViewUsers().length() != 0) {
+            for (String viewUser : project.getViewUsers().split(",")) {
                 ExchangisProjectUser projectUser = new ExchangisProjectUser();
                 projectUser.setProjectId(project.getId());
-                projectUser.setPrivUser(view);
-                projectUser.setPriv(1);
+                projectUser.setPrivUser(viewUser);
+                projectUser.setPriv(4);
                 projectUser.setUpdateTime(project.getLastUpdateTime());
-                projectUsers.add(projectUser);
+                projectUserMap.put(viewUser ,projectUser);
             }
         }
-        if (project.getEditUsers() != null && project.getEditUsers().length()!=0) {
-            for (String edit : project.getEditUsers().split(",")) {
-                ExchangisProjectUser projectUser = new ExchangisProjectUser();
-                projectUser.setProjectId(project.getId());
-                projectUser.setPrivUser(edit);
-                projectUser.setPriv(3);
-                projectUser.setUpdateTime(project.getLastUpdateTime());
-                projectUsers.add(projectUser);
+        if (Objects.nonNull(project.getEditUsers()) && project.getEditUsers().length() != 0) {
+            for (String editUser : project.getEditUsers().split(",")) {
+                if (Objects.nonNull(projectUserMap.get(editUser))) {
+                    projectUserMap.get(editUser).setPriv(6);
+                } else {
+                    ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                    projectUser.setProjectId(project.getId());
+                    projectUser.setPrivUser(editUser);
+                    projectUser.setPriv(6);
+                    projectUser.setUpdateTime(project.getLastUpdateTime());
+                    projectUserMap.put(editUser ,projectUser);
+                }
             }
         }
-        if (project.getExecUsers() != null && project.getExecUsers().length()!=0) {
-            for (String exec : project.getExecUsers().split(",")) {
-                ExchangisProjectUser projectUser = new ExchangisProjectUser();
-                projectUser.setProjectId(project.getId());
-                projectUser.setPrivUser(exec);
-                projectUser.setPriv(2);
-                projectUser.setUpdateTime(project.getLastUpdateTime());
-                projectUsers.add(projectUser);
+        if (Objects.nonNull(project.getExecUsers()) && project.getExecUsers().length() != 0) {
+            for (String execUser : project.getExecUsers().split(",")) {
+                if (Objects.nonNull(projectUserMap.get(execUser))) {
+                    projectUserMap.get(execUser).setPriv(7);
+                } else {
+                    ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                    projectUser.setProjectId(project.getId());
+                    projectUser.setPrivUser(execUser);
+                    projectUser.setPriv(7);
+                    projectUser.setUpdateTime(project.getLastUpdateTime());
+                    projectUserMap.put(execUser ,projectUser);
+                }
             }
         }
-        ExchangisProjectUser projectUser = new ExchangisProjectUser();
-        projectUser.setProjectId(project.getId());
-        projectUser.setPrivUser(project.getCreateUser());
-        projectUser.setPriv(0);
-        projectUser.setUpdateTime(project.getLastUpdateTime());
-        projectUsers.add(projectUser);
-        this.projectUserMapper.addProjectUser(projectUsers);
+
+        if(projectUserMap.size() > 0) {
+            this.projectUserMapper.addProjectUser(new ArrayList<>(projectUserMap.values()));
+
+        }
         return project.getId();
     }
 
@@ -125,44 +132,50 @@ public class ProjectServiceImpl implements ProjectService {
         updatedProject.setLastUpdateTime(Calendar.getInstance().getTime());
         this.projectMapper.updateOne(updatedProject);
 
-        List<ExchangisProjectUser> projectUsers = new ArrayList<>();
-        if (updatedProject.getViewUsers() != null && updatedProject.getViewUsers().length()!=0) {
-            for (String view : updatedProject.getViewUsers().split(",")) {
+        Map<String, ExchangisProjectUser> projectUserMap = new HashMap<>();
+        if (Objects.nonNull(updatedProject.getViewUsers()) && updatedProject.getViewUsers().length() != 0) {
+            for (String viewUser : updatedProject.getViewUsers().split(",")) {
                 ExchangisProjectUser projectUser = new ExchangisProjectUser();
                 projectUser.setProjectId(updatedProject.getId());
-                projectUser.setPrivUser(view);
-                projectUser.setPriv(1);
+                projectUser.setPrivUser(viewUser);
+                projectUser.setPriv(4);
                 projectUser.setUpdateTime(updatedProject.getLastUpdateTime());
-                projectUsers.add(projectUser);
+                projectUserMap.put(viewUser ,projectUser);
             }
         }
-        if (updatedProject.getEditUsers() != null && updatedProject.getEditUsers().length()!=0) {
-            for (String edit : updatedProject.getEditUsers().split(",")) {
-                ExchangisProjectUser projectUser = new ExchangisProjectUser();
-                projectUser.setProjectId(updatedProject.getId());
-                projectUser.setPrivUser(edit);
-                projectUser.setPriv(3);
-                projectUser.setUpdateTime(updatedProject.getLastUpdateTime());
-                projectUsers.add(projectUser);
+        if (Objects.nonNull(updatedProject.getEditUsers()) && updatedProject.getEditUsers().length() != 0) {
+            for (String editUser : updatedProject.getEditUsers().split(",")) {
+                if (Objects.nonNull(projectUserMap.get(editUser))) {
+                    projectUserMap.get(editUser).setPriv(6);
+                } else {
+                    ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                    projectUser.setProjectId(updatedProject.getId());
+                    projectUser.setPrivUser(editUser);
+                    projectUser.setPriv(6);
+                    projectUser.setUpdateTime(updatedProject.getLastUpdateTime());
+                    projectUserMap.put(editUser ,projectUser);
+                }
             }
         }
-        if (updatedProject.getExecUsers() != null && updatedProject.getExecUsers().length()!=0) {
-            for (String exec : updatedProject.getExecUsers().split(",")) {
-                ExchangisProjectUser projectUser = new ExchangisProjectUser();
-                projectUser.setProjectId(updatedProject.getId());
-                projectUser.setPrivUser(exec);
-                projectUser.setPriv(2);
-                projectUser.setUpdateTime(updatedProject.getLastUpdateTime());
-                projectUsers.add(projectUser);
+        if (Objects.nonNull(updatedProject.getExecUsers()) && updatedProject.getExecUsers().length() != 0) {
+            for (String execUser : updatedProject.getExecUsers().split(",")) {
+                if (Objects.nonNull(projectUserMap.get(execUser))) {
+                    projectUserMap.get(execUser).setPriv(7);
+                } else {
+                    ExchangisProjectUser projectUser = new ExchangisProjectUser();
+                    projectUser.setProjectId(updatedProject.getId());
+                    projectUser.setPrivUser(execUser);
+                    projectUser.setPriv(7);
+                    projectUser.setUpdateTime(updatedProject.getLastUpdateTime());
+                    projectUserMap.put(execUser ,projectUser);
+                }
             }
         }
-        ExchangisProjectUser projectUser = new ExchangisProjectUser();
-        projectUser.setProjectId(updatedProject.getId());
-        projectUser.setPrivUser(updatedProject.getCreateUser());
-        projectUser.setPriv(0);
-        projectUser.setUpdateTime(updatedProject.getLastUpdateTime());
-        projectUsers.add(projectUser);
-        this.projectUserMapper.updateProjectUser(projectUsers);
+
+        this.projectUserMapper.deleteProjectUser(Long.valueOf(projectVo.getId()));
+        if(projectUserMap.size() > 0) {
+            this.projectUserMapper.addProjectUser(new ArrayList<>(projectUserMap.values()));
+        }
     }
 
     @Override
@@ -241,5 +254,11 @@ public class ProjectServiceImpl implements ProjectService {
             return new ExchangisProjectInfo(project);
         }
         return null;
+    }
+
+    @Override
+    public ExchangisProjectUser queryProjectUser(ExchangisProjectUserVo exchangisProjectUserVo) {
+        ExchangisProjectUser projectUser = new ExchangisProjectUser(Long.valueOf(exchangisProjectUserVo.getProjectId()), exchangisProjectUserVo.getPrivUser());
+        return this.projectUserMapper.queryProjectUser(projectUser);
     }
 }
