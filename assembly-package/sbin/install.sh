@@ -26,6 +26,7 @@ source ${SOURCE_ROOT}/config/db.sh
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SHELL_LOG="${DIR}/console.out"   #console.out是什么文件？
 export SQL_SOURCE_PATH="${DIR}/../db/exchangis_ddl.sql"
+export SQL_DML_PATH="${DIR}/../db/exchangis_dml.sql"
 PACKAGE_DIR="${DIR}/../packages"
 # Home Path
 EXCHNGIS_HOME_PATH="${DIR}/../"
@@ -136,7 +137,7 @@ init_database(){
         if [ $? == 0 ]; then
           LOG INFO "\033[1m Scan out mysql command, so begin to initalize the database\033[0m"
           mysql -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USERNAME} -p${MYSQL_PASSWORD}  --default-character-set=utf8 -e \
-          "CREATE DATABASE IF NOT EXISTS ${DATABASE}; USE ${DATABASE}; source ${SQL_SOURCE_PATH};"
+          "CREATE DATABASE IF NOT EXISTS ${DATABASE}; USE ${DATABASE}; source ${SQL_SOURCE_PATH}; source ${SQL_DML_PATH};"
         fi
     fi
 }
