@@ -137,7 +137,7 @@ init_database(){
         if [ $? == 0 ]; then
           LOG INFO "\033[1m Scan out mysql command, so begin to initalize the database\033[0m"
           mysql -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USERNAME} -p${MYSQL_PASSWORD}  --default-character-set=utf8 -e \
-          "CREATE DATABASE IF NOT EXISTS ${DATABASE}; USE ${DATABASE}; source ${SQL_SOURCE_PATH};"
+          "CREATE DATABASE IF NOT EXISTS ${DATABASE}; USE ${DATABASE}; source ${SQL_SOURCE_PATH}; source ${SQL_DML_PATH};"
         fi
     fi
 }
