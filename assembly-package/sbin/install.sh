@@ -26,6 +26,7 @@ source ${SOURCE_ROOT}/config/db.sh
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SHELL_LOG="${DIR}/console.out"   #console.out是什么文件？
 export SQL_SOURCE_PATH="${DIR}/../db/exchangis_ddl.sql"
+export SQL_DML_PATH="${DIR}/../db/exchangis_dml.sql"
 PACKAGE_DIR="${DIR}/../packages"
 # Home Path
 EXCHNGIS_HOME_PATH="${DIR}/../"
