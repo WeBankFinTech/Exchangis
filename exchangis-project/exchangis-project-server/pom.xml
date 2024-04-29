@@ -5,7 +5,7 @@
     <parent>
         <artifactId>exchangis-project</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
-        <version>1.1.2</version>
+        <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,22 +20,22 @@
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-project-provider</artifactId>
-            <version>1.1.2</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-server</artifactId>
-            <version>1.1.2</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-dao</artifactId>
-            <version>1.1.2</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-common</artifactId>
-            <version>1.1.2</version>
+            <version>${revision}</version>
         </dependency>
     </dependencies>
 

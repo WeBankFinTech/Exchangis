@@ -401,7 +401,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         QueryWrapper<ExchangisJobDsBind> condition = new QueryWrapper<>();
         condition.eq("source_ds_id", id).or().eq("sink_ds_id", id);
-        Long inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
+        Integer inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
         if (inUseCount > 0) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "目前存在引用依赖");
         }
