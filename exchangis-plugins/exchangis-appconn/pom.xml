@@ -25,8 +25,24 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>httpclient</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-cache</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
                 </exclusion>
             </exclusions>
             <optional>true</optional>
@@ -48,8 +64,8 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>linkis-common</artifactId>
                     <groupId>org.apache.linkis</groupId>
+                    <artifactId>linkis-common</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -73,6 +89,29 @@
             <artifactId>dss-common</artifactId>
             <version>${dss.version}</version>
             <scope>provided</scope>
+            <exclusions>
+
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context-support</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-webmvc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-jdbc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-tx</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>

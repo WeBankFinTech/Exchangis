@@ -198,6 +198,15 @@
                     <finalName>core</finalName>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>${jdk.compile.version}</source>
+                    <target>${jdk.compile.version}</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -223,6 +223,10 @@
 					<configuration>
 						<source>${jdk.compile.version}</source>
 						<target>${jdk.compile.version}</target>
+						<compilerArguments>
+							<verbose/>
+							<bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>
+						</compilerArguments>
 					</configuration>
 				</plugin>
 				<plugin>
