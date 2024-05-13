@@ -39,7 +39,6 @@
             <unpack>false</unpack>
             <useStrictFiltering>false</useStrictFiltering>
             <useTransitiveFiltering>true</useTransitiveFiltering>
-
             <excludes>
                 <exclude>antlr:antlr:jar</exclude>
                 <exclude>aopalliance:aopalliance:jar</exclude>

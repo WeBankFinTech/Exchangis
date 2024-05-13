@@ -234,6 +234,10 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
   private def setPluginConfig(self: Configuration): Unit = {
     val plugins: util.Map[String, Configuration] = dataxEngineConnContext
       .getPluginDefinitions.asScala.map(define => (define.getPluginName, define.getPluginConf)).toMap.asJava
+    info(s"content is ${dataxEngineConnContext.toString}")
+    dataxEngineConnContext.getPluginDefinitions.asScala.foreach { definition =>
+      info(s"PluginName: ${definition.getPluginName}, pluginConf: ${definition.getPluginConf}, pluginPath: ${definition.getPluginPath}")
+    }
     val pluginsNeed: util.Map[String, Configuration] = new util.HashMap()
     Option(self.getString(CoreConstant.DATAX_JOB_CONTENT_READER_NAME)).foreach(readerPlugin => pluginsNeed.put(readerPlugin, plugins.get(readerPlugin)))
     Option(self.getString(CoreConstant.DATAX_JOB_CONTENT_WRITER_NAME)).foreach(writerPlugin => pluginsNeed.put(writerPlugin, plugins.get(writerPlugin)))

@@ -3,8 +3,8 @@
 -- 删除exchangis关联的数据 --
 delete from `dss_appconn_instance` where `appconn_id` in (select `id` from `dss_appconn` where `appconn_name` = 'exchangis');
 delete from  `dss_workspace_menu_appconn` where `appconn_id` in (select `id` from `dss_appconn` where `appconn_name` = 'exchangis');
-
 delete from `dss_appconn`  where `appconn_name`='exchangis';
+
 INSERT INTO `dss_appconn` (`appconn_name`, `is_user_need_init`, `level`, `if_iframe`, `is_external`, `reference`, `class_name`, `appconn_class_path`, `resource`)
 VALUES ('exchangis', 0, 1, 1, 1, NULL, 'com.webank.wedatasphere.exchangis.dss.appconn.ExchangisAppConn', 'DSS_INSTALL_HOME_VAL/dss-appconns/exchangis', '');
 select @dss_appconn_exchangis_id:=id from `dss_appconn` where `appconn_name` = "exchangis";
@@ -18,7 +18,7 @@ INSERT INTO `dss_workspace_menu_appconn` (`appconn_id`, `menu_id`, `title_en`, `
  VALUES(@dss_appconn_exchangis_id,@exchangis_menuId,'Exchangis','Exchangis','Exchangis',''
  ,'exchangis, statement','数据交换,数据源','1','enter Exchangis','进入Exchangis','user manual','用户手册','http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/#/projectManage','shujukeshihua-logo',NULL,NULL,NULL,NULL,NULL,'shujukeshihua-icon');
 
--- Sqoop节点安装
+-- 卸载节点
 select @old_dss_exchangis_sqoopId:=id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop';
 select @old_dss_exchangis_dataxId:=id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax';
 delete from `dss_workflow_node`  where `node_type` like '%exchangis%';
