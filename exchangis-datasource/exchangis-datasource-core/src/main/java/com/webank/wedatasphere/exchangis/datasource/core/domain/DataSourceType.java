@@ -12,7 +12,9 @@ public enum DataSourceType {
 
     SFTP("SFTP"),
 
-    ORACLE("ORACLE");
+    ORACLE("ORACLE"),
+
+    STARROCKS("STARROCKS");
 
     public String name;
 

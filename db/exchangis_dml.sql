@@ -64,7 +64,7 @@ INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_directio
 
 -- engine_settings records
 INSERT INTO `exchangis_engine_settings` (id, engine_name, engine_desc, engine_settings_value, engine_direction, res_loader_class, res_uploader_class, modify_time) VALUES
-(1, 'datax', 'datax sync engine', '{}', 'mysql->hive,hive->mysql,mysql->oracle,oracle->mysql,oracle->hive,hive->oracle,mongodb->hive,hive->mongodb,mysql->elasticsearch,oracle->elasticsearch,mongodb->elasticsearch,mysql->mongodb,mongodb->mysql,oracle->mongodb,mongodb->oracle', 'com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngineResourceLoader', NULL, NULL),
+(1, 'datax', 'datax sync engine', '{}', 'mysql->hive,hive->mysql,mysql->oracle,oracle->mysql,oracle->hive,hive->oracle,mongodb->hive,hive->mongodb,mysql->elasticsearch,oracle->elasticsearch,mongodb->elasticsearch,mysql->mongodb,mongodb->mysql,oracle->mongodb,mongodb->oracle,mysql->starrocks', 'com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngineResourceLoader', NULL, NULL),
 (2, 'sqoop', 'hadoop tool', '{}', 'mysql->hive,hive->mysql', '', NULL, NULL);
 
 -- exchangis_job_transform_rule records
