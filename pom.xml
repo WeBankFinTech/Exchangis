@@ -131,6 +131,12 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+			<!--linkis http support-->
+			<dependency>
+				<groupId>org.apache.linkis</groupId>
+				<artifactId>linkis-gateway-httpclient-support</artifactId>
+				<version>${linkis.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.apache.linkis</groupId>
 				<artifactId>linkis-common</artifactId>

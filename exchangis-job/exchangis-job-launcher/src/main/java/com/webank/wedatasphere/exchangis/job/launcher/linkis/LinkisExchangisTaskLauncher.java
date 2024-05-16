@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
-import com.webank.wedatasphere.exchangis.common.linkis.ClientConfiguration;
+import com.webank.wedatasphere.exchangis.common.linkis.client.ClientConfiguration;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
@@ -10,16 +10,13 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangis
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.conf.Configuration;
-import org.apache.linkis.common.conf.Configuration$;
 import org.apache.linkis.common.exception.LinkisRetryException;
 import org.apache.linkis.common.utils.DefaultRetryHandler;
 import org.apache.linkis.common.utils.RetryHandler;
-import org.apache.linkis.computation.client.LinkisJobClient;
 import org.apache.linkis.computation.client.LinkisJobClient$;
 import org.apache.linkis.httpclient.config.ClientConfig;
 import org.apache.linkis.httpclient.dws.authentication.TokenAuthenticationStrategy;
 import org.apache.linkis.httpclient.dws.config.DWSClientConfig;
-import org.apache.linkis.httpclient.dws.config.DWSClientConfigBuilder;
 import org.apache.linkis.httpclient.dws.config.DWSClientConfigBuilder$;
 
 import java.util.*;
