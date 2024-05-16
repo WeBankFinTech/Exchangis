@@ -26,6 +26,15 @@ public class StatusUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
 
     private TaskManager<LaunchedExchangisTask> taskManager;
 
+    /**
+     * High priority to get schedule resource
+     * @return priority
+     */
+    @Override
+    public int getPriority() {
+        return 2;
+    }
+
     public StatusUpdateSchedulerTask(TaskManager<LaunchedExchangisTask> taskManager){
         this.taskManager = taskManager;
     }
