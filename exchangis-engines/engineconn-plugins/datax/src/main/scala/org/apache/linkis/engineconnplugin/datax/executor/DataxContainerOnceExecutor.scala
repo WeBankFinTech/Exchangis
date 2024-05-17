@@ -26,7 +26,9 @@ import com.alibaba.datax.core.util.container.{CoreConstant, LoadUtil}
 import com.alibaba.datax.core.util.{ConfigurationValidate, ExceptionTracker, FrameworkErrorCode, SecretUtil}
 import org.apache.commons.lang3.StringUtils
 import org.apache.linkis.common.utils.{ClassUtils, Utils}
+import org.apache.linkis.engineconn.acessible.executor.service.{ExecutorHeartbeatService, ExecutorHeartbeatServiceHolder}
 import org.apache.linkis.engineconn.common.creation.EngineCreationContext
+import org.apache.linkis.engineconn.executor.service.ManagerService
 import org.apache.linkis.engineconn.once.executor.{OnceExecutorExecutionContext, OperableOnceExecutor}
 import org.apache.linkis.engineconnplugin.datax.config.DataxConfiguration
 import org.apache.linkis.engineconnplugin.datax.exception.{DataxJobExecutionException, DataxPluginLoadException}
@@ -86,6 +88,8 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
         }
         info(s"The executor: [${getId}]  has been finished, now to stop DataxEngineConn.")
         closeDaemon()
+        // Try to heartbeat at last
+        tryToHeartbeat()
         if (!isFailed) {
           trySucceed()
         }
@@ -103,6 +107,8 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
         if (!(future.isDone || future.isCancelled)) {
           trace(s"The executor: [$getId] has been still running")
         }
+        // Heartbeat action interval
+        tryToHeartbeat()
       }
     }, DataxConfiguration.STATUS_FETCH_INTERVAL.getValue.toLong,
       DataxConfiguration.STATUS_FETCH_INTERVAL.getValue.toLong, TimeUnit.MILLISECONDS)
@@ -143,6 +149,10 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
     metrics
   }
 
+  def getMessage(key: String):util.Map[String, util.List[String]] = {
+    null
+  }
+
   override def getDiagnosis: util.Map[String, Any] = {
     // Not support diagnosis
     new util.HashMap[String, Any]()
@@ -155,6 +165,19 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
   override def tryFailed(): Boolean = {
 //    Option(this.container).foreach(_.shutdown())
     super.tryFailed()
+  }
+
+  /**
+   * Try to send heartbeat message to ecm
+   */
+  private def tryToHeartbeat(): Unit = {
+    logger.trace("heartbeat and record to linkis manager")
+    ExecutorHeartbeatServiceHolder.getDefaultHeartbeatService() match {
+      case heartbeatService: ExecutorHeartbeatService =>
+        val heartbeatMsg = heartbeatService.generateHeartBeatMsg(this)
+        ManagerService.getManagerService.heartbeatReport(heartbeatMsg)
+        logger.trace(s"Succeed to report heartbeatMsg: [${heartbeatMsg}]")
+    }
   }
   /**
    * Execute with job content
