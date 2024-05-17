@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
-import com.webank.wedatasphere.exchangis.common.linkis.client.ClientConfiguration;
+import com.webank.wedatasphere.exchangis.common.linkis.ClientConfiguration;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
