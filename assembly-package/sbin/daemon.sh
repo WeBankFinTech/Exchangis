@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+load_env_definitions ${ENV_FILE}
 if [[ "x"${EXCHANGIS_HOME} != "x" ]]; then
   source ${EXCHANGIS_HOME}/sbin/launcher.sh
   source ${EXCHANGIS_HOME}/sbin/common.sh
@@ -48,7 +49,6 @@ restart(){
 COMMAND=$1
 case $COMMAND in
   start|stop|restart)
-    load_env_definitions ${ENV_FILE}
     if [[ ! -z $2 ]]; then
       SERVICE_NAME=${MODULE_DEFAULT_PREFIX}$2${MODULE_DEFAULT_SUFFIX}
       MAIN_CLASS=${MODULE_MAIN_CLASS[${SERVICE_NAME}]}
