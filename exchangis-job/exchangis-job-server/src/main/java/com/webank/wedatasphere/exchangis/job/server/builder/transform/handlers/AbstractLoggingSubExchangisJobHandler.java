@@ -7,8 +7,10 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.server.builder.SpringExchangisJobBuilderContext;
+import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -23,6 +25,7 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
     public final void handleSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
         wrapFuncWithContext(ctx, () -> {
             try {
+                handleSrcColumns(subExchangisJob.getSourceColumns());
                 handleJobSource(subExchangisJob, ctx);
             }catch (ErrorException e){
                 throw new ExchangisJobException.Runtime(-1, "Exception in handling job source parameters", e);
@@ -34,6 +37,7 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
     public final void handleSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
         wrapFuncWithContext(ctx, () -> {
             try {
+                handleSinkColumns(subExchangisJob.getSinkColumns());
                 handleJobSink(subExchangisJob, ctx);
             } catch (ErrorException e) {
                 throw new ExchangisJobException.Runtime(-1, "Exception in handling job sink parameters", e);
@@ -69,6 +73,42 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
     }
 
     /**
+     * If auto fill column
+     * @return bool
+     */
+    protected boolean fillColumn(){
+        return false;
+    }
+
+    /**
+     * Handle source columns
+     * @param columns columns
+     */
+    protected void handleSrcColumns(List<SubExchangisJob.ColumnDefine> columns) {
+        if (fillColumn()){
+            boolean complete = columns.stream().noneMatch(column -> StringUtils.isBlank(column.getType()) || null == column.getIndex());
+            if (!complete){
+                doFillColumns(columns);
+            }
+        }
+    }
+
+    /**
+     * Handle sink columns
+     * @param columns columns
+     */
+    protected void handleSinkColumns(List<SubExchangisJob.ColumnDefine> columns){
+        if (fillColumn()){
+            boolean complete = columns.stream().noneMatch(column -> StringUtils.isBlank(column.getType()));
+            if (!complete){
+                doFillColumns(columns);
+            }
+        }
+    }
+
+
+
+    /**
      * handle job source params
      * @param subExchangisJob sub exchangis job
      * @param ctx ctx
@@ -81,6 +121,14 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
      * @param ctx ctx
      */
     public abstract void handleJobSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException;
+
+    /**
+     * Do fill column
+     * @param columns columns
+     */
+    protected void doFillColumns(List<SubExchangisJob.ColumnDefine> columns){
+
+    }
 
     /**
      * Warn message
@@ -112,5 +160,9 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
 
     protected static SpringExchangisJobBuilderContext getJobBuilderContext(){
         return springContext.get();
+    }
+
+    private void completeColumns(){
+
     }
 }
