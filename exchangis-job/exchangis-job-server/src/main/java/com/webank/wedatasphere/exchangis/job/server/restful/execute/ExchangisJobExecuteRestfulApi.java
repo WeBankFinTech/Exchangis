@@ -157,11 +157,15 @@ public class ExchangisJobExecuteRestfulApi {
                                         @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                         @RequestParam(value = "ignoreKeywords", required = false) String ignoreKeywords,
                                         @RequestParam(value = "onlyKeywords", required = false) String onlyKeywords,
+                                        @RequestParam(value = "enableTail", required = false) Boolean enableTail,
                                         @RequestParam(value = "lastRows", required = false) Integer lastRows, HttpServletRequest request) {
 
         Message result = Message.ok("Submitted succeed(提交成功)！");
         LogQuery logQuery = new LogQuery(fromLine, pageSize,
                 ignoreKeywords, onlyKeywords, lastRows);
+        if (null != enableTail) {
+            logQuery.setEnableTail(enableTail);
+        }
         String loginUser = UserUtils.getLoginUser(request);
         try {
             if(!JobAuthorityUtils.hasJobExecuteSituationAuthority(loginUser, jobExecutionId, OperationType.JOB_QUERY)) {

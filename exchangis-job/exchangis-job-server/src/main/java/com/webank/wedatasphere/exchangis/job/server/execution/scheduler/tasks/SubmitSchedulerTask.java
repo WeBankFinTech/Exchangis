@@ -72,6 +72,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                 // Ignore
             }
         }
+        // Set max retry
     }
     @Override
     protected void schedule() throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
