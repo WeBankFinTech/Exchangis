@@ -22,7 +22,7 @@
 
 	<groupId>com.webank.wedatasphere.exchangis</groupId>
 	<artifactId>exchangis</artifactId>
-	<version>1.1.3-webank</version>
+	<version>${revision}</version>
 	<packaging>pom</packaging>
 
 	<name>exchangis</name>
@@ -229,10 +229,10 @@
 					<configuration>
 						<source>${jdk.compile.version}</source>
 						<target>${jdk.compile.version}</target>
-						<compilerArguments>
-							<verbose/>
-							<bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>
-						</compilerArguments>
+<!--						<compilerArguments>-->
+<!--							<verbose/>-->
+<!--							<bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>-->
+<!--						</compilerArguments>-->
 					</configuration>
 				</plugin>
 				<plugin>

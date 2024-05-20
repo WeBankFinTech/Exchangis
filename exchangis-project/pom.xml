@@ -12,9 +12,9 @@
     <artifactId>exchangis-project</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>exchangis-project-entity</module>
         <module>exchangis-project-server</module>
         <module>exchangis-project-provider</module>
-        <module>exchangis-project-entity</module>
     </modules>
 
     <properties>
