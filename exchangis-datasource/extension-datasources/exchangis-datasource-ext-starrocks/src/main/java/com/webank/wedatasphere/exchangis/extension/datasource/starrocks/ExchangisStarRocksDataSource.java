@@ -1,8 +1,8 @@
 package com.webank.wedatasphere.exchangis.extension.datasource.starrocks;
 
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceType;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisBatchDataSource;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceType;
 
 import java.util.List;
 
@@ -13,10 +13,9 @@ import java.util.List;
 public class ExchangisStarRocksDataSource extends ExchangisBatchDataSource {
 
     @Override
-    public String name() {
-        return DataSourceType.STARROCKS.name;
+    protected ExchangisDataSourceType type() {
+        return ExchangisDataSourceType.STARROCKS;
     }
-
     @Override
     public String description() {
         return "This is StarRocks DataSource";
@@ -28,22 +27,19 @@ public class ExchangisStarRocksDataSource extends ExchangisBatchDataSource {
     }
 
     @Override
-    public String classifier() {
-        return null;
-    }
-
-    @Override
     public String structClassifier() {
         return null;
     }
 
     @Override
     public String icon() {
-        return null;
+        return "icon-starrocks";
     }
 
     @Override
     public List<ExchangisJobParamConfig> getDataSourceParamConfigs() {
-        return super.getDataSourceParamConfigs(DataSourceType.STARROCKS.name);
+        return super.getDataSourceParamConfigs(ExchangisDataSourceType.STARROCKS.name);
     }
+
+
 }

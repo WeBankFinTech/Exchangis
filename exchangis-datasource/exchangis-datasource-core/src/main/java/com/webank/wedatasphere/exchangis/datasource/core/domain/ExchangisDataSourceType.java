@@ -12,8 +12,9 @@ public enum ExchangisDataSourceType {
 
     SFTP("SFTP", "sftp连接"),
 
-    ORACLE("ORACLE", "关系型数据库");
+    ORACLE("ORACLE", "关系型数据库"),
 
+    STARROCKS("STARROCKS", "大数据存储");
     /**
      * Type name
      */
