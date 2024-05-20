@@ -18,7 +18,17 @@ public class ExchangisJobDsBind {
 
     private Long sourceDsId;
 
+    /**
+     * Source data source name
+     */
+    private String sourceDsName;
+
     private Long sinkDsId;
+
+    /**
+     * Sink data source name
+     */
+    private String sinkDsName;
 
     public Long getId() {
         return id;
@@ -58,5 +68,21 @@ public class ExchangisJobDsBind {
 
     public void setSinkDsId(Long sinkDsId) {
         this.sinkDsId = sinkDsId;
+    }
+
+    public String getSourceDsName() {
+        return sourceDsName;
+    }
+
+    public void setSourceDsName(String sourceDsName) {
+        this.sourceDsName = sourceDsName;
+    }
+
+    public String getSinkDsName() {
+        return sinkDsName;
+    }
+
+    public void setSinkDsName(String sinkDsName) {
+        this.sinkDsName = sinkDsName;
     }
 }

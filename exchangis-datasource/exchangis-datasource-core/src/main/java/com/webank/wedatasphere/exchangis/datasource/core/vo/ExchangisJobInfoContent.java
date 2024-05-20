@@ -7,17 +7,35 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExchangisJobInfoContent {
 
+    /**
+     * Engine name
+     */
     private String engine;
 
+    /**
+     * Sub job name
+     */
     private String subJobName;
 
+    /**
+     * Data source content
+     */
     private ExchangisJobDataSourcesContent dataSources;
 
+    /**
+     * Extra params
+     */
     private ExchangisJobParamsContent params;
 
+    /**
+     * Transform define
+     */
 //    private List<ExchangisJobTransformsItem> transforms;
     private ExchangisJobTransformsContent transforms;
 
+    /**
+     * Settings
+     */
     private List<ExchangisJobParamsContent.ExchangisJobParamsItem> settings;
 
     public String getEngine() {
