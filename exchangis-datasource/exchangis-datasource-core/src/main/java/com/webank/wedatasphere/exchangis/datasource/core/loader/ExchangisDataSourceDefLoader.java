@@ -2,13 +2,13 @@ package com.webank.wedatasphere.exchangis.datasource.core.loader;
 
 
 import com.webank.wedatasphere.exchangis.dao.hook.MapperHook;
-import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
+import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import org.apache.linkis.common.conf.CommonVars;
 
 import java.util.Objects;
 
-public interface ExchangisDataSourceLoader {
+public interface ExchangisDataSourceDefLoader {
 
     String EXCHANGIS_DIR_NAME = Objects.isNull(CommonVars.apply("wds.exchangis.datasource.extension.dir").getValue()) ? "exchangis-extds" : CommonVars.apply("wds.exchangis.datasource.extension.dir").getValue().toString();
 
@@ -26,8 +26,8 @@ public interface ExchangisDataSourceLoader {
 
     void init(MapperHook mapperHook) throws Exception;
 
-    ExchangisDataSource load(String dataSourceType);
+    ExchangisDataSourceDefinition load(String dataSourceType);
 
-    ExchangisDataSource get(String dataSourceType, boolean reload);
+    ExchangisDataSourceDefinition get(String dataSourceType, boolean reload);
 
 }

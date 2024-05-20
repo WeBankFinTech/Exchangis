@@ -8,7 +8,7 @@ import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
-import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
+import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.*;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.DefaultDataSourceUIViewer;
@@ -84,7 +84,7 @@ public class AbstractDataSourceService {
             source.setType(split[0]);
             source.setId(split[1]);
             Optional.ofNullable(loginUser).ifPresent(u -> {
-                Optional.ofNullable(this.context.getExchangisDataSource(split[0])).ifPresent(o -> {
+                Optional.ofNullable(this.context.getExchangisDsDefinition(split[0])).ifPresent(o -> {
                     LinkisDataSourceRemoteClient dsClient = o.getDataSourceRemoteClient();
                     GetInfoByDataSourceIdAction action = GetInfoByDataSourceIdAction.builder()
                             .setDataSourceId(Long.parseLong(split[1]))
@@ -112,7 +112,7 @@ public class AbstractDataSourceService {
             sink.setType(split[0]);
             sink.setId(split[1]);
             Optional.ofNullable(loginUser).ifPresent(u -> {
-                Optional.ofNullable(this.context.getExchangisDataSource(split[0])).ifPresent(o -> {
+                Optional.ofNullable(this.context.getExchangisDsDefinition(split[0])).ifPresent(o -> {
                     LinkisDataSourceRemoteClient dsClient = o.getDataSourceRemoteClient();
                     GetInfoByDataSourceIdAction action = GetInfoByDataSourceIdAction.builder()
                             .setDataSourceId(Long.parseLong(split[1]))
@@ -146,7 +146,7 @@ public class AbstractDataSourceService {
             ExchangisDataSourceIdUI source = dataSourceIdsUI.getSource();
             if (null != source) {
                 String type = source.getType();
-                ExchangisDataSource exchangisSourceDataSource = this.context.getExchangisDataSource(type);
+                ExchangisDataSourceDefinition exchangisSourceDataSource = this.context.getExchangisDsDefinition(type);
                 if (null != exchangisSourceDataSource) {
                     sourceParamConfigs = exchangisSourceDataSource.getDataSourceParamConfigs().stream().filter(
                             i -> i.getConfigDirection().equals(content.getEngine() + "-SOURCE") || "SOURCE".equalsIgnoreCase(i.getConfigDirection())).collect(Collectors.toList());
@@ -156,7 +156,7 @@ public class AbstractDataSourceService {
             ExchangisDataSourceIdUI sink = dataSourceIdsUI.getSink();
             if (null != sink) {
                 String type = sink.getType();
-                ExchangisDataSource exchangisSinkDataSource = this.context.getExchangisDataSource(type);
+                ExchangisDataSourceDefinition exchangisSinkDataSource = this.context.getExchangisDsDefinition(type);
                 if (null != exchangisSinkDataSource) {
                     sinkParamConfigs = exchangisSinkDataSource.getDataSourceParamConfigs().stream().filter(i ->
                             i.getConfigDirection().equals(content.getEngine() + "-SINK") || "SINK".equalsIgnoreCase(i.getConfigDirection())).collect(Collectors.toList());
