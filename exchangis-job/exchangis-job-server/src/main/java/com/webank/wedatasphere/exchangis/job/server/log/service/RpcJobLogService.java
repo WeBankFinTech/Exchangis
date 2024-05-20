@@ -233,6 +233,9 @@ public class RpcJobLogService extends AbstractJobLogService{
                 }
                 line = lineSupplier.get();
             }
+            if (logQuery.isEnableTail()){
+                Collections.reverse(logs);
+            }
             result = new LogResult(lineNum, false, logs);
         } catch (IOException e) {
             throw new ExchangisJobServerException.Runtime(LOG_OP_ERROR.getCode(),"Unable to query the logs from path: [" + logPath + "]", e);
