@@ -172,9 +172,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
                         if (StringUtils.isNotBlank(sourceId)){
                             this.sourceType = resolveDataSourceId(content.getDataSources().getSourceId(), paramSet);
                         } else {
-                            Optional.ofNullable(content.getDataSources().getSource().getType()).ifPresent(type -> {
-                                this.sourceType = type.name;
-                            });
+
                         }
 
                     }
@@ -195,9 +193,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
                        if (StringUtils.isNotBlank(sinkId)){
                          this.sinkType = resolveDataSourceId(content.getDataSources().getSinkId(), paramSet);
                        } else {
-                         Optional.ofNullable(content.getDataSources().getSink().getType()).ifPresent(type -> {
-                             this.sinkType = type.name;
-                         });
+
                        }
                     }
                 }
@@ -245,9 +241,6 @@ public class TransformExchangisJob extends GenericExchangisJob {
             return null;
         }
 
-        private String resolveDataSource(ExchangisJobDataSourcesContent.ExchangisJobDataSource dataSource){
-            return null;
-        }
         /**
          *
          * @param items
