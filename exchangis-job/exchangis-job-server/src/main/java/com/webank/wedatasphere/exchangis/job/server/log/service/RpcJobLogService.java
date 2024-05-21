@@ -93,9 +93,10 @@ public class RpcJobLogService extends AbstractJobLogService{
                     }
                 };
             }
+            logPath = logPath.substring(splitPos + 1);
         }
         File logFile = new File(Constraints.LOG_LOCAL_PATH.getValue() + IOUtils.DIR_SEPARATOR_UNIX +
-                launchedExchangisJob.getLogPath());
+                logPath);
 
         if (!logFile.exists()){
             // Write empty string to create new file
