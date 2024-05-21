@@ -13,7 +13,7 @@ import java.util.Date;
 public class BoolColumn extends Column {
 
     public BoolColumn(Boolean bool) {
-        super(bool, Column.Type.BOOL, 1);
+        super(bool, Column.Type.BOOLEAN, 1);
     }
 
     public BoolColumn(final String data) {
@@ -30,7 +30,7 @@ public class BoolColumn extends Column {
     }
 
     public BoolColumn() {
-        super(null, Column.Type.BOOL, 1);
+        super(null, Column.Type.BOOLEAN, 1);
     }
 
     @Override
