@@ -111,7 +111,7 @@ public class MySQLDataxSubExchangisJobHandler extends AuthEnabledSubExchangisJob
     }
 
     public JobParamDefine<?>[] sinkMappings(){
-        return new JobParamDefine[]{USERNAME, PASSWORD, SINK_DATABASE, SINK_TABLE,
-                SINK_HOST, SINK_PORT, SINK_PARAMS_MAP};
+        return new JobParamDefine[]{SINK_HOST, SINK_PORT, USERNAME, PASSWORD,
+                SINK_DATABASE, SINK_TABLE, SINK_PARAMS_MAP};
     }
 }

@@ -25,6 +25,10 @@ public class JobParamConstraints {
 
     public static final String PORT = "port";
 
+    public static final String HTTP_PORT = "http_port";
+
+    public static final String LOAD_URL = "load_url";
+
     public static final String SERVICE_NAME = "instance";
 
     public static final String WHERE = "where";

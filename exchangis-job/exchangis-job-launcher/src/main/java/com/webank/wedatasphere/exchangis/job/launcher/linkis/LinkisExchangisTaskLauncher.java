@@ -55,7 +55,7 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
             field.setAccessible(true);
             try {
                 ExchangisLaunchClient client = new ExchangisLaunchClient(clientConfig);
-                field.set("", client);
+                field.set(SimpleOnceJobBuilder$.MODULE$, client);
                 Runtime.getRuntime().addShutdownHook(new Thread(client::close));
                 setField = true;
             } catch (IllegalAccessException e) {
