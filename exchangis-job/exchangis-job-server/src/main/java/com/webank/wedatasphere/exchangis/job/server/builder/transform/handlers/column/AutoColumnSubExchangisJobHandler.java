@@ -1,12 +1,20 @@
-package com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers;
+package com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.column;
 
 import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
+import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.AbstractLoggingSubExchangisJobHandler;
 import com.webank.wedatasphere.exchangis.job.utils.ColumnDefineUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.common.exception.ErrorException;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,11 +25,31 @@ import java.util.stream.Collectors;
 /**
  * Provide method to autofill columns
  */
-public abstract class AutoColumnSubExchangisJobHandler extends AbstractLoggingSubExchangisJobHandler{
+public abstract class AutoColumnSubExchangisJobHandler extends AbstractLoggingSubExchangisJobHandler {
     /**
      * Auto type name
      */
     private static final String AUTO_TYPE = "[Auto]";
+
+    /**
+     * Database
+     */
+    private static final JobParamDefine<String> DATABASE = JobParams.define(JobParamConstraints.DATABASE);
+
+    /**
+     * Table
+     */
+    private static final JobParamDefine<String> TABLE = JobParams.define(JobParamConstraints.TABLE);
+
+    @Override
+    public void handleJobSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
+        // Ignore
+    }
+
+    @Override
+    public void handleJobSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
+        // Ignore
+    }
 
     /**
      * Handle source columns
@@ -53,13 +81,6 @@ public abstract class AutoColumnSubExchangisJobHandler extends AbstractLoggingSu
         }
     }
 
-    /**
-     * If auto fill column
-     * @return bool
-     */
-    protected boolean autoColumn(){
-        return true;
-    }
 
     /**
      * Do fill column
@@ -84,10 +105,18 @@ public abstract class AutoColumnSubExchangisJobHandler extends AbstractLoggingSu
     /**
      * Get columns for metadata server
      * @param paramSet param set
-     * @return
+     * @return columns
      */
     protected List<MetaColumn> getMetaColumns(JobParamSet paramSet){
-        return Collections.emptyList();
+        String database = DATABASE.getValue(paramSet);
+        String table = TABLE.getValue(paramSet);
+        JobParam<String> dataSourceId = paramSet.get(JobParamConstraints.DATA_SOURCE_ID);
+        try {
+            return Objects.requireNonNull(getBean(MetadataInfoService.class)).getColumns(getJobBuilderContext().getOriginalJob().getCreateUser(),
+                    Long.valueOf(dataSourceId.getValue()), database, table);
+        } catch (ExchangisDataSourceException e) {
+            throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());
+        }
     }
     /**
      *
@@ -109,4 +138,9 @@ public abstract class AutoColumnSubExchangisJobHandler extends AbstractLoggingSu
         }
     }
 
+    /**
+     * If auto fill column
+     * @return bool
+     */
+    protected abstract boolean autoColumn();
 }
