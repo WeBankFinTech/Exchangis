@@ -79,10 +79,10 @@ INSERT INTO `exchangis_engine_settings` (id, engine_name, engine_desc, engine_se
 -- exchangis_job_transform_rule records
 INSERT INTO `exchangis_job_transform_rule` (rule_name,rule_type,rule_source,data_source_type,engine_type,direction) VALUES
 ('es_with_post_processor','DEF','{"types": ["MAPPING", "PROCESSOR"]}','ELASTICSEARCH',NULL,'SINK')
-,('es_fields_not_editable','MAPPING','{"fieldEditEnable": false, "fieldDeleteEnable": false}','ELASTICSEARCH',NULL,'SINK')
-,('hive_sink_not_access','MAPPING','{"fieldEditEnable": false, "fieldDeleteEnable": false, "fieldAddEnable": false}','HIVE',NULL,'SINK')
+,('es_fields_not_editable','MAPPING','{"fieldEditEnable": true, "fieldDeleteEnable": true}','ELASTICSEARCH',NULL,'SINK')
+,('hive_sink_not_access','MAPPING','{"fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": true}','HIVE',NULL,'SINK')
 ,('mongo_field_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH"}','MONGODB',NULL,'SINK')
-,('mysql_field_source_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH","fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": false}','MYSQL',NULL,'SOURCE')
-,('mysql_field_source_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH","fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": true}','STARROCKS',NULL,'SINK')
+,('mysql_field_source_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH","fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": true}','MYSQL',NULL,'SOURCE')
+,('starrocks_field_source_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH","fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": true}','STARROCKS',NULL,'SINK')
 ;
 
