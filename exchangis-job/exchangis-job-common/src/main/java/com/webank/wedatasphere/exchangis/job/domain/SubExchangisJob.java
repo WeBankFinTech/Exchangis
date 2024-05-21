@@ -144,6 +144,11 @@ public class SubExchangisJob extends GenericExchangisJob {
 
         }
 
+        public ColumnDefine(String name, String type){
+            this.name = name;
+            this.type = type;
+        }
+
         public ColumnDefine(String name, String type, Integer index){
             this.name = name;
             this.type = type;
@@ -174,6 +179,51 @@ public class SubExchangisJob extends GenericExchangisJob {
         }
     }
 
+    /**
+     * Column define with precision and scale
+     */
+    public static class DecimalColumnDefine extends ColumnDefine{
+
+        private static final int DEFAULT_PRECISION = 38;
+
+        private static final int DEFAULT_SCALE = 18;
+
+        /**
+         * Precision
+         */
+        private int precision = DEFAULT_PRECISION;
+
+        /**
+         * Scale
+         */
+        private int scale = DEFAULT_SCALE;
+
+        public DecimalColumnDefine(){
+
+        }
+
+        public DecimalColumnDefine(String name, String type, Integer index, int precision, int scale){
+            super(name, type, index);
+            this.precision = precision;
+            this.scale = scale;
+        }
+
+        public int getPrecision() {
+            return precision;
+        }
+
+        public void setPrecision(int precision) {
+            this.precision = precision;
+        }
+
+        public int getScale() {
+            return scale;
+        }
+
+        public void setScale(int scale) {
+            this.scale = scale;
+        }
+    }
     /**
      * Column function
      */
