@@ -12,6 +12,16 @@ public class ExchangisJobTransformsContent {
     @JsonProperty("code_id")
     private String codeId;
 
+    /**
+     * Table (source) not exist
+     */
+    private boolean srcTblNotExist = false;
+
+    /**
+     * Table (sink) not exist
+     */
+    private boolean sinkTblNotExist = false;
+
     private List<ExchangisJobTransformsItem> mapping;
 
     public boolean isAddEnable() {
@@ -52,5 +62,21 @@ public class ExchangisJobTransformsContent {
 
     public void setCodeId(String codeId) {
         this.codeId = codeId;
+    }
+
+    public boolean isSrcTblNotExist() {
+        return srcTblNotExist;
+    }
+
+    public void setSrcTblNotExist(boolean srcTblNotExist) {
+        this.srcTblNotExist = srcTblNotExist;
+    }
+
+    public boolean isSinkTblNotExist() {
+        return sinkTblNotExist;
+    }
+
+    public void setSinkTblNotExist(boolean sinkTblNotExist) {
+        this.sinkTblNotExist = sinkTblNotExist;
     }
 }
