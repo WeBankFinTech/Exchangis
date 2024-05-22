@@ -20,8 +20,11 @@ class LaunchTaskLogOperator extends EngineConnLogOperator{
 
   protected override def addParameters(builder: EngineConnOperateAction.Builder): Unit = {
     super.addParameters(builder)
+    builder.operatorName(EngineConnLogOperator.OPERATOR_NAME)
     builder.addParameter("enableTail", enableTail)
   }
+
+  override def getName: String = LaunchTaskLogOperator.OPERATOR_NAME
 }
 object LaunchTaskLogOperator {
   val OPERATOR_NAME = "launchTaskLog"

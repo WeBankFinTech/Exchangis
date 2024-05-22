@@ -140,7 +140,7 @@ public abstract class AbstractJobLogService implements JobLogService {
             return cacheHolder.get(jobExecId, () -> {
                 LaunchedExchangisJobEntity launchedExchangisJob = launchedJobDao.searchLogPathInfo(jobExecId);
                 if (Objects.nonNull(launchedExchangisJob)) {
-
+                    return loadJobLogCache(jobExecId, launchedExchangisJob);
                 }
                 return null;
             });

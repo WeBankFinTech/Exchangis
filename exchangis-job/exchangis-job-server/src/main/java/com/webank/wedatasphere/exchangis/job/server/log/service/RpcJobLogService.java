@@ -153,6 +153,7 @@ public class RpcJobLogService extends AbstractJobLogService{
                 throw new ExchangisJobServerException.Runtime(LOG_OP_ERROR.getCode(),"Unable to fetch log from: [" + logPath +
                         "], unknown request protocol: [" + response + "]", null);
             }
+            logPath = logPath.substring(splitPos + 1);
         }
         String fullPath = Constraints.LOG_LOCAL_PATH.getValue() + IOUtils.DIR_SEPARATOR_UNIX + logPath;
         LogResult result = new LogResult(0, false, Collections.emptyList());

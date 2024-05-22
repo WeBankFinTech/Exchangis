@@ -3,5 +3,5 @@ INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_directio
 ,('batchSize','批量字节数大小','DATAX-SINK','STARROCKS','INPUT','maxBatchSize','批量字节数大小','',0,'NUMBER','','','REGEX','^[1-9]\\d*$','批量大小输入错误',0,0,'',1,'',2,'',1,NULL);
 
 UPDATE exchangis_engine_settings
-SET engine_direction='mysql->hive,hive->mysql,mysql->oracle,oracle->mysql,oracle->hive,hive->oracle,mongodb->hive,hive->mongodb,mysql->elasticsearch,oracle->elasticsearch,mongodb->elasticsearch,mysql->mongodb,mongodb->mysql,oracle->mongodb,mongodb->oracle,mysql->starrocks'
+SET engine_direction='mysql->hive,hive->mysql,mysql->oracle,oracle->mysql,oracle->hive,hive->oracle,mongodb->hive,hive->mongodb,mysql->elasticsearch,oracle->elasticsearch,mongodb->elasticsearch,mysql->mongodb,mongodb->mysql,oracle->mongodb,mongodb->oracle,hive->starrocks'
 WHERE engine_name='datax';

@@ -22,7 +22,7 @@ public class ExchangisJobDataSourcesContent {
     /**
      * Source ds
      */
-    private ExchangisJobDataSource source = new ExchangisJobDataSource();
+//    private ExchangisJobDataSource source = new ExchangisJobDataSource();
 
 
     @JsonProperty("sink_id")
@@ -31,7 +31,7 @@ public class ExchangisJobDataSourcesContent {
     /**
      * Sink ds
      */
-    private ExchangisJobDataSource sink = new ExchangisJobDataSource();
+//    private ExchangisJobDataSource sink = new ExchangisJobDataSource();
 
     public String getSourceId() {
         return sourceId;
@@ -49,21 +49,21 @@ public class ExchangisJobDataSourcesContent {
         this.sinkId = sinkId;
     }
 
-    public void setSource(ExchangisJobDataSource source) {
-        this.source = source;
-    }
+//    public void setSource(ExchangisJobDataSource source) {
+//        this.source = source;
+//    }
 
-    public ExchangisJobDataSource getSource() {
-        return source;
-    }
+//    public ExchangisJobDataSource getSource() {
+//        return source;
+//    }
 
-    public void setSink(ExchangisJobDataSource sink) {
-        this.sink = sink;
-    }
+//    public void setSink(ExchangisJobDataSource sink) {
+//        this.sink = sink;
+//    }
 
-    public ExchangisJobDataSource getSink() {
-        return sink;
-    }
+//    public ExchangisJobDataSource getSink() {
+//        return sink;
+//    }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class ExchangisJobDataSource {

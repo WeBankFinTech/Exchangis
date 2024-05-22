@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.extension.datasource.starrocks;
 
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceType;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.StructClassifier;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisBatchDataSource;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class ExchangisStarRocksDataSource extends ExchangisBatchDataSource {
 
     @Override
     public String structClassifier() {
-        return null;
+        return StructClassifier.STRUCTURED.name;
     }
 
     @Override
