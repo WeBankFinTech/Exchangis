@@ -6,6 +6,7 @@
         <artifactId>exchangis</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
         <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,17 +21,17 @@
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-datasource-server</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-engine-server</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-server</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
         <!--
         metrics interface, wait for audit
@@ -43,12 +44,12 @@
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-project-server</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-dao</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml</groupId>

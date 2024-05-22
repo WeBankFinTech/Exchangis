@@ -6,6 +6,7 @@
         <artifactId>exchangis</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
         <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
