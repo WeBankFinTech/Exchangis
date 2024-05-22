@@ -24,9 +24,9 @@ public class SubExchangisJob extends GenericExchangisJob {
 
     public static final String REALM_JOB_DATA_SOURCE = "job.realm.data-source";
 
-    public static final String REALM_JOB_CONTENT_SINK = "job.realm.content.sink";
-
     public static final String REALM_JOB_CONTENT_SOURCE = "job.realm.content.source";
+
+    public static final String REALM_JOB_CONTENT_SINK = "job.realm.content.sink";
 
 //    public static final String REALM_JOB_COLUMN_MAPPING = "job.realm.column-mappings";
 

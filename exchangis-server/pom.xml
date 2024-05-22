@@ -46,10 +46,10 @@
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.linkis</groupId>
-            <artifactId>linkis-module</artifactId>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-dao</artifactId>
+            <version>${revision}</version>
         </dependency>
-        <!--classmate-->
         <dependency>
             <groupId>com.fasterxml</groupId>
             <artifactId>classmate</artifactId>
