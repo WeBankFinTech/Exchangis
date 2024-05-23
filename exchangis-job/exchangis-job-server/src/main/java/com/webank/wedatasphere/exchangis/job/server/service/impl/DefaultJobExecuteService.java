@@ -321,7 +321,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         }
         if (Objects.nonNull(logQuery.getLastRows())){
             logResult.setEnd(true);
-        }else if (noLogs){
+        }else if (noLogs || logQuery.isEnableTail()){
 //            logResult.getLogs().add("<<The log content is empty>>");
             if (TaskStatus.isCompleted(status)){
                 logResult.setEnd(true);
