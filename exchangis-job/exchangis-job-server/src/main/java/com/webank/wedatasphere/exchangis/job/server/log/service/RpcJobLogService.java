@@ -194,7 +194,11 @@ public class RpcJobLogService extends AbstractJobLogService{
                 RandomAccessFile finalLogReader = logReader;
                 lineSupplier = () -> {
                     try {
-                        return finalLogReader.readLine();
+                        String line =  finalLogReader.readLine();
+                        if (null != line){
+                            return new String(line.getBytes(StandardCharsets.ISO_8859_1), Charset.defaultCharset());
+                        }
+                        return null;
                     } catch (IOException e) {
                         throw new ExchangisJobServerException.Runtime(LOG_OP_ERROR.getCode(), e.getMessage(), e);
                     }

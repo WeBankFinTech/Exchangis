@@ -80,17 +80,17 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
       override def run(): Unit = {
         val params: util.Map[String, Object] = onceExecutorExecutionContext.getOnceExecutorContent.getJobContent
         val result = execute(params, onceExecutorExecutionContext.getEngineCreationContext)
-        if (result._1 != 0) {
-          isFailed = true
-          tryFailed()
-          val message = s"Exec Datax engine conn occurred error, with exit code: [${result._1}]"
-          setResponse(ErrorExecuteResponse(message, new DataxJobExecutionException(message, result._2)))
-        }
         info(s"The executor: [${getId}]  has been finished, now to stop DataxEngineConn.")
         closeDaemon()
-        // Try to heartbeat at last
-        tryToHeartbeat()
+        if (result._1 != 0) {
+          isFailed = true
+          val message = s"Exec Datax engine conn occurred error, with exit code: [${result._1}]"
+          setResponse(ErrorExecuteResponse(message, new DataxJobExecutionException(message, result._2)))
+          tryFailed()
+        }
         if (!isFailed) {
+          // Try to heartbeat at last
+          tryToHeartbeat()
           trySucceed()
         }
         this synchronized notify()
@@ -106,9 +106,9 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
       override def run(): Unit = {
         if (!(future.isDone || future.isCancelled)) {
           trace(s"The executor: [$getId] has been still running")
+          // Heartbeat action interval
+          tryToHeartbeat()
         }
-        // Heartbeat action interval
-        tryToHeartbeat()
       }
     }, DataxConfiguration.STATUS_FETCH_INTERVAL.getValue.toLong,
       DataxConfiguration.STATUS_FETCH_INTERVAL.getValue.toLong, TimeUnit.MILLISECONDS)
