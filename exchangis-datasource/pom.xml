@@ -26,6 +26,7 @@
         <module>extension-datasources/exchangis-datasource-ext-mongodb</module>
         <module>extension-datasources/exchangis-datasource-ext-oracle</module>
         <module>extension-datasources/exchangis-datasource-ext-starrocks</module>
+        <module>extension-datasources/exchangis-datasource-ext-tdsql</module>
         <module>exchangis-datasource-server</module>
     </modules>
 

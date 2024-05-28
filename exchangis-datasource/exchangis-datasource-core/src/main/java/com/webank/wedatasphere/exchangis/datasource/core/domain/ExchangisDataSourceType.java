@@ -14,7 +14,10 @@ public enum ExchangisDataSourceType {
 
     ORACLE("ORACLE", "关系型数据库"),
 
-    STARROCKS("STARROCKS", "大数据存储");
+    STARROCKS("STARROCKS", "大数据存储"),
+
+    TDSQL("TDSQL", "大数据存储");
+
     /**
      * Type name
      */
