@@ -76,7 +76,7 @@ public class ExchangisJobExecuteRestfulApi {
                     jobInfo.getExecuteUser() : loginUser);
             result.data("jobExecutionId", jobExecutionId);
         } catch (Exception e) {
-            String message;
+             String message;
             if (Objects.nonNull(jobInfo)) {
                 message = "Error occur while executing job: [id: " + jobInfo.getId() + " name: " + jobInfo.getName() + "]";
                 result = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
