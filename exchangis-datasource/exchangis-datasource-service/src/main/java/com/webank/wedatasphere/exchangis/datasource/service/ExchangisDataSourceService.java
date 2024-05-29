@@ -160,19 +160,22 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         Set<String> directType = new HashSet<>();
         for (EngineSettings engineSetting: engineSettings) {
-            if (StringUtils.isEmpty(direct)) {
-                for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
-                    directType.add(engineSetting.getDirectionRules().get(i).getSource());
-                    directType.add(engineSetting.getDirectionRules().get(i).getSink());
-                }
-            } else {
-                for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
-                    if ((StringUtils.equals(direct.toLowerCase(), "source"))) {
-                        directType.add(engineSetting.getDirectionRules().get(i).getSource());
+            for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
+                engineSetting.getDirectionRules().stream().forEach(item -> {
+                    String source = item.getSource();
+                    String sink = item.getSink();
+                    if (StringUtils.isEmpty(direct)) {
+                        directType.add(source);
+                        directType.add(sink);
+                    } else if (StringUtils.equals(direct, "source")) {
+                        directType.add(source);
                     } else {
-                        directType.add(engineSetting.getDirectionRules().get(i).getSink());
+                        if ((StringUtils.isBlank(sourceType) ||
+                                (StringUtils.isNoneBlank(sourceType) && StringUtils.equals(source, sourceType.toLowerCase())))) {
+                            directType.add(sink);
+                        }
                     }
-                }
+                });
             }
         }
 
@@ -180,7 +183,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         LOGGER.info("listDataSources userName: {}" + userName);
         // 通过 datasourcemanager 获取的数据源类型和context中的数据源通过 type 和 name 比较
         // 以 exchangis 中注册了的数据源集合为准
-
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         GetAllDataSourceTypesResult result;
         try {
@@ -212,21 +214,14 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
                     ExchangisDataSourceDefDTO dto = new ExchangisDataSourceDefDTO(
                             type.getId(),
                             type.getClassifier(),
-//                            item.classifier(),
                             item.name(),
                             item.structClassifier()
                     );
-//                    dto.setDescription(item.description());
-//                    dto.setIcon(item.icon());
-//                    dto.setOption(item.option());
                     // use linkis datasource table field to fill the dto bean
                     dto.setIcon(type.getIcon());
                     dto.setDescription(type.getDescription());
                     dto.setOption(type.getOption());
-                    if (sourceType == null || !sourceType.toLowerCase().equals(type.getName())) {
-                        //LOGGER.info("sourceType:{}, typename: {}", sourceType.toLowerCase(), type.getName());
-                        dtos.add(dto);
-                    }
+                    dtos.add(dto);
                 }
             }
         }
