@@ -80,6 +80,7 @@ public class MySQLDataxSubExchangisJobHandler extends AuthEnabledSubExchangisJob
     @Override
     public void handleJobSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
         JobParamSet paramSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
+        preHandleJobParamSet(paramSet);
         if (Objects.nonNull(paramSet)){
             Arrays.asList(sourceMappings()).forEach(define -> paramSet.addNonNull(define.get(paramSet)));
             paramSet.add(QUERY_SQL.newParam(subExchangisJob));
@@ -89,6 +90,7 @@ public class MySQLDataxSubExchangisJobHandler extends AuthEnabledSubExchangisJob
     @Override
     public void handleJobSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
         JobParamSet paramSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK);
+        preHandleJobParamSet(paramSet);
         if (Objects.nonNull(paramSet)){
             Arrays.asList(sinkMappings()).forEach(define -> paramSet.addNonNull(define.get(paramSet)));
             paramSet.add(SQL_COLUMN.newParam(subExchangisJob));
@@ -105,12 +107,12 @@ public class MySQLDataxSubExchangisJobHandler extends AuthEnabledSubExchangisJob
         return "datax".equalsIgnoreCase(engineType);
     }
 
-    private JobParamDefine<?>[] sourceMappings(){
+    protected JobParamDefine<?>[] sourceMappings(){
         return new JobParamDefine[]{USERNAME, PASSWORD, SOURCE_DATABASE,
                 SOURCE_HOST, SOURCE_PORT, SOURCE_PARAMS_MAP};
     }
 
-    public JobParamDefine<?>[] sinkMappings(){
+    protected JobParamDefine<?>[] sinkMappings(){
         return new JobParamDefine[]{SINK_HOST, SINK_PORT, USERNAME, PASSWORD,
                 SINK_DATABASE, SINK_TABLE, SINK_PARAMS_MAP};
     }

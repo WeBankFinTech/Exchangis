@@ -106,6 +106,9 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
      */
     public abstract void handleJobSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException;
 
+    public void preHandleJobParamSet(JobParamSet paramSet) {
+        // Empty
+    }
 
     /**
      * Warn message

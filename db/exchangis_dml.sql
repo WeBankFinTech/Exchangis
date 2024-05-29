@@ -46,6 +46,11 @@ INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_directio
 ,('writeMode','写入方式','DATAX-SINK','MYSQL','OPTION','writeMode','写入方式','',1,'OPTION','["INSERT","UPDATE"]','INSERT','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL);
 
 INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
+('where','WHERE条件','SOURCE','TDSQL','INPUT','where','WHERE条件','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,500}$','WHERE条件输入过长',0,0,'',1,'',2,'',1,NULL);
+,('writeMode','写入方式','SQOOP-SINK','TDSQL','OPTION','writeMode','写入方式','',1,'OPTION','["INSERT","UPDATE"]','INSERT','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL)
+,('writeMode','写入方式','DATAX-SINK','TDSQL','OPTION','writeMode','写入方式','',1,'OPTION','["INSERT","UPDATE"]','INSERT','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL);
+
+INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
 ('writeMode','写入方式','SQOOP-SINK','HIVE','OPTION','writeMode','写入方式(OVERWRITE只对TEXT类型表生效)','',1,'OPTION','["OVERWRITE","APPEND"]','OVERWRITE','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL)
 ,('partition','分区信息','SINK','HIVE','MAP','partition','分区信息(文本)','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,'',2,'',1,NULL)
 ,('partition','分区信息','SOURCE','HIVE','MAP','partition','分区信息(文本)','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,'',2,'',1,NULL);

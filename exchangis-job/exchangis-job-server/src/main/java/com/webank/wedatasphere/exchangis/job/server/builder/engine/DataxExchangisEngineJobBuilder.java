@@ -39,6 +39,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
     static{
         //hive use hdfs plugin resource
         PLUGIN_NAME_MAPPER.put("hive", "hdfs");
+        PLUGIN_NAME_MAPPER.put("tdsql", "mysql");
     }
 
     /**

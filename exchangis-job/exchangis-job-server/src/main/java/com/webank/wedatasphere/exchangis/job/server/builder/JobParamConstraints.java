@@ -15,6 +15,12 @@ public class JobParamConstraints {
 
     public static final String PASSWORD = "password";
 
+    public static final String APP_ID = "appid";
+
+    public static final String OBJECT_ID = "objectid";
+
+    public static final String DK = "dk";
+
     public static final String DATABASE = "database";
 
     public static final String CONNECT_PARAMS = "params";
