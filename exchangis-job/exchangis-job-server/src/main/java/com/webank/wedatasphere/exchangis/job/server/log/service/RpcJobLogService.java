@@ -232,7 +232,7 @@ public class RpcJobLogService extends AbstractJobLogService{
                             LOG.info("have error information");
                         }
                         if (!line.contains("password")) {
-                            logs.add(new String(line.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
+                            logs.add(line);
                         }
                         readLine += 1;
                     }
