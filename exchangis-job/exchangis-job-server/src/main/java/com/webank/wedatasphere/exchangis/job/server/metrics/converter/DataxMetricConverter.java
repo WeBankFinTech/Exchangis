@@ -75,7 +75,7 @@ public class DataxMetricConverter extends AbstractMetricConverter implements Abs
         long readSuccess = Optional.ofNullable(rawValue.getLong("readSucceedRecords")).orElse(0L);
         long readFail = Optional.ofNullable(rawValue.getLong("readFailedRecords")).orElse(0L);
         indicator.setExchangedRecords(readSuccess + readFail);
-        long writeFail = Optional.ofNullable(rawValue.getLong("writeFailedBytes")).orElse(0L);
+        long writeFail = Optional.ofNullable(rawValue.getLong("writeFailedRecords")).orElse(0L);
         indicator.setErrorRecords(readFail + writeFail);
         return indicator;
     }
