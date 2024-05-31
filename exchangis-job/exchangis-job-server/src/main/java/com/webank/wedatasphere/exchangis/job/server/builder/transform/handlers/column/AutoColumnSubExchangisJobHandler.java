@@ -58,7 +58,8 @@ public abstract class AutoColumnSubExchangisJobHandler extends AbstractLoggingSu
     protected void handleSrcColumns(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx,
                                     List<SubExchangisJob.ColumnDefine> columns) {
         if (autoColumn()){
-            boolean complete = columns.stream().noneMatch(column -> StringUtils.isBlank(column.getType()) || column.getType().equals(AUTO_TYPE) || null == column.getIndex());
+            boolean complete = Objects.nonNull(columns) && columns.size() > 0 &&
+                    columns.stream().noneMatch(column -> StringUtils.isBlank(column.getType()) || column.getType().equals(AUTO_TYPE) || null == column.getIndex());
             if (!complete){
                 JobParamSet paramSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
                 doFillColumns(paramSet, columns);
@@ -73,7 +74,8 @@ public abstract class AutoColumnSubExchangisJobHandler extends AbstractLoggingSu
     protected void handleSinkColumns(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx,
                                      List<SubExchangisJob.ColumnDefine> columns){
         if (autoColumn()){
-            boolean complete = columns.stream().noneMatch(column -> StringUtils.isBlank(column.getType()) || column.getType().equals(AUTO_TYPE));
+            boolean complete = Objects.nonNull(columns) && columns.size() > 0 &&
+                    columns.stream().noneMatch(column -> StringUtils.isBlank(column.getType()) || column.getType().equals(AUTO_TYPE));
             if (!complete){
                 JobParamSet paramSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK);
                 doFillColumns(paramSet, columns);
