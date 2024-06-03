@@ -39,7 +39,7 @@
 	<properties>
 		<revision>1.1.3-webank</revision>
 		<dss.version>1.1.2</dss.version>
-		<linkis.version>1.4.0</linkis.version>
+		<linkis.version>1.5.0-wds</linkis.version>
 		<linkis.datasource.version>1.4.0</linkis.datasource.version>
 		<streamis.version>0.1.0-SNAPSHOT</streamis.version>
 		<flatten-maven-plugin.version>1.3.0</flatten-maven-plugin.version>
@@ -69,6 +69,7 @@
 		<aspectj.version>1.9.5</aspectj.version>
 		<xstream.version>1.4.19</xstream.version>
 		<jobmanager.version>0.1.0-SNAPSHOT</jobmanager.version>
+		<jasypt.version>1.9.3</jasypt.version>
 	</properties>
 
 	<modules>
@@ -221,10 +222,10 @@
 					<configuration>
 						<source>${jdk.compile.version}</source>
 						<target>${jdk.compile.version}</target>
-<!--						<compilerArguments>-->
-<!--							<verbose/>-->
-<!--							<bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>-->
-<!--						</compilerArguments>-->
+						<!--						<compilerArguments>-->
+						<!--							<verbose/>-->
+						<!--							<bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>-->
+						<!--						</compilerArguments>-->
 					</configuration>
 				</plugin>
 				<plugin>
@@ -236,6 +237,17 @@
 					<groupId>net.alchim31.maven</groupId>
 					<artifactId>scala-maven-plugin</artifactId>
 					<version>${scala-maven-plugin.version}</version>
+<!--					<configuration>-->
+<!--						<scalaVersion>${scala.version}</scalaVersion>-->
+<!--						<recompileMode>incremental</recompileMode>-->
+<!--						<args>-->
+<!--							<arg>-unchecked</arg>-->
+<!--							<arg>-deprecation</arg>-->
+<!--							<arg>-feature</arg>-->
+<!--							<arg>-explaintypes</arg>-->
+<!--&lt;!&ndash;							<arg>-target:jvm-${java.version}</arg>&ndash;&gt;-->
+<!--						</args>-->
+<!--					</configuration>-->
 					<executions>
 						<execution>
 							<id>eclipse-add-source</id>
@@ -265,10 +277,6 @@
 							</goals>
 						</execution>
 					</executions>
-					<configuration>
-						<scalaVersion>${scala.version}</scalaVersion>
-						<recompileMode>incremental</recompileMode>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -302,12 +310,12 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>flatten-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
+		<!--		<plugins>-->
+		<!--			<plugin>-->
+		<!--				<groupId>org.codehaus.mojo</groupId>-->
+		<!--				<artifactId>flatten-maven-plugin</artifactId>-->
+		<!--			</plugin>-->
+		<!--		</plugins>-->
 	</build>
 
 </project>
