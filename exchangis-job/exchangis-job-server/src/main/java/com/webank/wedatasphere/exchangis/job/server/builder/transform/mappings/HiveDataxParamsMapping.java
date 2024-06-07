@@ -321,6 +321,10 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
             Type t = FIELD_MAP.get(type.toUpperCase().replaceAll("[(<（][\\s\\S]+", ""));
             if (null != t){
                 columnDefine.setType(t.toString());
+                if (t == Type.OBJECT){
+                    // Set the raw column type
+                    columnDefine.setRawType(type);
+                }
             } else {
                 columnDefine.setType(Type.STRING.toString());
             }

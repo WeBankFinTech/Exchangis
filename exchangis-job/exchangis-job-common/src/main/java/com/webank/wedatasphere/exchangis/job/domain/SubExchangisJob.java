@@ -135,6 +135,12 @@ public class SubExchangisJob extends GenericExchangisJob {
          * Column type
          */
         private String type;
+
+        /**
+         * Raw column type
+         */
+        private String rawType;
+
         /**
          * Column index
          */
@@ -176,6 +182,14 @@ public class SubExchangisJob extends GenericExchangisJob {
 
         public void setIndex(Integer index) {
             this.index = index;
+        }
+
+        public String getRawType() {
+            return rawType;
+        }
+
+        public void setRawType(String rawType) {
+            this.rawType = rawType;
         }
     }
 
