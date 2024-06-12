@@ -6,6 +6,7 @@ import java.util.Date;
  * @author jefftlin
  * @date 2024/6/7
  */
+@Deprecated
 public class DSSProjectDataSource {
     private String dataSourceName;
     private String dataSourceDesc;

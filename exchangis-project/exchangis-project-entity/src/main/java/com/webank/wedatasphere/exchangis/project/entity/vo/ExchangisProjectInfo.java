@@ -45,10 +45,6 @@ public class ExchangisProjectInfo {
      */
     private Map<String, Object> source = new HashMap<>();
 
-    /**
-     * DataSource from dss project
-     */
-    private List<DSSProjectDataSource> dataSources;
 
     /**
      * User has the edit permission
@@ -91,7 +87,7 @@ public class ExchangisProjectInfo {
     private String privUser;
 
     /**
-     * Data sources related
+     * DataSource from dss project
      */
     private List<ExchangisProjectDsVo> dataSources = new ArrayList<>();
 
@@ -122,7 +118,6 @@ public class ExchangisProjectInfo {
         this.setDomain(project.getDomain());
         this.setSource(project.getSource());
         this.setPrivUser("");
-        this.setDataSources(project.getDataSources());
         this.setEditUsers(project.getEditUsers());
         this.setViewUsers(project.getViewUsers());
         this.setExecUsers(project.getExecUsers());
@@ -173,13 +168,7 @@ public class ExchangisProjectInfo {
         this.source = source;
     }
 
-    public List<DSSProjectDataSource> getDataSources() {
-        return dataSources;
-    }
 
-    public void setDataSources(List<DSSProjectDataSource> dataSources) {
-        this.dataSources = dataSources;
-    }
 
     public String getEditUsers() {
         return editUsers;

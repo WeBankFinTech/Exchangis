@@ -8,6 +8,7 @@ import java.util.List;
  * @author jefftlin
  * @date 2024/6/12
  */
+@Deprecated
 public interface ProjectDataSourceMapper {
 
     /**

@@ -10,9 +10,9 @@ import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
-import com.webank.wedatasphere.exchangis.project.entity.domain.DSSProjectDataSource;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDataSource;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectDataSourceMapper;
+import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectDsRelationMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectUserMapper;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
@@ -40,7 +40,7 @@ public class ProjectServiceImpl implements ProjectService {
     private ProjectMapper projectMapper;
 
     @Autowired
-    private ProjectDataSourceMapper projectDataSourceMapper;
+    private ProjectDsRelationMapper projectDsRelationMapper;
 
     @Resource
     private ExchangisJobOpenService jobServiceOpenApi;
@@ -70,13 +70,13 @@ public class ProjectServiceImpl implements ProjectService {
 
         Long projectId = project.getId();
         List<ExchangisProjectDataSource> projectDataSources = new ArrayList<>();
-        List<DSSProjectDataSource> dataSources = projectInfo.getDataSources();
-        if (Objects.nonNull(dataSources) && !dataSources.isEmpty()) {
-            dataSources.forEach(dataSource -> {
-                projectDataSources.add(new ExchangisProjectDataSource(projectId, dataSource.getDataSourceName(), dataSource.getCreateUser()));
-            });
-            this.projectDataSourceMapper.insertProjectDataSources(projectDataSources);
-        }
+//        List<DSSProjectDataSource> dataSources = projectInfo.getDataSources();
+//        if (Objects.nonNull(dataSources) && !dataSources.isEmpty()) {
+//            dataSources.forEach(dataSource -> {
+//                projectDataSources.add(new ExchangisProjectDataSource(projectId, dataSource.getDataSourceName(), dataSource.getCreateUser()));
+//            });
+//            this.projectDataSourceMapper.insertProjectDataSources(projectDataSources);
+//        }
 
         Map<String, ExchangisProjectUser> projectUserMap = new HashMap<>();
         if (Objects.nonNull(project.getViewUsers()) && project.getViewUsers().length() != 0) {
@@ -149,16 +149,16 @@ public class ProjectServiceImpl implements ProjectService {
         updatedProject.setLastUpdateTime(Calendar.getInstance().getTime());
         this.projectMapper.updateOne(updatedProject);
 
-        this.projectDataSourceMapper.deleteProjectDataSource(projectId);
+//        this.projectDataSourceMapper.deleteProjectDataSource(projectId);
 
         List<ExchangisProjectDataSource> projectDataSources = new ArrayList<>();
-        List<DSSProjectDataSource> dataSources = projectInfo.getDataSources();
-        if (Objects.nonNull(dataSources) && !dataSources.isEmpty()) {
-            projectInfo.getDataSources().forEach(dataSource -> {
-                projectDataSources.add(new ExchangisProjectDataSource(projectId, dataSource.getDataSourceName(), dataSource.getCreateUser()));
-            });
-            this.projectDataSourceMapper.insertProjectDataSources(projectDataSources);
-        }
+//        List<DSSProjectDataSource> dataSources = projectInfo.getDataSources();
+//        if (Objects.nonNull(dataSources) && !dataSources.isEmpty()) {
+//            projectInfo.getDataSources().forEach(dataSource -> {
+//                projectDataSources.add(new ExchangisProjectDataSource(projectId, dataSource.getDataSourceName(), dataSource.getCreateUser()));
+//            });
+//            this.projectDataSourceMapper.insertProjectDataSources(projectDataSources);
+//        }
 
         Map<String, ExchangisProjectUser> projectUserMap = new HashMap<>();
         if (Objects.nonNull(updatedProject.getViewUsers()) && updatedProject.getViewUsers().length() != 0) {

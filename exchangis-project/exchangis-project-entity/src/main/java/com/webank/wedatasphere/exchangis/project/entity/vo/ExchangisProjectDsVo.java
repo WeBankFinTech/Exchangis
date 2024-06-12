@@ -14,6 +14,7 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ExchangisProjectDsVo implements ExchangisDataSource {
 
+    private Long dataSourceId;
     /**
      * Data source name
      */
@@ -49,12 +50,12 @@ public class ExchangisProjectDsVo implements ExchangisDataSource {
 
     @Override
     public Long getId() {
-        return 0L;
+        return dataSourceId;
     }
 
     @Override
     public void setId(Long id) {
-
+        this.dataSourceId = id;
     }
 
     @Override

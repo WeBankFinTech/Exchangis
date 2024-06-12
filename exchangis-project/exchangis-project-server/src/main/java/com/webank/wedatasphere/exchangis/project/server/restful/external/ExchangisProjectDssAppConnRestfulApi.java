@@ -6,6 +6,7 @@ import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
+import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
@@ -203,7 +204,12 @@ public class ExchangisProjectDssAppConnRestfulApi {
             String dsName = dataSource.getName();
             if (StringUtils.isNotBlank(dsName)){
                 try {
-                    dataSourceService.getDataSource(permUser, dataSource.getName());
+                    GetDataSourceInfoResultDTO result = dataSourceService.getDataSource(permUser, dataSource.getName());
+                    if (Objects.nonNull(result)){
+                        GetDataSourceInfoResultDTO.DataSourceInfoDTO dsInfo = result.getData();
+                        dataSource.setId(dsInfo.getInfo().getId());
+                        dataSource.setCreator(dsInfo.getInfo().getCreateUser());
+                    }
                 } catch (ErrorException e) {
                     throw new ExchangisProjectErrorException(ExchangisProjectExceptionCode.VALIDATE_DS_ERROR.getCode(),
                             "Fail to validate data source: [" + dsName + "] related by project [" + projectName + "](校验项目关联数据源失败)" +
