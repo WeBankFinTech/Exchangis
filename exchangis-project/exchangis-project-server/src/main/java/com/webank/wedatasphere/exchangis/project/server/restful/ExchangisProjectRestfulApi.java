@@ -14,7 +14,7 @@ import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.entity.domain.ExchangisProjectUser;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
-import com.webank.wedatasphere.exchangis.project.server.utils.ProjectAuthorityUtils;
+import com.webank.wedatasphere.exchangis.project.provider.utils.ProjectAuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectConfiguration;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;

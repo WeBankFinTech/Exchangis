@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.project.server.exception;
+package com.webank.wedatasphere.exchangis.project.provider.exception;
 
 /**
  * @author jefftlin
@@ -6,7 +6,8 @@ package com.webank.wedatasphere.exchangis.project.server.exception;
  **/
 public enum ExchangisProjectExceptionCode {
 
-    UNSUPPORTED_OPERATION(32001);
+    UNSUPPORTED_OPERATION(32001),
+    VALIDATE_DS_ERROR(32002);
 
     private int code;
 

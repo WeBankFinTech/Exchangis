@@ -37,6 +37,12 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
+        <!-- project provider -->
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-project-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

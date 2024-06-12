@@ -9,6 +9,10 @@ public class DataSourceQueryVO {
     private String typeName;
     private String name;
     private String direct;
+    /**
+     * Project id
+     */
+    private Long projectId;
     private Map<String, Object> labels;
 
     public Map<String, Object> getLabels() {
@@ -65,5 +69,13 @@ public class DataSourceQueryVO {
 
     public void setDirect(String direct) {
         this.direct = direct;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 }

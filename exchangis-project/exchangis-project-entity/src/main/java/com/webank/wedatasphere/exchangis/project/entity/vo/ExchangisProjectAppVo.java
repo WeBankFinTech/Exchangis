@@ -7,10 +7,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author tikazhang
@@ -79,6 +76,11 @@ public class ExchangisProjectAppVo {
     private Date createTime;
 
     private HashMap<String, Object> labels;
+
+    /**
+     * Data sources related
+     */
+    private List<ExchangisProjectDsVo> dataSources = new ArrayList<>();
 
     public ExchangisProjectAppVo(){
 
@@ -192,5 +194,13 @@ public class ExchangisProjectAppVo {
 
     public void setLabels(HashMap labels) {
         this.labels = labels;
+    }
+
+    public List<ExchangisProjectDsVo> getDataSources() {
+        return dataSources;
+    }
+
+    public void setDataSources(List<ExchangisProjectDsVo> dataSources) {
+        this.dataSources = dataSources;
     }
 }

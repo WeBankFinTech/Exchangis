@@ -7,10 +7,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * View object
@@ -81,9 +78,17 @@ public class ExchangisProjectInfo {
 
     private Map<String, Object> labels;
 
+    /**
+     * Privilege
+     */
     private String privilege;
 
     private String privUser;
+
+    /**
+     * Data sources related
+     */
+    private List<ExchangisProjectDsVo> dataSources = new ArrayList<>();
 
     public ExchangisProjectInfo(){
 
@@ -119,6 +124,8 @@ public class ExchangisProjectInfo {
         this.setCreateUser(project.getCreateUser());
         this.setCreateTime(project.getCreateTime());
         this.setLabels(project.getLabels());
+        this.setDataSources(project.getDataSources());
+
     }
     public String getId() {
         return id + "";
@@ -271,5 +278,13 @@ public class ExchangisProjectInfo {
 
     public void setPrivUser(String privUser) {
         this.privUser = privUser;
+    }
+
+    public List<ExchangisProjectDsVo> getDataSources() {
+        return dataSources;
+    }
+
+    public void setDataSources(List<ExchangisProjectDsVo> dataSources) {
+        this.dataSources = dataSources;
     }
 }

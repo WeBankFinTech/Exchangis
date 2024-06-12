@@ -444,7 +444,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         MetadataGetDatabasesResult databases;
         try {
             databases = metaDataRemoteClient.getDatabases(MetadataGetDatabasesAction.builder()
-//                    .setSystem("system")
+//                    .setSystem("exchangis")
                     .setSystem(type)
                     .setDataSourceId(id)
                     .setUser(userName)
@@ -631,7 +631,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         int totalPage = 0;
         try {
             QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
-                    .setSystem("system")
+                    .setSystem("exchangis")
                     .setName(dataSourceName)
                     .setIdentifies("")
                     .setCurrentPage(page)
@@ -725,7 +725,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
-                .setSystem("system")
+                .setSystem("exchangis")
                 .setIdentifies("")
                 .setUser(userName);
 
@@ -794,7 +794,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         try {
             Result execute = linkisDataSourceRemoteClient.execute(
-                    GetDataSourceInfoByIdAndVersionIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).setVersionId(versionId).build()
+                    GetDataSourceInfoByIdAndVersionIdAction.builder().setSystem("exchangis").setUser(userName).setDataSourceId(id).setVersionId(versionId).build()
             );
             String responseBody = execute.getResponseBody();
             GetDataSourceInfoResultDTO result = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
@@ -813,12 +813,31 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
 
     }
 
+    /**
+     * Get data source by name
+     * @param userName username
+     * @param dsName data source name
+     * @return dto
+     * @throws ErrorException e
+     */
+    public GetDataSourceInfoResultDTO getDataSource(String userName, String dsName) throws ErrorException{
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        try {
+            Result execute = linkisDataSourceRemoteClient
+                    .execute(GetInfoByDataSourceNameAction.builder()
+                            .setSystem("exchangis").setUser(userName).setDataSourceName(dsName)
+                            .build());
+            String responseBody = execute.getResponseBody();
+        } catch (Exception e){
 
+        }
+        return null;
+    }
     public GetDataSourceInfoResultDTO getDataSource(String userName, Long id) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         try {
             Result execute = linkisDataSourceRemoteClient.execute(
-                    GetInfoByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
+                    GetInfoByDataSourceIdAction.builder().setSystem("exchangis").setUser(userName).setDataSourceId(id).build()
             );
             String responseBody = execute.getResponseBody();
             GetDataSourceInfoResultDTO result = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
@@ -920,7 +939,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         Result execute = linkisDataSourceRemoteClient.execute(
                 MetadataGetColumnsAction.builder()
-                        .setSystem("system")
+                        .setSystem("exchangis")
                         .setUser(username)
                         .setDataSourceId(id)
                         .setDatabase(database)
@@ -948,7 +967,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         Result execute = linkisDataSourceRemoteClient.execute(
                 MetadataGetTablePropsAction.builder()
-                        .setSystem("system")
+                        .setSystem("exchangis")
                         .setUser(username)
                         .setDataSourceId(id)
                         .setDatabase(database)
@@ -980,18 +999,18 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         try {
             // 先根据ID获取数据源详情
 //            result = linkisDataSourceRemoteClient.getInfoByDataSourceId(
-//                    GetInfoByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
+//                    GetInfoByDataSourceIdAction.builder().setSystem("exchangis").setUser(userName).setDataSourceId(id).build()
 //            );
 
             Result execute = linkisDataSourceRemoteClient.execute(
-                    GetInfoByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
+                    GetInfoByDataSourceIdAction.builder().setSystem("exchangis").setUser(userName).setDataSourceId(id).build()
             );
             String responseBody = execute.getResponseBody();
 
             result = Json.fromJson(responseBody, GetDataSourceInfoResultDTO.class);
 
 //            GetInfoByDataSourceIdResult result = linkisDataSourceRemoteClient.getInfoByDataSourceId(
-//                    GetInfoByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
+//                    GetInfoByDataSourceIdAction.builder().setSystem("exchangis").setUser(userName).setDataSourceId(id).build()
 //            );
             if (result.getStatus() != 0) {
                 throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
@@ -1222,7 +1241,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService implem
         GetConnectParamsByDataSourceIdResult result;
         try {
             result = linkisDataSourceRemoteClient.getConnectParams(
-                    GetConnectParamsByDataSourceIdAction.builder().setSystem("system").setUser(userName).setDataSourceId(id).build()
+                    GetConnectParamsByDataSourceIdAction.builder().setSystem("exchangis").setUser(userName).setDataSourceId(id).build()
             );
         } catch (Exception e) {
             if (e instanceof ErrorException) {
