@@ -53,4 +53,14 @@ public class ExchangisProjectDataSource {
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
+
+    @Override
+    public String toString() {
+        return "ExchangisProjectDataSource{" +
+                "projectId=" + projectId +
+                ", dataSourceName='" + dataSourceName + '\'' +
+                ", createUser='" + createUser + '\'' +
+                ", createTime=" + createTime +
+                '}';
+    }
 }

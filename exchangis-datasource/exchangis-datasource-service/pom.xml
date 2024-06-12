@@ -18,13 +18,11 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-datasource-linkis</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <!--Job common module-->
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>

@@ -15,16 +15,16 @@
     </sql>
 
     <sql id="detail_columns">
-        project_id, data_source_name, create_time
+        project_id,data_source_name,create_user,create_time
     </sql>
 
     <insert id="insertProjectDataSources">
         <foreach collection="list" item="item" open="" close="" separator="">
             <![CDATA[
                 INSERT INTO exchangis_project_datasource
-                (project_id,data_source_name,create_time)
+                (project_id,data_source_name,create_user)
                 VALUES
-                (#{item.projectId},#{item.dataSourceName},now());
+                (#{item.projectId},#{item.dataSourceName},#{item.create_user});
             ]]>
         </foreach>
     </insert>
