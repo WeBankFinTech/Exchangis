@@ -55,33 +55,33 @@ public class ExchangisProjectDssAppConnRestfulApi {
     public Message createProject(@Validated @RequestBody ExchangisProjectAppVo projectVo,
                                  BindingResult result, HttpServletRequest request){
         LOG.error("Create project from dss {}", projectVo.toString());
-        ExchangisProjectInfo project = new ExchangisProjectInfo(projectVo);
+        ExchangisProjectInfo projectInfo = new ExchangisProjectInfo(projectVo);
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
 
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String username = UserUtils.getLoginUser(request);
-        if (StringUtils.isBlank(project.getViewUsers()) || !StringUtils.contains(project.getViewUsers(), username)) {
-            project.setViewUsers(username + project.getViewUsers());
+        if (StringUtils.isBlank(projectInfo.getViewUsers()) || !StringUtils.contains(projectInfo.getViewUsers(), username)) {
+            projectInfo.setViewUsers(username + projectInfo.getViewUsers());
         }
-        if (StringUtils.isBlank(project.getEditUsers()) || !StringUtils.contains(project.getEditUsers(), username)) {
-            project.setEditUsers(username + project.getEditUsers());
+        if (StringUtils.isBlank(projectInfo.getEditUsers()) || !StringUtils.contains(projectInfo.getEditUsers(), username)) {
+            projectInfo.setEditUsers(username + projectInfo.getEditUsers());
         }
-        if (StringUtils.isBlank(project.getExecUsers()) || !StringUtils.contains(project.getExecUsers(), username)) {
-            project.setExecUsers(username + project.getExecUsers());
+        if (StringUtils.isBlank(projectInfo.getExecUsers()) || !StringUtils.contains(projectInfo.getExecUsers(), username)) {
+            projectInfo.setExecUsers(username + projectInfo.getExecUsers());
         }
 
         try {
-            LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(project), username);
-            if (projectService.existsProject(null, project.getName())){
+            LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectInfo), username);
+            if (projectService.existsProject(null, projectInfo.getName())){
                 return Message.error("Have the same name project (存在同名工程)");
             }
-            long projectIdd = projectService.createProject(project, username);
+            long projectIdd = projectService.createProject(projectInfo, username);
             String projectId = String.valueOf(projectIdd);
-            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + project.getName(), OperateTypeEnum.CREATE, request);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectInfo.getName(), OperateTypeEnum.CREATE, request);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
-                    new Pair<>("projectName", project.getName()),
+                    new Pair<>("projectName", projectInfo.getName()),
                     new Pair<>("projectId", projectId));
         } catch (Exception t) {
             LOG.error("Failed to create project for user {} from DSS", username, t);

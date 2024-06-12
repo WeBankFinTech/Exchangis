@@ -48,7 +48,7 @@ public class ExchangisProjectAppVo {
     /**
      * DataSource from dss project
      */
-    List<DSSProjectDataSource> dssProjectDataSources;
+    private List<DSSProjectDataSource> dataSources;
 
     /**
      * User has the view permission
@@ -136,12 +136,12 @@ public class ExchangisProjectAppVo {
         this.source = source;
     }
 
-    public List<DSSProjectDataSource> getDssProjectDataSources() {
-        return dssProjectDataSources;
+    public List<DSSProjectDataSource> getDataSources() {
+        return dataSources;
     }
 
-    public void setDssProjectDataSources(List<DSSProjectDataSource> dssProjectDataSources) {
-        this.dssProjectDataSources = dssProjectDataSources;
+    public void setDataSources(List<DSSProjectDataSource> dataSources) {
+        this.dataSources = dataSources;
     }
 
     public String getViewUsers() {
@@ -213,7 +213,7 @@ public class ExchangisProjectAppVo {
                 ", description='" + description + '\'' +
                 ", domain='" + domain + '\'' +
                 ", source=" + source +
-                ", dssProjectDataSources=" + dssProjectDataSources +
+                ", dssProjectDataSources=" + dataSources +
                 ", viewUsers='" + viewUsers + '\'' +
                 ", editUsers='" + editUsers + '\'' +
                 ", execUsers='" + execUsers + '\'' +

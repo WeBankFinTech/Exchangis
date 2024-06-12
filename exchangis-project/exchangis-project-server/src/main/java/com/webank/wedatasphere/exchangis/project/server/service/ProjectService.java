@@ -15,10 +15,10 @@ public interface ProjectService {
 
      /**
       * Create project
-      * @param projectVo project vo
+      * @param projectInfo project info
       * @return new project id
       */
-     long createProject(ExchangisProjectInfo projectVo, String userName);
+     long createProject(ExchangisProjectInfo projectInfo, String userName);
 
      /**
       * Exists project
@@ -30,10 +30,10 @@ public interface ProjectService {
 
      /**
       * Update project
-      * @param projectVo project vo
+      * @param projectInfo project info
       * @param userName userName
       */
-     void updateProject(ExchangisProjectInfo projectVo, String userName);
+     void updateProject(ExchangisProjectInfo projectInfo, String userName);
 
      /**
       * Query the page result
