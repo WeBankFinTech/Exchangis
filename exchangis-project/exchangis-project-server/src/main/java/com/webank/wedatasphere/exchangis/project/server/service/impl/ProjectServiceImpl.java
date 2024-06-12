@@ -223,7 +223,7 @@ public class ProjectServiceImpl implements ProjectService {
     public ExchangisProjectInfo getProjectDetailById(Long projectId) {
         ExchangisProject project = this.projectMapper.getDetailById(projectId);
         if (Objects.nonNull(project)){
-            ExchangisProjectInfo projectVo = new ExchangisProjectInfo(project);
+            ExchangisProjectInfo projectVo = getProject(project);
             projectVo.setViewUsers(project.getViewUsers());
             projectVo.setEditUsers(project.getEditUsers());
             projectVo.setExecUsers(project.getExecUsers());
@@ -242,7 +242,7 @@ public class ProjectServiceImpl implements ProjectService {
     public ExchangisProjectInfo getProjectById(Long projectId) {
         ExchangisProject project = projectMapper.getBasicById(projectId);
         if (Objects.nonNull(project)){
-            return new ExchangisProjectInfo(project);
+            return getProject(project);
         }
         return null;
     }
@@ -251,9 +251,16 @@ public class ProjectServiceImpl implements ProjectService {
     public ExchangisProjectInfo selectByName(String name){
         ExchangisProject project = this.projectMapper.selectByName(name);
         if (Objects.nonNull(project)){
-            return new ExchangisProjectInfo(project);
+            return getProject(project);
         }
         return null;
+    }
+
+    private ExchangisProjectInfo getProject(ExchangisProject project) {
+        ExchangisProjectInfo exchangisProjectInfo = new ExchangisProjectInfo(project);
+        //todo add datasource 在sql中获取数据源信息即可
+        exchangisProjectInfo.setDssProjectDataSources(null);
+        return exchangisProjectInfo;
     }
 
     @Override

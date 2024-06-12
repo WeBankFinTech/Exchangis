@@ -2,15 +2,13 @@ package com.webank.wedatasphere.exchangis.project.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
+import com.webank.wedatasphere.exchangis.project.entity.domain.DSSProjectDataSource;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author tikazhang
@@ -48,14 +46,19 @@ public class ExchangisProjectAppVo {
     private Map<String, Object> source = new HashMap<>();
 
     /**
-     * User has the edit permission
+     * DataSource from dss project
      */
-    private String editUsers;
+    List<DSSProjectDataSource> dssProjectDataSources;
 
     /**
      * User has the view permission
      */
     private String viewUsers;
+
+    /**
+     * User has the edit permission
+     */
+    private String editUsers;
 
     /**
      * User has the execute permission
@@ -133,12 +136,12 @@ public class ExchangisProjectAppVo {
         this.source = source;
     }
 
-    public String getEditUsers() {
-        return editUsers;
+    public List<DSSProjectDataSource> getDssProjectDataSources() {
+        return dssProjectDataSources;
     }
 
-    public void setEditUsers(String editUsers) {
-        this.editUsers = editUsers;
+    public void setDssProjectDataSources(List<DSSProjectDataSource> dssProjectDataSources) {
+        this.dssProjectDataSources = dssProjectDataSources;
     }
 
     public String getViewUsers() {
@@ -147,6 +150,14 @@ public class ExchangisProjectAppVo {
 
     public void setViewUsers(String viewUsers) {
         this.viewUsers = viewUsers;
+    }
+
+    public String getEditUsers() {
+        return editUsers;
+    }
+
+    public void setEditUsers(String editUsers) {
+        this.editUsers = editUsers;
     }
 
     public String getExecUsers() {
@@ -192,5 +203,24 @@ public class ExchangisProjectAppVo {
 
     public void setLabels(HashMap labels) {
         this.labels = labels;
+    }
+
+    @Override
+    public String toString() {
+        return "ExchangisProjectAppVo{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", domain='" + domain + '\'' +
+                ", source=" + source +
+                ", dssProjectDataSources=" + dssProjectDataSources +
+                ", viewUsers='" + viewUsers + '\'' +
+                ", editUsers='" + editUsers + '\'' +
+                ", execUsers='" + execUsers + '\'' +
+                ", label='" + label + '\'' +
+                ", createUser='" + createUser + '\'' +
+                ", createTime=" + createTime +
+                ", labels=" + labels +
+                '}';
     }
 }

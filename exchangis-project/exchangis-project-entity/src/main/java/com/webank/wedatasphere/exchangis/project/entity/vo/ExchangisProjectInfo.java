@@ -2,21 +2,18 @@ package com.webank.wedatasphere.exchangis.project.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
+import com.webank.wedatasphere.exchangis.project.entity.domain.DSSProjectDataSource;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * View object
  * TODO @JsonInclude(JsonInclude.Include.NON_EMPTY)
  */
-//@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ExchangisProjectInfo {
     /**
      * ID
@@ -47,6 +44,11 @@ public class ExchangisProjectInfo {
      * Information from the dss
      */
     private Map<String, Object> source = new HashMap<>();
+
+    /**
+     * DataSource from dss project
+     */
+    List<DSSProjectDataSource> dssProjectDataSources;
 
     /**
      * User has the edit permission
@@ -112,6 +114,7 @@ public class ExchangisProjectInfo {
         this.setDomain(project.getDomain());
         this.setSource(project.getSource());
         this.setPrivUser("");
+        this.setDssProjectDataSources(project.getDssProjectDataSources());
         this.setEditUsers(project.getEditUsers());
         this.setViewUsers(project.getViewUsers());
         this.setExecUsers(project.getExecUsers());
@@ -158,6 +161,14 @@ public class ExchangisProjectInfo {
 
     public void setSource(Map<String, Object> source) {
         this.source = source;
+    }
+
+    public List<DSSProjectDataSource> getDssProjectDataSources() {
+        return dssProjectDataSources;
+    }
+
+    public void setDssProjectDataSources(List<DSSProjectDataSource> dssProjectDataSources) {
+        this.dssProjectDataSources = dssProjectDataSources;
     }
 
     public String getEditUsers() {

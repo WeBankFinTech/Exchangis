@@ -52,36 +52,36 @@ public class ExchangisProjectDssAppConnRestfulApi {
     private JobInfoService jobInfoService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public Message createProject(@Validated @RequestBody ExchangisProjectAppVo project,
+    public Message createProject(@Validated @RequestBody ExchangisProjectAppVo projectVo,
                                  BindingResult result, HttpServletRequest request){
-        ExchangisProjectInfo projectVo = new ExchangisProjectInfo(project);
+        LOG.error("Create project from dss {}", projectVo.toString());
+        ExchangisProjectInfo project = new ExchangisProjectInfo(projectVo);
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
 
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String username = UserUtils.getLoginUser(request);
-        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
-            projectVo.setViewUsers(username + projectVo.getViewUsers());
+        if (StringUtils.isBlank(project.getViewUsers()) || !StringUtils.contains(project.getViewUsers(), username)) {
+            project.setViewUsers(username + project.getViewUsers());
         }
-        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
-            projectVo.setEditUsers(username + projectVo.getEditUsers());
+        if (StringUtils.isBlank(project.getEditUsers()) || !StringUtils.contains(project.getEditUsers(), username)) {
+            project.setEditUsers(username + project.getEditUsers());
         }
-        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
-            projectVo.setExecUsers(username + projectVo.getExecUsers());
-
+        if (StringUtils.isBlank(project.getExecUsers()) || !StringUtils.contains(project.getExecUsers(), username)) {
+            project.setExecUsers(username + project.getExecUsers());
         }
 
         try {
-            LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
-            if (projectService.existsProject(null, projectVo.getName())){
+            LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(project), username);
+            if (projectService.existsProject(null, project.getName())){
                 return Message.error("Have the same name project (存在同名工程)");
             }
-            long projectIdd = projectService.createProject(projectVo, username);
+            long projectIdd = projectService.createProject(project, username);
             String projectId = String.valueOf(projectIdd);
-            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectVo.getName(), OperateTypeEnum.CREATE, request);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + project.getName(), OperateTypeEnum.CREATE, request);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
-                    new Pair<>("projectName", projectVo.getName()),
+                    new Pair<>("projectName", project.getName()),
                     new Pair<>("projectId", projectId));
         } catch (Exception t) {
             LOG.error("Failed to create project for user {} from DSS", username, t);
@@ -99,6 +99,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
     @RequestMapping( value = "/{id:\\d+}", method = RequestMethod.PUT)
     public Message updateProject(@PathVariable("id") Long id, @Validated({UpdateGroup.class, Default.class}) @RequestBody ExchangisProjectInfo projectVo
             , BindingResult result, HttpServletRequest request) {
+        LOG.error("Update project from dss {}", projectVo.toString());
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
