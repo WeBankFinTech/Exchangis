@@ -152,6 +152,11 @@
 				<version>${linkis.datasource.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.linkis</groupId>
+				<artifactId>linkis-metadata-query-common</artifactId>
+				<version>${linkis.datasource.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
 				<version>${gson.version}</version>
