@@ -64,38 +64,38 @@ public class ExchangisProjectDssAppConnRestfulApi {
     private ExchangisDataSourceService dataSourceService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public Message createProject(@Validated @RequestBody ExchangisProjectAppVo project,
+    public Message createProject(@Validated @RequestBody ExchangisProjectAppVo projectVo,
                                  BindingResult result, HttpServletRequest request){
-        ExchangisProjectInfo projectVo = new ExchangisProjectInfo(project);
+        LOG.error("Create project from dss {}", projectVo.toString());
+        ExchangisProjectInfo projectInfo = new ExchangisProjectInfo(projectVo);
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
 
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String username = UserUtils.getLoginUser(request);
-        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
-            projectVo.setViewUsers(username + projectVo.getViewUsers());
+        if (StringUtils.isBlank(projectInfo.getViewUsers()) || !StringUtils.contains(projectInfo.getViewUsers(), username)) {
+            projectInfo.setViewUsers(username + projectInfo.getViewUsers());
         }
-        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
-            projectVo.setEditUsers(username + projectVo.getEditUsers());
+        if (StringUtils.isBlank(projectInfo.getEditUsers()) || !StringUtils.contains(projectInfo.getEditUsers(), username)) {
+            projectInfo.setEditUsers(username + projectInfo.getEditUsers());
         }
-        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
-            projectVo.setExecUsers(username + projectVo.getExecUsers());
-
+        if (StringUtils.isBlank(projectInfo.getExecUsers()) || !StringUtils.contains(projectInfo.getExecUsers(), username)) {
+            projectInfo.setExecUsers(username + projectInfo.getExecUsers());
         }
 
         try {
-            LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
-            if (projectService.existsProject(null, projectVo.getName())){
+            LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectInfo), username);
+            if (projectService.existsProject(null, projectInfo.getName())){
                 return Message.error("Have the same name project (存在同名工程)");
             }
             // validate data sources
             validateDataSources(username, projectVo.getName(), projectVo.getDataSources());
-            long projectIdd = projectService.createProject(projectVo, username);
+            long projectIdd = projectService.createProject(projectInfo, username);
             String projectId = String.valueOf(projectIdd);
-            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectVo.getName(), OperateTypeEnum.CREATE, request);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectInfo.getName(), OperateTypeEnum.CREATE, request);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
-                    new Pair<>("projectName", projectVo.getName()),
+                    new Pair<>("projectName", projectInfo.getName()),
                     new Pair<>("projectId", projectId));
         } catch (Exception t) {
             LOG.error("Failed to create project for user {} from DSS", username, t);
@@ -113,6 +113,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
     @RequestMapping( value = "/{id:\\d+}", method = RequestMethod.PUT)
     public Message updateProject(@PathVariable("id") Long id, @Validated({UpdateGroup.class, Default.class}) @RequestBody ExchangisProjectInfo projectVo
             , BindingResult result, HttpServletRequest request) {
+        LOG.error("Update project from dss {}", projectVo.toString());
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }

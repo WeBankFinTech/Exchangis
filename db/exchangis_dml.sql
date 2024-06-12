@@ -54,8 +54,8 @@ INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_directio
 ('writeMode','写入方式','SQOOP-SINK','HIVE','OPTION','writeMode','写入方式(OVERWRITE只对TEXT类型表生效)','',1,'OPTION','["OVERWRITE","APPEND"]','OVERWRITE','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL)
 ,('partition','分区信息','SINK','HIVE','MAP','partition','分区信息(文本)','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,'',2,'',1,NULL)
 ,('partition','分区信息','SOURCE','HIVE','MAP','partition','分区信息(文本)','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,'',2,'',1,NULL);
-,('transferMode','传输方式','DATAX-SOURCE','HIVE','OPTION','transferMode','传输方式','',1,'OPTION','["二进制","记录"]','二进制','','','该传输方式不可用',0,0,'',1,'',1,'',1,NULL)
-,('nullFormat','空值字符','DATAX-SOURCE','HIVE','INPUT','nullFormat','空值字符','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','空值字符输入错误',0,0,'',1,'',2,'',1,49)
+,('transferMode','传输方式','DATAX-SOURCE','HIVE','OPTION','transferMode','传输方式','',1,'OPTION','["记录"]','二进制','','','该传输方式不可用',0,0,'',1,'',1,'',1,NULL)
+,('nullFormat','空值字符','DATAX-SOURCE','HIVE','INPUT','nullFormat','空值字符','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','空值字符输入错误',0,0,'',1,'',2,'',1,48)
 ,('writeMode','写入方式','DATAX-SINK','HIVE','OPTION','writeMode','写入方式(OVERWRITE只对TEXT类型表生效)','',1,'OPTION','["append","truncate"]','append','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL)
 ,('nullFormat','空值字符','DATAX-SINK','HIVE','INPUT','nullFormat','空值字符','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','空值字符输入错误',0,0,'',1,'',2,'',1,49);
 
@@ -73,7 +73,7 @@ INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_directio
 ,('batchSize','批量大小','DATAX-SINK','MONGODB','INPUT','batchSize','批量大小','',0,'NUMBER','','','REGEX','^[1-9]\\d*$','批量大小输入错误',0,0,'',1,'',2,'',1,NULL);
 
 INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
-('writeMode','写入方式','DATAX-SINK','STARROCKS','OPTION','writeMode','写入方式','',1,'OPTION','["insert"]','insert','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL)
+('writeMode','写入方式','DATAX-SINK','STARROCKS','OPTION','writeMode','写入方式','',1,'OPTION','["upsert"]','upsert','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL)
 ,('batchSize','批量字节数大小','DATAX-SINK','STARROCKS','INPUT','maxBatchSize','批量字节数大小','',0,'NUMBER','','','REGEX','^[1-9]\\d*$','批量大小输入错误',0,0,'',1,'',2,'',1,NULL);
 
 -- engine_settings records

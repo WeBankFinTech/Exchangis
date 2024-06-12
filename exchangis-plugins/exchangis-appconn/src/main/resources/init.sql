@@ -26,17 +26,17 @@ insert into `dss_workflow_node` (`name`, `appconn_name`, `node_type`, `jump_type
 values('datax','exchangis','linkis.appconn.exchangis.datax',1,'1','1','0','1','icons/datax.icon');
 
 -- 节点组表dss_workflow_node_to_group
-INSERT INTO `dss_workflow_node_to_group`(`node_id`,`group_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop'), (select id from `dss_workflow_node_group` where `name` = '数据交换'));
-INSERT INTO `dss_workflow_node_to_group`(`node_id`,`group_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax'), (select id from `dss_workflow_node_group` where `name` = '数据交换'));
+INSERT INTO `dss_workflow_node_to_group`(`node_id`,`group_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop' limit 1), (select id from `dss_workflow_node_group` where `name` = '数据交换'));
+INSERT INTO `dss_workflow_node_to_group`(`node_id`,`group_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax' limit 1), (select id from `dss_workflow_node_group` where `name` = '数据交换'));
 
 -- 节点UI表dss_workflow_node_to_ui
-INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop'), 1);
-INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop'), 2);
-INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop'), 3);
-INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop'), 4);
-INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop'), 5);
-INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax'), 1);
-INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax'), 2);
-INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax'), 3);
-INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax'), 4);
-INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax'), 5);
+INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop' limit 1), 1);
+INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop' limit 1), 2);
+INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop' limit 1), 3);
+INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop' limit 1), 4);
+INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.sqoop' limit 1), 5);
+INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax' limit 1), 1);
+INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax' limit 1), 2);
+INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax' limit 1), 3);
+INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax' limit 1), 4);
+INSERT INTO `dss_workflow_node_to_ui`(`workflow_node_id`,`ui_id`) values ((select id from `dss_workflow_node` where `node_type` = 'linkis.appconn.exchangis.datax' limit 1), 5);

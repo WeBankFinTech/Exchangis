@@ -24,7 +24,6 @@ public class ExchangisJobVo {
     /**
      * Project id
      */
-    @NotNull(groups = InsertGroup.class, message = "Project id cannot be null (工程ID不能为空)")
     private Long projectId;
 
     /**

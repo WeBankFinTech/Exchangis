@@ -55,6 +55,7 @@ public class ExchangisProjectUpdateOperation
         putAction.addRequestPayload("description", requestRef.getDSSProject().getDescription());
         putAction.addRequestPayload("domain", Constraints.DOMAIN_NAME);
         putAction.addRequestPayload("source", MapUtils.newCommonMap("workspace", requestRef.getWorkspace().getWorkspaceName()));
+        putAction.addRequestPayload("dataSources", requestRef.getDSSProjectDataSources());
     }
 
 }
