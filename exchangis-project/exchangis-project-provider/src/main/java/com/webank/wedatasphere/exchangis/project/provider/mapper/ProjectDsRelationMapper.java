@@ -1,6 +1,8 @@
 package com.webank.wedatasphere.exchangis.project.provider.mapper;
 
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectDsQueryVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -25,11 +27,10 @@ public interface ProjectDsRelationMapper {
 
     /**
      * Fetch related data sources in page
-      * @param projectId project id
-     * @param dsType data source type
+      * @param queryVo query
      * @return
      */
-    List<ExchangisProjectDsRelation> queryPageList(Long projectId, String dsType);
+    List<ExchangisProjectDsRelation> queryPageList(@Param("query") ProjectDsQueryVo queryVo);
 
     /**
      * List related data sources
