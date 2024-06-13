@@ -11,14 +11,11 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
-import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectDsVo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.*;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectDsRelationMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectUserMapper;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
-import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
-import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectUserVo;
-import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectQueryVo;
 import com.webank.wedatasphere.exchangis.project.entity.domain.ExchangisProjectUser;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
 import org.slf4j.Logger;
@@ -270,6 +267,10 @@ public class ProjectServiceImpl implements ProjectService {
             projectVo.setEditUsers(project.getEditUsers());
             projectVo.setExecUsers(project.getExecUsers());
             projectVo.setSource(project.getSourceMap());
+            List<ExchangisProjectDsRelation> proDsRelations = projectDsRelationMapper
+                    .queryPageList(new ProjectDsQueryVo(projectId));
+            projectVo.setDataSources(proDsRelations.stream()
+                    .map(ExchangisProjectDsVo::new).collect(Collectors.toList()));
             return projectVo;
         }
         return null;

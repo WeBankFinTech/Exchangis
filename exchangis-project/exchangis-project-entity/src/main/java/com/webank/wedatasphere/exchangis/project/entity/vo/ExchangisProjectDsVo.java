@@ -18,6 +18,7 @@ public class ExchangisProjectDsVo implements ExchangisDataSource {
     /**
      * Data source id
      */
+    @JsonProperty("dataSourceId")
     private Long dataSourceId;
 
     /**
@@ -57,7 +58,7 @@ public class ExchangisProjectDsVo implements ExchangisDataSource {
     }
 
     public ExchangisProjectDsVo(ExchangisProjectDsRelation relation) {
-        this.dataSourceId = relation.getId();
+        this.dataSourceId = relation.getDsId();
         this.dataSourceName = relation.getDsName();
         this.dataSourceType = relation.getDsType();
         this.createUser = relation.getDsCreator();

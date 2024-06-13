@@ -20,6 +20,13 @@ public class ProjectDsQueryVo extends PageQuery {
      */
     private String type;
 
+    public ProjectDsQueryVo() {
+    }
+
+    public ProjectDsQueryVo(Long projectId) {
+        this.projectId = projectId;
+    }
+
     public Long getProjectId() {
         return projectId;
     }
