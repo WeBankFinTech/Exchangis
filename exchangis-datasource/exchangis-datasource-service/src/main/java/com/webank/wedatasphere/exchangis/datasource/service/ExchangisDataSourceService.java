@@ -11,7 +11,7 @@ import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
 import com.webank.wedatasphere.exchangis.datasource.GetDataSourceInfoByIdAndVersionIdAction;
-import com.webank.wedatasphere.exchangis.datasource.Utils.RSAUtil;
+import com.webank.wedatasphere.exchangis.datasource.utils.RSAUtil;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
@@ -27,7 +27,6 @@ import com.webank.wedatasphere.exchangis.datasource.linkis.request.ParamsTestCon
 import com.webank.wedatasphere.exchangis.datasource.linkis.response.ParamsTestConnectResult;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
-import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
 import com.webank.wedatasphere.exchangis.engine.dao.EngineSettingsDao;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineSettings;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
@@ -242,7 +241,8 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
     }
 
     @Transactional
-    public Message create(HttpServletRequest request, /*String type, */DataSourceCreateVO vo) throws Exception {
+    @SuppressWarnings("unchecked")
+    public Message create(String username, /*String type, */DataSourceCreateVO vo) throws Exception {
         //DataSourceCreateVO vo;
         Map<String, Object> json;
         try {
@@ -261,27 +261,15 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter createSystem should not be empty");
         }
 
-
-        String user = UserUtils.getLoginUser(request);
-        LOGGER.info("createDatasource userName:" + user);
-
         ExchangisDataSourceDefinition dsType = context.getExchangisDsDefinition(vo.getDataSourceTypeId());
         if (Objects.isNull(dsType)) {
             throw new ExchangisDataSourceException(CONTEXT_GET_DATASOURCE_NULL.getCode(), "exchangis context get datasource null");
         }
-
         LinkisDataSourceRemoteClient client = dsType.getDataSourceRemoteClient();
-        LOGGER.info("create datasource json as follows");
-        Set<Map.Entry<String, Object>> entries = json.entrySet();
-        for (Map.Entry<String, Object> entry : entries) {
-            LOGGER.info("key {} : value {}", entry.getKey(), entry.getValue());
-        }
-//        CreateDataSourceResult result;
         String responseBody;
         try {
-
             Result execute = client.execute(CreateDataSourceAction.builder()
-                    .setUser(user)
+                    .setUser(username)
                     .addRequestPayloads(json)
                     .build()
             );
@@ -290,7 +278,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_CREATE_ERROR.getCode(), e.getMessage());
         }
 
-//        if (Objects.isNull(result)) {
         if (Strings.isNullOrEmpty(responseBody)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_CREATE_ERROR.getCode(), "datasource create response null or empty");
         }
@@ -299,14 +286,13 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         if (result.getStatus() != 0) {
             throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
         }
-//        Long dataSourceId = result.getInsert_id();
         Long dataSourceId = result.getData().getId();
         UpdateDataSourceParameterResult updateDataSourceParameterResult;
         try {
             // 创建完成后发布数据源参数，形成一个版本
             updateDataSourceParameterResult = client.updateDataSourceParameter(
                     UpdateDataSourceParameterAction.builder()
-                            .setUser(user)
+                            .setUser(username)
                             .setDataSourceId(Long.parseLong(dataSourceId + ""))
                             .addRequestPayloads(json)
                             .build()
@@ -322,7 +308,9 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         if (updateDataSourceParameterResult.getStatus() != 0) {
             throw new ExchangisDataSourceException(updateDataSourceParameterResult.getStatus(), updateDataSourceParameterResult.getMessage());
         }
-        return Message.ok().data("id", dataSourceId);
+        Message message = Message.ok();
+        updateDataSourceParameterResult.getData().forEach(message::data);
+        return message.data("id", dataSourceId);
     }
 
     @Transactional
@@ -530,7 +518,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         List<ExchangisJobInfoContent> jobInfoContents = this.parseJobContent(job.getJobContent());
         List<ExchangisDataSourceParamsUI> uis = new ArrayList<>();
         for (ExchangisJobInfoContent cnt : jobInfoContents) {
-            uis.add(this.buildDataSourceParamsUI(cnt));
+            uis.add(this.buildDataSourceParamsUI(null, cnt));
         }
 
         return Message.ok().data("ui", uis);

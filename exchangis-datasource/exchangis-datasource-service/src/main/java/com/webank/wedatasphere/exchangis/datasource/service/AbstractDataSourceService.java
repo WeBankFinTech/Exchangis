@@ -89,14 +89,12 @@ public abstract class AbstractDataSourceService {
         return ids;
     }
 
-    protected ExchangisDataSourceParamsUI buildDataSourceParamsUI(ExchangisJobInfoContent content) {
-        ExchangisDataSourceIdsUI dataSourceIdsUI = buildDataSourceIdsUI(content);
-
+    protected ExchangisDataSourceParamsUI buildDataSourceParamsUI(ExchangisDataSourceIdsUI dataSourceIdsUi, ExchangisJobInfoContent content) {
         ExchangisJobParamsContent params = content.getParams();
         List<ExchangisJobParamConfig> sourceParamConfigs = Collections.emptyList();
         List<ExchangisJobParamConfig> sinkParamConfigs = Collections.emptyList();
-        if (null != dataSourceIdsUI) {
-            ExchangisDataSourceIdUI source = dataSourceIdsUI.getSource();
+        if (null != dataSourceIdsUi) {
+            ExchangisDataSourceIdUI source = dataSourceIdsUi.getSource();
             if (null != source) {
                 String type = source.getType();
                 ExchangisDataSourceDefinition exchangisSourceDataSource = this.context.getExchangisDsDefinition(type);
@@ -106,7 +104,7 @@ public abstract class AbstractDataSourceService {
                 }
             }
 
-            ExchangisDataSourceIdUI sink = dataSourceIdsUI.getSink();
+            ExchangisDataSourceIdUI sink = dataSourceIdsUi.getSink();
             if (null != sink) {
                 String type = sink.getType();
                 ExchangisDataSourceDefinition exchangisSinkDataSource = this.context.getExchangisDsDefinition(type);
@@ -139,7 +137,7 @@ public abstract class AbstractDataSourceService {
         ExchangisDataSourceIdsUI dataSourceIdsUI = buildDataSourceIdsUI(request, content);
 
         // ----------- 构建 dataSourceParamsUI
-        ExchangisDataSourceParamsUI paramsUI = buildDataSourceParamsUI(content);
+        ExchangisDataSourceParamsUI paramsUI = buildDataSourceParamsUI(dataSourceIdsUI, content);
 
         // ----------- 构建 dataSourceTransformsUI
         ExchangisJobTransformsContent transforms = content.getTransforms();

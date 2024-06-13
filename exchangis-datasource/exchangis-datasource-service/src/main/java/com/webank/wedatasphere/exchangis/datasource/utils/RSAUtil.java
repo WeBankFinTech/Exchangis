@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.datasource.Utils;
+package com.webank.wedatasphere.exchangis.datasource.utils;
 
 import org.apache.linkis.common.conf.CommonVars;
 

@@ -167,8 +167,7 @@ public class ExchangisDataSourceRestfulApi {
     public Message create(/*@PathParam("type") String type, */@Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult, HttpServletRequest request ) throws Exception {
         Message message = new Message();
         String loginUser = UserUtils.getLoginUser(request);
-        String oringinUser = SecurityFilter.getLoginUsername(request);
-        LOG.info("dataSourceName: " + dataSourceCreateVO.getDataSourceName() + ", dataSourceDesc: " + dataSourceCreateVO.getDataSourceDesc() + ", label: " + dataSourceCreateVO.getLabels());
+        String originUser = SecurityFilter.getLoginUsername(request);
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             for(int i=0;i<fieldErrors.size();i++){
@@ -178,7 +177,7 @@ public class ExchangisDataSourceRestfulApi {
         }
         else {
             try {
-                message = exchangisDataSourceService.create(request, dataSourceCreateVO);
+                message = exchangisDataSourceService.create(loginUser, dataSourceCreateVO);
             } catch (ExchangisDataSourceException e) {
                 String errorMessage = "Error occur while create datasource";
                 LOG.error(errorMessage, e);
@@ -192,7 +191,7 @@ public class ExchangisDataSourceRestfulApi {
                 }
             }
         }
-        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.DATASOURCE,"0", "DataSource name is: " + dataSourceCreateVO.getDataSourceName(), OperateTypeEnum.CREATE,request);
+        AuditLogUtils.printLog(originUser, loginUser, TargetTypeEnum.DATASOURCE,"0", "DataSource name is: " + dataSourceCreateVO.getDataSourceName(), OperateTypeEnum.CREATE,request);
         return message;
     }
 
