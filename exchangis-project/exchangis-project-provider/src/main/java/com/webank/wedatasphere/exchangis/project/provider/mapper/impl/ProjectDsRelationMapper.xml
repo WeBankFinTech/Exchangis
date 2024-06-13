@@ -63,4 +63,14 @@
         SELECT * FROM <include refid="tableName"/>
         WHERE project_id=#{projectId} AND data_source_type=#{dsType}
     </select>
+
+    <select id="listByProjects" resultMap="projectDsResult">
+        SELECT * FROM <include refid="tableName"/>
+        <if test="proIds != null">
+            WHERE project_id in
+            <foreach collection="proIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
 </mapper>

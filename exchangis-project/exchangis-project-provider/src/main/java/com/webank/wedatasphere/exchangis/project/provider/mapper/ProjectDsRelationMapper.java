@@ -27,7 +27,7 @@ public interface ProjectDsRelationMapper {
 
     /**
      * Fetch related data sources in page
-      * @param queryVo query
+     * @param queryVo query
      * @return
      */
     List<ExchangisProjectDsRelation> queryPageList(ProjectDsQueryVo queryVo);
@@ -35,7 +35,15 @@ public interface ProjectDsRelationMapper {
     /**
      * List related data sources
      * @param projectId project id
+     * @param dsType datasource type
      * @return type
      */
     List<ExchangisProjectDsRelation> listByProject(Long projectId, String dsType);
+
+    /**
+     * List related data sources
+     * @param proIds project ids
+     * @return type
+     */
+    List<ExchangisProjectDsRelation> listByProjects(@Param("proIds") List<Long> proIds);
 }

@@ -215,8 +215,19 @@ public class ProjectServiceImpl implements ProjectService {
         try{
             List<ExchangisProject> projects = this.projectMapper.queryPageList(queryVo);
             PageInfo<ExchangisProject> pageInfo = new PageInfo<>(projects);
-            List<ExchangisProjectInfo> infoList = projects
-                    .stream().map(ExchangisProjectInfo::new).collect(Collectors.toList());
+            // query project datasource relation
+            List<Long> ids = projects.stream().map(ExchangisProject::getId).collect(Collectors.toList());
+            List<ExchangisProjectDsRelation> proDsRelations = projectDsRelationMapper
+                    .listByProjects(ids);
+
+            List<ExchangisProjectInfo> infoList = projects.stream().map(project -> {
+                ExchangisProjectInfo exchangisProjectInfo = new ExchangisProjectInfo(project);
+                exchangisProjectInfo.setDataSources(
+                        proDsRelations.stream().filter(item -> item.getProjectId().equals(project.getId())).map(ExchangisProjectDsVo::new).collect(Collectors.toList())
+                );
+                return exchangisProjectInfo;
+            }).collect(Collectors.toList());
+
             PageResult<ExchangisProjectInfo> pageResult = new PageResult<>();
             pageResult.setList(infoList);
             pageResult.setTotal(pageInfo.getTotal());

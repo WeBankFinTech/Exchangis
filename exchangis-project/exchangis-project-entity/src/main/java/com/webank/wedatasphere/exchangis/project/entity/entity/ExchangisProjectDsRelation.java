@@ -43,7 +43,10 @@ public class ExchangisProjectDsRelation {
      */
     private Date lastUpdateTime;
 
-    public ExchangisProjectDsRelation(ExchangisProjectDsVo vo){
+    public ExchangisProjectDsRelation() {
+    }
+
+    public ExchangisProjectDsRelation(ExchangisProjectDsVo vo) {
         this.dsName = vo.getName();
         this.dsId = vo.getId();
         this.dsType = vo.getType();

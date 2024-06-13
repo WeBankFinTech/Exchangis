@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.webank.wedatasphere.exchangis.common.domain.ExchangisDataSource;
+import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
 
 import java.util.Date;
 
@@ -14,7 +15,11 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ExchangisProjectDsVo implements ExchangisDataSource {
 
+    /**
+     * Data source id
+     */
     private Long dataSourceId;
+
     /**
      * Data source name
      */
@@ -47,6 +52,16 @@ public class ExchangisProjectDsVo implements ExchangisDataSource {
      */
     @JsonProperty("modifyTime")
     private Date modifyTime;
+
+    public ExchangisProjectDsVo() {
+    }
+
+    public ExchangisProjectDsVo(ExchangisProjectDsRelation relation) {
+        this.dataSourceId = relation.getId();
+        this.dataSourceName = relation.getDsName();
+        this.dataSourceType = relation.getDsType();
+        this.createUser = relation.getDsCreator();
+    }
 
     @Override
     public Long getId() {
