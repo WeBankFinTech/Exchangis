@@ -30,7 +30,7 @@ public interface ProjectDsRelationMapper {
       * @param queryVo query
      * @return
      */
-    List<ExchangisProjectDsRelation> queryPageList(@Param("query") ProjectDsQueryVo queryVo);
+    List<ExchangisProjectDsRelation> queryPageList(ProjectDsQueryVo queryVo);
 
     /**
      * List related data sources

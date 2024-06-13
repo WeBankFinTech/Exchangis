@@ -45,7 +45,18 @@
 
     <select id="queryPageList" resultMap="projectDsResult">
         SELECT * FROM <include refid="tableName"/>
-        WHERE project_id=#{projectId} AND data_source_type=#{dsType}
+        <where>
+            <if test="projectId != null">
+                AND project_id = #{projectId}
+            </if>
+            <if test="type != null and type != ''">
+                AND data_source_type = #{type}
+            </if>
+            <if test="name != null and name != ''">
+                AND data_source_name like concat('%', #{name}, '%')
+            </if>
+        </where>
+        ORDER BY last_update_time DESC
     </select>
 
     <select id="listByProject" resultMap="projectDsResult">
