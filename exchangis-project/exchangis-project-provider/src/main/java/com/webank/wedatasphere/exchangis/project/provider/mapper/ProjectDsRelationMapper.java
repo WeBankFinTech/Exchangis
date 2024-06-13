@@ -18,6 +18,12 @@ public interface ProjectDsRelationMapper {
     void deleteByIds(List<Long> idList);
 
     /**
+     * Delete by project
+     * @param projectId project id
+     */
+    void deleteByProject(Long projectId);
+
+    /**
      * Fetch related data sources in page
       * @param projectId project id
      * @param dsType data source type

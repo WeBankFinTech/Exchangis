@@ -208,6 +208,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
                     if (Objects.nonNull(result)){
                         GetDataSourceInfoResultDTO.DataSourceInfoDTO dsInfo = result.getData();
                         dataSource.setId(dsInfo.getInfo().getId());
+                        dataSource.setType(dsInfo.getInfo().getDataSourceType().getName());
                         dataSource.setCreator(dsInfo.getInfo().getCreateUser());
                     }
                 } catch (ErrorException e) {

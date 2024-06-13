@@ -31,7 +31,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
         // Get the launchable task from launchable task inner join launched task
         List<LaunchableExchangisTask> tasks = taskObserverService.onPublishLaunchableTask(batchSize);
         if (!tasks.isEmpty()) {
-            LOG.info("Get the launchable task from database, size: [{}]", tasks.size());
+            LOG.debug("Get the launchable task from database, size: [{}]", tasks.size());
         }
         return tasks;
     }
