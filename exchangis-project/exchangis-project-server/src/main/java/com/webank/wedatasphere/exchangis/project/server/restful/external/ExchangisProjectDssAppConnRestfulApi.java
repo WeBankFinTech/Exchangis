@@ -15,6 +15,7 @@ import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectAppVo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectDsVo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.provider.ExchangisProjectConfiguration;
 import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectErrorException;
 import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectExceptionCode;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -91,8 +93,27 @@ public class ExchangisProjectDssAppConnRestfulApi {
             if (projectService.existsProject(null, projectInfo.getName())){
                 return Message.error("Have the same name project (存在同名工程)");
             }
+            // Try to create project datasources for user
+            LOG.info("Start to create and relate project datasources for project [{}]", projectVo.getName());
+            String[] projectDsList = ExchangisProjectConfiguration.PROJECT_DATASOURCES
+                    .getValue().split(",");
+            for(String projectDs : projectDsList){
+                String newName = projectDs + "_" + username;
+                try {
+                    dataSourceService.copyDataSource(username, projectDs, newName);
+                    // Attach data source to project
+                    ExchangisProjectDsVo projectDsVo = new ExchangisProjectDsVo();
+                    projectDsVo.setName(newName);
+                    projectVo.getDataSources().add(projectDsVo);
+                } catch (Exception e){
+                    LOG.warn("Fail to create project data source(模版创建项目数据源失败,跳过) " +
+                                    "from model: [{}] for user: [{}], message: [{}]",
+                            projectDs, username, e.getMessage());
+                }
+            }
             // validate data sources
             validateDataSources(username, projectVo.getName(), projectVo.getDataSources());
+            // Add project data sources
             long projectIdd = projectService.createProject(projectInfo, username);
             String projectId = String.valueOf(projectIdd);
             AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectInfo.getName(), OperateTypeEnum.CREATE, request);

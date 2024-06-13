@@ -2,7 +2,6 @@ package com.webank.wedatasphere.exchangis.project.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
-import com.webank.wedatasphere.exchangis.project.entity.domain.DSSProjectDataSource;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
 import org.hibernate.validator.constraints.NotBlank;
 

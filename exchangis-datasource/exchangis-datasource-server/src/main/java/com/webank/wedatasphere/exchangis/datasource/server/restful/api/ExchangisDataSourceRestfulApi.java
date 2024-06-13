@@ -277,7 +277,8 @@ public class ExchangisDataSourceRestfulApi {
         String loginUser = UserUtils.getLoginUser(request);
         String oringinUser = SecurityFilter.getLoginUsername(request);
         try{
-            message = exchangisDataSourceService.publishDataSource(request, /*type, */id, version);
+            String username = UserUtils.getLoginUser(request);
+            message = exchangisDataSourceService.publishDataSource(username, /*type, */id, version);
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while publish datasource";
             LOG.error(errorMessage, e);
