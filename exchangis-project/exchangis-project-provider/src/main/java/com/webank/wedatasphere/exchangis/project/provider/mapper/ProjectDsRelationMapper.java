@@ -46,4 +46,13 @@ public interface ProjectDsRelationMapper {
      * @return type
      */
     List<ExchangisProjectDsRelation> listByProjects(@Param("proIds") List<Long> proIds);
+
+    /**
+     * Get data source by id and username which in project privilege table
+     * @param username username
+     * @param dsId data source id
+     * @return ds
+     */
+    ExchangisProjectDsRelation getByUserAndDsId(@Param("username")String username,
+                                                @Param("dsId") Long dsId);
 }

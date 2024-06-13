@@ -10,6 +10,7 @@ import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceS
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
@@ -19,11 +20,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.QueryParam;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +39,9 @@ public class ExchangisDataSourceRestfulApi {
     private final ExchangisDataSourceService exchangisDataSourceService;
 
     private static Pattern p = Pattern.compile("(?<=\\[)[^]]+");
+
+    @Resource
+    private ProjectOpenService projectOpenService;
 
     @Autowired
     public ExchangisDataSourceRestfulApi(ExchangisDataSourceService exchangisDataSourceService) {
@@ -375,7 +381,11 @@ public class ExchangisDataSourceRestfulApi {
     public Message queryDataSourceDBs(HttpServletRequest request, @PathVariable("type") String type, @PathVariable("id") Long id) throws Exception {
         Message message = null;
         try{
-            message = exchangisDataSourceService.queryDataSourceDBs(request, type, id);
+            AtomicReference<String> username = new AtomicReference<>(UserUtils.getLoginUser(request));
+            // Try to get data source authority from project and set the privilege user
+            projectOpenService.hasDataSourceAuth(username.get(), id,
+                    ds -> username.set(ds.getCreator()));
+            message = exchangisDataSourceService.queryDataSourceDBs(username.get(), type, id);
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while query datasource";
             LOG.error(errorMessage, e);
@@ -388,8 +398,12 @@ public class ExchangisDataSourceRestfulApi {
     public Message queryDataSourceDBTables(HttpServletRequest request, @PathVariable("type") String type,
                                            @PathVariable("id") Long id, @PathVariable("dbName") String dbName) throws Exception {
         Message message = null;
-        try{
-            message = exchangisDataSourceService.queryDataSourceDBTables(request, type, id, dbName);
+        try {
+            AtomicReference<String> username = new AtomicReference<>(UserUtils.getLoginUser(request));
+            // Try to get data source authority from project and set the privilege user
+            projectOpenService.hasDataSourceAuth(username.get(), id,
+                    ds -> username.set(ds.getCreator()));
+            message = exchangisDataSourceService.queryDataSourceDBTables(username.get(), type, id, dbName);
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while getting tables";
             LOG.error(errorMessage, e);
@@ -405,7 +419,11 @@ public class ExchangisDataSourceRestfulApi {
 
         Message message = null;
         try{
-            message = exchangisDataSourceService.queryDataSourceDBTableFields(request, type, id, dbName, tableName);
+            AtomicReference<String> username = new AtomicReference<>(UserUtils.getLoginUser(request));
+            // Try to get data source authority from project and set the privilege user
+            projectOpenService.hasDataSourceAuth(username.get(), id,
+                    ds -> username.set(ds.getCreator()));
+            message = exchangisDataSourceService.queryDataSourceDBTableFields(username.get(), type, id, dbName, tableName);
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while getting table fields";
             LOG.error(errorMessage, e);
@@ -413,19 +431,6 @@ public class ExchangisDataSourceRestfulApi {
         }
         return message;
 
-    }
-
-    @RequestMapping( value = "/fieldsmapping", method = RequestMethod.POST)
-    public Message queryDataSourceDBTableFieldsMapping(HttpServletRequest request, @RequestBody FieldMappingVO vo) throws Exception {
-        Message message = null;
-        try{
-            message = exchangisDataSourceService.queryDataSourceDBTableFieldsMapping(request, vo);
-        } catch (ExchangisDataSourceException e) {
-            String errorMessage = "Error occur while getting field List Information";
-            LOG.error(errorMessage, e);
-            message = Message.error("获取表字段列表信息失败，请检查数据源配置或更换数据源");
-        }
-        return message;
     }
 
     @RequestMapping( value = "/tools/encrypt", method = RequestMethod.POST)

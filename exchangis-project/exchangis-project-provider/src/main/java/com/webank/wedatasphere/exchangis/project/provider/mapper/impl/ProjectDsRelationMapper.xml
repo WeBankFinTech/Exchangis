@@ -73,4 +73,10 @@
             </foreach>
         </if>
     </select>
+
+    <select id="getByUserAndDsId" resultMap="projectDsResult">
+        SELECT * FROM <include refid="tableName"/>
+        WHERE  data_source_id = #{dsId}
+        AND project_id IN ( SELECT project_id FROM exchangis_project_user WHERE priv_user = #{username}) LIMIT 1;
+    </select>
 </mapper>

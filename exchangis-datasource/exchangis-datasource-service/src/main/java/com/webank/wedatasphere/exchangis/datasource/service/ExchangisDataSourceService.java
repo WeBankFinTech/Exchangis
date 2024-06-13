@@ -447,19 +447,24 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         return Message.ok().data("id", result.getData().getId());
     }
 
-    public Message queryDataSourceDBs(HttpServletRequest request, String type, Long id) throws Exception {
+    /**
+     * Query database from data source
+     * @param username username
+     * @param type type
+     * @param id id
+     * @return message
+     * @throws Exception e
+     */
+    public Message queryDataSourceDBs(String username, String type, Long id) throws Exception {
         ExchangisDataSourceDefinition definition = context.getExchangisDsDefinition(type);
         LinkisMetaDataRemoteClient metaDataRemoteClient = definition.getMetaDataRemoteClient();
-
-        String userName = UserUtils.getLoginUser(request);
-        LOGGER.info("queryDataSourceDBs userName:" + userName);
         MetadataGetDatabasesResult databases;
         try {
             databases = metaDataRemoteClient.getDatabases(MetadataGetDatabasesAction.builder()
-//                    .setSystem("exchangis")
+                    .setSystem("exchangis")
                     .setSystem(type)
                     .setDataSourceId(id)
-                    .setUser(userName)
+                    .setUser(username)
                     .build());
         } catch (Exception e) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_DATABASES_ERROR.getCode(), e.getMessage());
@@ -470,14 +475,19 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         }
 
         List<String> dbs = Optional.ofNullable(databases.getDbs()).orElse(new ArrayList<>());
-
         return Message.ok().data("dbs", dbs);
     }
 
-    public Message queryDataSourceDBTables(HttpServletRequest request, String type, Long id, String dbName) throws Exception {
-        String user = UserUtils.getLoginUser(request);
-        LOGGER.info("queryDataSourceDBTables userName:" + user);
-
+    /**
+     * Query table in database from data source
+     * @param username username
+     * @param type type
+     * @param id id
+     * @param dbName database name
+     * @return message
+     * @throws Exception e
+     */
+    public Message queryDataSourceDBTables(String username, String type, Long id, String dbName) throws Exception {
         ExchangisDataSourceDefinition definition = context.getExchangisDsDefinition(type);
         MetadataGetTablesResult tables;
         try {
@@ -486,7 +496,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                     .setSystem(type)
                     .setDataSourceId(id)
                     .setDatabase(dbName)
-                    .setUser(user)
+                    .setUser(username)
                     .build()
             );
         } catch (Exception e) {
@@ -496,9 +506,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         if (Objects.isNull(tables)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_TABLES_ERROR.getCode(), "metadata get tables null or empty");
         }
-
         List<String> tbs = Optional.ofNullable(tables.getTables()).orElse(new ArrayList<>());
-
         return Message.ok().data("tbs", tbs);
     }
 
@@ -592,12 +600,19 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
 
     }
 
-    public Message queryDataSourceDBTableFields(HttpServletRequest request, String type, Long id, String dbName, String tableName) throws Exception {
+    /**
+     * Query table fields
+     * @param username username
+     * @param type type
+     * @param id id
+     * @param dbName database name
+     * @param tableName table name
+     * @return message
+     * @throws Exception e
+     */
+    public Message queryDataSourceDBTableFields(String username, String type, Long id, String dbName, String tableName) throws Exception {
         ExchangisDataSourceDefinition definition = context.getExchangisDsDefinition(type);
         LinkisMetaDataRemoteClient metaDataRemoteClient = definition.getMetaDataRemoteClient();
-
-        String user = UserUtils.getLoginUser(request);
-        LOGGER.info("queryDataSourceDBTableFields userName:" + user);
         List<MetaColumnInfo> allColumns;
         try {
             MetadataGetColumnsResult columns = metaDataRemoteClient.getColumns(MetadataGetColumnsAction.builder()
@@ -605,9 +620,8 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                     .setDataSourceId(id)
                     .setDatabase(dbName)
                     .setTable(tableName)
-                    .setUser(user)
+                    .setUser(username)
                     .build());
-
             allColumns = columns.getAllColumns();
         } catch (Exception e) {
             throw new ExchangisDataSourceException(CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(), e.getMessage());
@@ -821,6 +835,8 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         }
         return null;
     }
+
+    @Override
     public GetDataSourceInfoResultDTO getDataSource(String userName, Long id) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         try {
@@ -1310,70 +1326,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
 
     }
 
-    /**
-     * TODO: the mapping function is defined by the rule of Hive directly, we should abstract to support all the types
-     * @param request
-     * @param vo
-     * @return
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    public Message queryDataSourceDBTableFieldsMapping(HttpServletRequest request, FieldMappingVO vo) throws Exception {
-
-        this.checkDSSupportDegree(vo.getEngine(), vo.getSourceTypeId(), vo.getSinkTypeId());
-        boolean containHive = "HIVE".equals(vo.getSourceTypeId()) || "HIVE".equals(vo.getSinkTypeId());
-
-        Message message = Message.ok();
-        message.data("addEnable", !containHive);
-
-        Message sourceMessage = this.queryDataSourceDBTableFields(request, vo.getSourceTypeId(), vo.getSourceDataSourceId(), vo.getSourceDataBase(), vo.getSourceTable());
-        List<DataSourceDbTableColumnDTO> sourceFields = (List<DataSourceDbTableColumnDTO>) sourceMessage.getData().get("columns");
-        for (int i = 0; i < sourceFields.size(); i++) {
-            DataSourceDbTableColumnDTO field = sourceFields.get(i);
-            field.setFieldIndex(i);
-            field.setFieldEditable(!"HIVE".equals(vo.getSourceTypeId()) && !"ELASTICSEARCH".equals(vo.getSourceTypeId()));
-        }
-        message.data("sourceFields", sourceFields);
-
-        Message sinkMessage = this.queryDataSourceDBTableFields(request, vo.getSinkTypeId(), vo.getSinkDataSourceId(), vo.getSinkDataBase(), vo.getSinkTable());
-        List<DataSourceDbTableColumnDTO> sinkFields = (List<DataSourceDbTableColumnDTO>) sinkMessage.getData().get("columns");
-        for (int i = 0; i < sinkFields.size(); i++) {
-            DataSourceDbTableColumnDTO field = sinkFields.get(i);
-//            field.setFieldIndex(i);
-            field.setFieldEditable(!"HIVE".equals(vo.getSinkTypeId()) && !"ELASTICSEARCH".equals(vo.getSinkTypeId()));
-        }
-        message.data("sinkFields", sinkFields);
-
-        // field mapping deduction
-        List<Map<String, Object>> deductions = new ArrayList<>();
-        List<DataSourceDbTableColumnDTO> left = sourceFields;
-        List<DataSourceDbTableColumnDTO> right = sinkFields;
-        boolean exchanged = false;
-        if (containHive && "HIVE".equals(vo.getSourceTypeId())) {
-            left = sinkFields;
-            right = sourceFields;
-            exchanged = true;
-        }
-
-        // source size and sink size must not be null
-        if (!Objects.isNull(left) && left.size() > 0) {
-            for (int i = 0; i < right.size(); i ++){
-                DataSourceDbTableColumnDTO leftElement = left.get(i % left.size());
-                DataSourceDbTableColumnDTO rightElement = right.get(i);
-                Map<String, Object> deduction = new HashMap<>();
-                deduction.put("source", exchanged ? rightElement : leftElement);
-                deduction.put("sink", exchanged ? leftElement : rightElement);
-                deduction.put("deleteEnable", true);
-                deductions.add(deduction);
-            }
-        }
-
-        message.data("deductions", deductions);
-        message.data("transformEnable", true);
-
-        return message;
-    }
-
     public Message encryptConnectInfo(String encryStr) throws Exception {
         if (Objects.isNull(encryStr)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "dataSourceType connect parameter show not be null");
@@ -1422,7 +1374,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
     private List<ExchangisDataSourceDTO> toExchangisDataSources(Long projectId, List<ExchangisProjectDsRelation> dsRelations){
         return dsRelations.stream().map(ds -> {
             ExchangisDataSourceDTO item = new ExchangisDataSourceDTO();
-            item.setId(ds.getId());
+            item.setId(ds.getDsId());
             item.setName(ds.getDsName());
             item.setType(ds.getDsType());
             item.setCreateUser(ds.getDsCreator());

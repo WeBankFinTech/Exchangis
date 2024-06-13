@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform.mappings;
 
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
@@ -110,8 +111,11 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
         String database = HIVE_DATABASE.getValue(paramSet);
         String table = HIVE_TABLE.getValue(paramSet);
         JobParam<String> dataSourceId = paramSet.get(JobParamConstraints.DATA_SOURCE_ID);
+        JobParam<String> dsCreator = paramSet.get(JobParamConstraints.DATA_SOURCE_CREATOR);
+        String dsOwner = Objects.nonNull(dsCreator) ? dsCreator.getValue() : GlobalConfiguration.getAdminUser();
         try {
-           return Objects.requireNonNull(getBean(MetadataInfoService.class)).getTableProps(getJobBuilderContext().getOriginalJob().getCreateUser(),
+           return Objects.requireNonNull(getBean(MetadataInfoService.class)).getTableProps(
+                   Optional.ofNullable(dsOwner).orElse(getJobBuilderContext().getOriginalJob().getCreateUser()),
                     Long.valueOf(dataSourceId.getValue()), database, table);
         } catch (ExchangisDataSourceException e) {
             throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());
@@ -126,8 +130,11 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
         List<String> partitionKeys = new ArrayList<>();
         String database = HIVE_DATABASE.getValue(paramSet);
         String table = HIVE_TABLE.getValue(paramSet);
+        JobParam<String> dsCreator = paramSet.get(JobParamConstraints.DATA_SOURCE_CREATOR);
+        String dsOwner = Objects.nonNull(dsCreator) ? dsCreator.getValue() : GlobalConfiguration.getAdminUser();
         try {
-            partitionKeys = Objects.requireNonNull(getBean(MetadataInfoService.class)).getPartitionKeys(getJobBuilderContext().getOriginalJob().getCreateUser(),
+            partitionKeys = Objects.requireNonNull(getBean(MetadataInfoService.class)).getPartitionKeys(
+                    Optional.ofNullable(dsOwner).orElse(getJobBuilderContext().getOriginalJob().getCreateUser()),
                     Long.parseLong(dataSourceId.getValue()), database, table);
         } catch (ExchangisDataSourceException e) {
             throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());

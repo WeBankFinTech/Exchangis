@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping;
 
+import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
@@ -16,6 +17,7 @@ import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mappi
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match.FieldColumnMatch;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match.FieldMatchStrategy;
 import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +46,16 @@ public class FieldMappingTransformer implements Transformer {
      */
     private final JobTransformRuleDao transformRuleDao;
 
-    public FieldMappingTransformer(FieldMappingRulesFusion rulesFusion, JobTransformRuleDao transformRuleDao){
+    /**
+     * Project open service
+     */
+    private final ProjectOpenService projectOpenService;
+
+    public FieldMappingTransformer(FieldMappingRulesFusion rulesFusion,
+                                   JobTransformRuleDao transformRuleDao, ProjectOpenService projectOpenService){
         this.rulesFusion = rulesFusion;
         this.transformRuleDao = transformRuleDao;
+        this.projectOpenService = projectOpenService;
     }
 
     @Override
@@ -86,8 +95,12 @@ public class FieldMappingTransformer implements Transformer {
         List<FieldColumn> sourceColumns = new ArrayList<>();
         if (!requestVo.isSrcTblNotExist()) {
             try {
+                AtomicReference<String> operator = new AtomicReference<>(requestVo.getOperator());
+                // Try to get data source authority from project and set the privilege user
+                projectOpenService.hasDataSourceAuth(operator.get(), requestVo.getSourceDataSourceId(),
+                        ds -> operator.set(ds.getCreator()));
                 List<MetaColumn> metaColumns = getOrLoadMetadataInfoService().
-                        getColumns(requestVo.getOperator(), requestVo.getSourceDataSourceId(),
+                        getColumns(operator.get(), requestVo.getSourceDataSourceId(),
                                 requestVo.getSourceDataBase(), requestVo.getSourceTable());
                 boolean editable = rule.getFieldEditEnableRuleItem().getOrDefault(TransformRule.Direction.SOURCE.name(), true);
                 for (int i = 0; i < metaColumns.size(); i++) {
@@ -102,8 +115,12 @@ public class FieldMappingTransformer implements Transformer {
         List<FieldColumn> sinkColumns = new ArrayList<>();
         if (!requestVo.isSinkTblNotExist()) {
             try {
+                AtomicReference<String> operator = new AtomicReference<>(requestVo.getOperator());
+                // Try to get data source authority from project and set the privilege user
+                projectOpenService.hasDataSourceAuth(operator.get(), requestVo.getSinkDataSourceId(),
+                        ds -> operator.set(ds.getCreator()));
                 List<MetaColumn> metaColumns = getOrLoadMetadataInfoService().
-                        getColumns(requestVo.getOperator(), requestVo.getSinkDataSourceId(),
+                        getColumns(operator.get(), requestVo.getSinkDataSourceId(),
                                 requestVo.getSinkDataBase(), requestVo.getSinkTable());
                 boolean editable = rule.getFieldEditEnableRuleItem().getOrDefault(TransformRule.Direction.SINK.name(), true);
                 for (int i = 0; i < metaColumns.size(); i++) {

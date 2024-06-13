@@ -9,7 +9,11 @@ public class JobParamConstraints {
 
     public static final String NULL_FORMAT = "nullFormat";
 
-    public static final String DATA_SOURCE_ID = "data_source_id";
+    public static final String DATA_SOURCE_ID = "_data_source_id";
+
+    public static final String DATA_SOURCE_NAME = "_data_source_name";
+
+    public static final String DATA_SOURCE_CREATOR = "_data_source_creator";
 
     public static final String USERNAME = "username";
 

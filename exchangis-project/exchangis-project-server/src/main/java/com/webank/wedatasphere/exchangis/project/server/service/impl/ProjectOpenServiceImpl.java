@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.project.server.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.webank.wedatasphere.exchangis.common.domain.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
@@ -9,6 +10,7 @@ import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectDsQueryVo;
 import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectErrorException;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectDsRelationMapper;
+import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectUserMapper;
 import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import com.webank.wedatasphere.exchangis.project.provider.utils.ProjectAuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Implement of open service
@@ -57,6 +60,63 @@ public class ProjectOpenServiceImpl implements ProjectOpenService {
                 LOG.warn("Fail to validate the authority of project [{}] in operation [{}] for user [{}]",
                         project.getName(), operationType, username, e);
             }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean hasDataSourceAuth(String username, Long dataSourceId, Consumer<ExchangisDataSource> authority) {
+        ExchangisProjectDsRelation dsRelation = projectDsRelationMapper
+                .getByUserAndDsId(username, dataSourceId);
+        if (Objects.nonNull(dsRelation)){
+            // Call back the data source authority
+            authority.accept(new ExchangisDataSource() {
+                @Override
+                public Long getId() {
+                    return dsRelation.getDsId();
+                }
+
+                @Override
+                public void setId(Long id) {
+                }
+
+                @Override
+                public String getType() {
+                    return dsRelation.getDsType();
+                }
+
+                @Override
+                public void setType(String type) {
+                }
+
+                @Override
+                public String getName() {
+                    return dsRelation.getDsName();
+                }
+
+                @Override
+                public void setName(String name) {
+                }
+
+                @Override
+                public String getCreator() {
+                    return dsRelation.getDsCreator();
+                }
+
+                @Override
+                public void setCreator(String creator) {
+                }
+
+                @Override
+                public String getDesc() {
+                    return null;
+                }
+
+                @Override
+                public void setDesc(String desc) {
+                }
+            });
+            return true;
         }
         return false;
     }

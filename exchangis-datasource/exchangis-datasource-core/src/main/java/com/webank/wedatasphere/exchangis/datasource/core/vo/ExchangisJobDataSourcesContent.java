@@ -2,7 +2,10 @@ package com.webank.wedatasphere.exchangis.datasource.core.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.webank.wedatasphere.exchangis.common.domain.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceType;
+
+import java.util.Objects;
 
 /**
  * string: HIVE.ID.DB.TABLE
@@ -10,6 +13,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSou
  *  "type": "HIVE",
  *  "id": 467,
  *  "name": "HIVE-DEMO",
+ *  "creator": "hadoop",
  *  "database": "default",
  *  "table": "demo-test"
  * }
@@ -22,7 +26,7 @@ public class ExchangisJobDataSourcesContent {
     /**
      * Source ds
      */
-//    private ExchangisJobDataSource source = new ExchangisJobDataSource();
+    private ExchangisJobDataSource source = new ExchangisJobDataSource();
 
 
     @JsonProperty("sink_id")
@@ -31,7 +35,7 @@ public class ExchangisJobDataSourcesContent {
     /**
      * Sink ds
      */
-//    private ExchangisJobDataSource sink = new ExchangisJobDataSource();
+    private ExchangisJobDataSource sink = new ExchangisJobDataSource();
 
     public String getSourceId() {
         return sourceId;
@@ -49,24 +53,24 @@ public class ExchangisJobDataSourcesContent {
         this.sinkId = sinkId;
     }
 
-//    public void setSource(ExchangisJobDataSource source) {
-//        this.source = source;
-//    }
+    public void setSource(ExchangisJobDataSource source) {
+        this.source = source;
+    }
 
-//    public ExchangisJobDataSource getSource() {
-//        return source;
-//    }
+    public ExchangisJobDataSource getSource() {
+        return source;
+    }
 
-//    public void setSink(ExchangisJobDataSource sink) {
-//        this.sink = sink;
-//    }
+    public void setSink(ExchangisJobDataSource sink) {
+        this.sink = sink;
+    }
 
-//    public ExchangisJobDataSource getSink() {
-//        return sink;
-//    }
+    public ExchangisJobDataSource getSink() {
+        return sink;
+    }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class ExchangisJobDataSource {
+    public static class ExchangisJobDataSource implements ExchangisDataSource {
 
         /**
          * Data source type
@@ -76,12 +80,17 @@ public class ExchangisJobDataSourcesContent {
         /**
          * Data source id
          */
-        private String id;
+        private Long id;
 
         /**
          * Data source name
          */
         private String name;
+
+        /**
+         * Data source creator
+         */
+        private String creator;
 
         /**
          * Database field
@@ -98,20 +107,25 @@ public class ExchangisJobDataSourcesContent {
          */
         private String uri;
 
-        public void setType(ExchangisDataSourceType type) {
-            this.type = type;
+
+        @Override
+        public void setType(String type) {
+            this.type = ExchangisDataSourceType.valueOf(type);
         }
 
-        public ExchangisDataSourceType getType() {
-            return type;
+
+        public Long getId() {
+            return id;
         }
 
-        public void setId(String id) {
+        @Override
+        public void setId(Long id) {
             this.id = id;
         }
 
-        public String getId() {
-            return id;
+        @Override
+        public String getType() {
+            return Objects.nonNull(type) ? type.name() : null;
         }
 
         public void setName(String name) {
@@ -121,6 +135,27 @@ public class ExchangisJobDataSourcesContent {
         public String getName() {
             return name;
         }
+
+        @Override
+        public String getCreator() {
+            return this.creator;
+        }
+
+        @Override
+        public void setCreator(String creator) {
+            this.creator = creator;
+        }
+
+        @Override
+        public String getDesc() {
+            return null;
+        }
+
+        @Override
+        public void setDesc(String desc) {
+
+        }
+
 
         public void setDatabase(String database) {
             this.database = database;
