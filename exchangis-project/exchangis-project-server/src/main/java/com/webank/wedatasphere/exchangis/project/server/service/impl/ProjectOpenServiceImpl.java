@@ -35,9 +35,20 @@ public class ProjectOpenServiceImpl implements ProjectOpenService {
 
     @Resource
     private ProjectDsRelationMapper projectDsRelationMapper;
+
+    @Override
+    public ExchangisProjectInfo getProject(Long projectId) {
+        return projectService.getProjectDetailById(projectId);
+    }
+
     @Override
     public boolean hasAuthority(String username, Long projectId, OperationType operationType) {
-        ExchangisProjectInfo project = projectService.getProjectDetailById(projectId);
+        return hasAuthority(username,
+                projectService.getProjectDetailById(projectId), operationType);
+    }
+
+    @Override
+    public boolean hasAuthority(String username, ExchangisProjectInfo project, OperationType operationType) {
         if (Objects.nonNull(project)){
             try {
                 return ProjectAuthorityUtils.hasProjectAuthority(username,

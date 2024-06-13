@@ -36,6 +36,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -208,7 +209,8 @@ public class ExchangisProjectDssAppConnRestfulApi {
                     if (Objects.nonNull(result)){
                         GetDataSourceInfoResultDTO.DataSourceInfoDTO dsInfo = result.getData();
                         dataSource.setId(dsInfo.getInfo().getId());
-                        dataSource.setType(dsInfo.getInfo().getDataSourceType().getName());
+                        dataSource.setType(dsInfo.getInfo().getDataSourceType()
+                                .getName().toUpperCase(Locale.ROOT));
                         dataSource.setCreator(dsInfo.getInfo().getCreateUser());
                     }
                 } catch (ErrorException e) {
