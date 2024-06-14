@@ -266,14 +266,14 @@ public class DefaultJobInfoService implements JobInfoService {
         // 校验引擎是否支持该数据通道
         for (int i = 0; i < content.size(); i++) {
             ExchangisJobInfoContent task = content.get(i);
-            String sourceType = task.getDataSources().getSourceId().split("\\.")[0];
-            String sinkType = task.getDataSources().getSinkId().split("\\.")[0];
+            String sourceType = task.getDataSources().getSource().getType();
+            String sinkType = task.getDataSources().getSink().getType();
             this.exchangisDataSourceService.checkDSSupportDegree(engine, sourceType, sinkType);
             ExchangisJobDsBind dsBind = new ExchangisJobDsBind();
             dsBind.setJobId(jobVo.getId());
             dsBind.setTaskIndex(i);
-            dsBind.setSourceDsId(Long.parseLong(task.getDataSources().getSourceId().split("\\.")[1]));
-            dsBind.setSinkDsId(Long.parseLong(task.getDataSources().getSinkId().split("\\.")[1]));
+            dsBind.setSourceDsId(task.getDataSources().getSource().getId());
+            dsBind.setSinkDsId(task.getDataSources().getSink().getId());
             dsBinds.add(dsBind);
         }
         exchangisJob.setModifyUser(jobVo.getModifyUser());

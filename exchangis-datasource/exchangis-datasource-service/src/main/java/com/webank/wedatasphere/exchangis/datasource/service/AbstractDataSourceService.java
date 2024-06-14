@@ -84,7 +84,7 @@ public abstract class AbstractDataSourceService {
         ExchangisDataSourceIdUI sinkUi = parseDataSourceIdUi(requestUser, sinkId,
                 dataSources.getSink());
         ExchangisDataSourceIdsUI ids = new ExchangisDataSourceIdsUI();
-        ids.setSink(sourceUi);
+        ids.setSource(sourceUi);
         ids.setSink(sinkUi);
         return ids;
     }
@@ -334,6 +334,7 @@ public abstract class AbstractDataSourceService {
                         String name = dataSourceInfo.getData().getInfo().getDataSourceName();
                         ui.setDs(name);
                         ui.setName(name);
+                        ui.setCreator(dataSourceInfo.getData().getInfo().getCreateUser());
                     }
                 } catch (ErrorException e) {
                     // Ignore

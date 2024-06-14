@@ -26,8 +26,8 @@ public class ExchangisJobDataSourcesContent {
     /**
      * Source ds
      */
+    @JsonProperty("source")
     private ExchangisJobDataSource source = new ExchangisJobDataSource();
-
 
     @JsonProperty("sink_id")
     private String sinkId;
@@ -35,6 +35,7 @@ public class ExchangisJobDataSourcesContent {
     /**
      * Sink ds
      */
+    @JsonProperty("sink")
     private ExchangisJobDataSource sink = new ExchangisJobDataSource();
 
     public String getSourceId() {
@@ -95,7 +96,7 @@ public class ExchangisJobDataSourcesContent {
         /**
          * Database field
          */
-        private String database;
+        private String db;
 
         /**
          * Table field
@@ -157,12 +158,12 @@ public class ExchangisJobDataSourcesContent {
         }
 
 
-        public void setDatabase(String database) {
-            this.database = database;
+        public void setDb(String db) {
+            this.db = db;
         }
 
-        public String getDatabase() {
-            return database;
+        public String getDb() {
+            return db;
         }
 
         public void setTable(String table) {

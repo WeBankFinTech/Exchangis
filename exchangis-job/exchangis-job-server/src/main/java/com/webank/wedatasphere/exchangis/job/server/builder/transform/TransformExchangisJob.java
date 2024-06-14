@@ -233,7 +233,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
                 }
                 paramSet.addNonNull(JobParams.newOne(JobParamConstraints.DATA_SOURCE_NAME, dataSource.getName(), true));
                 paramSet.addNonNull(JobParams.newOne(JobParamConstraints.DATA_SOURCE_CREATOR, dataSource.getCreator(), true));
-                paramSet.addNonNull(JobParams.newOne(JobParamConstraints.DATABASE, dataSource.getDatabase(), true));
+                paramSet.addNonNull(JobParams.newOne(JobParamConstraints.DATABASE, dataSource.getDb(), true));
                 paramSet.addNonNull(JobParams.newOne(JobParamConstraints.TABLE, dataSource.getTable(), true));
                 return dataSource.getType();
             }

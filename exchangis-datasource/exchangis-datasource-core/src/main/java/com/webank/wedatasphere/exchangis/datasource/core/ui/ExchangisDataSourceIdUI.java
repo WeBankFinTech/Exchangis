@@ -36,7 +36,7 @@ public class ExchangisDataSourceIdUI {
         this.id = dataSource.getId() + "";
         this.name = dataSource.getName();
         this.ds = this.name;
-        this.db = dataSource.getDatabase();
+        this.db = dataSource.getDb();
         this.table = dataSource.getTable();
         this.creator = dataSource.getCreator();
     }
