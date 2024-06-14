@@ -635,7 +635,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         int total = 0;
         // If to fetch from remote server
         boolean toRemote = true;
-        List<ExchangisDataSourceDTO> dataSourcesQuery = new ArrayList<>();
+        Map<String, ExchangisDataSourceDTO> dsQueryMap = new LinkedHashMap<>();
         Long refProjectId = vo.getProjectId();
         if (Objects.nonNull(refProjectId)){
             // Try to get data sources from project relation
@@ -646,6 +646,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                 if (projectOpenService.hasAuthority(username, project, OperationType.PROJECT_QUERY)){
                     // Build project data source query
                     ProjectDsQueryVo dsQueryVo = new ProjectDsQueryVo();
+                    dsQueryVo.setProjectId(refProjectId);
                     dsQueryVo.setName(dataSourceName);
                     if (Objects.nonNull(typeId)){
                         // Try to find the type string
@@ -658,13 +659,19 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                     PageResult<ExchangisProjectDsRelation> dsRelations = projectOpenService.queryDsRelation(dsQueryVo);
                     total += dsRelations.getTotal();
                     Optional.ofNullable(toExchangisDataSources(refProjectId, dsRelations.getList()))
-                            .ifPresent(dataSourcesQuery::addAll);
+                            .ifPresent(list -> {
+                                list.forEach(item -> {
+                                    if (!dsQueryMap.containsKey(item.getName())) {
+                                        dsQueryMap.put(item.getName(), item);
+                                    }
+                                });
+                            });
                 }
             }
         }
         if (toRemote) {
             // Recalculate the page number and page size
-            if (dataSourcesQuery.size() >= pageSize){
+            if (dsQueryMap.size() >= pageSize){
                 page = 1;
             } else if (total > 0){
                 int totalPages = (total + pageSize - 1) / pageSize;
@@ -696,12 +703,18 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                 result = linkisDataSourceRemoteClient.queryDataSource(action);
                 total += result.getTotalPage();
                 List<DataSource> dataSources = result.getAllDataSource();
-                int addSize = Math.min(pageSize - dataSourcesQuery.size(), dataSources.size());
+                int addSize = Math.min(pageSize - dsQueryMap.size(), dataSources.size());
                 if (addSize > 0){
                     Optional.ofNullable(toExchangisDataSources(dataSources.subList(0, addSize)))
-                            .ifPresent(dataSourcesQuery::addAll);
+                            .ifPresent(list -> {
+                                for(int i = 0; i < addSize; i++) {
+                                    ExchangisDataSourceDTO item = list.get(i);
+                                    if (!dsQueryMap.containsKey(item.getName())) {
+                                        dsQueryMap.put(item.getName(), item);
+                                    }
+                                }
+                            });
                 }
-
             } catch (Exception e) {
                 if (e instanceof ErrorException) {
                     ErrorException ee = (ErrorException) e;
@@ -712,7 +725,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
             }
         }
         Message message = Message.ok();
-        message.data("list", dataSourcesQuery);
+        message.data("list", dsQueryMap.values());
         message.data("total", total);
         return message;
     }
