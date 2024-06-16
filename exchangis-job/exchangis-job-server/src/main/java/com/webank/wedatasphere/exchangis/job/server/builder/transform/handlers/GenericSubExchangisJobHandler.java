@@ -9,9 +9,11 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.datasource.client.response.GetConnectParamsByDataSourceIdResult;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -23,8 +25,10 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
     public static final String ID_SPLIT_SYMBOL = "\\.";
 
     private static final JobParamDefine<String> SOURCE_ID = JobParams.define("source_id");
+    private static final JobParamDefine<Map<String, Object>> SOURCE = JobParams.define("source");
 
     private static final JobParamDefine<String> SINK_ID = JobParams.define("sink_id");
+    private static final JobParamDefine<Map<String, Object>> SINK = JobParams.define("sink");
 
     @Override
     public String dataSourceType() {
@@ -38,7 +42,7 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
         JobParamSet sourceParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE);
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sourceParamSet)){
             info("Fetch data source parameters in [{}]", subExchangisJob.getSourceType());
-            appendDataSourceParams(idParamSet.load(SOURCE_ID),  sourceParamSet, originJob.getCreateUser());
+            appendDataSourceParams(idParamSet.load(SOURCE), idParamSet.load(SOURCE_ID), sourceParamSet, originJob.getCreateUser());
         }
 
     }
@@ -50,21 +54,30 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
         JobParamSet sinkParamSet = subExchangisJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK);
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sinkParamSet)){
             info("Fetch data source parameters in [{}]", subExchangisJob.getSinkType());
-            appendDataSourceParams(idParamSet.load(SINK_ID),  sinkParamSet, originJob.getCreateUser());
+            appendDataSourceParams(idParamSet.load(SINK), idParamSet.load(SINK_ID), sinkParamSet, originJob.getCreateUser());
         }
     }
 
     /**
      * Append data source params
-     * @param idParam param
+     * @param param param
+     * @param idParam id param
      * @param paramSet param set
      * @param userName username
      * @throws ErrorException
      */
-    private void appendDataSourceParams(JobParam<String> idParam, JobParamSet paramSet, String userName) throws ErrorException {
+    private void appendDataSourceParams(JobParam<Map<String, Object>> param, JobParam<String> idParam, JobParamSet paramSet, String userName) throws ErrorException {
         ExchangisDataSourceService dataSourceService = DataSourceService.instance;
+        Map<String, Object> paramValue = param.getValue();
         String sourceId = idParam.getValue();
-        if(Objects.nonNull(sourceId)){
+        if (Objects.nonNull(paramValue) && !paramValue.isEmpty()) {
+            String id = String.valueOf(paramValue.get("id"));
+            if (StringUtils.isNoneBlank(id)){
+                GetConnectParamsByDataSourceIdResult infoResult = dataSourceService.getDataSourceConnectParamsById(userName, Long.valueOf(id));
+                Optional.ofNullable(infoResult.connectParams()).ifPresent(connectParams ->
+                        connectParams.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, true))));
+            }
+        } else {
             // {TYPE}.{ID}.{DB}.{TABLE}
             String[] idSerial = sourceId.split(ID_SPLIT_SYMBOL);
             if (idSerial.length >= 2){
