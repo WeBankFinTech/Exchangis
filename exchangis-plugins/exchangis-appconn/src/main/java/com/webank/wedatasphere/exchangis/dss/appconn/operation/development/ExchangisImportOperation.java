@@ -38,6 +38,7 @@ public class ExchangisImportOperation extends AbstractDevelopmentOperation<Third
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public RefJobContentResponseRef importRef(ThirdlyRequestRef.ImportRequestRefImpl importRequestRef) throws ExternalOperationFailedException {
         logger.info("User {} try to import Exchangis job {} with jobContent: {}, refProjectId: {}, projectName: {}, nodeType: {}.",
                 importRequestRef.getUserName(), importRequestRef.getName(), importRequestRef.getRefJobContent(),
@@ -45,21 +46,22 @@ public class ExchangisImportOperation extends AbstractDevelopmentOperation<Third
         DSSPostAction postAction = new DSSPostAction();
         postAction.setUser(importRequestRef.getUserName());
         postAction.addRequestPayload("projectId", importRequestRef.getRefProjectId());
+        postAction.addRequestPayload("projectName", importRequestRef.getProjectName());
         postAction.addRequestPayload("projectVersion", "v1");
         postAction.addRequestPayload("flowVersion", importRequestRef.getNewVersion());
         postAction.addRequestPayload("resourceId", importRequestRef.getResourceMap().get(ImportRequestRef.RESOURCE_ID_KEY));
         postAction.addRequestPayload("version", importRequestRef.getResourceMap().get(ImportRequestRef.RESOURCE_VERSION_KEY));
         postAction.addRequestPayload("user", importRequestRef.getUserName());
         InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(importRequestRef, importUrl, postAction, ssoRequestOperation);
-        Map<String, Object> realNode = (Map<String, Object>) responseRef.getData().get("sqoop");
+        Map<String, Object> realNode = (Map<String, Object>) responseRef.getData().get("importRefIds");
         long newId = 0L;
         for (Map.Entry<String, Object> entry : realNode.entrySet()) {
-            newId = ((Double) Double.parseDouble(entry.getValue().toString())).longValue();
+            newId = Long.parseLong(entry.getValue().toString());
             if (newId != 0) {
                 break;
             }
         }
-        logger.info("New job id is {}", newId);
+        logger.info("Import new job id in Exchangis: [{}]", newId);
         return RefJobContentResponseRef.newBuilder().setRefJobContent(MapUtils.newCommonMap(REF_JOB_ID, newId)).success();
     }
 

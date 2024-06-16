@@ -13,7 +13,8 @@ import java.util.Map;
  * @Date 2022/3/15 10:01
  */
 public interface ProjectImportService {
-    Message importProject(HttpServletRequest req, Map<String, Object> params) throws ExchangisJobServerException, ServerException;
 
-    IdCatalog importOpt(String projectJson, Long projectId, String versionSuffix, String userName, String importType) throws ExchangisJobServerException;
+    Message importProject(HttpServletRequest req, Map<String, Object> params) throws ExchangisJobServerException;
+
+    IdCatalog importOpt(String projectJson, Long projectId, String versionSuffix, String userName) throws ExchangisJobServerException;
 }

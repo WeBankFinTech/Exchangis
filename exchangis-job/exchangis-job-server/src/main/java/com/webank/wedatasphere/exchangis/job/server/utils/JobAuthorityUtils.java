@@ -93,7 +93,9 @@ public class JobAuthorityUtils {
             String errorMsg = String.format("Job may be deleted, please check it with job_id [%s] in table exchangis_job_entity", jobId);
             throw new ExchangisJobServerException(ExchangisJobExceptionCode.JOB_EXCEPTION_CODE.getCode(), errorMsg);
         }
-
+        if (privUser.equals(exchangisBasicJob.getCreateUser())){
+            return true;
+        }
         ExchangisProjectUser exchangisProjectUser = new ExchangisProjectUser();
         exchangisProjectUser.setProjectId(exchangisBasicJob.getProjectId());
         exchangisProjectUser.setPrivUser(privUser);

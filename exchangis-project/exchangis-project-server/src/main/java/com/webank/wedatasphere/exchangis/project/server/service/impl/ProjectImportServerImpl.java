@@ -1,5 +1,7 @@
 package com.webank.wedatasphere.exchangis.project.server.service.impl;
 
+import com.webank.wedatasphere.exchangis.engine.resource.bml.BmlClients;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.server.dto.ExportedProject;
 import com.webank.wedatasphere.exchangis.job.server.dto.IdCatalog;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
@@ -11,7 +13,6 @@ import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.bml.client.BmlClient;
-import org.apache.linkis.bml.client.BmlClientFactory;
 import org.apache.linkis.bml.protocol.BmlDownloadResponse;
 import org.apache.linkis.server.BDPJettyServerHelper;
 import org.apache.linkis.server.Message;
@@ -20,15 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.rmi.ServerException;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +43,7 @@ public class ProjectImportServerImpl implements ProjectImportService {
 
     Pattern pattern1 = Pattern.compile("([a-zA-Z]+_\\d+).*");
 
-    Pattern pattern2 = Pattern.compile("(\\S+)_v1\\S+");
+    Pattern pattern2 = Pattern.compile("(\\S+)_v\\d+\\S+");
 
     @Resource
     private JobInfoService jobInfoService;
@@ -53,135 +52,113 @@ public class ProjectImportServerImpl implements ProjectImportService {
     private ProjectMapper projectMapper;
 
     @Override
-    public Message importProject(HttpServletRequest req, Map<String, Object> params) throws ExchangisJobServerException, ServerException {
+    public Message importProject(HttpServletRequest req, Map<String, Object> params)
+            throws ExchangisJobServerException{
         String userName = SecurityFilter.getLoginUsername(req);
-        //String resourceId = "99763d27-a35e-43f2-829b-100830bca538";
         String resourceId = (String) params.get("resourceId");
         String version = (String) params.get("version");
         Long projectId = (Long) params.get("projectId");
-        //Long projectId = Long.parseLong("1497870871035973669");
-        //Long projectId = Long.parseLong("111111");
+        String projectName = String.valueOf(Optional.ofNullable(params.get("projectName")).orElse(""));
         String projectVersion = (String) params.get("projectVersion");
         String flowVersion = (String) params.get("flowVersion");
         String versionSuffix = projectVersion + "_" + flowVersion;
-        LOG.info("resourceId: {}, projectId: {}, versionSuffix: {}, version: {}, userName: {}, flowVersion: {}", resourceId, projectId, versionSuffix, version, userName, flowVersion);
-        BmlClient bmlClient = BmlClientFactory.createBmlClient(userName);
+        BmlClient bmlClient = BmlClients.getInstance();
         BmlDownloadResponse bmlDownloadResponse = bmlClient.downloadShareResource(userName, resourceId, version);
-        LOG.info("bmlDownloadResponse: {}", bmlDownloadResponse);
-        Message message = null;
         if (bmlDownloadResponse == null || !bmlDownloadResponse.isSuccess()) {
-            throw new ServerException("cannot download exported data from BML");
+            throw new ExchangisJobServerException(ExchangisJobExceptionCode.EXPORT_JOB_ERROR.getCode(),
+                    "Cannot download imported data/resource from BML (从BML下载导入资源失败)", null);
         }
+        LOG.info("Download jobs resource for project: [{}] " +
+                "from BML: [resourceId: {}, version: {}]", projectName, bmlDownloadResponse.resourceId(), bmlDownloadResponse.version());
+        Message message;
         try {
             String projectJson = IOUtils.toString(bmlDownloadResponse.inputStream(), StandardCharsets.UTF_8);
-            LOG.info("projectJson: {}", projectJson);
-            IdCatalog idCatalog = importOpt(projectJson, projectId, versionSuffix, userName, "import");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Download jobs resources: {}", projectJson);
+            }
+            IdCatalog idCatalog = importOpt(projectJson, projectId, versionSuffix, userName);
             message = Message.ok("import Job ok")
-                    .data("sqoop", idCatalog.getSqoop())
-                    .data("datax", idCatalog.getDatax());
-
+                    .data("importRefIds", idCatalog.getJobIds());
             return message;
         } catch (IOException | ExchangisJobServerException e) {
             LOG.error("Error occur while import option: {}", e.getMessage());
-            message = Message.error("Error occur while import option: {}");
-            //throw new ExchangisJobServerException(31101, "导入出现错误:" + "[" + e.getMessage() + "]");
+            message = Message.error("Error occur while import option: [" + e.getMessage() + "]");
         }
         finally {
             IOUtils.closeQuietly(bmlDownloadResponse.inputStream());
         }
-
         return message;
     }
 
     @Override
-    public IdCatalog importOpt(String projectJson, Long projectId, String versionSuffix, String userName, String importType) throws ExchangisJobServerException {
+    @Transactional(rollbackFor = Exception.class)
+    public IdCatalog importOpt(String projectJson, Long projectId, String versionSuffix, String userName) throws ExchangisJobServerException {
         ExportedProject exportedProject = BDPJettyServerHelper.gson().fromJson(projectJson, ExportedProject.class);
         IdCatalog idCatalog = new IdCatalog();
-
-        importSqoop(projectId, versionSuffix, exportedProject, idCatalog, userName, importType);
-
-        importDatax(projectId, versionSuffix, exportedProject, idCatalog, userName, importType);
-
+        if (!exportedProject.getJobs().isEmpty()) {
+            importJob(userName, exportedProject, idCatalog, projectId, versionSuffix);
+        }
         return idCatalog;
     }
 
-    private void importSqoop(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog, String userName, String importType) throws ExchangisJobServerException {
-        List<ExchangisJobVo> sqoops = exportedProject.getSqoops();
-        if (sqoops == null) {
-            return;
-        }
-        List<ExchangisProject> projects = projectMapper.getDetailByName(exportedProject.getName());
-        if (projects.size() == 0) {
-            ExchangisProject project = new ExchangisProject();
-            project.setName(exportedProject.getName());
-            project.setCreateTime(Calendar.getInstance().getTime());
-            project.setCreateUser(userName);
-            Long newProjectId = projectMapper.insertOne(project);
-            List<ExchangisProject> newProjects = projectMapper.getDetailByName(exportedProject.getName());
-            addSqoopTask (sqoops, newProjects, versionSuffix, idCatalog, projectId, importType);
-        }
-        else if (projects.size() == 1) {
-            addSqoopTask (sqoops, projects, versionSuffix, idCatalog, projectId, importType);
-        }
-        else {
-            throw new ExchangisJobServerException(31101, "Already exits duplicated project name(存在重复项目名称) projectName is:" + "[" + exportedProject.getName() + "]");
-        }
-    }
-
-    private void importDatax(Long projectId, String versionSuffix, ExportedProject exportedProject, IdCatalog idCatalog, String userName, String importType) throws ExchangisJobServerException {
-
-        List<ExchangisJobVo> dataxs = exportedProject.getDataxes();
-        if (dataxs == null) {
-            return;
-        }
-        List<ExchangisProject> projects = projectMapper.getDetailByName(exportedProject.getName());
-        if (projects.size() == 0) {
-            ExchangisProject project = new ExchangisProject();
-            project.setName(exportedProject.getName());
-            project.setCreateTime(Calendar.getInstance().getTime());
-            project.setCreateUser(userName);
-            Long newProjectId = projectMapper.insertOne(project);
-            List<ExchangisProject> newProjects = projectMapper.getDetailByName(exportedProject.getName());
-            addSqoopTask (dataxs, newProjects, versionSuffix, idCatalog, projectId, importType);
-        }
-        else if (projects.size() == 1) {
-            addSqoopTask (dataxs, projects, versionSuffix, idCatalog, projectId, importType);
-        }
-        else {
-            throw new ExchangisJobServerException(31101, "Already exits duplicated project name(存在重复项目名称) projectName is:" + "[" + exportedProject.getName() + "]");
-        }
-    }
-
-    public void addSqoopTask (List<ExchangisJobVo> sqoops, List<ExchangisProject> projects, String versionSuffix, IdCatalog idCatalog, Long projectId, String importType) throws ExchangisJobServerException {
-        for (ExchangisJobVo sqoop : sqoops) {
-            Long projectIdProd = projects.get(0).getId();
-            Long oldId = sqoop.getId();
-            if (importType.equals("import")) {
-                sqoop.setProjectId(projectId);
-            }
-            sqoop.setJobName(updateName(sqoop.getJobName(), versionSuffix));
-            //Long existingId = (long) 55;
-            LOG.info("oldId: {}, projectid: {}, jobName: {}", sqoop.getId(), sqoop.getProjectId(), sqoop.getJobName());
-            LOG.info("jobByNameWithProjectId: {}", jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId));
-            Long existingId;
-            if (jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId) == null || jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId).size() == 0) {
-                existingId = null;
+    /**
+     * Import job
+     * @param username username
+     * @param exportedProject exported project
+     * @param idCatalog id catalog
+     * @param projectId project id
+     * @param versionSuffix version suffix
+     * @throws ExchangisJobServerException e
+     */
+    private void importJob(String username, ExportedProject exportedProject, IdCatalog idCatalog,
+                           Long projectId, String versionSuffix) throws ExchangisJobServerException {
+        List<ExchangisJobVo> jobs = exportedProject.getJobs();
+        ExchangisProject importProj;
+        if (Objects.nonNull(projectId)) {
+            // Fetch import project
+            importProj = projectMapper.getDetailById(projectId);
+        } else {
+            // Try to fetch projects with name and use the first one
+            List<ExchangisProject> results = projectMapper.getDetailByName(exportedProject.getName());
+            if (results.isEmpty()) {
+                importProj = new ExchangisProject();
+                importProj.setName(exportedProject.getName());
+                importProj.setCreateTime(Calendar.getInstance().getTime());
+                importProj.setCreateUser(username);
+                projectMapper.insertOne(importProj);
+            } else if (results.size() == 1){
+                importProj = results.get(0);
             } else {
-                existingId = jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId).get(0).getId();
+                throw new ExchangisJobServerException(ExchangisJobExceptionCode.JOB_EXCEPTION_CODE.getCode(),
+                        "Already exits duplicated project name(存在重复项目名称) projectName is:" + "[" + exportedProject.getName() + "]");
             }
-            //Long existingId = jobInfoService.getByNameWithProjectId(sqoop.getJobName(), projectId);
-            if (existingId != null) {
-                idCatalog.getSqoop().put(oldId, existingId);
-                throw new ExchangisJobServerException(31101, "Already exits duplicated job name(存在重复任务名称) jobName is:" + "[" + sqoop.getJobName() + "]");
-            } else {
-                LOG.info("Sqoop job content is: {}, Modify user is: {}, jobType is: {}", sqoop.getContent(), sqoop.getExecuteUser(), sqoop.getJobType());
-                ExchangisJobVo jobVo = jobInfoService.createJob(sqoop);
-                LOG.info("oldId: {}, newid: {}, jobName: {}", sqoop.getId(), jobVo.getId(), jobVo.getJobName());
-                idCatalog.getSqoop().put(oldId, jobVo.getId());
+        }
+        // Redefine the project id
+        projectId = importProj.getId();
+        for (ExchangisJobVo job : jobs){
+            Long prevId = job.getId();
+            // Reset the project id
+            job.setProjectId(projectId);
+            job.setJobName(updateName(job.getJobName(), versionSuffix));
+            List<ExchangisJobVo> existedJobs = jobInfoService.getByNameWithProjectId(job.getJobName(), projectId);
+            if (!existedJobs.isEmpty()){
+                throw new ExchangisJobServerException(ExchangisJobExceptionCode.JOB_EXCEPTION_CODE.getCode(),
+                        "Already exits duplicated job name(存在重复任务名称) jobName is:" + "[" + job.getJobName() + "]");
             }
+            jobInfoService.createJob(job);
+            LOG.info("Success to import job: [name: {}, import id: {}, export id: {}]",
+                    job.getJobName(), job.getId(), prevId);
+            idCatalog.getJobIds().put(prevId, job.getId());
         }
     }
 
+
+    /**
+     * Update name
+     * @param name name
+     * @param versionSuffix version suffix
+     * @return new name
+     */
     private String updateName(String name, String versionSuffix) {
         if (StringUtils.isBlank(versionSuffix)) {
             return name;

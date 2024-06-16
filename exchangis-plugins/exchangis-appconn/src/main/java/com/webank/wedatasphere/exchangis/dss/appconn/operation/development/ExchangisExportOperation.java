@@ -33,6 +33,7 @@ public class ExchangisExportOperation
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public ExportResponseRef exportRef(ThirdlyRequestRef.RefJobContentRequestRefImpl exportRequestRef) throws ExternalOperationFailedException {
         logger.info("User {} try to export Exchangis job {} with jobContent: {}, refProjectId: {}, projectName: {}, nodeType: {}.",
                 exportRequestRef.getUserName(), exportRequestRef.getName(), exportRequestRef.getRefJobContent(),
@@ -43,13 +44,11 @@ public class ExchangisExportOperation
         postAction.addRequestPayload("partial", true);
         String nodeType = exportRequestRef.getType();
         Long id = ((Double) exportRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID)).longValue();
-        if(Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase(nodeType)) {
-            postAction.addRequestPayload("sqoopIds", id);
-        } else if(Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(nodeType)) {
-            postAction.addRequestPayload("dataXIds", id);
-        } else {
+        if(!Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase(nodeType) && !Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(nodeType)) {
             throw new ExternalOperationFailedException(90177, "Unknown Exchangis jobType " + exportRequestRef.getType());
         }
+        // Just set the export job id
+        postAction.addRequestPayload("jobIds",  id);
         InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(exportRequestRef, exportUrl, postAction, ssoRequestOperation);
         return ExportResponseRef.newBuilder().setResourceMap(responseRef.getData()).success();
     }

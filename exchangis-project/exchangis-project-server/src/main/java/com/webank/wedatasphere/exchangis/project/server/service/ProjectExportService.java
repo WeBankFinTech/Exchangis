@@ -5,9 +5,8 @@ import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServer
 import org.apache.linkis.server.Message;
 
 import javax.servlet.http.HttpServletRequest;
-import java.rmi.ServerException;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author tikazhang
@@ -21,10 +20,8 @@ public interface ProjectExportService {
      * @param username params
      * @return
      */
-    Message exportProject(Map<String, Object> params, String username, HttpServletRequest request) throws ExchangisJobServerException, ServerException;
+    Message exportProject(Map<String, Object> params, String username, HttpServletRequest request) throws ExchangisJobServerException;
 
-    ExportedProject export(Long projectId, Map<String, Set<Long>> moduleIdsMap, boolean partial, HttpServletRequest request) throws ExchangisJobServerException;
-
-    Map<String, Set<Long>> getModuleIdsMap(Map<String, Object> params);
+    ExportedProject export(Long projectId, List<Long> jobIds, boolean partial, HttpServletRequest request) throws ExchangisJobServerException;
 
 }

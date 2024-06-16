@@ -10,23 +10,16 @@ import java.util.Map;
  */
 public class IdCatalog {
 
-    private Map<Long, Long> sqoop = Maps.newHashMap();
+    /**
+     * Job ids
+     */
+    private Map<Long, Long> jobIds = Maps.newHashMap();
 
-    private Map<Long, Long> datax = Maps.newHashMap();
-
-    public Map<Long, Long> getSqoop() {
-        return sqoop;
+    public Map<Long, Long> getJobIds() {
+        return jobIds;
     }
 
-    public void setSqoop(Map<Long, Long> sqoop) {
-        this.sqoop = sqoop;
-    }
-
-    public Map<Long, Long> getDatax() {
-        return datax;
-    }
-
-    public void setDatax(Map<Long, Long> datax) {
-        this.datax = datax;
+    public void setJobIds(Map<Long, Long> jobIds) {
+        this.jobIds = jobIds;
     }
 }

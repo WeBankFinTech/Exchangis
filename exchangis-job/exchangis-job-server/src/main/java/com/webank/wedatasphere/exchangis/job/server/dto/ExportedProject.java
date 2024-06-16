@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.dto;
 
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,24 +10,21 @@ import java.util.List;
  * @Date 2022/3/14 12:22
  */
 public class ExportedProject {
-    String name;
-    List<ExchangisJobVo> sqoops;
-    List<ExchangisJobVo> dataxes;
+    /**
+     * Project name
+     */
+    private String name;
+    /**
+     * Job list
+     */
+    private List<ExchangisJobVo> jobs = new ArrayList<>();
 
-    public List<ExchangisJobVo> getSqoops() {
-        return sqoops;
+    public List<ExchangisJobVo> getJobs() {
+        return jobs;
     }
 
-    public void setSqoops(List<ExchangisJobVo> sqoops) {
-        this.sqoops = sqoops;
-    }
-
-    public List<ExchangisJobVo> getDataxes() {
-        return dataxes;
-    }
-
-    public void setDataxes(List<ExchangisJobVo> dataxes) {
-        this.dataxes = dataxes;
+    public void setJobs(List<ExchangisJobVo> jobs) {
+        this.jobs = jobs;
     }
 
     public String getName() {
