@@ -214,7 +214,7 @@ CREATE TABLE `exchangis_engine_settings` (
    `engine_name` varchar(50) NOT NULL,
    `engine_desc` varchar(500) NOT NULL,
    `engine_settings_value` text,
-   `engine_direction` varchar(255) NOT NULL,
+   `engine_direction` text NOT NULL,
    `res_loader_class` varchar(255),
    `res_uploader_class` varchar(255),
    `modify_time` datetime DEFAULT NULL,

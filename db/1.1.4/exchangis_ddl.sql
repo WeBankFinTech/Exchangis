@@ -10,3 +10,5 @@ CREATE TABLE `exchangis_project_ds` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `exchangis_project_ds_un`(`project_id`, `data_source_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+ALTER TABLE  exchangis_engine_settings CHANGE engine_direction engine_direction text NOT NULL;
