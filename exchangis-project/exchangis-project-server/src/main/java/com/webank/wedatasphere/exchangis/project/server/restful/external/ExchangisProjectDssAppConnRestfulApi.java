@@ -79,13 +79,13 @@ public class ExchangisProjectDssAppConnRestfulApi {
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String username = UserUtils.getLoginUser(request);
         if (StringUtils.isBlank(projectInfo.getViewUsers()) || !StringUtils.contains(projectInfo.getViewUsers(), username)) {
-            projectInfo.setViewUsers(username + projectInfo.getViewUsers());
+            projectInfo.setViewUsers(username + "," + projectInfo.getViewUsers());
         }
         if (StringUtils.isBlank(projectInfo.getEditUsers()) || !StringUtils.contains(projectInfo.getEditUsers(), username)) {
-            projectInfo.setEditUsers(username + projectInfo.getEditUsers());
+            projectInfo.setEditUsers(username + "," + projectInfo.getEditUsers());
         }
         if (StringUtils.isBlank(projectInfo.getExecUsers()) || !StringUtils.contains(projectInfo.getExecUsers(), username)) {
-            projectInfo.setExecUsers(username + projectInfo.getExecUsers());
+            projectInfo.setExecUsers(username + "," + projectInfo.getExecUsers());
         }
 
         try {
