@@ -22,4 +22,10 @@ public interface TaskObserverService {
      * @return boolean
      */
     boolean subscribe(LaunchableExchangisTask task);
+
+    /**
+     * Unsubscribe entrance
+     * @param task task
+     */
+    void unsubscribe(LaunchableExchangisTask task);
 }

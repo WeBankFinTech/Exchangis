@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.mapper;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,6 +23,13 @@ public interface LaunchableTaskDao {
      * @param taskId
      */
     void deleteLaunchableTask(@Param("taskId") String taskId);
+
+    /**
+     * Delay launchableTask to designated time
+     * @param taskId task id
+     * @param delayTime delay time
+     */
+    void delayLaunchableTask(@Param("taskId") String taskId, Date delayTime);
 
     /**
      * upgradeLaunchableTask

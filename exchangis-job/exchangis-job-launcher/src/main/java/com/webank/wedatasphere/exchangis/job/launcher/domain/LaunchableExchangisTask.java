@@ -50,6 +50,11 @@ public class LaunchableExchangisTask implements ExchangisTask {
      */
     private String labels;
 
+    /**
+     * Instance name
+     */
+    private String instance;
+
     private Map<String, Object> linkisContentMap;
 
     private Map<String, Object> linkisParamsMap;
@@ -76,6 +81,16 @@ public class LaunchableExchangisTask implements ExchangisTask {
     @Override
     public void setExecuteUser(String executeUser) {
         this.executeUser = executeUser;
+    }
+
+    @Override
+    public String getInstance() {
+        return this.instance;
+    }
+
+    @Override
+    public void setInstance(String instance) {
+        this.instance = instance;
     }
 
     @Override

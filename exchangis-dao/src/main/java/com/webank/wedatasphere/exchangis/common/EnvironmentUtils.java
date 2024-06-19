@@ -6,6 +6,7 @@ import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.common.conf.Configuration;
 import org.apache.linkis.common.utils.Utils;
 import org.apache.linkis.server.utils.LinkisMainHelper;
+import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient;
 import org.springframework.context.ApplicationContext;
 
 
@@ -81,4 +82,14 @@ public class EnvironmentUtils {
         return StringUtils.isNotBlank(serverPort) ? Integer.parseInt(serverPort) : null;
     }
 
+    /**
+     * Examine if the server instance alive(use discovery client cache)
+     * @param serverAddress server address
+     * @return bool
+     */
+    public static boolean isServerAlive(String serverAddress){
+        EurekaDiscoveryClient discoveryClient = DataWorkCloudApplication.getApplicationContext()
+                .getBean(EurekaDiscoveryClient.class);
+        return false;
+    }
 }

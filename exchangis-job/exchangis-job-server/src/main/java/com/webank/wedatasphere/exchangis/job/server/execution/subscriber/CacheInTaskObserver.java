@@ -33,13 +33,21 @@ public abstract class CacheInTaskObserver<T extends ExchangisTask> extends Abstr
     public List<T> onPublish(int batchSize) throws ExchangisTaskObserverException {
         List<T> cacheTasks = new ArrayList<>(batchSize);
         T polledTask;
+        Set<String> taskIds = new HashSet<>();
         while (cacheTasks.size() < batchSize && (polledTask = queue.poll()) != null){
+            taskIds.add(polledTask.getId() + "");
             cacheTasks.add(polledTask);
         }
         int fetchTaskSize = cacheTasks.size();
         int restBatchSize = batchSize - fetchTaskSize;
         if (restBatchSize > 0 && (this.lastPublishTime + this.publishInterval <= System.currentTimeMillis())) {
-            Optional.ofNullable(onPublishNext(restBatchSize)).ifPresent(cacheTasks::addAll);
+            Optional.ofNullable(onPublishNext(restBatchSize)).ifPresent(observerTasks -> {
+                for (T observerTask : observerTasks){
+                   if (taskIds.add(observerTask.getId() + "")){
+                       cacheTasks.add(observerTask);
+                   }
+                }
+            });
         }
         return cacheTasks;
     }
@@ -48,13 +56,9 @@ public abstract class CacheInTaskObserver<T extends ExchangisTask> extends Abstr
     protected List<T> choose(List<T> candidateTasks,
                                                    TaskChooseRuler<T> chooseRuler, Scheduler scheduler) {
         List<T> chooseTasks = chooseRuler.choose(candidateTasks, scheduler);
-        // Left the rejected tasks
-        candidateTasks.removeAll(chooseTasks);
         // Update the lastUpdateTime
         Date currentTime = Calendar.getInstance().getTime();
         candidateTasks.forEach(task -> task.setLastUpdateTime(currentTime));
-        // Requeue into
-        this.queue.addAll(candidateTasks);
         return chooseTasks;
     }
 

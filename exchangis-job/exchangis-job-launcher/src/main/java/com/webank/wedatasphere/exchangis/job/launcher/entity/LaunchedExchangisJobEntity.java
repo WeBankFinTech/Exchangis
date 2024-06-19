@@ -64,6 +64,8 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
                 simpleDateFormat.format(new Date()) + IOUtils.DIR_SEPARATOR_UNIX + this.jobExecutionId;
         logPath = EnvironmentUtils.getServerAddress() + "@" + logPath;
         this.logPath = logPath;
+        // Set the instance name
+        this.instance = EnvironmentUtils.getServerAddress();
     }
     public String getJobExecutionId() {
         return jobExecutionId;

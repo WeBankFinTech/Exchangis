@@ -20,4 +20,12 @@ public interface ExchangisTask extends ExchangisBase {
     String getExecuteUser();
 
     void setExecuteUser(String executeUser);
+
+    /**
+     * Related server instance
+     * @return
+     */
+    String getInstance();
+
+    void setInstance(String instance);
 }

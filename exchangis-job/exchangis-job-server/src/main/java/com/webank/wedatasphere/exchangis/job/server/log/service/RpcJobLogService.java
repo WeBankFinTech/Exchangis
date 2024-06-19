@@ -135,6 +135,7 @@ public class RpcJobLogService extends AbstractJobLogService{
 
     @Override
     public LogResult logsFromPageAndPath(String logPath, LogQuery logQuery) {
+        LogResult result = new LogResult(0, false, Collections.emptyList());
         int splitPos = logPath.indexOf("@");
         if (splitPos > 0) {
             String logAddress = logPath.substring(0, splitPos);
@@ -144,8 +145,10 @@ public class RpcJobLogService extends AbstractJobLogService{
                     response = Sender.getSender(ServiceInstance.apply(EnvironmentUtils.getServerName(), logAddress))
                             .ask(new FetchLogRequest(logQuery, logPath));
                 } catch (Exception e){
-                    throw new ExchangisJobServerException.Runtime(LOG_OP_ERROR.getCode(),
-                            "Remote exception in fetching log from: [" + logPath + "]", e);
+                    LOG.warn("Rpc request exception in fetching log from: [" + logPath + "]", e);
+                    // Just end the log request
+                    result.setEnd(true);
+                    return result;
                 }
                 if (response instanceof FetchLogResponse){
                     return (LogResult) response;
@@ -156,7 +159,6 @@ public class RpcJobLogService extends AbstractJobLogService{
             logPath = logPath.substring(splitPos + 1);
         }
         String fullPath = Constraints.LOG_LOCAL_PATH.getValue() + IOUtils.DIR_SEPARATOR_UNIX + logPath;
-        LogResult result = new LogResult(0, false, Collections.emptyList());
         if (!new File(fullPath).exists()){
             return result;
         }

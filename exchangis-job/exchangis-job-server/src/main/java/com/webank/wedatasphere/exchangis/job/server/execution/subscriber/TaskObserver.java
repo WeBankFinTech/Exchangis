@@ -16,13 +16,27 @@ import java.util.List;
  */
 public interface TaskObserver<T extends ExchangisTask> extends SchedulerThread {
 
+    /**
+     * Observer name
+     * @return name
+     */
+    default String getName() {
+        return this.getClass().getSimpleName();
+    }
 
     /**
      * Subscribe method
-     * @param publishedTasks
+     * @param publishedTasks tasks
      */
-    void subscribe(List<T> publishedTasks) throws ExchangisTaskObserverException;
+    int subscribe(List<T> publishedTasks) throws ExchangisTaskObserverException;
 
+    /**
+     * Discard to unsubscribe tasks
+     * @param unsubscribeTasks tasks
+     */
+    default void discard(List<T> unsubscribeTasks) {
+        // Do nothing
+    }
     /**
      * Task choose ruler
      * @return ruler

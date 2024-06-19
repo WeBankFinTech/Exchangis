@@ -4,6 +4,8 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangis
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
+import com.webank.wedatasphere.exchangis.job.server.execution.parallel.TaskParallelManager;
+import com.webank.wedatasphere.exchangis.job.server.execution.parallel.TaskParallelRule;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.SubmitSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import org.slf4j.Logger;
@@ -26,6 +28,9 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
     @Resource
     private TaskObserverService taskObserverService;
 
+    @Resource
+    private TaskParallelManager parallelManager;
+
     @Override
     protected List<LaunchableExchangisTask> onPublishNext(int batchSize){
         // Get the launchable task from launchable task inner join launched task
@@ -38,7 +43,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
 
 
     @Override
-    public void subscribe(List<LaunchableExchangisTask> publishedTasks) throws ExchangisTaskObserverException {
+    public int subscribe(List<LaunchableExchangisTask> publishedTasks) throws ExchangisTaskObserverException {
         Iterator<LaunchableExchangisTask> iterator = publishedTasks.iterator();
         TaskExecution<?> taskExecution = getTaskExecution();
         if (Objects.isNull(taskExecution)){
@@ -51,17 +56,34 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                     // Check the submittable condition first in order to avoid the duplicate scheduler tasks
                     SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(launchableExchangisTask,
                             () -> {
-                                // check the status of launchedTask
-                                // insert or update launched task, status as TaskStatus.Scheduler
-                                return taskObserverService.subscribe(launchableExchangisTask);
+                                TaskParallelRule parallelRule = parallelManager.getOrCreateRule(launchableExchangisTask.getExecuteUser(),
+                                        TaskParallelManager.Operation.SUBMIT);
+                                if (parallelRule.incParallel()) {
+                                    // check the status of launchedTask
+                                    // insert or update launched task, status as TaskStatus.Scheduler
+                                    boolean success =  taskObserverService.subscribe(launchableExchangisTask);
+                                    if (!success){
+                                        parallelRule.decParallel(1);
+                                    }
+                                    return success;
+                                }
+                                return false;
+                    }, (submitTask, e) -> {
+                        TaskParallelRule parallelRule = parallelManager.getOrCreateRule(launchableExchangisTask.getExecuteUser(),
+                                TaskParallelManager.Operation.SUBMIT);
+                        // Decrease the parallel
+                        parallelRule.decParallel(1);
                     }, true);
                     if (submitSchedulerTask.isSubmitAble()) {
                         submitSchedulerTask.setTenancy(launchableExchangisTask.getExecuteUser());
                         try {
                             taskExecution.submit(submitSchedulerTask);
                         } catch (Exception e) {
-                            LOG.warn("Fail to async submit launchable task: [ id: {}, name: {}, job_execution_id: {} ]"
+                            // If the consumer queue is full?
+                            LOG.warn("Internal_Error: Fail to async submit launchable task: [ id: {}, name: {}, job_execution_id: {} ]"
                                     , launchableExchangisTask.getId(), launchableExchangisTask.getName(), launchableExchangisTask.getJobExecutionId(), e);
+                            // Unsubscribe the task
+                            taskObserverService.unsubscribe(launchableExchangisTask);
                         }
                     }
                 } catch (Exception e){
@@ -70,6 +92,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
             }
             iterator.remove();
         }
+        return 0;
     }
 
     @Override

@@ -56,7 +56,7 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
         return maxRetryNum;
     }
 
-    private void setMaxRetryNum(int maxRetryNum){
+    protected void setMaxRetryNum(int maxRetryNum){
         this.maxRetryNum = maxRetryNum;
     }
 

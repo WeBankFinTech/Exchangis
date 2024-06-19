@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Default implements
+ * Receive the task in '
  */
 @Component
 public class ReceiveTaskSubscriber extends AbstractTaskObserver<LaunchedExchangisTask> {
@@ -21,7 +21,7 @@ public class ReceiveTaskSubscriber extends AbstractTaskObserver<LaunchedExchangi
 
 
     @Override
-    public void subscribe(List<LaunchedExchangisTask> publishedTasks) throws ExchangisTaskObserverException {
-
+    public int subscribe(List<LaunchedExchangisTask> publishedTasks) throws ExchangisTaskObserverException {
+        return 0;
     }
 }
