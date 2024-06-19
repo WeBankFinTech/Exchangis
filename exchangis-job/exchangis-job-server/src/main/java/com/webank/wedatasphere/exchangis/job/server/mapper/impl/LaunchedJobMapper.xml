@@ -142,6 +142,7 @@
         WHERE
         job_execution_id = #{jobExecutionId}]]>
     </update>
+
     <select id="getAllLaunchedJob" resultMap="LaunchedJobMap">
         SELECT
         l.job_execution_id,
@@ -173,14 +174,13 @@
                 and l.name like concat('%', #{jobName}, '%')
             </if>
             <if test="loginUser.trim() != '' and loginUser != null">
-                and l.create_user=#{loginUser}
+                and p.id in (SELECT project_id FROM exchangis_project_user WHERE priv_user=#{loginUser})
             </if>
             <if test="status.trim() != '' and status != null">
                 and l.status = #{status}
             </if>
         </where>
         order by create_time desc
-        limit #{start}, #{size}
     </select>
 
     <select id="count" resultType="java.lang.Integer">

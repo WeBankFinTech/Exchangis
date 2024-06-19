@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
@@ -224,11 +225,10 @@ public class ExchangisJobExecuteRestfulApi {
         Message message = Message.ok("Submitted succeed(提交成功)！");
         jobName = jobName.replace("_", "\\_");
         try {
-            List<ExchangisLaunchedJobListVo> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
+            PageResult<ExchangisLaunchedJobListVo> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
                     launchStartTime, launchEndTime, current, size, request);
-            int total = executeService.count(jobExecutionId, jobName, status, launchStartTime, launchEndTime, request);
-            message.data("jobList", jobList);
-            message.data("total", total);
+            message.data("jobList", jobList.getList());
+            message.data("total", jobList.getTotal());
         } catch (ExchangisJobServerException e) {
             String errorMessage = "Error occur while getting job list: [job_execution_id: " + jobExecutionId  + "jobName: " + jobName  + "status: " + status  + "]";
             LOG.error(errorMessage, e);

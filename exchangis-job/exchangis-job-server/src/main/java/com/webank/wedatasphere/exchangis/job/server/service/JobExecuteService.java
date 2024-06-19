@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.service;
 
 
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
@@ -55,8 +56,8 @@ public interface JobExecuteService {
      * Gets Executed job list
      * @return the launched jobList
      */
-    List<ExchangisLaunchedJobListVo> getExecutedJobList(String jobExecutionId, String jobName, String status,
-                                                        Long launchStartTime, Long launchEndTime, int  current, int size, HttpServletRequest request) throws ExchangisJobServerException;
+    PageResult<ExchangisLaunchedJobListVo> getExecutedJobList(String jobExecutionId, String jobName, String status,
+                                                              Long launchStartTime, Long launchEndTime, int  current, int size, HttpServletRequest request) throws ExchangisJobServerException;
 
     /**
      * Count int.
