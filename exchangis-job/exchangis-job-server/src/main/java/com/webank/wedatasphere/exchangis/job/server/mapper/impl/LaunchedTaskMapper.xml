@@ -60,7 +60,7 @@
         #{metrics},
         #{status}
         ) ON DUPLICATE KEY UPDATE
-        name = #{name}, `status` = #{status};
+        name = #{name}, `status` = #{status}, `last_update_time` = NOW();
     </insert>
 
     <insert id="insertLaunchedTask" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
@@ -94,6 +94,11 @@
     <delete id="deleteLaunchedTask">
         DELETE FROM <include refid="TableName"/> WHERE
         task_id = #{taskId}
+    </delete>
+
+    <delete id="deleteLaunchedTaskInVersion">
+        DELETE FROM <include refid="TableName"/> WHERE
+        <![CDATA[task_id = #{taskId} AND last_update_time <= #{version}]]>
     </delete>
 
     <update id="upgradeLaunchedTask">

@@ -30,9 +30,16 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
 
     private static final int MAX_SUBSCRIBE_TIMES = 3;
 
+    /**
+     * Observer publish interval
+     */
     private static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_INTERVAL = CommonVars.apply("wds.exchangis.job.task.observer.publish.interval-in-millisecond", DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL);
 
+    /**
+     * Observer publish batch
+     */
     private static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_BATCH = CommonVars.apply("wds.exchangis.job.task.observer.publish.batch", DEFAULT_TASK_OBSERVER_PUBLISH_BATCH);
+
 
     private Scheduler scheduler;
 
@@ -76,7 +83,7 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
 
     @Override
     public void run() {
-        Thread.currentThread().setName("Observe-Thread-" + getName());
+        Thread.currentThread().setName("Observer-" + getName());
         LOG.info("Thread: [ {} ] is started. ", Thread.currentThread().getName());
         this.lastPublishTime = System.currentTimeMillis();
         while (!isShutdown) {
@@ -92,7 +99,6 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
                     e.setMethodName("call_on_publish");
                     throw e;
                 }
-                int subscribed = 0;
                 // Record the published size
                 int publishedSize = publishedTasks.size();
                 for ( int i = 0; i < MAX_SUBSCRIBE_TIMES && !publishedTasks.isEmpty(); i ++) {
@@ -102,19 +108,20 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
                     } catch (Exception e) {
                         throw new ExchangisTaskObserverException("call_choose_rule", "Fail to choose candidate tasks", e);
                     }
+                    // The rest one
+                    publishedTasks.removeAll(chooseTasks);
                     if (!chooseTasks.isEmpty()) {
                         try {
-                            subscribed = subscribe(chooseTasks);
+                            subscribe(chooseTasks, publishedTasks);
                         } catch (ExchangisTaskObserverException e) {
                             e.setMethodName("call_subscribe");
                             throw e;
                         }
                     }
-                    if (subscribed >= chooseTasks.size()){
-                        break;
-                    }
                 }
-                sleepOrWaitIfNeed(publishedSize);
+                // Discard the unsubscribed tasks
+                discard(publishedTasks);
+                sleepOrWaitIfNeed(publishedSize, publishedTasks.size());
             } catch (Exception e){
                 if(e instanceof ExchangisTaskObserverException){
                     LOG.warn("Observer exception in progress paragraph: [{}]",((ExchangisTaskObserverException)e).getMethodName(), e);
@@ -155,9 +162,9 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     /**
      * Sleep or wait during the publishing and subscribe
      */
-    private void sleepOrWaitIfNeed(int publishedSize){
+    private void sleepOrWaitIfNeed(int publishedSize, int unsubscribed){
         long observerWait = this.lastPublishTime + publishInterval - System.currentTimeMillis();
-        if (publishedSize <= 0 || observerWait > 0) {
+        if (publishedSize <= 0 || unsubscribed > 0) {
             observerWait = observerWait > 0? observerWait : publishInterval;
             boolean hasLock = observerLock.tryLock();
             if (hasLock) {
@@ -194,10 +201,7 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
         }
     }
     protected List<T> choose(List<T> candidateTasks, TaskChooseRuler<T> chooseRuler, Scheduler scheduler){
-        List<T> chosenList =  chooseRuler.choose(candidateTasks, scheduler);
-        // The rest one
-        candidateTasks.removeAll(chosenList);
-        return chosenList;
+        return chooseRuler.choose(candidateTasks, scheduler);
     }
 
     @Override

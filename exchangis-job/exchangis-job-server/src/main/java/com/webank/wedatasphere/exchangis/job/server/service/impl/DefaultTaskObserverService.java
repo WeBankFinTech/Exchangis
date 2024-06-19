@@ -8,12 +8,18 @@ import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchableTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.linkis.common.conf.CommonVars;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Task observer service
@@ -21,6 +27,10 @@ import java.util.Objects;
 @Service
 public class DefaultTaskObserverService implements TaskObserverService {
 
+    private static Logger LOG = LoggerFactory.getLogger(TaskObserverService.class);
+
+    private static final CommonVars<String> TASK_OBSERVER_LAUNCH_DELAY_IN_SEC = CommonVars.apply(
+            "wds.exchangis.job.task.observer.launch.delay-in-sec", "10,20,30,60");
     /**
      * Launchable task
      */
@@ -32,6 +42,27 @@ public class DefaultTaskObserverService implements TaskObserverService {
 
     @Resource
     private LaunchedJobDao launchedJobDao;
+
+    /**
+     * Launch delay in seconds
+     */
+    private int[] launchDelayInSec;
+
+    public DefaultTaskObserverService(){
+        String delayDefine = TASK_OBSERVER_LAUNCH_DELAY_IN_SEC.getValue();
+        if (StringUtils.isNotBlank(delayDefine)){
+            String[] delayParts = delayDefine.split(",");
+            try {
+                int[] delayInSec = new int[delayParts.length];
+                for (int i = 0; i < delayInSec.length; i ++ ){
+                    delayInSec[i] = Integer.parseInt(delayParts[i]);
+                }
+                this.launchDelayInSec = delayInSec;
+            }catch (Exception e){
+                LOG.warn("The wrong format in launch delay definition: [{}]", delayDefine, e);
+            }
+        }
+    }
     @Override
     public List<LaunchableExchangisTask> onPublishLaunchableTask(int limitSize) {
         return launchableTaskDao.getTaskToLaunch(limitSize);
@@ -55,6 +86,18 @@ public class DefaultTaskObserverService implements TaskObserverService {
 
     @Override
     public void unsubscribe(LaunchableExchangisTask task) {
-
+        LOG.info("Unsubscribe launch task: [{}], id: [{}], execution_id: [{}], last_update_time: [{}]",
+                task.getName(), task.getId(), task.getJobExecutionId(), task.getLastUpdateTime());
+        this.launchedTaskDao.deleteLaunchedTaskInVersion(task.getId() + "", task.getLastUpdateTime());
     }
+
+    @Override
+    public void discard(List<LaunchableExchangisTask> tasks) {
+        for(int i = 0; i < tasks.size(); i ++){
+            // Delay for each task
+            Calendar.getInstance();
+//            this.launchableTaskDao.delayLaunchableTask();
+        }
+    }
+
 }

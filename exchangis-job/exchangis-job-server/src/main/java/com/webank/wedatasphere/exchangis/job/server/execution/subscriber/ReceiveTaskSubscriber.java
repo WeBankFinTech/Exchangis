@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import org.springframework.stereotype.Component;
@@ -20,8 +21,10 @@ public class ReceiveTaskSubscriber extends AbstractTaskObserver<LaunchedExchangi
     }
 
 
+
     @Override
-    public int subscribe(List<LaunchedExchangisTask> publishedTasks) throws ExchangisTaskObserverException {
+    public int subscribe(List<LaunchedExchangisTask> publishedTasks,
+                         List<LaunchedExchangisTask> unsubscribedTasks) throws ExchangisTaskObserverException {
         return 0;
     }
 }

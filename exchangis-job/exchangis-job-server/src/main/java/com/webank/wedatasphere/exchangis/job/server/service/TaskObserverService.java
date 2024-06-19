@@ -24,8 +24,14 @@ public interface TaskObserverService {
     boolean subscribe(LaunchableExchangisTask task);
 
     /**
-     * Unsubscribe entrance
+     * Unsubscribe the launchable task
      * @param task task
      */
     void unsubscribe(LaunchableExchangisTask task);
+
+    /**
+     * Discard the launchable task
+     * @param tasks task
+     */
+    void discard(List<LaunchableExchangisTask> tasks);
 }

@@ -78,6 +78,11 @@ public abstract class CacheInTaskObserver<T extends ExchangisTask> extends Abstr
 
         private Queue<T> innerQueue;
 
+        /**
+         * Queue detail element
+         */
+        private T queueTail;
+
         public OperateLimitQueue(Queue<T> queue){
             this.innerQueue = queue;
         }
@@ -97,6 +102,8 @@ public abstract class CacheInTaskObserver<T extends ExchangisTask> extends Abstr
             boolean offer = this.innerQueue.offer(launchableExchangisTask);
             if(offer){
                 try {
+                    // Otherwise, not current always time
+                    this.queueTail = launchableExchangisTask;
                     publish();
                 } catch (Exception e){
                     LOG.warn("Publish the launchable task: {} has occurred an exception", launchableExchangisTask.getId(), e);

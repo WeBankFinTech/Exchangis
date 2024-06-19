@@ -69,6 +69,14 @@ public class TaskParallelRule {
         }
     }
 
+    /**
+     * Get the remaining parallel
+     * @return v
+     */
+    public int getRemaining(){
+        return maxParallel - parallel.get();
+    }
+
     public String getRuleName() {
         return ruleName;
     }

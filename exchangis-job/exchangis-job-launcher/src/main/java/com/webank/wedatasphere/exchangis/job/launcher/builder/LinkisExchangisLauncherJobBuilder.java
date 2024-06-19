@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.builder;
 
+import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
@@ -36,6 +37,8 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
         launchableTask.setName(inputJob.getName());
         launchableTask.setJobId(inputJob.getId());
         launchableTask.setExecuteUser(inputJob.getCreateUser());
+        // Set server address
+        launchableTask.setInstance(EnvironmentUtils.getServerAddress());
 //        launcherJob.setExecuteNode(exchangisJob.getExecuteNode());
         launchableTask.setLinkisContentMap(inputJob.getJobContent());
         Map<String, Object> linkisParams = new HashMap<>();

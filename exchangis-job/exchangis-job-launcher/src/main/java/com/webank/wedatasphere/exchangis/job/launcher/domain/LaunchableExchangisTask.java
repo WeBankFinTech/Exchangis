@@ -55,6 +55,16 @@ public class LaunchableExchangisTask implements ExchangisTask {
      */
     private String instance;
 
+    /**
+     * Launch delay time
+     */
+    private String delayTime;
+
+    /**
+     * Launch delay count
+     */
+    private Integer delayCount = 0;
+
     private Map<String, Object> linkisContentMap;
 
     private Map<String, Object> linkisParamsMap;
@@ -245,4 +255,19 @@ public class LaunchableExchangisTask implements ExchangisTask {
         this.labels = labels;
     }
 
+    public String getDelayTime() {
+        return delayTime;
+    }
+
+    public void setDelayTime(String delayTime) {
+        this.delayTime = delayTime;
+    }
+
+    public Integer getDelayCount() {
+        return delayCount;
+    }
+
+    public void setDelayCount(Integer delayCount) {
+        this.delayCount = delayCount;
+    }
 }

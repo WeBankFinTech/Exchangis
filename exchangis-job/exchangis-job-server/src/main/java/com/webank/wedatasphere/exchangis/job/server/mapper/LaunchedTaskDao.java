@@ -36,6 +36,13 @@ public interface LaunchedTaskDao {
     void deleteLaunchedTask(@Param("taskId")String taskId);
 
     /**
+     * Delete task in version (date)
+     * @param taskId task id
+     * @param versionDate version date
+     */
+    void deleteLaunchedTaskInVersion(@Param("taskId")String taskId, @Param("version")Date versionDate);
+
+    /**
      * upgrade launchedTask
      * @param launchedExchangisTaskEntity
      */

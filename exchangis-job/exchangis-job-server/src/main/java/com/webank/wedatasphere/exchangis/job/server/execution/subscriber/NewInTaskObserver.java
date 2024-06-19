@@ -28,22 +28,30 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
     @Resource
     private TaskObserverService taskObserverService;
 
+
     @Resource
     private TaskParallelManager parallelManager;
+
+    @Override
+    public String getName() {
+        return "NewInTaskObserver";
+    }
 
     @Override
     protected List<LaunchableExchangisTask> onPublishNext(int batchSize){
         // Get the launchable task from launchable task inner join launched task
         List<LaunchableExchangisTask> tasks = taskObserverService.onPublishLaunchableTask(batchSize);
         if (!tasks.isEmpty()) {
-            LOG.debug("Get the launchable task from database, size: [{}]", tasks.size());
+            LOG.info("Publish the tasks waiting to be launched from database, size: [{}], last_task_id: [{}]",
+                    tasks.size(), tasks.get(0).getId());
         }
         return tasks;
     }
 
 
     @Override
-    public int subscribe(List<LaunchableExchangisTask> publishedTasks) throws ExchangisTaskObserverException {
+    public int subscribe(List<LaunchableExchangisTask> publishedTasks,
+                         List<LaunchableExchangisTask> unsubscribedTasks) throws ExchangisTaskObserverException {
         Iterator<LaunchableExchangisTask> iterator = publishedTasks.iterator();
         TaskExecution<?> taskExecution = getTaskExecution();
         if (Objects.isNull(taskExecution)){
@@ -84,7 +92,10 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                                     , launchableExchangisTask.getId(), launchableExchangisTask.getName(), launchableExchangisTask.getJobExecutionId(), e);
                             // Unsubscribe the task
                             taskObserverService.unsubscribe(launchableExchangisTask);
+                            unsubscribedTasks.add(launchableExchangisTask);
                         }
+                    } else {
+                        unsubscribedTasks.add(launchableExchangisTask);
                     }
                 } catch (Exception e){
                     LOG.error("Exception in subscribing launchable tasks, please check your status of database and network", e);
@@ -95,8 +106,10 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
         return 0;
     }
 
+
     @Override
-    public String getName() {
-        return "NewInTaskObserver";
+    public void discard(List<LaunchableExchangisTask> unsubscribeTasks) {
+        // Delay the tasks
+        queue.peek();
     }
 }

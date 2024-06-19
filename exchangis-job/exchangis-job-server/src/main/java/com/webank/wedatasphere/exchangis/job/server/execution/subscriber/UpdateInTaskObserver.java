@@ -14,7 +14,8 @@ public class UpdateInTaskObserver extends AbstractTaskObserver<LaunchedExchangis
 
 
     @Override
-    public int subscribe(List<LaunchedExchangisTask> publishedTasks) throws ExchangisTaskObserverException {
+    public int subscribe(List<LaunchedExchangisTask> publishedTasks,
+                         List<LaunchedExchangisTask> unsubscribedTasks) throws ExchangisTaskObserverException {
         return 0;
     }
 }

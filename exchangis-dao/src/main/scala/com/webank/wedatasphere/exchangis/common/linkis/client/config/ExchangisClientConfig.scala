@@ -33,4 +33,5 @@ object ExchangisClientConfig{
   def newBuilder: ExchangisClientConfigBuilder = {
     new ExchangisClientConfigBuilder()
   }
+
 }

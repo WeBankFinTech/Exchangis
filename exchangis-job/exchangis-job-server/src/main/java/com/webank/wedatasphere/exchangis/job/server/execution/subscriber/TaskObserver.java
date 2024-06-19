@@ -26,9 +26,10 @@ public interface TaskObserver<T extends ExchangisTask> extends SchedulerThread {
 
     /**
      * Subscribe method
-     * @param publishedTasks tasks
+     * @param publishedTasks published tasks
+     * @param unsubscribedTasks unsubscribed tasks
      */
-    int subscribe(List<T> publishedTasks) throws ExchangisTaskObserverException;
+    int subscribe(List<T> publishedTasks, List<T> unsubscribedTasks) throws ExchangisTaskObserverException;
 
     /**
      * Discard to unsubscribe tasks
