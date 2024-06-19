@@ -77,8 +77,9 @@ class DataxEngineConnFactory extends MultiExecutorEngineConnFactory with Logging
     })
     CORE_ARRAY_CONFIGS.foreach(config => config.getValue(options) match {
       case array: Array[String] => configuration.set(config.key, array)
-      case str: String => if (StringUtils.isNotBlank(str))
-        configuration.set(config.key, util.Arrays.asList(str.split(",")))
+      case str: String => if (StringUtils.isNotBlank(str)) {
+        configuration.set(config.key, str.split(",").toBuffer.asJava)
+      }
       case _ => //Ignore the unrecognized value
     })
     Option(DataxConfiguration.JOB_EXECUTION_ID.getValue(options)) match {
