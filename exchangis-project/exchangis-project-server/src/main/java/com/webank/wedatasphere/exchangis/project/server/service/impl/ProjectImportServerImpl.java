@@ -138,7 +138,7 @@ public class ProjectImportServerImpl implements ProjectImportService {
         for (ExchangisJobVo job : jobs){
             Long prevId = job.getId();
             // Reset the project id
-            job.setProjectId(projectId);
+            job.setProjectId(String.valueOf(projectId));
             job.setJobName(updateName(job.getJobName(), versionSuffix));
             List<ExchangisJobVo> existedJobs = jobInfoService.getByNameWithProjectId(job.getJobName(), projectId);
             if (!existedJobs.isEmpty()){

@@ -77,7 +77,7 @@ public class ExchangisJobDssAppConnRestfulApi {
 
         Long id = null;
         try{
-            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, Long.parseLong(exchangisJobVo.getProjectId()), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to create Job (没有创建任务权限)");
             }
             id = jobInfoService.createJob(exchangisJobVo).getId();
@@ -112,7 +112,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             if (Objects.isNull(exchangisJob)){
                 return response;
             }
-            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJob.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, Long.parseLong(exchangisJob.getProjectId()), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to delete (没有删除任务权限)");
             }
             jobInfoService.deleteJob(id);
