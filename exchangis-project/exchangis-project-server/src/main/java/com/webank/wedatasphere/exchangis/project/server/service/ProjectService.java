@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.project.entity.domain.ExchangisProjectU
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectUserVo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectQueryVo;
+import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectErrorException;
 
 /**
  * Project query
@@ -33,7 +34,7 @@ public interface ProjectService {
       * @param projectInfo project info
       * @param userName userName
       */
-     void updateProject(ExchangisProjectInfo projectInfo, String userName);
+     void updateProject(ExchangisProjectInfo projectInfo, String userName) throws ExchangisProjectErrorException;
 
      /**
       * Query the page result

@@ -157,7 +157,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
                     new Pair<>("projectId", projectVo.getId()));
         } catch (Exception t) {
             LOG.error("Failed to update project for user {}", username, t);
-            return Message.error("Fail to update project (更新工程失败)");
+            return Message.error("Fail to update project (更新工程失败) " + t.getMessage());
         }
     }
 
@@ -190,7 +190,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
             return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
-            return Message.error("Failed to delete project (删除工程失败)");
+            return Message.error("Failed to delete project (删除工程失败) " + t.getMessage());
         }
 
     }
@@ -211,7 +211,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
                     new Pair<>("projectInfo",projectInfo));
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
-            return Message.error("Failed to delete project (根据名字获取工程失败)");
+            return Message.error("Failed to delete project (根据名字获取工程失败) " + t.getMessage());
         }
     }
 
@@ -240,9 +240,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
                                     ", op_user: [" + permUser + "], reason: [" + e.getMessage() + "]",
                             e);
                 }
-
             }
         }
-
     }
 }
