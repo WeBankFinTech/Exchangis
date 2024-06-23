@@ -23,10 +23,19 @@
             <artifactId>exchangis-datasource-service</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-datasource-loader</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-datasource-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-datasource-linkis</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
