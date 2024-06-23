@@ -7,7 +7,9 @@ INSERT INTO `dss_appconn` (`appconn_name`, `is_user_need_init`, `level`, `if_ifr
 VALUES ('exchangis', 0, 1, 1, 1, NULL, 'com.webank.wedatasphere.exchangis.dss.appconn.ExchangisAppConn', '/appcom/Install/dss/dss-appconns/exchangis', '');
 
 INSERT INTO `dss_appconn_instance` (`appconn_id`, `label`, `url`, `enhance_json`, `homepage_uri`)
-VALUES ((select id from `dss_appconn` where `appconn_name` = "exchangis" limit 1), 'DEV', 'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/', '', '#/projectManage');
+VALUES ((select id from `dss_appconn` where `appconn_name` = "exchangis" limit 1), 'DEV', 'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/', '', '#/projectManage?labels=dev');
+INSERT INTO `dss_appconn_instance` (`appconn_id`, `label`, `url`, `enhance_json`, `homepage_uri`)
+VALUES ((select id from `dss_appconn` where `appconn_name` = "exchangis" limit 1), 'DEV', 'http://APPCONN_INSTALL_IP:APPCONN_INSTALL_PORT/', '', '#/projectManage?labels=prod');
 
 -- 看appconn组件是要归属于哪个菜单
 INSERT INTO `dss_workspace_menu_appconn` (`appconn_id`, `menu_id`, `title_en`, `title_cn`, `desc_en`, `desc_cn`, `labels_en`, `labels_cn`, `is_active`, `access_button_en`, `access_button_cn`, `manual_button_en`, `manual_button_cn`, `manual_button_url`, `icon`, `order`, `create_by`, `create_time`, `last_update_time`, `last_update_user`, `image`)

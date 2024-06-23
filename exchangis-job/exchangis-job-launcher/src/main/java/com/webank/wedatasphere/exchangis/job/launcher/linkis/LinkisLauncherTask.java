@@ -251,7 +251,7 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                 int endLine = query.getFromLine() + (query.getPageSize() - 1);
                 if (isEnd) {
                     isEnd = TaskStatus.isCompleted(getStatus());
-                    endLine = query.getFromLine();
+                    endLine = query.getFromLine() + logSize;
                 }
                 // Init the error count
                 this.reqError.set(0);

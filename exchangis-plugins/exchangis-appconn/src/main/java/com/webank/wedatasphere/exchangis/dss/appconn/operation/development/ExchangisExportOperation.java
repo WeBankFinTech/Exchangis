@@ -10,6 +10,8 @@ import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalO
 import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
 import com.webank.wedatasphere.exchangis.dss.appconn.utils.ExchangisHttpUtils;
 
+import java.util.Objects;
+
 import static com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints.API_REQUEST_PREFIX;
 
 /**
@@ -40,7 +42,11 @@ public class ExchangisExportOperation
                 exportRequestRef.getRefProjectId(), exportRequestRef.getProjectName(), exportRequestRef.getType());
         DSSPostAction postAction = new DSSPostAction();
         postAction.setUser(exportRequestRef.getUserName());
-        postAction.addRequestPayload("projectId", exportRequestRef.getRefProjectId());
+        Long refProjectId = exportRequestRef.getRefProjectId();
+        if (Objects.isNull(refProjectId)) {
+            refProjectId = Long.valueOf(String.valueOf(exportRequestRef.getRefJobContent().get("refProjectId")));
+        }
+        postAction.addRequestPayload("projectId", refProjectId);
         postAction.addRequestPayload("partial", true);
         String nodeType = exportRequestRef.getType();
         Long id = ((Double) exportRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID)).longValue();
