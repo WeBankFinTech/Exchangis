@@ -17,6 +17,8 @@ import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.T
 import com.webank.wedatasphere.exchangis.job.utils.SnowFlake;
 import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.common.exception.ErrorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +31,12 @@ import java.util.Optional;
  */
 public class DefaultTaskGenerator extends AbstractTaskGenerator{
 
+    private static Logger LOG = LoggerFactory.getLogger(DefaultTaskGenerator.class);
 
     private static class Constraints{
-        private static final CommonVars<Long> TASK_ID_GENERATOR_DATA_CENTER = CommonVars.apply("wds.exchangis.job.task.generator.id.data-center", 1L);
+        private static final CommonVars<Long> TASK_ID_GENERATOR_DATA_CENTER = CommonVars.apply("wds.exchangis.job.task.generator.id.data-center", -1L);
 
-        private static final CommonVars<Long> TASK_ID_GENERATOR_WORKER = CommonVars.apply("wds.exchangis.job.task.generator.id.worker", 1L);
+        private static final CommonVars<Long> TASK_ID_GENERATOR_WORKER = CommonVars.apply("wds.exchangis.job.task.generator.id.worker", -1L);
 
         private static final CommonVars<Long> TASK_ID_GENERATOR_START_TIME = CommonVars.apply("wds.exchangis.job.task.generator.id.start-time", 1238434978657L);
     }
@@ -59,7 +62,16 @@ public class DefaultTaskGenerator extends AbstractTaskGenerator{
     @Override
     public void init() throws ExchangisJobException {
         super.init();
-        idGenerator = new SnowFlake(Constraints.TASK_ID_GENERATOR_DATA_CENTER.getValue(), Constraints.TASK_ID_GENERATOR_WORKER.getValue(),
+        long dataCenterId = Constraints.TASK_ID_GENERATOR_DATA_CENTER.getValue();
+        if (dataCenterId < 0){
+            dataCenterId = SnowFlake.generateCenterId();
+        }
+        long workerId = Constraints.TASK_ID_GENERATOR_WORKER.getValue();
+        if (workerId < 0){
+            workerId = SnowFlake.generateWorkerId();
+        }
+        LOG.info("Build task id generator with data center id: [{}] worker id: [{}] in snowFlake algorithm ", dataCenterId, workerId);
+        idGenerator = new SnowFlake(dataCenterId, workerId,
                 Constraints.TASK_ID_GENERATOR_START_TIME.getValue());
     }
 
@@ -70,7 +82,7 @@ public class DefaultTaskGenerator extends AbstractTaskGenerator{
         ExchangisJobInfo jobInfo = launchableExchangisJob.getExchangisJobInfo();
         List<LaunchableExchangisTask> launchableExchangisTasks = new ArrayList<>();
         if (Objects.isNull(jobInfo)){
-            throwable = new ExchangisTaskGenerateException("Job information is empty in launchable exchangis job", null);
+            throwable = new ExchangisTaskGenerateException("Job information is empty in launch-able exchangis job", null);
             onEvent(new TaskGenerateErrorEvent(launchableExchangisJob, throwable));
             throw throwable;
         }

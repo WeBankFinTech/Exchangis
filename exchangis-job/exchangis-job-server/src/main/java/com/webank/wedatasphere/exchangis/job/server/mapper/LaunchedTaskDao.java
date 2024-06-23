@@ -40,7 +40,15 @@ public interface LaunchedTaskDao {
      * @param taskId task id
      * @param versionDate version date
      */
-    void deleteLaunchedTaskInVersion(@Param("taskId")String taskId, @Param("version")Date versionDate);
+    int deleteLaunchedTaskInVersion(@Param("taskId")String taskId, @Param("version")Date versionDate);
+
+    /**
+     * Update date in version
+     * @param updateDate update date
+     * @param versionDate version date
+     * @return affect rows
+     */
+    int updateDateInVersion(@Param("taskId")String taskId, @Param("updateDate")Date updateDate, @Param("version")Date versionDate);
 
     /**
      * upgrade launchedTask
@@ -139,5 +147,18 @@ public interface LaunchedTaskDao {
      */
 
     void deleteTask(@Param("jobExecutionId") String jobExecutionId);
+
+    /**
+     * Get the expired tasks with status
+     * @param instance instance
+     * @param status status
+     * @param expireTime expire time
+     * @param limitSize limit size
+     * @return entities
+     */
+    List<LaunchedExchangisTaskEntity> getLaunchedTaskInExpire(@Param("instance")String instance,
+                                                              @Param("status")String status,
+                                                              @Param("expireTime") Date expireTime,
+                                                              @Param("limitSize")Integer limitSize);
 
 }

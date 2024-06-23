@@ -24,12 +24,14 @@ public interface TaskObserver<T extends ExchangisTask> extends SchedulerThread {
         return this.getClass().getSimpleName();
     }
 
+    default String getInstance(){
+        return null;
+    }
     /**
      * Subscribe method
      * @param publishedTasks published tasks
-     * @param unsubscribedTasks unsubscribed tasks
      */
-    int subscribe(List<T> publishedTasks, List<T> unsubscribedTasks) throws ExchangisTaskObserverException;
+    int subscribe(List<T> publishedTasks) throws ExchangisTaskObserverException;
 
     /**
      * Discard to unsubscribe tasks

@@ -9,12 +9,14 @@ import org.apache.linkis.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -33,12 +35,12 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     /**
      * Observer publish interval
      */
-    private static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_INTERVAL = CommonVars.apply("wds.exchangis.job.task.observer.publish.interval-in-millisecond", DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL);
+    protected static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_INTERVAL = CommonVars.apply("wds.exchangis.job.task.observer.publish.interval-in-mills", DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL);
 
     /**
      * Observer publish batch
      */
-    private static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_BATCH = CommonVars.apply("wds.exchangis.job.task.observer.publish.batch", DEFAULT_TASK_OBSERVER_PUBLISH_BATCH);
+    protected static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_BATCH = CommonVars.apply("wds.exchangis.job.task.observer.publish.batch", DEFAULT_TASK_OBSERVER_PUBLISH_BATCH);
 
 
     private Scheduler scheduler;
@@ -66,7 +68,7 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
 
     protected long lastPublishTime = -1;
 
-    private boolean isShutdown = false;
+    protected boolean isShutdown = false;
 
     public AbstractTaskObserver(int publishBatch, int publishInterval){
         if (publishBatch <= 0){
@@ -79,20 +81,21 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     public AbstractTaskObserver(){
         this.publishBatch = TASK_OBSERVER_PUBLISH_BATCH.getValue();
         this.publishInterval = TASK_OBSERVER_PUBLISH_INTERVAL.getValue();
+        this.lastPublishTime = -1;
     }
 
     @Override
     public void run() {
         Thread.currentThread().setName("Observer-" + getName());
         LOG.info("Thread: [ {} ] is started. ", Thread.currentThread().getName());
-        this.lastPublishTime = System.currentTimeMillis();
+        String instance = getInstance();
         while (!isShutdown) {
             try {
                 List<T> publishedTasks;
                 try {
-                    publishedTasks = onPublish(publishBatch);
+                    publishedTasks = onPublish(instance, publishBatch);
                     // If list of publish tasks is not empty
-                    if (publishedTasks.size() > 0) {
+                    if (publishedTasks.size() > 0 || this.lastPublishTime <= 0) {
                         this.lastPublishTime = System.currentTimeMillis();
                     }
                 } catch (ExchangisTaskObserverException e){
@@ -103,16 +106,22 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
                 int publishedSize = publishedTasks.size();
                 for ( int i = 0; i < MAX_SUBSCRIBE_TIMES && !publishedTasks.isEmpty(); i ++) {
                     List<T> chooseTasks;
-                    try {
-                        chooseTasks = choose(publishedTasks, getTaskChooseRuler(), getScheduler());
-                    } catch (Exception e) {
-                        throw new ExchangisTaskObserverException("call_choose_rule", "Fail to choose candidate tasks", e);
+                    TaskChooseRuler<T> chooseRuler = getTaskChooseRuler();
+                    if (Objects.nonNull(chooseRuler)) {
+                        try {
+                            chooseTasks = choose(publishedTasks, getTaskChooseRuler(), getScheduler());
+                        } catch (Exception e) {
+                            throw new ExchangisTaskObserverException("call_choose_rule", "Fail to choose candidate tasks", e);
+                        }
+                        // The rest one
+                        publishedTasks.removeAll(chooseTasks);
+                    } else {
+                        chooseTasks = new ArrayList<>(publishedTasks);
+                        publishedTasks.clear();
                     }
-                    // The rest one
-                    publishedTasks.removeAll(chooseTasks);
                     if (!chooseTasks.isEmpty()) {
                         try {
-                            subscribe(chooseTasks, publishedTasks);
+                            subscribe(chooseTasks);
                         } catch (ExchangisTaskObserverException e) {
                             e.setMethodName("call_subscribe");
                             throw e;
@@ -121,7 +130,7 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
                 }
                 // Discard the unsubscribed tasks
                 discard(publishedTasks);
-                sleepOrWaitIfNeed(publishedSize, publishedTasks.size());
+                sleepOrWaitIfNeed(publishedSize);
             } catch (Exception e){
                 if(e instanceof ExchangisTaskObserverException){
                     LOG.warn("Observer exception in progress paragraph: [{}]",((ExchangisTaskObserverException)e).getMethodName(), e);
@@ -162,9 +171,9 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     /**
      * Sleep or wait during the publishing and subscribe
      */
-    private void sleepOrWaitIfNeed(int publishedSize, int unsubscribed){
+    private void sleepOrWaitIfNeed(int publishedSize){
         long observerWait = this.lastPublishTime + publishInterval - System.currentTimeMillis();
-        if (publishedSize <= 0 || unsubscribed > 0) {
+        if (!nextPublish(publishedSize, observerWait)) {
             observerWait = observerWait > 0? observerWait : publishInterval;
             boolean hasLock = observerLock.tryLock();
             if (hasLock) {
@@ -183,9 +192,22 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
                     observerLock.unlock();
                 }
             }
+        } else {
+            LockSupport.parkNanos(1L);
         }
     }
-    protected abstract List<T> onPublish(int batchSize) throws ExchangisTaskObserverException;
+
+    /**
+     * If go on publish, else wait for the next interval
+     * @param publishedSize published
+     * @param observerWait wait time
+     * @return bool
+     */
+    protected boolean nextPublish(int publishedSize, long observerWait){
+        return publishedSize > 0 && observerWait <= 0;
+    }
+
+    protected abstract List<T> onPublish(String instance, int batchSize) throws ExchangisTaskObserverException;
 
     /**
      * Call publish

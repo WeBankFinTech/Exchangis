@@ -12,9 +12,12 @@ import com.webank.wedatasphere.exchangis.job.server.execution.generator.*;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.AbstractTaskSchedulerLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.FlexibleTenancyLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSchedulerLoadBalancer;
+import com.webank.wedatasphere.exchangis.job.server.execution.parallel.TaskParallelManager;
+import com.webank.wedatasphere.exchangis.job.server.execution.parallel.TenancyTaskParallelManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerExecutorManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisGenericScheduler;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TenancyParallelConsumerManager;
+import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.MaxParallelChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.MaxUsageTaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
@@ -142,14 +145,19 @@ public class ExchangisJobExecuteAutoConfiguration {
         return new LinkisExchangisTaskLaunchManager();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(TaskParallelManager.class)
+    public TaskParallelManager taskParallelManager() {
+        return new TenancyTaskParallelManager();
+    }
     /**
      * Choose rule
      * @return
      */
     @Bean
     @ConditionalOnMissingBean(TaskChooseRuler.class)
-    public TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler(){
-        return new MaxUsageTaskChooseRuler();
+    public TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler(TaskParallelManager parallelManager){
+        return new MaxParallelChooseRuler(parallelManager);
     }
     /**
      * Task execution

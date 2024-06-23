@@ -92,4 +92,12 @@ public class EnvironmentUtils {
                 .getBean(EurekaDiscoveryClient.class);
         return false;
     }
+
+    /**
+     * Get the server container startup time
+     * @return timestamp
+     */
+    public static long getStartupTime(){
+        return DataWorkCloudApplication.getApplicationContext().getStartupDate();
+    }
 }

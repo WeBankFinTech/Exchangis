@@ -16,6 +16,9 @@
         <result column="linkis_source" property="linkisSource"/>
         <result column="labels" property="labels"/>
         <result column="job_execution_id" property="jobExecutionId"/>
+        <result column="delay_time" property="delayTime"/>
+        <result column="delay_count" property="delayCount"/>
+        <result column="instance" property="instance"/>
     </resultMap>
 
     <sql id="TableName">
@@ -24,13 +27,13 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, linkis_source, labels </sql>
+        id, name, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, linkis_source, labels, delay_time, delay_count, instance </sql>
 
     <insert id="addLaunchableTask" >
         <foreach collection="tasks" item="task">
         insert into
         <include refid="TableName"/>
-        (id, name, job_execution_id, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, linkis_source, labels)
+        (id, name, job_execution_id, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, linkis_source, labels, delay_time, delay_count, instance)
         values(
         #{task.id},
         #{task.name},
@@ -43,7 +46,10 @@
         #{task.linkisJobContent},
         #{task.linkisParams},
         #{task.linkisSource},
-        #{task.labels}
+        #{task.labels},
+        #{task.delayTime},
+        #{task.delayCount},
+        #{task.instance}
         );
         </foreach>
     </insert>
@@ -80,10 +86,60 @@
 
     <select id="getTaskToLaunch" resultMap="BaseResultMap">
         <![CDATA[SELECT * FROM exchangis_launchable_task t
-        left join exchangis_launched_task_entity l on t.id = l.id where l.task_id is NULL ORDER BY t.create_time ASC LIMIT #{limitSize};]]>
+        left join exchangis_launched_task_entity l on t.id = l.id
+         ]]>
+        <where>
+            <if test="instance != null and instance != ''">
+                AND  t.instance = #{instance}
+            </if>
+            AND l.task_id is NULL
+        </where>
+        <![CDATA[ORDER BY t.delay_time ASC LIMIT #{limitSize};]]>
+    </select>
+
+    <!--use the 'last_update_time' in launched task-->
+    <select id="getTaskToLaunchInExpire" resultMap="BaseResultMap">
+        <![CDATA[
+        SELECT
+        t.id,
+        t.name,
+        t.create_time,
+        l.last_update_time,
+        t.engine_type,
+        t.execute_user,
+        t.linkis_job_name,
+        t.linkis_job_content,
+        t.linkis_params,
+        t.linkis_source,
+        t.labels,
+        t.delay_time,
+        t.delay_count,
+        t.instance,
+        t.job_execution_id
+        FROM exchangis_launchable_task t
+        INNER JOIN exchangis_launched_task_entity l ON t.id = l.id]]>
+        <if test="instance != null and instance != ''">
+            AND  t.instance = #{instance}
+        </if>
+        <![CDATA[
+        where l.`last_update_time` < #{expireTime} AND l.`status` = #{status}
+        ORDER BY t.delay_time ASC LIMIT #{limitSize};]]>
     </select>
 
     <select id="sumProgressByJobExecutionId">
         <![CDATA[SELECT SUM(progress) FROM exchangis_launched_task_entity WHERE job_execution_id = #{jobExecutionId};]]>
     </select>
+    
+    <update id="delayBatch">
+        <foreach collection="tasks" item="task">
+            <![CDATA[UPDATE ]]>
+            <include refid="TableName"/>
+            <![CDATA[
+            SET delay_time = #{task.delayTime},
+             delay_count = #{task.delayCount},
+             last_update_time = #{task.lastUpdateTime}
+            WHERE id = #{task.id};
+            ]]>
+        </foreach>
+    </update>
 </mapper>

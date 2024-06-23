@@ -77,10 +77,13 @@ public abstract class AbstractTaskManager implements TaskManager<LaunchedExchang
 
     @Override
     public void addRunningTask(LaunchedExchangisTask task) {
+        TaskStatus beforeStatus = task.getStatus();
         task.setStatus(TaskStatus.Running);
         task.setRunningTime(Calendar.getInstance().getTime());
         onEvent(new TaskLaunchEvent(task));
-        info(task, "Status of task: [name: {}, id: {}] change to {}, info: [{}]", task.getName(), task.getTaskId(), task.getStatus(), "");
+        if (beforeStatus != task.getStatus()) {
+            info(task, "Status of task: [name: {}, id: {}] change to {}, info: [{}]", task.getName(), task.getTaskId(), task.getStatus(), "");
+        }
         if (Objects.isNull(runningTasks.putIfAbsent(task.getTaskId(), new TaskContext(task)))){
             jobWrappers.compute(task.getJobExecutionId(), (jobExecutionId, jobWrapper) -> {
                 if (Objects.nonNull(jobWrapper) && jobWrapper.addTask(task)){

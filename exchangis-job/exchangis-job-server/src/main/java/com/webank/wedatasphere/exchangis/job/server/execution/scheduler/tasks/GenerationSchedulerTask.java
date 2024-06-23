@@ -31,6 +31,15 @@ public class GenerationSchedulerTask extends AbstractExchangisSchedulerTask {
         this.scheduleId = this.launchableExchangisJob.getJobExecutionId();
     }
 
+    public GenerationSchedulerTask(TaskGenerator<LaunchableExchangisJob> taskGenerator,
+                                   LaunchableExchangisJob launchableExchangisJob) throws ExchangisTaskGenerateException {
+        super("");
+        this.taskGenerator = taskGenerator;
+        this.launchableExchangisJob = launchableExchangisJob;
+        this.ctx = taskGenerator.getTaskGeneratorContext();
+        this.scheduleId = this.launchableExchangisJob.getJobExecutionId();
+    }
+
     @Override
     protected void schedule() throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
         try {

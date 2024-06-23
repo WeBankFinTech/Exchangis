@@ -167,6 +167,11 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
         }
 
         @Override
+        public void onPrepare(TaskPrepareEvent prepareEvent) throws ExchangisOnEventException {
+
+        }
+
+        @Override
         public void onProgressUpdate(TaskProgressUpdateEvent updateEvent) {
             // Ignore
         }

@@ -130,13 +130,24 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
 
     @Override
     public String getInstance() {
-        return null;
+        return instance;
     }
 
     @Override
     public void setInstance(String instance) {
+        this.instance = instance;
+    }
+
+    @Override
+    public Date getDelayTime() {
+        return null;
+    }
+
+    @Override
+    public void setDelayTime(Date delayTime) {
 
     }
+
 
     @Override
     public Long getId() {

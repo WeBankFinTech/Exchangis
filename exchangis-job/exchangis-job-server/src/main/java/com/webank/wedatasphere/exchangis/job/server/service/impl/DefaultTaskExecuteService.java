@@ -54,7 +54,10 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
         LaunchedExchangisJobEntity launchedJob = null;
         if (!TaskStatus.isCompleted(status)){
             launchedJob = launchedJobDao.searchLaunchedJob(task.getJobExecutionId());
-            TaskStatus jobStatus = launchedJob.getStatus();
+            TaskStatus jobStatus = TaskStatus.Cancelled;
+            if (Objects.nonNull(launchedJob)){
+                jobStatus = launchedJob.getStatus();
+            }
             if (TaskStatus.isCompleted(jobStatus) && Objects.nonNull(task.getLauncherTask())){
                 // Kill the remote task
                 try {
@@ -70,7 +73,11 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
         if (!task.getStatus().equals(status)){
             launchedJob = Objects.isNull(launchedJob) ?
                     launchedJobDao.searchLaunchedJob(task.getJobExecutionId()) : launchedJob;
-            getSelfService().updateTaskStatus(task, status, !TaskStatus.isCompleted(launchedJob.getStatus()));
+            TaskStatus jobStatus = TaskStatus.Cancelled;
+            if (Objects.nonNull(launchedJob)){
+                jobStatus = launchedJob.getStatus();
+            }
+            getSelfService().updateTaskStatus(task, status, !TaskStatus.isCompleted(jobStatus));
         }
     }
 
@@ -82,7 +89,10 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
         this.launchedTaskDao.updateLaunchInfo(task);
         // Well, search the job info
         LaunchedExchangisJobEntity launchedJob = launchedJobDao.searchLaunchedJob(task.getJobExecutionId());
-        TaskStatus jobStatus = launchedJob.getStatus();
+        TaskStatus jobStatus = TaskStatus.Cancelled;
+        if (Objects.nonNull(launchedJob)) {
+            jobStatus = launchedJob.getStatus();
+        }
         if (jobStatus == TaskStatus.Scheduled || jobStatus == TaskStatus.Inited) {
             // Update the job status also, status change to Running
             this.launchedJobDao.upgradeLaunchedJobStatusInVersion(task.getJobExecutionId(),
@@ -100,6 +110,16 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     public void onDequeue(TaskDequeueEvent dequeueEvent) throws ExchangisOnEventException {
         // Delete task in table
         this.launchableTaskDao.deleteLaunchableTask(dequeueEvent.getTaskId());
+    }
+
+    @Override
+    public void onPrepare(TaskPrepareEvent prepareEvent) throws ExchangisOnEventException {
+        // Update the launched task in date version
+        if (this.launchedTaskDao.updateDateInVersion(prepareEvent.getTaskId(),
+                Calendar.getInstance().getTime(), prepareEvent.getVersion()) <= 0){
+            throw new ExchangisOnEventException("Launched task has conflict version with current version: ["
+                    + prepareEvent.getVersion() + "]", null);
+        }
     }
 
     @Override

@@ -45,8 +45,28 @@ public interface LaunchableTaskDao {
 
     /**
      * Get Tasks need to execute
-     * @param
+     * @param instance ins
      */
 
-    List<LaunchableExchangisTask> getTaskToLaunch(@Param("limitSize") Integer limitSize);
+    List<LaunchableExchangisTask> getTaskToLaunch(@Param("instance")String instance,
+                                                  @Param("limitSize") Integer limitSize);
+
+    /**
+     * Get the expired tasks need to execute
+     * @param status expire status
+     * @param instance ins
+     * @param expireTime expire time
+     * @param limitSize limit size
+     * @return
+     */
+    List<LaunchableExchangisTask> getTaskToLaunchInExpire(@Param("instance")String instance,
+                                                          @Param("status")String status,
+                                                          @Param("expireTime") Date expireTime,
+                                                          @Param("limitSize")Integer limitSize);
+
+    /**
+     * Batch delay
+     * @param tasks tasks
+     */
+    void delayBatch(@Param("tasks")List<LaunchableExchangisTask> tasks);
 }

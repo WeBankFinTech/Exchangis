@@ -95,20 +95,23 @@ public class ExchangisProjectDssAppConnRestfulApi {
             }
             // Try to create project datasources for user
             LOG.info("Start to create and relate project datasources for project [{}]", projectVo.getName());
-            String[] projectDsList = ExchangisProjectConfiguration.PROJECT_DATASOURCES
-                    .getValue().split(",");
-            for(String projectDs : projectDsList){
-                String newName = projectDs + "_" + username;
-                try {
-                    dataSourceService.copyDataSource(username, projectDs, newName);
-                    // Attach data source to project
-                    ExchangisProjectDsVo projectDsVo = new ExchangisProjectDsVo();
-                    projectDsVo.setName(newName);
-                    projectVo.getDataSources().add(projectDsVo);
-                } catch (Exception e){
-                    LOG.warn("Fail to create project data source(模版创建项目数据源失败,跳过) " +
-                                    "from model: [{}] for user: [{}], message: [{}]",
-                            projectDs, username, e.getMessage());
+            if (StringUtils.isNotBlank(ExchangisProjectConfiguration.PROJECT_DATASOURCES
+                        .getValue())) {
+                String[] projectDsList = ExchangisProjectConfiguration.PROJECT_DATASOURCES
+                        .getValue().split(",");
+                for (String projectDs : projectDsList) {
+                    String newName = projectDs + "_" + username;
+                    try {
+                        dataSourceService.copyDataSource(username, projectDs, newName);
+                        // Attach data source to project
+                        ExchangisProjectDsVo projectDsVo = new ExchangisProjectDsVo();
+                        projectDsVo.setName(newName);
+                        projectVo.getDataSources().add(projectDsVo);
+                    } catch (Exception e) {
+                        LOG.warn("Fail to create project data source(模版创建项目数据源失败,跳过) " +
+                                        "from model: [{}] for user: [{}], message: [{}]",
+                                projectDs, username, e.getMessage());
+                    }
                 }
             }
             // validate data sources

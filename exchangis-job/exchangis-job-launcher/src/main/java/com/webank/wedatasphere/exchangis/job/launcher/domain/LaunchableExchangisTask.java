@@ -1,7 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.domain;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.job.constraints.LabelSerializeConstraints;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
 import com.webank.wedatasphere.exchangis.job.utils.LabelConvertUtils;
 
@@ -58,7 +57,7 @@ public class LaunchableExchangisTask implements ExchangisTask {
     /**
      * Launch delay time
      */
-    private String delayTime;
+    private Date delayTime;
 
     /**
      * Launch delay count
@@ -255,11 +254,11 @@ public class LaunchableExchangisTask implements ExchangisTask {
         this.labels = labels;
     }
 
-    public String getDelayTime() {
+    public Date getDelayTime() {
         return delayTime;
     }
 
-    public void setDelayTime(String delayTime) {
+    public void setDelayTime(Date delayTime) {
         this.delayTime = delayTime;
     }
 
@@ -270,4 +269,17 @@ public class LaunchableExchangisTask implements ExchangisTask {
     public void setDelayCount(Integer delayCount) {
         this.delayCount = delayCount;
     }
+
+    /**
+     * Clear the content
+     */
+    public void simplify(){
+        this.linkisParams = null;
+        this.linkisParamsMap = null;
+        this.linkisJobContent = null;
+        this.linkisContentMap = null;
+        this.linkisSource = null;
+        this.linkisSourceMap = null;
+    }
+
 }

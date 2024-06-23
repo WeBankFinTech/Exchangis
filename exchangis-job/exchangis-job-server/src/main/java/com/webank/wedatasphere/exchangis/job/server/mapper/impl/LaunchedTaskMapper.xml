@@ -24,6 +24,7 @@
         <result column="running_time" property="runningTime"/>
         <result column="metrics" property="metrics"/>
         <result column="status" property="status"/>
+        <result column="instance" property="instance"/>
     </resultMap>
 
     <sql id="TableName">
@@ -32,12 +33,12 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status </sql>
+        id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status, instance </sql>
 
     <insert id="insertLaunchedTaskOrUpdate" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
         insert into
         <include refid="TableName"/>
-        (id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status)
+        (id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status, instance)
         values(
         #{id},
         #{name},
@@ -58,15 +59,16 @@
         #{launchTime},
         #{runningTime},
         #{metrics},
-        #{status}
+        #{status},
+        #{instance}
         ) ON DUPLICATE KEY UPDATE
-        name = #{name}, `status` = #{status}, `last_update_time` = NOW();
+        `status` = #{status}, name = #{name};
     </insert>
 
     <insert id="insertLaunchedTask" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
         insert into
         <include refid="TableName"/>
-        (id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status)
+        (id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status, instance)
         values(
         #{id},
         #{name},
@@ -87,7 +89,8 @@
         #{launchTime},
         #{runningTime},
         #{metrics},
-        #{status}
+        #{status},
+        #{instance}
         );
     </insert>
 
@@ -98,8 +101,13 @@
 
     <delete id="deleteLaunchedTaskInVersion">
         DELETE FROM <include refid="TableName"/> WHERE
-        <![CDATA[task_id = #{taskId} AND last_update_time <= #{version}]]>
+        <![CDATA[task_id = #{taskId} AND last_update_time = #{version}]]>
     </delete>
+
+    <update id="updateDateInVersion">
+        UPDATE <include refid="TableName"/>
+        SET last_update_time = #{updateDate} WHERE task_id = #{taskId} AND last_update_time = #{version}
+    </update>
 
     <update id="upgradeLaunchedTask">
         UPDATE <include refid="TableName"/>
@@ -222,6 +230,23 @@
         from
         <include refid="TableName" />
         where job_execution_id = #{jobExecutionId}
+    </select>
+
+    <select id="getLaunchedTaskInExpire" resultMap="BaseResultMap">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM
+        <include refid="TableName" />
+        <where>
+            <if test="instance != null and instance != ''">
+                AND  instance = #{instance}
+            </if>
+            <![CDATA[
+            AND `last_update_time` < #{expireTime}
+            AND `status` = #{status}
+            ]]>
+        </where>
+        ORDER BY last_update_time ASC LIMIT #{limitSize};
     </select>
 
     <delete id="deleteTask">

@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.launcher.entity;
 
 
+import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
@@ -59,6 +60,7 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
         this.jobExecutionId = launchableExchangisTask.getJobExecutionId();
         this.status = TaskStatus.Scheduled;
         this.lastUpdateTime = Calendar.getInstance().getTime();
+        this.instance = EnvironmentUtils.getServerAddress();
     }
     public String getTaskId(){
         if (Objects.isNull(taskId) && Objects.nonNull(getId())){

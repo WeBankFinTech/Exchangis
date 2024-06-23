@@ -21,6 +21,7 @@
         <result column="retry_num" property="retryNum"/>
         <result column="log_path" property="logPath"/>
         <result column="create_user" property="createUser"/>
+        <result column="instance" property="instance"/>
         <association property="exchangisJobEntity" javaType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity" >
             <result property="id" column="id" />
             <result property="source" column="source" />
@@ -33,12 +34,13 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, job_id, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, create_user    </sql>
+        id, name, create_time, last_update_time, job_id, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, create_user, instance
+    </sql>
 
     <insert id="insertLaunchedJob" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
         insert into
         <include refid="TableName"/>
-        (name, create_time, last_update_time, job_id, launchable_task_num, job_execution_id, engine_type, execute_user, create_user, job_name, status, progress, error_code, error_msg, retry_num, log_path)
+        (name, create_time, last_update_time, job_id, launchable_task_num, job_execution_id, engine_type, execute_user, create_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, instance)
         values(
         #{name},
         #{createTime},
@@ -55,7 +57,8 @@
         #{errorCode},
         #{errorMessage},
         #{retryNum},
-        #{logPath}
+        #{logPath},
+        #{instance}
         );
     </insert>
 
@@ -141,6 +144,16 @@
         WHERE
         job_execution_id = #{jobExecutionId}]]>
     </update>
+
+    <update id="updateLaunchedJobDate">
+        <![CDATA[UPDATE ]]>
+        <include refid="TableName"/>
+        <![CDATA[SET
+        last_update_time = #{updateTime}
+        WHERE
+        job_execution_id = #{jobExecutionId}]]>
+    </update>
+
     <select id="getAllLaunchedJob" resultMap="LaunchedJobMap">
         SELECT
         l.job_execution_id,
@@ -212,4 +225,20 @@
         job_execution_id = #{jobExecutionId}
     </delete>
 
+    <select id="getLaunchedJobInExpire" resultMap="LaunchedJobMap">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM
+        <include refid="TableName" />
+        <where>
+            <if test="instance != null and instance != ''">
+                AND  instance = #{instance}
+            </if>
+            <![CDATA[
+            AND `last_update_time` < #{expireTime}
+            AND `status` = #{status}
+            ]]>
+        </where>
+        ORDER BY last_update_time ASC LIMIT #{limitSize};
+    </select>
 </mapper>

@@ -27,6 +27,8 @@ public interface TaskExecutionListener extends ExchangisListener<TaskExecutionEv
             onProgressUpdate((TaskProgressUpdateEvent)event);
         } else if (event instanceof TaskDequeueEvent){
             onDequeue((TaskDequeueEvent) event);
+        } else if (event instanceof TaskPrepareEvent){
+            onPrepare((TaskPrepareEvent) event);
         }
     }
 
@@ -61,6 +63,12 @@ public interface TaskExecutionListener extends ExchangisListener<TaskExecutionEv
      */
     void onDequeue(TaskDequeueEvent dequeueEvent) throws ExchangisOnEventException;
 
+    /**
+     * Prepare event
+     * @param prepareEvent prepare event
+     * @throws ExchangisOnEventException exception
+     */
+    void onPrepare(TaskPrepareEvent prepareEvent) throws ExchangisOnEventException;
     /**
      * Progress update
      * @param updateEvent update event

@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
+import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.parallel.TaskParallelManager;
@@ -13,9 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Subscribe the new task from database and then submit to scheduler
@@ -32,17 +31,24 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
     @Resource
     private TaskParallelManager parallelManager;
 
+    public NewInTaskObserver(){
+        this.lastPublishTime = System.currentTimeMillis();
+    }
     @Override
     public String getName() {
         return "NewInTaskObserver";
     }
 
     @Override
-    protected List<LaunchableExchangisTask> onPublishNext(int batchSize){
-        // Get the launchable task from launchable task inner join launched task
-        List<LaunchableExchangisTask> tasks = taskObserverService.onPublishLaunchableTask(batchSize);
+    public String getInstance() {
+        return EnvironmentUtils.getServerAddress();
+    }
+
+    @Override
+    protected List<LaunchableExchangisTask> onPublishNext(String instance, int batchSize){
+        List<LaunchableExchangisTask> tasks = taskObserverService.onPublishLaunchAbleTask(instance, batchSize);
         if (!tasks.isEmpty()) {
-            LOG.info("Publish the tasks waiting to be launched from database, size: [{}], last_task_id: [{}]",
+            LOG.info("Publish the launch-able tasks waiting to be launched from database, size: [{}], last_task_id: [{}]",
                     tasks.size(), tasks.get(0).getId());
         }
         return tasks;
@@ -50,8 +56,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
 
 
     @Override
-    public int subscribe(List<LaunchableExchangisTask> publishedTasks,
-                         List<LaunchableExchangisTask> unsubscribedTasks) throws ExchangisTaskObserverException {
+    public int subscribe(List<LaunchableExchangisTask> publishedTasks) throws ExchangisTaskObserverException {
         Iterator<LaunchableExchangisTask> iterator = publishedTasks.iterator();
         TaskExecution<?> taskExecution = getTaskExecution();
         if (Objects.isNull(taskExecution)){
@@ -61,6 +66,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
             LaunchableExchangisTask launchableExchangisTask = iterator.next();
             if (Objects.nonNull(launchableExchangisTask)){
                 try {
+                    AtomicBoolean noParallel = new AtomicBoolean(false);
                     // Check the submittable condition first in order to avoid the duplicate scheduler tasks
                     SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(launchableExchangisTask,
                             () -> {
@@ -75,12 +81,18 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                                     }
                                     return success;
                                 }
+                                noParallel.set(true);
                                 return false;
                     }, (submitTask, e) -> {
                         TaskParallelRule parallelRule = parallelManager.getOrCreateRule(launchableExchangisTask.getExecuteUser(),
                                 TaskParallelManager.Operation.SUBMIT);
                         // Decrease the parallel
                         parallelRule.decParallel(1);
+                        if (Objects.nonNull(e)){
+                            // Fail to submit, unsubscribe and discard it
+                            taskObserverService.unsubscribe(launchableExchangisTask);
+                            discard(Collections.singletonList(launchableExchangisTask));
+                        }
                     }, true);
                     if (submitSchedulerTask.isSubmitAble()) {
                         submitSchedulerTask.setTenancy(launchableExchangisTask.getExecuteUser());
@@ -88,17 +100,21 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                             taskExecution.submit(submitSchedulerTask);
                         } catch (Exception e) {
                             // If the consumer queue is full?
-                            LOG.warn("Internal_Error: Fail to async submit launchable task: [ id: {}, name: {}, job_execution_id: {} ]"
+                            LOG.warn("Internal_Error: Fail to async submit launch-able task: [ id: {}, name: {}, job_execution_id: {} ]"
                                     , launchableExchangisTask.getId(), launchableExchangisTask.getName(), launchableExchangisTask.getJobExecutionId(), e);
-                            // Unsubscribe the task
+                            // Unsubscribe and discard the task
                             taskObserverService.unsubscribe(launchableExchangisTask);
-                            unsubscribedTasks.add(launchableExchangisTask);
+                            discard(Collections.singletonList(launchableExchangisTask));
                         }
-                    } else {
-                        unsubscribedTasks.add(launchableExchangisTask);
+                    } else if (noParallel.get()){
+                        // Has no parallel
+                        discard(Collections.singletonList(launchableExchangisTask));
                     }
                 } catch (Exception e){
-                    LOG.error("Exception in subscribing launchable tasks, please check your status of database and network", e);
+                    LOG.error("Internal_Error: Exception in subscribing task: [ id: {}, name: {}, job_execution_id: {} ]" +
+                            ", please check your status of database and network",
+                            launchableExchangisTask.getId(), launchableExchangisTask.getName(), launchableExchangisTask.getJobExecutionId(), e);
+                    // Wait the other recover observers to subscribe the task
                 }
             }
             iterator.remove();
@@ -106,10 +122,22 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
         return 0;
     }
 
-
     @Override
     public void discard(List<LaunchableExchangisTask> unsubscribeTasks) {
-        // Delay the tasks
-        queue.peek();
+        // Calculate the delay time and requeue to the cache
+        try {
+            taskObserverService.delayToSubscribe(unsubscribeTasks);
+        }catch(Exception e){
+            LOG.warn("Internal_Error: Exception in delaying unsubscribe tasks, reason:[{}]",
+                    e.getMessage(), e);
+            // Enforce to sleep
+            try {
+                Thread.sleep(publishInterval);
+            } catch (InterruptedException ex) {
+                //Ignore
+            }
+        }
+        Queue<LaunchableExchangisTask> queue = getCacheQueue();
+        unsubscribeTasks.forEach(queue::offer);
     }
 }
