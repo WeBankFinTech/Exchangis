@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
+import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
@@ -58,6 +59,9 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
             task.setJobExecutionId(launchableExchangisJob.getJobExecutionId());
             task.setCreateTime(calendar.getTime());
             task.setLastUpdateTime(task.getCreateTime());
+            task.setInstance(EnvironmentUtils.getServerAddress());
+            task.setDelayTime(calendar.getTime());
+            task.setDelayCount(0);
         });
         this.launchableTaskDao.addLaunchableTask(tasks);
         LaunchedExchangisJobEntity launchedJob = new LaunchedExchangisJobEntity(launchableExchangisJob);
