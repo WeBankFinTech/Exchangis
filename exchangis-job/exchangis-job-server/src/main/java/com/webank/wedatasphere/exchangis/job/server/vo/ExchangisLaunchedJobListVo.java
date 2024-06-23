@@ -11,6 +11,8 @@ public class ExchangisLaunchedJobListVo {
 
     private String executeNode;
 
+    private String projectName;
+
     private String name;
 
     private Date createTime;
@@ -31,9 +33,10 @@ public class ExchangisLaunchedJobListVo {
 
     }
 
-    public ExchangisLaunchedJobListVo(String jobExecutionId, String executeNode, String name, Date createTime, Long flow, String createUser, String executeUser, String status, double progress, Date lastUpdateTime){
+    public ExchangisLaunchedJobListVo(String jobExecutionId, String executeNode, String projectName, String name, Date createTime, Long flow, String createUser, String executeUser, String status, double progress, Date lastUpdateTime){
         this.jobExecutionId = jobExecutionId;
         this.executeNode = executeNode;
+        this.projectName = projectName;
         this.name = name;
         this.status = status;
         this.createTime = createTime;
@@ -67,6 +70,14 @@ public class ExchangisLaunchedJobListVo {
 
     public void setExecuteNode(String executeNode) {
         this.executeNode = executeNode;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
     public String getName() {

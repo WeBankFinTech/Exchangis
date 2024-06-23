@@ -177,12 +177,12 @@ public class ExchangisJobRestfulApi {
         Message response = Message.ok();
 
         try {
-            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, Long.parseLong(exchangisJobVo.getProjectId()), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to create Job (没有创建任务权限)");
             }
 
             //Check whether the job with the same name exists in current project
-            List<ExchangisJobVo> jobs = jobInfoService.getByNameAndProjectId(exchangisJobVo.getJobName(), exchangisJobVo.getProjectId());
+            List<ExchangisJobVo> jobs = jobInfoService.getByNameAndProjectId(exchangisJobVo.getJobName(), Long.parseLong(exchangisJobVo.getProjectId()));
             if (!Objects.isNull(jobs) && jobs.size() > 0) {
                 return Message.error("A task with the same name exists under the current project (当前项目下存在同名任务)");
             }
@@ -220,7 +220,7 @@ public class ExchangisJobRestfulApi {
         exchangisJobVo.setModifyUser(loginUser);
         Message response = Message.ok();
         try {
-            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, Long.parseLong(exchangisJobVo.getProjectId()), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to update (没有作业复制权限)");
             }
             response.data("result", jobInfoService.copyJob(exchangisJobVo));
@@ -315,11 +315,11 @@ public class ExchangisJobRestfulApi {
 
             String loginUser = UserUtils.getLoginUser(request);
 
-            ExchangisJobVo job = jobInfoService.getJob(id, true);
+            ExchangisJobVo job = jobInfoService.getDecoratedJob(request, id);
             if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to get job (没有获取任务权限)");
             }
-            job = jobInfoService.getDecoratedJob(request, id);
+//            job = jobInfoService.getDecoratedJob(request, id);
             response.data("result", job);
         } catch (Exception e) {
             String message = "Fail to get job detail (查询任务失败)";

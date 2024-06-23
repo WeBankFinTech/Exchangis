@@ -38,7 +38,7 @@ public interface ProjectDsRelationMapper {
      * @param dsType datasource type
      * @return type
      */
-    List<ExchangisProjectDsRelation> listByProject(Long projectId, String dsType);
+    List<ExchangisProjectDsRelation> listByProject(@Param("projectId") Long projectId, @Param("dsType") String dsType);
 
     /**
      * List related data sources
@@ -53,6 +53,5 @@ public interface ProjectDsRelationMapper {
      * @param dsId data source id
      * @return ds
      */
-    ExchangisProjectDsRelation getByUserAndDsId(@Param("username")String username,
-                                                @Param("dsId") Long dsId);
+    ExchangisProjectDsRelation getByUserAndDsId(@Param("username") String username, @Param("dsId") Long dsId);
 }

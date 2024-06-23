@@ -23,8 +23,9 @@
         <result column="create_user" property="createUser"/>
         <result column="instance" property="instance"/>
         <association property="exchangisJobEntity" javaType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity" >
-            <result property="id" column="id" />
-            <result property="source" column="source" />
+            <result column="id" property="id" />
+            <result column="project_name" property="projectName" />
+            <result column="source" property="source" />
         </association>
     </resultMap>
 
@@ -164,11 +165,19 @@
         l.progress,
         l.last_update_time,
         l.create_user,
-        c.source
+        c.source,
+        p.name as project_name
         FROM
         `exchangis_launched_job_entity` l
         LEFT JOIN `exchangis_job_entity` c ON l.job_id = c.id
+        INNER JOIN `exchangis_project_info` p ON c.project_id = p.id
         <where>
+            <if test="launchStartTime != null">
+                and l.create_time >= #{launchStartTime}
+            </if>
+            <if test="launchEndTime != null">
+                and l.create_time &lt;= #{launchEndTime}
+            </if>
             <if test="jobExecutionId.trim() != '' and jobExecutionId != null">
                 and l.job_execution_id = #{jobExecutionId}
             </if>
@@ -177,20 +186,13 @@
                 and l.name like concat('%', #{jobName}, '%')
             </if>
             <if test="loginUser.trim() != '' and loginUser != null">
-                and l.create_user like concat('%', #{loginUser}, '%')
+                and p.id in (SELECT project_id FROM exchangis_project_user WHERE priv_user=#{loginUser})
             </if>
             <if test="status.trim() != '' and status != null">
                 and l.status = #{status}
             </if>
-            <if test="launchStartTime != null">
-                and l.create_time >= #{launchStartTime}
-            </if>
-            <if test="launchEndTime != null">
-                and l.create_time &lt;= #{launchEndTime}
-            </if>
         </where>
         order by create_time desc
-        limit #{start}, #{size}
     </select>
 
     <select id="count" resultType="java.lang.Integer">

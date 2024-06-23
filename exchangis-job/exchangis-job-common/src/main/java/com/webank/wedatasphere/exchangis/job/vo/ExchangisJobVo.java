@@ -1,19 +1,10 @@
 package com.webank.wedatasphere.exchangis.job.vo;
 
-
-
-import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import org.hibernate.validator.constraints.NotBlank;
-
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.*;
 
-/**
- *
- */
-//@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ExchangisJobVo {
 
     /**
@@ -24,7 +15,7 @@ public class ExchangisJobVo {
     /**
      * Project id
      */
-    private Long projectId;
+    private String projectId;
 
     /**
      * Job type
@@ -117,7 +108,7 @@ public class ExchangisJobVo {
     public ExchangisJobVo(ExchangisJobEntity jobEntity){
         if (Objects.nonNull(jobEntity)) {
             this.id = jobEntity.getId();
-            this.projectId = jobEntity.getProjectId();
+            this.projectId = String.valueOf(jobEntity.getProjectId());
             this.engineType = jobEntity.getEngineType();
             this.jobDesc = jobEntity.getJobDesc();
             this.jobLabels = jobEntity.getJobLabel();
@@ -176,11 +167,11 @@ public class ExchangisJobVo {
         this.modifyTime = modifyTime;
     }
 
-    public Long getProjectId() {
+    public String getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(Long projectId) {
+    public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
 

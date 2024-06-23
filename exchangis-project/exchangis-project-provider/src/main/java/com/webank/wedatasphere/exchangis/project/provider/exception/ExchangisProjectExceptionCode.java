@@ -7,7 +7,10 @@ package com.webank.wedatasphere.exchangis.project.provider.exception;
 public enum ExchangisProjectExceptionCode {
 
     UNSUPPORTED_OPERATION(32001),
-    VALIDATE_DS_ERROR(32002);
+
+    VALIDATE_DS_ERROR(32002),
+
+    RELEASE_PROJECT_DS_RELATION_ERROR(32003);
 
     private int code;
 

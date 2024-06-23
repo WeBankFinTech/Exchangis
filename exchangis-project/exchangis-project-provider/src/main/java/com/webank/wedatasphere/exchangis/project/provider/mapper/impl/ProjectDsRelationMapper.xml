@@ -61,7 +61,15 @@
 
     <select id="listByProject" resultMap="projectDsResult">
         SELECT * FROM <include refid="tableName"/>
-        WHERE project_id=#{projectId} AND data_source_type=#{dsType}
+        <where>
+            <if test="projectId != null">
+                AND project_id = #{projectId}
+            </if>
+            <if test="dsType != null and dsType != ''">
+                AND data_source_type = #{dsType}
+            </if>
+        </where>
+        ORDER BY last_update_time DESC
     </select>
 
     <select id="listByProjects" resultMap="projectDsResult">

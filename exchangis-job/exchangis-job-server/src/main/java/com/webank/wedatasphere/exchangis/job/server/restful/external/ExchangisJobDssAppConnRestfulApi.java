@@ -77,7 +77,7 @@ public class ExchangisJobDssAppConnRestfulApi {
 
         Long id = null;
         try{
-            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, Long.parseLong(exchangisJobVo.getProjectId()), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to create Job (没有创建任务权限)");
             }
             id = jobInfoService.createJob(exchangisJobVo).getId();
@@ -112,7 +112,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             if (Objects.isNull(exchangisJob)){
                 return response;
             }
-            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJob.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, Long.parseLong(exchangisJob.getProjectId()), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to delete (没有删除任务权限)");
             }
             jobInfoService.deleteJob(id);
@@ -190,7 +190,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             if (Objects.isNull(jobVo)){
                 return Message.error("Job related the id: [" + id + "] is Empty(关联的DSS任务不存在)");
             }
-            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, id, OperationType.JOB_EXECUTE)) {
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_EXECUTE)) {
                 return Message.error("You have no permission to execute job (没有执行任务权限)");
             }
             // Convert to the job info
@@ -211,7 +211,7 @@ public class ExchangisJobDssAppConnRestfulApi {
                 message = "Error occur while executing job: [id: " + jobInfo.getId() + " name: " + jobInfo.getName() + "]";
                 response = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
             } else {
-                message = "Error to get the job detail (获取任务信息出错)";
+                message = "Error to get the job detail (获取任务信息出错), reason: " + e.getMessage();
                 response = Message.error(message);
             }
             LOG.error(message, e);

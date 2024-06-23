@@ -149,7 +149,7 @@ init_properties(){
       LINKIS_SERVER_URL="http://127.0.0.1:9001"
     fi
 
-    sed -ri "s![#]?(wds.exchangis.datasource.client.serverurl=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
+    sed -ri "s![#]?(wds.exchangis.datasource.client.server-url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
     sed -ri "s![#]?(wds.exchangis.client.linkis.server-url=)\S*!\1${LINKIS_GATEWAY_URL}!g" ${BOOTSTRAP_PROP_FILE}
     sed -ri "s![#]?(port: )\S*!\1${EXCHANGIS_PORT}!g" ${APPLICATION_YML}
     sed -ri "s![#]?(defaultZone: )\S*!\1${EUREKA_URL}!g" ${APPLICATION_YML}

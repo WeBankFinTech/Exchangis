@@ -6,12 +6,17 @@ import com.github.pagehelper.PageInfo;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
+import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
 import com.webank.wedatasphere.exchangis.project.entity.vo.*;
+import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectErrorException;
+import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectExceptionCode;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectDsRelationMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectUserMapper;
@@ -47,6 +52,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ProjectUserMapper projectUserMapper;
+
+    @Autowired
+    private ExchangisDataSourceService exchangisDataSourceService;
+
+    @Autowired
+    private ExchangisJobEntityDao exchangisJobEntityDao;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -132,7 +144,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateProject(ExchangisProjectInfo projectInfo, String userName) {
+    public void updateProject(ExchangisProjectInfo projectInfo, String userName) throws ExchangisProjectErrorException {
         Long projectId = Long.valueOf(projectInfo.getId());
         ExchangisProject updatedProject = new ExchangisProject();
         updatedProject.setId(projectId);
@@ -148,10 +160,36 @@ public class ProjectServiceImpl implements ProjectService {
         updatedProject.setLastUpdateTime(Calendar.getInstance().getTime());
         this.projectMapper.updateOne(updatedProject);
 
-        this.projectDsRelationMapper.deleteByProject(projectId);
         List<ExchangisProjectDsRelation> projectDataSources = new ArrayList<>();
         List<ExchangisProjectDsVo> dataSources = projectInfo.getDataSources();
         if (Objects.nonNull(dataSources) && !dataSources.isEmpty()) {
+            // check delete
+            List<ExchangisProjectDsRelation> projectDsRelations = this.projectDsRelationMapper.listByProject(projectId, null);
+
+            Set<String> dsNames = dataSources.stream()
+                    .map(ExchangisProjectDsVo::getName)
+                    .collect(Collectors.toSet());
+            Set<String> deleteNames = projectDsRelations.stream()
+                    .map(ExchangisProjectDsRelation::getDsName)
+                    .filter(name -> !dsNames.contains(name))
+                    .collect(Collectors.toSet());
+
+            List<ExchangisJobEntity> detailList = exchangisJobEntityDao.getDetailList(projectId);
+            for (ExchangisJobEntity jobDetail : detailList) {
+                List<ExchangisJobInfoContent> contentList = exchangisDataSourceService.parseJobContent(jobDetail.getJobContent());
+                for (ExchangisJobInfoContent content : contentList) {
+                    String sourceName = content.getDataSources().getSource().getName();
+                    String sinkName = content.getDataSources().getSink().getName();
+                    if (deleteNames.contains(sourceName) || deleteNames.contains(sinkName)) {
+                        throw new ExchangisProjectErrorException(ExchangisProjectExceptionCode.RELEASE_PROJECT_DS_RELATION_ERROR.getCode(),
+                                "Release project ds relation error, the delete datasource is bound by the job " + jobDetail.getName() + " with subJob " + content.getSubJobName()
+                                + " （解绑的数据源已存在任务配置中，请在任务中解绑后重试）");
+                    }
+                }
+            }
+
+            // first to delete then to insert
+            this.projectDsRelationMapper.deleteByProject(projectId);
             dataSources.forEach(dataSource -> {
                 ExchangisProjectDsRelation exchangisProjectDsRelation = new ExchangisProjectDsRelation(dataSource);
                 exchangisProjectDsRelation.setProjectId(projectId);

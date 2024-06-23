@@ -1,6 +1,7 @@
 package org.apache.linkis.engineconnplugin.datax.config
 
 import com.alibaba.datax.core.util.container.CoreConstant
+import org.apache.commons.lang.StringUtils
 import org.apache.linkis.common.conf.CommonVars
 
 /**
@@ -26,7 +27,10 @@ object DataxCoreConfiguration {
   /**
    * Extra format for 'date','datetime' and 'time'
    */
-  val COMMON_COLUMN_EXTRA_FORMATS: CommonVars[String] = CommonVars("common.column.extraFormats", "yyyy-MM-dd")
+  val COMMON_COLUMN_EXTRA_FORMATS: CommonVars[String] = CommonVars("common.column.extraFormats",
+    StringUtils.join(Array[String]("yyyy-MM-dd HH:mm:ss.SSS", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd",
+      "HH:mm:ss", "yyyyMMdd", "yyyy-MM-dd'T'HH:mm:ssZZ", "yyyy-MM-dd'T'HH:mm:ss",
+      "'T'HH:mm:ssZZ", "'T'HH:mm:ss", "HH:mm:ssZZ", "yyyy-MM-ddZZ", "EEE, dd MMM yyyy HH:mm:ss Z").asInstanceOf[Array[Object]], '\002'))
 
   /**
    * TimeZone

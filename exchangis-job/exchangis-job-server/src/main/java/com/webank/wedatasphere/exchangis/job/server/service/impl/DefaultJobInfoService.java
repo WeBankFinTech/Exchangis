@@ -58,7 +58,7 @@ public class DefaultJobInfoService implements JobInfoService {
     public ExchangisJobVo createJob(ExchangisJobVo jobVo) {
         LOG.info("Sqoop job labels is: {}", jobVo.getJobLabels());
         ExchangisJobEntity jobEntity = new ExchangisJobEntity();
-        jobEntity.setProjectId(jobVo.getProjectId());
+        jobEntity.setProjectId(Long.parseLong(jobVo.getProjectId()));
         jobEntity.setJobType(jobVo.getJobType());
         jobEntity.setEngineType(jobVo.getEngineType());
         jobEntity.setJobLabel(jobVo.getJobLabels());
@@ -133,7 +133,7 @@ public class DefaultJobInfoService implements JobInfoService {
             return null;
         }
         ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
-        jobVo.setProjectId(exchangisJob.getProjectId());
+        jobVo.setProjectId(String.valueOf(exchangisJob.getProjectId()));
         if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
             jobVo.setContent(exchangisJob.getJobContent());
             jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?

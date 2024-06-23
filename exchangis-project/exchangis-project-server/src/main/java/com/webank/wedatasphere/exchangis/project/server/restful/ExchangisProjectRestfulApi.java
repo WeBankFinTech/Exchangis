@@ -86,7 +86,7 @@ public class ExchangisProjectRestfulApi {
             return pageResult.toMessage();
         } catch (Exception t) {
             LOG.error("Failed to query project list for user {}", username, t);
-            return Message.error("Failed to query project list (获取项目列表失败)");
+            return Message.error("Failed to query project list (获取项目列表失败) " + t.getMessage());
         }
     }
 
@@ -111,7 +111,7 @@ public class ExchangisProjectRestfulApi {
             return Message.ok().data("item", project);
         } catch (Exception t) {
             LOG.error("failed to get project detail for user {}", username, t);
-            return Message.error("Fail to get project detail (获取项目详情失败)");
+            return Message.error("Fail to get project detail (获取项目详情失败) " + t.getMessage());
         }
     }
 
@@ -156,7 +156,7 @@ public class ExchangisProjectRestfulApi {
                     new Pair<>("projectId", projectId));
         } catch (Exception t) {
             LOG.error("Failed to create project for user {}", username, t);
-            return Message.error("Fail to create project (创建项目失败)");
+            return Message.error("Fail to create project (创建项目失败) " + t.getMessage());
         }
     }
     /**
@@ -174,7 +174,7 @@ public class ExchangisProjectRestfulApi {
                     new Pair<>("projectInfo",projectInfo));
         } catch (Exception t) {
             LOG.error("Failed to get project for user {}", username, t);
-            return Message.error("Failed to get project (根据名字获取项目失败)");
+            return Message.error("Failed to get project (根据名字获取项目失败) " + t.getMessage());
         }
     }
 
@@ -227,7 +227,7 @@ public class ExchangisProjectRestfulApi {
                     new Pair<>("projectId", projectVo.getId()));
         } catch (Exception t) {
             LOG.error("Failed to update project for user {}", username, t);
-            return Message.error("Fail to update project (更新项目失败)");
+            return Message.error("Fail to update project (更新项目失败) " + t.getMessage());
         }
     }
 
@@ -269,7 +269,7 @@ public class ExchangisProjectRestfulApi {
             return ExchangisProjectRestfulUtils.dealOk("删除项目成功");
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
-            return Message.error("Failed to delete project (删除项目失败)");
+            return Message.error("Failed to delete project (删除项目失败) " + t.getMessage());
         }
     }
 
@@ -290,7 +290,7 @@ public class ExchangisProjectRestfulApi {
                     new Pair<>("exchangisProjectUser", new ExchangisProjectUserVo(exchangisProjectUser)));
         } catch (Exception t) {
             LOG.error("Failed to get exchangisProjectUser for project {} and privUser {}", id, username);
-            return Message.error("Failed to get project (根据项目ID和用户获取项目权限信息失败)");
+            return Message.error("Failed to get project (根据项目ID和用户获取项目权限信息失败) " + t.getMessage());
         }
     }
 

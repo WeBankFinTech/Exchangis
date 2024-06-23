@@ -46,7 +46,7 @@ public abstract class AbstractDataSourceService {
         this.exchangisJobParamConfigMapper = exchangisJobParamConfigMapper;
     }
 
-    protected List<ExchangisJobInfoContent> parseJobContent(String content) {
+    public List<ExchangisJobInfoContent> parseJobContent(String content) {
         List<ExchangisJobInfoContent> jobInfoContents;
         if (Strings.isNullOrEmpty(content)) {
             jobInfoContents = new ArrayList<>();
