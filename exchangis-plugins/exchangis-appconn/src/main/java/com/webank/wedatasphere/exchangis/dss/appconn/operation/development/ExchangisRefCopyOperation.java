@@ -57,7 +57,7 @@ public class ExchangisRefCopyOperation extends
         Map<String, Object> copyRefIds = (Map<String, Object>) responseRef.getData().get("copyRefIds");
         long newId = 0L;
         for (Map.Entry<String, Object> entry : copyRefIds.entrySet()) {
-            newId = Long.parseLong(entry.getValue().toString());
+            newId = (long) Double.parseDouble(entry.getValue().toString());
             if (newId != 0) {
                 break;
             }

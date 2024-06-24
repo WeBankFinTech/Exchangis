@@ -56,7 +56,7 @@ public class ExchangisImportOperation extends AbstractDevelopmentOperation<Third
         Map<String, Object> realNode = (Map<String, Object>) responseRef.getData().get("importRefIds");
         long newId = 0L;
         for (Map.Entry<String, Object> entry : realNode.entrySet()) {
-            newId = Long.parseLong(entry.getValue().toString());
+            newId = (long) Double.parseDouble(entry.getValue().toString());
             if (newId != 0) {
                 break;
             }

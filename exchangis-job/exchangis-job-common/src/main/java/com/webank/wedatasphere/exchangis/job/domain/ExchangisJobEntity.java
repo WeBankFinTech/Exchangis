@@ -46,4 +46,25 @@ public class ExchangisJobEntity extends ExchangisJobInfo{
         this.modifyUser = modifyUser;
     }
 
+    @Override
+    public String toString() {
+        return "ExchangisJobEntity{" +
+                "projectId=" + projectId +
+                ", projectName='" + projectName + '\'' +
+                ", source='" + source + '\'' +
+                ", modifyUser='" + modifyUser + '\'' +
+                ", jobContent='" + jobContent + '\'' +
+                ", executeUser='" + executeUser + '\'' +
+                ", jobParams='" + jobParams + '\'' +
+                ", jobDesc='" + jobDesc + '\'' +
+                ", jobType='" + jobType + '\'' +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", engineType='" + engineType + '\'' +
+                ", jobLabel='" + jobLabel + '\'' +
+                ", createTime=" + createTime +
+                ", lastUpdateTime=" + lastUpdateTime +
+                ", createUser='" + createUser + '\'' +
+                '}';
+    }
 }

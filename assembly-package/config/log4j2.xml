@@ -39,11 +39,10 @@
         </RollingFile>
     </appenders>
     <loggers>
-        <logger name="com.webank.wedatasphere.exchangis.job.utils.AuditLogUtils" level="INFO" additivity="false">
+        <logger name="com.webank.wedatasphere.exchangis.common.AuditLogUtils" level="INFO" additivity="false">
             <appender-ref ref="AuditLog"/>
         </logger>
         <root level="INFO" additivity="false">
-            <appender-ref ref="RollingFile"/>
             <appender-ref ref="Console"/>
         </root>
         <logger name="com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger$" level="INFO" additivity="true">

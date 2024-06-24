@@ -135,6 +135,14 @@ public class ExchangisJobVo {
 
     public void setId(Long id) { this.id = id; }
 
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
     public String getJobName() {
         return jobName;
     }
@@ -165,14 +173,6 @@ public class ExchangisJobVo {
 
     public void setModifyTime(Date modifyTime) {
         this.modifyTime = modifyTime;
-    }
-
-    public String getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
     }
 
     public String getJobType() {

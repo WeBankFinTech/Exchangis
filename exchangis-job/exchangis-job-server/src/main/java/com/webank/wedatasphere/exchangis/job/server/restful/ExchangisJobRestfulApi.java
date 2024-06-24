@@ -319,7 +319,6 @@ public class ExchangisJobRestfulApi {
             if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to get job (没有获取任务权限)");
             }
-//            job = jobInfoService.getDecoratedJob(request, id);
             response.data("result", job);
         } catch (Exception e) {
             String message = "Fail to get job detail (查询任务失败)";
