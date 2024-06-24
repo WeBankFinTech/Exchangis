@@ -13,7 +13,7 @@
     <artifactId>linkis-engineplugin-datax</artifactId>
 
     <properties>
-        <linkis.version>1.4.0</linkis.version>
+        <linkis.version>1.5.0-wds-SNAPSHOT</linkis.version>
         <datax.engine.version>3.0.0-Plus-2</datax.engine.version>
         <datax.version>3.0.0</datax.version>
         <hadoop.version>3.3.4</hadoop.version>
