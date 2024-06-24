@@ -17,6 +17,8 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
+import com.webank.wedatasphere.exchangis.job.server.validator.JobValidateResult;
+import com.webank.wedatasphere.exchangis.job.server.validator.JobValidator;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +34,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.VALIDATE_JOB_ERROR;
 
 /**
  * Default implement
@@ -52,6 +56,12 @@ public class DefaultJobInfoService implements JobInfoService {
 
     @Resource
     private JobInfoService jobInfoService;
+
+    /**
+     * Validators
+     */
+    @Resource
+    private List<JobValidator<?>> validators = new ArrayList<>();
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -272,6 +282,13 @@ public class DefaultJobInfoService implements JobInfoService {
             dsBind.setSourceDsId(task.getDataSources().getSource().getId());
             dsBind.setSinkDsId(task.getDataSources().getSink().getId());
             dsBinds.add(dsBind);
+        }
+        for(JobValidator<?> validator : this.validators){
+            JobValidateResult<?> result = validator.doValidate(content, null);
+            if (Objects.nonNull(result) && !result.isResult()){
+                //Just throw exception
+                throw new ExchangisJobServerException(VALIDATE_JOB_ERROR.getCode(), result.getMessage());
+            }
         }
         exchangisJob.setModifyUser(jobVo.getModifyUser());
         exchangisJob.setLastUpdateTime(jobVo.getModifyTime());
