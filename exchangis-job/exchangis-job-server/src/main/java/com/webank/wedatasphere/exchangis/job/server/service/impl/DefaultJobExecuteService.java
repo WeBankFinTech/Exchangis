@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
@@ -33,6 +34,8 @@ import com.webank.wedatasphere.exchangis.job.server.metrics.ExchangisMetricsVo;
 import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricConverterFactory;
 import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricsConverter;
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
+import com.webank.wedatasphere.exchangis.job.server.validator.JobValidateResult;
+import com.webank.wedatasphere.exchangis.job.server.validator.JobValidator;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.conf.CommonVars;
@@ -98,6 +101,12 @@ public class DefaultJobExecuteService implements JobExecuteService {
      */
     @Resource
     private MetricConverterFactory<ExchangisMetricsVo> metricConverterFactory;
+
+    /**
+     * Validators
+     */
+    @Resource
+    private List<JobValidator<?>> validators = new ArrayList<>();
 
     /**
      * Log ignore key set
@@ -324,6 +333,16 @@ public class DefaultJobExecuteService implements JobExecuteService {
 
     @Override
     public String executeJob(ExchangisJobInfo jobInfo, String execUser) throws ExchangisJobServerException {
+        List<ExchangisJobInfoContent> contents = Json.fromJson(jobInfo.getJobContent(), List.class, ExchangisJobInfoContent.class);
+        if (Objects.nonNull(contents) && contents.size() > 0) {
+            for (JobValidator<?> validator : this.validators) {
+                JobValidateResult<?> result = validator.doValidate(contents, null);
+                if (Objects.nonNull(result) && !result.isResult()) {
+                    //Just throw exception
+                    throw new ExchangisJobServerException(VALIDATE_JOB_ERROR.getCode(), result.getMessage());
+                }
+            }
+        }
         // Build generator scheduler task
         GenerationSchedulerTask schedulerTask = null;
         try {
