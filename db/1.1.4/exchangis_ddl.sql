@@ -12,3 +12,12 @@ CREATE TABLE `exchangis_project_ds` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 ALTER TABLE  exchangis_engine_settings CHANGE engine_direction engine_direction text NOT NULL;
+
+ALTER TABLE exchangis_launchable_task ADD COLUMN delay_time datetime;
+ALTER TABLE exchangis_launchable_task ADD COLUMN delay_count int(3) DEFAULT 0;
+ALTER TABLE exchangis_launchable_task ADD COLUMN instance varchar(100);
+
+ALTER TABLE exchangis_launched_task_entity ADD COLUMN instance varchar(100);
+ALTER TABLE exchangis_launched_task_entity ADD COLUMN commit_version int(13) DEFAULT 0;
+
+ALTER TABLE exchangis_launched_job_entity ADD COLUMN instance varchar(100);

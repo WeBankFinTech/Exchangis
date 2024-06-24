@@ -2,7 +2,6 @@ package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
 import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import org.slf4j.Logger;
@@ -38,9 +37,13 @@ public class GenerateInTaskObserver extends AbstractTaskObserver<LaunchedExchang
 
     @Override
     protected List<LaunchedExchangisJobEntity> onPublish(String instance, int batchSize) throws ExchangisTaskObserverException {
+        if (observerService == null){
+            return null;
+        }
         if (this.lastPublishTime <= 0){
             // Get the server startup time
             startupTime = EnvironmentUtils.getStartupTime();
+            LOG.info("Container startup [time: {}]", startupTime);
         }
         Date expireTime = new Date(startupTime);
         List<LaunchedExchangisJobEntity> jobs = observerService.onPublishLaunchedJobInExpire(instance,

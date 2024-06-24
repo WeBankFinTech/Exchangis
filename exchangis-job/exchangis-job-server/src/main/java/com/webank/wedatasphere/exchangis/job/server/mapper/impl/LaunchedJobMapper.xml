@@ -45,7 +45,7 @@
         values(
         #{name},
         #{createTime},
-        #{lastUpdateTime},
+        #{lastUpdateTime, jdbcType=TIMESTAMP},
         #{jobId},
         #{launchableTaskNum},
         #{jobExecutionId},

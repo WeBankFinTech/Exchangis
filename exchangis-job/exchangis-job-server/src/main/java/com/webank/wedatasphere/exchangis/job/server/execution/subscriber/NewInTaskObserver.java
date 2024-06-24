@@ -48,8 +48,8 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
     protected List<LaunchableExchangisTask> onPublishNext(String instance, int batchSize){
         List<LaunchableExchangisTask> tasks = taskObserverService.onPublishLaunchAbleTask(instance, batchSize);
         if (!tasks.isEmpty()) {
-            LOG.info("Publish the launch-able tasks waiting to be launched from database, size: [{}], last_task_id: [{}]",
-                    tasks.size(), tasks.get(0).getId());
+            LOG.info("Publish the launch-able tasks waiting to be launched from database, size: [{}], cache_queue: [{}], last_task_id: [{}]",
+                    tasks.size(), getCacheQueue().size(), tasks.get(0).getId());
         }
         return tasks;
     }
@@ -125,19 +125,21 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
     @Override
     public void discard(List<LaunchableExchangisTask> unsubscribeTasks) {
         // Calculate the delay time and requeue to the cache
-        try {
-            taskObserverService.delayToSubscribe(unsubscribeTasks);
-        }catch(Exception e){
-            LOG.warn("Internal_Error: Exception in delaying unsubscribe tasks, reason:[{}]",
-                    e.getMessage(), e);
-            // Enforce to sleep
+        if (!unsubscribeTasks.isEmpty()) {
             try {
-                Thread.sleep(publishInterval);
-            } catch (InterruptedException ex) {
-                //Ignore
+                taskObserverService.delayToSubscribe(unsubscribeTasks);
+            } catch (Exception e) {
+                LOG.warn("Internal_Error: Exception in delaying unsubscribe tasks, reason:[{}]",
+                        e.getMessage(), e);
+                // Enforce to sleep
+                try {
+                    Thread.sleep(publishInterval);
+                } catch (InterruptedException ex) {
+                    //Ignore
+                }
             }
+            Queue<LaunchableExchangisTask> queue = getCacheQueue();
+            unsubscribeTasks.forEach(queue::offer);
         }
-        Queue<LaunchableExchangisTask> queue = getCacheQueue();
-        unsubscribeTasks.forEach(queue::offer);
     }
 }

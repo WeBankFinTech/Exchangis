@@ -59,15 +59,19 @@ public class ReceiveTaskSubscriber extends AbstractTaskObserver<LaunchableExchan
 
     @Override
     protected boolean nextPublish(int publishedSize, long observerWait) {
-        return publishedSize > 0 && startupTime > 0;
+        return publishedSize > 0;
     }
 
     @Override
     protected List<LaunchableExchangisTask> onPublish(String instance, int batchSize) throws ExchangisTaskObserverException {
+        if (observerService == null){
+            return null;
+        }
         // Means the first time to publish
         if (this.lastPublishTime <= 0){
             // Get the server startup time
             startupTime = EnvironmentUtils.getStartupTime();
+            LOG.info("Container startup time: {}", startupTime);
         }
         List<LaunchableExchangisTask> tasks;
         // Recover the tasks in 'Scheduled' state for a long time which scheduled by instance
@@ -103,7 +107,7 @@ public class ReceiveTaskSubscriber extends AbstractTaskObserver<LaunchableExchan
         for (LaunchableExchangisTask task : publishedTasks){
             // Drop the related launched task in version
             if (launchedTaskDao.deleteLaunchedTaskInVersion(task.getId() + "",
-                    task.getLastUpdateTime()) > 0){
+                    task.getCommitVersion()) > 0){
                 // Simplify the task content
                 task.simplify();
                 // Offer to other task observer to subscribe

@@ -94,6 +94,10 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
                 List<T> publishedTasks;
                 try {
                     publishedTasks = onPublish(instance, publishBatch);
+                    if (Objects.isNull(publishedTasks)){
+                        Thread.sleep(publishInterval);
+                        continue;
+                    }
                     // If list of publish tasks is not empty
                     if (publishedTasks.size() > 0 || this.lastPublishTime <= 0) {
                         this.lastPublishTime = System.currentTimeMillis();

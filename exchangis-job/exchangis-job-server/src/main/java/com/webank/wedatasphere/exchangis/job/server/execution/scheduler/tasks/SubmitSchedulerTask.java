@@ -23,6 +23,7 @@ import org.apache.linkis.scheduler.queue.JobInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -104,11 +105,14 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                         launchableExchangisTask.getName(), launchableExchangisTask.getId(), launcher.name(), retryCnt.get());
                 boolean prepared = true;
                 try {
+                    Integer commitVersion = Optional.ofNullable(launchableExchangisTask.getCommitVersion()).orElse(0);
                     onEvent(new TaskPrepareEvent(launchableExchangisTask.getId() + "",
-                            launchableExchangisTask.getLastUpdateTime()));
+                            commitVersion, Calendar.getInstance().getTime()));
+                    // Update the version
+                    launchableExchangisTask.setCommitVersion(commitVersion + 1);
                 } catch (Exception e){
                     LOG.warn("Fail to prepare submit: [name:{} id:{}], reason: [{}]",
-                            launchableExchangisTask.getName(), launchableExchangisTask.getId(), e.getMessage());
+                            launchableExchangisTask.getName(), launchableExchangisTask.getId(), e.getMessage(), e);
                     prepared = false;
                 }
                 if (prepared) {

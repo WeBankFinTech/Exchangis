@@ -42,6 +42,11 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
 
     private Map<String, Object> metricsMap;
 
+    /**
+     * Commit version
+     */
+    private Integer commitVersion;
+
     public LaunchedExchangisTaskEntity(){
 
     }
@@ -59,7 +64,6 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
         // jobName
         this.jobExecutionId = launchableExchangisTask.getJobExecutionId();
         this.status = TaskStatus.Scheduled;
-        this.lastUpdateTime = Calendar.getInstance().getTime();
         this.instance = EnvironmentUtils.getServerAddress();
     }
     public String getTaskId(){

@@ -21,6 +21,8 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
 
     public static final int MAX_RETRY_NUM = 3;
 
+    private static final int MAX_ERROR_DEPTH = 4;
+
     private int maxRetryNum = MAX_RETRY_NUM;
 
     /**
@@ -105,7 +107,8 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
         super.transitionCompleted(executeCompleted);
         if (executeCompleted instanceof ErrorExecuteResponse){
             ErrorExecuteResponse response = ((ErrorExecuteResponse)executeCompleted);
-            LOG.error("Schedule Error: " + response.message(), response.t());
+//            LOG.error("Schedule Error: " + response.message(), response.t());
+            LOG.error("Schedule Error: {} => Stack message: {}" + response.message(), toErrorMsg(response.t()));
         }
     }
 
@@ -115,5 +118,20 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
 
     public void setTenancy(String tenancy) {
         this.tenancy = tenancy;
+    }
+
+    /**
+     * Deal with error
+     * @param t t
+     * @return message
+     */
+    private String toErrorMsg(Throwable t){
+        StringBuilder builder = new StringBuilder();
+        int depth = 0;
+        while (null != t && depth++ < MAX_ERROR_DEPTH){
+            builder.append("[").append(t.getMessage()).append("]");
+            t = t.getCause();
+        }
+        return builder.toString();
     }
 }

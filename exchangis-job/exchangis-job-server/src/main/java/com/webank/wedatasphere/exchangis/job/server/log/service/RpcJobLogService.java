@@ -230,9 +230,6 @@ public class RpcJobLogService extends AbstractJobLogService{
                         rowIgnore = !isIncludeLine(line, onlyKeywords, ignoreKeywords);
                     }
                     if (!rowIgnore) {
-                        if (line.contains("password")) {
-                            LOG.info("have error information");
-                        }
                         if (!line.contains("password")) {
                             logs.add(line);
                         }

@@ -40,15 +40,15 @@ public interface LaunchedTaskDao {
      * @param taskId task id
      * @param versionDate version date
      */
-    int deleteLaunchedTaskInVersion(@Param("taskId")String taskId, @Param("version")Date versionDate);
+    int deleteLaunchedTaskInVersion(@Param("taskId")String taskId, @Param("version")Integer version);
 
     /**
      * Update date in version
      * @param updateDate update date
-     * @param versionDate version date
+     * @param version version
      * @return affect rows
      */
-    int updateDateInVersion(@Param("taskId")String taskId, @Param("updateDate")Date updateDate, @Param("version")Date versionDate);
+    int updateDateInVersion(@Param("taskId")String taskId, @Param("updateDate")Date updateDate, @Param("version")Integer version);
 
     /**
      * upgrade launchedTask

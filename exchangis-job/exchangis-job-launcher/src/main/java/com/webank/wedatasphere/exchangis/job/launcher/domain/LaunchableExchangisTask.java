@@ -72,6 +72,11 @@ public class LaunchableExchangisTask implements ExchangisTask {
 
     private Map<String, Object> labelsMap;
 
+    /**
+     * Commit version
+     */
+    private Integer commitVersion;
+
     @Override
     public String getEngineType() {
         return this.engineType;
@@ -268,6 +273,14 @@ public class LaunchableExchangisTask implements ExchangisTask {
 
     public void setDelayCount(Integer delayCount) {
         this.delayCount = delayCount;
+    }
+
+    public Integer getCommitVersion() {
+        return commitVersion;
+    }
+
+    public void setCommitVersion(Integer commitVersion) {
+        this.commitVersion = commitVersion;
     }
 
     /**

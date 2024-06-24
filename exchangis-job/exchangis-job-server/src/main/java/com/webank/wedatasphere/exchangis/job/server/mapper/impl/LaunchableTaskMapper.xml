@@ -19,6 +19,7 @@
         <result column="delay_time" property="delayTime"/>
         <result column="delay_count" property="delayCount"/>
         <result column="instance" property="instance"/>
+        <result column="commit_version" property="commitVersion"/>
     </resultMap>
 
     <sql id="TableName">
@@ -27,7 +28,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, linkis_source, labels, delay_time, delay_count, instance </sql>
+        id, name, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, linkis_source, labels, job_execution_id, delay_time, delay_count, instance </sql>
 
     <insert id="addLaunchableTask" >
         <foreach collection="tasks" item="task">
@@ -39,7 +40,7 @@
         #{task.name},
         #{task.jobExecutionId},
         #{task.createTime},
-        #{task.lastUpdateTime},
+        #{task.lastUpdateTime, jdbcType=TIMESTAMP},
         #{task.engineType},
         #{task.executeUser},
         #{task.linkisJobName},
@@ -92,7 +93,10 @@
             <if test="instance != null and instance != ''">
                 AND  t.instance = #{instance}
             </if>
+            <![CDATA[
+            AND t.delay_time <= NOW()
             AND l.task_id is NULL
+            ]]>
         </where>
         <![CDATA[ORDER BY t.delay_time ASC LIMIT #{limitSize};]]>
     </select>
@@ -115,7 +119,8 @@
         t.delay_time,
         t.delay_count,
         t.instance,
-        t.job_execution_id
+        t.job_execution_id,
+        l.commit_version
         FROM exchangis_launchable_task t
         INNER JOIN exchangis_launched_task_entity l ON t.id = l.id]]>
         <if test="instance != null and instance != ''">

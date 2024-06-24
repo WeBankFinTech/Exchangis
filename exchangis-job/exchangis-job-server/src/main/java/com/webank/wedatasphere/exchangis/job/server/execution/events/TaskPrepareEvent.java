@@ -16,26 +16,45 @@ public class TaskPrepareEvent extends TaskExecutionEvent{
     /**
      * Version date
      */
-    private Date version;
-    public TaskPrepareEvent(String taskId, Date version) {
+    private Integer version;
+
+    /**
+     * Update time
+     */
+    private Date updateTime;
+    public TaskPrepareEvent(String taskId, Integer version, Date updateTime) {
         super(null);
         this.taskId = taskId;
         this.version = version;
+        this.updateTime = updateTime;
     }
 
     public String getTaskId() {
         return taskId;
     }
 
+    @Override
+    public String eventId() {
+        return "_TaskExecution_" + this.taskId;
+    }
+
     public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
 
-    public Date getVersion() {
+    public Integer getVersion() {
         return version;
     }
 
-    public void setVersion(Date version) {
+    public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 }

@@ -25,6 +25,7 @@
         <result column="metrics" property="metrics"/>
         <result column="status" property="status"/>
         <result column="instance" property="instance"/>
+        <result column="commit_version" property="commitVersion"/>
     </resultMap>
 
     <sql id="TableName">
@@ -33,7 +34,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status, instance </sql>
+        id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status, instance, commit_version</sql>
 
     <insert id="insertLaunchedTaskOrUpdate" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
         insert into
@@ -43,7 +44,7 @@
         #{id},
         #{name},
         #{createTime},
-        #{lastUpdateTime},
+        #{lastUpdateTime, jdbcType=TIMESTAMP},
         #{jobId},
         #{engineType},
         #{executeUser},
@@ -73,7 +74,7 @@
         #{id},
         #{name},
         #{createTime},
-        #{lastUpdateTime},
+        #{lastUpdateTime, jdbcType=TIMESTAMP},
         #{jobId},
         #{engineType},
         #{executeUser},
@@ -101,12 +102,13 @@
 
     <delete id="deleteLaunchedTaskInVersion">
         DELETE FROM <include refid="TableName"/> WHERE
-        <![CDATA[task_id = #{taskId} AND last_update_time = #{version}]]>
+        <![CDATA[task_id = #{taskId} AND `commit_version` = #{version}]]>
     </delete>
 
     <update id="updateDateInVersion">
         UPDATE <include refid="TableName"/>
-        SET last_update_time = #{updateDate} WHERE task_id = #{taskId} AND last_update_time = #{version}
+        <![CDATA[SET last_update_time = #{updateDate}, `commit_version` = `commit_version` + 1
+        WHERE task_id = #{taskId} AND `commit_version` = #{version}]]>
     </update>
 
     <update id="upgradeLaunchedTask">

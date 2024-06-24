@@ -169,8 +169,8 @@ public class DefaultTaskObserverService implements TaskObserverService {
                     task.setLinkisJobContent(lastTask.getLinkisJobContent());
                     task.setLinkisParams(lastTask.getLinkisParams());
                     task.setLinkisSource(lastTask.getLinkisSource());
-                    // Refresh the update time, use as date version
-                    task.setLastUpdateTime(taskEntity.getLastUpdateTime());
+                    // set the commit version as 0
+                    task.setCommitVersion(0);
                 }
                 return result;
             }
@@ -261,12 +261,12 @@ public class DefaultTaskObserverService implements TaskObserverService {
     public void delayToSubscribe(List<LaunchableExchangisTask> tasks) {
         for(LaunchableExchangisTask task : tasks){
             Calendar calendar = Calendar.getInstance();
+            task.setLastUpdateTime(calendar.getTime());
             // Delay for each task
             int delayCount = Optional.ofNullable(task.getDelayCount()).orElse(0);
             calendar.add(Calendar.SECOND, launchDelayInSec[ delayCount % launchDelayInSec.length]);
             Date delayTime = calendar.getTime();
             task.setDelayTime(delayTime);
-            task.setLastUpdateTime(delayTime);
             task.setDelayCount(delayCount + 1);
         }
         this.launchableTaskDao.delayBatch(tasks);

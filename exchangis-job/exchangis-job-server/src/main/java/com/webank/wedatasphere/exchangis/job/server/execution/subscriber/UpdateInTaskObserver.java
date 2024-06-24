@@ -43,9 +43,13 @@ public class UpdateInTaskObserver extends AbstractTaskObserver<LaunchedExchangis
 
     @Override
     protected List<LaunchedExchangisTaskEntity> onPublish(String instance, int batchSize) throws ExchangisTaskObserverException {
+        if (observerService == null){
+            return null;
+        }
         if (this.lastPublishTime <= 0){
             // Get the server startup time
             startupTime = EnvironmentUtils.getStartupTime();
+            LOG.info("Container startup time: {}", startupTime);
         }
         Date expireTime = new Date(startupTime);
         List<LaunchedExchangisTaskEntity> tasks = observerService.onPublishLaunchedTaskInExpire(instance, expireTime, batchSize);

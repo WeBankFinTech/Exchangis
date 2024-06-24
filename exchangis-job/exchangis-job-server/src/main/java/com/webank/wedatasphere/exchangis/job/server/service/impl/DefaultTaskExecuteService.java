@@ -116,7 +116,7 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     public void onPrepare(TaskPrepareEvent prepareEvent) throws ExchangisOnEventException {
         // Update the launched task in date version
         if (this.launchedTaskDao.updateDateInVersion(prepareEvent.getTaskId(),
-                Calendar.getInstance().getTime(), prepareEvent.getVersion()) <= 0){
+                prepareEvent.getUpdateTime(), prepareEvent.getVersion()) <= 0){
             throw new ExchangisOnEventException("Launched task has conflict version with current version: ["
                     + prepareEvent.getVersion() + "]", null);
         }
