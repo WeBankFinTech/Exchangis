@@ -336,7 +336,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         List<ExchangisJobInfoContent> contents = Json.fromJson(jobInfo.getJobContent(), List.class, ExchangisJobInfoContent.class);
         if (Objects.nonNull(contents) && contents.size() > 0) {
             for (JobValidator<?> validator : this.validators) {
-                JobValidateResult<?> result = validator.doValidate(contents, null);
+                JobValidateResult<?> result = validator.doValidate(jobInfo.getName(), contents, null);
                 if (Objects.nonNull(result) && !result.isResult()) {
                     //Just throw exception
                     throw new ExchangisJobServerException(VALIDATE_JOB_ERROR.getCode(), result.getMessage());

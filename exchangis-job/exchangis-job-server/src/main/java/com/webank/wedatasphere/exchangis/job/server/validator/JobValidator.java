@@ -12,9 +12,11 @@ public interface JobValidator<T> {
 
     /**
      * Job validate result
-     * @param jobVo job vo
-     * @param execUser
+     * @param jobName job name
+     * @param contents content list
+     * @param execUser  exec user
      * @return
      */
-    JobValidateResult<T> doValidate(List<ExchangisJobInfoContent> jobVo, String execUser);
+    JobValidateResult<T> doValidate(String jobName,
+                                    List<ExchangisJobInfoContent> contents, String execUser);
 }

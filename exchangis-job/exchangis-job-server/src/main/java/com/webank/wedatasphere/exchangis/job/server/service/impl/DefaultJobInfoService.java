@@ -284,7 +284,7 @@ public class DefaultJobInfoService implements JobInfoService {
             dsBinds.add(dsBind);
         }
         for(JobValidator<?> validator : this.validators){
-            JobValidateResult<?> result = validator.doValidate(content, null);
+            JobValidateResult<?> result = validator.doValidate(jobVo.getJobName(), content, null);
             if (Objects.nonNull(result) && !result.isResult()){
                 //Just throw exception
                 throw new ExchangisJobServerException(VALIDATE_JOB_ERROR.getCode(), result.getMessage());

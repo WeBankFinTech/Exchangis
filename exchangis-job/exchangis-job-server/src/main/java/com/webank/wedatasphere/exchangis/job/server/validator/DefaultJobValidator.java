@@ -9,7 +9,8 @@ import java.util.List;
 public class DefaultJobValidator implements JobValidator<String>{
 
     @Override
-    public JobValidateResult<String> doValidate(List<ExchangisJobInfoContent> jobVo, String execUser) {
+    public JobValidateResult<String> doValidate(String jobName,
+                                                List<ExchangisJobInfoContent> jobVo, String execUser) {
         return null;
     }
 }
