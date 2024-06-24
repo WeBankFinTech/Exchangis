@@ -42,9 +42,9 @@ public class ExchangisExportOperation
                 exportRequestRef.getRefProjectId(), exportRequestRef.getProjectName(), exportRequestRef.getType());
         DSSPostAction postAction = new DSSPostAction();
         postAction.setUser(exportRequestRef.getUserName());
-        Long refProjectId = exportRequestRef.getRefProjectId();
+        Object refProjectId = exportRequestRef.getRefProjectId();
         if (Objects.isNull(refProjectId)) {
-            refProjectId = Long.valueOf(String.valueOf(exportRequestRef.getRefJobContent().get("refProjectId")));
+            refProjectId = exportRequestRef.getRefJobContent().get("refProjectId");
         }
         postAction.addRequestPayload("projectId", refProjectId);
         postAction.addRequestPayload("partial", true);

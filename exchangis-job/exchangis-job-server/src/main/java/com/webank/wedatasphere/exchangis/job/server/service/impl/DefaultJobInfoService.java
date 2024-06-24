@@ -56,7 +56,6 @@ public class DefaultJobInfoService implements JobInfoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ExchangisJobVo createJob(ExchangisJobVo jobVo) {
-        LOG.info("Sqoop job labels is: {}", jobVo.getJobLabels());
         ExchangisJobEntity jobEntity = new ExchangisJobEntity();
         jobEntity.setProjectId(Long.parseLong(jobVo.getProjectId()));
         jobEntity.setJobType(jobVo.getJobType());
@@ -72,16 +71,14 @@ public class DefaultJobInfoService implements JobInfoService {
         jobEntity.setSource(Json.toJson(jobVo.getSource(), null));
         //jobEntity.setJobContent(jobVo.getContent());
         jobEntity.setModifyUser(jobVo.getModifyUser());
-        LOG.info("Sqoop job Entity labels is: {}", jobEntity.getJobLabel());
         //Map<String, Object> contentVo = BDPJettyServerHelper.gson().fromJson(jobVo.getContent(), Map.class);
-        LOG.info("Sqoop job content is: {}, Modify user is: {}, jobType is: {}", jobVo.getContent(), jobEntity.getExecuteUser(), jobEntity.getJobType());
         if(jobVo.getContent() != null) {
             jobEntity.setJobContent(jobVo.getContent());
-            LOG.info("Sqoop job content is: {}, executor: {}", jobEntity.getJobContent(), jobEntity.getExecuteUser());
         }
         jobEntityDao.addJobEntity(jobEntity);
         jobVo.setId(jobEntity.getId());
         jobVo.setCreateTime(jobEntity.getCreateTime());
+        LOG.info("Success to create job: {}", jobEntity.toString());
         return jobVo;
     }
 
