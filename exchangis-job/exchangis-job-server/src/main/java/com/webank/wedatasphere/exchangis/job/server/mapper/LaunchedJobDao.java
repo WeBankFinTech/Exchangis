@@ -84,11 +84,25 @@ public interface LaunchedJobDao {
      * @return
      */
     int updateLaunchedJobDate(@Param("jobExecutionId")String jobExecutionId, @Param("updateTime") Date updateTime);
+
     /**
      * get All launchJob
      * @return job entity list
      */
-    List<LaunchedExchangisJobEntity> getAllLaunchedJob(@Param("jobExecutionId") String jobExecutionId, @Param("jobName") String jobName, @Param("status") String status, @Param("launchStartTime") Date launchStartTime, @Param("launchEndTime") Date launchEndTime, @Param("loginUser") String loginUser);
+    List<LaunchedExchangisJobEntity> getAllLaunchedJobInAdmin(@Param("jobExecutionId") String jobExecutionId,
+                                                       @Param("jobName") String jobName, @Param("status") String status,
+                                                       @Param("launchStartTime") Date launchStartTime,
+                                                       @Param("launchEndTime") Date launchEndTime);
+    /**
+     * get All launchJob
+     * @return job entity list
+     */
+    List<LaunchedExchangisJobEntity> getAllLaunchedJob(@Param("jobExecutionId") String jobExecutionId,
+                                                       @Param("jobName") String jobName,
+                                                       @Param("status") String status,
+                                                       @Param("launchStartTime") Date launchStartTime,
+                                                       @Param("launchEndTime") Date launchEndTime,
+                                                       @Param("loginUser") String loginUser);
 
     /**
      * get launchJob count

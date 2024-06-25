@@ -154,7 +154,41 @@
         WHERE
         job_execution_id = #{jobExecutionId}]]>
     </update>
-
+    <select id="getAllLaunchedJobInAdmin"  resultMap="LaunchedJobMap">
+        SELECT
+        l.job_execution_id,
+        l.name,
+        l.create_time,
+        l.execute_user,
+        l.status,
+        l.progress,
+        l.last_update_time,
+        l.create_user,
+        c.source,
+        p.name as project_name
+        FROM
+        `exchangis_launched_job_entity` l
+        LEFT JOIN `exchangis_job_entity` c ON l.job_id = c.id
+        INNER JOIN `exchangis_project_info` p ON c.project_id = p.id
+        <where>
+            <if test="jobExecutionId.trim() != '' and jobExecutionId != null">
+                and l.job_execution_id = #{jobExecutionId}
+            </if>
+            <if test="launchStartTime != null">
+                and l.create_time >= #{launchStartTime}
+            </if>
+            <if test="launchEndTime != null">
+                and l.create_time &lt;= #{launchEndTime}
+            </if>
+            <if test="status.trim() != '' and status != null">
+                and l.status = #{status}
+            </if>
+            <!--如果name有值，则模糊匹配name-->
+            <if test="jobName.trim() != '' and jobName != null">
+                and l.name like concat('%', #{jobName}, '%')
+            </if>
+        </where>
+    </select>
     <select id="getAllLaunchedJob" resultMap="LaunchedJobMap">
         SELECT
         l.job_execution_id,
@@ -172,24 +206,24 @@
         LEFT JOIN `exchangis_job_entity` c ON l.job_id = c.id
         INNER JOIN `exchangis_project_info` p ON c.project_id = p.id
         <where>
+            <if test="jobExecutionId.trim() != '' and jobExecutionId != null">
+                and l.job_execution_id = #{jobExecutionId}
+            </if>
             <if test="launchStartTime != null">
                 and l.create_time >= #{launchStartTime}
             </if>
             <if test="launchEndTime != null">
                 and l.create_time &lt;= #{launchEndTime}
             </if>
-            <if test="jobExecutionId.trim() != '' and jobExecutionId != null">
-                and l.job_execution_id = #{jobExecutionId}
-            </if>
-            <!--如果name有值，则模糊匹配name-->
-            <if test="jobName.trim() != '' and jobName != null">
-                and l.name like concat('%', #{jobName}, '%')
-            </if>
             <if test="loginUser.trim() != '' and loginUser != null">
                 and p.id in (SELECT project_id FROM exchangis_project_user WHERE priv_user=#{loginUser})
             </if>
             <if test="status.trim() != '' and status != null">
                 and l.status = #{status}
+            </if>
+            <!--如果name有值，则模糊匹配name-->
+            <if test="jobName.trim() != '' and jobName != null">
+                and l.name like concat('%', #{jobName}, '%')
             </if>
         </where>
         order by create_time desc

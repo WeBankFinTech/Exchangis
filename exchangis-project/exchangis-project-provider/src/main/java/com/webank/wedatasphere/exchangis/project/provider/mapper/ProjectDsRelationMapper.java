@@ -54,4 +54,11 @@ public interface ProjectDsRelationMapper {
      * @return ds
      */
     ExchangisProjectDsRelation getByUserAndDsId(@Param("username") String username, @Param("dsId") Long dsId);
+
+    /**
+     * Get by data source id
+     * @param dsId ds id
+     * @return
+     */
+    ExchangisProjectDsRelation getByDsId(@Param("dsId") Long dsId);
 }

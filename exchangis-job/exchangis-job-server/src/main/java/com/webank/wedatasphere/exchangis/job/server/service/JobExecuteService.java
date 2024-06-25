@@ -73,11 +73,12 @@ public interface JobExecuteService {
 
     /**
      * Execute job
+     * @param requestUser  login user
      * @param jobInfo job info
      * @return job execution id
      * @throws ExchangisJobServerException
      */
-    String executeJob(ExchangisJobInfo jobInfo, String execUser) throws ExchangisJobServerException;
+    String executeJob(String requestUser, ExchangisJobInfo jobInfo, String execUser) throws ExchangisJobServerException;
     /**
      * Kill job.
      *

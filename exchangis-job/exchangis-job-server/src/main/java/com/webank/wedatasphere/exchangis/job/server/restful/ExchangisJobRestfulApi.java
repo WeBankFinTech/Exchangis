@@ -438,7 +438,7 @@ public class ExchangisJobRestfulApi {
             if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to save content (没有保存任务权限)");
             }
-            ExchangisJobVo exchangisJob = jobInfoService.updateJobContent(jobVo);
+            ExchangisJobVo exchangisJob = jobInfoService.updateJobContent(loginUser, jobVo);
             response.data("id", exchangisJob.getId());
         } catch (Exception e) {
             String message = "Fail to save the job content (保存任务内容失败)";

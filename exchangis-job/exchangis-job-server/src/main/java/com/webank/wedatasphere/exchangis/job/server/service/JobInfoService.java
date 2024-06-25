@@ -97,7 +97,7 @@ public interface JobInfoService {
      * @param jobVo the exchangis job content
      * @return the exchangis job
      */
-    ExchangisJobVo updateJobContent(ExchangisJobVo jobVo) throws ExchangisJobServerException, ExchangisDataSourceException;
+    ExchangisJobVo updateJobContent(String requestUser, ExchangisJobVo jobVo) throws ExchangisJobServerException, ExchangisDataSourceException;
 
     /**
      * Copy job exchangis job basic info.

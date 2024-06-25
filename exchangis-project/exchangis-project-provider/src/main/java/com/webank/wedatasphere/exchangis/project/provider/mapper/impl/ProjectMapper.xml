@@ -52,6 +52,10 @@
         ORDER BY dp.create_time DESC
     </select>
 
+    <select id="queryPageInAll" resultMap="projectResult">
+        SELECT * FROM exchangis_project_info
+        ORDER BY create_time DESC
+    </select>
     <!--getDetailById-->
     <select id="getDetailById" resultMap="projectResult">
         SELECT

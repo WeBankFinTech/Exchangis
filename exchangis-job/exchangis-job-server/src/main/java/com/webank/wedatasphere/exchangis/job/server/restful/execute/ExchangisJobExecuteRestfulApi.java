@@ -73,7 +73,7 @@ public class ExchangisJobExecuteRestfulApi {
             }
 
             // Send to execute service
-            String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
+            String jobExecutionId = executeService.executeJob(loginUser, jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
                     jobInfo.getExecuteUser() : loginUser);
             result.data("jobExecutionId", jobExecutionId);
         } catch (Exception e) {

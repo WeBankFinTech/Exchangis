@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.utils;
 
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
@@ -48,6 +49,9 @@ public class JobAuthorityUtils {
      * @return
      */
     public static boolean hasProjectAuthority(String privUser, Long projectId, OperationType operationType) throws ExchangisJobServerException {
+        if (GlobalConfiguration.isAdminUser(privUser)){
+            return true;
+        }
         ExchangisProjectUser exchangisProjectUser = new ExchangisProjectUser();
         exchangisProjectUser.setProjectId(projectId);
         exchangisProjectUser.setPrivUser(privUser);
@@ -88,6 +92,9 @@ public class JobAuthorityUtils {
      * @return
      */
     public static boolean hasJobAuthority(String privUser, Long jobId, OperationType operationType) throws ExchangisJobServerException {
+        if (GlobalConfiguration.isAdminUser(privUser)){
+            return true;
+        }
         ExchangisJobEntity exchangisBasicJob = exchangisJobEntityDao.getBasicInfo(jobId);
         if (Objects.isNull(exchangisBasicJob)) {
             String errorMsg = String.format("Job may be deleted, please check it with job_id [%s] in table exchangis_job_entity", jobId);
@@ -109,6 +116,9 @@ public class JobAuthorityUtils {
     }
 
     public static boolean hasJobExecuteSituationAuthority(String privUser, String jobExecutionId, OperationType operationType) throws ExchangisJobServerException {
+        if (GlobalConfiguration.isAdminUser(privUser)){
+            return true;
+        }
         LaunchedExchangisJobEntity launchedExchangisJob = launchedJobDao.searchLaunchedJob(jobExecutionId);
         if (Objects.isNull(launchedExchangisJob)) {
             String errorMsg = String.format("Luanched job may be deleted, please check it with job_execution_id [%s] in table exchangis_launched_job_entity",

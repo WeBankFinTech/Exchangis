@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
@@ -276,7 +277,10 @@ public class DefaultJobExecuteService implements JobExecuteService {
         List<ExchangisLaunchedJobListVo> jobList = new ArrayList<>();
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
-        List<LaunchedExchangisJobEntity> jobEntitylist = launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, UserUtils.getLoginUser(request));
+        String loginUser = UserUtils.getLoginUser(request);
+        List<LaunchedExchangisJobEntity> jobEntitylist = GlobalConfiguration.isAdminUser(loginUser) ?
+                launchedJobDao.getAllLaunchedJobInAdmin(jobExecutionId, jobName, status, startTime, endTime) :
+                launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, loginUser);
         PageInfo<LaunchedExchangisJobEntity> pageInfo = new PageInfo<>(jobEntitylist);
         if (jobEntitylist != null) {
             try {
@@ -332,11 +336,15 @@ public class DefaultJobExecuteService implements JobExecuteService {
     }
 
     @Override
-    public String executeJob(ExchangisJobInfo jobInfo, String execUser) throws ExchangisJobServerException {
+    public String executeJob(String requestUser, ExchangisJobInfo jobInfo, String execUser) throws ExchangisJobServerException {
         List<ExchangisJobInfoContent> contents = Json.fromJson(jobInfo.getJobContent(), List.class, ExchangisJobInfoContent.class);
         if (Objects.nonNull(contents) && contents.size() > 0) {
             for (JobValidator<?> validator : this.validators) {
                 JobValidateResult<?> result = validator.doValidate(jobInfo.getName(), contents, null);
+                if (GlobalConfiguration.isAdminUser(requestUser)){
+                    // skip
+                    continue;
+                }
                 if (Objects.nonNull(result) && !result.isResult()) {
                     //Just throw exception
                     throw new ExchangisJobServerException(VALIDATE_JOB_ERROR.getCode(), result.getMessage());

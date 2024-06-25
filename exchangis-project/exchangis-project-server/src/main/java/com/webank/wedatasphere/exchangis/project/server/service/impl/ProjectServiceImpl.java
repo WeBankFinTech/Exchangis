@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.project.server.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
@@ -248,7 +249,10 @@ public class ProjectServiceImpl implements ProjectService {
     public PageResult<ExchangisProjectInfo> queryProjects(ProjectQueryVo queryVo) {
         PageHelper.startPage(queryVo.getPage(), queryVo.getPageSize());
         try{
-            List<ExchangisProject> projects = this.projectMapper.queryPageList(queryVo);
+            // Admin user get projects
+            List<ExchangisProject> projects = GlobalConfiguration.isAdminUser(queryVo.getCreateUser())?
+                    this.projectMapper.queryPageInAll() :
+                    this.projectMapper.queryPageList(queryVo);
             PageInfo<ExchangisProject> pageInfo = new PageInfo<>(projects);
             // query project datasource relation
             List<Long> ids = projects.stream().map(ExchangisProject::getId).collect(Collectors.toList());

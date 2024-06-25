@@ -35,4 +35,13 @@ public class GlobalConfiguration {
     public static String getAdminUser(){
         return administrators.size() > 0? administrators.get(0) : null;
     }
+
+    /**
+     * Is admin user
+     * @param username username
+     * @return bool
+     */
+    public static boolean isAdminUser(String username){
+        return administrators.contains(username);
+    }
 }

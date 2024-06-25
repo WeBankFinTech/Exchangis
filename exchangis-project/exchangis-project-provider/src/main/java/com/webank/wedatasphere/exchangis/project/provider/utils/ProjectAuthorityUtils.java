@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.project.provider.utils;
 
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectErrorException;
 import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectExceptionCode;
@@ -24,6 +25,9 @@ public class ProjectAuthorityUtils {
      * @return
      */
     public static boolean hasProjectAuthority(String username, ExchangisProjectInfo project, OperationType operationType) throws ExchangisProjectErrorException {
+        if (GlobalConfiguration.isAdminUser(username)){
+            return true;
+        }
         if (StringUtils.isNotEmpty(username) &&
                 Objects.nonNull(project) &&
                 Objects.nonNull(operationType)) {

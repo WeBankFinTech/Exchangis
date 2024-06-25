@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
@@ -257,7 +258,7 @@ public class DefaultJobInfoService implements JobInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ExchangisJobVo updateJobContent(ExchangisJobVo jobVo) throws ExchangisJobServerException, ExchangisDataSourceException {
+    public ExchangisJobVo updateJobContent(String requestUser, ExchangisJobVo jobVo) throws ExchangisJobServerException, ExchangisDataSourceException {
         Long jobId = jobVo.getId();
         ExchangisJobEntity exchangisJob = this.jobEntityDao.getDetail(jobId);
         exchangisJob.setJobContent(jobVo.getContent());
@@ -285,6 +286,9 @@ public class DefaultJobInfoService implements JobInfoService {
         }
         for(JobValidator<?> validator : this.validators){
             JobValidateResult<?> result = validator.doValidate(jobVo.getJobName(), content, null);
+            if (GlobalConfiguration.isAdminUser(requestUser)){
+                continue;
+            }
             if (Objects.nonNull(result) && !result.isResult()){
                 //Just throw exception
                 throw new ExchangisJobServerException(VALIDATE_JOB_ERROR.getCode(), result.getMessage());

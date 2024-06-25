@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.project.server.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.domain.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
@@ -66,8 +67,9 @@ public class ProjectOpenServiceImpl implements ProjectOpenService {
 
     @Override
     public boolean hasDataSourceAuth(String username, Long dataSourceId, Consumer<ExchangisDataSource> authority) {
-        ExchangisProjectDsRelation dsRelation = projectDsRelationMapper
-                .getByUserAndDsId(username, dataSourceId);
+        // Admin user
+        ExchangisProjectDsRelation dsRelation = (GlobalConfiguration.isAdminUser(username)) ?
+                projectDsRelationMapper.getByDsId(dataSourceId) : projectDsRelationMapper.getByUserAndDsId(username, dataSourceId);
         if (Objects.nonNull(dsRelation)){
             // Call back the data source authority
             authority.accept(new ExchangisDataSource() {

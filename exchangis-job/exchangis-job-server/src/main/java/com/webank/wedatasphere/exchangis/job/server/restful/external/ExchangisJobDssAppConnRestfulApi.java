@@ -202,7 +202,7 @@ public class ExchangisJobDssAppConnRestfulApi {
                     jobInfo.getName(), jobInfo.getId(), jobInfo.getCreateUser(),
                     execUser, loginUser);
             // Send to execute service, just use login user(execute user) from dss
-            String jobExecutionId = executeService.executeJob(jobInfo, loginUser);
+            String jobExecutionId = executeService.executeJob(loginUser, jobInfo, loginUser);
             response.data("jobExecutionId", jobExecutionId);
             LOG.info("Prepare to get job status");
         } catch (Exception e) {
