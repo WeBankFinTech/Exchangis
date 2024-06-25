@@ -16,7 +16,7 @@
   ~
   -->
 
-<configuration status="error" monitorInterval="30">
+<configuration status="info" monitorInterval="30">
     <appenders>
         <RpcLog name="RpcLog" >
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level - %msg%xEx%n"/>
@@ -25,7 +25,7 @@
             <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger{36} %L %M - %msg%xEx%n"/>
         </Console>
-        <RollingFile name="RollingFile" fileName="${sys:log.path}/${sys:serviceName}.log"
+        <RollingFile name="System" fileName="${sys:log.path}/${sys:serviceName}.log"
                      filePattern="${sys:log.path}/$${date:yyyy-MM-dd}/${sys:serviceName}/exchangis-log-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-40t] %c{1.} (%L) [%M] - %msg%xEx%n"/>
             <SizeBasedTriggeringPolicy size="100MB"/>
@@ -44,6 +44,7 @@
         </logger>
         <root level="INFO" additivity="false">
             <appender-ref ref="Console"/>
+            <appender-ref ref="System"/>
         </root>
         <logger name="com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger$" level="INFO" additivity="true">
             <appender-ref ref="RpcLog"/>
