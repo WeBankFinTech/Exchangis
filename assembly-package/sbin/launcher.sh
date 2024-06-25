@@ -29,8 +29,6 @@ DEBUG_PORT="7006"
 SPRING_PROFILE="exchangis"
 SLEEP_TIMEREVAL_S=2
 
-load_env_definitions ${ENV_FILE}
-
 function LOG(){
   currentTime=`date "+%Y-%m-%d %H:%M:%S.%3N"`
   echo -e "$currentTime [${1}] ($$) $2" | tee -a ${SHELL_LOG}
@@ -208,7 +206,7 @@ launcher_start(){
     wait_for_startup 20 $1 $2
     if [[ $? -eq 0 ]]; then
         LOG INFO "Launcher: [ $1 ] start success"
-        APPLICATION_YML="${EXCHANGIS_CONF_PATH}/application-exchangis.yml"
+        APPLICATION_YML="${EXCHANGIS_CONF_PATH}/application-exchangis.properties"
         EUREKA_URL=`cat ${APPLICATION_YML} | grep Zone | sed -n '1p'`
         LOG INFO "Please check exchangis server in EUREKA_ADDRESS: ${EUREKA_URL#*:} "
     else
@@ -248,3 +246,5 @@ launcher_stop(){
       return 1
     fi
 }
+
+load_env_definitions ${ENV_FILE}
