@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.common;
 
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import org.apache.linkis.server.security.ProxyUserSSOUtils;
 import org.apache.linkis.server.security.SecurityFilter;
 import scala.Option;
@@ -15,7 +16,8 @@ public class UserUtils {
         Option<String> proxyUserUsername =
                 ProxyUserSSOUtils.getProxyUserUsername(request);
         String loginUser = null;
-        if (proxyUserUsername.isDefined()) {
+        if (proxyUserUsername.isDefined() &&
+                GlobalConfiguration.PROXY_MODE.getValue()) {
             loginUser = proxyUserUsername.get();
         } else {
             loginUser = SecurityFilter.getLoginUsername(request);

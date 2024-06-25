@@ -18,7 +18,7 @@ public interface ProjectMapper {
      */
     List<ExchangisProject> queryPageList(ProjectPageQuery pageQuery);
 
-    List<ExchangisProject> queryPageInAll();
+    List<ExchangisProject> queryPageInAll(ProjectPageQuery pageQuery);
     /**
      * Get detail by id
      * @param projectId project id

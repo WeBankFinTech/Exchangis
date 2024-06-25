@@ -21,6 +21,7 @@ import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobTaskVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedJobListVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
@@ -31,6 +32,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.VALIDATE_JOB_ERROR;
 
 /**
  *
@@ -80,12 +83,17 @@ public class ExchangisJobExecuteRestfulApi {
              String message;
             if (Objects.nonNull(jobInfo)) {
                 message = "Error occur while executing job: [id: " + jobInfo.getId() + " name: " + jobInfo.getName() + "]";
-                result = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
+                result = Message.error(message + "(执行任务出错) [" + ((e instanceof ErrorException)? ((ErrorException) e).getDesc() : e.getMessage()) + "]");
             } else {
                 message = "Error to get the job detail (获取任务信息出错)";
                 result = Message.error(message);
             }
-            LOG.error(message, e);
+            if (e instanceof ExchangisJobServerException &&
+                    ((ExchangisJobServerException) e).getErrCode() == VALIDATE_JOB_ERROR.getCode()){
+                LOG.error(message);
+            } else {
+                LOG.error(message, e);
+            }
         }
         result.setMethod("/api/rest_j/v1/dss/exchangis/main/job/{id}/execute");
         assert jobInfo != null;

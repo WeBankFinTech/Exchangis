@@ -251,7 +251,7 @@ public class ProjectServiceImpl implements ProjectService {
         try{
             // Admin user get projects
             List<ExchangisProject> projects = GlobalConfiguration.isAdminUser(queryVo.getCreateUser())?
-                    this.projectMapper.queryPageInAll() :
+                    this.projectMapper.queryPageInAll(queryVo) :
                     this.projectMapper.queryPageList(queryVo);
             PageInfo<ExchangisProject> pageInfo = new PageInfo<>(projects);
             // query project datasource relation

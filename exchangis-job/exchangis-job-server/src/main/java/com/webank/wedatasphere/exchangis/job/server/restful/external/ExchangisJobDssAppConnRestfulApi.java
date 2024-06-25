@@ -9,6 +9,7 @@ import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
@@ -30,6 +31,8 @@ import javax.validation.groups.Default;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.VALIDATE_JOB_ERROR;
 
 /**
  * Define to support the app conn, in order to distinguish from the inner api
@@ -209,12 +212,17 @@ public class ExchangisJobDssAppConnRestfulApi {
             String message;
             if (Objects.nonNull(jobInfo)) {
                 message = "Error occur while executing job: [id: " + jobInfo.getId() + " name: " + jobInfo.getName() + "]";
-                response = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
+                response = Message.error(message + "(执行任务出错) [" + e.getMessage() + "]");
             } else {
                 message = "Error to get the job detail (获取任务信息出错), reason: " + e.getMessage();
                 response = Message.error(message);
             }
-            LOG.error(message, e);
+            if (e instanceof ExchangisJobServerException &&
+                    ((ExchangisJobServerException) e).getErrCode() == VALIDATE_JOB_ERROR.getCode()){
+                LOG.error(message);
+            } else {
+                LOG.error(message, e);
+            }
             return response;
         }
         AuditLogUtils.printLog(originUser, loginUser, TargetTypeEnum.JOB, String.valueOf(id), "Execute task is: " + jobInfo.getName(), OperateTypeEnum.EXECUTE, request);
