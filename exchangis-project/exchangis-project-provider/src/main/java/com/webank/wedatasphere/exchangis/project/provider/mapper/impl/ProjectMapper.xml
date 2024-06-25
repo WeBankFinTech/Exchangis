@@ -54,6 +54,14 @@
 
     <select id="queryPageInAll" resultMap="projectResult">
         SELECT * FROM exchangis_project_info
+        <where>
+            <if test="name != '' and name != null">
+                AND name like concat('%', #{name}, '%')
+            </if>
+            <if test="domain != '' and domain != null">
+                AND domain = #{domain}
+            </if>
+        </where>
         ORDER BY create_time DESC
     </select>
     <!--getDetailById-->

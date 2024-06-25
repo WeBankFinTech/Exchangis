@@ -13,6 +13,9 @@ public class GlobalConfiguration {
     public static final CommonVars<String> ADMIN_USERS = CommonVars.apply(
             "wds.exchangis.common.auth.admin", "hadoop");
 
+    public static final CommonVars<Boolean> PROXY_MODE = CommonVars.apply(
+            "wds.exchangis.common.user.proxy.mode", false
+    );
     public static final String AUTH_SEPARATOR = ",";
 
     private static final List<String> administrators = new ArrayList<>();
@@ -44,4 +47,5 @@ public class GlobalConfiguration {
     public static boolean isAdminUser(String username){
         return administrators.contains(username);
     }
+
 }

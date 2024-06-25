@@ -17,6 +17,7 @@ import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.server.vo.JobFunction;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.ProxyUserSSOUtils;
 import org.apache.linkis.server.security.SecurityFilter;
@@ -33,6 +34,8 @@ import javax.validation.groups.Default;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.VALIDATE_JOB_ERROR;
 
 /**
  * The basic controller of Exchangis job
@@ -442,11 +445,16 @@ public class ExchangisJobRestfulApi {
             response.data("id", exchangisJob.getId());
         } catch (Exception e) {
             String message = "Fail to save the job content (保存任务内容失败)";
-            if (e.getCause() instanceof ExchangisJobServerException
-                    || e.getCause() instanceof ExchangisDataSourceException) {
-                message += ", reason: " + e.getCause().getMessage();
+            if (e instanceof ExchangisJobServerException
+                    || e instanceof ExchangisDataSourceException) {
+                message += " [" + ((ErrorException) e).getDesc() +  "]";
             }
-            LOG.error(message, e);
+            if (e instanceof ExchangisJobServerException &&
+                    ((ExchangisJobServerException) e).getErrCode() == VALIDATE_JOB_ERROR.getCode()){
+                LOG.error(message);
+            } else {
+                LOG.error(message, e);
+            }
             response = Message.error(message);
         }
         AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB,id.toString(), "Job id is: " + id.toString(), OperateTypeEnum.UPDATE,request);
