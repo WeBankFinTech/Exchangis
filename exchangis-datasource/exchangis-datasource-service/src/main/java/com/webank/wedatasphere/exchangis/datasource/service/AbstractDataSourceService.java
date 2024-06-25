@@ -231,8 +231,11 @@ public abstract class AbstractDataSourceService {
             case MAP:
                 Map<String, Object> mapElement = null;
                 try {
-                    mapElement = Json.fromJson(Json.toJson(value, null),
-                            Map.class, String.class, Object.class);
+                    String json = Json.toJson(value, null);
+                    if (StringUtils.isNotBlank(json)) {
+                        mapElement = Json.fromJson(json,
+                                Map.class, String.class, Object.class);
+                    }
                 } catch (Exception e) {
                     LOG.info("Exception happened while parse json"+ "Config value: " + value + "message: " + e.getMessage(), e);
                 }
