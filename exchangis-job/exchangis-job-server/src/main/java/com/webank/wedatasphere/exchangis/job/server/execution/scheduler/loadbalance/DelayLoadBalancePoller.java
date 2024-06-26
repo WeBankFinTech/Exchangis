@@ -49,10 +49,8 @@ public abstract class DelayLoadBalancePoller<T> implements LoadBalancePoller<T>{
         // Only combine with DelayLoadBalancePoller
         if(other instanceof DelayLoadBalancePoller){
             DelayLoadBalancePoller<T> poller = (DelayLoadBalancePoller<T>)other;
-            List<DelayElement> shiftElements = new ArrayList<>();
-            poller.delayQueue.drainTo(shiftElements, Integer.MAX_VALUE);
-            for(DelayElement delayElement : shiftElements){
-                delayQueue.put(delayElement);
+            for(Object delayElement : poller.delayQueue.toArray()){
+                delayQueue.put((DelayElement) delayElement);
             }
         }
     }

@@ -20,8 +20,6 @@ public class GenerateInTaskObserver extends AbstractTaskObserver<LaunchedExchang
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateInTaskObserver.class);
 
-    @Resource
-    private TaskObserverService observerService;
 
     private long startupTime = -1;
 

@@ -13,6 +13,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTa
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
+import com.webank.wedatasphere.exchangis.job.server.execution.AbstractTaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.DefaultTaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
@@ -74,22 +75,8 @@ public class DefaultTaskObserverService implements TaskObserverService {
     /**
      * Task execution
      */
-    @Resource
-    private TaskExecution<LaunchableExchangisTask> taskExecution;
+    private AbstractTaskExecution taskExecution;
 
-    /**
-     * Launch manager
-     */
-    @Resource
-    private ExchangisTaskLaunchManager launchManager;
-
-    @Resource
-    private TaskManager<LaunchedExchangisTask> taskManager;
-    /**
-     * Load balancer
-     */
-    @Resource
-    private TaskSchedulerLoadBalancer<LaunchedExchangisTask> loadBalancer;
 
     /**
      * Launch delay in seconds
@@ -197,13 +184,14 @@ public class DefaultTaskObserverService implements TaskObserverService {
         launchedTask.setLaunchTime(task.getLaunchTime());
         launchedTask.setRunningTime(task.getRunningTime());
         ExchangisTaskLauncher<LaunchableExchangisTask, LaunchedExchangisTask> taskLauncher =
-                this.launchManager.getTaskLauncher(DefaultTaskExecution.DEFAULT_LAUNCHER_NAME);
+                this.taskExecution.getExchangisLaunchManager().getTaskLauncher(DefaultTaskExecution.DEFAULT_LAUNCHER_NAME);
         try {
             AccessibleLauncherTask accessibleLauncherTask = taskLauncher.launcherTask(launchedTask);
             launchedTask.setLauncherTask(accessibleLauncherTask);
-            this.taskManager.addRunningTask(launchedTask);
+            this.taskExecution.getTaskManager().addRunningTask(launchedTask);
             // Add the launchedExchangisTask to the load balance poller
-            List<LoadBalanceSchedulerTask<LaunchedExchangisTask>> loadBalanceSchedulerTasks = this.loadBalancer.choose(launchedTask);
+            List<LoadBalanceSchedulerTask<LaunchedExchangisTask>> loadBalanceSchedulerTasks =
+                    this.taskExecution.getTaskSchedulerLoadBalancer().choose(launchedTask);
             Optional.ofNullable(loadBalanceSchedulerTasks).ifPresent(tasks -> tasks.forEach(loadBalanceSchedulerTask -> {
                 loadBalanceSchedulerTask.getOrCreateLoadBalancePoller().push(launchedTask);
             }));
@@ -272,4 +260,11 @@ public class DefaultTaskObserverService implements TaskObserverService {
         this.launchableTaskDao.delayBatch(tasks);
     }
 
+    public AbstractTaskExecution getTaskExecution() {
+        return taskExecution;
+    }
+
+    public void setTaskExecution(AbstractTaskExecution taskExecution) {
+        this.taskExecution = taskExecution;
+    }
 }

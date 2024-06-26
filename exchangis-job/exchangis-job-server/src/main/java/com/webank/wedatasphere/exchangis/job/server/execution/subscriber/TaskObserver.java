@@ -5,6 +5,7 @@ import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObser
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.SchedulerThread;
+import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import org.apache.linkis.scheduler.Scheduler;
 
 import java.util.List;
@@ -67,5 +68,9 @@ public interface TaskObserver<T extends ExchangisTask> extends SchedulerThread {
     void setTaskExecution(TaskExecution<T> execution);
 
     TaskExecution<T> getTaskExecution();
+
+    void setTaskObserverService(TaskObserverService observerService);
+
+    TaskObserverService getTaskObserverService();
 
 }

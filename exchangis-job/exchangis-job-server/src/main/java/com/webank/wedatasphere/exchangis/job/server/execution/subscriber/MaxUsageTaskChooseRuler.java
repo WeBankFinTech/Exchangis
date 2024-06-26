@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Max usage of queue in executor service
  */
+@Deprecated
 public class MaxUsageTaskChooseRuler implements TaskChooseRuler<LaunchableExchangisTask>{
 
     @Override

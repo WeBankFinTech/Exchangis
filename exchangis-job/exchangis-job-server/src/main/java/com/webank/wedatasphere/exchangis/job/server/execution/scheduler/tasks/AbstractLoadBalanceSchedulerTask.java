@@ -65,8 +65,7 @@ public abstract class AbstractLoadBalanceSchedulerTask<T> extends AbstractExchan
                         try {
                             rePushWithBalancer(pollElement, this.schedulerLoadBalancer);
                         } catch (Exception e) {
-                            throw new ExchangisSchedulerException.Runtime(
-                                    "Error occurred in rePush in load balance scheduler task [" + getName() + "]", e);
+                            LOG.error("Internal_Error: Error occurred in rePush in load balance scheduler task [" + getName() + "]", e);
                         }
                     }
                 });

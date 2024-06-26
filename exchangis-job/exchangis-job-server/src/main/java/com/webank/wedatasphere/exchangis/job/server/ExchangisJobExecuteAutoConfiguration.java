@@ -24,6 +24,7 @@ import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObs
 import com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger;
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
 import com.webank.wedatasphere.exchangis.job.server.log.service.RpcJobLogService;
+import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.executer.ExecutorManager;
@@ -174,8 +175,9 @@ public class ExchangisJobExecuteAutoConfiguration {
     public AbstractTaskExecution taskExecution(Scheduler scheduler, ExchangisTaskLaunchManager launchManager,
                                                TaskManager<LaunchedExchangisTask> taskManager, List<TaskObserver<?>> observers,
                                                TaskSchedulerLoadBalancer<LaunchedExchangisTask> loadBalancer,
-                                               TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler, List<TaskExecutionListener> executionListeners){
-        AbstractTaskExecution taskExecution = new DefaultTaskExecution(scheduler, launchManager, taskManager, observers, loadBalancer, taskChooseRuler);
+                                               TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler, List<TaskExecutionListener> executionListeners,
+                                               TaskObserverService observerService){
+        AbstractTaskExecution taskExecution = new DefaultTaskExecution(scheduler, launchManager, taskManager, observers, loadBalancer, taskChooseRuler, observerService);
         ConsumerManager consumerManager = scheduler.getSchedulerContext().getOrCreateConsumerManager();
         if (consumerManager instanceof TenancyParallelConsumerManager){
             ((TenancyParallelConsumerManager) consumerManager).setInitResidentThreads(observers.size() +

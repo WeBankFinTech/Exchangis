@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.service;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
+import com.webank.wedatasphere.exchangis.job.server.execution.AbstractTaskExecution;
 
 import java.util.Date;
 import java.util.List;
@@ -80,4 +81,6 @@ public interface TaskObserverService {
      * @param tasks task
      */
     void delayToSubscribe(List<LaunchableExchangisTask> tasks);
+
+    void setTaskExecution(AbstractTaskExecution taskExecution);
 }

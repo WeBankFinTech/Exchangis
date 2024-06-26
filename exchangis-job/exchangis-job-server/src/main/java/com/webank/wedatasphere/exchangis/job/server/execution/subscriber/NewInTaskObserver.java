@@ -24,9 +24,6 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
 
     private static final Logger LOG = LoggerFactory.getLogger(NewInTaskObserver.class);
 
-    @Resource
-    private TaskObserverService taskObserverService;
-
 
     @Resource
     private TaskParallelManager parallelManager;
@@ -46,7 +43,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
 
     @Override
     protected List<LaunchableExchangisTask> onPublishNext(String instance, int batchSize){
-        List<LaunchableExchangisTask> tasks = taskObserverService.onPublishLaunchAbleTask(instance, batchSize);
+        List<LaunchableExchangisTask> tasks = observerService.onPublishLaunchAbleTask(instance, batchSize);
         if (!tasks.isEmpty()) {
             LOG.info("Publish the launch-able tasks waiting to be launched from database, size: [{}], cache_queue: [{}], last_task_id: [{}]",
                     tasks.size(), getCacheQueue().size(), tasks.get(0).getId());
@@ -75,7 +72,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                                 if (parallelRule.incParallel()) {
                                     // check the status of launchedTask
                                     // insert or update launched task, status as TaskStatus.Scheduler
-                                    boolean success =  taskObserverService.subscribe(launchableExchangisTask);
+                                    boolean success =  observerService.subscribe(launchableExchangisTask);
                                     if (!success){
                                         parallelRule.decParallel(1);
                                     }
@@ -90,7 +87,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                         parallelRule.decParallel(1);
                         if (Objects.nonNull(e)){
                             // Fail to submit, unsubscribe and discard it
-                            taskObserverService.unsubscribe(launchableExchangisTask);
+                            observerService.unsubscribe(launchableExchangisTask);
                             discard(Collections.singletonList(launchableExchangisTask));
                         }
                     }, true);
@@ -103,7 +100,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                             LOG.warn("Internal_Error: Fail to async submit launch-able task: [ id: {}, name: {}, job_execution_id: {} ]"
                                     , launchableExchangisTask.getId(), launchableExchangisTask.getName(), launchableExchangisTask.getJobExecutionId(), e);
                             // Unsubscribe and discard the task
-                            taskObserverService.unsubscribe(launchableExchangisTask);
+                            observerService.unsubscribe(launchableExchangisTask);
                             discard(Collections.singletonList(launchableExchangisTask));
                         }
                     } else if (noParallel.get()){
@@ -127,7 +124,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
         // Calculate the delay time and requeue to the cache
         if (!unsubscribeTasks.isEmpty()) {
             try {
-                taskObserverService.delayToSubscribe(unsubscribeTasks);
+                observerService.delayToSubscribe(unsubscribeTasks);
             } catch (Exception e) {
                 LOG.warn("Internal_Error: Exception in delaying unsubscribe tasks, reason:[{}]",
                         e.getMessage(), e);

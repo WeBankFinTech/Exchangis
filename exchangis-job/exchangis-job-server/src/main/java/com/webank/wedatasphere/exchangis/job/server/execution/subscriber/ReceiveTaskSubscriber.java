@@ -36,9 +36,6 @@ public class ReceiveTaskSubscriber extends AbstractTaskObserver<LaunchableExchan
     private NewInTaskObserver newInTaskObserver;
 
     @Resource
-    private TaskObserverService observerService;
-
-    @Resource
     private LaunchedTaskDao launchedTaskDao;
 
     private long startupTime = -1;

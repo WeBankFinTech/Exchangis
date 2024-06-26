@@ -28,9 +28,6 @@ public class UpdateInTaskObserver extends AbstractTaskObserver<LaunchedExchangis
 
     private long startupTime = -1;
 
-    @Resource
-    private TaskObserverService observerService;
-
     @Override
     public String getInstance() {
         return EnvironmentUtils.getServerAddress();

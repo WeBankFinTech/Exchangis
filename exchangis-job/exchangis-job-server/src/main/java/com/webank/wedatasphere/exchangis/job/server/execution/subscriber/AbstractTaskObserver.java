@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
+import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.scheduler.Scheduler;
 import org.slf4j.Logger;
@@ -47,6 +48,7 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
 
     private TaskChooseRuler<T> taskChooseRuler;
 
+
     /**
      * Task manager
      */
@@ -69,6 +71,8 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     protected long lastPublishTime = -1;
 
     protected boolean isShutdown = false;
+
+    protected TaskObserverService observerService;
 
     public AbstractTaskObserver(int publishBatch, int publishInterval){
         if (publishBatch <= 0){
@@ -268,6 +272,16 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     @Override
     public TaskExecution<T> getTaskExecution() {
         return taskExecution;
+    }
+
+    @Override
+    public void setTaskObserverService(TaskObserverService observerService) {
+        this.observerService = observerService;
+    }
+
+    @Override
+    public TaskObserverService getTaskObserverService() {
+        return this.observerService;
     }
 
     @Override

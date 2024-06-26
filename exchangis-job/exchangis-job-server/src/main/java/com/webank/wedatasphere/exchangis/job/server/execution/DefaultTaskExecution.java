@@ -12,6 +12,7 @@ import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.St
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.SubmitSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
+import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import org.apache.linkis.scheduler.Scheduler;
 
 import java.util.List;
@@ -49,6 +50,11 @@ public class DefaultTaskExecution extends AbstractTaskExecution{
      * Launch manager
      */
     private ExchangisTaskLaunchManager launchManager;
+
+    /**
+     * Task observe service
+     */
+    private TaskObserverService observerService;
     /**
      *
      * @param scheduler scheduler
@@ -61,13 +67,15 @@ public class DefaultTaskExecution extends AbstractTaskExecution{
     public DefaultTaskExecution(Scheduler scheduler, ExchangisTaskLaunchManager launchManager,
                                 TaskManager<LaunchedExchangisTask> taskManager, List<TaskObserver<?>> taskObservers,
                                 TaskSchedulerLoadBalancer<LaunchedExchangisTask> taskSchedulerLoadBalancer,
-                                TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler){
+                                TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler,
+                                TaskObserverService observerService){
         this.scheduler = scheduler;
         this.taskManager = taskManager;
         this.taskObservers = taskObservers;
         this.launchManager = launchManager;
         this.taskSchedulerLoadBalancer = taskSchedulerLoadBalancer;
         this.taskChooseRuler = taskChooseRuler;
+        this.observerService = observerService;
     }
 
     @Override
@@ -92,33 +100,37 @@ public class DefaultTaskExecution extends AbstractTaskExecution{
     }
 
     @Override
-    protected TaskManager<LaunchedExchangisTask> getTaskManager() {
+    public TaskManager<LaunchedExchangisTask> getTaskManager() {
         return this.taskManager;
     }
 
     @Override
-    protected List<TaskObserver<?>> getTaskObservers() {
+    public List<TaskObserver<?>> getTaskObservers() {
         return this.taskObservers;
     }
 
     @Override
-    protected Scheduler getScheduler() {
+    public Scheduler getScheduler() {
         return this.scheduler;
     }
 
     @Override
-    protected TaskChooseRuler<LaunchableExchangisTask> getTaskChooseRuler() {
+    public TaskChooseRuler<LaunchableExchangisTask> getTaskChooseRuler() {
         return taskChooseRuler;
     }
 
     @Override
-    protected ExchangisTaskLaunchManager getExchangisLaunchManager() {
+    public ExchangisTaskLaunchManager getExchangisLaunchManager() {
         return launchManager;
     }
 
     @Override
-    protected TaskSchedulerLoadBalancer<LaunchedExchangisTask> getTaskSchedulerLoadBalancer() {
+    public TaskSchedulerLoadBalancer<LaunchedExchangisTask> getTaskSchedulerLoadBalancer() {
         return this.taskSchedulerLoadBalancer;
     }
 
+    @Override
+    public TaskObserverService getTaskObserverService() {
+        return this.observerService;
+    }
 }
