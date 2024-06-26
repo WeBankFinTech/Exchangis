@@ -118,6 +118,45 @@ public class DataxMappingContext {
         }
     }
 
+    public static class DecimalColumn extends Column {
+        /**
+         * Precision
+         */
+        private Integer precision;
+
+        /**
+         * Scale
+         */
+        private Integer scale;
+
+        public DecimalColumn(Column column, Integer precision, Integer scale){
+            super(column.name, column.type, column.rawType, column.index);
+            this.precision = precision;
+            this.scale = scale;
+        }
+        public DecimalColumn(String name, String type, String rawType,
+                             String index, Integer precision, Integer scale) {
+            super(name, type, rawType, index);
+            this.precision = precision;
+            this.scale = scale;
+        }
+
+        public Integer getPrecision() {
+            return precision;
+        }
+
+        public void setPrecision(Integer precision) {
+            this.precision = precision;
+        }
+
+        public Integer getScale() {
+            return scale;
+        }
+
+        public void setScale(Integer scale) {
+            this.scale = scale;
+        }
+    }
     /**
      * Transformer
      */

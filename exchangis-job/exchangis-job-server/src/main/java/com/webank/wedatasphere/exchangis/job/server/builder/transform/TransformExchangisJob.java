@@ -12,6 +12,7 @@ import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.GenericSubExchangisJobHandler;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformTypes;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobUtils;
+import com.webank.wedatasphere.exchangis.job.utils.ColumnDefineUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,9 +106,9 @@ public class TransformExchangisJob extends GenericExchangisJob {
                 for(int i = 0; i < items.size(); i++){
                     final int index = i;
                     ExchangisJobTransformsItem item = items.get(i);
-                    ColumnDefine srcColumn = new ColumnDefine(item.getSourceFieldName(),
+                    ColumnDefine srcColumn = ColumnDefineUtils.getColumn(item.getSourceFieldName(),
                             item.getSourceFieldType(), item.getSourceFieldIndex());
-                    ColumnDefine sinkColumn = new ColumnDefine(item.getSinkFieldName(),
+                    ColumnDefine sinkColumn = ColumnDefineUtils.getColumn(item.getSinkFieldName(),
                             item.getSinkFieldType(), item.getSinkFieldIndex());
                     Optional.ofNullable(item.getValidator()).ifPresent(validator ->
                             convertValidatorFunction(index, validator));

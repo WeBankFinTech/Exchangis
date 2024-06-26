@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Datax engine job builder
@@ -47,14 +48,24 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
      */
     private static final JobParamDefine<DataxMappingContext> COLUMN_MAPPINGS = JobParams.define("column.mappings", job -> {
         DataxMappingContext mappingContext = new DataxMappingContext();
-        job.getSourceColumns().forEach(columnDefine -> mappingContext.getSourceColumns().add(
-                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
-                        columnDefine.getRawType(), columnDefine.getIndex() + "")
-        ));
-        job.getSinkColumns().forEach(columnDefine -> mappingContext.getSinkColumns().add(
-                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
-                        columnDefine.getRawType(), columnDefine.getIndex() + "")
-        ));
+        job.getSourceColumns().forEach(columnDefine -> {
+            DataxMappingContext.Column column = new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
+                    columnDefine.getRawType(), columnDefine.getIndex() + "");
+            mappingContext.getSourceColumns().add( columnDefine instanceof SubExchangisJob.DecimalColumnDefine ?
+                new DataxMappingContext.DecimalColumn(column,
+                        ((SubExchangisJob.DecimalColumnDefine) columnDefine).getPrecision(),
+                        ((SubExchangisJob.DecimalColumnDefine) columnDefine).getScale()) :
+                    column);
+        });
+        job.getSinkColumns().forEach(columnDefine -> {
+            DataxMappingContext.Column column = new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
+                    columnDefine.getRawType(), columnDefine.getIndex() + "");
+            mappingContext.getSinkColumns().add(columnDefine instanceof SubExchangisJob.DecimalColumnDefine ?
+                    new DataxMappingContext.DecimalColumn(column,
+                            ((SubExchangisJob.DecimalColumnDefine) columnDefine).getPrecision(),
+                            ((SubExchangisJob.DecimalColumnDefine) columnDefine).getScale()):
+                    column);
+        });
         job.getColumnFunctions().forEach(function -> {
             DataxMappingContext.Transformer.Parameter parameter = new DataxMappingContext.Transformer.Parameter();
             parameter.setColumnIndex(function.getIndex() + "");
