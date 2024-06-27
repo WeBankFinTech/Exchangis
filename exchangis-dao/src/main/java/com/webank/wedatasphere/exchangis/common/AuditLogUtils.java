@@ -31,7 +31,7 @@ public class AuditLogUtils {
         //String detailInfo=new Gson().toJson(params);
         String detailInfo=params.toString();
         LOGGER.info("[{}],[{}],[{}],[{}],[{}],[{}],[{}],[{}],[{}]",
-                new Date(),user, "proxyUser is: " + proxyUser, "Exchangis-1.1.2", targetType.getName(),
+                new Date(),user, "proxyUser is: " + proxyUser, "Exchangis-1.1.3", targetType.getName(),
                 targetId,targetName,operateType.getName(), detailInfo);
     }
 

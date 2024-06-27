@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskNotExistException;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
@@ -9,7 +10,6 @@ import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskProgressInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import org.apache.commons.lang.StringUtils;
-import org.apache.linkis.common.utils.Utils;
 import org.apache.linkis.computation.client.LinkisJobBuilder;
 import org.apache.linkis.computation.client.LinkisJobClient;
 import org.apache.linkis.computation.client.once.SubmittableOnceJob;
@@ -34,6 +34,8 @@ import static com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherCo
 public class LinkisLauncherTask implements AccessibleLauncherTask {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkisLauncherTask.class);
+
+    private static final String METRIC_NAME = "ecMetrics";
 
     /**
      * Engine versions
@@ -162,6 +164,13 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                     // Init the error count
                     this.reqError.set(0);
                     return metrics;
+                }else {
+                    // Try to get metric from job info
+                    Map<String, Object> jobInfo = getJobInfo(false);
+                    Object metric = jobInfo.get(METRIC_NAME);
+                    if (Objects.nonNull(metric)){
+                        return Json.fromJson(String.valueOf(metric), Map.class);
+                    }
                 }
             }catch(Exception e){
                 dealException(e);
@@ -222,13 +231,14 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
         // The logOperator is not thread safe, so create it each time
         if (Objects.nonNull(this.onceJob)){
             try{
-                EngineConnLogOperator logOperator = (EngineConnLogOperator) this.onceJob.getOperator(EngineConnLogOperator.OPERATOR_NAME());
+                LaunchTaskLogOperator logOperator = (LaunchTaskLogOperator) this.onceJob.getOperator(LaunchTaskLogOperator.OPERATOR_NAME());
                 logOperator.setFromLine(query.getFromLine());
                 logOperator.setPageSize(query.getPageSize());
                 logOperator.setEngineConnType(this.engineConn);
                 logOperator.setECMServiceInstance(this.onceJob.getECMServiceInstance(this.jobInfo));
                 logOperator.setIgnoreKeywords(query.getIgnoreKeywords());
                 logOperator.setOnlyKeywords(query.getOnlyKeywords());
+                logOperator.setEnableTail(query.isEnableTail());
                 if (Objects.nonNull(query.getLastRows())){
                     logOperator.setLastRows(query.getLastRows());
                 }

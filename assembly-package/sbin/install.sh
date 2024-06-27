@@ -30,7 +30,7 @@ PACKAGE_DIR="${DIR}/../packages"
 # Home Path
 EXCHNGIS_HOME_PATH="${DIR}/../"
 
-CONF_FILE_PATH="bin/configure.sh"
+CONF_FILE_PATH="sbin/configure.sh"
 FORCE_INSTALL=false
 SKIP_PACKAGE=false
 USER=`whoami`
@@ -125,7 +125,7 @@ interact_echo(){
 
 # Initalize database
 init_database(){
-    BOOTSTRAP_PROP_FILE="${CONF_PATH}/dss-exchangis-server.properties"
+    BOOTSTRAP_PROP_FILE="${CONF_PATH}/dss-exchangis-main-server-dev.properties"
     if [ "x${SQL_SOURCE_PATH}" != "x" ] && [ -f "${SQL_SOURCE_PATH}" ]; then
         `mysql --version >/dev/null 2>&1`
         DATASOURCE_URL="jdbc:mysql:\/\/${MYSQL_HOST}:${MYSQL_PORT}\/${DATABASE}\?useSSL=false\&characterEncoding=UTF-8\&allowMultiQueries=true"

@@ -124,4 +124,18 @@ public abstract class EngineResource {
     public void setPath(String path) {
         this.path = path;
     }
+
+    @Override
+    public String toString() {
+        return "EngineResource{" +
+                "engineType='" + engineType + '\'' +
+                ", id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", path='" + path + '\'' +
+                ", createTime=" + createTime +
+                ", modifyTime=" + modifyTime +
+                ", creator='" + creator + '\'' +
+                '}';
+    }
 }

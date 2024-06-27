@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.loader.loader;
 
-import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceLoader;
+import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceDefLoader;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.conf.CommonVars;
@@ -11,13 +11,13 @@ public class ExchangisDataSourceLoaderFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ExchangisDataSourceLoaderFactory.class);
 
-    private static Class<? extends ExchangisDataSourceLoader> clazz = LocalExchangisDataSourceLoader.class;
-    private static ExchangisDataSourceLoader exchangisDataSourceLoader = null;
+    private static Class<? extends ExchangisDataSourceDefLoader> clazz = LocalExchangisDataSourceLoader.class;
+    private static ExchangisDataSourceDefLoader exchangisDataSourceDefLoader = null;
 
-    public static ExchangisDataSourceLoader getLoader(){
-        if (exchangisDataSourceLoader == null){
+    public static ExchangisDataSourceDefLoader getLoader(){
+        if (exchangisDataSourceDefLoader == null){
             synchronized (ExchangisDataSourceLoaderFactory.class){
-                if (exchangisDataSourceLoader == null){
+                if (exchangisDataSourceDefLoader == null){
                     // 可以通过配置自行加载对应的类
                     CommonVars<String> apply = CommonVars.apply("exchangis.extds.loader.classname", "");
                     String className = apply.getValue();
@@ -29,7 +29,7 @@ public class ExchangisDataSourceLoaderFactory {
                         }
                     }
                     try {
-                        exchangisDataSourceLoader = clazz.newInstance();
+                        exchangisDataSourceDefLoader = clazz.newInstance();
                     } catch (Exception e) {
                         logger.error(String.format("Can not initialize ExchangisDataSourceLoader class %s.", clazz.getSimpleName()), e);
                     }
@@ -37,7 +37,7 @@ public class ExchangisDataSourceLoaderFactory {
                 }
             }
         }
-        return exchangisDataSourceLoader;
+        return exchangisDataSourceDefLoader;
     }
 
 }

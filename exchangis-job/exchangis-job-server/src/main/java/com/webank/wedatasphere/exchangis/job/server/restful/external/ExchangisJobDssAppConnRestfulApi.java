@@ -82,10 +82,10 @@ public class ExchangisJobDssAppConnRestfulApi {
         } catch (Exception e){
             String message = "Fail to create dss job: " + exchangisJobVo.getJobName() +" (创建DSS任务失败)";
             LOG.error(message, e);
-            response = Message.error(message);
+            return Message.error(message);
         }
         assert id != null;
-        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, id.toString(), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.CREATE, request);
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, String.valueOf(id), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.CREATE, request);
         return response;
     }
 
@@ -115,9 +115,9 @@ public class ExchangisJobDssAppConnRestfulApi {
         } catch (Exception e){
             String message = "Fail to delete dss job [ id: " + id + "] (删除DSS任务失败)";
             LOG.error(message, e);
-            response = Message.error(message);
+            return Message.error(message);
         }
-        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, id.toString(), "Job", OperateTypeEnum.DELETE, request);
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, String.valueOf(id), "Job", OperateTypeEnum.DELETE, request);
         return response;
     }
 
@@ -155,9 +155,9 @@ public class ExchangisJobDssAppConnRestfulApi {
         } catch (Exception e){
             String message = "Fail to update dss job: " + exchangisJobVo.getJobName() +" (更新DSS任务失败)";
             LOG.error(message, e);
-            response = Message.error(message);
+            return Message.error(message);
         }
-        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, id.toString(), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.UPDATE, request);
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, String.valueOf(id), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.UPDATE, request);
         return response;
     }
 
@@ -178,7 +178,7 @@ public class ExchangisJobDssAppConnRestfulApi {
         String submitUser = params.get("submitUser").toString();
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String loginUser = UserUtils.getLoginUser(request);
-        Message result = Message.ok();
+        Message response = Message.ok();
         ExchangisJobInfo jobInfo = null;
         LOG.info("wds execute user: {}", loginUser);
         try {
@@ -203,7 +203,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             // Send to execute service
             String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
                     jobInfo.getExecuteUser() : loginUser);
-            result.data("jobExecutionId", jobExecutionId);
+            response.data("jobExecutionId", jobExecutionId);
 
             LOG.info("Prepare to get job status");
             /*while (true) {
@@ -223,15 +223,16 @@ public class ExchangisJobDssAppConnRestfulApi {
             String message;
             if (Objects.nonNull(jobInfo)) {
                 message = "Error occur while executing job: [id: " + jobInfo.getId() + " name: " + jobInfo.getName() + "]";
-                result = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
+                response = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
             } else {
                 message = "Error to get the job detail (获取任务信息出错)";
-                result = Message.error(message);
+                response = Message.error(message);
             }
             LOG.error(message, e);
+            return response;
         }
         assert jobInfo != null;
-        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, id.toString(), "Execute task is: " + jobInfo.getName(), OperateTypeEnum.EXECUTE, request);
-        return result;
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, String.valueOf(id), "Execute task is: " + jobInfo.getName(), OperateTypeEnum.EXECUTE, request);
+        return response;
     }
 }

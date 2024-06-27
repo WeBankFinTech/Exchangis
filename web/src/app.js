@@ -72,3 +72,10 @@ if (localStr !== 'zh-CN') {
   localStorage.setItem('fes_locale', 'zh-CN')
   document.location = '/'
 }
+
+
+window.addEventListener('beforeunload', function () {
+  if (localStorage.getItem('exchangis_environment')) {
+    localStorage.removeItem('exchangis_environment');
+  }
+});

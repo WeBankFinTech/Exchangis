@@ -1,62 +1,169 @@
 package com.webank.wedatasphere.exchangis.datasource.dto;
 
-public class ExchangisDataSourceDTO {
-    private final String id;
-    private final String classifier;
-    private final String name;
-    private String option;
-    private String description;
-    private String icon;
-    private String struct_classifier;
+import java.util.Date;
 
-    public ExchangisDataSourceDTO(String id, String classifier, String name, String struct_classifier) {
-        this.id = id;
-        this.classifier = classifier;
-        this.name = name;
-        this.struct_classifier = struct_classifier;
+public class ExchangisDataSourceDTO {
+
+    private Long id;
+    private String name;
+    private String type;
+    private Long dataSourceTypeId;
+    private String createIdentify;
+    private String createSystem;
+    private String desc;
+    private String createUser;
+    private String labels;
+    private String label;
+    private Long versionId;
+    private String modifyUser;
+    private Date modifyTime;
+    private boolean expire;
+    private boolean writeAble;
+    private boolean readAble;
+    private String authDbs;
+    private String authTbls;
+
+    public boolean isExpire() {
+        return expire;
     }
 
-    public String getId() {
+    public void setExpire(boolean expire) {
+        this.expire = expire;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public String getClassifier() {
-        return classifier;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getOption() {
-        return option;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setOption(String option) {
-        this.option = option;
+    public String getType() {
+        return type;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public void setIcon(String icon) {
-        this.icon = icon;
+    public String getCreateIdentify() {
+        return createIdentify;
     }
 
-    public String getDescription() {
-        return description;
+    public void setCreateIdentify(String createIdentify) {
+        this.createIdentify = createIdentify;
     }
 
-    public String getIcon() {
-        return icon;
+    public Long getDataSourceTypeId() {
+        return dataSourceTypeId;
     }
 
-    public String getStruct_classifier() {
-        return struct_classifier;
+    public void setDataSourceTypeId(Long dataSourceTypeId) {
+        this.dataSourceTypeId = dataSourceTypeId;
     }
 
-    public void setStruct_classifier(String struct_classifier) {
-        this.struct_classifier = struct_classifier;
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
+    public String getLabels() {
+        return labels;
+    }
+
+    public void setLabels(String labels) {
+        this.labels = labels;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public Long getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(Long versionId) {
+        this.versionId = versionId;
+    }
+
+    public String getModifyUser() {
+        return modifyUser;
+    }
+
+    public void setModifyUser(String modifyUser) {
+        this.modifyUser = modifyUser;
+    }
+
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
+    }
+
+    public String getCreateSystem() {
+        return createSystem;
+    }
+
+    public void setCreateSystem(String createSystem) {
+        this.createSystem = createSystem;
+    }
+
+    public boolean isWriteAble() {
+        return writeAble;
+    }
+
+    public void setWriteAble(boolean writeAble) {
+        this.writeAble = writeAble;
+    }
+
+    public boolean isReadAble() {
+        return readAble;
+    }
+
+    public void setReadAble(boolean readAble) {
+        this.readAble = readAble;
+    }
+
+    public String getAuthDbs() {
+        return authDbs;
+    }
+
+    public void setAuthDbs(String authDbs) {
+        this.authDbs = authDbs;
+    }
+
+    public String getAuthTbls() {
+        return authTbls;
+    }
+
+    public void setAuthTbls(String authTbls) {
+        this.authTbls = authTbls;
     }
 }

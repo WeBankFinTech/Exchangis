@@ -9,6 +9,7 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.server.builder.SpringExchangisJobBuilderContext;
 import org.apache.linkis.common.exception.ErrorException;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
     public final void handleSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
         wrapFuncWithContext(ctx, () -> {
             try {
+                handleSrcColumns(subExchangisJob, ctx, subExchangisJob.getSourceColumns());
                 handleJobSource(subExchangisJob, ctx);
             }catch (ErrorException e){
                 throw new ExchangisJobException.Runtime(-1, "Exception in handling job source parameters", e);
@@ -34,6 +36,7 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
     public final void handleSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {
         wrapFuncWithContext(ctx, () -> {
             try {
+                handleSinkColumns(subExchangisJob, ctx, subExchangisJob.getSinkColumns());
                 handleJobSink(subExchangisJob, ctx);
             } catch (ErrorException e) {
                 throw new ExchangisJobException.Runtime(-1, "Exception in handling job sink parameters", e);
@@ -68,6 +71,27 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
         }
     }
 
+
+    /**
+     * Handle source columns
+     * @param columns columns
+     */
+    protected void handleSrcColumns(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx,
+                                    List<SubExchangisJob.ColumnDefine> columns) {
+        // Empty
+    }
+
+    /**
+     * Handle sink columns
+     * @param columns columns
+     */
+    protected void handleSinkColumns(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx,
+                                     List<SubExchangisJob.ColumnDefine> columns){
+        // Empty
+    }
+
+
+
     /**
      * handle job source params
      * @param subExchangisJob sub exchangis job
@@ -81,6 +105,10 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
      * @param ctx ctx
      */
     public abstract void handleJobSink(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException;
+
+    public void preHandleJobParamSet(JobParamSet paramSet) {
+        // Empty
+    }
 
     /**
      * Warn message
@@ -113,4 +141,5 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
     protected static SpringExchangisJobBuilderContext getJobBuilderContext(){
         return springContext.get();
     }
+
 }

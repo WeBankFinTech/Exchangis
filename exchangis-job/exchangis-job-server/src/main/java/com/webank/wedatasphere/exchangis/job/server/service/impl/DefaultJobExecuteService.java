@@ -32,6 +32,7 @@ import com.webank.wedatasphere.exchangis.job.server.metrics.converter.MetricsCon
 import com.webank.wedatasphere.exchangis.job.server.service.JobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.common.conf.CommonVars;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -48,6 +50,10 @@ import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExcept
 @Service
 public class DefaultJobExecuteService implements JobExecuteService {
     private final static Logger LOG = LoggerFactory.getLogger(DefaultJobExecuteService.class);
+
+    private static final CommonVars<String> TASK_LOG_IGNORE_KEYS = CommonVars.apply(
+            "wds.exchangis.job.task.log.ignore-keys",
+            "service.DefaultManagerService,info.DefaultNodeHealthyInfoManager");
 
     @Autowired
     private LaunchedTaskDao launchedTaskDao;
@@ -89,6 +95,18 @@ public class DefaultJobExecuteService implements JobExecuteService {
     @Resource
     private MetricConverterFactory<ExchangisMetricsVo> metricConverterFactory;
 
+    /**
+     * Log ignore key set
+     */
+    private final Set<String> logIgnoreKeySet = new HashSet<>();
+
+    @PostConstruct
+    public void init(){
+        String defaultIgnoreKeys = TASK_LOG_IGNORE_KEYS.getValue();
+        if (StringUtils.isNotBlank(defaultIgnoreKeys)){
+            logIgnoreKeySet.addAll(Arrays.asList(defaultIgnoreKeys.split(",")));
+        }
+    }
     @Override
     public List<ExchangisJobTaskVo> getExecutedJobTaskList(String jobExecutionId) throws ExchangisJobServerException{
         List<LaunchedExchangisTaskEntity> launchedExchangisTaskEntities = launchedTaskDao.selectTaskListByJobExecutionId(jobExecutionId);
@@ -189,6 +207,16 @@ public class DefaultJobExecuteService implements JobExecuteService {
     public ExchangisCategoryLogVo getTaskLogInfo(String taskId, String jobExecutionId, LogQuery logQuery)
             throws ExchangisJobServerException, ExchangisTaskLaunchException {
         LaunchedExchangisTaskEntity launchedTaskEntity = this.launchedTaskDao.getLaunchedTaskEntity(taskId);
+        if (logIgnoreKeySet.size() > 0){
+            String ignoreKeys = logQuery.getIgnoreKeywords();
+            if (StringUtils.isNotBlank(ignoreKeys)){
+                Set<String> ignores = new HashSet<>(Arrays.asList(ignoreKeys.split(",")));
+                ignores.addAll(logIgnoreKeySet);
+                logQuery.setIgnoreKeywords(StringUtils.join(ignores, ","));
+            } else {
+                logQuery.setIgnoreKeywords(StringUtils.join(logIgnoreKeySet, ","));
+            }
+        }
         if (Objects.isNull(launchedTaskEntity)){
             return resultToCategoryLog(logQuery, new LogResult(0, false, new ArrayList<>()), TaskStatus.Inited);
         }
@@ -321,7 +349,7 @@ public class DefaultJobExecuteService implements JobExecuteService {
         }
         if (Objects.nonNull(logQuery.getLastRows())){
             logResult.setEnd(true);
-        }else if (noLogs){
+        }else if (noLogs || logQuery.isEnableTail()){
 //            logResult.getLogs().add("<<The log content is empty>>");
             if (TaskStatus.isCompleted(status)){
                 logResult.setEnd(true);

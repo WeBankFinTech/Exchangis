@@ -603,7 +603,7 @@ public class HdfsReaderUtil {
                     }
                     Type type = Type.valueOf(columnType.toUpperCase());
                     // it's all ok if nullFormat is null
-                    if (StringUtils.equals(columnValue, nullFormat) || StringUtils.isBlank(columnValue)) {
+                    if (StringUtils.equals(columnValue, nullFormat) || StringUtils.isEmpty(columnValue)) {
                         columnValue = null;
                     }
                     switch (type) {

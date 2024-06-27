@@ -33,6 +33,11 @@ public class TransformRequestVo {
     private String sourceTable;
 
     /**
+     * Table (source) not exist
+     */
+    private boolean srcTblNotExist = false;
+
+    /**
      * Sink type id
      */
     @NotNull(message = "sink type cannot be null (目的类型不能为空）")
@@ -54,6 +59,10 @@ public class TransformRequestVo {
      */
     private String sinkTable;
 
+    /**
+     * Table (sink) not exist
+      */
+    private boolean sinkTblNotExist = false;
     /**
      * Labels
      */
@@ -149,5 +158,21 @@ public class TransformRequestVo {
 
     public void setOperator(String operator) {
         this.operator = operator;
+    }
+
+    public void setSrcTblNotExist(boolean srcTblNotExist) {
+        this.srcTblNotExist = srcTblNotExist;
+    }
+
+    public void setSinkTblNotExist(boolean sinkTblNotExist) {
+        this.sinkTblNotExist = sinkTblNotExist;
+    }
+
+    public boolean isSrcTblNotExist() {
+        return srcTblNotExist;
+    }
+
+    public boolean isSinkTblNotExist() {
+        return sinkTblNotExist;
     }
 }

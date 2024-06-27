@@ -1,0 +1,1 @@
+ALTER TABLE exchangis_launchable_task CHANGE linkis_job_content linkis_job_content mediumtext NULL;
