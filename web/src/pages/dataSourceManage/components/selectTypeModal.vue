@@ -37,6 +37,16 @@ export default {
   data() {
     return { searchVal: "" };
   },
+  watch: {
+    visible: {
+      immediate: true,
+      handler: function(cur) {
+        if(cur) {
+          this.searchVal = '';
+        }
+      }
+    }
+  },
   computed: {
     options() {
       let options = {};

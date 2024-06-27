@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Expose the ui interface to front-end rendering
@@ -29,6 +30,7 @@ public class ExchangisDataSourceRenderRestfulApi {
     public Message partition(@PathVariable("elementType") String type,
                              @RequestParam("dataSourceId") Long dataSourceId,
                              @RequestParam("database") String database,
+                             @RequestParam(value = "tableNotExist",  required = false) Boolean tableNotExist,
                              @RequestParam("table") String table, HttpServletRequest request){
         String userName = UserUtils.getLoginUser(request);
         ElementUI.Type uiType;
@@ -39,8 +41,11 @@ public class ExchangisDataSourceRenderRestfulApi {
         }
         Message result = Message.ok();
         try{
-            ElementUI<?> elementUI = renderService.getPartitionAndRender(userName, dataSourceId, database, table, uiType);
+            boolean notExist = Optional.ofNullable(tableNotExist).orElse(false);
+            ElementUI<?> elementUI = renderService.getPartitionAndRender(userName, dataSourceId,
+                    database, table, uiType, notExist);
             result.data("type", uiType.name());
+            result.data("customize", notExist);
             if (Objects.nonNull(elementUI)){
                 result.data("render", elementUI.getValue());
             }

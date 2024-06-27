@@ -41,6 +41,7 @@ public interface ExchangisJob extends ExchangisBase{
      * @param jobLabels
      */
     void setJobLabels(Map<String, Object> jobLabels);
+    
     /**
      * Create user
      * @return user name

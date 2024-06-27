@@ -20,7 +20,7 @@ import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskCho
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger;
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
-import com.webank.wedatasphere.exchangis.job.server.log.service.LocalSimpleJobLogService;
+import com.webank.wedatasphere.exchangis.job.server.log.service.RpcJobLogService;
 import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.executer.ExecutorManager;
@@ -50,7 +50,7 @@ public class ExchangisJobExecuteAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(JobLogService.class)
     public JobLogService jobLogService(){
-        return new LocalSimpleJobLogService();
+        return new RpcJobLogService();
     }
 
     /**

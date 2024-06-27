@@ -503,7 +503,8 @@ export const getJobExecLog = (params) => {
       pageSize: params.pageSize || 50,
       onlyKeywords: params.onlyKeywords,
       ignoreKeywords: params.ignoreKeywords,
-      lastRows: params.lastRows
+      lastRows: params.lastRows,
+      enableTail: true
     },
     {
       method: "GET",
@@ -521,7 +522,8 @@ export const getTaskExecLog = (params) => {
       jobExecutionId: params.id,
       onlyKeywords: params.onlyKeywords,
       ignoreKeywords: params.ignoreKeywords,
-      lastRows: params.lastRows
+      lastRows: params.lastRows,
+      enableTail: true
     },
     {
       method: "GET",
@@ -534,7 +536,7 @@ export const getPartitionInfo = (params) => {
   if (!params.source) return
   const url = params.source.split(BASE_URL)[1]
   return request(
-    `${url}?labels=${getEnvironment()}&dataSourceId=${params.dataSourceId}&database=${params.database}&table=${params.table}&_=${Math.random()}`,
+    `${url}?labels=${getEnvironment()}&dataSourceId=${params.dataSourceId}&database=${params.database}&table=${params.table}&tableNotExist=${params.tableNotExist}&_=${Math.random()}`,
     {},
     {
       method: "GET",

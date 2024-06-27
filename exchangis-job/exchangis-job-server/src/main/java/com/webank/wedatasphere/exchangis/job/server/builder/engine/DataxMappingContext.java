@@ -62,6 +62,11 @@ public class DataxMappingContext {
         private String type;
 
         /**
+         * Raw column type
+         */
+        private String rawType;
+
+        /**
          * Index name
          */
         private String index;
@@ -71,8 +76,13 @@ public class DataxMappingContext {
         }
 
         public Column(String name, String type, String index){
+            this(name, type, null, index);
+        }
+
+        public Column(String name, String type, String rawType, String index){
             this.name = name;
             this.type = type;
+            this.rawType = rawType;
             this.index = index;
         }
         public String getName() {
@@ -97,6 +107,14 @@ public class DataxMappingContext {
 
         public void setIndex(String index) {
             this.index = index;
+        }
+
+        public String getRawType() {
+            return rawType;
+        }
+
+        public void setRawType(String rawType) {
+            this.rawType = rawType;
         }
     }
 

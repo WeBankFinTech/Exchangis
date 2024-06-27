@@ -25,7 +25,9 @@ public abstract class AbstractFieldMatchStrategy implements FieldMatchStrategy{
                 if (Objects.nonNull(matchColumn)){
                     fieldColumnMatches.add(new FieldColumnMatch(dependColumn, matchColumn));
                 } else if (!ignoreUnMatch){
-                    fieldColumnMatches.add(new FieldColumnMatch(dependColumn, searchColumns.get(i % searchColumns.size())));
+                    if (searchColumns.size() > 0) {
+                        fieldColumnMatches.add(new FieldColumnMatch(dependColumn, searchColumns.get(i % searchColumns.size())));
+                    }
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
+import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
@@ -26,6 +27,15 @@ public class StatusUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
 
     private TaskManager<LaunchedExchangisTask> taskManager;
 
+    /**
+     * High priority to get schedule resource
+     * @return priority
+     */
+    @Override
+    public int getPriority() {
+        return 2;
+    }
+
     public StatusUpdateSchedulerTask(TaskManager<LaunchedExchangisTask> taskManager){
         this.taskManager = taskManager;
     }
@@ -38,7 +48,13 @@ public class StatusUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
             if (Objects.nonNull(progressInfo)){
                 this.taskManager.refreshRunningTaskProgress(launchedExchangisTask, progressInfo);
             }
-            this.taskManager.refreshRunningTaskStatus(launchedExchangisTask, launcherTask.getLocalStatus());
+            TaskStatus status = launcherTask.getLocalStatus();
+            if (TaskStatus.isCompleted(status)){
+                this.taskManager.refreshRunningTaskStatusAndMetrics(launchedExchangisTask,
+                        status, launcherTask.getMetricsInfo());
+            } else {
+                this.taskManager.refreshRunningTaskStatus(launchedExchangisTask, status);
+            }
         } catch (ExchangisTaskLaunchException e){
             throw new ExchangisSchedulerException("Fail to update status(progress) for task: [" + launchedExchangisTask.getTaskId() + "]", e);
         }

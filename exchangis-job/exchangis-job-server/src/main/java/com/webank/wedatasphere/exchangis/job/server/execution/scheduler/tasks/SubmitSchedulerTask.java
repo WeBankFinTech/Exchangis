@@ -34,6 +34,11 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
 
     private static final Logger LOG = LoggerFactory.getLogger(SubmitSchedulerTask.class);
 
+    /**
+     * Submit parallel limit
+     */
+    private static final AtomicInteger SUBMIT_PARALLEL = new AtomicInteger(0);
+
     private LaunchableExchangisTask launchableExchangisTask;
 
     private TaskManager<LaunchedExchangisTask> taskManager;
@@ -72,6 +77,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                 // Ignore
             }
         }
+        // Set max retry
     }
     @Override
     protected void schedule() throws ExchangisSchedulerException, ExchangisSchedulerRetryException {

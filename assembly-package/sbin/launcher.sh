@@ -110,9 +110,9 @@ construct_java_command(){
     # mkdir
     mkdir -p ${EXCHANGIS_LOG_PATH}
     mkdir -p ${EXCHANGIS_PID_PATH}
-    local classpath=${EXCHANGIS_CONF_PATH}":."
+    local classpath=${EXCHANGIS_CONF_PATH}
     local opts=""
-    classpath=${EXCHANGIS_LIB_PATH}/"exchangis-server/*:"${classpath}
+    classpath=${classpath}":"${EXCHANGIS_LIB_PATH}/"exchangis-server/*:."
     LOG INFO "classpath:"${classpath}
     if [[ "x${EXCHANGIS_JAVA_OPTS}" == "x" ]]; then
       # Use G1 garbage collector
@@ -133,7 +133,6 @@ construct_java_command(){
     opts=${opts}" -Dlogging.level.reactor.ipc.netty.channel.CloseableContextHandler=off"
     opts=${opts}" -Duser.dir=${USER_DIR}"
     opts=${opts}" -classpath "${classpath}
-    LOG INFO "opts:"${opts}
     if [[ "x${JAVA_HOME}" != "x" ]]; then
         EXEC_JAVA=${JAVA_HOME}"/bin/java "${opts}" "$2
     else

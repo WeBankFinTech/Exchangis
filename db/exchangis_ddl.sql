@@ -92,7 +92,7 @@ CREATE TABLE `exchangis_project_user` (
   `priv` int(20) DEFAULT NULL,
   `last_update_time` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `exchangis_project_user_un` (`project_id`)
+  UNIQUE KEY `exchangis_project_user_un` (`project_id`,`priv_user`,`priv`)
 ) ENGINE=InnoDB AUTO_INCREMENT=844 DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT;
 
 -- exchangis_launchable_task definition
@@ -106,7 +106,7 @@ CREATE TABLE `exchangis_launchable_task` (
   `engine_type` varchar(45) DEFAULT '',
   `execute_user` varchar(50) DEFAULT '',
   `linkis_job_name` varchar(100) NOT NULL,
-  `linkis_job_content` text NOT NULL,
+  `linkis_job_content` mediumtext NOT NULL,
   `linkis_params` text DEFAULT NULL,
   `linkis_source` varchar(64) DEFAULT NULL,
   `labels` varchar(64) DEFAULT NULL,

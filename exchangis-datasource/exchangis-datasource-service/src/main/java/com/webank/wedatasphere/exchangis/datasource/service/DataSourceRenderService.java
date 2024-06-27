@@ -11,6 +11,7 @@ public interface DataSourceRenderService {
      * @return element ui
      */
     ElementUI<?> getPartitionAndRender(String userName,
-                                       Long dataSourceId, String database, String table, ElementUI.Type uiType) throws ExchangisDataSourceException;
+                                       Long dataSourceId, String database,
+                                       String table, ElementUI.Type uiType, boolean tableNotExist) throws ExchangisDataSourceException;
 
 }

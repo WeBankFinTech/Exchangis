@@ -12,7 +12,11 @@ public enum Classifier {
 
     SFTP("sftp连接"),
 
-    ORACLE("关系型数据库");
+    ORACLE("关系型数据库"),
+
+    STARROCKS("关系型数据库"),
+
+    TDSQL("关系型数据库");
 
     public String name;
 

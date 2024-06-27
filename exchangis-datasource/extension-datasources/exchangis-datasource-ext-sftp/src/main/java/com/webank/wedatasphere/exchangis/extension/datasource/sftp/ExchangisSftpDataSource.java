@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.extension.datasource.sftp;
 
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.Classifier;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceType;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceType;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.StructClassifier;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisBatchDataSource;
 
@@ -11,13 +11,8 @@ import java.util.List;
 public class ExchangisSftpDataSource extends ExchangisBatchDataSource {
 
     @Override
-    public String name() {
-        return DataSourceType.SFTP.name;
-    }
-
-    @Override
-    public String classifier() {
-        return Classifier.SFTP.name;
+    protected ExchangisDataSourceType type() {
+        return ExchangisDataSourceType.SFTP;
     }
 
     @Override
@@ -27,7 +22,7 @@ public class ExchangisSftpDataSource extends ExchangisBatchDataSource {
 
     @Override
     public String description() {
-        return "This is Sftp";
+        return "This is sftp";
     }
 
     @Override
@@ -42,6 +37,7 @@ public class ExchangisSftpDataSource extends ExchangisBatchDataSource {
 
     @Override
     public List<ExchangisJobParamConfig> getDataSourceParamConfigs() {
-        return super.getDataSourceParamConfigs(DataSourceType.SFTP.name);
+        return super.getDataSourceParamConfigs(ExchangisDataSourceType.SFTP.name);
     }
+
 }
