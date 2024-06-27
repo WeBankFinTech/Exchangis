@@ -49,7 +49,7 @@ object GetDataSourceInfoByIdAndVersionIdAction {
     }
 
     def build(): GetDataSourceInfoByIdAndVersionIdAction = {
-      if(dataSourceId == null) throw new DataSourceClientBuilderException("dataSourceId is needed!")
+      if(dataSourceId == 0L) throw new DataSourceClientBuilderException("dataSourceId is needed!")
       if(versionId == null) throw new DataSourceClientBuilderException("versionId is needed!")
       if(system == null) throw new DataSourceClientBuilderException("system is needed!")
       if(user == null) throw new DataSourceClientBuilderException("user is needed!")

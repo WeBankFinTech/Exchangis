@@ -28,6 +28,8 @@ public class Json {
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         //Ignore unknown properties
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        //Accept NaN
+        mapper.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
         //Cancel to scape no ascii
 //            mapper.configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), false);
     }

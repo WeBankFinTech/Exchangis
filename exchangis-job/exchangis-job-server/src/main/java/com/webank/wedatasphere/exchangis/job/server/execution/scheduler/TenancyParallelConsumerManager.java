@@ -1,6 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.priority.PriorityOrderedQueue;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.priority.PriorityRunnable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.utils.Utils;
 import org.apache.linkis.scheduler.listener.ConsumerListener;
@@ -9,14 +11,10 @@ import org.apache.linkis.scheduler.queue.fifoqueue.FIFOGroup;
 import org.apache.linkis.scheduler.queue.fifoqueue.FIFOUserConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -53,7 +51,7 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
             try{
                 Group group = getSchedulerContext().getOrCreateGroupFactory().getOrCreateGroup(null);
                 if (group instanceof FIFOGroup){
-                    defaultExecutorService = Utils.newCachedThreadPool(((FIFOGroup) group).getMaxRunningJobs() +
+                    defaultExecutorService = newPriorityThreadPool(((FIFOGroup) group).getMaxRunningJobs() +
                             this.initResidentThreads + 1,
                             TenancyParallelGroupFactory.GROUP_NAME_PREFIX + TenancyParallelGroupFactory.DEFAULT_TENANCY + "-Executor-", true);
                     tenancyExecutorServices.put(TenancyParallelGroupFactory.DEFAULT_TENANCY, defaultExecutorService);
@@ -128,7 +126,7 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
             if (StringUtils.isNotBlank(tenancy)){
                 return tenancyExecutorServices.computeIfAbsent(tenancy, tenancyName -> {
                     // Use the default value of max running jobs
-                    return Utils.newCachedThreadPool(parallelGroupFactory.getDefaultMaxRunningJobs()  + parallelGroupFactory.getParallelPerTenancy(),
+                    return newPriorityThreadPool(parallelGroupFactory.getDefaultMaxRunningJobs()  + parallelGroupFactory.getParallelPerTenancy(),
                             TenancyParallelGroupFactory.GROUP_NAME_PREFIX + tenancy + "-Executor-", true);
                 });
             }
@@ -151,4 +149,34 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
     public Map<String, ExecutorService> getTenancyExecutorServices() {
         return tenancyExecutorServices;
     }
+
+    /**
+     * Create thread pool with priority for tenancy consumer
+     * @return
+     */
+    private ExecutorService newPriorityThreadPool(int threadNum, String threadName, boolean isDaemon){
+        ThreadPoolExecutor threadPool =  new ThreadPoolExecutor(
+                threadNum,
+                threadNum,
+                120L,
+                TimeUnit.SECONDS,
+                new PriorityBlockingQueue<>(10 * threadNum, (o1, o2) -> {
+                    int left = o1 instanceof PriorityRunnable ? ((PriorityRunnable) o1).getPriority() : 0;
+                    int right = o2 instanceof PriorityRunnable ? ((PriorityRunnable) o2).getPriority() : 0;
+                    return right - left;
+                }),
+                new ThreadFactory() {
+                    final AtomicInteger num = new AtomicInteger(0);
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread t = new Thread(r);
+                        t.setDaemon(isDaemon);
+                        t.setName(threadName + num.incrementAndGet());
+                        return t;
+                    }
+                });
+        threadPool.allowCoreThreadTimeOut(true);
+        return threadPool;
+    }
+
 }

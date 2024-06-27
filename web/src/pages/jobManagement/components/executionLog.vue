@@ -39,6 +39,11 @@
       v-if="pauseLog.isPause"
       style="position: absolute;left:930px;z-index: 1;top: 8px"
     >{{pauseLog.pauseIsEnd ? '隐藏读取最后n行日志' : '恢复日志拉取' }}</a-button>
+    <div style="text-align: center;position: fixed;bottom: 12px;left: 50%;z-index: 9;">
+      <a-button size="small" style="margin: 0 5px;" :disabled="isLoading" @click="getLog('pre')">上一页</a-button>
+      <a-button size="small" style="margin: 0 5px;" :disabled="isLoading" @click="getLog('next')">下一页</a-button>
+      <a-button size="small" type="primary" style="margin: 0 5px;" :disabled="isLoading" @click="getLog('new')">查看最新日志</a-button>
+    </div>
   </div>
 </template>
 <script>
@@ -117,51 +122,124 @@ export default defineComponent({
     }
     _updateInfo()
 
-    const _showInfoLog = (curId) => {
-      const fromLine = logs.endLine ?  logs.endLine + 1 : 0
-      if (logs.isEnd) {
-        clearInterval(showLogTimer)
-        showLogTimer = null
-        return message.warning("查询日志结束")
-      }
-      const _updateLog = (res) => {
-        logs.logs = res.logs
-        logs.isEnd = res.isEnd
-        const buildLog = (key) => {
-          let arr = logs.logs[key] ? logs.logs[key].split('\n') : []
-          for (let i = 0; i < arr.length; i++) {
-            arr[i] = `${logs.endLine + i + 1}.   ${arr[i]}`
-          }
-          if (logs.logs[key]) {
-            return curLog[key] ? curLog[key] + '\n' + arr.join('\n') : arr.join('\n')
-          } else {
-            return curLog[key] ? curLog[key] : ''
-          }
+    // 更新日志
+    const _updateLog = (res) => {
+      logs.logs = res.logs
+      logs.isEnd = res.isEnd
+      const buildLog = (key) => {
+        let arr = logs.logs[key] ? logs.logs[key].split('\n') : []
+        for (let i = 0; i < arr.length; i++) {
+          arr[i] = `${logs.endLine + i + 1}.   ${arr[i]}`
         }
-        curLog.all = buildLog('all')
-        curLog.error = buildLog('error')
-        curLog.info = buildLog('info')
-        curLog.warn = buildLog('warn')
-        logs.endLine = res.endLine
-        nextTick(() => {
-          const textareas = document.querySelectorAll('.exec-content textarea')
-          textareas.forEach(textarea => {
-            textarea.scrollTop = textarea.scrollHeight
-          })
-        })
+        if (logs.logs[key]) {
+          return curLog[key] ? curLog[key] + '\n' + arr.join('\n') : arr.join('\n')
+        } else {
+          return curLog[key] ? curLog[key] : ''
+        }
       }
-      if (curId === id) {
+      curLog.all = buildLog('all')
+      curLog.error = buildLog('error')
+      curLog.info = buildLog('info')
+      curLog.warn = buildLog('warn')
+      logs.endLine = res.endLine
+      nextTick(() => {
+        const textareas = document.querySelectorAll('.exec-content textarea')
+        textareas.forEach(textarea => {
+          textarea.scrollTop = textarea.scrollHeight
+        })
+      })
+    }
+
+    const isLoading = ref(false);
+    const recordLogs = ref({
+      endLine: 0,
+      isEnd: false
+    })
+    const getLog = (type) => {
+      recordLogs.value = {endLine: logs.endLine, isEnd: logs.isEnd};
+      let fromLine = 1;
+      if (type === 'pre') {
+        const page = Math.ceil((recordLogs.value.endLine || 0) / 50);
+        if (page <= 1) {
+          return message.warning("当前日志已经是第一页")
+        }
+        fromLine = (page-2) * 50 + 1;
+      } else if (type === 'next') {
+        if (recordLogs.value.endLine % 50 !== 0) {
+          logs.isEnd = true;
+          return message.warning("当前日志已经是最后一页");
+        }
+        fromLine = recordLogs.value.endLine + 1;
+      }
+      isLoading.value = true;
+      if (curLogId === id) {
         getJobExecLog({
-          id: curId,
+          id: curLogId,
           fromLine,
           onlyKeywords: searchKeyword.value,
           ignoreKeywords: ignoreKeyword.value || '[main],[SpringContextShutdownHook]',
           lastRows: lastRows.value
         })
           .then((res) => {
+            if(res.logs && JSON.stringify(res.logs) !== '{}') {
+              resetData();
+              _updateLog(res)
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+            //message.error("获取日志失败")
+            pauseFetchingLog(true);
+          }).finally(() => {
+            isLoading.value = false;
+          })
+      } else {
+        getTaskExecLog({
+          taskId: curLogId,
+          id: id,
+          fromLine,
+          onlyKeywords: searchKeyword.value,
+          ignoreKeywords: ignoreKeyword.value || '[main],[SpringContextShutdownHook]',
+          lastRows: lastRows.value
+        })
+          .then((res) => {
+            if(res.logs && JSON.stringify(res.logs) !== '{}') {
+              resetData();
+              _updateLog(res)
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+            message.error("获取日志失败")
+            pauseFetchingLog(true);
+          }).finally(() => {
+            isLoading.value = false;
+          })
+      }
+    }
+
+    const _showInfoLog = (curId) => {
+      if (logs.isEnd) {
+        isLoading.value = false;
+        clearInterval(showLogTimer)
+        showLogTimer = null
+        return message.warning("查询日志结束")
+      }
+      isLoading.value = true;
+      if (curId === id) {
+        getJobExecLog({
+          id: curId,
+          fromLine: 1,
+          onlyKeywords: searchKeyword.value,
+          ignoreKeywords: ignoreKeyword.value || '[main],[SpringContextShutdownHook]',
+          lastRows: lastRows.value
+        })
+          .then((res) => {
+            resetData(null, false);
             _updateLog(res)
           })
           .catch((err) => {
+            isLoading.value = false;
             console.log(err)
             //message.error("获取日志失败")
             pauseFetchingLog(true);
@@ -170,15 +248,17 @@ export default defineComponent({
         getTaskExecLog({
           taskId: curId,
           id: id,
-          fromLine,
+          fromLine: 1,
           onlyKeywords: searchKeyword.value,
           ignoreKeywords: ignoreKeyword.value || '[main],[SpringContextShutdownHook]',
           lastRows: lastRows.value
         })
           .then((res) => {
+            resetData(null, false);
             _updateLog(res)
           })
           .catch((err) => {
+            isLoading.value = false;
             console.log(err)
             message.error("获取日志失败")
             pauseFetchingLog(true);
@@ -186,7 +266,7 @@ export default defineComponent({
       }
     }
 
-    const resetData = (data) => {
+    const resetData = (data = null, isClear = true) => {
       logs.logs = {}
       logs.endLine = 0
       pauseLog.pauseEndLine = 0
@@ -196,8 +276,10 @@ export default defineComponent({
       curLog.error = ''
       curLog.info = ''
       curLog.warn = ''
-      clearInterval(showLogTimer)
-      showLogTimer = null
+      if (isClear) {
+        clearInterval(showLogTimer)
+        showLogTimer = null
+      }
       if (data) {
         logs.endLine = data.endLine
         logs.isEnd = data.isEnd
@@ -278,7 +360,9 @@ export default defineComponent({
       logs,
       pauseFetchingLog,
       resetData,
-      maxRows
+      maxRows,
+      isLoading,
+      getLog
     }
   }
 })

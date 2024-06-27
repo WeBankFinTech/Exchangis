@@ -1,57 +1,67 @@
 <template>
   <div>
-    <a-select
-      v-if="type === 'OPTION'"
-      v-model:value="value"
-      ref="select"
-      :options="checkOptions"
-      @change="emitData(value)"
-      :style="style"
-      :placeholder="description"
-    >
-    </a-select>
-    <template v-if="type === 'MAP'">
-      <div style="margin-bottom: 5px" v-if="(sourceType ==='HIVE') && !partitionArr.length">
-        <a-input style="width: 400px;" disabled />
-      </div>
-      <div style="margin-bottom: 5px" v-for="item in partitionArr">
-        <a-input
-          style="width: 30%"
-          disabled
-          v-model:value = item.label
-        />
-        <a-input
-          v-if="item.type === 'INPUT'"
-          v-model:value="item.value"
-          @change="handleChange(item.value, item)"
-          style="margin-left: 5px;width: 60%"
-        />
-        <a-select
-          v-if="item.type === 'OPTION'"
-          mode="tags"
-          v-model:value="item.value"
-          :maxTagCount="1"
-          @change="handleChange(item.value, item)"
-          :options="item.options"
-          style="margin-left: 5px;width: 60%"
-        />
-      </div>
+    <!-- 自定义库表存在分区时 -->
+    <template v-if="tableNotExist && itemKey === 'partition'">
+      <NoTablePartition  
+        v-model:modelValue="value"
+        @updateValue="emitData(value)"
+      />
     </template>
-    <template v-if="type === 'INPUT'">
-      <a-input
+    <template v-else>
+      <a-select
+        v-if="type === 'OPTION'"
         v-model:value="value"
+        ref="select"
+        :options="checkOptions"
         @change="emitData(value)"
         :style="style"
         :placeholder="description"
-      />
-      <span style="margin-left: 5px">{{unit}}</span>
+      >
+      </a-select>
+      <template v-if="type === 'MAP'">
+        <!-- 源数据类型为HIVE，且数据分区返回为空 -->
+        <div style="margin-bottom: 5px" v-if="(sourceType ==='HIVE') && !partitionArr.length">
+          <a-input style="width: 400px;" disabled />
+        </div>
+        <div style="margin-bottom: 5px" v-for="item in partitionArr">
+          <a-input
+            style="width: 30%"
+            disabled
+            v-model:value = item.label
+          />
+          <a-input
+            v-if="item.type === 'INPUT'"
+            v-model:value="item.value"
+            @change="handleChange(item.value, item)"
+            style="margin-left: 5px;width: 60%"
+          />
+          <a-select
+            v-if="item.type === 'OPTION'"
+            mode="tags"
+            v-model:value="item.value"
+            :maxTagCount="1"
+            @change="handleChange(item.value, item)"
+            :options="item.options"
+            style="margin-left: 5px;width: 60%"
+          />
+        </div>
+      </template>
+      <template v-if="type === 'INPUT'">
+        <a-input
+          v-model:value="value"
+          @change="emitData(value)"
+          :style="style"
+          :placeholder="description"
+        />
+        <span style="margin-left: 5px">{{unit}}</span>
+      </template>
     </template>
-
   </div>
 </template>
 <script>
-import { defineComponent, h, toRaw, watch, computed, reactive, ref } from "vue";
+import { defineComponent, defineAsyncComponent, h, toRaw, watch, computed, reactive, ref, nextTick } from "vue";
 import { getPartitionInfo } from "@/common/service";
+import { debounce } from 'lodash-es'
 import { message } from "ant-design-vue";
 
 export default defineComponent({
@@ -63,18 +73,43 @@ export default defineComponent({
         return { width: '200px' }
       }
     },
-    data: Object // 数据源参数包含数据类型， 数据源等参数{ db，ds，id，table，type }
+    data: Object, // 数据源参数包含数据类型， 数据源等参数{ db，ds，id，table，type }
+    tableNotExist: {
+      type: Boolean,
+      default: false
+    }
+  },
+  components: {
+    NoTablePartition: defineAsyncComponent(() => import("./noTablePartition.vue")), // 没有库表的分区
   },
   emits: ["updateInfo"],
   setup(props, context) {
-    let { type, field, value, unit, source, description } = props.param;
+    let { type, field, value, unit, source, description, key } = props.param;
     // console.log(props.param, 'asdadsad')
-    value = ref(value)
+    if (key === 'partition' && props.tableNotExist && value !== null && !Array.isArray(value)) {
+      const temp = [];
+      Object.entries(value || {}).forEach(([index, val]) => {
+        temp.push({ key: index, value: val });
+      })
+      value = ref(temp)
+    } else {
+      value = ref(value)
+    }
+    const itemKey = ref(key);
     //let tmlName = field.split(".").pop();
     const newProps = computed(() => JSON.parse(JSON.stringify(props.param)))
     const newData = computed(() => JSON.parse(JSON.stringify(props.data || {})))
-    watch(() => [newProps.value, newData.value], ([val, data1], [oldVal, oldData1]) => {
-      value.value = val.value
+    const tableNotExist = computed(() => props.tableNotExist);
+    watch(() => [newProps.value, newData.value], async ([val, data1], [oldVal, oldData1]) => {
+      if (key === 'partition' && props.tableNotExist && value !== null && !Array.isArray(val.value)) {
+        const temp = [];
+        Object.entries(val.value || {}).forEach(([index, val]) => {
+          temp.push({ key: index, value: val });
+        })
+        value.value = temp
+      } else {
+        value.value = val.value
+      }
       if (type === 'OPTION'){
         checkOptions.value = []
         val.values.map((item) => {
@@ -86,6 +121,7 @@ export default defineComponent({
       }
       if (type === 'MAP') {
         if (data1.id != oldData1.id || data1.db !== oldData1.db || data1.table !== oldData1.table) {
+          await nextTick();
           _buildMap()
         } else {
           value.value = value.value || {}
@@ -136,7 +172,8 @@ export default defineComponent({
         source: url,
         dataSourceId: props.data.id,
         database: props.data.db,
-        table: props.data.table
+        table: props.data.table,
+        tableNotExist: tableNotExist.value
       })
         .then(res => {
           for (let i in res.render) {
@@ -174,6 +211,8 @@ export default defineComponent({
     if (type === 'MAP') {
       _buildMap()
     }
+
+
     const emitData = (value, isCan) => {
       let res = toRaw(props.param)
       if (isCan) {
@@ -214,9 +253,11 @@ export default defineComponent({
     }
 
     return {
+      tableNotExist,
       checkOptions,
       type,
       value,
+      itemKey,
       emitData,
       unit,
       source,

@@ -1,23 +1,17 @@
 package com.webank.wedatasphere.exchangis.extension.datasource.mysql;
 
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.Classifier;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceType;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceType;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.StructClassifier;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisBatchDataSource;
 
-import java.util.List;
-
+/**
+ * Note: MongoDB data source
+ */
 public class ExchangisMongoDbDataSource extends ExchangisBatchDataSource {
 
     @Override
-    public String name() {
-        return DataSourceType.MONGODB.name;
-    }
-
-    @Override
-    public String classifier() {
-        return Classifier.MONGODB.name;
+    protected ExchangisDataSourceType type() {
+        return ExchangisDataSourceType.MONGODB;
     }
 
     @Override
@@ -40,8 +34,4 @@ public class ExchangisMongoDbDataSource extends ExchangisBatchDataSource {
         return "icon-mongodb";
     }
 
-    @Override
-    public List<ExchangisJobParamConfig> getDataSourceParamConfigs() {
-        return super.getDataSourceParamConfigs(DataSourceType.MONGODB.name);
-    }
 }

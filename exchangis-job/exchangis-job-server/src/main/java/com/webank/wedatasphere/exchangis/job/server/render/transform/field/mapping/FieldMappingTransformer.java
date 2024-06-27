@@ -84,31 +84,35 @@ public class FieldMappingTransformer implements Transformer {
         settings.setTransformEnable(rule.isFieldTransformEnable());
         // Get raw meta columns
         List<FieldColumn> sourceColumns = new ArrayList<>();
-        try {
-            List<MetaColumn> metaColumns = getOrLoadMetadataInfoService().
-                    getColumns(requestVo.getOperator(), requestVo.getSourceDataSourceId(),
-                            requestVo.getSourceDataBase(), requestVo.getSourceTable());
-            boolean editable = rule.getFieldEditEnableRuleItem().getOrDefault(TransformRule.Direction.SOURCE.name(), true);
-            for (int i = 0; i < metaColumns.size(); i++) {
-                MetaColumn metaColumn = metaColumns.get(i);
-                sourceColumns.add(new FieldColumnWrapper(metaColumn.getName(), metaColumn.getType(), i, editable));
+        if (!requestVo.isSrcTblNotExist()) {
+            try {
+                List<MetaColumn> metaColumns = getOrLoadMetadataInfoService().
+                        getColumns(requestVo.getOperator(), requestVo.getSourceDataSourceId(),
+                                requestVo.getSourceDataBase(), requestVo.getSourceTable());
+                boolean editable = rule.getFieldEditEnableRuleItem().getOrDefault(TransformRule.Direction.SOURCE.name(), true);
+                for (int i = 0; i < metaColumns.size(); i++) {
+                    MetaColumn metaColumn = metaColumns.get(i);
+                    sourceColumns.add(new FieldColumnWrapper(metaColumn.getName(), metaColumn.getType(), i, editable));
+                }
+            } catch (ExchangisDataSourceException e) {
+                throw new ExchangisJobException.Runtime(ExchangisJobExceptionCode.RENDER_TRANSFORM_ERROR.getCode(), "Fail to get source meta columns in generating field mapping settings", e);
             }
-        } catch (ExchangisDataSourceException e) {
-            throw new ExchangisJobException.Runtime(ExchangisJobExceptionCode.RENDER_TRANSFORM_ERROR.getCode(), "Fail to get source meta columns in generating field mapping settings", e);
         }
         settings.setSourceFields(sourceColumns);
         List<FieldColumn> sinkColumns = new ArrayList<>();
-        try {
-            List<MetaColumn> metaColumns = getOrLoadMetadataInfoService().
-                    getColumns(requestVo.getOperator(), requestVo.getSinkDataSourceId(),
-                            requestVo.getSinkDataBase(), requestVo.getSinkTable());
-            boolean editable = rule.getFieldEditEnableRuleItem().getOrDefault(TransformRule.Direction.SINK.name(), true);
-            for (int i = 0; i < metaColumns.size(); i++) {
-                MetaColumn metaColumn = metaColumns.get(i);
-                sinkColumns.add(new FieldColumnWrapper(metaColumn.getName(), metaColumn.getType(), i, editable));
+        if (!requestVo.isSinkTblNotExist()) {
+            try {
+                List<MetaColumn> metaColumns = getOrLoadMetadataInfoService().
+                        getColumns(requestVo.getOperator(), requestVo.getSinkDataSourceId(),
+                                requestVo.getSinkDataBase(), requestVo.getSinkTable());
+                boolean editable = rule.getFieldEditEnableRuleItem().getOrDefault(TransformRule.Direction.SINK.name(), true);
+                for (int i = 0; i < metaColumns.size(); i++) {
+                    MetaColumn metaColumn = metaColumns.get(i);
+                    sinkColumns.add(new FieldColumnWrapper(metaColumn.getName(), metaColumn.getType(), i, editable));
+                }
+            } catch (ExchangisDataSourceException e) {
+                throw new ExchangisJobException.Runtime(ExchangisJobExceptionCode.RENDER_TRANSFORM_ERROR.getCode(), "Fail to get sink meta columns in generating field mapping settings", e);
             }
-        } catch (ExchangisDataSourceException e) {
-            throw new ExchangisJobException.Runtime(ExchangisJobExceptionCode.RENDER_TRANSFORM_ERROR.getCode(), "Fail to get sink meta columns in generating field mapping settings", e);
         }
         settings.setSinkFields(sinkColumns);
         FieldMatchStrategy matchStrategy = rule.getFieldMatchStrategy();

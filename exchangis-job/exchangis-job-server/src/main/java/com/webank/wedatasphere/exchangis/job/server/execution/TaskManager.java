@@ -41,6 +41,7 @@ public interface TaskManager<T extends ExchangisTask> extends JobServerLogging<T
      */
     boolean refreshRunningTaskMetrics(T task, Map<String, Object> metricsMap);
 
+
     /**
      * Refresh running task status
      * @param task
@@ -48,6 +49,15 @@ public interface TaskManager<T extends ExchangisTask> extends JobServerLogging<T
      * @return
      */
     boolean refreshRunningTaskStatus(T task, TaskStatus status);
+
+    /**
+     * Refresh running task status and metrics
+     * @param task task
+     * @param status status
+     * @param metricsMap metric map
+     * @return
+     */
+    boolean refreshRunningTaskStatusAndMetrics(T task, TaskStatus status, Map<String, Object> metricsMap);
 
     /**
      * Refresh progress

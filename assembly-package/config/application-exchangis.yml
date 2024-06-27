@@ -2,7 +2,7 @@ server:
   port: 9321
 spring:
   application:
-    name: exchangis-server
+    name: dss-exchangis-main-server-dev
 eureka:
   client:
     serviceUrl:

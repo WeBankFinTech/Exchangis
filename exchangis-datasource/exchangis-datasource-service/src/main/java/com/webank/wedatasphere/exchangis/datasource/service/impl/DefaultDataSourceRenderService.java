@@ -36,11 +36,13 @@ public class DefaultDataSourceRenderService implements DataSourceRenderService {
 
     @Override
     public ElementUI<?> getPartitionAndRender(String userName,
-                                              Long dataSourceId, String database, String table, ElementUI.Type uiType) throws ExchangisDataSourceException {
-        List<String> partitionKeys = metadataInfoService.getPartitionKeys(userName, dataSourceId, database, table);
+                                              Long dataSourceId, String database, String table, ElementUI.Type uiType, boolean tableNotExist) throws ExchangisDataSourceException {
         Map<String, Object> renderParams = new LinkedHashMap<>();
-        List<String> placeHolder = Arrays.asList(DEFAULT_PLACEHOLDER);
-        partitionKeys.forEach(partition -> renderParams.putIfAbsent(partition, placeHolder));
+        if (!tableNotExist) {
+            List<String> partitionKeys = metadataInfoService.getPartitionKeys(userName, dataSourceId, database, table);
+            List<String> placeHolder = Arrays.asList(DEFAULT_PLACEHOLDER);
+            partitionKeys.forEach(partition -> renderParams.putIfAbsent(partition, placeHolder));
+        }
         return elementUIFactory.createElement(uiType.name(), renderParams, Map.class);
     }
 }
