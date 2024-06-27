@@ -91,7 +91,7 @@ object DataxCoreConfiguration {
   /**
    * Stream channel class
    */
-  val CORE_TRANSPORT_STREAM_CHANNEL_CLASS: CommonVars[String] = CommonVars(CoreConstant.DATAX_CORE_TRANSPORT_STREAM_CHANNEL_CLASS, "com.webank.wedatasphere.exchangis.datax.core.transport.channel.memory.MemoryStreamChannel")
+  val CORE_TRANSPORT_STREAM_CHANNEL_CLASS: CommonVars[String] = CommonVars(CoreConstant.DATAX_CORE_TRANSPORT_STREAM_CHANNEL_CLASS, "com.alibaba.datax.core.transport.channel.memory.MemoryStreamChannel")
 
   /**
    * Block size of stream channel

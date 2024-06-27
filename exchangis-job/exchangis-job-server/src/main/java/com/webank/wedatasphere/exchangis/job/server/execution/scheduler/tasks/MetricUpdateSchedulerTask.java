@@ -31,6 +31,15 @@ public class MetricUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
         this.taskManager = taskManager;
     }
 
+    /**
+     * High priority to get schedule resource
+     * @return priority
+     */
+    @Override
+    public int getPriority() {
+        return 2;
+    }
+
     @Override
     protected void onPoll(LaunchedExchangisTask launchedExchangisTask) throws ExchangisSchedulerException, ExchangisSchedulerRetryException {
         LOG.trace("Metrics update task: [{}] in scheduler: [{}]", launchedExchangisTask.getTaskId(), getName());

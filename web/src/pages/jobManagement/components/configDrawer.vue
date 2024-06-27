@@ -299,6 +299,7 @@ export default {
   top: 0;
   right: 0;
   height: 100%;
+  z-index: 999;
   :deep(.ant-drawer-content-wrapper) {
     width: 98% !important;
   }

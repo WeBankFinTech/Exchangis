@@ -26,7 +26,9 @@ import com.alibaba.datax.core.util.container.{CoreConstant, LoadUtil}
 import com.alibaba.datax.core.util.{ConfigurationValidate, ExceptionTracker, FrameworkErrorCode, SecretUtil}
 import org.apache.commons.lang3.StringUtils
 import org.apache.linkis.common.utils.{ClassUtils, Utils}
+import org.apache.linkis.engineconn.acessible.executor.service.{ExecutorHeartbeatService, ExecutorHeartbeatServiceHolder}
 import org.apache.linkis.engineconn.common.creation.EngineCreationContext
+import org.apache.linkis.engineconn.executor.service.ManagerService
 import org.apache.linkis.engineconn.once.executor.{OnceExecutorExecutionContext, OperableOnceExecutor}
 import org.apache.linkis.engineconnplugin.datax.config.DataxConfiguration
 import org.apache.linkis.engineconnplugin.datax.exception.{DataxJobExecutionException, DataxPluginLoadException}
@@ -78,15 +80,17 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
       override def run(): Unit = {
         val params: util.Map[String, Object] = onceExecutorExecutionContext.getOnceExecutorContent.getJobContent
         val result = execute(params, onceExecutorExecutionContext.getEngineCreationContext)
-        if (result._1 != 0) {
-          isFailed = true
-          tryFailed()
-          val message = s"Exec Datax engine conn occurred error, with exit code: [${result._1}]"
-          setResponse(ErrorExecuteResponse(message, new DataxJobExecutionException(message, result._2)))
-        }
         info(s"The executor: [${getId}]  has been finished, now to stop DataxEngineConn.")
         closeDaemon()
+        if (result._1 != 0) {
+          isFailed = true
+          val message = s"Exec Datax engine conn occurred error, with exit code: [${result._1}]"
+          setResponse(ErrorExecuteResponse(message, new DataxJobExecutionException(message, result._2)))
+          tryFailed()
+        }
         if (!isFailed) {
+          // Try to heartbeat at last
+          tryToHeartbeat()
           trySucceed()
         }
         this synchronized notify()
@@ -102,6 +106,8 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
       override def run(): Unit = {
         if (!(future.isDone || future.isCancelled)) {
           trace(s"The executor: [$getId] has been still running")
+          // Heartbeat action interval
+          tryToHeartbeat()
         }
       }
     }, DataxConfiguration.STATUS_FETCH_INTERVAL.getValue.toLong,
@@ -143,6 +149,10 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
     metrics
   }
 
+  def getMessage(key: String):util.Map[String, util.List[String]] = {
+    null
+  }
+
   override def getDiagnosis: util.Map[String, Any] = {
     // Not support diagnosis
     new util.HashMap[String, Any]()
@@ -155,6 +165,19 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
   override def tryFailed(): Boolean = {
 //    Option(this.container).foreach(_.shutdown())
     super.tryFailed()
+  }
+
+  /**
+   * Try to send heartbeat message to ecm
+   */
+  private def tryToHeartbeat(): Unit = {
+    logger.trace("heartbeat and record to linkis manager")
+    ExecutorHeartbeatServiceHolder.getDefaultHeartbeatService() match {
+      case heartbeatService: ExecutorHeartbeatService =>
+        val heartbeatMsg = heartbeatService.generateHeartBeatMsg(this)
+        ManagerService.getManagerService.heartbeatReport(heartbeatMsg)
+        logger.trace(s"Succeed to report heartbeatMsg: [${heartbeatMsg}]")
+    }
   }
   /**
    * Execute with job content
@@ -234,6 +257,10 @@ abstract class DataxContainerOnceExecutor extends DataxOnceExecutor with Operabl
   private def setPluginConfig(self: Configuration): Unit = {
     val plugins: util.Map[String, Configuration] = dataxEngineConnContext
       .getPluginDefinitions.asScala.map(define => (define.getPluginName, define.getPluginConf)).toMap.asJava
+    info(s"content is ${dataxEngineConnContext.toString}")
+    dataxEngineConnContext.getPluginDefinitions.asScala.foreach { definition =>
+      info(s"PluginName: ${definition.getPluginName}, pluginConf: ${definition.getPluginConf}, pluginPath: ${definition.getPluginPath}")
+    }
     val pluginsNeed: util.Map[String, Configuration] = new util.HashMap()
     Option(self.getString(CoreConstant.DATAX_JOB_CONTENT_READER_NAME)).foreach(readerPlugin => pluginsNeed.put(readerPlugin, plugins.get(readerPlugin)))
     Option(self.getString(CoreConstant.DATAX_JOB_CONTENT_WRITER_NAME)).foreach(writerPlugin => pluginsNeed.put(writerPlugin, plugins.get(writerPlugin)))

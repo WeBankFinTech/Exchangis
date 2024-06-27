@@ -39,6 +39,7 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
     static{
         //hive use hdfs plugin resource
         PLUGIN_NAME_MAPPER.put("hive", "hdfs");
+        PLUGIN_NAME_MAPPER.put("tdsql", "mysql");
     }
 
     /**
@@ -47,10 +48,12 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
     private static final JobParamDefine<DataxMappingContext> COLUMN_MAPPINGS = JobParams.define("column.mappings", job -> {
         DataxMappingContext mappingContext = new DataxMappingContext();
         job.getSourceColumns().forEach(columnDefine -> mappingContext.getSourceColumns().add(
-                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(), columnDefine.getIndex() + "")
+                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
+                        columnDefine.getRawType(), columnDefine.getIndex() + "")
         ));
         job.getSinkColumns().forEach(columnDefine -> mappingContext.getSinkColumns().add(
-                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(), columnDefine.getIndex() + "")
+                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
+                        columnDefine.getRawType(), columnDefine.getIndex() + "")
         ));
         job.getColumnFunctions().forEach(function -> {
             DataxMappingContext.Transformer.Parameter parameter = new DataxMappingContext.Transformer.Parameter();
