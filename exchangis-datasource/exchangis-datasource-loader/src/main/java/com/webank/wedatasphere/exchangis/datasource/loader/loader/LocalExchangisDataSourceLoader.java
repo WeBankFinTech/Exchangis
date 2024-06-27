@@ -1,9 +1,9 @@
 package com.webank.wedatasphere.exchangis.datasource.loader.loader;
 
 import com.webank.wedatasphere.exchangis.dao.hook.MapperHook;
-import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
+import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
-import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceLoader;
+import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceDefLoader;
 import com.webank.wedatasphere.exchangis.datasource.loader.clazzloader.ExchangisDataSourceClassLoader;
 import com.webank.wedatasphere.exchangis.datasource.loader.utils.ExceptionHelper;
 import com.webank.wedatasphere.exchangis.datasource.loader.utils.ExtDsUtils;
@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
-public class LocalExchangisDataSourceLoader implements ExchangisDataSourceLoader {
+public class LocalExchangisDataSourceLoader implements ExchangisDataSourceDefLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalExchangisDataSourceLoader.class);
 
@@ -61,24 +61,24 @@ public class LocalExchangisDataSourceLoader implements ExchangisDataSourceLoader
             if (clazz == null) {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
             } else {
-                ExchangisDataSource exchangisDataSource = (ExchangisDataSource) clazz.newInstance();
-                exchangisDataSource.setMapperHook(mapperHook);
+                ExchangisDataSourceDefinition dsType = (ExchangisDataSourceDefinition) clazz.newInstance();
+                dsType.setMapperHook(mapperHook);
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
-                LOGGER.info("ExchangisDataSource is {}", exchangisDataSource.getClass().toString());
+                LOGGER.info("ExchangisDataSource is {}", dsType.getClass().toString());
 
-                context.addExchangisDataSource(exchangisDataSource);
+                context.addExchangisDsDefinition(dsType);
             }
         }
 
     }
 
     @Override
-    public ExchangisDataSource load(String dataSourceType) {
+    public ExchangisDataSourceDefinition load(String dataSourceType) {
         return null;
     }
 
     @Override
-    public ExchangisDataSource get(String dataSourceType, boolean reload) {
+    public ExchangisDataSourceDefinition get(String dataSourceType, boolean reload) {
         return null;
     }
 }

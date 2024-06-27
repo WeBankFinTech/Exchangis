@@ -168,7 +168,13 @@ public class TransformExchangisJob extends GenericExchangisJob {
                                         ExchangisJobParamsContent.ExchangisJobParamsItem::getConfigValue));
                     });
                     if(Objects.nonNull(paramSet)) {
-                        this.sourceType = resolveDataSourceId(content.getDataSources().getSourceId(), paramSet);
+                        String sourceId = content.getDataSources().getSourceId();
+                        if (StringUtils.isNotBlank(sourceId)){
+                            this.sourceType = resolveDataSourceId(content.getDataSources().getSourceId(), paramSet);
+                        } else {
+
+                        }
+
                     }
                 }
 
@@ -183,7 +189,12 @@ public class TransformExchangisJob extends GenericExchangisJob {
                                         ExchangisJobParamsContent.ExchangisJobParamsItem::getConfigValue));
                     });
                     if(Objects.nonNull(paramSet)) {
-                       this.sinkType =  resolveDataSourceId(content.getDataSources().getSinkId(), paramSet);
+                       String sinkId = content.getDataSources().getSinkId();
+                       if (StringUtils.isNotBlank(sinkId)){
+                         this.sinkType = resolveDataSourceId(content.getDataSources().getSinkId(), paramSet);
+                       } else {
+
+                       }
                     }
                 }
             }

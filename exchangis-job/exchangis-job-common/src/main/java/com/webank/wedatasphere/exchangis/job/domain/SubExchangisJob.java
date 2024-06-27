@@ -24,9 +24,9 @@ public class SubExchangisJob extends GenericExchangisJob {
 
     public static final String REALM_JOB_DATA_SOURCE = "job.realm.data-source";
 
-    public static final String REALM_JOB_CONTENT_SINK = "job.realm.content.sink";
-
     public static final String REALM_JOB_CONTENT_SOURCE = "job.realm.content.source";
+
+    public static final String REALM_JOB_CONTENT_SINK = "job.realm.content.sink";
 
 //    public static final String REALM_JOB_COLUMN_MAPPING = "job.realm.column-mappings";
 
@@ -135,6 +135,12 @@ public class SubExchangisJob extends GenericExchangisJob {
          * Column type
          */
         private String type;
+
+        /**
+         * Raw column type
+         */
+        private String rawType;
+
         /**
          * Column index
          */
@@ -142,6 +148,11 @@ public class SubExchangisJob extends GenericExchangisJob {
 
         public ColumnDefine(){
 
+        }
+
+        public ColumnDefine(String name, String type){
+            this.name = name;
+            this.type = type;
         }
 
         public ColumnDefine(String name, String type, Integer index){
@@ -172,8 +183,61 @@ public class SubExchangisJob extends GenericExchangisJob {
         public void setIndex(Integer index) {
             this.index = index;
         }
+
+        public String getRawType() {
+            return rawType;
+        }
+
+        public void setRawType(String rawType) {
+            this.rawType = rawType;
+        }
     }
 
+    /**
+     * Column define with precision and scale
+     */
+    public static class DecimalColumnDefine extends ColumnDefine{
+
+        private static final int DEFAULT_PRECISION = 38;
+
+        private static final int DEFAULT_SCALE = 18;
+
+        /**
+         * Precision
+         */
+        private int precision = DEFAULT_PRECISION;
+
+        /**
+         * Scale
+         */
+        private int scale = DEFAULT_SCALE;
+
+        public DecimalColumnDefine(){
+
+        }
+
+        public DecimalColumnDefine(String name, String type, Integer index, int precision, int scale){
+            super(name, type, index);
+            this.precision = precision;
+            this.scale = scale;
+        }
+
+        public int getPrecision() {
+            return precision;
+        }
+
+        public void setPrecision(int precision) {
+            this.precision = precision;
+        }
+
+        public int getScale() {
+            return scale;
+        }
+
+        public void setScale(int scale) {
+            this.scale = scale;
+        }
+    }
     /**
      * Column function
      */

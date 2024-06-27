@@ -60,7 +60,9 @@ public class DataxMetricConverter extends AbstractMetricConverter implements Abs
     @Override
     public ExchangisMetricsVo.Traffic parseTraffic(String key, JsonEntity rawValue) {
         ExchangisMetricsVo.Traffic traffic = new ExchangisMetricsVo.Traffic();
-        Double speed = rawValue.getDouble("recordSpeed");
+        Double speed = Optional.ofNullable(rawValue.getDouble("recordSpeedPerSecond")).orElse(
+                rawValue.getDouble("recordSpeed")
+        );
         if (Objects.nonNull(speed)){
             traffic.setFlow(new BigDecimal(speed).setScale(2, RoundingMode.HALF_UP).doubleValue());
         }
@@ -70,8 +72,11 @@ public class DataxMetricConverter extends AbstractMetricConverter implements Abs
     @Override
     public ExchangisMetricsVo.Indicator parseIndicator(String key, JsonEntity rawValue) {
         ExchangisMetricsVo.Indicator indicator = new ExchangisMetricsVo.Indicator();
-        Optional.ofNullable(rawValue.getLong("writeSucceedRecords")).ifPresent(indicator::setExchangedRecords);
-        Optional.ofNullable(rawValue.getLong("totalErrorRecords")).ifPresent(indicator::setErrorRecords);
+        long readSuccess = Optional.ofNullable(rawValue.getLong("readSucceedRecords")).orElse(0L);
+        long readFail = Optional.ofNullable(rawValue.getLong("readFailedRecords")).orElse(0L);
+        indicator.setExchangedRecords(readSuccess + readFail);
+        long writeFail = Optional.ofNullable(rawValue.getLong("writeFailedRecords")).orElse(0L);
+        indicator.setErrorRecords(readFail + writeFail);
         return indicator;
     }
 

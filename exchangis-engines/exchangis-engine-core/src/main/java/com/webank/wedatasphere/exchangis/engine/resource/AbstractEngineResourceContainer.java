@@ -245,6 +245,7 @@ public abstract class AbstractEngineResourceContainer<T extends EngineResource, 
                 // Try tp upload the node engine resource
                 try {
                     U uploadedRes = this.engineResourceUploader.upload(nodeEngineRes, pathNode.getRemoteResource());
+                    LOG.info("uploadedRes is {}", uploadedRes.toString());
                     if (Objects.nonNull(uploadedRes)) {
                         // Store the uploaded remoted resource information
                         if (Objects.nonNull(pathNode.getRemoteResource())) {

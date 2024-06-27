@@ -5,7 +5,7 @@
     <parent>
         <artifactId>exchangis</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
-        <version>1.1.2</version>
+        <version>${revision}</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -21,12 +21,12 @@
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-common</artifactId>
-            <version>1.1.2</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-launcher</artifactId>
-            <version>1.1.2</version>
+            <version>${revision}</version>
         </dependency>
     </dependencies>
 

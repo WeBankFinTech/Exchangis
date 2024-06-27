@@ -34,7 +34,7 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
         /**
          * types that supported by <em>DataX</em>
          */
-        STRING, LONG, BOOLEAN, DOUBLE, DATE
+        STRING, LONG, BOOLEAN, DOUBLE, DATE, BINARY, OBJECT
     }
     //hive type => dataX type
     static{
@@ -49,10 +49,10 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
         FIELD_MAP.put("CHAR", Type.STRING);
         FIELD_MAP.put("VARCHAR", Type.STRING);
         FIELD_MAP.put("STRUCT", Type.STRING);
-        FIELD_MAP.put("MAP", Type.STRING);
-        FIELD_MAP.put("ARRAY", Type.STRING);
+        FIELD_MAP.put("MAP", Type.OBJECT);
+        FIELD_MAP.put("ARRAY", Type.OBJECT);
         FIELD_MAP.put("UNION", Type.STRING);
-        FIELD_MAP.put("BINARY", Type.STRING);
+        FIELD_MAP.put("BINARY", Type.BINARY);
         FIELD_MAP.put("BOOLEAN", Type.BOOLEAN);
         FIELD_MAP.put("DATE", Type.DATE);
         FIELD_MAP.put("TIMESTAMP", Type.DATE);
@@ -321,6 +321,10 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
             Type t = FIELD_MAP.get(type.toUpperCase().replaceAll("[(<（][\\s\\S]+", ""));
             if (null != t){
                 columnDefine.setType(t.toString());
+                if (t == Type.OBJECT){
+                    // Set the raw column type
+                    columnDefine.setRawType(type);
+                }
             } else {
                 columnDefine.setType(Type.STRING.toString());
             }

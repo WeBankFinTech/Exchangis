@@ -5,7 +5,7 @@
     <parent>
         <artifactId>exchangis-engine-datax</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
-        <version>1.1.2</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -147,7 +147,7 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
-            <version>${hadoop.version}</version>
+            <version>3.3.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
@@ -196,6 +196,15 @@
                         <descriptor>${basedir}/src/main/assembly/package.xml</descriptor>
                     </descriptors>
                     <finalName>core</finalName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>${jdk.compile.version}</source>
+                    <target>${jdk.compile.version}</target>
                 </configuration>
             </plugin>
         </plugins>

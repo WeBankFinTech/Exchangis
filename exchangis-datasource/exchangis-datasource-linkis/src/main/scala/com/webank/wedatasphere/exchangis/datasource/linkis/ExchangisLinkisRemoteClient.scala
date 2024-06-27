@@ -1,62 +1,36 @@
 package com.webank.wedatasphere.exchangis.datasource.linkis
 
-import com.webank.wedatasphere.exchangis.common.linkis.ClientConfiguration
+import com.webank.wedatasphere.exchangis.common.linkis.client.{ClientConfiguration, ExchangisHttpClient}
+import com.webank.wedatasphere.exchangis.common.linkis.client.config.ExchangisClientConfig
+import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceConfiguration
+import com.webank.wedatasphere.exchangis.datasource.core.exception.{ExchangisDataSourceException, ExchangisDataSourceExceptionCode}
+import org.apache.commons.lang3.StringUtils
+import org.apache.linkis.datasource.client.config.DatasourceClientConfig.DATA_SOURCE_SERVICE_CLIENT_NAME
 import org.apache.linkis.datasource.client.impl.{LinkisDataSourceRemoteClient, LinkisMetaDataRemoteClient}
 import org.apache.linkis.datasource.client.request._
 import org.apache.linkis.datasource.client.response._
 import org.apache.linkis.datasourcemanager.common.domain.{DataSource, DataSourceType}
-import org.apache.linkis.httpclient.dws.authentication.{StaticAuthenticationStrategy, TokenAuthenticationStrategy}
-import org.apache.linkis.httpclient.dws.config.{DWSClientConfig, DWSClientConfigBuilder}
+import org.apache.linkis.httpclient.dws.DWSHttpClient
 
-import java.lang
-import java.util.concurrent.TimeUnit
 
 object ExchangisLinkisRemoteClient {
+
   //Linkis Datasource Client Config
-  val serverUrl: String = ClientConfiguration.LINKIS_SERVER_URL.getValue
-  val authTokenValue: String = ClientConfiguration.LINKIS_TOKEN_VALUE.getValue
-  val connectionTimeout: lang.Long = ExchangisDataSourceConfiguration.CONNECTION_TIMEOUT.getValue
-  val discoveryEnabled: lang.Boolean = ExchangisDataSourceConfiguration.DISCOVERY_ENABLED.getValue
-  val discoveryFrequencyPeriod: lang.Long = ExchangisDataSourceConfiguration.DISCOVERY_FREQUENCY_PERIOD.getValue
-  val loadbalancerEnabled: lang.Boolean = ExchangisDataSourceConfiguration.LOAD_BALANCER_ENABLED.getValue
-  val maxConnectionSize: Integer = ExchangisDataSourceConfiguration.MAX_CONNECTION_SIZE.getValue
-  val retryEnabled: lang.Boolean = ExchangisDataSourceConfiguration.RETRY_ENABLED.getValue
-  val readTimeout: lang.Long = ExchangisDataSourceConfiguration.READ_TIMEOUT.getValue
-  val dwsVersion: String = ExchangisDataSourceConfiguration.DWS_VERSION.getValue
-
-
-  //  val clientConfig = DWSClientConfigBuilder.newBuilder()
-  //    .addServerUrl(serverUrl)
-  //    .connectionTimeout(connectionTimeout)
-  //    .discoveryEnabled(discoveryEnabled)
-  //    .discoveryFrequency(1,TimeUnit.MINUTES)
-  //    .loadbalancerEnabled(loadbalancerEnabled)
-  //    .maxConnectionSize(maxConnectionSize)
-  //    .retryEnabled(retryEnabled)
-  //    .readTimeout(readTimeout)
-  //    .setAuthenticationStrategy(new StaticAuthenticationStrategy())
-  //    .setAuthTokenKey(authTokenKey)
-  //    .setAuthTokenValue(authTokenValue)
-  //    .setDWSVersion(dwsVersion)
-  //    .build()
-
-  val clientConfig: DWSClientConfig = DWSClientConfigBuilder.newBuilder()
-    .addServerUrl(serverUrl)
-    .connectionTimeout(connectionTimeout)
-    .discoveryEnabled(discoveryEnabled)
-    .discoveryFrequency(discoveryFrequencyPeriod, TimeUnit.MINUTES)
-    .loadbalancerEnabled(loadbalancerEnabled)
-    .maxConnectionSize(maxConnectionSize)
-    .retryEnabled(retryEnabled)
-    .readTimeout(readTimeout)
-    .setAuthenticationStrategy(new TokenAuthenticationStrategy())
-    .setAuthTokenValue(authTokenValue)
-    .setDWSVersion(dwsVersion)
+  val clientConfig: ExchangisClientConfig = ExchangisClientConfig.newBuilder
+    .addServerUrl(ExchangisDataSourceConfiguration.SERVER_URL.getValue)
+    .setAuthTokenValue(ExchangisDataSourceConfiguration.AUTH_TOKEN_VALUE.getValue)
+    .setDWSVersion(ExchangisDataSourceConfiguration.DWS_VERSION.getValue)
     .build()
 
-  val dataSourceClient = new LinkisDataSourceRemoteClient(clientConfig)
+  /**
+   * Data source client
+   */
+  val dataSourceClient = new ExchangisDataSourceClient(clientConfig, null)
 
-  val metaDataClient = new LinkisMetaDataRemoteClient(clientConfig)
+  /**
+   * Meta data client
+   */
+  val metaDataClient = new ExchangisMetadataClient(clientConfig)
 
   def getLinkisDataSourceRemoteClient: LinkisDataSourceRemoteClient = {
     dataSourceClient
@@ -82,10 +56,6 @@ object ExchangisLinkisRemoteClient {
       .setPageSize(1).build()
     )
   }
-
-//  def createDataSource() = {
-//    dataSourceClient.execute().asInstanceOf[]
-//  }
 
   /**
    * get datasourceConnect information
@@ -171,4 +141,28 @@ object ExchangisLinkisRemoteClient {
   }
 
 
+}
+
+/**
+ * Exchangis data source client
+ * @param clientConfig client config
+ * @param clientName client name
+ */
+class ExchangisDataSourceClient(clientConfig: ExchangisClientConfig, clientName: String) extends LinkisDataSourceRemoteClient(clientConfig, clientName){
+
+  protected override val dwsHttpClient: DWSHttpClient = {
+    val client = if (StringUtils.isEmpty(clientName))  DATA_SOURCE_SERVICE_CLIENT_NAME.getValue else clientName
+    Option(clientConfig) match {
+      case Some(config) => new ExchangisHttpClient(config, client)
+      case _ => throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode, "Linkis client config cannot be null")
+    }
+  }
+}
+
+/**
+ * Exchangis meta data client
+ * @param clientConfig client config
+ */
+class ExchangisMetadataClient(clientConfig: ExchangisClientConfig) extends LinkisMetaDataRemoteClient(clientConfig){
+  protected override val dwsHttpClient: DWSHttpClient = new ExchangisHttpClient(clientConfig, "MetaData-Client")
 }

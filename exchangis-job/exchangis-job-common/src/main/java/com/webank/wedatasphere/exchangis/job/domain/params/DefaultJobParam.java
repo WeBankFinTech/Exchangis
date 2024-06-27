@@ -19,7 +19,7 @@ public class DefaultJobParam<T> implements JobParam<T> {
 
     private Class<?> sourceType = Object.class;
 
-    DefaultJobParam(){
+    public DefaultJobParam(){
 
     }
 

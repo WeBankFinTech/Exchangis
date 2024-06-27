@@ -5,7 +5,8 @@
     <parent>
         <artifactId>exchangis</artifactId>
         <groupId>com.webank.wedatasphere.exchangis</groupId>
-        <version>1.1.2</version>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,8 +16,8 @@
     <modules>
         <module>exchangis-datasource-core</module>
         <module>exchangis-datasource-loader</module>
-        <module>exchangis-datasource-streamis</module>
         <module>exchangis-datasource-linkis</module>
+        <module>exchangis-datasource-streamis</module>
         <module>exchangis-datasource-service</module>
         <module>extension-datasources/exchangis-datasource-ext-mysql</module>
         <module>extension-datasources/exchangis-datasource-ext-hive</module>
@@ -24,6 +25,8 @@
         <module>extension-datasources/exchangis-datasource-ext-elasticsearch</module>
         <module>extension-datasources/exchangis-datasource-ext-mongodb</module>
         <module>extension-datasources/exchangis-datasource-ext-oracle</module>
+        <module>extension-datasources/exchangis-datasource-ext-starrocks</module>
+        <module>extension-datasources/exchangis-datasource-ext-tdsql</module>
         <module>exchangis-datasource-server</module>
     </modules>
 

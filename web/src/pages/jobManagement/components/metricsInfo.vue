@@ -26,7 +26,7 @@
     <div>
       <div class="core-block" style="background-color: #2e92f7">
         <div>{{metricsInfo[progress.taskId].indicator.exchangedRecords}}</div>
-        <div>已同步</div>
+        <div>记录数</div>
       </div>
       <div class="core-block" style="background-color: #ff4d4f">
         <div>{{metricsInfo[progress.taskId].indicator.errorRecords}}</div>

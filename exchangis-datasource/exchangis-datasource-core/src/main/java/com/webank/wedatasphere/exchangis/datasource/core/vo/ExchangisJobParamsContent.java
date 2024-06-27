@@ -1,12 +1,20 @@
 package com.webank.wedatasphere.exchangis.datasource.core.vo;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
 public class ExchangisJobParamsContent {
 
+    /**
+     * Source params
+     */
     private List<ExchangisJobParamsItem> sources;
+
+    /**
+     * Sink params
+     */
     private List<ExchangisJobParamsItem> sinks;
 
     public List<ExchangisJobParamsItem> getSources() {
@@ -26,13 +34,17 @@ public class ExchangisJobParamsContent {
     }
 
     public static class ExchangisJobParamsItem {
+
         @JsonProperty("config_key")
+        @JsonAlias({"key", "k"})
         private String configKey;
 
         @JsonProperty("config_name")
+        @JsonAlias({"name", "n"})
         private String configName;
 
         @JsonProperty("config_value")
+        @JsonAlias({"value", "v"})
         private Object configValue;
 
         private Integer sort;
