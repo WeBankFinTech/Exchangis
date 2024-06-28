@@ -7,6 +7,8 @@ import org.apache.linkis.scheduler.exception.LinkisJobRetryException;
 import org.apache.linkis.scheduler.executer.*;
 import org.apache.linkis.scheduler.listener.ExecutorListener;
 import org.apache.linkis.scheduler.queue.SchedulerEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.Option;
 import scala.Some;
 import scala.concurrent.duration.Duration;
@@ -15,7 +17,9 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 
 /**
@@ -136,7 +140,7 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
         }
     }
 
-    public static abstract class FactoryCreateExecutor implements Executor{
+    public static abstract class FactoryCreateExecutor implements Executor, ConcurrentTaskOperateSupport{
 
         /**
          * Executor factory
@@ -154,16 +158,23 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
     public static class DefaultDirectExecutor extends FactoryCreateExecutor{
 
+        private static final Logger LOG = LoggerFactory.getLogger(DefaultDirectExecutor.class);
+
         @Override
         public long getId() {
             return 0;
         }
 
+        private Map<String, RequestContext> reqContext = new ConcurrentHashMap<>();
         @Override
         public ExecuteResponse execute(ExecuteRequest executeRequest) {
             if (executeRequest instanceof AbstractExchangisSchedulerTask.DirectExecuteRequest){
+                AbstractExchangisSchedulerTask.DirectExecuteRequest directExecuteRequest =
+                        (AbstractExchangisSchedulerTask.DirectExecuteRequest) executeRequest;
+                String id = directExecuteRequest.id();
+                reqContext.putIfAbsent(id, new RequestContext(directExecuteRequest));
                 try {
-                    ((AbstractExchangisSchedulerTask.DirectExecuteRequest)executeRequest).directExecute();
+                    directExecuteRequest.directExecute();
                     return new SuccessExecuteResponse();
                 } catch (ExchangisSchedulerException | ExchangisSchedulerRetryException e) {
                     e.setErrCode(LinkisJobRetryException.JOB_RETRY_ERROR_CODE());
@@ -171,6 +182,8 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
                             + e.getMessage() + "]", e);
                 } catch (Exception e){
                     return new ErrorExecuteResponse("Unknown Exception occurred in scheduling, message: [" + e.getMessage() + "]", e);
+                } finally {
+                    Optional.ofNullable(reqContext.remove(id)).ifPresent(context -> context.downLatch.countDown());
                 }
             }
             return new ErrorExecuteResponse("Unsupported execute request: code: [" + executeRequest.code() + "]", null);
@@ -189,6 +202,63 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
         @Override
         public void close() throws IOException {
 
+        }
+
+
+        @Override
+        public boolean kill(String jobId) {
+            Optional.ofNullable(reqContext.get(jobId)).ifPresent(context -> {
+                try {
+                    LOG.info("Try to kill scheduler job id: [{}] ", jobId);
+                    context.executeRequest.cancel();
+                    context.downLatch.await();
+                } catch (InterruptedException e) {
+                    //
+                }
+            });
+            return true;
+        }
+
+        @Override
+        public boolean killAll() {
+            return true;
+        }
+
+        @Override
+        public boolean pause(String jobId) {
+            return false;
+        }
+
+        @Override
+        public boolean pauseAll() {
+            return true;
+        }
+
+        @Override
+        public boolean resume(String jobId) {
+            return true;
+        }
+
+        @Override
+        public boolean resumeAll() {
+            return true;
+        }
+
+        private class RequestContext{
+
+            /**
+             * Request
+             */
+            AbstractExchangisSchedulerTask.DirectExecuteRequest executeRequest;
+            /**
+             * Count down
+             */
+            CountDownLatch downLatch;
+
+            RequestContext(AbstractExchangisSchedulerTask.DirectExecuteRequest executeRequest){
+                this.executeRequest = executeRequest;
+                this.downLatch = new CountDownLatch(1);
+            }
         }
     }
 }

@@ -100,6 +100,14 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
                 throw e;
             }
         }
+
+        public String id(){
+            return getId();
+        }
+
+        public void cancel(){
+            kill();
+        }
     }
 
     @Override

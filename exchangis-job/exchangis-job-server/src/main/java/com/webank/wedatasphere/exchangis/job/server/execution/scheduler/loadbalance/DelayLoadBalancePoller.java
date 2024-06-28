@@ -7,6 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -20,8 +21,18 @@ public abstract class DelayLoadBalancePoller<T> implements LoadBalancePoller<T>{
      * Delay queue
      */
     private DelayQueue<DelayElement> delayQueue = new DelayQueue<>();
+
+    /**
+     * If closed
+     */
+    private AtomicBoolean closed = new AtomicBoolean(false);
+
+    /**
+     * The other poller which combined self poller
+     */
+    private DelayLoadBalancePoller<T> combined;
     @Override
-    public List<T> poll() throws InterruptedException {
+    public synchronized List<T> poll() throws InterruptedException {
         List<DelayElement> delayElements = new ArrayList<>();
         delayQueue.drainTo(delayElements, MAX_POLL_SIZE);
         while (delayElements.isEmpty()){
@@ -38,26 +49,39 @@ public abstract class DelayLoadBalancePoller<T> implements LoadBalancePoller<T>{
     }
 
     @Override
-    public void push(T element) {
+    public synchronized boolean push(T element) {
+        if (closed.get()){
+            if (Objects.nonNull(combined)){
+                combined.push(element);
+            }
+            return false;
+        }
         DelayElement delayElement = new DelayElement(element);
         delayQueue.offer(delayElement);
+        return true;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void combine(LoadBalancePoller<T> other) {
+    public synchronized void combine(LoadBalancePoller<T> other) {
         // Only combine with DelayLoadBalancePoller
         if(other instanceof DelayLoadBalancePoller){
             DelayLoadBalancePoller<T> poller = (DelayLoadBalancePoller<T>)other;
             for(Object delayElement : poller.delayQueue.toArray()){
                 delayQueue.put((DelayElement) delayElement);
             }
+            poller.combined = this;
         }
     }
 
     @Override
     public int size() {
         return delayQueue.size();
+    }
+
+    @Override
+    public void close() {
+        this.closed.set(true);
     }
 
     /**

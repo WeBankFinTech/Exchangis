@@ -58,6 +58,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
      * Submittable
      */
     private AtomicBoolean submitAble = new AtomicBoolean(false);
+
     /**
      * Each schedule task should has an id
      *

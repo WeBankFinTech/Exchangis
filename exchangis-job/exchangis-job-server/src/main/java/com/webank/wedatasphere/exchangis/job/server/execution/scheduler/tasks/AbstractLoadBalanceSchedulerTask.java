@@ -121,6 +121,9 @@ public abstract class AbstractLoadBalanceSchedulerTask<T> extends AbstractExchan
     @Override
     public void kill() {
         pollFinish = true;
+        if (Objects.nonNull(loadBalancePoller)){
+            this.loadBalancePoller.close();
+        }
         super.kill();
     }
 
