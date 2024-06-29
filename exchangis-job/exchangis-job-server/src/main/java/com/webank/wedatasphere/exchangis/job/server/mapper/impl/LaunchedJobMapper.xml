@@ -188,6 +188,7 @@
                 and l.name like concat('%', #{jobName}, '%')
             </if>
         </where>
+        order by create_time desc
     </select>
     <select id="getAllLaunchedJob" resultMap="LaunchedJobMap">
         SELECT
