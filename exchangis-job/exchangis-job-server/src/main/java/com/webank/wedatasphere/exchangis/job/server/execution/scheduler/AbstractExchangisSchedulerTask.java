@@ -106,7 +106,7 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
         }
 
         public void cancel(){
-            kill();
+//            kill();
         }
     }
 
