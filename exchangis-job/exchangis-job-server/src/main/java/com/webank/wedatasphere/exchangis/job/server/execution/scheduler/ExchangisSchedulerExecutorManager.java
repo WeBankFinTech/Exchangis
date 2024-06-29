@@ -210,7 +210,6 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
             Optional.ofNullable(reqContext.get(jobId)).ifPresent(context -> {
                 try {
                     LOG.info("Try to kill scheduler job id: [{}] ", jobId);
-                    context.executeRequest.cancel();
                     context.downLatch.await();
                 } catch (InterruptedException e) {
                     //
