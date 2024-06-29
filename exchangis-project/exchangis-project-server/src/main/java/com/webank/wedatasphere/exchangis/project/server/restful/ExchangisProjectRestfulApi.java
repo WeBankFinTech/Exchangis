@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.project.server.restful;
 
 import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
@@ -285,7 +286,9 @@ public class ExchangisProjectRestfulApi {
         try {
             ExchangisProjectUserVo exchangisProjectUserVo = new ExchangisProjectUserVo(id, username);
             ExchangisProjectUser exchangisProjectUser = projectService.queryProjectUser(exchangisProjectUserVo);
-
+            if (Objects.isNull(exchangisProjectUser) && GlobalConfiguration.isAdminUser(username)){
+                exchangisProjectUser = new ExchangisProjectUser(id, username);
+            }
             return ExchangisProjectRestfulUtils.dealOk("根据项目ID和用户获取项目权限信息成功",
                     new Pair<>("exchangisProjectUser", new ExchangisProjectUserVo(exchangisProjectUser)));
         } catch (Exception t) {
