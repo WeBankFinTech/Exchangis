@@ -93,8 +93,8 @@ public class ExchangisProjectDssAppConnRestfulApi {
             if (projectService.existsProject(null, projectInfo.getName())){
                 return Message.error("Have the same name project (存在同名工程)");
             }
-            // Try to create project datasources for user
-            LOG.info("Start to create and relate project datasources for project [{}]", projectVo.getName());
+            // Try to create or get project datasources for user
+            LOG.info("Start to create or get relate project datasources for project [{}]", projectVo.getName());
             if (StringUtils.isNotBlank(ExchangisProjectConfiguration.PROJECT_DATASOURCES
                         .getValue())) {
                 String[] projectDsList = ExchangisProjectConfiguration.PROJECT_DATASOURCES
@@ -149,6 +149,27 @@ public class ExchangisProjectDssAppConnRestfulApi {
             ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
                 return Message.error("You have no permission to update (没有项目的更新权限)");
+            }
+            // Try to create or get project datasources for user
+            LOG.info("Start to create or get relate project datasources for project [{}]", projectVo.getName());
+            if (StringUtils.isNotBlank(ExchangisProjectConfiguration.PROJECT_DATASOURCES
+                    .getValue())) {
+                String[] projectDsList = ExchangisProjectConfiguration.PROJECT_DATASOURCES
+                        .getValue().split(",");
+                for (String projectDs : projectDsList) {
+                    String newName = projectDs + "_" + username;
+                    try {
+                        dataSourceService.copyDataSource(username, projectDs, newName);
+                        // Attach data source to project
+                        ExchangisProjectDsVo projectDsVo = new ExchangisProjectDsVo();
+                        projectDsVo.setName(newName);
+                        projectVo.getDataSources().add(projectDsVo);
+                    } catch (Exception e) {
+                        LOG.warn("Fail to create project data source(模版创建项目数据源失败,跳过) " +
+                                        "from model: [{}] for user: [{}], message: [{}]",
+                                projectDs, username, e.getMessage());
+                    }
+                }
             }
             // validate data sources
             validateDataSources(username, projectVo.getName(), projectVo.getDataSources());
