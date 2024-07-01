@@ -1216,6 +1216,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
             createDs.setCreateUser(operator);
             createDs.setLabel(modelDs.getLabel());
             createDs.setConnectParams(modelDs.getConnectParams());
+            createDs.setComment("init");
             Message resultMsg = create(operator, createDs);
             Object version = resultMsg.getData().get("version");
             Object id = resultMsg.getData().get("id");
