@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  */
 public class StarRocksDataxSubExchangisJobHandler extends AuthEnabledSubExchangisJobHandler {
 
+    private static final int DEFAULT_HTTP_PORT = 8030;
     /**
      * Host
      */
@@ -37,10 +38,13 @@ public class StarRocksDataxSubExchangisJobHandler extends AuthEnabledSubExchangi
      */
     private static final JobParamDefine<String> SINK_LOAD_URL = JobParams.define("loadUrl[0]", paramSet -> {
         JobParam<String> host = paramSet.get("connection[0].host");
-        JobParam<String> httpPort = paramSet.get(JobParamConstraints.HTTP_PORT);
-        if (Objects.nonNull(host) && StringUtils.isNotBlank(host.getValue()) &&
-                Objects.nonNull(httpPort) && StringUtils.isNotBlank(httpPort.getValue())) {
-            return host.getValue() + ":" + httpPort.getValue();
+        JobParam<String> httpPortParams = paramSet.get(JobParamConstraints.HTTP_PORT);
+        String httpPort = DEFAULT_HTTP_PORT + "";
+        if (Objects.nonNull(httpPortParams) && StringUtils.isNotBlank(httpPortParams.getValue())){
+            httpPort = httpPortParams.getValue();
+        }
+        if (Objects.nonNull(host) && StringUtils.isNotBlank(host.getValue())) {
+            return host.getValue() + ":" + httpPort;
         }
         return null;
     });
