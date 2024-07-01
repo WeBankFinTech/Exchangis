@@ -36,10 +36,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Restful class for dss project
@@ -150,6 +147,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
                 return Message.error("You have no permission to update (没有项目的更新权限)");
             }
+            String projectCreator = Optional.ofNullable(projectStored.getCreateUser()).orElse(username);
             // Try to create or get project datasources for user
             LOG.info("Start to create or get relate project datasources for project [{}]", projectVo.getName());
             if (StringUtils.isNotBlank(ExchangisProjectConfiguration.PROJECT_DATASOURCES
@@ -157,9 +155,9 @@ public class ExchangisProjectDssAppConnRestfulApi {
                 String[] projectDsList = ExchangisProjectConfiguration.PROJECT_DATASOURCES
                         .getValue().split(",");
                 for (String projectDs : projectDsList) {
-                    String newName = projectDs + "_" + username;
+                    String newName = projectDs + "_" + projectCreator;
                     try {
-                        dataSourceService.copyDataSource(username, projectDs, newName);
+                        dataSourceService.copyDataSource(projectCreator, projectDs, newName);
                         // Attach data source to project
                         ExchangisProjectDsVo projectDsVo = new ExchangisProjectDsVo();
                         projectDsVo.setName(newName);
@@ -167,12 +165,12 @@ public class ExchangisProjectDssAppConnRestfulApi {
                     } catch (Exception e) {
                         LOG.warn("Fail to create project data source(模版创建项目数据源失败,跳过) " +
                                         "from model: [{}] for user: [{}], message: [{}]",
-                                projectDs, username, e.getMessage());
+                                projectDs, projectCreator, e.getMessage());
                     }
                 }
             }
             // validate data sources
-            validateDataSources(username, projectVo.getName(), projectVo.getDataSources());
+            validateDataSources(projectCreator, projectVo.getName(), projectVo.getDataSources());
             LOG.info("UpdateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             projectService.updateProject(projectVo, username);
             AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, id.toString(), "Project name is: " + projectVo.getName(), OperateTypeEnum.UPDATE, request);
