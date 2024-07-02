@@ -27,7 +27,7 @@ public abstract class AutoColumnSubExchangisJobHandler extends AbstractLoggingSu
     /**
      * Auto type name
      */
-    private static final String AUTO_TYPE = "[Auto]";
+    public static final String AUTO_TYPE = "[Auto]";
 
     /**
      * Database

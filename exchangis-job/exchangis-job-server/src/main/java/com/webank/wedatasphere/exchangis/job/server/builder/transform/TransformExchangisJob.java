@@ -224,7 +224,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
                     if (idSerial.length >= 4) {
                         paramSet.add(JobParams.newOne(JobParamConstraints.DATA_SOURCE_ID, idSerial[1], true));
                         paramSet.add(JobParams.newOne(JobParamConstraints.DATABASE, idSerial[2], true));
-                        paramSet.add(JobParams.newOne(JobParamConstraints.TABLE, idSerial[3], true));
+                        paramSet.add(JobParams.newOne(JobParamConstraints.TABLE, JobUtils.replaceVariable(idSerial[3], new HashMap<>()), true));
                     }
                     return idSerial[0];
                 }
@@ -235,7 +235,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
                 paramSet.addNonNull(JobParams.newOne(JobParamConstraints.DATA_SOURCE_NAME, dataSource.getName(), true));
                 paramSet.addNonNull(JobParams.newOne(JobParamConstraints.DATA_SOURCE_CREATOR, dataSource.getCreator(), true));
                 paramSet.addNonNull(JobParams.newOne(JobParamConstraints.DATABASE, dataSource.getDb(), true));
-                paramSet.addNonNull(JobParams.newOne(JobParamConstraints.TABLE, dataSource.getTable(), true));
+                paramSet.addNonNull(JobParams.newOne(JobParamConstraints.TABLE, JobUtils.replaceVariable(dataSource.getTable(), new HashMap<>()), true));
                 return dataSource.getType();
             }
             return null;

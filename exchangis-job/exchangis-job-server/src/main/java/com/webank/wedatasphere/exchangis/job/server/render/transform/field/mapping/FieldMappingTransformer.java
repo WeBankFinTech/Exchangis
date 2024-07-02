@@ -6,6 +6,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisData
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.column.AutoColumnSubExchangisJobHandler;
 import com.webank.wedatasphere.exchangis.job.server.mapper.JobTransformRuleDao;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformRule;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.Transformer;
@@ -132,6 +133,20 @@ public class FieldMappingTransformer implements Transformer {
             }
         }
         settings.setSinkFields(sinkColumns);
+        if (sourceColumns.size() > 0 && requestVo.isSinkTblNotExist()){
+            // Redefine sink columns
+            sinkColumns = new ArrayList<>();
+            for(FieldColumn column : sourceColumns){
+                sinkColumns.add(new FieldColumnWrapper(column.getName(), AutoColumnSubExchangisJobHandler.AUTO_TYPE, null, true));
+            }
+        }
+        if (sinkColumns.size() > 0 && requestVo.isSrcTblNotExist()){
+            // Redefine sink columns
+            sourceColumns = new ArrayList<>();
+            for(FieldColumn column : sinkColumns){
+                sourceColumns.add(new FieldColumnWrapper(column.getName(), AutoColumnSubExchangisJobHandler.AUTO_TYPE, null, true));
+            }
+        }
         FieldMatchStrategy matchStrategy = rule.getFieldMatchStrategy();
         if (Objects.isNull(matchStrategy)) {
             // Just use the all match strategy
@@ -187,7 +202,7 @@ public class FieldMappingTransformer implements Transformer {
 
         }
 
-        public FieldColumnWrapper(String name, String type, int fieldIndex, boolean fieldEditable){
+        public FieldColumnWrapper(String name, String type, Integer fieldIndex, boolean fieldEditable){
             super(name, type, fieldIndex);
             this.fieldEditable = fieldEditable;
         }
