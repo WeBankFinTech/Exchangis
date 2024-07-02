@@ -9,7 +9,6 @@ CREATE TABLE `exchangis_job_ds_bind` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=59575 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-
 -- exchangis_job_entity definition
 DROP TABLE IF EXISTS `exchangis_job_entity`;
 CREATE TABLE `exchangis_job_entity` (
@@ -28,7 +27,8 @@ CREATE TABLE `exchangis_job_entity` (
   `project_id` bigint(13) DEFAULT NULL,
   `source` text,
   `modify_user` varchar(50) DEFAULT NULL COMMENT '修改用户',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_project_id` (`project_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5793 DEFAULT CHARSET=utf8;
 
 
@@ -92,7 +92,8 @@ CREATE TABLE `exchangis_project_user` (
   `priv` int(20) DEFAULT NULL,
   `last_update_time` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `exchangis_project_user_un` (`project_id`,`priv_user`,`priv`)
+  UNIQUE KEY `exchangis_project_user_un` (`project_id`,`priv_user`,`priv`),
+  KEY `idx_priv_user` (`priv_user`)
 ) ENGINE=InnoDB AUTO_INCREMENT=844 DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT;
 
 -- exchangis_launchable_task definition
@@ -110,6 +111,9 @@ CREATE TABLE `exchangis_launchable_task` (
   `linkis_params` text DEFAULT NULL,
   `linkis_source` varchar(64) DEFAULT NULL,
   `labels` varchar(64) DEFAULT NULL,
+  `delay_time` datetime DEFAULT NULL,
+  `delay_count` int(3) DEFAULT 0,
+  `instance` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -133,8 +137,10 @@ CREATE TABLE `exchangis_launched_job_entity` (
   `job_execution_id` varchar(255) DEFAULT NULL,
   `log_path` varchar(255) DEFAULT NULL,
   `create_user` varchar(100) DEFAULT NULL,
+  `instance` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `job_execution_id_UNIQUE` (`job_execution_id`)
+  UNIQUE KEY `job_execution_id_UNIQUE` (`job_execution_id`),
+  KEY `idx_job_id` (`job_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8380 DEFAULT CHARSET=utf8;
 
 -- exchangis_launched_task_entity definition
@@ -160,6 +166,8 @@ CREATE TABLE `exchangis_launched_task_entity` (
   `running_time` datetime DEFAULT NULL,
   `metrics` text,
   `status` varchar(64) DEFAULT NULL,
+  `commit_version` int(13) DEFAULT 0,
+  `instance` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

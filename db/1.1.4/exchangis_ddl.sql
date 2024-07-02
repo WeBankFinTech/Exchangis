@@ -21,3 +21,7 @@ ALTER TABLE exchangis_launched_task_entity ADD COLUMN instance varchar(100);
 ALTER TABLE exchangis_launched_task_entity ADD COLUMN commit_version int(13) DEFAULT 0;
 
 ALTER TABLE exchangis_launched_job_entity ADD COLUMN instance varchar(100);
+
+CREATE INDEX idx_project_id ON exchangis_job_entity (project_id);
+CREATE INDEX idx_job_id ON exchangis_launched_job_entity (job_id);
+CREATE INDEX idx_priv_user ON exchangis_project_user (priv_user);

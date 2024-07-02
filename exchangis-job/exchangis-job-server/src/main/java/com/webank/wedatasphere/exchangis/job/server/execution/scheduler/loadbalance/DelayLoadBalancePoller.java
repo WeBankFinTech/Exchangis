@@ -3,7 +3,6 @@ package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbal
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
@@ -31,8 +30,9 @@ public abstract class DelayLoadBalancePoller<T> implements LoadBalancePoller<T>{
      * The other poller which combined self poller
      */
     private DelayLoadBalancePoller<T> combined;
+
     @Override
-    public synchronized List<T> poll() throws InterruptedException {
+    public List<T> poll() throws InterruptedException {
         List<DelayElement> delayElements = new ArrayList<>();
         delayQueue.drainTo(delayElements, MAX_POLL_SIZE);
         while (delayElements.isEmpty()){

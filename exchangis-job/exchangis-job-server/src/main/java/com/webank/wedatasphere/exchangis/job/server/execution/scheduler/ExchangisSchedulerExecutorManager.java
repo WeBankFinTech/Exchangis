@@ -207,14 +207,14 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
         @Override
         public boolean kill(String jobId) {
-            Optional.ofNullable(reqContext.get(jobId)).ifPresent(context -> {
-                try {
-                    LOG.info("Try to kill scheduler job id: [{}] ", jobId);
-                    context.downLatch.await();
-                } catch (InterruptedException e) {
-                    //
-                }
-            });
+//            Optional.ofNullable(reqContext.get(jobId)).ifPresent(context -> {
+//                try {
+//                    LOG.info("Try to kill scheduler job id: [{}] ", jobId);
+//                    context.downLatch.await();
+//                } catch (InterruptedException e) {
+//                    //
+//                }
+//            });
             return true;
         }
 
