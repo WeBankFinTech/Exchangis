@@ -64,9 +64,7 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
         } catch (NoSuchFieldException e) {
             // Ignore
         }
-        if (!setField){
-            LinkisJobClient$.MODULE$.config().setDefaultClientConfig(clientConfig);
-        }
+        LinkisJobClient$.MODULE$.config().setDefaultClientConfig(clientConfig);
     }
 
     @Override
