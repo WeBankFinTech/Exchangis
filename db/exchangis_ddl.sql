@@ -7,7 +7,7 @@ CREATE TABLE `exchangis_job_ds_bind` (
   `source_ds_id` bigint(20) NOT NULL,
   `sink_ds_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=59575 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- exchangis_job_entity definition
 DROP TABLE IF EXISTS `exchangis_job_entity`;
@@ -29,7 +29,7 @@ CREATE TABLE `exchangis_job_entity` (
   `modify_user` varchar(50) DEFAULT NULL COMMENT '修改用户',
   PRIMARY KEY (`id`),
   KEY `idx_project_id` (`project_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5793 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- exchangis_job_param_config definition
@@ -61,7 +61,7 @@ CREATE TABLE `exchangis_job_param_config` (
   `status` tinyint(4) DEFAULT NULL,
   `ref_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- exchangis_project_info definition
 DROP TABLE IF EXISTS `exchangis_project_info`;
@@ -81,7 +81,7 @@ CREATE TABLE `exchangis_project_info` (
   `edit_users` varchar(255) DEFAULT '',
   `source` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1497870871035974171 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- exchangis_project_user definition
 DROP TABLE IF EXISTS `exchangis_project_user`;
@@ -94,7 +94,7 @@ CREATE TABLE `exchangis_project_user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `exchangis_project_user_un` (`project_id`,`priv_user`,`priv`),
   KEY `idx_priv_user` (`priv_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=844 DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT;
 
 -- exchangis_launchable_task definition
 DROP TABLE IF EXISTS `exchangis_launchable_task`;
@@ -141,7 +141,7 @@ CREATE TABLE `exchangis_launched_job_entity` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `job_execution_id_UNIQUE` (`job_execution_id`),
   KEY `idx_job_id` (`job_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8380 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- exchangis_launched_task_entity definition
 DROP TABLE IF EXISTS `exchangis_launched_task_entity`;
@@ -186,7 +186,7 @@ CREATE TABLE `exchangis_job_func` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `job_func_tab_name_idx` (`tab_name`,`func_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- exchangis_job_func_params definition
 DROP TABLE IF EXISTS `exchangis_job_func_params`;
