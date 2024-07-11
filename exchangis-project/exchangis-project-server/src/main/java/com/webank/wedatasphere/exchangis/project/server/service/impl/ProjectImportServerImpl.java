@@ -57,7 +57,15 @@ public class ProjectImportServerImpl implements ProjectImportService {
         String userName = SecurityFilter.getLoginUsername(req);
         String resourceId = (String) params.get("resourceId");
         String version = (String) params.get("version");
-        Long projectId = (Long) params.get("projectId");
+        Object importProjectId = params.get("projectId");
+        Long projectId = null;
+        if (importProjectId instanceof Integer) {
+            projectId = Integer.valueOf(importProjectId.toString()).longValue();
+        } else if (importProjectId instanceof Long) {
+            projectId = Long.valueOf(importProjectId.toString());
+        } else {
+            throw new IllegalArgumentException("Cannot convert " + importProjectId + " to long");
+        }
         String projectName = String.valueOf(Optional.ofNullable(params.get("projectName")).orElse(""));
         String projectVersion = (String) params.get("projectVersion");
         String flowVersion = (String) params.get("flowVersion");

@@ -57,7 +57,15 @@ public class ExchangisProjectJobDssAppConnRestfulApi {
         String originUser = SecurityFilter.getLoginUsername(request);
         Message response;
         try {
-            Long projectId = (Long) params.get("projectId");
+            Object importProjectId = params.get("projectId");
+            Long projectId = null;
+            if (importProjectId instanceof Integer) {
+                projectId = Integer.valueOf(importProjectId.toString()).longValue();
+            } else if (importProjectId instanceof Long) {
+                projectId = Long.valueOf(importProjectId.toString());
+            } else {
+                throw new IllegalArgumentException("Cannot convert " + importProjectId + " to long");
+            }
             if (!JobAuthorityUtils.hasProjectAuthority(userName, projectId, OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to import (没有导入权限)");
             }
@@ -84,7 +92,15 @@ public class ExchangisProjectJobDssAppConnRestfulApi {
         String originUser = SecurityFilter.getLoginUsername(request);
         Message response;
         try {
-            Long projectId = Long.parseLong(params.get("projectId").toString());
+            Object exportProjectId = params.get("projectId");
+            Long projectId = null;
+            if (exportProjectId instanceof Integer) {
+                projectId = Integer.valueOf(exportProjectId.toString()).longValue();
+            } else if (exportProjectId instanceof Long) {
+                projectId = Long.valueOf(exportProjectId.toString());
+            } else {
+                throw new IllegalArgumentException("Cannot convert " + exportProjectId + " to long");
+            }
             if (!JobAuthorityUtils.hasProjectAuthority(userName, projectId, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to export (没有导出权限)");
             }
