@@ -12,6 +12,6 @@ public enum TaskStatus {
      * @return boolean
      */
     public static boolean isCompleted(TaskStatus status){
-        return null == status || status.equals(Cancelled) || status.equals(Failed) || status.equals(Success);
+        return null == status || status.equals(Cancelled) || status.equals(Failed) || status.equals(Success) || status.equals(WaitForRetry);
     }
 }

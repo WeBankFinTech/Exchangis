@@ -50,6 +50,10 @@ public class StatusUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
             }
             TaskStatus status = launcherTask.getLocalStatus();
             if (TaskStatus.isCompleted(status)){
+                if (status == TaskStatus.WaitForRetry){
+                    // Use failed status instead of wait for retry
+                    status = TaskStatus.Failed;
+                }
                 this.taskManager.refreshRunningTaskStatusAndMetrics(launchedExchangisTask,
                         status, launcherTask.getMetricsInfo());
             } else {
