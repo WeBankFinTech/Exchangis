@@ -22,6 +22,7 @@ else
   source ./launcher.sh
   source ./common.sh
 fi
+load_env_definitions ${ENV_FILE}
 
 usage(){
   echo "Usage is [start|stop|restart {server}]"

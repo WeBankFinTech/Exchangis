@@ -21,12 +21,12 @@
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-common</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.2</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-launcher</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.2</version>
         </dependency>
     </dependencies>
 

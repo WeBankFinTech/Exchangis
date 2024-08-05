@@ -1,11 +1,11 @@
 ExchangisAppConn安装文档
 本文主要介绍在DSS(DataSphere Studio)1.0.1中ExchangisAppConn的部署、配置以及安装
 ### 1.部署ExchangisAppConn的准备工作
-您在部署ExchangisAppConn之前，请按照[Exchangis1.0.0安装部署文档](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_deploy_cn.md)安装完成Exchangis1.0.0及其他相关组件的安装，并确保工程基本功能可用。
+您在部署ExchangisAppConn之前，请按照[Exchangis安装部署文档](docs/zh_CN/ch1/exchangis_deploy_cn.md)安装完成Exchangis及其他相关组件的安装，并确保工程基本功能可用。
 
 ### 2.ExchangisAppConn插件的下载和编译
 #### 1）下载二进制包
-我们提供ExchangisAppconn的物料包，您可直接下载使用。[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0/exchangis-appconn.zip)
+我们提供ExchangisAppconn的物料包，您可直接下载使用。[点击跳转 Release 界面](https://github.com/WeBankFinTech/Exchangis/releases)
 #### 2） 编译打包
 
 如果您想自己开发和编译ExchangisAppConn，具体编译步骤如下：
@@ -64,7 +64,7 @@ sh ./dss-start-all.sh
 2.	在exchangis端查看是否同步创建项目，创建成功说明appconn安装成功
 ![image](https://user-images.githubusercontent.com/27387830/169782337-678f2df0-080a-495a-b59f-a98c5a427cf8.png)
 
-更多使用操作可参照[Exchangis1.0用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.0.0/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
+更多使用操作可参照[Exchangis用户手册](docs/zh_CN/ch1/exchangis_user_manual_cn.md)
 
 ### 5.Exchangis AppConn安装原理
 
