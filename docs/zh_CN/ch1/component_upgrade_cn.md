@@ -1,5 +1,5 @@
 Exchangis 升级文档
-本文主要介绍在原有安装Exchangis服务的基础上适配DSS1.1.2和Linkis1.4.0的升级步骤，Exchangis1.1.2相对与Exchangis1.0.0-rc1版本最大的区别在于ExchangisAppconn的安装，需要对整个Exchangisappconn进行重新替换和加载
+本文主要介绍在原有安装Exchangis服务的基础上适配DSS1.1.2和Linkis1.4.0的升级步骤，Exchangis1.1.2相对与Exchangis1.0.0版本最大的区别在于ExchangisAppconn的安装，需要对整个Exchangisappconn进行重新替换和加载
 ### 1.升级Exchangis前的工作
 您在升级Exchangis之前，请按照[DSS1.1.2安装部署文档](https://github.com/WeBankFinTech/DataSphereStudio-Doc/tree/main/zh_CN/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2)
 和[Linkis1.4.0安装部署文档](https://linkis.staged.apache.org/zh-CN/docs/1.4.0/deployment/deploy-quick)完成DSS和Linkis的安装升级
@@ -14,7 +14,7 @@ Exchangis 升级文档
 ```
 
 #### 2）下载二进制包
-我们提供ExchangisAppconn的升级物料包，您可直接下载使用。[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.0.0-rc/exchangis-appconn.zip)（TODO：待发版时更新）
+我们提供ExchangisAppconn的升级物料包，您可直接下载使用。[点击跳转 Release 界面](https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/WeDatasphere/Exchangis/exchangis1.1.2/Exchangis1.1.2_install_package.zip)
 
 #### 3） 编译打包
 
@@ -66,7 +66,7 @@ sh ./appconn-refresh.sh
 
 #### 4.2）更新Exchangis安装目录下的lib包
 
-将从下载链接中得到的exchangis-project-server-1.0.0.jar和exchangis-server-1.0.0.jar两个包放入以下Exchangis安装目录的文件路径下(先删除原有旧的这两个包)：
+将从下载链接中得到的exchangis-project-server-1.1.2.jar和exchangis-server-1.1.2.jar两个包放入以下Exchangis安装目录的文件路径下(先删除原有旧的这两个包)：
 
 ```$xslt
 lib/exchangis-server
@@ -77,9 +77,9 @@ lib/exchangis-server
    ```shell script
    ./sbin/daemon.sh restart server
    ```
-# 4.3）更新exchangis-server.propertis文件
+# 4.3）更新dss-exchangis-server.propertis文件
 
-将exchangis-server.propertis文件中的最后一行进行替换，替换内容如下
+将dss-exchangis-server.propertis文件中的最后一行进行替换，替换内容如下
 
 ```$xslt
 wds.linkis-session.ticket.key=bdp-user-ticket-id
@@ -94,4 +94,4 @@ wds.linkis-session.ticket.key=bdp-user-ticket-id
 ![image](https://user-images.githubusercontent.com/27387830/169782337-678f2df0-080a-495a-b59f-a98c5a427cf8.png)
 
 
- 更多使用操作可参照[Exchangis用户手册](https://github.com/WeBankFinTech/Exchangis/blob/dev-1.1.2/docs/zh_CN/ch1/exchangis_user_manual_cn.md)
+ 更多使用操作可参照[Exchangis用户手册](docs/zh_CN/ch1/exchangis_user_manual_cn.md)

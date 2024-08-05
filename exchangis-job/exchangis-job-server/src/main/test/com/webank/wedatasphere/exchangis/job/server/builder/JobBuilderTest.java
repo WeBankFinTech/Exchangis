@@ -57,7 +57,7 @@ public class JobBuilderTest {
                 "                        \"preSql\": [], \n" +
                 "                        \"connection\": [\n" +
                 "                            {\n" +
-                "                                \"jdbcUrl\":\"jdbc:mysql://172.24.2.61:3306/test\", \n" +
+                "                                \"jdbcUrl\":\"jdbc:mysql://127.0.0.1:3306/test\", \n" +
                 "                                \"table\": [\"testtab\"]\n" +
                 "                            }\n" +
                 "                        ]\n" +
