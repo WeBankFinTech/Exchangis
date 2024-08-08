@@ -30,7 +30,7 @@ public class AuditLogUtils {
                                 String targetId, String targetName, OperateTypeEnum operateType, Object params) {
         String detailInfo=params.toString();
         LOGGER.info("[{}],[{}],[{}],[{}],[{}],[{}],[{}],[{}],[{}]",
-                new Date(),user, "proxyUser is: " + proxyUser, "Exchangis-1.1.4", targetType.getName(),
+                new Date(),user, "proxyUser is: " + proxyUser, "Exchangis-1.1.6", targetType.getName(),
                 targetId,targetName,operateType.getName(), detailInfo);
     }
 
