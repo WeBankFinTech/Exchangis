@@ -627,7 +627,8 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
      * @throws Exception e
      */
     public Message queryDataSources(HttpServletRequest request, DataSourceQueryVO vo) throws Exception {
-        String username = UserUtils.getLoginUser(request);
+        String username = StringUtils.isNoneBlank(vo.getCreateUser()) ?
+                vo.getCreateUser() : UserUtils.getLoginUser(request);
         int page = Objects.isNull(vo.getPage()) ? 1 : vo.getPage();
         int pageSize = Objects.isNull(vo.getPageSize()) ? 100 : vo.getPageSize();
         String dataSourceName = Objects.isNull(vo.getName()) ? "" : vo.getName().replace("_", "\\_");

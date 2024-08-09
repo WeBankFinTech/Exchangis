@@ -9,6 +9,7 @@ public class DataSourceQueryVO {
     private String typeName;
     private String name;
     private String direct;
+    private String createUser;
     /**
      * Project id
      */
@@ -69,6 +70,14 @@ public class DataSourceQueryVO {
 
     public void setDirect(String direct) {
         this.direct = direct;
+    }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
     }
 
     public Long getProjectId() {
