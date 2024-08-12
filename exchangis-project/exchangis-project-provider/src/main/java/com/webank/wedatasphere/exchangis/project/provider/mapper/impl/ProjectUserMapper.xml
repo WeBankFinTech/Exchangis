@@ -25,6 +25,13 @@
         where project_id = #{projectId}
     </delete>
 
+    <select id="queryProjectUsers" resultMap ="projectUserResult">
+        select
+        <include refid="BaseColumnList"/>
+        from
+        <include refid="TableName" />
+    </select>
+
     <select id="queryProjectUser" resultMap ="projectUserResult">
         select
         <include refid="BaseColumnList"/>
