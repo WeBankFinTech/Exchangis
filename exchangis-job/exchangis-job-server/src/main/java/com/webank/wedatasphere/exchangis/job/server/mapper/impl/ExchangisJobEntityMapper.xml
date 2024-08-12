@@ -166,4 +166,18 @@
             #{item}
         </foreach>
     </delete>
+
+    <update id="recycleUserJob">
+        UPDATE `exchangis_job_entity`
+        SET modify_user='SYSTEM',create_user= CASE WHEN create_user=#{username} THEN #{handover} ELSE create_user END,
+        execute_user= CASE WHEN execute_user=#{username} THEN #{handover} ELSE execute_user END
+        WHERE create_user=#{username} OR execute_user=#{username};
+        <if test="projectIds != null and projectIds.size > 0">
+            AND project_id in (
+            <foreach collection="projectIds" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+    </update>
 </mapper>

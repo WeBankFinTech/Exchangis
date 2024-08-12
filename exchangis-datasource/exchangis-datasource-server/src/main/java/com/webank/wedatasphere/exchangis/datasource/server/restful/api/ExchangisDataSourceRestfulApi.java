@@ -234,12 +234,12 @@ public class ExchangisDataSourceRestfulApi {
 
     // update datasource and parameters (insert new record in datasource_version table)
     @RequestMapping( value = "/{id}", method = RequestMethod.PUT)
-    public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, @Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult) throws Exception {
+    public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, @Valid @RequestBody DataSourceCreateVO dataSourceUpdateVO, BindingResult bindingResult) throws Exception {
         Message message = new Message();
 
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String loginUser = UserUtils.getLoginUser(request);
-        LOG.info("dataSourceName:   " + dataSourceCreateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceCreateVO.getDataSourceDesc() + "label:   " + dataSourceCreateVO.getLabels());
+        LOG.info("dataSourceName:   " + dataSourceUpdateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceUpdateVO.getDataSourceDesc() + "label:   " + dataSourceUpdateVO.getLabels());
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             for(int i=0;i<fieldErrors.size();i++){
@@ -249,7 +249,7 @@ public class ExchangisDataSourceRestfulApi {
         }
         else {
             try{
-                message = exchangisDataSourceService.updateDataSource(request, /*type, */id, dataSourceCreateVO);
+                message = exchangisDataSourceService.updateDataSource(request, /*type, */id, dataSourceUpdateVO);
             } catch (ExchangisDataSourceException e) {
                 String errorMessage = "Error occur while update datasource";
                 LOG.error(errorMessage, e);
@@ -264,7 +264,7 @@ public class ExchangisDataSourceRestfulApi {
                 }
             }
         }
-        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource name is: " + dataSourceCreateVO.getDataSourceName(), OperateTypeEnum.UPDATE,request);
+        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource name is: " + dataSourceUpdateVO.getDataSourceName(), OperateTypeEnum.UPDATE,request);
         return message;
 
     }

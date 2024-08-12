@@ -146,4 +146,17 @@
     <select id="getAuthoritis" resultType="java.lang.String">
         select priv from exchangis_project_user where priv_user = #{loginUser} and project_id = #{projectId}
     </select>
+
+    <update id="recycleUserProject">
+        UPDATE `udes_project`
+        SET create_user=#{handover},modify_user='SYSTEM'
+        WHERE create_user=#{username}
+        <if test="projectIds != null and projectIds.size > 0">
+            AND id in (
+            <foreach collection="projectIds" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+    </update>
 </mapper>

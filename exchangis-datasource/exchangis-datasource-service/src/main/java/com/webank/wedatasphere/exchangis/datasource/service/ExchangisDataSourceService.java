@@ -311,7 +311,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
     }
 
     @Transactional
-    public Message updateDataSource(HttpServletRequest request,/* String type,*/ Long id, DataSourceCreateVO vo) throws Exception {
+    public Message updateDataSource(HttpServletRequest request, Long id, DataSourceCreateVO vo) throws Exception {
 
         Map<String, Object> json;
         try {
@@ -320,12 +320,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         } catch (JsonProcessingException e) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
         }
-        String comment = vo.getComment();
         String createSystem = vo.getCreateSystem();
-        if (Objects.isNull(comment)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter comment should not be null");
-        }
-
         if (Strings.isNullOrEmpty(createSystem)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter createSystem should not be empty");
         }
@@ -336,7 +331,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         }
 
         LinkisDataSourceRemoteClient client = dsType.getDataSourceRemoteClient();
-//        UpdateDataSourceResult updateDataSourceResult;
         String responseBody;
         try {
             Result execute = client.execute(UpdateDataSourceAction.builder()
@@ -350,7 +344,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), e.getMessage());
         }
 
-//        if (Objects.isNull(updateDataSourceResult)) {
         if (Strings.isNullOrEmpty(responseBody)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), "datasource update null or empty");
         }
@@ -373,15 +366,12 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         } catch (Exception e) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), e.getMessage());
         }
-
         if (Objects.isNull(updateDataSourceParameterResult)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), "datasource update params version null or empty");
         }
-
         if (updateDataSourceParameterResult.getStatus() != 0) {
             throw new ExchangisDataSourceException(updateDataSourceParameterResult.getStatus(), updateDataSourceParameterResult.getMessage());
         }
-
         return Message.ok();
     }
 
@@ -1225,6 +1215,59 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                 publishDataSource(operator,
                         Long.parseLong(String.valueOf(id)), Long.parseLong(String.valueOf(version)));
             }
+        }
+    }
+
+    @Override
+    public void recycleDataSource(String userName, String handover) throws ExchangisDataSourceException {
+        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
+                .setSystem("Exchangis")
+                .setIdentifies("")
+                .setUser(userName);
+        List<DataSource> allDataSource = null;
+        try {
+            QueryDataSourceResult result = linkisDataSourceRemoteClient.queryDataSource(builder.build());
+            allDataSource = result.getAllDataSource();
+            if (Objects.nonNull(allDataSource)) {
+                for (int i = 0; i < allDataSource.size(); i++) {
+                    DataSource dataSource = allDataSource.get(i);
+                    Map<String, Object> json;
+                    try {
+                        dataSource.setCreateUser(handover);
+                        json = mapper.readValue(mapper.writeValueAsString(dataSource), Map.class);
+                        json.put("labels",json.get("label"));
+                    } catch (JsonProcessingException e) {
+                        throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
+                    }
+                    json = null;
+                    String user = "SYSTEM";
+                    ExchangisDataSourceDefinition dsType = context.getExchangisDsDefinition(dataSource.getDataSourceTypeId());
+
+                    LinkisDataSourceRemoteClient client = dsType.getDataSourceRemoteClient();
+                    String responseBody;
+                    Result execute = client.execute(UpdateDataSourceAction.builder()
+                            .setUser(user)
+                            .setDataSourceId(dataSource.getId())
+                            .addRequestPayloads(json)
+                            .build()
+                    );
+                    responseBody = execute.getResponseBody();
+                    if (Strings.isNullOrEmpty(responseBody)) {
+                        throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), "datasource update null or empty");
+                    }
+
+                    UpdateDataSourceSuccessResultDTO updateDataSourceResult = Json.fromJson(responseBody, UpdateDataSourceSuccessResultDTO.class);
+
+                    if (updateDataSourceResult.getStatus() != 0) {
+                        throw new ExchangisDataSourceException(updateDataSourceResult.getStatus(), updateDataSourceResult.getMessage());
+                    }
+                }
+            }
+        } catch (ExchangisDataSourceException e) {
+            LOG.error("Failed to recycle datasource, cause by : " + e);
+        } catch (Exception e){
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_QUERY_DATASOURCE_ERROR.getCode(), e.getMessage());
         }
     }
 

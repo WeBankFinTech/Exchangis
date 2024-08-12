@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.service;
 
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import org.apache.linkis.common.exception.ErrorException;
 
 /**
@@ -15,4 +16,9 @@ public interface DataSourceService {
      */
     void copyDataSource(String operator,
                         String sourceName, String newName) throws ErrorException;
+
+    /**
+     * Recycle data source
+     */
+    void recycleDataSource(String userName, String handover) throws ExchangisDataSourceException;
 }

@@ -69,4 +69,12 @@ public interface LaunchableTaskDao {
      * @param tasks tasks
      */
     void delayBatch(@Param("tasks")List<LaunchableExchangisTask> tasks);
+
+    /**
+     * Recycle user launchable task
+     * @param username
+     * @param handover
+     */
+    void recycleLaunchableTask(@Param("username")String username, @Param("handover")String handover,
+                        @Param("projectIds")List<Long> projectIds);
 }

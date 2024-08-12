@@ -147,4 +147,17 @@
             ]]>
         </foreach>
     </update>
+
+    <update id="recycleLaunchableTask">
+        UPDATE <include refid="TableName" />
+        SET execute_user=#{handover},modify_user='SYSTEM'
+        WHERE execute_user=#{username}
+        <if test="projectIds != null and projectIds.size > 0">
+            AND project_id in (
+            <foreach collection="projectIds" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+    </update>
 </mapper>

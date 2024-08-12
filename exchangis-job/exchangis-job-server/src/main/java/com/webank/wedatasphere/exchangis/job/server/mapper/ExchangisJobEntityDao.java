@@ -72,4 +72,12 @@ public interface ExchangisJobEntityDao {
     List<ExchangisJobEntity> getByNameAndProjectId(@Param("jobName") String jobName, @Param("projectId") Long projectId);
 
     List<ExchangisJobEntity> getByNameWithProjectId(@Param("jobName") String jobName, @Param("projectId") Long projectId);
+
+    /**
+     * Recycle user jobs
+     * @param username
+     * @param handover
+     */
+    void recycleUserJob(@Param("username")String username, @Param("handover")String handover,
+                            @Param("projectIds")List<Long> projectIds);
 }

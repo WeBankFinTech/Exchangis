@@ -81,4 +81,12 @@ public interface ProjectMapper {
      * @return List
      */
     List<String> getAuthoritis(@Param("projectId") Long projectId, @Param("loginUser") String loginUser);
+
+    /**
+     * Recycle user project
+     * @param username
+     * @param handover
+     */
+    void recycleUserProject(@Param("username")String username, @Param("handover")String handover,
+                            @Param("projectIds")List<Long> projectIds);
 }
