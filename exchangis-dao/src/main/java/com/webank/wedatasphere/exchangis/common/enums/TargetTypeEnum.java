@@ -21,6 +21,10 @@ public enum TargetTypeEnum {
      * 任务
      */
     TASK("task"),
+    /**
+     * 用户
+     */
+    USER("user")
     ;
     private String name;
 

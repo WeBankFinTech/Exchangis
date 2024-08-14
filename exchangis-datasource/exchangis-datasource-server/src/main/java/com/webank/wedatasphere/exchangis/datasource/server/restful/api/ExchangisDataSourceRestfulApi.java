@@ -9,7 +9,6 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
-import com.webank.wedatasphere.exchangis.datasource.vo.FieldMappingVO;
 import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;

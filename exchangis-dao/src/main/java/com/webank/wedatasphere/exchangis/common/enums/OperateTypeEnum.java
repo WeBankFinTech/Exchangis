@@ -5,6 +5,7 @@ package com.webank.wedatasphere.exchangis.common.enums;
  * @Date 2022/9/19 20:16
  */
 public enum OperateTypeEnum {
+    QUERY("query"),
     CREATE("create"),
     UPDATE("update"),
     DELETE("delete"),
