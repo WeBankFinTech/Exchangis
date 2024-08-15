@@ -20,8 +20,8 @@ import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisData
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ExchangisDataSourceParamsUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobTransformsContent;
 import com.webank.wedatasphere.exchangis.datasource.dto.*;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
 import com.webank.wedatasphere.exchangis.datasource.linkis.request.ParamsTestConnectAction;
@@ -33,6 +33,7 @@ import com.webank.wedatasphere.exchangis.engine.domain.EngineSettings;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
 import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
@@ -108,7 +109,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
             return null;
         }
 
-        List<ExchangisJobInfoContent> jobInfoContents = this.parseJobContent(job.getJobContent());
+        List<ExchangisJobInfoContent> jobInfoContents = JobUtils.parseJobContent(job.getJobContent());
         List<ExchangisDataSourceUIViewer> uis = new ArrayList<>();
         for (ExchangisJobInfoContent cnt : jobInfoContents) {
             cnt.setEngine(job.getEngineType());
@@ -494,7 +495,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
             return null;
         }
 
-        List<ExchangisJobInfoContent> jobInfoContents = this.parseJobContent(job.getJobContent());
+        List<ExchangisJobInfoContent> jobInfoContents = JobUtils.parseJobContent(job.getJobContent());
         List<ExchangisDataSourceParamsUI> uis = new ArrayList<>();
         for (ExchangisJobInfoContent cnt : jobInfoContents) {
             uis.add(this.buildDataSourceParamsUI(null, cnt));
@@ -554,7 +555,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
             return null;
         }
 
-        List<ExchangisJobInfoContent> contents = this.parseJobContent(job.getJobContent());
+        List<ExchangisJobInfoContent> contents = JobUtils.parseJobContent(job.getJobContent());
 
         for (ExchangisJobInfoContent content : contents) {
             if (content.getSubJobName().equalsIgnoreCase(jobName)) {

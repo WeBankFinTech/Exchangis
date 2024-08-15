@@ -1,21 +1,45 @@
-package com.webank.wedatasphere.exchangis.job.server.utils;
+package com.webank.wedatasphere.exchangis.job.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.utils.VariableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 
-
+/**
+ * @author jefftlin
+ * @date 2024/8/15
+ */
 public class JobUtils {
+
+    private static Logger logger = LoggerFactory.getLogger(JobUtils.class);
 
     private static final String MARKER_HEAD = "r";
 
-    private static Logger logger = LoggerFactory.getLogger(JobUtils.class);
+    protected static final ObjectMapper mapper = new ObjectMapper();
+
+    public static List<ExchangisJobInfoContent> parseJobContent(String content) {
+        List<ExchangisJobInfoContent> jobInfoContents;
+        if (Strings.isNullOrEmpty(content)) {
+            jobInfoContents = new ArrayList<>();
+        } else {
+            try {
+                jobInfoContents = mapper.readValue(content, new TypeReference<List<ExchangisJobInfoContent>>() {
+                });
+            } catch (JsonProcessingException e) {
+                jobInfoContents = new ArrayList<>();
+            }
+        }
+        return jobInfoContents;
+    }
 
     /**
      * Replace the parameter in variables
@@ -74,7 +98,6 @@ public class JobUtils {
             i=i+1;
         }
     }
-
 
     public static String renderDt(String template, Calendar calendar){
         long time = calendar.getTimeInMillis();

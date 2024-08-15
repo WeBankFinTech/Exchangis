@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.validator;
 
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -3,7 +3,6 @@ package com.webank.wedatasphere.exchangis.job.server.utils;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 

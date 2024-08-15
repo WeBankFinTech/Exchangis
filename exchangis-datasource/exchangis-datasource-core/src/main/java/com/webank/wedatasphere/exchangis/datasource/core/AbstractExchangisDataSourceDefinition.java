@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.hook.MapperHook;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceType;
+import com.webank.wedatasphere.exchangis.common.enums.ExchangisDataSourceType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
 

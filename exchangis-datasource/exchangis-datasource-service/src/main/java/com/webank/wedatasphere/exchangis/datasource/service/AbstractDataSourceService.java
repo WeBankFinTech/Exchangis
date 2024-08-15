@@ -15,17 +15,14 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.*;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.DefaultDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobDataSourcesContent;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobParamsContent;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSourcesContent;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobParamsContent;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobTransformsContent;
 import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
-import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
-import org.apache.linkis.datasource.client.request.GetInfoByDataSourceIdAction;
-import org.apache.linkis.httpclient.response.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,21 +41,6 @@ public abstract class AbstractDataSourceService {
     public AbstractDataSourceService(ExchangisDataSourceContext context, ExchangisJobParamConfigMapper exchangisJobParamConfigMapper) {
         this.context = context;
         this.exchangisJobParamConfigMapper = exchangisJobParamConfigMapper;
-    }
-
-    public List<ExchangisJobInfoContent> parseJobContent(String content) {
-        List<ExchangisJobInfoContent> jobInfoContents;
-        if (Strings.isNullOrEmpty(content)) {
-            jobInfoContents = new ArrayList<>();
-        } else {
-            try {
-                jobInfoContents = this.mapper.readValue(content, new TypeReference<List<ExchangisJobInfoContent>>() {
-                });
-            } catch (JsonProcessingException e) {
-                jobInfoContents = new ArrayList<>();
-            }
-        }
-        return jobInfoContents;
     }
 
     private ExchangisDataSourceIdsUI buildDataSourceIdsUI(ExchangisJobInfoContent content) {

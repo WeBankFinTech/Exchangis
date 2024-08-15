@@ -1,9 +1,9 @@
-package com.webank.wedatasphere.exchangis.datasource.core.vo;
+package com.webank.wedatasphere.exchangis.job.domain.content;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.webank.wedatasphere.exchangis.common.domain.ExchangisDataSource;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceType;
+import com.webank.wedatasphere.exchangis.common.enums.ExchangisDataSourceType;
 
 import java.util.Objects;
 

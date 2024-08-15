@@ -7,12 +7,13 @@ import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao;
+import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
 import com.webank.wedatasphere.exchangis.project.entity.vo.*;
@@ -177,7 +178,7 @@ public class ProjectServiceImpl implements ProjectService {
 
             List<ExchangisJobEntity> detailList = exchangisJobEntityDao.getDetailList(projectId);
             for (ExchangisJobEntity jobDetail : detailList) {
-                List<ExchangisJobInfoContent> contentList = exchangisDataSourceService.parseJobContent(jobDetail.getJobContent());
+                List<ExchangisJobInfoContent> contentList = JobUtils.parseJobContent(jobDetail.getJobContent());
                 for (ExchangisJobInfoContent content : contentList) {
                     String sourceName = content.getDataSources().getSource().getName();
                     String sinkName = content.getDataSources().getSink().getName();

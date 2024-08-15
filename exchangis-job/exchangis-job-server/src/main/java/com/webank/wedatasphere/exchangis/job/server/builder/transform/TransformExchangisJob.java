@@ -2,16 +2,16 @@ package com.webank.wedatasphere.exchangis.job.server.builder.transform;
 
 import com.webank.wedatasphere.exchangis.common.linkis.bml.BmlResource;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.*;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.GenericExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.content.*;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.GenericSubExchangisJobHandler;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformTypes;
-import com.webank.wedatasphere.exchangis.job.server.utils.JobUtils;
+import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
 import com.webank.wedatasphere.exchangis.job.utils.ColumnDefineUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;

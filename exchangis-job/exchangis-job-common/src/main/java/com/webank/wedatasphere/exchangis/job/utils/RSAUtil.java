@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.utils;
+package com.webank.wedatasphere.exchangis.job.utils;
 
 import javax.crypto.Cipher;
 import java.io.IOException;

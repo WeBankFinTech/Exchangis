@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.datasource.core.vo;
+package com.webank.wedatasphere.exchangis.job.domain.content;
 
 import java.util.List;
 

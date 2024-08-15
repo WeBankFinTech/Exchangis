@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui;
 
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobDataSourcesContent;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSourcesContent;
 
 /**
  * 任务数据源UI对象

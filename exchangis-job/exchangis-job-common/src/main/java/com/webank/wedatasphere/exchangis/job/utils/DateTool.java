@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.utils;
+package com.webank.wedatasphere.exchangis.job.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
