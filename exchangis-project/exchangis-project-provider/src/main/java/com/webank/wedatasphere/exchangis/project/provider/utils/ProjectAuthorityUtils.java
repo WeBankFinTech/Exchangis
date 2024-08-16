@@ -43,7 +43,8 @@ public class ProjectAuthorityUtils {
                             editUsers.contains(username) ||
                             execUsers.contains(username);
                 case PROJECT_ALTER:
-                    return StringUtils.equals(username, project.getCreateUser());
+                    return StringUtils.equals(username, project.getCreateUser()) ||
+                            execUsers.contains(username);
                 default:
                     throw new ExchangisProjectErrorException(ExchangisProjectExceptionCode.UNSUPPORTED_OPERATION.getCode(), "Unsupported operationType");
             }
