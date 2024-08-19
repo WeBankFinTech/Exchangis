@@ -6,13 +6,11 @@ import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TenancyP
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;

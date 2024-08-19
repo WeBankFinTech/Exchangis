@@ -7,7 +7,6 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.*;
-import com.webank.wedatasphere.exchangis.job.server.log.JobServerLogging;
 import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCacheUtils;
 
 import java.util.*;

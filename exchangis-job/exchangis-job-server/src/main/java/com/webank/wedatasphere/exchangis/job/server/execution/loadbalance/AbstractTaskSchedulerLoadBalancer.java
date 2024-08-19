@@ -1,12 +1,9 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.loadbalance;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
-import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.LoadBalanceSchedulerTask;
+import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
 import com.webank.wedatasphere.exchangis.job.utils.TypeGenericUtils;
-import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Future;
 
 /**
  * Scheduler load balancer for launched task

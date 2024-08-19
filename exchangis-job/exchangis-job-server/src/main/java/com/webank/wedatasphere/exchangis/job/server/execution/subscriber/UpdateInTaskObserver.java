@@ -1,20 +1,12 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
 import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
-import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.linkis.common.conf.CommonVars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.net.Inet4Address;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

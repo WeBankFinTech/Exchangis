@@ -18,7 +18,6 @@ import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.Exchangi
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisGenericScheduler;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TenancyParallelConsumerManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.MaxParallelChooseRuler;
-import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.MaxUsageTaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger;

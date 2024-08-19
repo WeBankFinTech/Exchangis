@@ -2,8 +2,6 @@ package com.webank.wedatasphere.exchangis.job.server.render.transform.processor;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
-import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
-import org.apache.ibatis.annotations.Update;
 
 import javax.validation.constraints.NotNull;
 

@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
-import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
@@ -9,21 +8,18 @@ import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
 import com.webank.wedatasphere.exchangis.job.server.execution.AbstractTaskManager;
+import com.webank.wedatasphere.exchangis.job.server.log.JobServerLogging;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskDequeueEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskExecutionEvent;
-import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskDeleteEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.TaskPrepareEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSchedulerLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
-import com.webank.wedatasphere.exchangis.job.server.log.JobServerLogging;
 import org.apache.linkis.scheduler.queue.JobInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;

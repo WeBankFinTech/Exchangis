@@ -37,7 +37,6 @@ public class JsonEntity {
         return false;
     }
 
-
     public static List<String> searchKeyPaths(JsonEntity configuration, String path,
                                               String key){
         return searchKeyPaths(configuration, path, key, Integer.MAX_VALUE);

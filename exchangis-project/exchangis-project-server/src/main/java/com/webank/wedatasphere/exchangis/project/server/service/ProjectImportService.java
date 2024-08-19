@@ -5,7 +5,6 @@ import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServer
 import org.apache.linkis.server.Message;
 
 import javax.servlet.http.HttpServletRequest;
-import java.rmi.ServerException;
 import java.util.Map;
 
 /**

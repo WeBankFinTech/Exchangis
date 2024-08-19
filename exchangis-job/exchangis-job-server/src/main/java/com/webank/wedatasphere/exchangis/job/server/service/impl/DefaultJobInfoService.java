@@ -308,4 +308,5 @@ public class DefaultJobInfoService implements JobInfoService {
         ExchangisJobVo newJob = jobInfoService.createJob(job);
         return newJob;
     }
+
 }

@@ -10,7 +10,6 @@ import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.P
 import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.ProcessorTransformer;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.TransformProcessor;
 import com.webank.wedatasphere.exchangis.job.server.service.JobTransformService;
-import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.apache.linkis.server.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

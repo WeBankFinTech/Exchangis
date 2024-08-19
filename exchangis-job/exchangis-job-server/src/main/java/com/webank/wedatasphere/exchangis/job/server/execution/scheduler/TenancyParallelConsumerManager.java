@@ -4,7 +4,6 @@ import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisScheduler
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.priority.PriorityOrderedQueue;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.priority.PriorityRunnable;
 import org.apache.commons.lang.StringUtils;
-import org.apache.linkis.common.utils.Utils;
 import org.apache.linkis.scheduler.listener.ConsumerListener;
 import org.apache.linkis.scheduler.queue.*;
 import org.apache.linkis.scheduler.queue.fifoqueue.FIFOGroup;

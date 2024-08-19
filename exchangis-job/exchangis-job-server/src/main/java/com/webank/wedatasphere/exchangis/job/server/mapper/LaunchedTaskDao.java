@@ -1,12 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.mapper;
 
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.jmx.export.annotation.ManagedOperationParameter;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;

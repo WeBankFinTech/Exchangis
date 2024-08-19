@@ -30,7 +30,6 @@ public class ExchangisJobInfoContent {
     /**
      * Transform define
      */
-//    private List<ExchangisJobTransformsItem> transforms;
     private ExchangisJobTransformsContent transforms;
 
     /**

@@ -5,8 +5,8 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
+import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.*;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSchedulerLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
@@ -43,7 +43,7 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
     private List<TaskExecutionListener> listeners = new ArrayList<>();
 
     @Override
-    public void submit(LaunchableExchangisTask task) throws ExchangisTaskExecuteException{
+    public void submit(LaunchableExchangisTask task) throws ExchangisTaskExecuteException {
         SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(task);
         try {
             submit(submitSchedulerTask);

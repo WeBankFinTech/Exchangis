@@ -4,7 +4,6 @@ import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedTaskDao;
-import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import org.apache.linkis.common.conf.CommonVars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

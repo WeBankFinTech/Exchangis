@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping;
 
-import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;

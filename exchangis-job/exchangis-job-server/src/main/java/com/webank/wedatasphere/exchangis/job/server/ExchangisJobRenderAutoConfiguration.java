@@ -2,11 +2,11 @@ package com.webank.wedatasphere.exchangis.job.server;
 
 import com.webank.wedatasphere.exchangis.job.server.mapper.JobTransformRuleDao;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.*;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.FieldMappingRulesFusion;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match.*;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.def.DefaultTransformDefineRulesFusion;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.DefaultFieldMappingRulesFusion;
-import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.FieldMappingRulesFusion;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.FieldMappingTransformer;
-import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match.*;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.ProcessorTransformer;
 import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
