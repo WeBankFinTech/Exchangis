@@ -84,6 +84,11 @@ public class ExchangisJobDataSourcesContent {
         private Long id;
 
         /**
+         * Model id
+         */
+        private Long modelId;
+
+        /**
          * Data source name
          */
         private String name;
@@ -122,6 +127,18 @@ public class ExchangisJobDataSourcesContent {
         @Override
         public void setId(Long id) {
             this.id = id;
+        }
+
+        /**
+         * Model id
+         * @return model id
+         */
+        public Long getModelId() {
+            return modelId;
+        }
+
+        public void setModelId(Long modelId) {
+            this.modelId = modelId;
         }
 
         @Override

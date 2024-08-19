@@ -1,0 +1,99 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelBindMapper">
+    <resultMap id="rateLimitUsed" type="DataSourceModelBind">
+        <result property="id" column="id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="dataSourceId" column="data_source_id"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyUser" column="modify_user"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
+    <sql id="table">
+        exchangis_data_source_model_bind
+    </sql>
+
+    <sql id="columns">
+        model_id,data_source_id,
+        create_user,create_time,modify_user,modify_time
+    </sql>
+
+    <insert id="addDataSourceModelBind" useGeneratedKeys="true" keyProperty="id">
+        <foreach collection="list" item="item" open="" close="" separator="">
+            <![CDATA[
+                INSERT INTO exchangis_data_source_model_bind (
+                 model_id,data_source_id,
+                 create_user,modify_user
+                ) VALUES (
+                 #{item.modelId},
+                 #{item.dataSourceId},
+                 #{item.createUser},
+                 #{item.modifyUser}
+                );
+            ]]>
+        </foreach>
+    </insert>
+
+    <update id="updateDataSourceModelBind">
+        <foreach collection="list" item="item" separator="">
+            <![CDATA[
+                UPDATE exchangis_data_source_model_bind SET
+                model_id = #{item.modelId},
+                data_source_id = #{item.dataSourceId},
+                create_user = #{item.createUser},
+                modify_user = #{item.modifyUser}
+                WHERE
+                data_source_id=#{item.dataSourceId};
+            ]]>
+        </foreach>
+    </update>
+
+    <delete id="deleteDataSourceModelBind">
+        DELETE FROM <include refid="table"/> WHERE
+        model_id=#{item.modelId} and data_source_id=#{item.dataSourceId}
+    </delete>
+
+    <select id="queryDataSourceModelBinds" resultMap="rateLimitUsed">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_data_source_model_bind
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="queryDataSourceIdsByModel" resultMap="rateLimitUsed">
+        SELECT
+        data_source_id
+        FROM exchangis_data_source_model_bind
+        WHERE model_id = #{modelId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="queryDataSourceModelBind" resultMap="rateLimitUsed">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_data_source_model_bind
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+    </select>
+
+    <sql id="findPageWhere">
+        <where>
+            <if test="modelId != null and modelId != ''">
+                AND model_id = #{modelId}
+            </if>
+            <if test="dataSourceId != null and dataSourceId != ''">
+                AND data_source_id = #{dataSourceId}
+            </if>
+            <if test="createUser != null and createUser != ''">
+                AND create_user = #{createUser}
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                AND modify_user = #{modifyUser}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

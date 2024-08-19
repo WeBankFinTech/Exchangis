@@ -32,4 +32,12 @@ public interface ExchangisJobOpenService {
      * @param idList id list
      */
     void deleteJobBatch(List<Long> idList) throws ExchangisJobException;
+
+    /**
+     * If there are some jobs which run with the dataSource model provided
+     *
+     * @param id
+     * @return
+     */
+    boolean isRunWithDataSourceModel(Long id);
 }

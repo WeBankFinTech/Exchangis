@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.common.domain;
 
 /**
  * Data source common basic inf
+ * TIPS: Not need to define modelId
  */
 public interface ExchangisDataSource {
 

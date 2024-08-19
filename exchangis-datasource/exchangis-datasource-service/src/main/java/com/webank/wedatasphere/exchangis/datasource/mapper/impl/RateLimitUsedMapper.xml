@@ -1,0 +1,152 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitUsedMapper">
+    <resultMap id="rateLimitUsed" type="RateLimitUsed">
+        <result property="id" column="id"/>
+        <result property="rateLimitId" column="rate_limit_id"/>
+        <result property="rateLimitType" column="rate_limit_type"/>
+        <result property="rateLimitUsed" column="rate_limit_used"/>
+        <result property="rateLimitTotal" column="rate_limit_total"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyUser" column="modify_user"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
+    <sql id="table">
+        exchangis_rate_limit_used
+    </sql>
+
+    <sql id="columns">
+        id,rate_limit_id,rate_limit_type,rate_limit_used,rate_limit_total,
+        create_user,create_time,modify_user,modify_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <foreach collection="list" item="item" open="" close="" separator="">
+            <![CDATA[
+                INSERT INTO exchangis_rate_limit_used (
+                 rate_limit_id,rate_limit_type,rate_limit_used,
+                 rate_limit_total,create_user,modify_user
+                ) VALUES (
+                 #{item.rateLimitId},
+                 #{item.rateLimitType},
+                 #{item.rateLimitUsed},
+                 #{item.rateLimitTotal},
+                 #{item.createUser},
+                 #{item.modifyUser}
+                );
+            ]]>
+        </foreach>
+    </insert>
+
+    <update id="update">
+        <foreach collection="list" item="item" separator="">
+            <![CDATA[
+                UPDATE exchangis_rate_limit_used SET
+                rate_limit_id = #{item.rateLimitId},
+                rate_limit_type = #{item.rateLimitType},
+                rate_limit_total = #{item.rateLimitTotal},
+                modify_user = #{item.modifyUser}
+                WHERE
+                rate_limit_id = #{item.rateLimitId} AND rate_limit_type = #{item.rateLimitType};
+            ]]>
+        </foreach>
+    </update>
+
+    <delete id="delete">
+        DELETE FROM <include refid="table"/> WHERE
+        rate_limit_id in (
+        <foreach collection="ids" item="item" separator=",">
+            ${item}
+        </foreach>
+        )
+    </delete>
+
+    <select id="selectUsedInLimitIds" resultMap="rateLimitUsed">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_rate_limit_used
+        <where>
+            rate_limit_id IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+    <update id="applyRateLimitUsed">
+        UPDATE <include refid="table"/>
+        <set>
+            <![CDATA[ rate_limit_used = CASE
+                WHEN rate_limit_used + #{rateLimitUsed} <= rate_limit_total
+                THEN rate_limit_used + #{rateLimitUsed}
+                ELSE rate_limit_used
+                END
+                ]]>
+        </set>
+        WHERE rate_limit_id = #{rateLimitId} AND rate_limit_type = #{rateLimitType};
+    </update>
+
+    <update id="releaseRateLimitUsed">
+        <foreach collection="list" item="item" separator="">
+            UPDATE <include refid="table"/>
+            <set>
+                <![CDATA[ rate_limit_used = CASE
+                WHEN rate_limit_used - #{item.rateLimitUsed} > 0
+                THEN rate_limit_used - #{item.rateLimitUsed}
+                ELSE 0
+                END
+                ]]>
+            </set>
+            WHERE rate_limit_id = #{item.rateLimitId} AND rate_limit_type = #{item.rateLimitType};
+        </foreach>
+    </update>
+
+    <update id="resetRateLimitUsed">
+        UPDATE <include refid="table"/> SET
+        rate_limit_used = 0
+        WHERE
+        rate_limit_id = #{id}
+    </update>
+
+    <select id="selectAllList" resultMap="rateLimitUsed">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_rate_limit_used
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT count(*) FROM <include refid="table"/>
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="findPage" resultMap="rateLimitUsed">
+        SELECT
+        <include refid="columns"/>
+        FROM <include refid="table"/>
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+    </select>
+
+    <sql id="findPageWhere">
+        <where>
+            <if test="rateLimitId != null and rateLimitId != ''">
+                AND rate_limit_id = #{rateLimitId}
+            </if>
+            <if test="rateLimitType != null and rateLimitType != ''">
+                AND rate_limit_type = #{rateLimitType}
+            </if>
+            <if test="rateLimitUsed != null and rateLimitType != ''">
+                AND rate_limit_used = #{rateLimitType}
+            </if>
+            <if test="rateLimitTotal != null and rateLimitTotal != ''">
+                AND rate_limit_total = #{rateLimitTotal}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

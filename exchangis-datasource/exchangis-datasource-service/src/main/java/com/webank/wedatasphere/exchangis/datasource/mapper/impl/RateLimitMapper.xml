@@ -1,0 +1,164 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitMapper">
+    <resultMap id="rateLimit" type="RateLimit">
+        <result property="id" column="id"/>
+        <result property="limitRealmId" column="limit_realm_id"/>
+        <result property="limitRealm" column="limit_realm"/>
+        <result property="flowRateLimit" column="flow_rate_limit"/>
+        <result property="flowRateLimitUnit" column="flow_rate_limit_unit"/>
+        <result property="recordRateLimit" column="record_rate_limit"/>
+        <result property="parallelLimit" column="parallel_limit"/>
+        <result property="openLimit" column="open_limit"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyUser" column="modify_user"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
+    <resultMap id="rateLimitVo" type="RateLimitVo">
+        <result property="id" column="id"/>
+        <result property="limitRealmId" column="limit_realm_id"/>
+        <result property="limitRealm" column="limit_realm"/>
+        <result property="modelName" column="model_name"/>
+        <result property="flowRateLimit" column="flow_rate_limit"/>
+        <result property="flowRateLimitUnit" column="flow_rate_limit_unit"/>
+        <result property="recordRateLimit" column="record_rate_limit"/>
+        <result property="parallelLimit" column="parallel_limit"/>
+        <result property="openLimit" column="open_limit"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyUser" column="modify_user"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
+    <sql id="table">
+        exchangis_rate_limit
+    </sql>
+
+    <sql id="columns">
+        id,limit_realm_id,limit_realm,flow_rate_limit,
+        flow_rate_limit_unit,record_rate_limit,parallel_limit,open_limit,
+        create_user,create_time,modify_user,modify_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO exchangis_rate_limit (
+         limit_realm_id,limit_realm,flow_rate_limit,flow_rate_limit_unit,record_rate_limit,
+         parallel_limit,open_limit,create_user,modify_user
+        ) VALUES (
+         #{limitRealmId},
+         #{limitRealm},
+         #{flowRateLimit},
+         #{flowRateLimitUnit},
+         #{recordRateLimit},
+         #{parallelLimit},
+         #{openLimit},
+         #{createUser},
+         #{modifyUser}
+        )
+        ]]>
+    </insert>
+
+    <update id="update">
+        UPDATE <include refid="table"/> SET
+        limit_realm_id = #{limitRealmId},
+        limit_realm = #{limitRealm},
+        flow_rate_limit = #{flowRateLimit},
+        flow_rate_limit_unit = #{flowRateLimitUnit},
+        record_rate_limit = #{recordRateLimit},
+        parallel_limit = #{parallelLimit},
+        open_limit = #{openLimit},
+        modify_user = #{modifyUser}
+        WHERE
+        id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM <include refid="table"/> WHERE
+        id in (
+        <foreach collection="ids" item="value" separator=",">
+            ${value}
+        </foreach>
+        )
+    </delete>
+
+    <select id="selectOne" resultMap="rateLimit">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_rate_limit
+        <where>
+            <if test="id != null and id != ''">
+                AND id = #{id}
+            </if>
+            <if test="limitRealmId != null and limitRealmId != ''">
+                AND limit_realm_id = #{limitRealmId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAllList" resultMap="rateLimit">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_rate_limit rl
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT count(*) FROM <include refid="table"/> rl
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="selectByRealmIds" resultMap="rateLimit">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_rate_limit
+        WHERE
+        limit_realm = #{limitRealm} AND
+        limit_realm_id in (
+        <foreach collection="limitRealmIds" item="value" separator=",">
+            ${value}
+        </foreach>
+        )
+    </select>
+
+    <select id="findPageVo" resultMap="rateLimitVo">
+        SELECT
+        rl.id,rl.limit_realm_id,rl.limit_realm,rl.flow_rate_limit,
+        rl.flow_rate_limit_unit,rl.record_rate_limit,rl.parallel_limit,rl.open_limit,
+        rl.create_user,rl.create_time,rl.modify_user,rl.modify_time,
+        dsm.model_name
+        FROM <include refid="table"/> rl
+        LEFT JOIN udes_data_source_model dsm on rl.limit_realm_id=dsm.id
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="findPage" resultMap="rateLimit">
+        SELECT
+        <include refid="columns"/> rl
+        FROM <include refid="table"/>
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+    </select>
+
+    <sql id="findPageWhere">
+        <where>
+            <if test="openLimit != null and openLimit != ''">
+                AND rl.open_limit = #{openLimit}
+            </if>
+            <if test="limitRealmId != null and limitRealmId != ''">
+                AND rl.limit_realm_id = #{limitRealmId}
+            </if>
+            <if test="limitRealm != null and limitRealm != ''">
+                AND rl.limit_realm = #{limitRealm}
+            </if>
+            <if test="userRole != null and userRole == 'user'">
+                AND rl.create_user = #{createUser}
+            </if>
+        </where>
+    </sql>
+</mapper>
