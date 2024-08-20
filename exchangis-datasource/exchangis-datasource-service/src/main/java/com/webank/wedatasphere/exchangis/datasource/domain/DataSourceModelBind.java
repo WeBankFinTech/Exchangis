@@ -3,11 +3,6 @@ package com.webank.wedatasphere.exchangis.datasource.domain;
 
 import java.util.Date;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- * DataSource model
- */
 public class DataSourceModelBind {
 
     private Long modelId;

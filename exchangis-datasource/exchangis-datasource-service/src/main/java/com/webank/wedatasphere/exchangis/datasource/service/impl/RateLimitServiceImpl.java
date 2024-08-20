@@ -33,10 +33,6 @@ import java.util.Comparator;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 @Service
 public class RateLimitServiceImpl implements RateLimitService {
 

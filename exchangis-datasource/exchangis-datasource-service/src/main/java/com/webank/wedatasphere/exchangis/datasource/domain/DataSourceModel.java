@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author jefftlin
- * @date 2024/8/15
  * DataSource model
  */
 public class DataSourceModel {

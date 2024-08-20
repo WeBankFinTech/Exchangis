@@ -8,10 +8,6 @@ import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitQuery;
 
 import java.util.List;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public interface RateLimitService {
 
     /**

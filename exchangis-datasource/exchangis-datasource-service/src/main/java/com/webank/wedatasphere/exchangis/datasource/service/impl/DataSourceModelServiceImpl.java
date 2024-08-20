@@ -13,10 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 @Service
 public class DataSourceModelServiceImpl implements DataSourceModelService {
 

@@ -13,10 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public class RateLimitTool {
 
     /**

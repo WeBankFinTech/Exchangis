@@ -9,10 +9,6 @@ import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public interface RateLimitMapper {
 
     /**

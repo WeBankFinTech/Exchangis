@@ -4,10 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public class RateLimitVo {
 
     public static final String DEFAULT_LIMIT_REALM = "MODEL";

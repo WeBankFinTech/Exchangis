@@ -7,10 +7,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public class RateLimit {
 
     public static final String DEFAULT_LIMIT_REALM = "MODEL";

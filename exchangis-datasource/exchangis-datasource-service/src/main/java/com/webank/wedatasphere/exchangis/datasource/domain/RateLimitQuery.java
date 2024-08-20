@@ -2,10 +2,6 @@ package com.webank.wedatasphere.exchangis.datasource.domain;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public class RateLimitQuery extends PageQuery {
 
     private Long id;

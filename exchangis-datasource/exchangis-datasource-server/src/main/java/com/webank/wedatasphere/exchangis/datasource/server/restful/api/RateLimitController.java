@@ -20,10 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.*;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 @RestController
 @RequestMapping(value = "dss/exchangis/main/datasources/rate-limit", produces = {"application/json;charset=utf-8"})
 public class RateLimitController {
