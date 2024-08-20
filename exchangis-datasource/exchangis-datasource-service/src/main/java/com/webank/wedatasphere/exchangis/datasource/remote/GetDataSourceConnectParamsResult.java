@@ -1,6 +1,6 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
-public class GetDataSourceConnectParamsResultDTO extends ResultDTO {
+public class GetDataSourceConnectParamsResult extends RemoteResult {
     private ConnectParamsDTO data;
 
     public ConnectParamsDTO getData() {

@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.datasource.domain;
+package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
@@ -9,22 +9,38 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author jefftlin
- * @date 2024/8/15
  * DataSource model
  */
-public class DataSourceModel {
+public class ExchangisDataSourceModel {
 
+    /**
+     * Model id
+     */
     private Long id;
 
+    /**
+     * Cluster name
+     */
     private String clusterName;
 
+    /**
+     * Model name (always equal to cluster name)
+     */
     private String modelName;
 
+    /**
+     * Data source type
+     */
     private String sourceType;
 
+    /**
+     * Model description
+     */
     private String modelDesc;
 
+    /**
+     * Create owner
+     */
     private String createOwner;
 
     private String parameter;
@@ -52,7 +68,7 @@ public class DataSourceModel {
         return parameterMap;
     }
 
-    public DataSourceModel() {
+    public ExchangisDataSourceModel() {
     }
 
     public Long getId() {

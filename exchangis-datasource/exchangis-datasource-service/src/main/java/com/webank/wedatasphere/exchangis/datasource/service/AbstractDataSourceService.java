@@ -2,7 +2,6 @@ package com.webank.wedatasphere.exchangis.datasource.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
@@ -19,7 +18,7 @@ import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSour
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobTransformsContent;
-import com.webank.wedatasphere.exchangis.datasource.dto.GetDataSourceInfoResultDTO;
+import com.webank.wedatasphere.exchangis.datasource.remote.GetDataSourceInfoResult;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
@@ -318,7 +317,7 @@ public abstract class AbstractDataSourceService {
             String finalOperator = operator;
             Optional.ofNullable(this.context.getExchangisDsDefinition(ui.getType())).ifPresent(o -> {
                 try {
-                    GetDataSourceInfoResultDTO dataSourceInfo = getDataSource(finalOperator, Long.parseLong(ui.getId()));
+                    GetDataSourceInfoResult dataSourceInfo = getDataSource(finalOperator, Long.parseLong(ui.getId()));
                     if (Objects.nonNull(dataSourceInfo)) {
                         String name = dataSourceInfo.getData().getInfo().getDataSourceName();
                         ui.setDs(name);
@@ -339,5 +338,5 @@ public abstract class AbstractDataSourceService {
      * @return dto
      * @throws ErrorException e
      */
-    protected abstract GetDataSourceInfoResultDTO getDataSource(String username, Long id) throws ErrorException;
+    protected abstract GetDataSourceInfoResult getDataSource(String username, Long id) throws ErrorException;
 }

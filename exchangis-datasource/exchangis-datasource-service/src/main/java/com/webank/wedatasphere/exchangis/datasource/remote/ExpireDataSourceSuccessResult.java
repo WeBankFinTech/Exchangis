@@ -1,8 +1,8 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ExpireDataSourceSuccessResultDTO extends ResultDTO {
+public class ExpireDataSourceSuccessResult extends RemoteResult {
     private ExpireIdDTO data;
 
 

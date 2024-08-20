@@ -1,8 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.mapper;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
-import com.webank.wedatasphere.exchangis.datasource.domain.DataSourceModel;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimit;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 
@@ -19,28 +18,28 @@ public interface DataSourceModelMapper {
      * @param key
      * @return
      */
-    DataSourceModel selectOneAndLock(Object key);
+    ExchangisDataSourceModel selectOneAndLock(Object key);
 
     /**
      * Select one by datasource id
      * @param dataSourceId
      * @return
      */
-    DataSourceModel selectOneByDataSourceId(@Param("dataSourceId") Long dataSourceId);
+    ExchangisDataSourceModel selectOneByDataSourceId(@Param("dataSourceId") Long dataSourceId);
 
-    List<DataSourceModel> selectInfoList(Object key);
+    List<ExchangisDataSourceModel> selectInfoList(Object key);
 
     /**
      * Select by model name
      * @param name model name
      * @return
      */
-    DataSourceModel selectOneByName(String name);
+    ExchangisDataSourceModel selectOneByName(String name);
 
     /**
      * Query with ratelimit
      */
-    List<DataSourceModel> queryWithRateLimit();
+    List<ExchangisDataSourceModel> queryWithRateLimit();
 
 
     /**
@@ -49,7 +48,7 @@ public interface DataSourceModelMapper {
      * @param dataSourceModel dataSourceModelEntity
      * @return primary key
      */
-    int insert(DataSourceModel dataSourceModel);
+    int insert(ExchangisDataSourceModel dataSourceModel);
 
     /**
      * Delete
@@ -64,7 +63,7 @@ public interface DataSourceModelMapper {
      * @param dataSourceModel dataSourceModelEntity
      * @return affect rows
      */
-    int update(DataSourceModel dataSourceModel);
+    int update(ExchangisDataSourceModel dataSourceModel);
 
     /**
      * Count result
@@ -80,20 +79,20 @@ public interface DataSourceModelMapper {
      * @param key primary key
      * @return data
      */
-    DataSourceModel selectOne(Object key);
+    ExchangisDataSourceModel selectOne(Object key);
 
     /**
      * Search
      *
      * @return
      */
-    List<DataSourceModel> findPage(PageQuery pageQuery, RowBounds rowBound);
+    List<ExchangisDataSourceModel> findPage(PageQuery pageQuery, RowBounds rowBound);
 
     /**
      * 查询所有的数据
      *
      * @return
      */
-    List<DataSourceModel> selectAllList(PageQuery pageQuery);
+    List<ExchangisDataSourceModel> selectAllList(PageQuery pageQuery);
 
 }

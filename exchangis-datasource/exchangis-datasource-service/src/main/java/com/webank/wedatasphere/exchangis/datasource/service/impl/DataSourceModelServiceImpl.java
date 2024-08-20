@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.service.impl;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
-import com.webank.wedatasphere.exchangis.datasource.domain.DataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelMapper;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
 import org.apache.ibatis.session.RowBounds;
@@ -27,7 +27,7 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
 
 
     @Override
-    public boolean add(DataSourceModel dataSourceModel) {
+    public boolean add(ExchangisDataSourceModel dataSourceModel) {
         return dataSourceModelMapper.insert(dataSourceModel) > 0;
     }
 
@@ -48,7 +48,7 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     }
 
     @Override
-    public boolean update(DataSourceModel dataSourceModel) {
+    public boolean update(ExchangisDataSourceModel dataSourceModel) {
         return dataSourceModelMapper.update(dataSourceModel) > 0;
     }
 
@@ -58,21 +58,21 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     }
 
     @Override
-    public List<DataSourceModel> findPage(PageQuery pageQuery) {
+    public List<ExchangisDataSourceModel> findPage(PageQuery pageQuery) {
         int currentPage = pageQuery.getPage();
         int pageSize = pageQuery.getPageSize();
         int offset = currentPage > 0 ? (currentPage - 1) * pageSize : 0;
-        List<DataSourceModel> result = dataSourceModelMapper.findPage(pageQuery, new RowBounds(offset, pageSize));
+        List<ExchangisDataSourceModel> result = dataSourceModelMapper.findPage(pageQuery, new RowBounds(offset, pageSize));
         return result;
     }
 
     @Override
-    public List<DataSourceModel> selectAllList(PageQuery pageQuery) {
+    public List<ExchangisDataSourceModel> selectAllList(PageQuery pageQuery) {
         return null;
     }
 
     @Override
-    public DataSourceModel get(Long id) {
+    public ExchangisDataSourceModel get(Long id) {
         return dataSourceModelMapper.selectOne(id);
     }
 
@@ -82,7 +82,7 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     }
 
     @Override
-    public List<DataSourceModel> queryWithRateLimit() {
+    public List<ExchangisDataSourceModel> queryWithRateLimit() {
         return dataSourceModelMapper.queryWithRateLimit();
     }
 }

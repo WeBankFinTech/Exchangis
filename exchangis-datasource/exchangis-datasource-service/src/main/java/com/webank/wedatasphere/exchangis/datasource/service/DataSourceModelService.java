@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.service;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
-import com.webank.wedatasphere.exchangis.datasource.domain.DataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public interface DataSourceModelService {
      * @param dataSourceModel
      * @return
      */
-    boolean add(DataSourceModel dataSourceModel);
+    boolean add(ExchangisDataSourceModel dataSourceModel);
 
     /**s
      * Delete batch(collection)
@@ -39,7 +39,7 @@ public interface DataSourceModelService {
      * @param dataSourceModel
      * @return
      */
-    boolean update(DataSourceModel dataSourceModel);
+    boolean update(ExchangisDataSourceModel dataSourceModel);
 
     /**
      * Count
@@ -54,16 +54,16 @@ public interface DataSourceModelService {
      *
      * @return
      */
-    List<DataSourceModel> findPage(PageQuery pageQuery);
+    List<ExchangisDataSourceModel> findPage(PageQuery pageQuery);
 
     /**
      * Select all
      *
      * @return
      */
-    List<DataSourceModel> selectAllList(PageQuery pageQuery);
+    List<ExchangisDataSourceModel> selectAllList(PageQuery pageQuery);
 
-    DataSourceModel get(Long id);
+    ExchangisDataSourceModel get(Long id);
 
     /**
      * Exist
@@ -75,5 +75,5 @@ public interface DataSourceModelService {
     /**
      * Query with ratelimit
      */
-    List<DataSourceModel> queryWithRateLimit();
+    List<ExchangisDataSourceModel> queryWithRateLimit();
 }

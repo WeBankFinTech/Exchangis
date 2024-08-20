@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.datasource.domain;
+package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 
 import java.util.Date;
@@ -8,7 +8,7 @@ import java.util.Date;
  * @date 2024/8/15
  * DataSource model
  */
-public class DataSourceModelBind {
+public class ExchangisDsModelRelation {
 
     private Long modelId;
 
@@ -22,7 +22,7 @@ public class DataSourceModelBind {
 
     private Date modifyTime;
 
-    public DataSourceModelBind() {
+    public ExchangisDsModelRelation() {
     }
 
     public Long getModelId() {

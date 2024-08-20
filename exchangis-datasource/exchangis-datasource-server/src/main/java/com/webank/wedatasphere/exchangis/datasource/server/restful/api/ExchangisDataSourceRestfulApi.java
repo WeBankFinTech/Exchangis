@@ -236,7 +236,7 @@ public class ExchangisDataSourceRestfulApi {
     public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, @Valid @RequestBody DataSourceCreateVO dataSourceUpdateVO, BindingResult bindingResult) throws Exception {
         Message message = new Message();
 
-        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String originUser = SecurityFilter.getLoginUsername(request);
         String loginUser = UserUtils.getLoginUser(request);
         LOG.info("dataSourceName:   " + dataSourceUpdateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceUpdateVO.getDataSourceDesc() + "label:   " + dataSourceUpdateVO.getLabels());
         if(bindingResult.hasErrors()){
@@ -263,7 +263,7 @@ public class ExchangisDataSourceRestfulApi {
                 }
             }
         }
-        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource name is: " + dataSourceUpdateVO.getDataSourceName(), OperateTypeEnum.UPDATE,request);
+        AuditLogUtils.printLog(originUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource name is: " + dataSourceUpdateVO.getDataSourceName(), OperateTypeEnum.UPDATE,request);
         return message;
 
     }

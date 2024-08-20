@@ -1,20 +1,20 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CreateDataSourceSuccessResultDTO extends ResultDTO {
-    private InsertIdDTO data;
+public class CreateDataSourceSuccessResult extends RemoteResult {
+    private InsertIdVo data;
 
 
-    public InsertIdDTO getData() {
+    public InsertIdVo getData() {
         return data;
     }
 
-    public void setData(InsertIdDTO data) {
+    public void setData(InsertIdVo data) {
         this.data = data;
     }
 
-    public static class InsertIdDTO {
+    public static class InsertIdVo {
         @JsonProperty(value = "insertId")
         private Long insertId;
 

@@ -1,8 +1,8 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
 import java.util.Map;
 
-public class MetadataGetTablePropsResultDTO extends ResultDTO {
+public class MetadataGetTablePropsResult extends RemoteResult {
 
     private Data data;
 

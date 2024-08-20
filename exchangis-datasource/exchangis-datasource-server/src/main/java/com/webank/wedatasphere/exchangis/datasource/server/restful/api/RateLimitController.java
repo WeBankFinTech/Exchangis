@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
 import com.webank.wedatasphere.exchangis.common.UserUtils;
-import com.webank.wedatasphere.exchangis.datasource.domain.DataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.domain.RateLimit;
 import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitVo;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
@@ -63,7 +63,7 @@ public class RateLimitController {
 
         // Param valid
         String username = UserUtils.getLoginUser(request);
-        DataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
+        ExchangisDataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
         MutablePair<Boolean, String> checkResult = checkDataSourceModel(rateLimit, dataSourceModel);
         if (!checkResult.getLeft()) {
             return Message.error("Please check the params!(参数校验失败)");
@@ -87,7 +87,7 @@ public class RateLimitController {
 //        }
 
         // Param valid
-        DataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
+        ExchangisDataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
         MutablePair<Boolean, String> checkResult = checkDataSourceModel(rateLimit, dataSourceModel);
         if (!checkResult.getLeft()) {
             return Message.error("Please check the params!(参数校验失败)");
@@ -114,7 +114,7 @@ public class RateLimitController {
 //        }
 
         // Param valid
-        DataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
+        ExchangisDataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
         MutablePair<Boolean, String> checkResult = checkDataSourceModel(rateLimit, dataSourceModel);
         if (!checkResult.getLeft()) {
             return Message.error("Please check the params!(参数校验失败)" + checkResult.getRight());
@@ -145,7 +145,7 @@ public class RateLimitController {
         return Message.ok();
     }
 
-    private MutablePair<Boolean, String> checkDataSourceModel(RateLimit rateLimit, DataSourceModel dataSourceModel) {
+    private MutablePair<Boolean, String> checkDataSourceModel(RateLimit rateLimit, ExchangisDataSourceModel dataSourceModel) {
         MutablePair<Boolean, String> pair = new MutablePair<>(true, null);
         if (Objects.isNull(dataSourceModel)) {
             pair.setLeft(false);
@@ -157,9 +157,9 @@ public class RateLimitController {
                 String uniqueId = "elasticUrls";
                 // Check unique id
                 Map<String, Object> paramMap = dataSourceModel.resolveParams();
-                List<DataSourceModel> dataSourceModels = dataSourceModelService.queryWithRateLimit();
+                List<ExchangisDataSourceModel> dataSourceModels = dataSourceModelService.queryWithRateLimit();
                 if (Objects.nonNull(dataSourceModels) && dataSourceModels.size() > 0) {
-                    for (DataSourceModel dsm : dataSourceModels) {
+                    for (ExchangisDataSourceModel dsm : dataSourceModels) {
                         Map<String, Object> params = dsm.resolveParams();
                         if (!Objects.equals(rateLimit.getLimitRealmId(), dsm.getId()) &&
                                 Objects.equals(paramMap.get(uniqueId), params.get(uniqueId))) {
