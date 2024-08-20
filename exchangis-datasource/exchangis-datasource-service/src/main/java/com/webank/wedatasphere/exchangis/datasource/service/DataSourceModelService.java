@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.service;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
-import com.webank.wedatasphere.exchangis.datasource.domain.DataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.datasource.domain;
+package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

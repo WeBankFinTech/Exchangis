@@ -1,9 +1,9 @@
 package com.webank.wedatasphere.exchangis.datasource.utils;
 
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimit;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitIdentify;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitUsed;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitIdentify;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitUsed;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.content.JobSettingsDefine;
 import com.webank.wedatasphere.exchangis.job.utils.JobUtils;

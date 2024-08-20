@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.service.impl;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
-import com.webank.wedatasphere.exchangis.datasource.domain.DataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelMapper;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
 import org.apache.ibatis.session.RowBounds;

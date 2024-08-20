@@ -1,13 +1,17 @@
-package com.webank.wedatasphere.exchangis.datasource.domain;
+package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 
 import java.util.Date;
 
-public class DataSourceModelBind {
+public class DataSourceModelBinding {
 
     private Long modelId;
 
-    private Long dataSourceId;
+    private Long dsId;
+
+    private String dsName;
+
+    private Long dsVersion;
 
     private String createUser;
 
@@ -17,7 +21,7 @@ public class DataSourceModelBind {
 
     private Date modifyTime;
 
-    public DataSourceModelBind() {
+    public DataSourceModelBinding() {
     }
 
     public Long getModelId() {
@@ -28,12 +32,28 @@ public class DataSourceModelBind {
         this.modelId = modelId;
     }
 
-    public Long getDataSourceId() {
-        return dataSourceId;
+    public Long getDsId() {
+        return dsId;
     }
 
-    public void setDataSourceId(Long dataSourceId) {
-        this.dataSourceId = dataSourceId;
+    public void setDsId(Long dsId) {
+        this.dsId = dsId;
+    }
+
+    public String getDsName() {
+        return dsName;
+    }
+
+    public void setDsName(String dsName) {
+        this.dsName = dsName;
+    }
+
+    public Long getDsVersion() {
+        return dsVersion;
+    }
+
+    public void setDsVersion(Long dsVersion) {
+        this.dsVersion = dsVersion;
     }
 
     public String getCreateUser() {
