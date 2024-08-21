@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.datasource.vo;
 import java.util.Date;
 import java.util.Map;
 
-public class DataSourceUpdateVO {
+public class DataSourceUpdateVo {
 
     private Long id;
 

@@ -12,6 +12,7 @@ import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
 import com.webank.wedatasphere.exchangis.datasource.GetDataSourceInfoByIdAndVersionIdAction;
+import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
 import com.webank.wedatasphere.exchangis.datasource.utils.RSAUtil;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
@@ -25,8 +26,8 @@ import com.webank.wedatasphere.exchangis.datasource.remote.*;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
 import com.webank.wedatasphere.exchangis.datasource.linkis.request.ParamsTestConnectAction;
 import com.webank.wedatasphere.exchangis.datasource.linkis.response.ParamsTestConnectResult;
-import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
-import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
+import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVo;
+import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVo;
 import com.webank.wedatasphere.exchangis.engine.dao.EngineSettingsDao;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineSettings;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
@@ -41,6 +42,7 @@ import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectDsQueryVo;
 import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
+import org.apache.linkis.datasource.client.AbstractRemoteClient;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import org.apache.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
 import org.apache.linkis.datasource.client.request.*;
@@ -50,7 +52,10 @@ import org.apache.linkis.datasource.client.response.GetDataSourceVersionsResult;
 import org.apache.linkis.datasource.client.response.MetadataGetColumnsResult;
 import org.apache.linkis.datasourcemanager.common.domain.DataSource;
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
+import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
 import org.apache.linkis.datasourcemanager.common.util.json.Json;
+import org.apache.linkis.httpclient.dws.response.DWSResult;
+import org.apache.linkis.httpclient.request.Action;
 import org.apache.linkis.httpclient.response.Result;
 import org.apache.linkis.metadata.query.common.domain.MetaColumnInfo;
 import org.apache.linkis.server.Message;
@@ -65,6 +70,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.*;
@@ -240,142 +247,90 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         return Message.ok().data("list", dtos);
     }
 
-    @Transactional
-    @SuppressWarnings("unchecked")
-    public Message create(String username, /*String type, */DataSourceCreateVO vo) throws ErrorException {
-        //DataSourceCreateVO vo;
-        Map<String, Object> json;
+    /**
+     * Create data source
+     * @param operator operator operatorr
+     * @param vo create vo
+     * @return data source id
+     * @throws ExchangisDataSourceException e
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> create(String operator, DataSourceCreateVo vo) throws ExchangisDataSourceException {
+        // TODO merge parameter from data source model
+        Map<String, Object> payLoads;
         try {
-            json = mapper.readValue(mapper.writeValueAsString(vo), Map.class);
-            json.put("labels",json.get("label"));
-        } catch (JsonProcessingException e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
+            payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
+            payLoads.put("labels", payLoads.get("label"));
+        } catch (JsonErrorException e) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(),
+                    e.getMessage());
         }
-        String comment = vo.getComment();
-        String createSystem = vo.getCreateSystem();
-        if (Objects.isNull(comment)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter comment should not be null");
-        }
-
-        if (Strings.isNullOrEmpty(createSystem)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter createSystem should not be empty");
-        }
-
-        com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition dsType = context.getExchangisDsDefinition(vo.getDataSourceTypeId());
+        ExchangisDataSourceDefinition dsType = context.getExchangisDsDefinition(vo.getDataSourceTypeId());
         if (Objects.isNull(dsType)) {
             throw new ExchangisDataSourceException(CONTEXT_GET_DATASOURCE_NULL.getCode(), "exchangis context get datasource null");
         }
         LinkisDataSourceRemoteClient client = dsType.getDataSourceRemoteClient();
-        String responseBody;
-        try {
-            Result execute = client.execute(CreateDataSourceAction.builder()
-                    .setUser(username)
-                    .addRequestPayloads(json)
-                    .build()
-            );
-            responseBody = execute.getResponseBody();
-        } catch (Exception e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_CREATE_ERROR.getCode(), e.getMessage());
-        }
-
-        if (Strings.isNullOrEmpty(responseBody)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_CREATE_ERROR.getCode(), "datasource create response null or empty");
-        }
-
-        CreateDataSourceSuccessResult result = Json.fromJson(responseBody, CreateDataSourceSuccessResult.class);
-        if (result.getStatus() != 0) {
-            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
-        }
+        // Send to create data source
+        Result createResult = rpcSend(client, () -> CreateDataSourceAction.builder()
+                .setUser(operator)
+                .addRequestPayloads(payLoads)
+                .build(),
+                AbstractRemoteClient::execute, CLIENT_DATASOURCE_CREATE_ERROR.getCode(),
+                "datasource create response null or empty");
+        CreateDataSourceSuccessResult result = Json.fromJson(createResult.getResponseBody(), CreateDataSourceSuccessResult.class);
+        // Get data source id
         Long dataSourceId = result.getData().getId();
-        UpdateDataSourceParameterResult updateDataSourceParameterResult;
-        try {
-            // 创建完成后发布数据源参数，形成一个版本
-            updateDataSourceParameterResult = client.updateDataSourceParameter(
-                    UpdateDataSourceParameterAction.builder()
-                            .setUser(username)
-                            .setDataSourceId(Long.parseLong(dataSourceId + ""))
-                            .addRequestPayloads(json)
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), e.getMessage());
-        }
-
-        if (Objects.isNull(updateDataSourceParameterResult)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), "datasource update params version null or empty");
-        }
-
-        if (updateDataSourceParameterResult.getStatus() != 0) {
-            throw new ExchangisDataSourceException(updateDataSourceParameterResult.getStatus(), updateDataSourceParameterResult.getMessage());
-        }
-        Message message = Message.ok();
-        updateDataSourceParameterResult.getData().forEach(message::data);
-        return message.data("id", dataSourceId);
+        // Send to create version
+        UpdateDataSourceParameterResult versionResult = rpcSend(client, () -> UpdateDataSourceParameterAction.builder()
+                .setUser(operator)
+                .setDataSourceId(Long.parseLong(dataSourceId + ""))
+                .addRequestPayloads(payLoads)
+                .build(),
+                LinkisDataSourceRemoteClient::updateDataSourceParameter, CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(),
+                "datasource update params version null or empty");
+        // TODO build the relation between model and data source version
+        Map<String, Object> versionParams = versionResult.getData();
+        versionParams.put("id", dataSourceId);
+        return versionParams;
     }
 
-    @Transactional
-    public Message updateDataSource(HttpServletRequest request, Long id, DataSourceCreateVO vo) throws Exception {
-
-        Map<String, Object> json;
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> update(String operator, Long id, DataSourceCreateVo vo) throws ExchangisDataSourceException {
+        Map<String, Object> payLoads;
         try {
-            json = mapper.readValue(mapper.writeValueAsString(vo), Map.class);
-            json.put("labels",json.get("label"));
-        } catch (JsonProcessingException e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
+            payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
+            payLoads.put("labels", payLoads.get("label"));
+        } catch (JsonErrorException e) {
+            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(),
+                    e.getMessage());
         }
-        String createSystem = vo.getCreateSystem();
-        if (Strings.isNullOrEmpty(createSystem)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter createSystem should not be empty");
-        }
-        String user = UserUtils.getLoginUser(request);
-        com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition dsType = context.getExchangisDsDefinition(vo.getDataSourceTypeId());
+        ExchangisDataSourceDefinition dsType = context.getExchangisDsDefinition(vo.getDataSourceTypeId());
         if (Objects.isNull(dsType)) {
-            throw new ExchangisDataSourceException(30401, "exchangis.datasource.null");
+            throw new ExchangisDataSourceException(CONTEXT_GET_DATASOURCE_NULL.getCode(), "exchangis context get datasource null");
         }
-
         LinkisDataSourceRemoteClient client = dsType.getDataSourceRemoteClient();
-        String responseBody;
-        try {
-            Result execute = client.execute(UpdateDataSourceAction.builder()
-                    .setUser(user)
-                    .setDataSourceId(Long.parseLong(id + ""))
-                    .addRequestPayloads(json)
-                    .build()
-            );
-            responseBody = execute.getResponseBody();
-        } catch (Exception e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), e.getMessage());
-        }
-
-        if (Strings.isNullOrEmpty(responseBody)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), "datasource update null or empty");
-        }
-
-        UpdateDataSourceSuccessResult updateDataSourceResult = Json.fromJson(responseBody, UpdateDataSourceSuccessResult.class);
-
-        if (updateDataSourceResult.getStatus() != 0) {
-            throw new ExchangisDataSourceException(updateDataSourceResult.getStatus(), updateDataSourceResult.getMessage());
-        }
-
-        UpdateDataSourceParameterResult updateDataSourceParameterResult;
-        try {
-            updateDataSourceParameterResult = client.updateDataSourceParameter(
-                    UpdateDataSourceParameterAction.builder()
-                            .setDataSourceId(Long.parseLong(id + ""))
-                            .setUser(user)
-                            .addRequestPayloads(json)
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), e.getMessage());
-        }
-        if (Objects.isNull(updateDataSourceParameterResult)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(), "datasource update params version null or empty");
-        }
-        if (updateDataSourceParameterResult.getStatus() != 0) {
-            throw new ExchangisDataSourceException(updateDataSourceParameterResult.getStatus(), updateDataSourceParameterResult.getMessage());
-        }
-        return Message.ok();
+        // TODO First to get data source data
+        // Send to update data source
+        rpcSend(client, () -> UpdateDataSourceAction.builder()
+                .setUser(operator)
+                .setDataSourceId(Long.parseLong(id + ""))
+                .addRequestPayloads(payLoads)
+                .build(),
+                AbstractRemoteClient::execute, CLIENT_DATASOURCE_UPDATE_ERROR.getCode(),
+                "datasource update null or empty");
+        // Send to create version
+        rpcSend(client, () -> UpdateDataSourceParameterAction.builder()
+                .setDataSourceId(Long.parseLong(id + ""))
+                .setUser(operator)
+                .addRequestPayloads(payLoads)
+                .build(),
+                LinkisDataSourceRemoteClient :: updateDataSourceParameter,
+                CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(),
+                "datasource update params version null or empty");
+        // TODO build the relation between model and data source version
+        return new HashMap<>();
     }
 
     @Transactional
@@ -619,7 +574,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
      * @return response message
      * @throws Exception e
      */
-    public Message queryDataSources(HttpServletRequest request, DataSourceQueryVO vo) throws Exception {
+    public Message queryDataSources(HttpServletRequest request, DataSourceQueryVo vo) throws Exception {
         String username = StringUtils.isNoneBlank(vo.getCreateUser()) ?
                 vo.getCreateUser() : UserUtils.getLoginUser(request);
         int page = Objects.isNull(vo.getPage()) ? 1 : vo.getPage();
@@ -960,7 +915,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
     }
 
     @SuppressWarnings("unchecked")
-    public Message testConnectByVo(HttpServletRequest request, DataSourceCreateVO vo) throws ErrorException {
+    public Message testConnectByVo(HttpServletRequest request, DataSourceCreateVo vo) throws ErrorException {
         LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         String userName = UserUtils.getLoginUser(request);
         Map<String, Object> json;
@@ -1201,7 +1156,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         String admin = GlobalConfiguration.getAdminUser();
         dsResult = getDataSource(StringUtils.isNotBlank(admin) ? admin : operator, sourceName);
         if (Objects.nonNull(dsResult)){
-            DataSourceCreateVO createDs = new DataSourceCreateVO();
+            DataSourceCreateVo createDs = new DataSourceCreateVo();
             GetDataSourceInfoResult.DataSourceItemDTO modelDs = dsResult.getData().getInfo();
             createDs.setDataSourceName(newName);
             createDs.setDataSourceTypeId(modelDs.getDataSourceTypeId());
@@ -1211,9 +1166,9 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
             createDs.setLabel(modelDs.getLabel());
             createDs.setConnectParams(modelDs.getConnectParams());
             createDs.setComment("init");
-            Message resultMsg = create(operator, createDs);
-            Object version = resultMsg.getData().get("version");
-            Object id = resultMsg.getData().get("id");
+            Map<String, Object> versionParams = create(operator, createDs);
+            Object version = versionParams.get("version");
+            Object id = versionParams.get("id");
             if (Objects.nonNull(version) && Objects.nonNull(id)){
                 publishDataSource(operator,
                         Long.parseLong(String.valueOf(id)), Long.parseLong(String.valueOf(version)));
@@ -1244,7 +1199,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                         throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(), e.getMessage());
                     }
                     json = null;
-                    String user = "SYSTEM";
+                    String user = GlobalConfiguration.getAdminUser();
                     com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition dsType = context.getExchangisDsDefinition(dataSource.getDataSourceTypeId());
 
                     LinkisDataSourceRemoteClient client = dsType.getDataSourceRemoteClient();
@@ -1274,6 +1229,38 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         }
     }
 
+    /**
+     * Rpc send wrapper
+     * @param client rpc client
+     * @param decorator decorator for action
+     * @param executor executor for client
+     * @param <T> action type
+     * @param <R> result type
+     * @return result
+     * @throws ExchangisDataSourceException e
+     */
+    private <T extends Action, R extends Result>R rpcSend(
+            LinkisDataSourceRemoteClient client,
+            Supplier<T> decorator, BiFunction<LinkisDataSourceRemoteClient, T, R> executor,
+            int errorCode, String nonErrorMessage) throws ExchangisDataSourceException{
+        T action = decorator.get();
+        R result;
+        try {
+            result = executor.apply(client, action);
+        } catch (Exception e){
+            throw new ExchangisDataSourceException(errorCode, e.getMessage());
+        }
+        if (Objects.isNull(result) || StringUtils.isBlank(result.getResponseBody())){
+            throw new ExchangisDataSourceException(errorCode, nonErrorMessage);
+        }
+        if (result instanceof DWSResult) {
+            DWSResult dwsResult = (DWSResult) result;
+            if (dwsResult.getStatus() != 0){
+                throw new ExchangisDataSourceException(dwsResult.getStatus(), dwsResult.getMessage());
+            }
+        }
+        return result;
+    }
     /**
      * Convert project data source relations to exchangis data sources
      * @param dsRelations relation

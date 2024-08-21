@@ -1,14 +1,16 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
+import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
-import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVO;
-import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVO;
+import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVo;
+import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVo;
 import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
@@ -25,6 +27,7 @@ import javax.validation.Valid;
 import javax.ws.rs.QueryParam;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,7 +40,7 @@ public class ExchangisDataSourceRestfulApi {
 
     private final ExchangisDataSourceService exchangisDataSourceService;
 
-    private static Pattern p = Pattern.compile("(?<=\\[)[^]]+");
+    private static final Pattern ERROR_PATTERN = Pattern.compile("(?<=\\[)[^]]+");
 
     @Resource
     private ProjectOpenService projectOpenService;
@@ -62,7 +65,7 @@ public class ExchangisDataSourceRestfulApi {
             LOG.error(errorMessage, e);
 
             String errorNote = e.getMessage();
-            Matcher matcher = p.matcher(errorNote);
+            Matcher matcher = ERROR_PATTERN.matcher(errorNote);
             if (matcher.find()) {
                 message = Message.error(matcher.group());
             }
@@ -76,7 +79,7 @@ public class ExchangisDataSourceRestfulApi {
 
     // query paged datasource
     @RequestMapping( value = "/query", method = {RequestMethod.GET,RequestMethod.POST})
-    public Message create(HttpServletRequest request, @RequestBody DataSourceQueryVO vo) throws Exception {
+    public Message query(HttpServletRequest request, @RequestBody DataSourceQueryVo vo) throws Exception {
         Message message = null;
         try{
             message = exchangisDataSourceService.queryDataSources(request, vo);
@@ -107,7 +110,7 @@ public class ExchangisDataSourceRestfulApi {
             LOG.error(errorMessage, e);
 
             String errorNote = e.getMessage();
-            Matcher matcher = p.matcher(errorNote);
+            Matcher matcher = ERROR_PATTERN.matcher(errorNote);
             if (matcher.find()) {
                 message = Message.error(matcher.group());
             }
@@ -149,7 +152,7 @@ public class ExchangisDataSourceRestfulApi {
             LOG.error(errorMessage, e);
 
             String errorNote = e.getMessage();
-            Matcher matcher = p.matcher(errorNote);
+            Matcher matcher = ERROR_PATTERN.matcher(errorNote);
             if (matcher.find()) {
                 message = Message.error(matcher.group());
             }
@@ -163,35 +166,47 @@ public class ExchangisDataSourceRestfulApi {
 
     // create datasource
     @RequestMapping( value = "", method = RequestMethod.POST)
-    public Message create(/*@PathParam("type") String type, */@Valid @RequestBody DataSourceCreateVO dataSourceCreateVO, BindingResult bindingResult, HttpServletRequest request ) throws Exception {
-        Message message = new Message();
+    public Message create(/*@PathParam("type") String type, */
+            @Valid @RequestBody DataSourceCreateVo dataSourceCreateVo,
+            BindingResult bindingResult, HttpServletRequest request ) throws Exception {
+        Message result;
         String loginUser = UserUtils.getLoginUser(request);
         String originUser = SecurityFilter.getLoginUsername(request);
+        AuditLogUtils.printLog(originUser, loginUser, TargetTypeEnum.DATASOURCE,"0", "DataSource name is: " + dataSourceCreateVo.getDataSourceName(),
+                OperateTypeEnum.CREATE,request);
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-            for(int i=0;i<fieldErrors.size();i++){
-                message = Message.error(fieldErrors.get(i).getDefaultMessage());
-                LOG.error("error field is : {} ,message is : {}", fieldErrors.get(i).getField(), fieldErrors.get(i).getDefaultMessage());
+            for (FieldError fieldError : fieldErrors) {
+                return Message.error("[Error](" + fieldError.getField() + "):" + fieldError.getDefaultMessage());
             }
         }
-        else {
-            try {
-                message = exchangisDataSourceService.create(loginUser, dataSourceCreateVO);
-            } catch (ExchangisDataSourceException e) {
-                String errorMessage = "Error occur while create datasource";
-                LOG.error(errorMessage, e);
-                String errorNote = e.getMessage();
-                Matcher matcher = p.matcher(errorNote);
-                if (matcher.find()) {
-                    message = Message.error(matcher.group());
-                }
-                else{
-                    message = Message.error("创建数据源失败");
-                }
+        try {
+            String comment = dataSourceCreateVo.getComment();
+            String createSystem = dataSourceCreateVo.getCreateSystem();
+            if (Objects.isNull(comment)) {
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(),
+                        "parameter comment should not be null");
+            }
+            if (Strings.isNullOrEmpty(createSystem)) {
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(),
+                        "parameter createSystem should not be empty");
+            }
+            Map<String, Object> versionData = exchangisDataSourceService.create(loginUser, dataSourceCreateVo);
+            result = Message.ok();
+            versionData.forEach(result::data);
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while create datasource";
+            LOG.error(errorMessage, e);
+            String errorNote = e.getMessage();
+            Matcher matcher = ERROR_PATTERN.matcher(errorNote);
+            if (matcher.find()) {
+                result = Message.error(matcher.group());
+            }
+            else{
+                result = Message.error("创建数据源失败:[" + errorNote + "]");
             }
         }
-        AuditLogUtils.printLog(originUser, loginUser, TargetTypeEnum.DATASOURCE,"0", "DataSource name is: " + dataSourceCreateVO.getDataSourceName(), OperateTypeEnum.CREATE,request);
-        return message;
+        return result;
     }
 
     // get datasource details
@@ -205,7 +220,7 @@ public class ExchangisDataSourceRestfulApi {
             LOG.error(errorMessage, e);
 
             String errorNote = e.getMessage();
-            Matcher matcher = p.matcher(errorNote);
+            Matcher matcher = ERROR_PATTERN.matcher(errorNote);
             if (matcher.find()) {
                 message = Message.error(matcher.group());
             }
@@ -231,40 +246,45 @@ public class ExchangisDataSourceRestfulApi {
 
     }
 
-    // update datasource and parameters (insert new record in datasource_version table)
+    /**
+     * update datasource and parameters (insert new record in datasource_version table)
+      */
     @RequestMapping( value = "/{id}", method = RequestMethod.PUT)
-    public Message update(HttpServletRequest request,/* @PathParam("type") String type, */@PathVariable("id") Long id, @Valid @RequestBody DataSourceCreateVO dataSourceUpdateVO, BindingResult bindingResult) throws Exception {
-        Message message = new Message();
-
+    public Message update(HttpServletRequest request,
+                          @PathVariable("id") Long id,
+                          @Valid @RequestBody DataSourceCreateVo updateVo, BindingResult bindingResult) throws Exception {
+        Message result;
         String originUser = SecurityFilter.getLoginUsername(request);
         String loginUser = UserUtils.getLoginUser(request);
-        LOG.info("dataSourceName:   " + dataSourceUpdateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceUpdateVO.getDataSourceDesc() + "label:   " + dataSourceUpdateVO.getLabels());
+        AuditLogUtils.printLog(originUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource name is: " + updateVo.getDataSourceName(),
+                OperateTypeEnum.UPDATE,request);
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-            for(int i=0;i<fieldErrors.size();i++){
-                message = Message.error(fieldErrors.get(i).getDefaultMessage());
-                LOG.error("error field is : {} ,message is : {}", fieldErrors.get(i).getField(), fieldErrors.get(i).getDefaultMessage());
+            for (FieldError fieldError : fieldErrors) {
+                return Message.error("[Error](" + fieldError.getField() + "):" + fieldError.getDefaultMessage());
             }
         }
-        else {
-            try{
-                message = exchangisDataSourceService.updateDataSource(request, /*type, */id, dataSourceUpdateVO);
-            } catch (ExchangisDataSourceException e) {
-                String errorMessage = "Error occur while update datasource";
-                LOG.error(errorMessage, e);
+        try{
+            String createSystem = updateVo.getCreateSystem();
+            if (Strings.isNullOrEmpty(createSystem)) {
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(), "parameter createSystem should not be empty");
+            }
+            exchangisDataSourceService.update(loginUser, id, updateVo);
+            result = Message.ok();
+        } catch (ExchangisDataSourceException e) {
+            String errorMessage = "Error occur while update datasource";
+            LOG.error(errorMessage, e);
 
-                String errorNote = e.getMessage();
-                Matcher matcher = p.matcher(errorNote);
-                if (matcher.find()) {
-                    message = Message.error(matcher.group());
-                }
-                else{
-                    message = Message.error("Exit same name dataSource(更新数据源失败)");
-                }
+            String errorNote = e.getMessage();
+            Matcher matcher = ERROR_PATTERN.matcher(errorNote);
+            if (matcher.find()) {
+                result = Message.error(matcher.group());
+            }
+            else{
+                result = Message.error("Exit same name dataSource(更新数据源失败):[" + e.getMessage() + "]");
             }
         }
-        AuditLogUtils.printLog(originUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource name is: " + dataSourceUpdateVO.getDataSourceName(), OperateTypeEnum.UPDATE,request);
-        return message;
+        return result;
 
     }
 
@@ -283,7 +303,7 @@ public class ExchangisDataSourceRestfulApi {
             LOG.error(errorMessage, e);
 
             String errorNote = e.getMessage();
-            Matcher matcher = p.matcher(errorNote);
+            Matcher matcher = ERROR_PATTERN.matcher(errorNote);
             if (matcher.find()) {
                 message = Message.error(matcher.group());
             }
@@ -326,7 +346,7 @@ public class ExchangisDataSourceRestfulApi {
             LOG.error(errorMessage, e);
 
             String errorNote = e.getMessage();
-            Matcher matcher = p.matcher(errorNote);
+            Matcher matcher = ERROR_PATTERN.matcher(errorNote);
             if (matcher.find()) {
                 message = Message.error(matcher.group());
             }
@@ -338,7 +358,7 @@ public class ExchangisDataSourceRestfulApi {
     }
 
     @RequestMapping( value = "/op/connect", method = RequestMethod.POST)
-    public Message testConnectByMap(HttpServletRequest request,/* @PathParam("type") String type, */@Valid @RequestBody DataSourceCreateVO dataSourceCreateVO,
+    public Message testConnectByMap(HttpServletRequest request,/* @PathParam("type") String type, */@Valid @RequestBody DataSourceCreateVo dataSourceCreateVO,
                                     BindingResult bindingResult) throws Exception {
         Message message = null;
         try{
@@ -348,7 +368,7 @@ public class ExchangisDataSourceRestfulApi {
             LOG.error(errorMessage, e);
 
             String errorNote = e.getMessage();
-            Matcher matcher = p.matcher(errorNote);
+            Matcher matcher = ERROR_PATTERN.matcher(errorNote);
             if (matcher.find()) {
                 message = Message.error(matcher.group());
             }
