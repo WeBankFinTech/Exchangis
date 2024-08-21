@@ -1,12 +1,9 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
 import com.webank.wedatasphere.exchangis.common.UserUtils;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitVo;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimit;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitVo;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitQuery;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-// TODO 这里仅仅为了测试，JOB的接口在另外的 Controller 中
 @RestController
 @RequestMapping(value = "dss/exchangis/main", produces = {"application/json;charset=utf-8"})
 public class ExchangisJobDataSourceRestfulApi {

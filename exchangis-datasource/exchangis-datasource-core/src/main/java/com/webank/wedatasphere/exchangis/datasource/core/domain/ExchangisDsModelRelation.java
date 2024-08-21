@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 import java.util.Date;
 
-public class DataSourceModelBinding {
+public class ExchangisDsModelRelation {
 
     private Long modelId;
 

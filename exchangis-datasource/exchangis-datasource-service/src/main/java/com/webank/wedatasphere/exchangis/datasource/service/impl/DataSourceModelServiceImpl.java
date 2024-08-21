@@ -1,6 +1,8 @@
 package com.webank.wedatasphere.exchangis.datasource.service.impl;
 
+import com.webank.wedatasphere.exchangis.common.pager.PageList;
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelMapper;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
@@ -54,17 +56,19 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     }
 
     @Override
-    public List<ExchangisDataSourceModel> findPage(PageQuery pageQuery) {
+    public PageList<ExchangisDataSourceModel> findPage(PageQuery pageQuery) {
         int currentPage = pageQuery.getPage();
         int pageSize = pageQuery.getPageSize();
         int offset = currentPage > 0 ? (currentPage - 1) * pageSize : 0;
-        List<ExchangisDataSourceModel> result = dataSourceModelMapper.findPage(pageQuery, new RowBounds(offset, pageSize));
-        return result;
+        PageList<ExchangisDataSourceModel> page = new PageList<>(currentPage, pageSize, offset);
+        List<ExchangisDataSourceModel> data = dataSourceModelMapper.findPage(pageQuery, new RowBounds(offset, pageSize));
+        page.setData(data);
+        return page;
     }
 
     @Override
-    public List<ExchangisDataSourceModel> selectAllList(PageQuery pageQuery) {
-        return null;
+    public List<ExchangisDataSourceModel> selectAllList(DataSourceModelQuery query) {
+        return dataSourceModelMapper.selectAllList(null);
     }
 
     @Override

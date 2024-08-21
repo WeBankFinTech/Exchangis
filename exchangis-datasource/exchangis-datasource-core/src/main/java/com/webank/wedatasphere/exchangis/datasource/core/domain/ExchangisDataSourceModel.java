@@ -38,14 +38,11 @@ public class ExchangisDataSourceModel {
      */
     private String modelDesc;
 
-    /**
-     * Create owner
-     */
-    private String createOwner;
-
     private String parameter;
 
     private Map<String, Object> parameterMap;
+
+    private String createUser;
 
     private Date createTime;
 
@@ -111,12 +108,12 @@ public class ExchangisDataSourceModel {
         this.modelDesc = modelDesc;
     }
 
-    public String getCreateOwner() {
-        return createOwner;
+    public String getCreateUser() {
+        return createUser;
     }
 
-    public void setCreateOwner(String createOwner) {
-        this.createOwner = createOwner;
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
     }
 
     public String getParameter() {
