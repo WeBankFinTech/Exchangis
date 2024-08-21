@@ -22,9 +22,9 @@ import java.util.*;
 
 @RestController
 @RequestMapping(value = "dss/exchangis/main/datasources/rate-limit", produces = {"application/json;charset=utf-8"})
-public class RateLimitController {
+public class ExchangisRateLimitController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RateLimitController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExchangisRateLimitController.class);
 
     @Resource
     private DataSourceModelService dataSourceModelService;

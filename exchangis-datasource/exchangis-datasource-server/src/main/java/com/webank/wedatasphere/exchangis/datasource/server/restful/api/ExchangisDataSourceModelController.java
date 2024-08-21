@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
 import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.enums.AuthType;
 import com.webank.wedatasphere.exchangis.common.pager.PageList;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
@@ -38,10 +39,16 @@ public class ExchangisDataSourceModelController {
         this.dataSourceModelService = dataSourceModelService;
     }
 
-    @RequestMapping( value = "", method = RequestMethod.POST)
-    public Message add(@Valid  @RequestBody ExchangisDataSourceModel model, HttpServletRequest request){
-        if(StringUtils.isNotBlank(model.getCreateUser()) && isDuplicate(model.getModelName(), request)){
-            Message.error("The name of model already exists");
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public Message add(@Valid @RequestBody ExchangisDataSourceModel model, HttpServletRequest request) {
+        if (StringUtils.isNotBlank(model.getCreateUser()) && isDuplicate(model.getModelName(), request)) {
+            return Message.error("The name of model already exists");
+        }
+        String userName = UserUtils.getLoginUser(request);
+        if (GlobalConfiguration.isAdminUser(userName)) {
+            model.setCreateOwner("");
+        } else {
+            model.setCreateOwner(model.getCreateUser());
         }
         model.setModelName(StringEscapeUtils.escapeHtml3(model.getModelName()));
         boolean ok = dataSourceModelService.add(model);
@@ -49,12 +56,12 @@ public class ExchangisDataSourceModelController {
                 Message.error("Failed ti add datasource model");
     }
 
-    @RequestMapping( value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public Message delete(@PathVariable Long id, HttpServletRequest request) {
         DataSourceModelQuery query = new DataSourceModelQuery();
         query.setModelId(id.intValue());
         List<ExchangisDataSourceModel> dsModels = dataSourceModelService.selectAllList(query);
-        if(Objects.nonNull(dsModels) && dsModels.size() > 0){
+        if (Objects.nonNull(dsModels) && dsModels.size() > 0) {
             return Message.error("The model is in use, cannot delete it");
         }
         boolean result = dataSourceModelService.delete(String.valueOf(id));
@@ -65,15 +72,15 @@ public class ExchangisDataSourceModelController {
                 Message.error("Failed to delete the dataSource model");
     }
 
-    @RequestMapping( value = "/{id}", method = RequestMethod.PUT)
-    public Message update(@Valid @RequestBody ExchangisDataSourceModel model, HttpServletRequest request){
-        if(model.getId()  <= 0){
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public Message update(@Valid @RequestBody ExchangisDataSourceModel model, HttpServletRequest request) {
+        if (model.getId() <= 0) {
             Message.error("Error dataSource model");
         }
         ExchangisDataSourceModel osMA = dataSourceModelService.get(model.getId());
-        if(!osMA.getModelName().equals(model.getModelName())
+        if (!osMA.getModelName().equals(model.getModelName())
                 && StringUtils.isNotBlank(model.getCreateUser())
-                && isDuplicate(model.getModelName(), model.getCreateUser())){
+                && isDuplicate(model.getModelName(), model.getCreateUser())) {
             return Message.error("The model is in duplicate");
         }
         model.setModelName(StringEscapeUtils.escapeHtml3(model.getModelName()));
@@ -86,8 +93,8 @@ public class ExchangisDataSourceModelController {
     }
 
     @RequestMapping(value = "/{modelType:\\w+}/list", method = RequestMethod.GET)
-    public Message listByType(@PathVariable("modelType")String modelType,
-                                       HttpServletRequest request){
+    public Message listByType(@PathVariable("modelType") String modelType,
+                              HttpServletRequest request) {
         DataSourceModelQuery query = new DataSourceModelQuery();
         query.setSourceType(modelType);
         List<ExchangisDataSourceModel> list = dataSourceModelService.selectAllList(query);
@@ -106,15 +113,15 @@ public class ExchangisDataSourceModelController {
     @RequestMapping(value = "pageList", method = RequestMethod.GET)
     public Message pageList(DataSourceModelQuery pageQuery, HttpServletRequest request) {
         PageList<ExchangisDataSourceModel> list = null;
-        int pageSize  = pageQuery.getPageSize();
-        if (pageSize == 0){
+        int pageSize = pageQuery.getPageSize();
+        if (pageSize == 0) {
             pageQuery.setPageSize(10);
         }
         list = dataSourceModelService.findPage(pageQuery);
         String username = UserUtils.getLoginUser(request);
         list.getData().forEach(element -> {
             //Bind authority scopes
-            if(StringUtils.isNotBlank(element.getCreateUser()) && !element.getCreateUser().equals(username)){
+            if (StringUtils.isNotBlank(element.getCreateUser()) && !element.getCreateUser().equals(username)) {
                 //Remove sensitive data
                 Map<String, Object> params = element.resolveParams();
                 Map<String, Object> newParams = new HashMap<>();
@@ -131,7 +138,7 @@ public class ExchangisDataSourceModelController {
         String username = UserUtils.getLoginUser(request);
         data.forEach(element -> {
             //Bind authority scopes
-            if(StringUtils.isNotBlank(element.getCreateUser()) && !element.getCreateUser().equals(username)){
+            if (StringUtils.isNotBlank(element.getCreateUser()) && !element.getCreateUser().equals(username)) {
                 //Remove sensitive data
                 Map<String, Object> params = element.resolveParams();
                 Map<String, Object> newParams = new HashMap<>();
@@ -142,13 +149,13 @@ public class ExchangisDataSourceModelController {
         return Message.ok().data("data", data);
     }
 
-    private boolean isDuplicate(String tsName, HttpServletRequest request){
+    private boolean isDuplicate(String tsName, HttpServletRequest request) {
         DataSourceModelQuery query = new DataSourceModelQuery();
         query.setModelExactName(tsName);
         return !dataSourceModelService.selectAllList(query).isEmpty();
     }
 
-    private boolean isDuplicate(String tsName, String createUser){
+    private boolean isDuplicate(String tsName, String createUser) {
         DataSourceModelQuery query = new DataSourceModelQuery();
         query.setModelExactName(tsName);
         query.setCreateUser(createUser);

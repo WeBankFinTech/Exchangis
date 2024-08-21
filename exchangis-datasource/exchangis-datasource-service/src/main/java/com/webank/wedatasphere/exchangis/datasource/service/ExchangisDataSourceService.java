@@ -256,7 +256,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> create(String operator, DataSourceCreateVo vo) throws ExchangisDataSourceException {
+    public Map<String, Object> create(String operator, DataSourceCreateVo vo) throws ExchangisDataSourceException, JsonErrorException {
         // TODO merge parameter from data source model
         Map<String, Object> payLoads;
         try {
