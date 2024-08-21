@@ -1,8 +1,8 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DeleteDataSourceSuccessResultDTO extends ResultDTO {
+public class DeleteDataSourceSuccessResult extends RemoteResult {
     private DeleteIdDTO data;
 
     public DeleteIdDTO getData() {

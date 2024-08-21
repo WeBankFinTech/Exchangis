@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.datasource.vo;
 
 import java.util.Map;
 
-public class FieldMappingVO {
+public class FieldMappingVo {
 
     private String engine;
 

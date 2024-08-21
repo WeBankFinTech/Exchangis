@@ -1,7 +1,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelBindMapper">
+<mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper">
     <resultMap id="rateLimitUsed" type="DataSourceModelBind">
         <result property="id" column="id"/>
         <result property="modelId" column="model_id"/>

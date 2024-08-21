@@ -1,6 +1,6 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
-public class DataSourceTestConnectResultDTO extends ResultDTO {
+public class DataSourceTestConnectResult extends RemoteResult {
 
     private TestConnectData data;
 

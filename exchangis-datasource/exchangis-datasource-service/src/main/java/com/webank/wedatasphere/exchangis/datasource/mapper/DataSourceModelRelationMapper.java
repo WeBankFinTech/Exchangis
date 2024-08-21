@@ -1,16 +1,19 @@
 package com.webank.wedatasphere.exchangis.datasource.mapper;
 
-import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelBinding;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDsModelRelation;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface DataSourceModelBindMapper {
+/**
+ * Relation mapper
+ */
+public interface DataSourceModelRelationMapper {
 
     /**
      * query dataSourceModelBinds
      */
-    List<DataSourceModelBinding> queryDataSourceModelBinds();
+    List<ExchangisDsModelRelation> queryDataSourceModelBinds();
 
     /**
      * query dataSourceModelBinds
@@ -21,19 +24,19 @@ public interface DataSourceModelBindMapper {
      * query dataSourceModelBind
      * @param dataSourceModelBinding
      */
-    DataSourceModelBinding queryDataSourceModelBind(DataSourceModelBinding dataSourceModelBinding);
+    ExchangisDsModelRelation queryDataSourceModelBind(ExchangisDsModelRelation dataSourceModelBind);
 
     /**
      * add dataSourceModelBinds
      * @param dataSourceModelBindings
      */
-    void addDataSourceModelBind(@Param("dataSourceModelBinds") List<DataSourceModelBinding> dataSourceModelBindings);
+    void addDataSourceModelBind(@Param("dataSourceModelBinds") List<ExchangisDsModelRelation> dataSourceModelBinds);
 
     /**
      * update dataSourceModelBinds
      * @param dataSourceModelBindings
      */
-    void updateDataSourceModelBind(@Param("dataSourceModelBinds") List<DataSourceModelBinding> dataSourceModelBindings);
+    void updateDataSourceModelBind(@Param("dataSourceModelBinds") List<ExchangisDsModelRelation> dataSourceModelBinds);
 
     /**
      * delete dataSourceModelBinds

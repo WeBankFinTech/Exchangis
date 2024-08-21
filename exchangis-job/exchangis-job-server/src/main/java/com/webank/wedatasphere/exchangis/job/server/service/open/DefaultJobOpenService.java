@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.service.open;
 
 import com.github.pagehelper.PageHelper;
-import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelBindMapper;
+import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
@@ -31,7 +31,7 @@ public class DefaultJobOpenService implements ExchangisJobOpenService {
     private ExchangisJobEntityDao jobEntityDao;
 
     @Resource
-    private DataSourceModelBindMapper dataSourceModelBindMapper;
+    private DataSourceModelRelationMapper dataSourceModelRelationMapper;
 
     @Override
     public ExchangisJobEntity getJobById(Long id, boolean basic) throws ExchangisJobException {
@@ -75,7 +75,7 @@ public class DefaultJobOpenService implements ExchangisJobOpenService {
     @Override
     public boolean isRunWithDataSourceModel(Long id) {
         // Get all datasources and jobs
-        List<Long> dsIds = dataSourceModelBindMapper.queryDataSourceIdsByModel(id);
+        List<Long> dsIds = dataSourceModelRelationMapper.queryDataSourceIdsByModel(id);
         List<ExchangisJobEntity> jobEntities = jobEntityDao.queryPageList(null);
 
         AtomicBoolean empty = new AtomicBoolean(false);

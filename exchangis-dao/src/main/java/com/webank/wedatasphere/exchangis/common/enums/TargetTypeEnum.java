@@ -14,9 +14,17 @@ public enum TargetTypeEnum {
      */
     JOB("job"),
     /**
+     * 数据源模板
+     */
+    DATASOURCE_MODEL("datasourceModel"),
+    /**
      * 数据源
      */
     DATASOURCE("datasource"),
+    /**
+     * 限速信息
+     */
+    RATE_LIMIT("rate_limit"),
     /**
      * 任务
      */

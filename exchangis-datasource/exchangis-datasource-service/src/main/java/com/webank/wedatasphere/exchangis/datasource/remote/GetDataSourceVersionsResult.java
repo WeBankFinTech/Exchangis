@@ -1,9 +1,9 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
 import java.util.List;
 import java.util.Map;
 
-public class GetDataSourceVersionsResultDTO extends ResultDTO {
+public class GetDataSourceVersionsResult extends RemoteResult {
 
     private VersionDataDTO data;
 

@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DataSourceCreateVO {
+public class DataSourceCreateVo {
     @Size(min=0,max=100,message="Length of dataSource name should between 0 and 100(数据源名字的长度应该在0和100之间)")
     private String dataSourceName;
 
@@ -42,16 +42,6 @@ public class DataSourceCreateVO {
     private String comment;
 
     private Map<String, Object> connectParams;
-
-//    private Map<String, Object> parameters;
-//
-//    public Map<String, Object> getParameters() {
-//        return parameters;
-//    }
-//
-//    public void setParameters(Map<String, Object> parameters) {
-//        this.parameters = parameters;
-//    }
 
     public String getDataSourceName() {
         return dataSourceName;

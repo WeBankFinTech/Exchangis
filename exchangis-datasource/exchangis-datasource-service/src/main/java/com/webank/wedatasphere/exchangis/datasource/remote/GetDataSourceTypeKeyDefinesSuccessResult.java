@@ -1,9 +1,9 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
 
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
 
-public class GetDataSourceTypeKeyDefinesSuccessResultDTO extends ResultDTO {
+public class GetDataSourceTypeKeyDefinesSuccessResult extends RemoteResult {
     private DataSourceKeyDefinition data;
 
     public DataSourceKeyDefinition getData() {

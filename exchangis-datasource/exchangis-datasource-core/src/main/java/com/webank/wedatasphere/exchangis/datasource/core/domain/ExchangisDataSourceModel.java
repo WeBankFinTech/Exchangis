@@ -11,23 +11,41 @@ import java.util.Map;
 /**
  * DataSource model
  */
-public class DataSourceModel {
+public class ExchangisDataSourceModel {
 
+    /**
+     * Model id
+     */
     private Long id;
 
+    /**
+     * Cluster name
+     */
     private String clusterName;
 
+    /**
+     * Model name (always equal to cluster name)
+     */
     private String modelName;
 
+    /**
+     * Data source type
+     */
     private String sourceType;
 
+    /**
+     * Model description
+     */
     private String modelDesc;
+
+    /**
+     * Create owner
+     */
+    private String createOwner;
 
     private String parameter;
 
     private Map<String, Object> parameterMap;
-
-    private String createUser;
 
     private Date createTime;
 
@@ -50,7 +68,7 @@ public class DataSourceModel {
         return parameterMap;
     }
 
-    public DataSourceModel() {
+    public ExchangisDataSourceModel() {
     }
 
     public Long getId() {
@@ -93,12 +111,12 @@ public class DataSourceModel {
         this.modelDesc = modelDesc;
     }
 
-    public String getCreateUser() {
-        return createUser;
+    public String getCreateOwner() {
+        return createOwner;
     }
 
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
+    public void setCreateOwner(String createOwner) {
+        this.createOwner = createOwner;
     }
 
     public String getParameter() {

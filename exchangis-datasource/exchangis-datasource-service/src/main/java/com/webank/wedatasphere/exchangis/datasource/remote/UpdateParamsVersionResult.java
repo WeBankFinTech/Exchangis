@@ -1,6 +1,6 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
-public class UpdateParamsVersionResultDTO extends ResultDTO {
+public class UpdateParamsVersionResult extends RemoteResult {
     private VersionDTO data;
 
     public VersionDTO getData() {

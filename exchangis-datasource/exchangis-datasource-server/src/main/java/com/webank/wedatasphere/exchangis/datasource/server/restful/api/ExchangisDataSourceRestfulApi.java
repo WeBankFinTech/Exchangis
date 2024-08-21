@@ -34,10 +34,9 @@ import java.util.regex.Pattern;
 public class ExchangisDataSourceRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisDataSourceRestfulApi.class);
 
+    private static Pattern p = Pattern.compile("(?<=\\[)[^]]+");
 
     private final ExchangisDataSourceService exchangisDataSourceService;
-
-    private static Pattern p = Pattern.compile("(?<=\\[)[^]]+");
 
     @Resource
     private ProjectOpenService projectOpenService;
@@ -238,7 +237,7 @@ public class ExchangisDataSourceRestfulApi {
 
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String loginUser = UserUtils.getLoginUser(request);
-        LOG.info("dataSourceName:   " + dataSourceUpdateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceUpdateVO.getDataSourceDesc() + "label:   " + dataSourceUpdateVO.getLabels());
+        LOG.info("dataSourceName: " + dataSourceUpdateVO.getDataSourceName() + " dataSourceDesc: " + dataSourceUpdateVO.getDataSourceDesc() + " label: " + dataSourceUpdateVO.getLabels());
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             for(int i=0;i<fieldErrors.size();i++){

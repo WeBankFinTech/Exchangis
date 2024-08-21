@@ -1,8 +1,8 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
 import java.util.List;
 
-public class MetadataGetColumnsResultDTO extends ResultDTO {
+public class MetadataGetColumnsResult extends RemoteResult {
 
     private Data data;
 

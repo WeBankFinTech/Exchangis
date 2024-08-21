@@ -1,6 +1,6 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
-public class ResultDTO {
+public class RemoteResult {
 
     private String method;
 

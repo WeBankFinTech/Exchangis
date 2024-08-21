@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.datasource.vo;
 
 import java.util.Map;
 
-public class DataSourceQueryVO {
+public class DataSourceQueryVo {
     private Integer page;
     private Integer pageSize;
     private Long typeId;

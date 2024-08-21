@@ -1,9 +1,24 @@
-package com.webank.wedatasphere.exchangis.datasource.dto;
+package com.webank.wedatasphere.exchangis.datasource.remote;
 
-public class DataSourceDbTableColumnDTO {
+/**
+ * Database table column
+ */
+public class DataSourceDbTableColumn {
+    /**
+     * Name
+     */
     private String name;
+    /**
+     * Type
+     */
     private String type;
+    /**
+     * Field index
+     */
     private int fieldIndex;
+    /**
+     * Editable
+     */
     private boolean fieldEditable;
 
     public String getName() {
