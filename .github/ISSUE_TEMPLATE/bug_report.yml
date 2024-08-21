@@ -37,7 +37,7 @@ body:
         - "exchangis-job-metrics"
         - "exchangis-project"
         - "exchangis-plugins"
-        - "exchangis-dao"
+        - "exchangis-common"
         - "exchangis-web"
     validations:
       required: true
