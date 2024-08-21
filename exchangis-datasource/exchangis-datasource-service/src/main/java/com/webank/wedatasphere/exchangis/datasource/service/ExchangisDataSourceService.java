@@ -13,15 +13,16 @@ import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMapper;
 import com.webank.wedatasphere.exchangis.datasource.GetDataSourceInfoByIdAndVersionIdAction;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
+import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
+import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceItem;
+import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceTypeDefinition;
 import com.webank.wedatasphere.exchangis.datasource.utils.RSAUtil;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
-import com.webank.wedatasphere.exchangis.datasource.core.ui.ExchangisDataSourceParamsUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
-import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobTransformsContent;
 import com.webank.wedatasphere.exchangis.datasource.remote.*;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
 import com.webank.wedatasphere.exchangis.datasource.linkis.request.ParamsTestConnectAction;
@@ -80,10 +81,30 @@ import static com.webank.wedatasphere.exchangis.datasource.core.exception.Exchan
 public class ExchangisDataSourceService extends AbstractDataSourceService
         implements DataSourceUIGetter, DataSourceService{
 
-    private final EngineSettingsDao settingsDao;
-
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisDataSourceService.class);
 
+    /**
+     * Engine settings
+     */
+    private final EngineSettingsDao settingsDao;
+
+    /**
+     * Open service
+     */
+    @Resource
+    private ExchangisJobOpenService jobOpenService;
+
+    /**
+     * Project open service
+     */
+    @Resource
+    private ProjectOpenService projectOpenService;
+
+    /**
+     * Job and data source
+     */
+    @Autowired
+    private ExchangisJobDsBindMapper exchangisJobDsBindMapper;
 
     @Autowired
     public ExchangisDataSourceService(ExchangisDataSourceContext context,
@@ -93,20 +114,11 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
-    @Resource
-    private ExchangisJobOpenService jobOpenService;
-
-    @Resource
-    private ProjectOpenService projectOpenService;
-
-    @Autowired
-    private ExchangisJobDsBindMapper exchangisJobDsBindMapper;
     @Override
     public List<ExchangisDataSourceUIViewer> getJobDataSourceUIs(HttpServletRequest request, Long jobId) {
         if (Objects.isNull(jobId)) {
             return null;
         }
-
         ExchangisJobEntity job;
         try {
             job = this.jobOpenService.getJobById(jobId, false);
@@ -129,7 +141,9 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         return uis;
     }
 
-    // 根据数据源类型获取参数
+    /**
+     * Generate data source ui
+     */
     @Override
     public List<ElementUI<?>> getDataSourceParamsUI(String dsType, String engineAndDirection) {
 
@@ -158,21 +172,21 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
      * 根据 LocalExchangisDataSourceLoader 加载到的本地的数据源与 Linkis 支持的数据源
      * 做比较，筛选出可以给前端展示的数据源类型
      */
-    public Message listDataSources(HttpServletRequest request, String engineType, String direct, String sourceType) throws Exception {
-        Collection<com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition> all = this.context.all();
-        List<ExchangisRemoteDataSourceDefinition> dtos = new ArrayList<>();
-
+    @Override
+    public List<ExchangisDataSourceTypeDefinition> listDataSourceTypes(String operator,
+                                                                       String engineType, String direct, String sourceType)
+            throws ExchangisDataSourceException{
+        List<ExchangisDataSourceTypeDefinition> typeDefinitions = new ArrayList<>();
+        // Load engine settings
         List<EngineSettings> settingsList = this.settingsDao.getSettings();
         List<EngineSettings> engineSettings = new ArrayList<>();
-
-
         if (StringUtils.isEmpty(engineType)) {
             engineSettings = settingsList;
         } else {
             EngineSettings engineSetting = new EngineSettings();
-            for (int i = 0; i < settingsList.size(); i++) {
-                if (StringUtils.equals(settingsList.get(i).getName(), engineType.toLowerCase())) {
-                    engineSetting = settingsList.get(i);
+            for (EngineSettings settings : settingsList) {
+                if (StringUtils.equals(settings.getName(), engineType.toLowerCase())) {
+                    engineSetting = settings;
                     break;
                 }
             }
@@ -182,7 +196,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         Set<String> directType = new HashSet<>();
         for (EngineSettings engineSetting: engineSettings) {
             for (int i = 0; i < engineSetting.getDirectionRules().size(); i++) {
-                engineSetting.getDirectionRules().stream().forEach(item -> {
+                engineSetting.getDirectionRules().forEach(item -> {
                     String source = item.getSource();
                     String sink = item.getSink();
                     if (StringUtils.isEmpty(direct)) {
@@ -191,6 +205,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                     } else if (StringUtils.equals(direct, "source")) {
                         directType.add(source);
                     } else {
+                        // Sink types filter
                         if ((StringUtils.isBlank(sourceType) ||
                                 (StringUtils.isNoneBlank(sourceType) && StringUtils.equals(source, sourceType.toLowerCase())))) {
                             directType.add(sink);
@@ -199,52 +214,32 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                 });
             }
         }
-
-        String userName = UserUtils.getLoginUser(request);
-        // 通过 datasourcemanager 获取的数据源类型和context中的数据源通过 type 和 name 比较
-        // 以 exchangis 中注册了的数据源集合为准
-        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
-        GetAllDataSourceTypesResult result;
-        try {
-            result = linkisDataSourceRemoteClient.getAllDataSourceTypes(GetAllDataSourceTypesAction.builder()
-                    .setUser(userName)
-                    .build()
-            );
-        } catch (Exception e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_TYPES_ERROR.getCode(), e.getMessage());
-        }
-
-        if (Objects.isNull(result)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_TYPES_ERROR.getCode(), "datasource get types null or empty");
-        }
-
-        List<DataSourceType> allDataSourceType = new ArrayList<>();
+        // Send to get data source types
+        LinkisDataSourceRemoteClient client = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        GetAllDataSourceTypesResult result = rpcSend(client, () -> GetAllDataSourceTypesAction.builder()
+                .setUser(operator)
+                .build(),
+                LinkisDataSourceRemoteClient::getAllDataSourceTypes,CLIENT_DATASOURCE_GET_TYPES_ERROR.getCode(),
+                "datasource get types null or empty");
         List<DataSourceType> dataSourceTypes = result.getAllDataSourceType();
-        for (DataSourceType dataSourceType : dataSourceTypes) {
-            if (directType.contains(dataSourceType.getName())) {
-                allDataSourceType.add(dataSourceType);
+        for (DataSourceType type : dataSourceTypes) {
+            String typeName = type.getName();
+            if (directType.contains(typeName)) {
+                ExchangisDataSourceDefinition definition = this.context.getExchangisDsDefinition(typeName);
+                ExchangisDataSourceTypeDefinition typeDef = new ExchangisDataSourceTypeDefinition(
+                        type.getId(),
+                        type.getClassifier(),
+                        definition.name(),
+                        definition.structClassifier()
+                );
+                // use linkis datasource table field to fill the definition bean
+                typeDef.setIcon(type.getIcon());
+                typeDef.setDescription(type.getDescription());
+                typeDef.setOption(type.getOption());
+                typeDefinitions.add(typeDef);
             }
         }
-
-        for (DataSourceType type : allDataSourceType) {
-            for (com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition item : all) {
-                if (item.name().equalsIgnoreCase(type.getName())) {
-                    ExchangisRemoteDataSourceDefinition dto = new ExchangisRemoteDataSourceDefinition(
-                            type.getId(),
-                            type.getClassifier(),
-                            item.name(),
-                            item.structClassifier()
-                    );
-                    // use linkis datasource table field to fill the dto bean
-                    dto.setIcon(type.getIcon());
-                    dto.setDescription(type.getDescription());
-                    dto.setOption(type.getOption());
-                    dtos.add(dto);
-                }
-            }
-        }
-
-        return Message.ok().data("list", dtos);
+        return typeDefinitions;
     }
 
     /**
@@ -272,15 +267,14 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         }
         LinkisDataSourceRemoteClient client = dsType.getDataSourceRemoteClient();
         // Send to create data source
-        Result createResult = rpcSend(client, () -> CreateDataSourceAction.builder()
+        CreateDataSourceResult createResult = rpcSend(client, () -> CreateDataSourceAction.builder()
                 .setUser(operator)
                 .addRequestPayloads(payLoads)
                 .build(),
-                AbstractRemoteClient::execute, CLIENT_DATASOURCE_CREATE_ERROR.getCode(),
+                LinkisDataSourceRemoteClient::createDataSource, CLIENT_DATASOURCE_CREATE_ERROR.getCode(),
                 "datasource create response null or empty");
-        CreateDataSourceSuccessResult result = Json.fromJson(createResult.getResponseBody(), CreateDataSourceSuccessResult.class);
         // Get data source id
-        Long dataSourceId = result.getData().getId();
+        Long dataSourceId = createResult.getInsertId();
         // Send to create version
         UpdateDataSourceParameterResult versionResult = rpcSend(client, () -> UpdateDataSourceParameterAction.builder()
                 .setUser(operator)
@@ -333,250 +327,114 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         return new HashMap<>();
     }
 
-    @Transactional
-    public Message deleteDataSource(HttpServletRequest request, /*String type,*/ Long id) throws Exception {
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long delete(String operator,  Long id) throws ExchangisDataSourceException {
         QueryWrapper<ExchangisJobDsBind> condition = new QueryWrapper<>();
         condition.eq("source_ds_id", id).or().eq("sink_ds_id", id);
         Long inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
         if (inUseCount > 0) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "目前存在引用依赖");
         }
-
-        LinkisDataSourceRemoteClient dataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
-        //        DeleteDataSourceResult result;
-
-        String responseBody;
-        try {
-            String user = UserUtils.getLoginUser(request);
-            Result execute = dataSourceRemoteClient.execute(
-                    new DeleteDataSourceAction.Builder().setUser(user).setDataSourceId(Long.parseLong(id + "")).builder()
-            );
-            responseBody = execute.getResponseBody();
-
-        } catch (Exception e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), e.getMessage());
-        }
-
-//        if (Objects.isNull(result)) {
-        if (Strings.isNullOrEmpty(responseBody)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "datasource delete null or empty");
-        }
-
-        DeleteDataSourceSuccessResult result = Json.fromJson(responseBody, DeleteDataSourceSuccessResult.class);
-
-        if (result.getStatus() != 0) {
-            throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
-        }
-//        return Message.ok().data("id", result.getRemove_id());
-        return Message.ok().data("id", result.getData().getId());
+        // TODO delete the relation between model and data source version
+        LinkisDataSourceRemoteClient client = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
+        DeleteDataSourceResult result = rpcSend(client, () -> DeleteDataSourceAction.builder()
+                .setUser(operator).setDataSourceId(Long.parseLong(id + "")).builder(),
+                LinkisDataSourceRemoteClient::deleteDataSource, CLIENT_DATASOURCE_DELETE_ERROR.getCode(),
+                "datasource delete null or empty");
+        return result.getRemoveId();
     }
 
     /**
      * Query database from data source
-     * @param username username
+     * @param operator username
      * @param type type
      * @param id id
      * @return message
-     * @throws Exception e
+     * @throws ExchangisDataSourceException e
      */
-    public Message queryDataSourceDBs(String username, String type, Long id) throws Exception {
-        com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition definition = context.getExchangisDsDefinition(type);
-        LinkisMetaDataRemoteClient metaDataRemoteClient = definition.getMetaDataRemoteClient();
-        MetadataGetDatabasesResult databases;
-        try {
-            databases = metaDataRemoteClient.getDatabases(MetadataGetDatabasesAction.builder()
-                    .setSystem("exchangis")
-                    .setSystem(type)
-                    .setDataSourceId(id)
-                    .setUser(username)
-                    .build());
-        } catch (Exception e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_DATABASES_ERROR.getCode(), e.getMessage());
-        }
-
-        if (Objects.isNull(databases)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_DATABASES_ERROR.getCode(), "metadata get databases null or empty");
-        }
-
-        List<String> dbs = Optional.ofNullable(databases.getDbs()).orElse(new ArrayList<>());
-        return Message.ok().data("dbs", dbs);
+    @Override
+    public List<String> getDatabases(String operator, String type, Long id) throws ExchangisDataSourceException {
+        ExchangisDataSourceDefinition definition = context.getExchangisDsDefinition(type);
+        MetadataGetDatabasesResult result = rpcSend(definition.getMetaDataRemoteClient(), () -> MetadataGetDatabasesAction.builder()
+                .setSystem("exchangis")
+                .setSystem(type)
+                .setDataSourceId(id)
+                .setUser(operator)
+                .build(),
+                LinkisMetaDataRemoteClient::getDatabases, CLIENT_METADATA_GET_DATABASES_ERROR.getCode(),
+                "metadata get databases null or empty");
+        return Optional.ofNullable(result.getDbs()).orElse(new ArrayList<>());
     }
 
     /**
      * Query table in database from data source
-     * @param username username
+     * @param  operator operator
      * @param type type
      * @param id id
-     * @param dbName database name
+     * @param database database name
      * @return message
-     * @throws Exception e
+     * @throws ExchangisDataSourceException e
      */
-    public Message queryDataSourceDBTables(String username, String type, Long id, String dbName) throws Exception {
-        com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition definition = context.getExchangisDsDefinition(type);
-        MetadataGetTablesResult tables;
-        try {
-            LinkisMetaDataRemoteClient metaDataRemoteClient = definition.getMetaDataRemoteClient();
-            tables = metaDataRemoteClient.getTables(MetadataGetTablesAction.builder()
-                    .setSystem(type)
-                    .setDataSourceId(id)
-                    .setDatabase(dbName)
-                    .setUser(username)
-                    .build()
-            );
-        } catch (Exception e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_TABLES_ERROR.getCode(), e.getMessage());
-        }
-
-        if (Objects.isNull(tables)) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_METADATA_GET_TABLES_ERROR.getCode(), "metadata get tables null or empty");
-        }
-        List<String> tbs = Optional.ofNullable(tables.getTables()).orElse(new ArrayList<>());
-        return Message.ok().data("tbs", tbs);
-    }
-
-    public Message getJobDataSourceParamsUI(Long jobId) {
-        if (Objects.isNull(jobId)) {
-            return null;
-        }
-
-        ExchangisJobEntity job;
-        try {
-            job = this.jobOpenService.getJobById(jobId, false);
-        } catch (ExchangisJobException e) {
-            throw new ExchangisDataSourceException
-                    .Runtime(CONTEXT_GET_DATASOURCE_NULL.getCode(), "Fail to get job entity (获得任务信息失败)", e);
-        }
-
-        if (Objects.isNull(job)) {
-            return null;
-        }
-
-        List<ExchangisJobInfoContent> jobInfoContents = JobUtils.parseJobContent(job.getJobContent());
-        List<ExchangisDataSourceParamsUI> uis = new ArrayList<>();
-        for (ExchangisJobInfoContent cnt : jobInfoContents) {
-            uis.add(this.buildDataSourceParamsUI(null, cnt));
-        }
-
-        return Message.ok().data("ui", uis);
-    }
-
-    public Message getJobDataSourceTransformsUI(Long jobId) {
-        if (Objects.isNull(jobId)) {
-            return null;
-        }
-
-        ExchangisJobEntity job;
-        try {
-            job = this.jobOpenService.getJobById(jobId, false);
-        } catch (ExchangisJobException e) {
-            throw new ExchangisDataSourceException
-                    .Runtime(CONTEXT_GET_DATASOURCE_NULL.getCode(), "Fail to get job entity (获得任务信息失败)", e);
-        }
-        if (Objects.isNull(job)) {
-            return null;
-        }
-
-        String jobContent = job.getJobContent();
-        ExchangisJobInfoContent content;
-        // 转换 content
-        if (Strings.isNullOrEmpty(jobContent)) {
-            content = new ExchangisJobInfoContent();
-        } else {
-            try {
-                content = this.mapper.readValue(jobContent, ExchangisJobInfoContent.class);
-            } catch (JsonProcessingException e) {
-                content = new ExchangisJobInfoContent();
-            }
-        }
-
-        // ----------- 构建 dataSourceTransformsUI
-        ExchangisJobTransformsContent transforms = content.getTransforms();
-
-        return Message.ok().data("ui", transforms);
-    }
-
-    public Message getJobDataSourceSettingsUI(Long jobId, String jobName) throws Exception {
-        if (Objects.isNull(jobId) || Strings.isNullOrEmpty(jobName)) {
-            return null;
-        }
-
-        ExchangisJobEntity job;
-        try {
-            job = this.jobOpenService.getJobById(jobId, false);
-        } catch (ExchangisJobException e) {
-            throw new ExchangisDataSourceException
-                    .Runtime(CONTEXT_GET_DATASOURCE_NULL.getCode(), "Fail to get job entity (获得任务信息失败)", e);
-        }
-        if (Objects.isNull(job)) {
-            return null;
-        }
-
-        List<ExchangisJobInfoContent> contents = JobUtils.parseJobContent(job.getJobContent());
-
-        for (ExchangisJobInfoContent content : contents) {
-            if (content.getSubJobName().equalsIgnoreCase(jobName)) {
-                List<ElementUI<?>> uis = this.buildJobSettingsUI(job.getEngineType(), content);
-                return Message.ok().data("uis", uis);
-            }
-        }
-
-        return Message.ok().data("ui", Collections.emptyList());
-
+    @Override
+    public List<String> getTables(String operator, String type, Long id, String database) throws ExchangisDataSourceException {
+        ExchangisDataSourceDefinition definition = context.getExchangisDsDefinition(type);
+        MetadataGetTablesResult tablesResult = rpcSend(definition.getMetaDataRemoteClient(), () -> MetadataGetTablesAction.builder()
+                .setSystem(type)
+                .setDataSourceId(id)
+                .setDatabase(database)
+                .setUser(operator)
+                .build(),
+                LinkisMetaDataRemoteClient::getTables, CLIENT_METADATA_GET_TABLES_ERROR.getCode(),
+                "metadata get tables null or empty");
+        return Optional.ofNullable(tablesResult.getTables()).orElse(new ArrayList<>());
     }
 
     /**
-     * Query table fields
-     * @param username username
+     * Query table fields (columns)
+     * @param operator username
      * @param type type
      * @param id id
-     * @param dbName database name
-     * @param tableName table name
+     * @param database database name
+     * @param table table name
      * @return message
-     * @throws Exception e
+     * @throws ExchangisDataSourceException e
      */
-    public Message queryDataSourceDBTableFields(String username, String type, Long id, String dbName, String tableName) throws Exception {
-        com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition definition = context.getExchangisDsDefinition(type);
-        LinkisMetaDataRemoteClient metaDataRemoteClient = definition.getMetaDataRemoteClient();
-        List<MetaColumnInfo> allColumns;
-        try {
-            MetadataGetColumnsResult columns = metaDataRemoteClient.getColumns(MetadataGetColumnsAction.builder()
-                    .setSystem(type)
-                    .setDataSourceId(id)
-                    .setDatabase(dbName)
-                    .setTable(tableName)
-                    .setUser(username)
-                    .build());
-            allColumns = columns.getAllColumns();
-        } catch (Exception e) {
-            throw new ExchangisDataSourceException(CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(), e.getMessage());
-        }
-
-        if (Objects.isNull(allColumns)) {
-            throw new ExchangisDataSourceException(CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(), "metadata get columns null or empty");
-        }
-
-        List<DataSourceDbTableColumn> list = new ArrayList<>();
-        allColumns.forEach(col -> {
+    @Override
+    public List<DataSourceDbTableColumn> getTableFields(String operator,
+                                                        String type, Long id, String database, String table) throws ExchangisDataSourceException {
+        ExchangisDataSourceDefinition definition = context.getExchangisDsDefinition(type);
+        MetadataGetColumnsResult columnsResult = rpcSend(definition.getMetaDataRemoteClient(), () -> MetadataGetColumnsAction.builder()
+                .setSystem(type)
+                .setDataSourceId(id)
+                .setDatabase(database)
+                .setTable(table)
+                .setUser(operator)
+                .build(),
+                LinkisMetaDataRemoteClient::getColumns, CLIENT_METADATA_GET_COLUMNS_ERROR.getCode(),
+                "metadata get columns null or empty");
+        List<MetaColumnInfo> columns = columnsResult.getAllColumns();
+        return Optional.ofNullable(columns).orElse(new ArrayList<>()).stream().map(column -> {
             DataSourceDbTableColumn item = new DataSourceDbTableColumn();
-            item.setName(col.getName());
-            item.setType(col.getType());
-            list.add(item);
-        });
-
-        return Message.ok().data("columns", list);
+            item.setName(column.getName());
+            item.setType(column.getType());
+            return item;
+        }).collect(Collectors.toList());
     }
 
     /**
      * Query data sources
-     * @param request request
-     * @param vo view object
+     * @param operator operator
+     * @param vo vo object
      * @return response message
      * @throws Exception e
      */
-    public Message queryDataSources(HttpServletRequest request, DataSourceQueryVo vo) throws Exception {
+    @Override
+    public PageResult<ExchangisDataSourceItem> queryDataSources(String operator,
+                                                                DataSourceQueryVo vo) throws ExchangisDataSourceException {
         String username = StringUtils.isNoneBlank(vo.getCreateUser()) ?
-                vo.getCreateUser() : UserUtils.getLoginUser(request);
+                vo.getCreateUser() : operator;
         int page = Objects.isNull(vo.getPage()) ? 1 : vo.getPage();
         int pageSize = Objects.isNull(vo.getPageSize()) ? 100 : vo.getPageSize();
         String dataSourceName = Objects.isNull(vo.getName()) ? "" : vo.getName().replace("_", "\\_");
@@ -584,7 +442,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         int total = 0;
         // If to fetch from remote server
         boolean toRemote = true;
-        Map<String, ExchangisRemoteDataSource> dsQueryMap = new LinkedHashMap<>();
+        Map<String, ExchangisDataSourceItem> dsQueryMap = new LinkedHashMap<>();
         Long refProjectId = vo.getProjectId();
         if (Objects.nonNull(refProjectId)){
             // Try to get data sources from project relation
@@ -607,7 +465,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                     }
                     PageResult<ExchangisProjectDsRelation> dsRelations = projectOpenService.queryDsRelation(dsQueryVo);
                     total += dsRelations.getTotal();
-                    Optional.ofNullable(toExchangisDataSources(refProjectId, dsRelations.getList()))
+                    Optional.ofNullable(toExchangisDataSourceItems(refProjectId, dsRelations.getList()))
                             .ifPresent(list -> {
                                 list.forEach(item -> {
                                     if (!dsQueryMap.containsKey(item.getName())) {
@@ -631,15 +489,14 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                     page = page - totalPages;
                 }
             }
-            // Request linkis server to get data sources
-            LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
-            QueryDataSourceResult result;
-            try {
+            // Send to get data sources from linkis
+            int finalPage = page;
+            QueryDataSourceResult result = rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> {
                 QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
                         .setSystem("exchangis")
                         .setName(dataSourceName)
                         .setIdentifies("")
-                        .setCurrentPage(page)
+                        .setCurrentPage(finalPage)
                         .setUser(username)
                         .setPageSize(pageSize);
                 if (!Objects.isNull(typeId)) {
@@ -648,76 +505,79 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                 if (!Strings.isNullOrEmpty(vo.getTypeName())) {
                     builder.setSystem(vo.getTypeName());
                 }
-                QueryDataSourceAction action = builder.build();
-                result = linkisDataSourceRemoteClient.queryDataSource(action);
-                total += result.getTotalPage();
-                List<DataSource> dataSources = result.getAllDataSource();
-                int addSize = Math.min(pageSize - dsQueryMap.size(), dataSources.size());
-                if (addSize > 0){
-                    Optional.ofNullable(toExchangisDataSources(dataSources.subList(0, addSize)))
-                            .ifPresent(list -> {
-                                for(int i = 0; i < addSize; i++) {
-                                    ExchangisRemoteDataSource item = list.get(i);
-                                    if (!dsQueryMap.containsKey(item.getName())) {
-                                        dsQueryMap.put(item.getName(), item);
-                                    }
+                return builder.build();
+            }, LinkisDataSourceRemoteClient::queryDataSource, CLIENT_QUERY_DATASOURCE_ERROR.getCode(),
+                    "");
+            total += result.getTotalPage();
+            List<DataSource> dataSources = result.getAllDataSource();
+            int addSize = Math.min(pageSize - dsQueryMap.size(), dataSources.size());
+            if (addSize > 0){
+                Optional.ofNullable(toExchangisDataSourceItems(dataSources.subList(0, addSize)))
+                        .ifPresent(list -> {
+                            for(int i = 0; i < addSize; i++) {
+                                ExchangisDataSourceItem item = list.get(i);
+                                if (!dsQueryMap.containsKey(item.getName())) {
+                                    dsQueryMap.put(item.getName(), item);
                                 }
-                            });
-                }
-            } catch (Exception e) {
-                if (e instanceof ErrorException) {
-                    ErrorException ee = (ErrorException) e;
-                    throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_QUERY_DATASOURCE_ERROR.getCode(), e.getMessage(), ee.getIp(), ee.getPort(), ee.getServiceKind());
-                } else {
-                    throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_QUERY_DATASOURCE_ERROR.getCode(), e.getMessage());
-                }
+                            }
+                        });
             }
         }
-        Message message = Message.ok();
-        message.data("list", dsQueryMap.values());
-        message.data("total", total);
-        return message;
+        PageResult<ExchangisDataSourceItem> pageResult = new PageResult<>();
+        pageResult.setList(new ArrayList<>(dsQueryMap.values()));
+        pageResult.setTotal((long) total);
+        return pageResult;
     }
 
-    public Message listAllDataSources(HttpServletRequest request, String typeName, Long typeId, Integer page, Integer pageSize) throws ExchangisDataSourceException {
-        String userName = UserUtils.getLoginUser(request);
-        LinkisDataSourceRemoteClient linkisDataSourceRemoteClient = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
-        QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
-                .setSystem("exchangis")
-                .setIdentifies("")
-                .setUser(userName);
-
-        if (!Strings.isNullOrEmpty(typeName)) {
-            builder.setName(typeName);
+    /**
+     * List data sources
+     * @param operator operator
+     * @param typeName type name
+     * @param typeId type id
+     * @param page page num
+     * @param pageSize page size
+     * @return data sources
+     * @throws ExchangisDataSourceException
+     */
+    public List<ExchangisDataSourceItem> listDataSources(String operator,
+                                                         String typeName, Long typeId, Integer page, Integer pageSize) throws ExchangisDataSourceException {
+        QueryDataSourceResult result = rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> {
+            QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
+                    .setSystem("exchangis")
+                    .setIdentifies("")
+                    .setUser(operator);
+            if (!Strings.isNullOrEmpty(typeName)) {
+                builder.setName(typeName);
+            }
+            if (!Objects.isNull(typeId)) {
+                builder.setTypeId(typeId);
+            }
+            if (!Objects.isNull(page)) {
+                builder.setCurrentPage(page);
+            } else {
+                builder.setCurrentPage(1);
+            }
+            if (!Objects.isNull(pageSize)) {
+                builder.setPageSize(pageSize);
+            } else {
+                builder.setPageSize(200);
+            }
+            return builder.build();
+        }, LinkisDataSourceRemoteClient::queryDataSource, CLIENT_QUERY_DATASOURCE_ERROR.getCode(),
+                "");
+        List<ExchangisDataSourceItem> dataSources = new ArrayList<>();
+        if (!Objects.isNull(result.getAllDataSource())) {
+            dataSources = toExchangisDataSourceItems(result.getAllDataSource());
         }
-        if (!Objects.isNull(typeId)) {
-            builder.setTypeId(typeId);
-        }
-        if (!Objects.isNull(page)) {
-            builder.setCurrentPage(page);
-        } else {
-            builder.setCurrentPage(1);
-        }
-        if (!Objects.isNull(pageSize)) {
-            builder.setPageSize(pageSize);
-        } else {
-            builder.setPageSize(200);
-        }
-
-        List<DataSource> allDataSource;
-        try {
-            QueryDataSourceResult result = linkisDataSourceRemoteClient.queryDataSource(builder.build());
-            allDataSource = result.getAllDataSource();
-        } catch (Exception e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_QUERY_DATASOURCE_ERROR.getCode(), e.getMessage());
-        }
-        List<ExchangisRemoteDataSource> dataSources = new ArrayList<>();
-        if (!Objects.isNull(allDataSource)) {
-            dataSources = toExchangisDataSources(allDataSource);
-        }
-        return Message.ok().data("list", dataSources);
+        return dataSources;
     }
 
+    @Override
+    public ExchangisDataSourceDetail getDataSource(String operator, Long id, String versionId) {
+        return null;
+    }
+
+    @Deprecated
     public Message getDataSource(HttpServletRequest request, Long id, String versionId) throws ErrorException {
         String userName = UserUtils.getLoginUser(request);
         GetDataSourceInfoResult result;
@@ -832,7 +692,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
             throw new ExchangisDataSourceException(result.getStatus(), result.getMessage());
         }
 
-        GetDataSourceInfoResult.DataSourceItemDTO info = result.getData().getInfo();
+        GetDataSourceInfoResult.DataSourceDetail info = result.getData().getInfo();
         Integer publishedVersionId = info.getPublishedVersionId();
         GetDataSourceVersionsResult versionsResult;
         try {
@@ -1086,7 +946,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
                 this.checkSqoopDSSupportDegree(sourceDsType, sinkDsType);
                 break;
             case "DATAX":
-                this.checkDataXDSSupportDegree(sourceDsType, sinkDsType);
                 break;
             default:
                 throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.UNSUPPORTEd_ENGINE.getCode(), "不支持的引擎");
@@ -1100,10 +959,6 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         if (sourceDsType.equals(sinkDsType)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.DS_TYPE_MUST_DIFFERENT.getCode(), "SQOOP引擎读写类型不可相同");
         }
-    }
-
-    private void checkDataXDSSupportDegree(String sourceDsType, String sinkDsType) throws ExchangisDataSourceException {
-
     }
 
     public Message encryptConnectInfo(String encryStr) throws Exception {
@@ -1157,7 +1012,7 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
         dsResult = getDataSource(StringUtils.isNotBlank(admin) ? admin : operator, sourceName);
         if (Objects.nonNull(dsResult)){
             DataSourceCreateVo createDs = new DataSourceCreateVo();
-            GetDataSourceInfoResult.DataSourceItemDTO modelDs = dsResult.getData().getInfo();
+            GetDataSourceInfoResult.DataSourceDetail modelDs = dsResult.getData().getInfo();
             createDs.setDataSourceName(newName);
             createDs.setDataSourceTypeId(modelDs.getDataSourceTypeId());
             createDs.setDataSourceDesc(modelDs.getDataSourceDesc());
@@ -1239,9 +1094,9 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
      * @return result
      * @throws ExchangisDataSourceException e
      */
-    private <T extends Action, R extends Result>R rpcSend(
-            LinkisDataSourceRemoteClient client,
-            Supplier<T> decorator, BiFunction<LinkisDataSourceRemoteClient, T, R> executor,
+    private <T extends Action, R extends Result, C extends AbstractRemoteClient>R rpcSend(
+            C client,
+            Supplier<T> decorator, BiFunction<C, T, R> executor,
             int errorCode, String nonErrorMessage) throws ExchangisDataSourceException{
         T action = decorator.get();
         R result;
@@ -1266,9 +1121,9 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
      * @param dsRelations relation
      * @return list
      */
-    private List<ExchangisRemoteDataSource> toExchangisDataSources(Long projectId, List<ExchangisProjectDsRelation> dsRelations){
+    private List<ExchangisDataSourceItem> toExchangisDataSourceItems(Long projectId, List<ExchangisProjectDsRelation> dsRelations){
         return dsRelations.stream().map(ds -> {
-            ExchangisRemoteDataSource item = new ExchangisRemoteDataSource();
+            ExchangisDataSourceItem item = new ExchangisDataSourceItem();
             item.setId(ds.getDsId());
             item.setName(ds.getDsName());
             item.setType(ds.getDsType());
@@ -1281,13 +1136,15 @@ public class ExchangisDataSourceService extends AbstractDataSourceService
      * @param dataSources  linkis data sources
      * @return list
      */
-    private List<ExchangisRemoteDataSource> toExchangisDataSources(List<DataSource> dataSources){
+    private List<ExchangisDataSourceItem> toExchangisDataSourceItems(List<DataSource> dataSources){
         return dataSources.stream().map(ds -> {
-            ExchangisRemoteDataSource item = new ExchangisRemoteDataSource();
+            ExchangisDataSourceItem item = new ExchangisDataSourceItem();
             item.setId(ds.getId());
             item.setCreateIdentify(ds.getCreateIdentify());
             item.setName(ds.getDataSourceName());
-            item.setType(ds.getCreateSystem());
+            Optional.ofNullable(ds.getDataSourceType()).ifPresent(type -> {
+                item.setType(type.getName());
+            });
             item.setCreateSystem(ds.getCreateSystem());
             item.setDataSourceTypeId(ds.getDataSourceTypeId());
             item.setLabels(ds.getLabels());

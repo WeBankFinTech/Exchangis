@@ -1,31 +1,31 @@
 package com.webank.wedatasphere.exchangis.datasource.remote;
 
 import java.util.Map;
-
+@Deprecated
 public class GetDataSourceInfoResult extends RemoteResult {
-    private DataSourceInfoDTO data;
+    private DataSourceInfo data;
 
-    public DataSourceInfoDTO getData() {
+    public DataSourceInfo getData() {
         return data;
     }
 
-    public void setData(DataSourceInfoDTO data) {
+    public void setData(DataSourceInfo data) {
         this.data = data;
     }
 
-    public static class DataSourceInfoDTO {
-        private DataSourceItemDTO info;
+    public static class DataSourceInfo {
+        private DataSourceDetail info;
 
-        public DataSourceItemDTO getInfo() {
+        public DataSourceDetail getInfo() {
             return info;
         }
 
-        public void setInfo(DataSourceItemDTO info) {
+        public void setInfo(DataSourceDetail info) {
             this.info = info;
         }
     }
 
-    public static class DataSourceItemDTO {
+    public static class DataSourceDetail {
         private Long id;
         private String dataSourceName;
         private String dataSourceDesc;

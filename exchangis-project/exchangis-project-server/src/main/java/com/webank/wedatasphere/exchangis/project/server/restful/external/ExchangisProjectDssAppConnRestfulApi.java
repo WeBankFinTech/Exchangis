@@ -250,7 +250,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
                 try {
                     GetDataSourceInfoResult result = dataSourceService.getDataSource(permUser, dataSource.getName());
                     if (Objects.nonNull(result)){
-                        GetDataSourceInfoResult.DataSourceInfoDTO dsInfo = result.getData();
+                        GetDataSourceInfoResult.DataSourceInfo dsInfo = result.getData();
                         dataSource.setId(dsInfo.getInfo().getId());
                         dataSource.setType(dsInfo.getInfo().getDataSourceType()
                                 .getName().toUpperCase(Locale.ROOT));

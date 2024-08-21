@@ -5,9 +5,12 @@ import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
+import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceItem;
+import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceTypeDefinition;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVo;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVo;
@@ -50,7 +53,9 @@ public class ExchangisDataSourceRestfulApi {
         this.exchangisDataSourceService = exchangisDataSourceService;
     }
 
-    // list all datasource types
+    /**
+     * List all datasource types
+     */
     @RequestMapping( value = "/type", method = RequestMethod.GET)
     public Message listDataSourceTypes(HttpServletRequest request,
                                        @RequestParam(value = "engineType", required = false) String engineType,
@@ -59,52 +64,61 @@ public class ExchangisDataSourceRestfulApi {
         Message message = null;
         LOG.info("engineType:{}, direct:{}, sourceType:{}", engineType, direct, sourceType);
         try{
-            message = exchangisDataSourceService.listDataSources(request, engineType, direct, sourceType);
+            List<ExchangisDataSourceTypeDefinition> typeDefinitions
+                    = exchangisDataSourceService.listDataSourceTypes(UserUtils.getLoginUser(request), engineType, direct, sourceType);
+            message = Message.ok().data("list", typeDefinitions);
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while list datasource type";
             LOG.error(errorMessage, e);
-
             String errorNote = e.getMessage();
             Matcher matcher = ERROR_PATTERN.matcher(errorNote);
             if (matcher.find()) {
                 message = Message.error(matcher.group());
             }
             else{
-                message = Message.error("Getting datasource type list fail (获取数据源类型列表失败)");
+                message = Message.error("Getting datasource type list fail (获取数据源类型列表失败):[" + e.getMessage() + "]");
             }
         }
         return message;
 
     }
 
-    // query paged datasource
+    /**
+     * Query paged datasource
+     */
     @RequestMapping( value = "/query", method = {RequestMethod.GET,RequestMethod.POST})
     public Message query(HttpServletRequest request, @RequestBody DataSourceQueryVo vo) throws Exception {
-        Message message = null;
+        Message message;
         try{
-            message = exchangisDataSourceService.queryDataSources(request, vo);
+            PageResult<ExchangisDataSourceItem> result =
+                    exchangisDataSourceService.queryDataSources(UserUtils.getLoginUser(request), vo);
+            return Message.ok().data("total", result.getTotal()).data("list", result.getList());
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while query datasource";
             LOG.error(errorMessage, e);
-            message = Message.error("查询数据源失败");
+            message = Message.error("查询数据源失败:[" + e.getMessage() + "]");
         }
         return message;
 
     }
 
-    // list all datasources
+    /**
+     * List all datasources
+      */
     @RequestMapping( value = "", method = RequestMethod.GET)
     @Deprecated
-    public Message listAllDataSources(
+    public Message listDataSources(
             HttpServletRequest request,
             @RequestParam(value = "typeId", required = false) Long typeId,
             @RequestParam(value = "typeName", required = false) String typeName,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size
-    ) throws Exception {
+    ) {
         Message message = null;
         try{
-            message = exchangisDataSourceService.listAllDataSources(request, typeName, typeId, page, size);
+            message = Message.ok().data("list",
+                    exchangisDataSourceService.listDataSources(UserUtils.getLoginUser(request),
+                    typeName, typeId, page, size));
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while getting datasource list";
             LOG.error(errorMessage, e);
@@ -115,7 +129,7 @@ public class ExchangisDataSourceRestfulApi {
                 message = Message.error(matcher.group());
             }
             else{
-                message = Message.error("Getting datasource list fail (获取数据源列表失败)");
+                message = Message.error("Getting datasource list fail (获取数据源列表失败):[" + e.getMessage() + "]");
             }
         }
         return message;
@@ -351,7 +365,7 @@ public class ExchangisDataSourceRestfulApi {
                 message = Message.error(matcher.group());
             }
             else{
-                message = Message.error("Connect datasource failed (数据源连接失效，请检查配置)");
+                message = Message.error("Connect datasource failed (数据源连接失效，请检查配置):[" + e.getMessage() + "]");
             }
         }
         return message;
@@ -373,80 +387,91 @@ public class ExchangisDataSourceRestfulApi {
                 message = Message.error(matcher.group());
             }
             else{
-                message = Message.error("Connect datasource failed (数据源连接失效，请检查配置)");
+                message = Message.error("Connect datasource failed (数据源连接失效，请检查配置):[" + e.getMessage() + "]");
             }
         }
         return message;
     }
 
-    // delete datasource (physical)
+    /**
+     * Delete data source
+     * @param request request
+     * @param id id
+     * @return message
+     */
     @RequestMapping( value = "/{id}", method = RequestMethod.DELETE)
-    public Message delete(HttpServletRequest request, /*@PathParam("type") String type, */@PathVariable("id") Long id) throws Exception {
-        Message message = null;
-        String oringinUser = SecurityFilter.getLoginUsername(request);
+    public Message delete(HttpServletRequest request,
+                          @PathVariable("id") Long id) {
+        Message message;
+        String originUser = SecurityFilter.getLoginUsername(request);
         String loginUser = UserUtils.getLoginUser(request);
         try{
-            message = exchangisDataSourceService.deleteDataSource(request, /*type, */id);
+            message = Message.ok().data("id",
+                    exchangisDataSourceService.delete(loginUser, id));
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while delete datasource";
             LOG.error(errorMessage, e);
-            message = Message.error("删除数据源失败，存在引用依赖");
+            message = Message.error("删除数据源失败:[" + e.getMessage() + "]");
         }
-        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource delete", OperateTypeEnum.DELETE, request);
+        AuditLogUtils.printLog(originUser, loginUser, TargetTypeEnum.DATASOURCE, id.toString(), "DataSource delete", OperateTypeEnum.DELETE, request);
         return message;
     }
 
     @RequestMapping( value = "/{type}/{id}/dbs", method = RequestMethod.GET)
-    public Message queryDataSourceDBs(HttpServletRequest request, @PathVariable("type") String type, @PathVariable("id") Long id) throws Exception {
-        Message message = null;
+    public Message getDatabases(HttpServletRequest request,
+                                @PathVariable("type") String type, @PathVariable("id") Long id) {
+        Message message;
         try{
             AtomicReference<String> username = new AtomicReference<>(UserUtils.getLoginUser(request));
             // Try to get data source authority from project and set the privilege user
             projectOpenService.hasDataSourceAuth(username.get(), id,
                     ds -> username.set(ds.getCreator()));
-            message = exchangisDataSourceService.queryDataSourceDBs(username.get(), type, id);
+            List<String> databases = exchangisDataSourceService.getDatabases(username.get(), type, id);
+            message = Message.ok().data("dbs", databases);
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while query datasource";
             LOG.error(errorMessage, e);
-            message = Message.error("数据源未发布或参数为空");
+            message = Message.error("数据源未发布或参数为空:[" + e.getMessage() + "]");
         }
         return message;
     }
 
     @RequestMapping( value = "/{type}/{id}/dbs/{dbName}/tables", method = RequestMethod.GET)
-    public Message queryDataSourceDBTables(HttpServletRequest request, @PathVariable("type") String type,
+    public Message getTables(HttpServletRequest request, @PathVariable("type") String type,
                                            @PathVariable("id") Long id, @PathVariable("dbName") String dbName) throws Exception {
-        Message message = null;
+        Message message;
         try {
             AtomicReference<String> username = new AtomicReference<>(UserUtils.getLoginUser(request));
             // Try to get data source authority from project and set the privilege user
             projectOpenService.hasDataSourceAuth(username.get(), id,
                     ds -> username.set(ds.getCreator()));
-            message = exchangisDataSourceService.queryDataSourceDBTables(username.get(), type, id, dbName);
+            message = Message.ok().data("tbs",
+                    exchangisDataSourceService.getTables(username.get(), type, id, dbName));
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while getting tables";
             LOG.error(errorMessage, e);
-            message = Message.error("获取数据表失败");
+            message = Message.error("获取数据表失败:[" + e.getMessage() + "]");
         }
         return message;
     }
 
     @RequestMapping( value = "/{type}/{id}/dbs/{dbName}/tables/{tableName}/fields", method = RequestMethod.GET)
-    public Message queryDataSourceDBTableFields(HttpServletRequest request, @PathVariable("type") String type,
+    public Message getTableFields(HttpServletRequest request, @PathVariable("type") String type,
                                                 @PathVariable("id") Long id, @PathVariable("dbName") String dbName,
                                                 @PathVariable("tableName") String tableName) throws Exception {
 
-        Message message = null;
+        Message message;
         try{
             AtomicReference<String> username = new AtomicReference<>(UserUtils.getLoginUser(request));
             // Try to get data source authority from project and set the privilege user
             projectOpenService.hasDataSourceAuth(username.get(), id,
                     ds -> username.set(ds.getCreator()));
-            message = exchangisDataSourceService.queryDataSourceDBTableFields(username.get(), type, id, dbName, tableName);
+            message = Message.ok().data("columns",
+                    exchangisDataSourceService.getTableFields(username.get(), type, id, dbName, tableName));
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while getting table fields";
             LOG.error(errorMessage, e);
-            message = Message.error("获取表字段失败");
+            message = Message.error("获取表字段失败:[" + e.getMessage() + "]");
         }
         return message;
 
@@ -458,7 +483,6 @@ public class ExchangisDataSourceRestfulApi {
         try{
             LOG.info("Encrypt params is: {}", params);
             message = exchangisDataSourceService.encryptConnectInfo((String) params.get("encryStr"));
-            //message = Message.ok().data("encryStr", "owwonowoww");
         } catch (Exception e) {
             String errorMessage = "Encrypted string failed";
             LOG.error(errorMessage, e);
@@ -472,7 +496,6 @@ public class ExchangisDataSourceRestfulApi {
         Message message = null;
         try{
             message = exchangisDataSourceService.decryptConnectInfo((String) params.get("sinkStr"));
-            //message = Message.ok().data("encryStr", "owwonowoww");
         } catch (Exception e) {
             String errorMessage = "Encrypted string failed";
             LOG.error(errorMessage, e);

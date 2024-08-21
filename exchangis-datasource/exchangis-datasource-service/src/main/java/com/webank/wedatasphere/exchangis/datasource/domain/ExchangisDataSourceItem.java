@@ -1,10 +1,13 @@
-package com.webank.wedatasphere.exchangis.datasource.remote;
+package com.webank.wedatasphere.exchangis.datasource.domain;
 
 import com.webank.wedatasphere.exchangis.common.domain.ExchangisDataSource;
 
 import java.util.Date;
 
-public class ExchangisRemoteDataSource implements ExchangisDataSource {
+/**
+ * Data source For list view
+ */
+public class ExchangisDataSourceItem implements ExchangisDataSource {
 
     private Long id;
     private String name;
