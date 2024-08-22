@@ -14,11 +14,11 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.*;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.DefaultDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSourcesContent;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobTransformsContent;
-import com.webank.wedatasphere.exchangis.datasource.remote.GetDataSourceInfoResult;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class AbstractDataSourceService {
+public abstract class AbstractDataSourceService extends AbstractLinkisDataSourceService implements ExchangisDataSourceService {
     protected final ObjectMapper mapper = new ObjectMapper();
     protected final ExchangisDataSourceContext context;
     protected final ExchangisJobParamConfigMapper exchangisJobParamConfigMapper;
@@ -317,12 +317,12 @@ public abstract class AbstractDataSourceService {
             String finalOperator = operator;
             Optional.ofNullable(this.context.getExchangisDsDefinition(ui.getType())).ifPresent(o -> {
                 try {
-                    GetDataSourceInfoResult dataSourceInfo = getDataSource(finalOperator, Long.parseLong(ui.getId()));
+                    ExchangisDataSourceDetail dataSourceInfo = getDataSource(finalOperator, Long.parseLong(ui.getId()));
                     if (Objects.nonNull(dataSourceInfo)) {
-                        String name = dataSourceInfo.getData().getInfo().getDataSourceName();
+                        String name = dataSourceInfo.getDataSourceName();
                         ui.setDs(name);
                         ui.setName(name);
-                        ui.setCreator(dataSourceInfo.getData().getInfo().getCreateUser());
+                        ui.setCreator(dataSourceInfo.getCreateUser());
                     }
                 } catch (ErrorException e) {
                     // Ignore
@@ -331,12 +331,4 @@ public abstract class AbstractDataSourceService {
         }
         return ui;
     }
-    /**
-     * Get data source info
-     * @param username username
-     * @param id id
-     * @return dto
-     * @throws ErrorException e
-     */
-    protected abstract GetDataSourceInfoResult getDataSource(String username, Long id) throws ErrorException;
 }
