@@ -5,8 +5,11 @@ import com.webank.wedatasphere.exchangis.dao.hook.MapperHook;
 import com.webank.wedatasphere.exchangis.datasource.core.context.DefaultExchangisDsContext;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceDefLoader;
+import com.webank.wedatasphere.exchangis.datasource.core.serialize.DefaultDataSourceParamKeySerializer;
+import com.webank.wedatasphere.exchangis.datasource.core.serialize.ParamKeySerializer;
 import com.webank.wedatasphere.exchangis.datasource.loader.loader.ExchangisDataSourceLoaderFactory;
 import org.apache.linkis.common.exception.ErrorException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,4 +29,9 @@ public class ServerConfig {
         return context;
     }
 
+    @Bean
+    @ConditionalOnMissingBean(ParamKeySerializer.class)
+    public ParamKeySerializer paramKeySerializer(){
+        return new DefaultDataSourceParamKeySerializer();
+    }
 }

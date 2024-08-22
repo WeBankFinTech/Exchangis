@@ -12,6 +12,11 @@ import java.util.Objects;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ExchangisDataSourceDetail extends DataSource implements ExchangisDataSource {
+    /**
+     * Model id
+     */
+    private Long modelId;
+
 
     public ExchangisDataSourceDetail(){
 
@@ -84,5 +89,13 @@ public class ExchangisDataSourceDetail extends DataSource implements ExchangisDa
     @Override
     public void setDesc(String desc) {
         // Not support
+    }
+
+    public Long getModelId() {
+        return modelId;
+    }
+
+    public void setModelId(Long modelId) {
+        this.modelId = modelId;
     }
 }

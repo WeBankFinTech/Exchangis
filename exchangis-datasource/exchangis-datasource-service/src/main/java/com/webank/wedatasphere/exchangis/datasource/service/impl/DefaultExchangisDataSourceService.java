@@ -1,7 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
@@ -13,6 +12,10 @@ import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMappe
 import com.webank.wedatasphere.exchangis.datasource.GetDataSourceInfoByIdAndVersionIdAction;
 import com.webank.wedatasphere.exchangis.datasource.GetInfoByDataSourceIdAndVersionIdResult;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDsModelRelation;
+import com.webank.wedatasphere.exchangis.datasource.core.serialize.ParamKeySerializer;
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
 import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceItem;
 import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceTypeDefinition;
@@ -21,6 +24,9 @@ import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisData
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
+import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelMapper;
+import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper;
+import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelTypeKeyMapper;
 import com.webank.wedatasphere.exchangis.datasource.service.AbstractDataSourceService;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceUIGetter;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
@@ -54,8 +60,6 @@ import org.apache.linkis.datasource.client.response.MetadataGetColumnsResult;
 import org.apache.linkis.datasourcemanager.common.domain.DataSource;
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
 import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
-import org.apache.linkis.datasourcemanager.common.util.json.Json;
-import org.apache.linkis.httpclient.response.Result;
 import org.apache.linkis.metadata.query.common.domain.MetaColumnInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +86,23 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
     private final EngineSettingsDao settingsDao;
 
     /**
+     * Data source model
+     */
+    @Resource
+    private DataSourceModelMapper modelMapper;
+
+    /**
+     * Model type key
+     */
+    @Resource
+    private DataSourceModelTypeKeyMapper modelTypeKeyMapper;
+
+    /**
+     * Model relation model
+     */
+    @Resource
+    private DataSourceModelRelationMapper modelRelationMapper;
+    /**
      * Open service
      */
     @Resource
@@ -98,6 +119,9 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
      */
     @Autowired
     private ExchangisJobDsBindMapper exchangisJobDsBindMapper;
+
+    @Resource
+    private ParamKeySerializer keySerializer;
 
     @Autowired
     public DefaultExchangisDataSourceService(ExchangisDataSourceContext context,
@@ -245,15 +269,11 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> create(String operator, DataSourceCreateVo vo) throws ExchangisDataSourceException {
-        // TODO merge parameter from data source model
-        Map<String, Object> payLoads;
-        try {
-            payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
-            payLoads.put("labels", payLoads.get("label"));
-        } catch (JsonErrorException e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(),
-                    e.getMessage());
-        }
+        Long modelId = vo.getModelId();
+        // Merge parameter from data source model
+        mergeModelParams(vo, modelId);
+        Map<String, Object> payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
+        Optional.ofNullable(payLoads).ifPresent(pay -> pay.put("labels", pay.get("label")));
         ExchangisDataSourceDefinition dsType = context.getExchangisDsDefinition(vo.getDataSourceTypeId());
         if (Objects.isNull(dsType)) {
             throw new ExchangisDataSourceException(CONTEXT_GET_DATASOURCE_NULL.getCode(), "exchangis context get datasource null");
@@ -276,7 +296,12 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
                 .build(),
                 LinkisDataSourceRemoteClient::updateDataSourceParameter, CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(),
                 "datasource update params version null or empty");
-        // TODO build the relation between model and data source version
+        // Build the relation between model and data source version
+        ExchangisDsModelRelation relation = new ExchangisDsModelRelation();
+        relation.setModelId(modelId);
+        relation.setDsName(vo.getDataSourceName());
+        relation.setDsVersion(versionResult.getVersion());
+        this.modelRelationMapper.addDataSourceModelBind(Collections.singletonList(relation));
         Map<String, Object> versionParams = versionResult.getData();
         versionParams.put("id", dataSourceId);
         return versionParams;
@@ -285,20 +310,27 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> update(String operator, Long id, DataSourceCreateVo vo) throws ExchangisDataSourceException {
-        Map<String, Object> payLoads;
-        try {
-            payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
-            payLoads.put("labels", payLoads.get("label"));
-        } catch (JsonErrorException e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(),
-                    e.getMessage());
-        }
         ExchangisDataSourceDefinition dsType = context.getExchangisDsDefinition(vo.getDataSourceTypeId());
         if (Objects.isNull(dsType)) {
             throw new ExchangisDataSourceException(CONTEXT_GET_DATASOURCE_NULL.getCode(), "exchangis context get datasource null");
         }
+        Long modelId = vo.getModelId();
+        // Merge parameter from data source model
+        mergeModelParams(vo, modelId);
+        Map<String, Object> payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
+        Optional.ofNullable(payLoads).ifPresent(pay -> pay.put("labels", pay.get("label")));
         LinkisDataSourceRemoteClient client = dsType.getDataSourceRemoteClient();
-        // TODO First to get data source data
+        // First send to get data source data before
+        GetInfoByDataSourceIdResult result = rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> GetInfoByDataSourceIdAction.builder()
+                        .setSystem("exchangis")
+                        .setUser(operator)
+                        .setDataSourceId(id).build(),
+                LinkisDataSourceRemoteClient::getInfoByDataSourceId, CLIENT_QUERY_DATASOURCE_ERROR.getCode(),
+                "");
+        DataSource beforeDs = result.getDataSource();
+        if (!Objects.equals(vo.getPublishedVersionId(), vo.getVersionId())){
+            // TODO delete the relation between data source id, version id and model id
+        }
         // Send to update data source
         rpcSend(client, () -> UpdateDataSourceAction.builder()
                 .setUser(operator)
@@ -307,16 +339,34 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
                 .build(),
                 AbstractRemoteClient::execute, CLIENT_DATASOURCE_UPDATE_ERROR.getCode(),
                 "datasource update null or empty");
-        // Send to create version
-        rpcSend(client, () -> UpdateDataSourceParameterAction.builder()
-                .setDataSourceId(Long.parseLong(id + ""))
-                .setUser(operator)
-                .addRequestPayloads(payLoads)
-                .build(),
-                LinkisDataSourceRemoteClient :: updateDataSourceParameter,
-                CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(),
-                "datasource update params version null or empty");
-        // TODO build the relation between model and data source version
+        UpdateDataSourceParameterResult versionResult;
+        try {
+            // Send to create version
+            versionResult = rpcSend(client, () -> UpdateDataSourceParameterAction.builder()
+                            .setDataSourceId(Long.parseLong(id + ""))
+                            .setUser(operator)
+                            .addRequestPayloads(payLoads)
+                            .build(),
+                    LinkisDataSourceRemoteClient::updateDataSourceParameter,
+                    CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(),
+                    "datasource update params version null or empty");
+        } catch (ExchangisDataSourceException e){
+            // Send to update the data source to rollback
+            rpcSend(client, () -> UpdateDataSourceAction.builder()
+                            .setUser(operator)
+                            .setDataSourceId(Long.parseLong(id + ""))
+                            .addRequestPayloads(Json.convert(beforeDs, Map.class, String.class, Object.class))
+                            .build(),
+                    AbstractRemoteClient::execute, CLIENT_DATASOURCE_UPDATE_ERROR.getCode(),
+                    "datasource update null or empty");
+            throw e;
+        }
+        // Build the relation between model and data source version
+        ExchangisDsModelRelation relation = new ExchangisDsModelRelation();
+        relation.setModelId(modelId);
+        relation.setDsName(vo.getDataSourceName());
+        relation.setDsVersion(versionResult.getVersion());
+        this.modelRelationMapper.addDataSourceModelBind(Collections.singletonList(relation));
         return new HashMap<>();
     }
 
@@ -589,7 +639,8 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
                         .setDataSourceId(id).build(),
                 LinkisDataSourceRemoteClient::getInfoByDataSourceId, CLIENT_QUERY_DATASOURCE_ERROR.getCode(),
                 "");
-        return new ExchangisDataSourceDetail(result.getDataSource());
+        return toExchangisDataSourceDetail(result.getDataSource(),
+                Optional.ofNullable(result.getDataSource().getVersionId()).orElse(0L).toString());
     }
 
     /**
@@ -606,7 +657,8 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
                 .build(),
                 LinkisDataSourceRemoteClient::getInfoByDataSourceName, CLIENT_QUERY_DATASOURCE_ERROR.getCode(),
                 "");
-        return new ExchangisDataSourceDetail(result.getDataSource());
+        return toExchangisDataSourceDetail(result.getDataSource(),
+                Optional.ofNullable(result.getDataSource().getVersionId()).orElse(0L).toString());
     }
 
     /**
@@ -675,14 +727,8 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
      */
     @Override
     public void testConnectByVo(String operator, DataSourceCreateVo vo){
-        Map<String, Object> payLoads;
-        try {
-            payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
-            payLoads.put("labels",payLoads.get("label"));
-        } catch (JsonErrorException e) {
-            throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARSE_JSON_ERROR.getCode(),
-                    e.getMessage());
-        }
+        Map<String, Object> payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
+        Optional.ofNullable(payLoads).ifPresent(pay -> pay.put("labels", pay.get("label")));
         rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () ->
                 new ParamsTestConnectAction(payLoads, operator),
                 LinkisDataSourceRemoteClient::execute, CLIENT_DATASOURCE_TEST_CONNECTION_ERROR.getCode(),
@@ -755,7 +801,6 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
                         .setUser(operator).setDataSourceTypeId(typeId).build(),
                 LinkisDataSourceRemoteClient::getKeyDefinitionsByType, CLIENT_DATASOURCE_GET_KEY_DEFINES_ERROR.getCode(),
                 "");
-
         return Objects.isNull(result.getKeyDefine()) ? null : result.getKeyDefine();
     }
 
@@ -833,6 +878,31 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
     }
 
     /**
+     * Merge model parameters
+     * @param vo void
+     * @param modelId model id
+     */
+    private void mergeModelParams(DataSourceCreateVo vo, Long modelId){
+        if (Objects.nonNull(modelId)){
+            return;
+        }
+        Map<String, Object> connectParams = Optional.ofNullable(vo.getConnectParams())
+                .orElse(new HashMap<>());
+        ExchangisDataSourceModel model = this.modelMapper.selectOne(modelId);
+        if (Objects.nonNull(model)){
+            Map<String, Object> modelParams = model.resolveParams();
+            // TODO get the model key definitions
+            List<ExchangisDataSourceTypeDefinition> definitions = new ArrayList<>();
+            definitions.forEach(definition -> {
+                // TODO try to serialize the parameter
+
+            });
+            // Add and overwrite to connect params
+            connectParams.putAll(modelParams);
+            vo.setConnectParams(connectParams);
+        }
+    }
+    /**
      * Get data source by id and version id
      * @param operator operator
      * @param id data source id
@@ -848,10 +918,22 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
                 .setVersionId(versionId).build(),
                 LinkisDataSourceRemoteClient::execute, CLIENT_QUERY_DATASOURCE_ERROR. getCode(),
                 "");
-        return new ExchangisDataSourceDetail(result.getDataSource());
+        return toExchangisDataSourceDetail(result.getDataSource(), versionId);
     }
 
-
+    /**
+     * To data source detail
+     * @param dataSource data source
+     * @param version version
+     * @return detail
+     */
+    private ExchangisDataSourceDetail toExchangisDataSourceDetail(DataSource dataSource, String version){
+        ExchangisDataSourceDetail detail = new ExchangisDataSourceDetail(dataSource);
+        if (StringUtils.isNotBlank(version)) {
+            // TODO Get the model id by data source and version id
+        }
+        return detail;
+    }
     /**
      * Convert project data source relations to exchangis data sources
      * @param dsRelations relation

@@ -6,6 +6,9 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * Use for updating or creating data source
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataSourceCreateVo {
     @Size(min=0,max=100,message="Length of dataSource name should between 0 and 100(数据源名字的长度应该在0和100之间)")
@@ -42,6 +45,11 @@ public class DataSourceCreateVo {
     private String comment;
 
     private Map<String, Object> connectParams;
+
+    /**
+     * Model id
+     */
+    private Long modelId;
 
     public String getDataSourceName() {
         return dataSourceName;
@@ -171,5 +179,13 @@ public class DataSourceCreateVo {
 
     public void setLabels(Map<String, Object> labels) {
         this.labels = labels;
+    }
+
+    public Long getModelId() {
+        return modelId;
+    }
+
+    public void setModelId(Long modelId) {
+        this.modelId = modelId;
     }
 }
