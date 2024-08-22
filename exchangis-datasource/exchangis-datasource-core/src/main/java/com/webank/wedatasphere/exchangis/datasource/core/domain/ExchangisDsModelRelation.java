@@ -1,18 +1,16 @@
 package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
-
 import java.util.Date;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- * DataSource model
- */
 public class ExchangisDsModelRelation {
 
     private Long modelId;
 
-    private Long dataSourceId;
+    private Long dsId;
+
+    private String dsName;
+
+    private Long dsVersion;
 
     private String createUser;
 
@@ -22,9 +20,6 @@ public class ExchangisDsModelRelation {
 
     private Date modifyTime;
 
-    public ExchangisDsModelRelation() {
-    }
-
     public Long getModelId() {
         return modelId;
     }
@@ -33,12 +28,28 @@ public class ExchangisDsModelRelation {
         this.modelId = modelId;
     }
 
-    public Long getDataSourceId() {
-        return dataSourceId;
+    public Long getDsId() {
+        return dsId;
     }
 
-    public void setDataSourceId(Long dataSourceId) {
-        this.dataSourceId = dataSourceId;
+    public void setDsId(Long dsId) {
+        this.dsId = dsId;
+    }
+
+    public String getDsName() {
+        return dsName;
+    }
+
+    public void setDsName(String dsName) {
+        this.dsName = dsName;
+    }
+
+    public Long getDsVersion() {
+        return dsVersion;
+    }
+
+    public void setDsVersion(Long dsVersion) {
+        this.dsVersion = dsVersion;
     }
 
     public String getCreateUser() {

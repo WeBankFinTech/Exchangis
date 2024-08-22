@@ -1,9 +1,5 @@
 package com.webank.wedatasphere.exchangis.datasource.exception;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public class RateLimitOperationException extends RuntimeException {
 
     public RateLimitOperationException(Throwable cause) {

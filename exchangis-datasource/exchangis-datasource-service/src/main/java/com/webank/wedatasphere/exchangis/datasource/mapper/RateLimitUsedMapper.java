@@ -1,17 +1,13 @@
 package com.webank.wedatasphere.exchangis.datasource.mapper;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimit;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitUsed;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitUsed;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public interface RateLimitUsedMapper {
 
     /**

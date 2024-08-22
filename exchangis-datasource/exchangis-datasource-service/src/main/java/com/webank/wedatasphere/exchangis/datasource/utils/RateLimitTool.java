@@ -1,9 +1,9 @@
 package com.webank.wedatasphere.exchangis.datasource.utils;
 
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimit;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitIdentify;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitUsed;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitIdentify;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitUsed;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.content.JobSettingsDefine;
 import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
@@ -13,10 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public class RateLimitTool {
 
     /**

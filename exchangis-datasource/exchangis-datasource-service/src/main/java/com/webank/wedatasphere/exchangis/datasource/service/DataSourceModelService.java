@@ -1,14 +1,12 @@
 package com.webank.wedatasphere.exchangis.datasource.service;
 
+import com.webank.wedatasphere.exchangis.common.pager.PageList;
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
 
 import java.util.List;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public interface DataSourceModelService {
 
     /**
@@ -54,14 +52,14 @@ public interface DataSourceModelService {
      *
      * @return
      */
-    List<ExchangisDataSourceModel> findPage(PageQuery pageQuery);
+    PageList<ExchangisDataSourceModel> findPage(PageQuery pageQuery);
 
     /**
      * Select all
      *
      * @return
      */
-    List<ExchangisDataSourceModel> selectAllList(PageQuery pageQuery);
+    List<ExchangisDataSourceModel> selectAllList(DataSourceModelQuery query);
 
     ExchangisDataSourceModel get(Long id);
 

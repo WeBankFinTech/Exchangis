@@ -6,14 +6,16 @@ import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.domain.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
+import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectDsVo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectDsQueryVo;
 import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectErrorException;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectDsRelationMapper;
+import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectMapper;
 import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import com.webank.wedatasphere.exchangis.project.provider.utils.ProjectAuthorityUtils;
-import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Implement of open service
@@ -30,24 +33,35 @@ import java.util.function.Consumer;
 public class ProjectOpenServiceImpl implements ProjectOpenService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProjectOpenService.class);
-    /**
-     * Basic project service
-     */
+
     @Resource
-    private ProjectService projectService;
+    private ProjectMapper projectMapper;
 
     @Resource
     private ProjectDsRelationMapper projectDsRelationMapper;
 
     @Override
     public ExchangisProjectInfo getProject(Long projectId) {
-        return projectService.getProjectDetailById(projectId);
+        ExchangisProject project = this.projectMapper.getDetailById(projectId);
+        if (Objects.nonNull(project)){
+            ExchangisProjectInfo projectVo = new ExchangisProjectInfo(project);
+            projectVo.setDataSources(null);
+            projectVo.setViewUsers(project.getViewUsers());
+            projectVo.setEditUsers(project.getEditUsers());
+            projectVo.setExecUsers(project.getExecUsers());
+            projectVo.setSource(project.getSourceMap());
+            List<ExchangisProjectDsRelation> proDsRelations = projectDsRelationMapper
+                    .queryPageList(new ProjectDsQueryVo(projectId));
+            projectVo.setDataSources(proDsRelations.stream()
+                    .map(ExchangisProjectDsVo::new).collect(Collectors.toList()));
+            return projectVo;
+        }
+        return null;
     }
 
     @Override
     public boolean hasAuthority(String username, Long projectId, OperationType operationType) {
-        return hasAuthority(username,
-                projectService.getProjectDetailById(projectId), operationType);
+        return hasAuthority(username, getProject(projectId), operationType);
     }
 
     @Override

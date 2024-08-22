@@ -9,13 +9,13 @@ import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSour
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitMapper;
 import com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitUsedMapper;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimit;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitIdentify;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitUsed;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitVo;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitIdentify;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitUsed;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitVo;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitNoLeftException;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
-import com.webank.wedatasphere.exchangis.datasource.domain.RateLimitQuery;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitQuery;
 import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -33,10 +33,6 @@ import java.util.Comparator;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 @Service
 public class RateLimitServiceImpl implements RateLimitService {
 

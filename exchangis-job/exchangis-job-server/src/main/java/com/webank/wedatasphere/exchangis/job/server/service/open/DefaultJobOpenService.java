@@ -31,7 +31,7 @@ public class DefaultJobOpenService implements ExchangisJobOpenService {
     private ExchangisJobEntityDao jobEntityDao;
 
     @Resource
-    private DataSourceModelRelationMapper dataSourceModelBindMapper;
+    private DataSourceModelRelationMapper dataSourceModelRelationMapper;
 
     @Override
     public ExchangisJobEntity getJobById(Long id, boolean basic) throws ExchangisJobException {
@@ -75,7 +75,7 @@ public class DefaultJobOpenService implements ExchangisJobOpenService {
     @Override
     public boolean isRunWithDataSourceModel(Long id) {
         // Get all datasources and jobs
-        List<Long> dsIds = dataSourceModelBindMapper.queryDataSourceIdsByModel(id);
+        List<Long> dsIds = dataSourceModelRelationMapper.queryDataSourceIdsByModel(id);
         List<ExchangisJobEntity> jobEntities = jobEntityDao.queryPageList(null);
 
         AtomicBoolean empty = new AtomicBoolean(false);

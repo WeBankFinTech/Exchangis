@@ -22,19 +22,19 @@ public interface DataSourceModelRelationMapper {
 
     /**
      * query dataSourceModelBind
-     * @param dataSourceModelBind
+     * @param dataSourceModelBinding
      */
     ExchangisDsModelRelation queryDataSourceModelBind(ExchangisDsModelRelation dataSourceModelBind);
 
     /**
      * add dataSourceModelBinds
-     * @param dataSourceModelBinds
+     * @param dataSourceModelBindings
      */
     void addDataSourceModelBind(@Param("dataSourceModelBinds") List<ExchangisDsModelRelation> dataSourceModelBinds);
 
     /**
      * update dataSourceModelBinds
-     * @param dataSourceModelBinds
+     * @param dataSourceModelBindings
      */
     void updateDataSourceModelBind(@Param("dataSourceModelBinds") List<ExchangisDsModelRelation> dataSourceModelBinds);
 

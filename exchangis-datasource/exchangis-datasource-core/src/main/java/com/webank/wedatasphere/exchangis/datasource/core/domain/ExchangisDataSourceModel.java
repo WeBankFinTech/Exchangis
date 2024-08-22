@@ -1,9 +1,12 @@
 package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +14,7 @@ import java.util.Map;
 /**
  * DataSource model
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ExchangisDataSourceModel {
 
     /**
@@ -26,6 +30,7 @@ public class ExchangisDataSourceModel {
     /**
      * Model name (always equal to cluster name)
      */
+    @Size(max = 100)
     private String modelName;
 
     /**
@@ -36,22 +41,24 @@ public class ExchangisDataSourceModel {
     /**
      * Model description
      */
+    @Size(max = 100)
     private String modelDesc;
-
-    /**
-     * Create owner
-     */
-    private String createOwner;
 
     private String parameter;
 
     private Map<String, Object> parameterMap;
 
+    private String createOwner;
+
+    private String createUser;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     private String modifyUser;
 
-    private Date updateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date modifyTime;
 
     /**
      * resolve parameters
@@ -119,6 +126,14 @@ public class ExchangisDataSourceModel {
         this.createOwner = createOwner;
     }
 
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
     public String getParameter() {
         return parameter;
     }
@@ -143,11 +158,11 @@ public class ExchangisDataSourceModel {
         this.modifyUser = modifyUser;
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
+    public Date getModifyTime() {
+        return modifyTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
     }
 }

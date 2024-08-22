@@ -308,8 +308,8 @@ public class DefaultJobInfoService implements JobInfoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ExchangisJobVo copyJob(ExchangisJobVo jobVo) {
-        ExchangisJobVo job = jobInfoService.getJob(jobVo.getId(), false);
-        ExchangisJobVo newJob = jobInfoService.createJob(job);
+        ExchangisJobVo job = this.getJob(jobVo.getId(), false);
+        ExchangisJobVo newJob = this.createJob(job);
         return newJob;
     }
 

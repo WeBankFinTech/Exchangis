@@ -1,11 +1,7 @@
-package com.webank.wedatasphere.exchangis.datasource.domain;
+package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 import java.util.*;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public class RateLimitIdentify {
 
     public enum LimitRealm {

@@ -1,8 +1,8 @@
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitMapper">
-    <resultMap id="rateLimit" type="RateLimit">
+    <resultMap id="rateLimit" type="com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit">
         <result property="id" column="id"/>
         <result property="limitRealmId" column="limit_realm_id"/>
         <result property="limitRealm" column="limit_realm"/>
@@ -17,7 +17,7 @@
         <result property="modifyTime" column="modify_time"/>
     </resultMap>
 
-    <resultMap id="rateLimitVo" type="RateLimitVo">
+    <resultMap id="rateLimitVo" type="com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitVo">
         <result property="id" column="id"/>
         <result property="limitRealmId" column="limit_realm_id"/>
         <result property="limitRealm" column="limit_realm"/>
@@ -132,7 +132,7 @@
         rl.create_user,rl.create_time,rl.modify_user,rl.modify_time,
         dsm.model_name
         FROM <include refid="table"/> rl
-        LEFT JOIN udes_data_source_model dsm on rl.limit_realm_id=dsm.id
+        LEFT JOIN exchangis_data_source_model dsm on rl.limit_realm_id=dsm.id
         <include refid="findPageWhere"/>
         ORDER BY create_time DESC
     </select>

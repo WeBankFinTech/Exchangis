@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.datasource.domain;
+package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -7,10 +7,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
 public class RateLimit {
 
     public static final String DEFAULT_LIMIT_REALM = "MODEL";
@@ -145,12 +141,28 @@ public class RateLimit {
         this.createUser = createUser;
     }
 
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
     public String getModifyUser() {
         return modifyUser;
     }
 
     public void setModifyUser(String modifyUser) {
         this.modifyUser = modifyUser;
+    }
+
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     public RateLimit() {

@@ -1,36 +1,69 @@
-package com.webank.wedatasphere.exchangis.datasource.domain;
+package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
-import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-/**
- * @author jefftlin
- * @date 2024/8/15
- */
-public class RateLimitQuery extends PageQuery {
+import java.util.Date;
+
+public class RateLimitVo {
+
+    public static final String DEFAULT_LIMIT_REALM = "MODEL";
+
+    public static final String DEFAULT_FLOW_RATE_LIMIT_UNIT = "MB";
+
+    public static final Boolean DEFAULT_OPEN_LIMIT = false;
 
     private Long id;
 
     private Long limitRealmId;
 
+    /**
+     * Default: MODEL
+     */
     private String limitRealm;
 
-    private String sourceType;
+    private String modelName;
 
     private Integer flowRateLimit;
 
     private String flowRateLimitUnit;
 
+    private Integer flowRateLimitUsed;
+
     private Integer recordRateLimit;
+
+    private Integer recordRateLimitUsed;
 
     private Integer parallelLimit;
 
+    private Integer parallelLimitUsed;
+
+    /**
+     * Open limit
+     * 1 with open; 0 with close
+     */
     private Boolean openLimit;
 
-    private String userRole;
-
+    /**
+     * Create user
+     */
     private String createUser;
 
+    /**
+     * Create time
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
+
+    /**
+     * Modify user
+     */
     private String modifyUser;
+
+    /**
+     * Modify time
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date modifyTime;
 
     public Long getId() {
         return id;
@@ -56,12 +89,12 @@ public class RateLimitQuery extends PageQuery {
         this.limitRealm = limitRealm;
     }
 
-    public String getSourceType() {
-        return sourceType;
+    public String getModelName() {
+        return modelName;
     }
 
-    public void setSourceType(String sourceType) {
-        this.sourceType = sourceType;
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
 
     public Integer getFlowRateLimit() {
@@ -80,12 +113,28 @@ public class RateLimitQuery extends PageQuery {
         this.flowRateLimitUnit = flowRateLimitUnit;
     }
 
+    public Integer getFlowRateLimitUsed() {
+        return flowRateLimitUsed;
+    }
+
+    public void setFlowRateLimitUsed(Integer flowRateLimitUsed) {
+        this.flowRateLimitUsed = flowRateLimitUsed;
+    }
+
     public Integer getRecordRateLimit() {
         return recordRateLimit;
     }
 
     public void setRecordRateLimit(Integer recordRateLimit) {
         this.recordRateLimit = recordRateLimit;
+    }
+
+    public Integer getRecordRateLimitUsed() {
+        return recordRateLimitUsed;
+    }
+
+    public void setRecordRateLimitUsed(Integer recordRateLimitUsed) {
+        this.recordRateLimitUsed = recordRateLimitUsed;
     }
 
     public Integer getParallelLimit() {
@@ -96,20 +145,20 @@ public class RateLimitQuery extends PageQuery {
         this.parallelLimit = parallelLimit;
     }
 
+    public Integer getParallelLimitUsed() {
+        return parallelLimitUsed;
+    }
+
+    public void setParallelLimitUsed(Integer parallelLimitUsed) {
+        this.parallelLimitUsed = parallelLimitUsed;
+    }
+
     public Boolean getOpenLimit() {
         return openLimit;
     }
 
     public void setOpenLimit(Boolean openLimit) {
         this.openLimit = openLimit;
-    }
-
-    public String getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(String userRole) {
-        this.userRole = userRole;
     }
 
     public String getCreateUser() {
@@ -128,19 +177,4 @@ public class RateLimitQuery extends PageQuery {
         this.modifyUser = modifyUser;
     }
 
-    public RateLimitQuery() {
-    }
-
-    public RateLimitQuery(RateLimit rateLimit) {
-        this.id = rateLimit.getId();
-        this.limitRealmId = rateLimit.getLimitRealmId();
-        this.limitRealm = rateLimit.getLimitRealm();
-        this.flowRateLimit = rateLimit.getFlowRateLimit();
-        this.flowRateLimitUnit = rateLimit.getFlowRateLimitUnit();
-        this.recordRateLimit = rateLimit.getRecordRateLimit();
-        this.parallelLimit = rateLimit.getParallelLimit();
-        this.openLimit = rateLimit.getOpenLimit();
-        this.createUser = rateLimit.getCreateUser();
-        this.modifyUser = rateLimit.getModifyUser();
-    }
 }
