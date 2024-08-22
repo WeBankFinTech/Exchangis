@@ -8,7 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class DataSourceModelQuery extends PageQuery {
-    private int modelId;
+    private long id;
+    private long modelId;
     private String clusterName;
     private String modelName;
     /**
@@ -22,11 +23,19 @@ public class DataSourceModelQuery extends PageQuery {
     private String createOwner;
     private Set<String> userDataAuth = new HashSet<>();
 
-    public int getModelId() {
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getModelId() {
         return modelId;
     }
 
-    public void setModelId(int modelId) {
+    public void setModelId(long modelId) {
         this.modelId = modelId;
     }
 

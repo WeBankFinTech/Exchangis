@@ -59,7 +59,7 @@ public class ExchangisDataSourceModelController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public Message delete(@PathVariable Long id, HttpServletRequest request) {
         DataSourceModelQuery query = new DataSourceModelQuery();
-        query.setModelId(id.intValue());
+        query.setModelId(id);
         List<ExchangisDataSourceModel> dsModels = dataSourceModelService.selectAllList(query);
         if (Objects.nonNull(dsModels) && dsModels.size() > 0) {
             return Message.error("The model is in use, cannot delete it");
@@ -73,11 +73,12 @@ public class ExchangisDataSourceModelController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public Message update(@Valid @RequestBody ExchangisDataSourceModel model, HttpServletRequest request) {
-        if (model.getId() <= 0) {
+    public Message update(@PathVariable Long id, @Valid @RequestBody ExchangisDataSourceModel model, HttpServletRequest request) {
+        if (id <= 0) {
             Message.error("Error dataSource model");
         }
-        ExchangisDataSourceModel osMA = dataSourceModelService.get(model.getId());
+        model.setId(id);
+        ExchangisDataSourceModel osMA = dataSourceModelService.get(id);
         if (!osMA.getModelName().equals(model.getModelName())
                 && StringUtils.isNotBlank(model.getCreateUser())
                 && isDuplicate(model.getModelName(), model.getCreateUser())) {
@@ -146,7 +147,31 @@ public class ExchangisDataSourceModelController {
                 element.setParameter(Json.toJson(newParams, null));
             }
         });
-        return Message.ok().data("data", data);
+        Message message = Message.ok();
+        message.data("list", data);
+        if (!data.isEmpty()) {
+            message.data("total", data.size());
+        }
+        return message;
+    }
+
+    @RequestMapping(value = "keyDefine", method = RequestMethod.GET)
+    public Message keyDefine(DataSourceModelQuery pageQuery, HttpServletRequest request) {
+        List<ExchangisDataSourceModel> data = dataSourceModelService.selectAllList(pageQuery);
+        String username = UserUtils.getLoginUser(request);
+        data.forEach(element -> {
+            //Bind authority scopes
+            if (StringUtils.isNotBlank(element.getCreateUser()) && !element.getCreateUser().equals(username)) {
+                //Remove sensitive data
+                Map<String, Object> params = element.resolveParams();
+                Map<String, Object> newParams = new HashMap<>();
+                newParams.put(Constants.PARAM_AUTH_TYPE, params.getOrDefault(Constants.PARAM_AUTH_TYPE, AuthType.NONE));
+                element.setParameter(Json.toJson(newParams, null));
+            }
+        });
+        Message message = Message.ok();
+
+        return message;
     }
 
     private boolean isDuplicate(String tsName, HttpServletRequest request) {

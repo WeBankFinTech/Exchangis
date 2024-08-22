@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.datasource.service;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVo;
 import org.apache.linkis.common.exception.ErrorException;
+import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
 
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public interface DataSourceService {
      * @param vo create vo
      * @return data source version parameters
      */
-    Map<String, Object> create(String operator, DataSourceCreateVo vo) throws ExchangisDataSourceException;
+    Map<String, Object> create(String operator, DataSourceCreateVo vo) throws ExchangisDataSourceException, JsonErrorException;
 
     /**
      * Update data source

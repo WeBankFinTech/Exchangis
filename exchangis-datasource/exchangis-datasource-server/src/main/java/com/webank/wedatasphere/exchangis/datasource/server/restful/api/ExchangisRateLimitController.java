@@ -33,18 +33,19 @@ public class ExchangisRateLimitController {
     private RateLimitService rateLimitService;
 
     @RequestMapping( value = "pageList", method = RequestMethod.GET)
-    public Message pageList(HttpServletRequest request,
-                            @RequestBody RateLimitQuery pageQuery,
-                            @RequestParam(value = "current", required = false) Integer current,
-                            @RequestParam(value = "size", required = false) Integer size) {
+    public Message pageList(HttpServletRequest request, RateLimitQuery pageQuery) {
         String username = UserUtils.getLoginUser(request);
-        Optional.ofNullable(current).ifPresent(pageQuery::setCurrent);
-        Optional.ofNullable(size).ifPresent(pageQuery::setSize);
         pageQuery.setCreateUser(username);
 
         try {
             List<RateLimitVo> rateLimitPage = rateLimitService.findRateLimitPage(pageQuery);
-            return Message.ok().data("rateLimitPage", rateLimitPage);
+            Message message = Message.ok();
+            message.data("list", rateLimitPage);
+            message.data("sourceType", pageQuery.getSourceType());
+            if (!rateLimitPage.isEmpty()) {
+                message.data("total", rateLimitPage.size());
+            }
+            return message;
         } catch (Exception t) {
             LOG.error("Failed to query project list for user {}", username, t);
             return Message.error("Failed to query rateLimit list (获取限速列表失败) " + t.getMessage());
@@ -62,13 +63,13 @@ public class ExchangisRateLimitController {
         ExchangisDataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
         MutablePair<Boolean, String> checkResult = checkDataSourceModel(rateLimit, dataSourceModel);
         if (!checkResult.getLeft()) {
-            return Message.error("Please check the params!(参数校验失败)");
+            return Message.error("Please check the params!(参数校验失败), Cause by : " + checkResult.getRight());
         }
 
         try {
             rateLimitService.add(rateLimit);
         } catch (RateLimitOperationException e) {
-            return Message.error("Failed to add the rateLimit!(添加限速信息失败)");
+            return Message.error("Failed to add the rateLimit!(添加限速信息失败), cause by : " + e.getMessage());
         }
         return Message.ok();
     }
@@ -86,7 +87,7 @@ public class ExchangisRateLimitController {
         ExchangisDataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
         MutablePair<Boolean, String> checkResult = checkDataSourceModel(rateLimit, dataSourceModel);
         if (!checkResult.getLeft()) {
-            return Message.error("Please check the params!(参数校验失败)");
+            return Message.error("Please check the params!(参数校验失败), Cause by : " + checkResult.getRight());
         }
 
         // Do update operation
@@ -94,7 +95,7 @@ public class ExchangisRateLimitController {
         try {
             rateLimitService.update(rateLimit);
         } catch (RateLimitOperationException e) {
-            return Message.error("Failed to update the rateLimit!(修改限速信息失败)");
+            return Message.error("Failed to update the rateLimit!(修改限速信息失败), cause by : " + e.getMessage());
         }
         return Message.ok();
     }
@@ -120,7 +121,7 @@ public class ExchangisRateLimitController {
         try {
             rateLimitService.delete(rateLimit);
         } catch (RateLimitOperationException e) {
-            return Message.error("Failed to delete the rateLimit!(删除限速信息失败)");
+            return Message.error("Failed to delete the rateLimit!(删除限速信息失败), cause by : " + e.getMessage());
         }
         return Message.ok();
     }
@@ -146,6 +147,7 @@ public class ExchangisRateLimitController {
         if (Objects.isNull(dataSourceModel)) {
             pair.setLeft(false);
             pair.setRight("ModelId not exist!(模板不存在)");
+            return pair;
         }
         if (Objects.nonNull(rateLimit) && Objects.nonNull(rateLimit.getLimitRealm()) && Objects.nonNull(rateLimit.getLimitRealmId())) {
             if (StringUtils.equals(RateLimit.DEFAULT_LIMIT_REALM, rateLimit.getLimitRealm()) &&
@@ -161,6 +163,7 @@ public class ExchangisRateLimitController {
                                 Objects.equals(paramMap.get(uniqueId), params.get(uniqueId))) {
                             pair.setLeft(false);
                             pair.setRight("Current cluster has been bound！（当前集群已绑定限速信息）");
+                            return pair;
                         }
                     }
                 }

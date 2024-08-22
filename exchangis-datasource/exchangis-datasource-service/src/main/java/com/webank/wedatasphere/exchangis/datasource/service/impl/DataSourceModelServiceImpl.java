@@ -68,7 +68,7 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
 
     @Override
     public List<ExchangisDataSourceModel> selectAllList(DataSourceModelQuery query) {
-        return dataSourceModelMapper.selectAllList(null);
+        return dataSourceModelMapper.selectAllList(query);
     }
 
     @Override

@@ -1,11 +1,10 @@
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper">
-    <resultMap id="rateLimitUsed" type="DataSourceModelBind">
-        <result property="id" column="id"/>
+    <resultMap id="rateLimitUsed" type="com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDsModelRelation">
         <result property="modelId" column="model_id"/>
-        <result property="dataSourceId" column="data_source_id"/>
+        <result property="dsId" column="data_source_id"/>
         <result property="createUser" column="create_user"/>
         <result property="createTime" column="create_time"/>
         <result property="modifyUser" column="modify_user"/>
