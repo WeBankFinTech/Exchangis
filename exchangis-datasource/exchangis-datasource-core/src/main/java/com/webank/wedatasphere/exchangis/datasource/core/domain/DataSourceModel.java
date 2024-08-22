@@ -15,7 +15,7 @@ import java.util.Map;
  * DataSource model
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ExchangisDataSourceModel {
+public class DataSourceModel {
 
     /**
      * Model id
@@ -75,7 +75,7 @@ public class ExchangisDataSourceModel {
         return parameterMap;
     }
 
-    public ExchangisDataSourceModel() {
+    public DataSourceModel() {
     }
 
     public Long getId() {

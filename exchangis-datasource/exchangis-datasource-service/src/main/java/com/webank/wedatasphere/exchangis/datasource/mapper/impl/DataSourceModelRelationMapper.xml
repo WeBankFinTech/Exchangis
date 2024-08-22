@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper">
-    <resultMap id="rateLimitUsed" type="com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDsModelRelation">
+    <resultMap id="rateLimitUsed" type="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation">
         <result property="modelId" column="model_id"/>
         <result property="dsId" column="data_source_id"/>
         <result property="createUser" column="create_user"/>
@@ -20,7 +20,7 @@
         create_user,create_time,modify_user,modify_time
     </sql>
 
-    <insert id="addDataSourceModelBind" useGeneratedKeys="true" keyProperty="id">
+    <insert id="addDsModelRelation" useGeneratedKeys="true" keyProperty="id">
         <foreach collection="list" item="item" open="" close="" separator="">
             <![CDATA[
                 INSERT INTO exchangis_data_source_model_relation (
@@ -36,7 +36,7 @@
         </foreach>
     </insert>
 
-    <update id="updateDataSourceModelBind">
+    <update id="updateDsModelRelation">
         <foreach collection="list" item="item" separator="">
             <![CDATA[
                 UPDATE exchangis_data_source_model_relation SET
@@ -50,19 +50,19 @@
         </foreach>
     </update>
 
-    <delete id="deleteDataSourceModelBind">
+    <delete id="deleteDsModelRelation">
         DELETE FROM <include refid="table"/> WHERE
         model_id=#{item.modelId} and data_source_id=#{item.dataSourceId}
     </delete>
 
-    <select id="queryDataSourceModelBinds" resultMap="rateLimitUsed">
+    <select id="querydsModelRelations" resultMap="rateLimitUsed">
         SELECT
         <include refid="columns"/>
         FROM <include refid="table"/>
         ORDER BY create_time DESC
     </select>
 
-    <select id="queryDataSourceIdsByModel" resultMap="rateLimitUsed">
+    <select id="queryDsIdsByModel" resultMap="rateLimitUsed">
         SELECT
         data_source_id
         FROM <include refid="table"/>
@@ -70,7 +70,7 @@
         ORDER BY create_time DESC
     </select>
 
-    <select id="queryDataSourceModelBind" resultMap="rateLimitUsed">
+    <select id="queryDsModelRelation" resultMap="rateLimitUsed">
         SELECT
         <include refid="columns"/>
         FROM <include refid="table"/>

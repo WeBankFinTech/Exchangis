@@ -3,15 +3,22 @@ package com.webank.wedatasphere.exchangis.datasource.service.impl;
 import com.webank.wedatasphere.exchangis.common.pager.PageList;
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelMapper;
+import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
+import org.apache.linkis.server.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,9 +30,11 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     @Resource
     private DataSourceModelMapper dataSourceModelMapper;
 
+    @Resource
+    private DataSourceModelRelationMapper dataSourceModelRelationMapper;
 
     @Override
-    public boolean add(ExchangisDataSourceModel dataSourceModel) {
+    public boolean add(DataSourceModel dataSourceModel) {
         return dataSourceModelMapper.insert(dataSourceModel) > 0;
     }
 
@@ -35,18 +44,26 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     }
 
     @Override
-    public boolean delete(String ids) {
-        String[] idsStr = ids.split(",");
-        List<Object> list = new ArrayList<Object>();
-        for (String id : idsStr) {
-            list.add(Long.valueOf(id));
+    @Transactional
+    public boolean delete(Long id) {
+        List<Long> dsIds = dataSourceModelRelationMapper.queryDsIdsByModel(id);
+        if (Objects.nonNull(dsIds) && dsIds.size() > 0) {
+            throw new DataSourceModelOperateException("The model is in use, cannot delete it");
         }
-        LOG.info("Delete ids: {}", ids);
-        return delete(list);
+        LOG.info("Delete datasource id : {}", id);
+        return delete(Arrays.asList(id));
     }
 
     @Override
-    public boolean update(ExchangisDataSourceModel dataSourceModel) {
+    @Transactional
+    public boolean update(DataSourceModel dataSourceModel) {
+        Long id = dataSourceModel.getId();
+        DataSourceModel queryModel = this.get(id);
+        if (!queryModel.getModelName().equals(dataSourceModel.getModelName())
+                && StringUtils.isNotBlank(dataSourceModel.getCreateUser())
+                && isDuplicate(dataSourceModel.getModelName(), dataSourceModel.getCreateUser())) {
+            throw new DataSourceModelOperateException("The model is in duplicate");
+        }
         return dataSourceModelMapper.update(dataSourceModel) > 0;
     }
 
@@ -56,23 +73,23 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     }
 
     @Override
-    public PageList<ExchangisDataSourceModel> findPage(PageQuery pageQuery) {
+    public PageList<DataSourceModel> findPage(PageQuery pageQuery) {
         int currentPage = pageQuery.getPage();
         int pageSize = pageQuery.getPageSize();
         int offset = currentPage > 0 ? (currentPage - 1) * pageSize : 0;
-        PageList<ExchangisDataSourceModel> page = new PageList<>(currentPage, pageSize, offset);
-        List<ExchangisDataSourceModel> data = dataSourceModelMapper.findPage(pageQuery, new RowBounds(offset, pageSize));
+        PageList<DataSourceModel> page = new PageList<>(currentPage, pageSize, offset);
+        List<DataSourceModel> data = dataSourceModelMapper.findPage(pageQuery, new RowBounds(offset, pageSize));
         page.setData(data);
         return page;
     }
 
     @Override
-    public List<ExchangisDataSourceModel> selectAllList(DataSourceModelQuery query) {
+    public List<DataSourceModel> selectAllList(DataSourceModelQuery query) {
         return dataSourceModelMapper.selectAllList(query);
     }
 
     @Override
-    public ExchangisDataSourceModel get(Long id) {
+    public DataSourceModel get(Long id) {
         return dataSourceModelMapper.selectOne(id);
     }
 
@@ -82,7 +99,15 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     }
 
     @Override
-    public List<ExchangisDataSourceModel> queryWithRateLimit() {
+    public List<DataSourceModel> queryWithRateLimit() {
         return dataSourceModelMapper.queryWithRateLimit();
     }
+
+    private boolean isDuplicate(String tsName, String createUser) {
+        DataSourceModelQuery query = new DataSourceModelQuery();
+        query.setModelExactName(tsName);
+        query.setCreateUser(createUser);
+        return !this.selectAllList(query).isEmpty();
+    }
+
 }

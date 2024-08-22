@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
 import com.webank.wedatasphere.exchangis.common.UserUtils;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitVo;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
@@ -52,15 +52,13 @@ public class ExchangisRateLimitController {
         }
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @RequestMapping(value = "", method = RequestMethod.POST)
     public Message add(@RequestBody @Valid RateLimit rateLimit, HttpServletRequest request) {
         if (Objects.isNull(rateLimit.getLimitRealm()) || Objects.isNull(rateLimit.getLimitRealmId())) {
             return Message.error("Please check the params!(参数校验失败)");
         }
-
         // Param valid
-        String username = UserUtils.getLoginUser(request);
-        ExchangisDataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
+        DataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
         MutablePair<Boolean, String> checkResult = checkDataSourceModel(rateLimit, dataSourceModel);
         if (!checkResult.getLeft()) {
             return Message.error("Please check the params!(参数校验失败), Cause by : " + checkResult.getRight());
@@ -74,24 +72,23 @@ public class ExchangisRateLimitController {
         return Message.ok();
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public Message update(@Valid @RequestBody RateLimit rateLimit,HttpServletRequest request) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public Message update(@PathVariable Long id, @Valid RateLimit rateLimit,HttpServletRequest request) {
+        RateLimit queryOne = rateLimitService.selectOne(new RateLimit(id));
+        if (Objects.isNull(queryOne)) {
+            return Message.error("Please check the params!(参数校验失败)");
+        }
+        rateLimit.setId(id);
         if (Objects.isNull(rateLimit.getLimitRealm()) || Objects.isNull(rateLimit.getLimitRealmId())) {
             return Message.error("Please check the params!(参数校验失败)");
         }
-//        if(!hasDataAuth(RateLimit.class,DataAuthScope.WRITE, request, rateLimitService.get(rateLimit))){
-//            return new Response<RateLimit>().errorResponse(CodeConstant.AUTH_ERROR, null, super.informationSwitch("exchangis.rate-limit.error.access.rights"));
-//        }
-
         // Param valid
-        ExchangisDataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
+        DataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
         MutablePair<Boolean, String> checkResult = checkDataSourceModel(rateLimit, dataSourceModel);
         if (!checkResult.getLeft()) {
             return Message.error("Please check the params!(参数校验失败), Cause by : " + checkResult.getRight());
         }
 
-        // Do update operation
-//        security.bindUserInfo(rateLimit, request);
         try {
             rateLimitService.update(rateLimit);
         } catch (RateLimitOperationException e) {
@@ -100,23 +97,18 @@ public class ExchangisRateLimitController {
         return Message.ok();
     }
 
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public Message delete(@PathVariable Long id, HttpServletRequest request) {
         RateLimit rateLimit = rateLimitService.selectOne(new RateLimit(id));
         if (Objects.isNull(rateLimit)) {
             return Message.error("Please check the params!(参数校验失败)");
         }
-//        if(!hasDataAuth(RateLimit.class,DataAuthScope.WRITE, request, rateLimit)){
-//            return new Response<RateLimit>().errorResponse(CodeConstant.AUTH_ERROR, null, super.informationSwitch("exchangis.rate-limit.error.access.rights"));
-//        }
-
         // Param valid
-        ExchangisDataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
+        DataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
         MutablePair<Boolean, String> checkResult = checkDataSourceModel(rateLimit, dataSourceModel);
         if (!checkResult.getLeft()) {
             return Message.error("Please check the params!(参数校验失败)" + checkResult.getRight());
         }
-
         // Do delete operation
         try {
             rateLimitService.delete(rateLimit);
@@ -128,21 +120,16 @@ public class ExchangisRateLimitController {
 
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
     public Message resetRateLimitUsed(@RequestBody RateLimit rateLimit, HttpServletRequest request){
-
         // Param valid
         RateLimit queryRateLimit = rateLimitService.selectOne(rateLimit);
         if (Objects.isNull(queryRateLimit)) {
             return Message.error("RateLimit Id : " + rateLimit.getId() + " is illegal!(非法参数)");
         }
-//        if(!hasDataAuth(RateLimit.class,DataAuthScope.WRITE, request, queryRateLimit)){
-//            return new Response<Object>().errorResponse(CodeConstant.AUTH_ERROR, null, super.informationSwitch("exchangis.rate-limit.error.access.rights"));
-//        }
-
         rateLimitService.resetRateLimitUsed(rateLimit);
         return Message.ok();
     }
 
-    private MutablePair<Boolean, String> checkDataSourceModel(RateLimit rateLimit, ExchangisDataSourceModel dataSourceModel) {
+    private MutablePair<Boolean, String> checkDataSourceModel(RateLimit rateLimit, DataSourceModel dataSourceModel) {
         MutablePair<Boolean, String> pair = new MutablePair<>(true, null);
         if (Objects.isNull(dataSourceModel)) {
             pair.setLeft(false);
@@ -155,9 +142,9 @@ public class ExchangisRateLimitController {
                 String uniqueId = "elasticUrls";
                 // Check unique id
                 Map<String, Object> paramMap = dataSourceModel.resolveParams();
-                List<ExchangisDataSourceModel> dataSourceModels = dataSourceModelService.queryWithRateLimit();
+                List<DataSourceModel> dataSourceModels = dataSourceModelService.queryWithRateLimit();
                 if (Objects.nonNull(dataSourceModels) && dataSourceModels.size() > 0) {
-                    for (ExchangisDataSourceModel dsm : dataSourceModels) {
+                    for (DataSourceModel dsm : dataSourceModels) {
                         Map<String, Object> params = dsm.resolveParams();
                         if (!Objects.equals(rateLimit.getLimitRealmId(), dsm.getId()) &&
                                 Objects.equals(paramMap.get(uniqueId), params.get(uniqueId))) {

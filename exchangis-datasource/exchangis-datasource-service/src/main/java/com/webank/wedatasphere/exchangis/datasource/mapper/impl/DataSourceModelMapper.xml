@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelMapper">
-    <resultMap id="resultModel" type="com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel">
+    <resultMap id="resultModel" type="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel">
         <result property="id" column="id"/>
         <result property="clusterName" column="cluster_name"/>
         <result property="modelName" column="model_name"/>
@@ -122,6 +122,7 @@
         source_type = #{sourceType},
         model_desc = #{modelDesc},
         parameter = #{parameter},
+        create_user = #{createUser},
         modify_user = #{modifyUser},
         modify_time = now()
         WHERE

@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.mapper;
 
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDsModelRelation;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelationQuery;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -11,36 +12,36 @@ import java.util.List;
 public interface DataSourceModelRelationMapper {
 
     /**
-     * query dataSourceModelBinds
+     * query dataSourceModelRelations
      */
-    List<ExchangisDsModelRelation> queryDataSourceModelBinds();
+    List<DataSourceModelRelation> querydsModelRelations();
 
     /**
      * query dataSourceModelBinds
      */
-    List<Long> queryDataSourceIdsByModel(@Param("modelId") Long modelId);
+    List<Long> queryDsIdsByModel(@Param("modelId") Long modelId);
 
     /**
-     * query dataSourceModelBind
-     * @param dataSourceModelBinding
+     * query dataSourceModelRelation
+     * @param dataSourceModelRelationQuery
      */
-    ExchangisDsModelRelation queryDataSourceModelBind(ExchangisDsModelRelation dataSourceModelBind);
+    DataSourceModelRelation queryDsModelRelation(DataSourceModelRelationQuery dataSourceModelRelationQuery);
 
     /**
-     * add dataSourceModelBinds
-     * @param dataSourceModelBindings
+     * add dataSourceModelRelations
+     * @param dataSourceModelRelations
      */
-    void addDataSourceModelBind(@Param("dataSourceModelBinds") List<ExchangisDsModelRelation> dataSourceModelBinds);
+    void addDsModelRelation(@Param("dataSourceModelRelations") List<DataSourceModelRelation> dataSourceModelRelations);
 
     /**
-     * update dataSourceModelBinds
-     * @param dataSourceModelBindings
+     * update dataSourceModelRelations
+     * @param dataSourceModelRelations
      */
-    void updateDataSourceModelBind(@Param("dataSourceModelBinds") List<ExchangisDsModelRelation> dataSourceModelBinds);
+    void updateDsModelRelation(@Param("dataSourceModelRelations") List<DataSourceModelRelation> dataSourceModelRelations);
 
     /**
-     * delete dataSourceModelBinds
+     * delete dataSourceModelRelations
      * @param modelId
      */
-    void deleteDataSourceModelBind(Long modelId, Long dataSourceId);
+    void deleteDsModelRelation(Long modelId, Long dataSourceId);
 }

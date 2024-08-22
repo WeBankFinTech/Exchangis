@@ -2,7 +2,9 @@ package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
 
-public class ExchangisDataSourceModelTypeKey extends DataSourceParamKeyDefinition {
+import java.util.Date;
+
+public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
     private Long dsTypeId;
 
@@ -11,6 +13,10 @@ public class ExchangisDataSourceModelTypeKey extends DataSourceParamKeyDefinitio
     private String nestType;
 
     private String nestFields;
+
+    private Date createTime;
+
+    private Date modifyTime;
 
     public Long getDsTypeId() {
         return dsTypeId;
@@ -42,5 +48,21 @@ public class ExchangisDataSourceModelTypeKey extends DataSourceParamKeyDefinitio
 
     public void setNestFields(String nestFields) {
         this.nestFields = nestFields;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
     }
 }

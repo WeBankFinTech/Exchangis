@@ -1,8 +1,10 @@
 package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
+import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
+
 import java.util.Date;
 
-public class ExchangisDsModelRelation {
+public class DataSourceModelRelationQuery extends PageQuery {
 
     private Long modelId;
 

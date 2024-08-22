@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.datasource.service;
 import com.webank.wedatasphere.exchangis.common.pager.PageList;
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface DataSourceModelService {
      * @param dataSourceModel
      * @return
      */
-    boolean add(ExchangisDataSourceModel dataSourceModel);
+    boolean add(DataSourceModel dataSourceModel);
 
     /**s
      * Delete batch(collection)
@@ -25,11 +25,11 @@ public interface DataSourceModelService {
     boolean delete(List<Object> ids);
 
     /**
-     * Delete batch
+     * Delete one
      *
-     * @param ids
+     * @param id
      */
-    boolean delete(String ids);
+    boolean delete(Long id);
 
     /**
      * Update
@@ -37,7 +37,7 @@ public interface DataSourceModelService {
      * @param dataSourceModel
      * @return
      */
-    boolean update(ExchangisDataSourceModel dataSourceModel);
+    boolean update(DataSourceModel dataSourceModel);
 
     /**
      * Count
@@ -52,16 +52,16 @@ public interface DataSourceModelService {
      *
      * @return
      */
-    PageList<ExchangisDataSourceModel> findPage(PageQuery pageQuery);
+    PageList<DataSourceModel> findPage(PageQuery pageQuery);
 
     /**
      * Select all
      *
      * @return
      */
-    List<ExchangisDataSourceModel> selectAllList(DataSourceModelQuery query);
+    List<DataSourceModel> selectAllList(DataSourceModelQuery query);
 
-    ExchangisDataSourceModel get(Long id);
+    DataSourceModel get(Long id);
 
     /**
      * Exist
@@ -73,5 +73,5 @@ public interface DataSourceModelService {
     /**
      * Query with ratelimit
      */
-    List<ExchangisDataSourceModel> queryWithRateLimit();
+    List<DataSourceModel> queryWithRateLimit();
 }

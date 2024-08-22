@@ -72,10 +72,6 @@ public class RateLimitServiceImpl implements RateLimitService {
 
     @Transactional
     public boolean update(RateLimit rateLimit) {
-        RateLimit oldOne = rateLimitMapper.selectOne(rateLimit);
-        if (Objects.isNull(oldOne)) {
-            throw new RateLimitOperationException("RateLimit is invalid, please check it!(非法参数)");
-        }
         rateLimitMapper.update(rateLimit);
         List<RateLimitUsed> rateLimitUsedList = RateLimitTool.generateRateLimitUsed(rateLimit, null);
         sortRateLimitUsed(rateLimitUsedList);
@@ -114,6 +110,9 @@ public class RateLimitServiceImpl implements RateLimitService {
         int pageSize = pageQuery.getPageSize();
         int offset = currentPage > 0 ? (currentPage - 1) * pageSize : 0;
         List<RateLimitVo> rateLimitVoList = rateLimitMapper.findPageVo(pageQuery, new RowBounds(offset, pageSize));
+//        if (StringUtils.equals() && Objects.nonNull(pageQuery.getSourceType())) {
+//
+//        }
         if (Objects.isNull(rateLimitVoList) || rateLimitVoList.size() <= 0) {
             return null;
         }

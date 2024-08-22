@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelTypeKeyMapper">
-    <resultMap id="dsTypeKey" type="com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModelTypeKey">
+    <resultMap id="dsTypeKey" type="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelTypeKey">
         <result property="id" column="id"/>
         <result property="dsTypeId" column="ds_type_id"/>
         <result property="dsType" column="ds_type"/>

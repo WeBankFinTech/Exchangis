@@ -30,7 +30,7 @@ public class ExchangisDataSourceModelTypeKeyController {
         String username = UserUtils.getLoginUser(request);
         DataSourceModelTypeKeyQuery pageQuery = new DataSourceModelTypeKeyQuery();
         try {
-            List<ExchangisDataSourceModelTypeKey> keyDefines = dataSourceModelTypeKeyService.selectAllDsModelTypeKeys(pageQuery);
+            List<DataSourceModelTypeKey> keyDefines = dataSourceModelTypeKeyService.selectAllDsModelTypeKeys(pageQuery);
             Message message = Message.ok();
             message.data("list", keyDefines);
             if (!keyDefines.isEmpty()) {

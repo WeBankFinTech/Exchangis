@@ -75,7 +75,7 @@ public class DefaultJobOpenService implements ExchangisJobOpenService {
     @Override
     public boolean isRunWithDataSourceModel(Long id) {
         // Get all datasources and jobs
-        List<Long> dsIds = dataSourceModelRelationMapper.queryDataSourceIdsByModel(id);
+        List<Long> dsIds = dataSourceModelRelationMapper.queryDsIdsByModel(id);
         List<ExchangisJobEntity> jobEntities = jobEntityDao.queryPageList(null);
 
         AtomicBoolean empty = new AtomicBoolean(false);
