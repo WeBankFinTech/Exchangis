@@ -10,6 +10,8 @@ public class DataSourceModelTypeKeyQuery extends PageQuery {
 
     private String dsType;
 
+    private String nestType;
+
     private String key;
 
     private String name;
@@ -23,6 +25,8 @@ public class DataSourceModelTypeKeyQuery extends PageQuery {
     private String require;
 
     private String refId;
+
+    private String refValue;
 
     public Long getId() {
         return id;
@@ -46,6 +50,14 @@ public class DataSourceModelTypeKeyQuery extends PageQuery {
 
     public void setDsType(String dsType) {
         this.dsType = dsType;
+    }
+
+    public String getNestType() {
+        return nestType;
+    }
+
+    public void setNestType(String nestType) {
+        this.nestType = nestType;
     }
 
     public String getKey() {
@@ -102,5 +114,13 @@ public class DataSourceModelTypeKeyQuery extends PageQuery {
 
     public void setRefId(String refId) {
         this.refId = refId;
+    }
+
+    public String getRefValue() {
+        return refValue;
+    }
+
+    public void setRefValue(String refValue) {
+        this.refValue = refValue;
     }
 }

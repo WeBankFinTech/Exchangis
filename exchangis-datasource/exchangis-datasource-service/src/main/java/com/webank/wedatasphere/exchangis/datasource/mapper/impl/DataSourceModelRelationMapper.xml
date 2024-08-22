@@ -12,7 +12,7 @@
     </resultMap>
 
     <sql id="table">
-        exchangis_data_source_model_bind
+        exchangis_data_source_model_relation
     </sql>
 
     <sql id="columns">
@@ -23,7 +23,7 @@
     <insert id="addDataSourceModelBind" useGeneratedKeys="true" keyProperty="id">
         <foreach collection="list" item="item" open="" close="" separator="">
             <![CDATA[
-                INSERT INTO exchangis_data_source_model_bind (
+                INSERT INTO exchangis_data_source_model_relation (
                  model_id,data_source_id,
                  create_user,modify_user
                 ) VALUES (
@@ -39,7 +39,7 @@
     <update id="updateDataSourceModelBind">
         <foreach collection="list" item="item" separator="">
             <![CDATA[
-                UPDATE exchangis_data_source_model_bind SET
+                UPDATE exchangis_data_source_model_relation SET
                 model_id = #{item.modelId},
                 data_source_id = #{item.dataSourceId},
                 create_user = #{item.createUser},
@@ -58,14 +58,14 @@
     <select id="queryDataSourceModelBinds" resultMap="rateLimitUsed">
         SELECT
         <include refid="columns"/>
-        FROM exchangis_data_source_model_bind
+        FROM <include refid="table"/>
         ORDER BY create_time DESC
     </select>
 
     <select id="queryDataSourceIdsByModel" resultMap="rateLimitUsed">
         SELECT
         data_source_id
-        FROM exchangis_data_source_model_bind
+        FROM <include refid="table"/>
         WHERE model_id = #{modelId}
         ORDER BY create_time DESC
     </select>
@@ -73,7 +73,7 @@
     <select id="queryDataSourceModelBind" resultMap="rateLimitUsed">
         SELECT
         <include refid="columns"/>
-        FROM exchangis_data_source_model_bind
+        FROM <include refid="table"/>
         <include refid="findPageWhere"/>
         ORDER BY create_time DESC
     </select>

@@ -53,7 +53,7 @@ public class RateLimitTool {
             AtomicReference<Integer> speedByteUsed = new AtomicReference<>(0);
             AtomicReference<Integer> speedRecordUsed = new AtomicReference<>(0);
             AtomicReference<Integer> speedAdvanceUsed = new AtomicReference<>(0);
-            if (!jobNotEmpty) {
+            if (jobNotEmpty) {
                 List<ExchangisJobInfoContent> jobInfoContents = JobUtils.parseJobContent(jobInfo.getJobContent());
                 jobInfoContents.stream().flatMap(content -> content.getSettings().stream())
                         .forEach(item -> {

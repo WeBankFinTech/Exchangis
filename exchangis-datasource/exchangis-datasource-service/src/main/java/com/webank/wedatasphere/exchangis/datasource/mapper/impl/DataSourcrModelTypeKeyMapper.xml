@@ -11,6 +11,8 @@
         <result property="defaultValue" column="default_value"/>
         <result property="valueType" column="value_type"/>
         <result property="valueRegex" column="value_regex"/>
+        <result property="nestType" column="nest_type"/>
+        <result property="nestFields" column="nest_fields"/>
         <result property="scope" column="scope"/>
         <result property="require" column="require"/>
         <result property="description" column="description"/>
@@ -26,11 +28,11 @@
     </sql>
 
     <sql id="columns">
-        id,ds_type_id,ds_type,key,name,
-        default_value,value_type,value_regex,
-        scope,require,description
-        refId,refValue
-        create_user,create_time,modify_user,modify_time
+        id,ds_type_id,ds_type,`key`,name,
+        default_value,value_type,value_regex,nest_type,nest_fields,
+        `scope`,`require`,description,
+        ref_id,ref_value,
+        create_time,modify_time
     </sql>
 
     <select id="selectAllList" resultMap="dsTypeKey">
@@ -73,6 +75,9 @@
             </if>
             <if test="valueType != null and valueType != ''">
                 AND value_type = #{valueType}
+            </if>
+            <if test="nestType != null and nestType != ''">
+                AND nest_type = #{nestType}
             </if>
             <if test="scope != null and scope != ''">
                 AND scope = #{scope}

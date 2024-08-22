@@ -4,11 +4,10 @@ import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.enums.AuthType;
 import com.webank.wedatasphere.exchangis.common.pager.PageList;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ModelTemplateStructure;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.*;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelTypeKeyService;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.server.Message;
@@ -34,6 +33,9 @@ public class ExchangisDataSourceModelController {
 
     @Resource
     private DataSourceModelService dataSourceModelService;
+
+    @Resource
+    private DataSourceModelTypeKeyService dataSourceModelTypeKeyService;
 
     public ExchangisDataSourceModelController(DataSourceModelService dataSourceModelService) {
         this.dataSourceModelService = dataSourceModelService;
@@ -155,23 +157,22 @@ public class ExchangisDataSourceModelController {
         return message;
     }
 
-    @RequestMapping(value = "keyDefine", method = RequestMethod.GET)
-    public Message keyDefine(DataSourceModelQuery pageQuery, HttpServletRequest request) {
-        List<ExchangisDataSourceModel> data = dataSourceModelService.selectAllList(pageQuery);
-        String username = UserUtils.getLoginUser(request);
-        data.forEach(element -> {
-            //Bind authority scopes
-            if (StringUtils.isNotBlank(element.getCreateUser()) && !element.getCreateUser().equals(username)) {
-                //Remove sensitive data
-                Map<String, Object> params = element.resolveParams();
-                Map<String, Object> newParams = new HashMap<>();
-                newParams.put(Constants.PARAM_AUTH_TYPE, params.getOrDefault(Constants.PARAM_AUTH_TYPE, AuthType.NONE));
-                element.setParameter(Json.toJson(newParams, null));
+    @RequestMapping(value = "/{dsType}/keyDefines", method = RequestMethod.GET)
+    public Message keyDefines(@PathVariable String dsType, HttpServletRequest request) {
+        DataSourceModelTypeKeyQuery pageQuery = new DataSourceModelTypeKeyQuery();
+        pageQuery.setDsType(dsType);
+        try {
+            List<ExchangisDataSourceModelTypeKey> keyDefines = dataSourceModelTypeKeyService.selectAllDsModelTypeKeys(pageQuery);
+            Message message = Message.ok();
+            message.data("list", keyDefines);
+            if (!keyDefines.isEmpty()) {
+                message.data("total", keyDefines.size());
             }
-        });
-        Message message = Message.ok();
-
-        return message;
+            return message;
+        } catch (Exception t) {
+            LOG.error("Failed to query key defines");
+            return Message.error("Failed to query key defines (获取数据源模板类型属性定义失败) " + t.getMessage());
+        }
     }
 
     private boolean isDuplicate(String tsName, HttpServletRequest request) {

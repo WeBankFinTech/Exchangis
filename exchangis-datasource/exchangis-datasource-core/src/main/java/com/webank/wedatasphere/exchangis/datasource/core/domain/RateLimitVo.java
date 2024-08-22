@@ -23,6 +23,8 @@ public class RateLimitVo {
 
     private String modelName;
 
+    private String sourceType;
+
     private Integer flowRateLimit;
 
     private String flowRateLimitUnit;
@@ -95,6 +97,14 @@ public class RateLimitVo {
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
+    }
+
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
     }
 
     public Integer getFlowRateLimit() {
