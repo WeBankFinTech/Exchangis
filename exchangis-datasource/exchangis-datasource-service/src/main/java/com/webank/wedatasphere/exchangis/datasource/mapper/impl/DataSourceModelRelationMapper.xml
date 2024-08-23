@@ -4,7 +4,7 @@
 <mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper">
     <resultMap id="rateLimitUsed" type="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation">
         <result property="modelId" column="model_id"/>
-        <result property="dsId" column="data_source_id"/>
+        <result property="dsId" column="ds_id"/>
         <result property="createUser" column="create_user"/>
         <result property="createTime" column="create_time"/>
         <result property="modifyUser" column="modify_user"/>
@@ -16,7 +16,7 @@
     </sql>
 
     <sql id="columns">
-        model_id,data_source_id,
+        model_id,ds_id,
         create_user,create_time,modify_user,modify_time
     </sql>
 
@@ -24,11 +24,11 @@
         <foreach collection="list" item="item" open="" close="" separator="">
             <![CDATA[
                 INSERT INTO exchangis_data_source_model_relation (
-                 model_id,data_source_id,
+                 model_id,ds_id,
                  create_user,modify_user
                 ) VALUES (
                  #{item.modelId},
-                 #{item.dataSourceId},
+                 #{item.dsId},
                  #{item.createUser},
                  #{item.modifyUser}
                 );
@@ -41,18 +41,18 @@
             <![CDATA[
                 UPDATE exchangis_data_source_model_relation SET
                 model_id = #{item.modelId},
-                data_source_id = #{item.dataSourceId},
+                ds_id = #{item.dsId},
                 create_user = #{item.createUser},
                 modify_user = #{item.modifyUser}
                 WHERE
-                data_source_id=#{item.dataSourceId};
+                ds_id=#{item.dsId};
             ]]>
         </foreach>
     </update>
 
     <delete id="deleteDsModelRelation">
         DELETE FROM <include refid="table"/> WHERE
-        model_id=#{item.modelId} and data_source_id=#{item.dataSourceId}
+        model_id=#{item.modelId} and ds_id=#{item.dsId}
     </delete>
 
     <select id="querydsModelRelations" resultMap="rateLimitUsed">
@@ -64,10 +64,9 @@
 
     <select id="queryDsIdsByModel" resultMap="rateLimitUsed">
         SELECT
-        data_source_id
+        ds_id
         FROM <include refid="table"/>
         WHERE model_id = #{modelId}
-        ORDER BY create_time DESC
     </select>
 
     <select id="queryDsModelRelation" resultMap="rateLimitUsed">
@@ -83,8 +82,8 @@
             <if test="modelId != null and modelId != ''">
                 AND model_id = #{modelId}
             </if>
-            <if test="dataSourceId != null and dataSourceId != ''">
-                AND data_source_id = #{dataSourceId}
+            <if test="dsId != null and dsId != ''">
+                AND ds_id = #{dsId}
             </if>
             <if test="createUser != null and createUser != ''">
                 AND create_user = #{createUser}

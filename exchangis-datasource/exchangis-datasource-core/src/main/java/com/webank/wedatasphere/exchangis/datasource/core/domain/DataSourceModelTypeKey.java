@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.datasource.core.domain;
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
 
 import java.util.Date;
+import java.util.Map;
 
 public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
@@ -10,7 +11,7 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
     private String dsType;
 
-    private String nestType;
+    private DataSourceParamKeyDefinition.ValueType nestType;
 
     private String nestFields;
 
@@ -36,11 +37,11 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
         this.dsType = dsType;
     }
 
-    public String getNestType() {
+    public DataSourceParamKeyDefinition.ValueType getNestType() {
         return nestType;
     }
 
-    public void setNestType(String nestType) {
+    public void setNestType(DataSourceParamKeyDefinition.ValueType nestType) {
         this.nestType = nestType;
     }
 
@@ -74,5 +75,12 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
     public void setModifyTime(Date modifyTime) {
         this.modifyTime = modifyTime;
+    }
+
+    public DataSourceModelTypeKey() {
+    }
+
+    public DataSourceModelTypeKey(Map<String, Object> keyDefine) {
+
     }
 }
