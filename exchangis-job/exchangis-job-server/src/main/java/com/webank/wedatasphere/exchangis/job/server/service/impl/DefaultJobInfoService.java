@@ -12,8 +12,9 @@ import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceUIGetter;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao;
@@ -49,11 +50,17 @@ public class DefaultJobInfoService implements JobInfoService {
     @Autowired
     private ExchangisJobDsBindServiceImpl exchangisJobDsBindService;
 
-    @Autowired
-    private ExchangisDataSourceService exchangisDataSourceService;
+    @Resource
+    private ExchangisDataSourceService dataSourceService;
 
     @Resource
     private ExchangisJobEntityDao jobEntityDao;
+
+    @Resource
+    private DataSourceUIGetter uiGetter;
+
+    @Resource
+    private JobInfoService jobInfoService;
 
     /**
      * Validators
@@ -187,7 +194,7 @@ public class DefaultJobInfoService implements JobInfoService {
         ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
         if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
             // Rebuild the job content with ui configuration
-            List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(request, id);
+            List<ExchangisDataSourceUIViewer> jobDataSourceUIs = this.uiGetter.getJobDataSourceUIs(request, id);
             ObjectMapper objectMapper = JsonUtils.jackson();
             try {
                 String content = objectMapper.writeValueAsString(jobDataSourceUIs);
@@ -213,7 +220,7 @@ public class DefaultJobInfoService implements JobInfoService {
             for(ExchangisJobEntity exchangisJob : exchangisJobList){
                 ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
                 if(StringUtils.isNotBlank(exchangisJob.getJobContent())){
-                    List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(request, exchangisJob.getId());
+                    List<ExchangisDataSourceUIViewer> jobDataSourceUIs = this.uiGetter.getJobDataSourceUIs(request, exchangisJob.getId());
                     ObjectMapper objectMapper = JsonUtils.jackson();
                     try {
                         String content = objectMapper.writeValueAsString(jobDataSourceUIs);
@@ -273,7 +280,7 @@ public class DefaultJobInfoService implements JobInfoService {
             ExchangisJobInfoContent task = content.get(i);
             String sourceType = task.getDataSources().getSource().getType();
             String sinkType = task.getDataSources().getSink().getType();
-            this.exchangisDataSourceService.checkDSSupportDegree(engine, sourceType, sinkType);
+            this.dataSourceService.supportDataSource(engine, sourceType, sinkType);
             ExchangisJobDsBind dsBind = new ExchangisJobDsBind();
             dsBind.setJobId(jobVo.getId());
             dsBind.setTaskIndex(i);

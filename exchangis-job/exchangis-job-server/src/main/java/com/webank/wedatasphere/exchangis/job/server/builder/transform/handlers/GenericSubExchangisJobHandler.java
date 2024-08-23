@@ -11,7 +11,6 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
-import org.apache.linkis.datasource.client.response.GetConnectParamsByDataSourceIdResult;
 
 import java.util.Map;
 import java.util.Objects;
@@ -73,17 +72,18 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
         if (Objects.nonNull(paramValue) && !paramValue.isEmpty()) {
             String id = String.valueOf(paramValue.get("id"));
             if (StringUtils.isNoneBlank(id)){
-                GetConnectParamsByDataSourceIdResult infoResult = dataSourceService.getDataSourceConnectParamsById(userName, Long.valueOf(id));
-                Optional.ofNullable(infoResult.connectParams()).ifPresent(connectParams ->
-                        connectParams.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, true))));
+                Map<String, Object> connectParams =
+                        dataSourceService.getDataSourceConnectParamsById(userName, Long.valueOf(id));
+                Optional.ofNullable(connectParams).ifPresent(params ->
+                        params.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, true))));
             }
         } else {
             // {TYPE}.{ID}.{DB}.{TABLE}
             String[] idSerial = sourceId.split(ID_SPLIT_SYMBOL);
             if (idSerial.length >= 2){
-                GetConnectParamsByDataSourceIdResult infoResult = dataSourceService.getDataSourceConnectParamsById(userName, Long.valueOf(idSerial[1]));
-                Optional.ofNullable(infoResult.connectParams()).ifPresent(connectParams ->
-                        connectParams.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, true))));
+                Map<String, Object> connectParams = dataSourceService.getDataSourceConnectParamsById(userName, Long.valueOf(idSerial[1]));
+                Optional.ofNullable(connectParams).ifPresent(params ->
+                        params.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, true))));
             }
         }
     }

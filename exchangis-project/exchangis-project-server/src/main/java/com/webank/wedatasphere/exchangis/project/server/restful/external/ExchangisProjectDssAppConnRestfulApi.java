@@ -6,7 +6,7 @@ import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
-import com.webank.wedatasphere.exchangis.datasource.remote.GetDataSourceInfoResult;
+import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
@@ -248,13 +248,12 @@ public class ExchangisProjectDssAppConnRestfulApi {
             String dsName = dataSource.getName();
             if (StringUtils.isNotBlank(dsName)){
                 try {
-                    GetDataSourceInfoResult result = dataSourceService.getDataSource(permUser, dataSource.getName());
+                    ExchangisDataSourceDetail result = dataSourceService.getDataSource(permUser, dataSource.getName());
                     if (Objects.nonNull(result)){
-                        GetDataSourceInfoResult.DataSourceInfoDTO dsInfo = result.getData();
-                        dataSource.setId(dsInfo.getInfo().getId());
-                        dataSource.setType(dsInfo.getInfo().getDataSourceType()
+                        dataSource.setId(result.getId());
+                        dataSource.setType(result.getDataSourceType()
                                 .getName().toUpperCase(Locale.ROOT));
-                        dataSource.setCreator(dsInfo.getInfo().getCreateUser());
+                        dataSource.setCreator(result.getCreateUser());
                     }
                 } catch (ErrorException e) {
                     throw new ExchangisProjectErrorException(ExchangisProjectExceptionCode.VALIDATE_DS_ERROR.getCode(),

@@ -1,6 +1,6 @@
-package com.webank.wedatasphere.exchangis.datasource.remote;
+package com.webank.wedatasphere.exchangis.datasource.domain;
 
-public class ExchangisRemoteDataSourceDefinition {
+public class ExchangisDataSourceTypeDefinition {
     private final String id;
     private final String classifier;
     private final String name;
@@ -9,7 +9,7 @@ public class ExchangisRemoteDataSourceDefinition {
     private String icon;
     private String struct_classifier;
 
-    public ExchangisRemoteDataSourceDefinition(String id, String classifier, String name, String struct_classifier) {
+    public ExchangisDataSourceTypeDefinition(String id, String classifier, String name, String struct_classifier) {
         this.id = id;
         this.classifier = classifier;
         this.name = name;

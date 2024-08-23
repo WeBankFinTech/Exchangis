@@ -7,8 +7,8 @@ import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
-import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
@@ -56,7 +56,7 @@ public class ProjectServiceImpl implements ProjectService {
     private ProjectUserMapper projectUserMapper;
 
     @Autowired
-    private ExchangisDataSourceService exchangisDataSourceService;
+    private ExchangisDataSourceService dataSourceService;
 
     @Autowired
     private ExchangisJobEntityDao exchangisJobEntityDao;
