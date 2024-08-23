@@ -14,6 +14,8 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
     private String nestFields;
 
+    private Boolean isSerialize;
+
     private Date createTime;
 
     private Date modifyTime;
@@ -48,6 +50,14 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
     public void setNestFields(String nestFields) {
         this.nestFields = nestFields;
+    }
+
+    public Boolean getSerialize() {
+        return isSerialize;
+    }
+
+    public void setSerialize(Boolean serialize) {
+        isSerialize = serialize;
     }
 
     public Date getCreateTime() {

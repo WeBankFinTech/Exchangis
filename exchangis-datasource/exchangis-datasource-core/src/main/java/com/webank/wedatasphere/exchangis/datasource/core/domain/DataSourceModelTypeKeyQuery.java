@@ -12,6 +12,8 @@ public class DataSourceModelTypeKeyQuery extends PageQuery {
 
     private String nestType;
 
+    private Boolean isSerialize;
+
     private String key;
 
     private String name;
@@ -58,6 +60,14 @@ public class DataSourceModelTypeKeyQuery extends PageQuery {
 
     public void setNestType(String nestType) {
         this.nestType = nestType;
+    }
+
+    public Boolean getSerialize() {
+        return isSerialize;
+    }
+
+    public void setSerialize(Boolean serialize) {
+        isSerialize = serialize;
     }
 
     public String getKey() {

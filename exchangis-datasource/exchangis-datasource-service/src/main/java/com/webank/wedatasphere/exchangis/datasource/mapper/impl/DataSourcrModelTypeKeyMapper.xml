@@ -13,6 +13,7 @@
         <result property="valueRegex" column="value_regex"/>
         <result property="nestType" column="nest_type"/>
         <result property="nestFields" column="nest_fields"/>
+        <result property="isSerialize" column="is_serialize"/>
         <result property="scope" column="scope"/>
         <result property="require" column="require"/>
         <result property="description" column="description"/>
@@ -29,7 +30,7 @@
 
     <sql id="columns">
         id,ds_type_id,ds_type,`key`,name,
-        default_value,value_type,value_regex,nest_type,nest_fields,
+        default_value,value_type,value_regex,nest_type,nest_fields,is_serialize,
         `scope`,`require`,description,
         ref_id,ref_value,
         create_time,modify_time
@@ -78,6 +79,9 @@
             </if>
             <if test="nestType != null and nestType != ''">
                 AND nest_type = #{nestType}
+            </if>
+            <if test="nestFields != null and nestFields != ''">
+                AND is_serialize = #{nestFields}
             </if>
             <if test="scope != null and scope != ''">
                 AND scope = #{scope}
