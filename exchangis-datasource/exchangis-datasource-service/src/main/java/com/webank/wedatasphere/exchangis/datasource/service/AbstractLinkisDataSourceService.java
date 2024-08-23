@@ -29,7 +29,7 @@ public abstract class AbstractLinkisDataSourceService {
     protected  <T extends Action, R extends Result, C extends AbstractRemoteClient>R rpcSend(
             C client,
             Supplier<T> decorator, BiFunction<C, T, R> executor,
-            int errorCode, String nonErrorMessage) throws ExchangisDataSourceException{
+            int errorCode, String nonErrorMessage) throws ExchangisDataSourceException {
         T action = decorator.get();
         R result;
         try {

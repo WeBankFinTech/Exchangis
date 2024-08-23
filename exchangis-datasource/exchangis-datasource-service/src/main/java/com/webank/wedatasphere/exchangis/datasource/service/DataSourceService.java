@@ -114,7 +114,7 @@ public interface DataSourceService {
      * @param id data source id
      * @return versions
      */
-    List<Map<String, Object>> getDataSourceVersionsById(String operator, Long id) throws ErrorException;
+    List<Map<String, Object>> getDataSourceVersionsById(String operator, Long id) throws ExchangisDataSourceException;
 
     /**
      * Get connect params
