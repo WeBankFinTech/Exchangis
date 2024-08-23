@@ -7,6 +7,6 @@ import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefin
  */
 public interface ParamKeySerializer {
 
-    void serialize(Object value, DataSourceParamKeyDefinition.ValueType valueType,
+    String serialize(Object value, DataSourceParamKeyDefinition.ValueType valueType,
                    DataSourceParamKeyDefinition.ValueType... nestValueType);
 }

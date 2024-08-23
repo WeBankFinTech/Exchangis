@@ -10,7 +10,7 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
     private String dsType;
 
-    private String nestType;
+    private ValueType nestType;
 
     private String nestFields;
 
@@ -34,11 +34,11 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
         this.dsType = dsType;
     }
 
-    public String getNestType() {
+    public ValueType getNestType() {
         return nestType;
     }
 
-    public void setNestType(String nestType) {
+    public void setNestType(ValueType nestType) {
         this.nestType = nestType;
     }
 

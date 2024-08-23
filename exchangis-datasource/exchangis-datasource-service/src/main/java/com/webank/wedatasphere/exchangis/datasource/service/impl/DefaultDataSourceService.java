@@ -12,8 +12,7 @@ import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMappe
 import com.webank.wedatasphere.exchangis.datasource.GetDataSourceInfoByIdAndVersionIdAction;
 import com.webank.wedatasphere.exchangis.datasource.GetInfoByDataSourceIdAndVersionIdResult;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.*;
 import com.webank.wedatasphere.exchangis.datasource.core.serialize.ParamKeySerializer;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
@@ -58,6 +57,7 @@ import org.apache.linkis.datasource.client.response.*;
 import org.apache.linkis.datasource.client.response.GetDataSourceVersionsResult;
 import org.apache.linkis.datasource.client.response.MetadataGetColumnsResult;
 import org.apache.linkis.datasourcemanager.common.domain.DataSource;
+import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
 import org.apache.linkis.metadata.query.common.domain.MetaColumnInfo;
 import org.slf4j.Logger;
@@ -296,11 +296,17 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                 LinkisDataSourceRemoteClient::updateDataSourceParameter, CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(),
                 "datasource update params version null or empty");
         // Build the relation between model and data source version
-        DataSourceModelRelation relation = new DataSourceModelRelation();
-        relation.setModelId(modelId);
-        relation.setDsName(vo.getDataSourceName());
-        relation.setDsVersion(versionResult.getVersion());
-        this.modelRelationMapper.addDsModelRelation(Collections.singletonList(relation));
+        try {
+            DataSourceModelRelation relation = new DataSourceModelRelation(vo.getDataSourceName(),
+                    versionResult.getVersion(), modelId);
+            relation.setCreateUser(operator);
+            relation.setDsId(dataSourceId);
+            this.modelRelationMapper.addDsModelRelation(Collections.singletonList(relation));
+        } catch (Exception e){
+            LOG.error("Internal_Error: Fail to add relation between " +
+                    "data source: [{}] in version: [{}] with model_id: [{}]", vo.getDataSourceName(), versionResult.getVersion(), modelId, e);
+            throw new ExchangisDataSourceException(CLIENT_DATASOURCE_CREATE_ERROR.getCode(), e.getMessage());
+        }
         Map<String, Object> versionParams = versionResult.getData();
         versionParams.put("id", dataSourceId);
         return versionParams;
@@ -328,7 +334,8 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                 "");
         DataSource beforeDs = result.getDataSource();
         if (!Objects.equals(vo.getPublishedVersionId(), vo.getVersionId())){
-            // TODO delete the relation between data source id, version id and model id
+            // Delete the relation between data source id, version id and model id
+            this.modelRelationMapper.deleteDsModelRelation(vo.getDataSourceName(), vo.getVersionId());
         }
         // Send to update data source
         rpcSend(client, () -> UpdateDataSourceAction.builder()
@@ -361,11 +368,18 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             throw e;
         }
         // Build the relation between model and data source version
-        DataSourceModelRelation relation = new DataSourceModelRelation();
-        relation.setModelId(modelId);
-        relation.setDsName(vo.getDataSourceName());
-        relation.setDsVersion(versionResult.getVersion());
-        this.modelRelationMapper.addDsModelRelation(Collections.singletonList(relation));
+        try {
+            DataSourceModelRelation relation = new DataSourceModelRelation(vo.getDataSourceName(),
+                    versionResult.getVersion(), modelId);
+            relation.setCreateUser(operator);
+            relation.setDsId(id);
+            this.modelRelationMapper.addDsModelRelation(Collections.singletonList(relation));
+        } catch (Exception e){
+            LOG.error("Internal_Error: Fail to add relation between " +
+                    "data source: [{}] in version: [{}] with model_id: [{}]", vo.getDataSourceName(), versionResult.getVersion(), modelId, e);
+            throw new ExchangisDataSourceException(CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), e.getMessage());
+        }
+
         return new HashMap<>();
     }
 
@@ -379,7 +393,8 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         if (inUseCount > 0) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "目前存在引用依赖");
         }
-        // TODO delete the relation between model and data source version
+        // Delete the relation between models and data source
+        this.modelRelationMapper.deleteDsModelByDsId(id);
         LinkisDataSourceRemoteClient client = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         DeleteDataSourceResult result = rpcSend(client, () -> DeleteDataSourceAction.builder()
                 .setUser(operator).setDataSourceId(Long.parseLong(id + "")).builder(),
@@ -890,11 +905,28 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         DataSourceModel model = this.modelMapper.selectOne(modelId);
         if (Objects.nonNull(model)){
             Map<String, Object> modelParams = model.resolveParams();
-            // TODO get the model key definitions
-            List<ExchangisDataSourceTypeDefinition> definitions = new ArrayList<>();
-            definitions.forEach(definition -> {
+            // Get the model key definitions
+            DataSourceModelTypeKeyQuery query = new DataSourceModelTypeKeyQuery();
+            query.setDsType(model.getSourceType());
+            List<DataSourceModelTypeKey> keys = this.modelTypeKeyMapper.queryList(query);
+            keys.forEach(key -> {
+                Object paramValue = modelParams.get(key.getKey());
                 // TODO try to serialize the parameter
-
+                boolean toSerialize = false;
+                if (Objects.nonNull(paramValue) && toSerialize){
+                    DataSourceParamKeyDefinition.ValueType[] subTypes = null;
+                    DataSourceParamKeyDefinition.ValueType nestType = key.getNestType();
+                    if (Objects.nonNull(nestType)){
+                        try {
+                            subTypes = new DataSourceParamKeyDefinition.ValueType[]{nestType};
+                        }catch (Exception e){
+                            // Ignore
+                        }
+                    }
+                    // Rewrite the value
+                    modelParams.put(key.getKey(),
+                            this.keySerializer.serialize(paramValue, key.getValueType(), subTypes));
+                }
             });
             // Add and overwrite to connect params
             connectParams.putAll(modelParams);
@@ -929,7 +961,15 @@ public class DefaultDataSourceService extends AbstractDataSourceService
     private ExchangisDataSourceDetail toExchangisDataSourceDetail(DataSource dataSource, String version){
         ExchangisDataSourceDetail detail = new ExchangisDataSourceDetail(dataSource);
         if (StringUtils.isNotBlank(version)) {
-            // TODO Get the model id by data source and version id
+            // Get the model id by data source and version id
+            DataSourceModelRelationQuery query = new DataSourceModelRelationQuery();
+            query.setDsName(dataSource.getDataSourceName());
+            query.setDsVersion(Long.parseLong(version));
+            DataSourceModelRelation relation =
+                    this.modelRelationMapper.queryDsModelRelation(query);
+            if (Objects.nonNull(relation)){
+                detail.setModelId(relation.getModelId());
+            }
         }
         return detail;
     }

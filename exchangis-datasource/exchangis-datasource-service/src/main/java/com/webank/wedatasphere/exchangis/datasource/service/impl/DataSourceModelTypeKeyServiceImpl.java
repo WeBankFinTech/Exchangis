@@ -34,7 +34,7 @@ public class DataSourceModelTypeKeyServiceImpl implements DataSourceModelTypeKey
 
     @Override
     public List<DataSourceModelTypeKey> selectAllDsModelTypeKeys(DataSourceModelTypeKeyQuery pageQuery) {
-        return dataSourceModelTypeKeyMapper.selectAllList(pageQuery);
+        return dataSourceModelTypeKeyMapper.queryList(pageQuery);
     }
 
     @Override

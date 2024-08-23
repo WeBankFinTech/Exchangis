@@ -12,11 +12,6 @@ import java.util.List;
 public interface DataSourceModelRelationMapper {
 
     /**
-     * query dataSourceModelRelations
-     */
-    List<DataSourceModelRelation> querydsModelRelations();
-
-    /**
      * query dataSourceModelBinds
      */
     List<Long> queryDsIdsByModel(@Param("modelId") Long modelId);
@@ -40,8 +35,16 @@ public interface DataSourceModelRelationMapper {
     void updateDsModelRelation(@Param("dataSourceModelRelations") List<DataSourceModelRelation> dataSourceModelRelations);
 
     /**
-     * delete dataSourceModelRelations
-     * @param modelId
+     * Delete relation by data source name and version
+     * @param dsName data source name
+     * @param versionId version id
      */
-    void deleteDsModelRelation(Long modelId, Long dataSourceId);
+    void deleteDsModelRelation(@Param("dsName") String dsName,
+                               @Param("dsVersion")Long versionId);
+
+    /**
+     * Delete data source model with ds id
+     * @param dsId data source id
+     */
+    void deleteDsModelByDsId(Long dsId);
 }

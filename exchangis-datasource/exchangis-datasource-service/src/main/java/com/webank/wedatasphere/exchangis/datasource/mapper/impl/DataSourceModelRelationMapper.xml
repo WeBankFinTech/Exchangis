@@ -2,9 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper">
-    <resultMap id="rateLimitUsed" type="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation">
+    <resultMap id="relationResult" type="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation">
+        <id property="id" column="id"/>
         <result property="modelId" column="model_id"/>
-        <result property="dsId" column="data_source_id"/>
+        <result property="dsId" column="ds_id"/>
+        <result property="dsName" column="ds_name"/>
+        <result property="dsVersion" column="ds_version"/>
         <result property="createUser" column="create_user"/>
         <result property="createTime" column="create_time"/>
         <result property="modifyUser" column="modify_user"/>
@@ -16,21 +19,23 @@
     </sql>
 
     <sql id="columns">
-        model_id,data_source_id,
-        create_user,create_time,modify_user,modify_time
+        id, model_id, ds_id, ds_name, ds_version,
+        create_user, create_time, modify_user, modify_time
     </sql>
 
     <insert id="addDsModelRelation" useGeneratedKeys="true" keyProperty="id">
         <foreach collection="list" item="item" open="" close="" separator="">
             <![CDATA[
                 INSERT INTO exchangis_data_source_model_relation (
-                 model_id,data_source_id,
-                 create_user,modify_user
+                 model_id, ds_id, ds_name, ds_version,
+                 create_user, create_time
                 ) VALUES (
                  #{item.modelId},
-                 #{item.dataSourceId},
+                 #{item.dsId},
+                 #{item.dsName},
+                 #{item.dsVersion},
                  #{item.createUser},
-                 #{item.modifyUser}
+                 #{item.createTime}
                 );
             ]]>
         </foreach>
@@ -40,29 +45,30 @@
         <foreach collection="list" item="item" separator="">
             <![CDATA[
                 UPDATE exchangis_data_source_model_relation SET
+                ds_name = #{item.dsName},
+                ds_version = #{item.dsVersion},
                 model_id = #{item.modelId},
-                data_source_id = #{item.dataSourceId},
+                ds_id = #{item.dsId},
                 create_user = #{item.createUser},
                 modify_user = #{item.modifyUser}
                 WHERE
-                data_source_id=#{item.dataSourceId};
+                id = #{item.id};
             ]]>
         </foreach>
     </update>
 
     <delete id="deleteDsModelRelation">
         DELETE FROM <include refid="table"/> WHERE
-        model_id=#{item.modelId} and data_source_id=#{item.dataSourceId}
+        ds_name = #{dsName}
+        AND ds_version = #{dsVersion};
     </delete>
 
-    <select id="querydsModelRelations" resultMap="rateLimitUsed">
-        SELECT
-        <include refid="columns"/>
-        FROM <include refid="table"/>
-        ORDER BY create_time DESC
-    </select>
+    <delete id="deleteDsModelByDsId">
+        DELETE FROM <include refid="table"/> WHERE
+        ds_id = #{dsId};
+    </delete>
 
-    <select id="queryDsIdsByModel" resultMap="rateLimitUsed">
+    <select id="queryDsIdsByModel" resultMap="relationResult">
         SELECT
         data_source_id
         FROM <include refid="table"/>
@@ -70,7 +76,7 @@
         ORDER BY create_time DESC
     </select>
 
-    <select id="queryDsModelRelation" resultMap="rateLimitUsed">
+    <select id="queryDsModelRelation" resultMap="relationResult">
         SELECT
         <include refid="columns"/>
         FROM <include refid="table"/>
@@ -80,11 +86,17 @@
 
     <sql id="findPageWhere">
         <where>
-            <if test="modelId != null and modelId != ''">
+            <if test="dsName != null and dsName != ''">
+                AND ds_name = #{dsName}
+            </if>
+            <if test="dsVersion != null">
+                AND ds_version = #{dsVersion}
+            </if>
+            <if test="modelId != null">
                 AND model_id = #{modelId}
             </if>
-            <if test="dataSourceId != null and dataSourceId != ''">
-                AND data_source_id = #{dataSourceId}
+            <if test="dsId != null">
+                AND ds_id = #{dsId}
             </if>
             <if test="createUser != null and createUser != ''">
                 AND create_user = #{createUser}
