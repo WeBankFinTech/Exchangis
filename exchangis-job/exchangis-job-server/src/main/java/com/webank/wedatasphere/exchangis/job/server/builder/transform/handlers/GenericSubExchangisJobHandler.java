@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers;
 
-import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
@@ -66,7 +66,7 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
      * @throws ErrorException
      */
     private void appendDataSourceParams(JobParam<Map<String, Object>> param, JobParam<String> idParam, JobParamSet paramSet, String userName) throws ErrorException {
-        ExchangisDataSourceService dataSourceService = DataSourceService.instance;
+        DataSourceService dataSourceService = GenericSubExchangisJobHandler.GenericDataSourceService.instance;
         Map<String, Object> paramValue = param.getValue();
         String sourceId = idParam.getValue();
         if (Objects.nonNull(paramValue) && !paramValue.isEmpty()) {
@@ -93,15 +93,15 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
         return Integer.MIN_VALUE;
     }
 
-    public static class DataSourceService{
+    public static class GenericDataSourceService{
 
         /**
          * Lazy load data source service
          */
-        public static ExchangisDataSourceService instance;
+        public static DataSourceService instance;
 
         static{
-            instance = SpringContextHolder.getBean(ExchangisDataSourceService.class);
+            instance = SpringContextHolder.getBean(DataSourceService.class);
         }
     }
 

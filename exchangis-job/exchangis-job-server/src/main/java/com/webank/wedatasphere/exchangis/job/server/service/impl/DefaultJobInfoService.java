@@ -13,7 +13,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisData
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceUIGetter;
-import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
@@ -51,7 +51,7 @@ public class DefaultJobInfoService implements JobInfoService {
     private ExchangisJobDsBindServiceImpl exchangisJobDsBindService;
 
     @Resource
-    private ExchangisDataSourceService dataSourceService;
+    private DataSourceService dataSourceService;
 
     @Resource
     private ExchangisJobEntityDao jobEntityDao;

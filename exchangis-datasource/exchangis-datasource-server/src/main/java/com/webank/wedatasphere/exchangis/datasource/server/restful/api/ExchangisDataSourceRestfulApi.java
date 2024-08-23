@@ -12,7 +12,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceItem;
 import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceTypeDefinition;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceUIGetter;
-import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
 import com.webank.wedatasphere.exchangis.datasource.utils.RSAUtil;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVo;
 import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVo;
@@ -46,7 +46,7 @@ public class ExchangisDataSourceRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisDataSourceRestfulApi.class);
 
 
-    private final ExchangisDataSourceService dataSourceService;
+    private final DataSourceService dataSourceService;
 
     private static final Pattern ERROR_PATTERN = Pattern.compile("(?<=\\[)[^]]+");
 
@@ -57,8 +57,8 @@ public class ExchangisDataSourceRestfulApi {
     private DataSourceUIGetter uiGetter;
 
     @Autowired
-    public ExchangisDataSourceRestfulApi(ExchangisDataSourceService exchangisDataSourceService) {
-        this.dataSourceService = exchangisDataSourceService;
+    public ExchangisDataSourceRestfulApi(DataSourceService dataSourceService) {
+        this.dataSourceService = dataSourceService;
     }
 
     /**

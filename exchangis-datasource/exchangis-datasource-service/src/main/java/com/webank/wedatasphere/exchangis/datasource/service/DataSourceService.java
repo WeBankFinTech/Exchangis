@@ -17,7 +17,7 @@ import java.util.Map;
  * Data source service api
  * TODO define all inf in <em>ExchangisDataSourceService</em>
  */
-public interface ExchangisDataSourceService {
+public interface DataSourceService {
     /**
      * Create data source
      * @param operator operator
@@ -60,7 +60,7 @@ public interface ExchangisDataSourceService {
      * @param typeId type id
      * @return map
      */
-    List<Map<String, Object>> getDataSourceKeyDefine(String operator, Long typeId);
+    List<Map<String, Object>> getDataSourceKeyDefine(String operator, Long typeId) throws ExchangisDataSourceException;
 
     /**
      * Check if support data source
@@ -68,13 +68,13 @@ public interface ExchangisDataSourceService {
      * @param sourceType  source type
      * @param sinkType sink type
      */
-    void supportDataSource(String engine, String sourceType, String sinkType);
+    void supportDataSource(String engine, String sourceType, String sinkType) throws ExchangisDataSourceException;
     /**
      * Query data sources
      * @param operator operator
      * @return page result
      */
-    PageResult<ExchangisDataSourceItem> queryDataSources(String operator, DataSourceQueryVo vo);
+    PageResult<ExchangisDataSourceItem> queryDataSources(String operator, DataSourceQueryVo vo) throws ExchangisDataSourceException;
 
     /**
      * List data sources
@@ -87,7 +87,7 @@ public interface ExchangisDataSourceService {
      */
     List<ExchangisDataSourceItem> listDataSources(String operator,
                                                   String typeName, Long typeId,
-                                                  Integer page, Integer pageSize);
+                                                  Integer page, Integer pageSize) throws ExchangisDataSourceException;
 
     /**
      * Get data source detail
@@ -96,9 +96,9 @@ public interface ExchangisDataSourceService {
      * @param versionId version id
      * @return detail
      */
-    ExchangisDataSourceDetail getDataSource(String operator, Long id, String versionId);
+    ExchangisDataSourceDetail getDataSource(String operator, Long id, String versionId) throws ExchangisDataSourceException;
 
-    ExchangisDataSourceDetail getDataSource(String operator, Long id);
+    ExchangisDataSourceDetail getDataSource(String operator, Long id) throws ExchangisDataSourceException;
 
     /**
      * Get data source by name
@@ -106,7 +106,7 @@ public interface ExchangisDataSourceService {
      * @param name data source name
      * @return detail
      */
-    ExchangisDataSourceDetail getDataSource(String operator, String name);
+    ExchangisDataSourceDetail getDataSource(String operator, String name) throws ExchangisDataSourceException;
 
     /**
      * Get version list of data source by id
@@ -114,7 +114,7 @@ public interface ExchangisDataSourceService {
      * @param id data source id
      * @return versions
      */
-    List<Map<String, Object>> getDataSourceVersionsById(String operator, Long id);
+    List<Map<String, Object>> getDataSourceVersionsById(String operator, Long id) throws ErrorException;
 
     /**
      * Get connect params
@@ -122,21 +122,21 @@ public interface ExchangisDataSourceService {
      * @param id data source id
      * @return
      */
-    Map<String, Object> getDataSourceConnectParamsById(String operator, Long id);
+    Map<String, Object> getDataSourceConnectParamsById(String operator, Long id) throws ExchangisDataSourceException;
     /**
      * Test connect
      * @param operator operator
      * @param id data source id
      * @param version version id
      */
-    void testConnect(String operator, Long id, Long version);
+    void testConnect(String operator, Long id, Long version) throws ExchangisDataSourceException;
 
     /**
      * Test connect by value obj
      * @param operator operator
      * @param vo value object
      */
-    void testConnectByVo(String operator, DataSourceCreateVo vo);
+    void testConnectByVo(String operator, DataSourceCreateVo vo) throws ExchangisDataSourceException;
 
     /**
      * Publish data source
@@ -144,14 +144,14 @@ public interface ExchangisDataSourceService {
      * @param id id
      * @param version version
      */
-    void publishDataSource(String operator, Long id, Long version);
+    void publishDataSource(String operator, Long id, Long version) throws ExchangisDataSourceException;
 
     /**
      * Expire data source
      * @param operator operator
      * @param id id
      */
-    void expireDataSource(String operator, Long id);
+    void expireDataSource(String operator, Long id) throws ExchangisDataSourceException;
     /**
      * Get databases from data source
      * @param operator operator
@@ -159,7 +159,7 @@ public interface ExchangisDataSourceService {
      * @param id data source id
      * @return databases
      */
-    List<String> getDatabases(String operator, String type, Long id);
+    List<String> getDatabases(String operator, String type, Long id) throws ExchangisDataSourceException;
 
     /**
      * Get tables in database from data source
@@ -169,7 +169,7 @@ public interface ExchangisDataSourceService {
      * @param database database name
      * @return tables
      */
-    List<String> getTables(String operator, String type, Long id, String database);
+    List<String> getTables(String operator, String type, Long id, String database) throws ExchangisDataSourceException;
 
     /**
      * Get table fields or columns
@@ -181,7 +181,7 @@ public interface ExchangisDataSourceService {
      * @return columns
      */
     List<DataSourceDbTableColumn> getTableFields(String operator, String type,
-                                                 Long id, String database, String table);
+                                                 Long id, String database, String table) throws ExchangisDataSourceException;
 
     /**
      * Copy data source

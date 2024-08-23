@@ -12,8 +12,8 @@ import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobParamConfigMappe
 import com.webank.wedatasphere.exchangis.datasource.GetDataSourceInfoByIdAndVersionIdAction;
 import com.webank.wedatasphere.exchangis.datasource.GetInfoByDataSourceIdAndVersionIdResult;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceModel;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDsModelRelation;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
 import com.webank.wedatasphere.exchangis.datasource.core.serialize.ParamKeySerializer;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
@@ -29,7 +29,7 @@ import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelati
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelTypeKeyMapper;
 import com.webank.wedatasphere.exchangis.datasource.service.AbstractDataSourceService;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceUIGetter;
-import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.remote.*;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
@@ -59,7 +59,6 @@ import org.apache.linkis.datasource.client.response.GetDataSourceVersionsResult;
 import org.apache.linkis.datasource.client.response.MetadataGetColumnsResult;
 import org.apache.linkis.datasourcemanager.common.domain.DataSource;
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
-import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
 import org.apache.linkis.metadata.query.common.domain.MetaColumnInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,10 +74,10 @@ import java.util.stream.Collectors;
 import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.*;
 
 @Service
-public class DefaultExchangisDataSourceService extends AbstractDataSourceService
-        implements DataSourceUIGetter, ExchangisDataSourceService {
+public class DefaultDataSourceService extends AbstractDataSourceService
+        implements DataSourceUIGetter, DataSourceService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultExchangisDataSourceService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultDataSourceService.class);
 
     /**
      * Engine settings
@@ -124,8 +123,8 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
     private ParamKeySerializer keySerializer;
 
     @Autowired
-    public DefaultExchangisDataSourceService(ExchangisDataSourceContext context,
-                                             ExchangisJobParamConfigMapper exchangisJobParamConfigMapper, EngineSettingsDao settingsDao) {
+    public DefaultDataSourceService(ExchangisDataSourceContext context,
+                                    ExchangisJobParamConfigMapper exchangisJobParamConfigMapper, EngineSettingsDao settingsDao) {
         super(context, exchangisJobParamConfigMapper);
         this.settingsDao = settingsDao;
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -297,11 +296,11 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
                 LinkisDataSourceRemoteClient::updateDataSourceParameter, CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(),
                 "datasource update params version null or empty");
         // Build the relation between model and data source version
-        ExchangisDsModelRelation relation = new ExchangisDsModelRelation();
+        DataSourceModelRelation relation = new DataSourceModelRelation();
         relation.setModelId(modelId);
         relation.setDsName(vo.getDataSourceName());
         relation.setDsVersion(versionResult.getVersion());
-        this.modelRelationMapper.addDataSourceModelBind(Collections.singletonList(relation));
+        this.modelRelationMapper.addDsModelRelation(Collections.singletonList(relation));
         Map<String, Object> versionParams = versionResult.getData();
         versionParams.put("id", dataSourceId);
         return versionParams;
@@ -362,11 +361,11 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
             throw e;
         }
         // Build the relation between model and data source version
-        ExchangisDsModelRelation relation = new ExchangisDsModelRelation();
+        DataSourceModelRelation relation = new DataSourceModelRelation();
         relation.setModelId(modelId);
         relation.setDsName(vo.getDataSourceName());
         relation.setDsVersion(versionResult.getVersion());
-        this.modelRelationMapper.addDataSourceModelBind(Collections.singletonList(relation));
+        this.modelRelationMapper.addDsModelRelation(Collections.singletonList(relation));
         return new HashMap<>();
     }
 
@@ -713,7 +712,7 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
      * @param version version id
      */
     @Override
-    public void testConnect(String operator, Long id, Long version){
+    public void testConnect(String operator, Long id, Long version) throws ExchangisDataSourceException {
         rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () ->
                         DataSourceTestConnectAction.builder().setUser(operator).setDataSourceId(Long.parseLong(id + "")).setVersion(version + "").build(),
                     LinkisDataSourceRemoteClient::getDataSourceTestConnect, CLIENT_DATASOURCE_TEST_CONNECTION_ERROR.getCode(),
@@ -759,7 +758,7 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
      * @return params
      */
     @Override
-    public Map<String, Object> getDataSourceConnectParamsById(String operator, Long id){
+    public Map<String, Object> getDataSourceConnectParamsById(String operator, Long id) throws ExchangisDataSourceException {
         GetConnectParamsByDataSourceIdResult result = rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> GetConnectParamsByDataSourceIdAction.builder()
                 .setSystem("exchangis")
                 .setUser(operator).setDataSourceId(id).build(),
@@ -775,7 +774,7 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
      * @throws ErrorException e
      */
     @Override
-    public void expireDataSource(String operator, Long id) throws ErrorException {
+    public void expireDataSource(String operator, Long id) throws ExchangisDataSourceException {
         rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () ->
                 ExpireDataSourceAction.builder()
                         .setUser(operator)
@@ -888,7 +887,7 @@ public class DefaultExchangisDataSourceService extends AbstractDataSourceService
         }
         Map<String, Object> connectParams = Optional.ofNullable(vo.getConnectParams())
                 .orElse(new HashMap<>());
-        ExchangisDataSourceModel model = this.modelMapper.selectOne(modelId);
+        DataSourceModel model = this.modelMapper.selectOne(modelId);
         if (Objects.nonNull(model)){
             Map<String, Object> modelParams = model.resolveParams();
             // TODO get the model key definitions

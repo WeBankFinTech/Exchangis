@@ -34,10 +34,6 @@ public abstract class AbstractLinkisDataSourceService {
         R result;
         try {
             result = executor.apply(client, action);
-        } catch (ErrorException e) {
-            // Deal with the linkis error exception
-            throw new ExchangisDataSourceException(errorCode,
-                    e.getMessage(), e.getIp(), e.getPort(), e.getServiceKind());
         } catch (Exception e){
             throw new ExchangisDataSourceException(errorCode, e.getMessage());
         }

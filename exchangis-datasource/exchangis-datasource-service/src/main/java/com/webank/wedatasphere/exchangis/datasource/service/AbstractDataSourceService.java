@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class AbstractDataSourceService extends AbstractLinkisDataSourceService implements ExchangisDataSourceService {
+public abstract class AbstractDataSourceService extends AbstractLinkisDataSourceService implements DataSourceService {
     protected final ObjectMapper mapper = new ObjectMapper();
     protected final ExchangisDataSourceContext context;
     protected final ExchangisJobParamConfigMapper exchangisJobParamConfigMapper;

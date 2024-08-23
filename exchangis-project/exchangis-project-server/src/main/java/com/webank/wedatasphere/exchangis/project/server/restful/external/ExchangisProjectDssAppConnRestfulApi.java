@@ -7,7 +7,7 @@ import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
 import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
-import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
@@ -62,7 +62,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
      * Data source service
      */
     @Resource
-    private ExchangisDataSourceService dataSourceService;
+    private DataSourceService dataSourceService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public Message createProject(@Validated @RequestBody ExchangisProjectAppVo projectVo,
