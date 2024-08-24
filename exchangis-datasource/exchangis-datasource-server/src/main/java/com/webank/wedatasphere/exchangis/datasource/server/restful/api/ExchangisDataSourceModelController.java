@@ -157,7 +157,8 @@ public class ExchangisDataSourceModelController {
         DataSourceModelTypeKeyQuery pageQuery = new DataSourceModelTypeKeyQuery();
         pageQuery.setDsType(dsType);
         try {
-            List<DataSourceModelTypeKey> keyDefines = dataSourceModelTypeKeyService.selectAllDsModelTypeKeys(pageQuery);
+            List<DataSourceModelTypeKey> keyDefines =
+                    dataSourceModelTypeKeyService.queryDsModelTypeKeys(UserUtils.getLoginUser(request), pageQuery);
             Message message = Message.ok();
             message.data("list", keyDefines);
             if (!keyDefines.isEmpty()) {

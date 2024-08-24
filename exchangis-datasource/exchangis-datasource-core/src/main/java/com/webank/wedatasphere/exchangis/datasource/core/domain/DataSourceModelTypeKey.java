@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.datasource.core.domain;
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
 
 import java.util.Date;
+import java.util.Map;
 
 public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
@@ -10,9 +11,11 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
     private String dsType;
 
-    private ValueType nestType;
+    private DataSourceParamKeyDefinition.ValueType nestType;
 
     private String nestFields;
+
+    private Boolean isSerialize;
 
     private Date createTime;
 
@@ -34,11 +37,11 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
         this.dsType = dsType;
     }
 
-    public ValueType getNestType() {
+    public DataSourceParamKeyDefinition.ValueType getNestType() {
         return nestType;
     }
 
-    public void setNestType(ValueType nestType) {
+    public void setNestType(DataSourceParamKeyDefinition.ValueType nestType) {
         this.nestType = nestType;
     }
 
@@ -48,6 +51,14 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
     public void setNestFields(String nestFields) {
         this.nestFields = nestFields;
+    }
+
+    public Boolean getSerialize() {
+        return isSerialize;
+    }
+
+    public void setSerialize(Boolean serialize) {
+        isSerialize = serialize;
     }
 
     public Date getCreateTime() {
@@ -64,5 +75,12 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
     public void setModifyTime(Date modifyTime) {
         this.modifyTime = modifyTime;
+    }
+
+    public DataSourceModelTypeKey() {
+    }
+
+    public DataSourceModelTypeKey(Map<String, Object> keyDefine) {
+
     }
 }

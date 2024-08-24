@@ -646,7 +646,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
     }
 
     @Override
-    public ExchangisDataSourceDetail getDataSource(String operator, Long id) throws ErrorException {
+    public ExchangisDataSourceDetail getDataSource(String operator, Long id) throws ExchangisDataSourceException {
         GetInfoByDataSourceIdResult result = rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> GetInfoByDataSourceIdAction.builder()
                         .setSystem("exchangis")
                         .setUser(operator)
@@ -665,7 +665,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
      * @throws ErrorException e
      */
     @Override
-    public ExchangisDataSourceDetail getDataSource(String userName, String dsName) throws ErrorException{
+    public ExchangisDataSourceDetail getDataSource(String userName, String dsName) throws ExchangisDataSourceException {
         GetInfoByDataSourceNameResult result = rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> GetInfoByDataSourceNameAction.builder()
                 .setSystem("exchangis").setUser(userName).setDataSourceName(dsName)
                 .build(),
@@ -683,7 +683,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
      * @throws ErrorException e
      */
     @Override
-    public List<Map<String, Object>> getDataSourceVersionsById(String operator, Long id) throws ErrorException {
+    public List<Map<String, Object>> getDataSourceVersionsById(String operator, Long id) throws ExchangisDataSourceException {
         GetInfoByDataSourceIdResult dataSourceInfo = rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> GetInfoByDataSourceIdAction.builder()
                 .setSystem("exchangis")
                 .setUser(operator).setDataSourceId(id).build(),
@@ -758,7 +758,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
      * @throws ErrorException e
      */
     @Override
-    public void publishDataSource(String operator, Long id, Long version){
+    public void publishDataSource(String operator, Long id, Long version) throws ExchangisDataSourceException {
         rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> PublishDataSourceVersionAction.builder()
                 .setUser(operator).setDataSourceId(Long.parseLong(id + "")).setVersion(Long.parseLong(version + ""))
                 .build(),
@@ -941,7 +941,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
      * @return detail
      * @throws ErrorException
      */
-    private ExchangisDataSourceDetail getDataSourceByIdAndVersionId(String operator, Long id, String versionId) throws ErrorException {
+    private ExchangisDataSourceDetail getDataSourceByIdAndVersionId(String operator, Long id, String versionId) throws ExchangisDataSourceException {
         GetInfoByDataSourceIdAndVersionIdResult result = (GetInfoByDataSourceIdAndVersionIdResult) rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> GetDataSourceInfoByIdAndVersionIdAction.builder()
                 .setSystem("exchangis")
                 .setUser(operator)

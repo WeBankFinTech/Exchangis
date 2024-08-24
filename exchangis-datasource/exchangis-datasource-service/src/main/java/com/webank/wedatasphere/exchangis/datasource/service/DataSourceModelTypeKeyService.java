@@ -11,7 +11,7 @@ public interface DataSourceModelTypeKeyService {
 
     PageList<DataSourceModelTypeKey> findDsModelTypeKeyPageList(DataSourceModelTypeKeyQuery pageQuery);
 
-    List<DataSourceModelTypeKey> selectAllDsModelTypeKeys(DataSourceModelTypeKeyQuery pageQuery);
+    List<DataSourceModelTypeKey> queryDsModelTypeKeys(String operator, DataSourceModelTypeKeyQuery pageQuery);
 
     long countDsModelTypeKey();
 

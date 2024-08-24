@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
+import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
 
 public class DataSourceModelTypeKeyQuery extends PageQuery {
 
@@ -10,7 +11,9 @@ public class DataSourceModelTypeKeyQuery extends PageQuery {
 
     private String dsType;
 
-    private String nestType;
+    private DataSourceParamKeyDefinition.ValueType nestType;
+
+    private Boolean isSerialize;
 
     private String key;
 
@@ -52,12 +55,20 @@ public class DataSourceModelTypeKeyQuery extends PageQuery {
         this.dsType = dsType;
     }
 
-    public String getNestType() {
+    public DataSourceParamKeyDefinition.ValueType getNestType() {
         return nestType;
     }
 
-    public void setNestType(String nestType) {
+    public void setNestType(DataSourceParamKeyDefinition.ValueType nestType) {
         this.nestType = nestType;
+    }
+
+    public Boolean getSerialize() {
+        return isSerialize;
+    }
+
+    public void setSerialize(Boolean serialize) {
+        isSerialize = serialize;
     }
 
     public String getKey() {
