@@ -13,6 +13,7 @@ public class ExchangisDataSourceItem implements ExchangisDataSource {
     private String name;
     private String type;
     private Long dataSourceTypeId;
+    private Long dataSourceModelId;
     private String createIdentify;
     private String createSystem;
     private String desc;
@@ -80,6 +81,14 @@ public class ExchangisDataSourceItem implements ExchangisDataSource {
 
     public void setDataSourceTypeId(Long dataSourceTypeId) {
         this.dataSourceTypeId = dataSourceTypeId;
+    }
+
+    public Long getDataSourceModelId() {
+        return dataSourceModelId;
+    }
+
+    public void setDataSourceModelId(Long dataSourceModelId) {
+        this.dataSourceModelId = dataSourceModelId;
     }
 
     public String getDesc() {
