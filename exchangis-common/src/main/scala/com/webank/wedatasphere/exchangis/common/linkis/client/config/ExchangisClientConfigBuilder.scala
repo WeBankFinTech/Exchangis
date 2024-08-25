@@ -21,8 +21,8 @@ class ExchangisClientConfigBuilder extends ClientConfigBuilder{
   // Load from vars default
   // Http common
   maxConnection = HttpClientConfiguration.MAX_CONNECTION_SIZE.getValue
-  connectTimeout = HttpClientConfiguration.CONNECTION_TIMEOUT.getValue
-  readTimeout = HttpClientConfiguration.SOCKET_READ_TIMEOUT.getValue
+  connectTimeout = HttpClientConfiguration.CONNECTION_TIMEOUT.getValue.longValue()
+  readTimeout = HttpClientConfiguration.SOCKET_READ_TIMEOUT.getValue.longValue()
   // Linkis client, use token auth default
   dwsVersion = ClientConfiguration.LINKIS_DWS_VERSION.getValue
   serverUrl = ClientConfiguration.LINKIS_SERVER_URL.getValue

@@ -23,7 +23,7 @@
         create_user, create_time, modify_user, modify_time
     </sql>
 
-    <insert id="addDsModelRelation" useGeneratedKeys="true" keyProperty="id">
+    <insert id="addRelation" useGeneratedKeys="true" keyProperty="id">
         <foreach collection="list" item="item" open="" close="" separator="">
             <![CDATA[
                 INSERT INTO exchangis_data_source_model_relation (
@@ -41,31 +41,34 @@
         </foreach>
     </insert>
 
-    <update id="updateDsModelRelation">
-        <foreach collection="list" item="item" separator="">
-            <![CDATA[
-                UPDATE exchangis_data_source_model_relation SET
-                ds_name = #{item.dsName},
-                ds_version = #{item.dsVersion},
-                model_id = #{item.modelId},
-                ds_id = #{item.dsId},
-                create_user = #{item.createUser},
-                modify_user = #{item.modifyUser}
-                WHERE
-                id = #{item.id};
-            ]]>
-        </foreach>
+    <update id="transferModelRelation">
+        UPDATE <include refid="table"/>
+        SET model_id = #{toId} WHERE model_id = #{fromId};
     </update>
 
-    <delete id="deleteDsModelRelation">
+    <delete id="deleteRelations">
         DELETE FROM <include refid="table"/> WHERE
         ds_name = #{dsName}
         AND ds_version = #{dsVersion};
     </delete>
 
-    <delete id="deleteDsModelByDsId">
+    <delete id="deleteRelationsByDsId">
         DELETE FROM <include refid="table"/> WHERE
         ds_id = #{dsId};
+    </delete>
+
+    <delete id="deleteRelationByModelIds">
+        DELETE FROM <include refid="table"/> WHERE
+        model_id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteRefRelationByModelId">
+        DELETE FROM <include refid="table"/> WHERE model_id IN (
+        SELECT id FROM exchangis_data_source_model WHERE
+        ref_model_id = #{modelId})
     </delete>
 
     <select id="queryDsIdsByModel" resultMap="relationResult">
@@ -76,7 +79,21 @@
         ORDER BY create_time DESC
     </select>
 
-    <select id="queryDsModelRelation" resultMap="relationResult">
+    <select id="queryRefRelationsByModel" resultMap="relationResult">
+        SELECT
+        <include refid="columns"/>
+        FROM <include refid="table"/>
+        WHERE model_id = #{modelId}
+        UNION ALL
+        SELECT
+        <include refid="columns"/>
+        FROM <include refid="table"/>
+        WHERE model_id IN (
+        SELECT id FROM exchangis_data_source_model WHERE ref_model_id = #{modelId}
+        );
+    </select>
+
+    <select id="queryRelations" resultMap="relationResult">
         SELECT
         <include refid="columns"/>
         FROM <include refid="table"/>

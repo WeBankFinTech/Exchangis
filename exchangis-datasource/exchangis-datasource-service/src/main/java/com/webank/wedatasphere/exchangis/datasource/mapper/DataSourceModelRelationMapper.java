@@ -12,39 +12,59 @@ import java.util.List;
 public interface DataSourceModelRelationMapper {
 
     /**
-     * query dataSourceModelBinds
+     * Query data source ids by model
      */
     List<Long> queryDsIdsByModel(@Param("modelId") Long modelId);
 
     /**
-     * query dataSourceModelRelation
-     * @param dataSourceModelRelationQuery
+     * Query (refer) relations by model
+     * @param modelId
+     * @return
      */
-    DataSourceModelRelation queryDsModelRelation(DataSourceModelRelationQuery dataSourceModelRelationQuery);
+    List<DataSourceModelRelation> queryRefRelationsByModel(@Param("modelId")Long modelId);
 
     /**
-     * add dataSourceModelRelations
-     * @param dataSourceModelRelations
+     * Query data source relations
+     * @param dataSourceModelRelationQuery query
      */
-    void addDsModelRelation(@Param("dataSourceModelRelations") List<DataSourceModelRelation> dataSourceModelRelations);
+    DataSourceModelRelation queryRelations(DataSourceModelRelationQuery dataSourceModelRelationQuery);
 
     /**
-     * update dataSourceModelRelations
-     * @param dataSourceModelRelations
+     * Add data source model relation
+     * @param dataSourceModelRelations relations
      */
-    void updateDsModelRelation(@Param("dataSourceModelRelations") List<DataSourceModelRelation> dataSourceModelRelations);
+    void addRelation(@Param("dataSourceModelRelations") List<DataSourceModelRelation> dataSourceModelRelations);
+
+    /**
+     * Transfer model relation
+     * @param fromId from id
+     * @param toId to id
+     */
+    void transferModelRelation(@Param("fromId") Long fromId, @Param("toId") Long toId);
 
     /**
      * Delete relation by data source name and version
      * @param dsName data source name
      * @param versionId version id
      */
-    void deleteDsModelRelation(@Param("dsName") String dsName,
-                               @Param("dsVersion")Long versionId);
+    void deleteRelations(@Param("dsName") String dsName,
+                         @Param("dsVersion")Long versionId);
 
     /**
-     * Delete data source model with ds id
+     * Delete relations by model id
+     * @param modelIds model id
+     */
+    void deleteRelationByModelIds(@Param("ids")List<Long> modelIds);
+
+    /**
+     * Delete relations by ds id
      * @param dsId data source id
      */
-    void deleteDsModelByDsId(Long dsId);
+    void deleteRelationsByDsId(Long dsId);
+
+    /**
+     * Delete refer relations by model id
+     * @param modelId model id
+     */
+    void deleteRefRelationByModelId(Long modelId);
 }

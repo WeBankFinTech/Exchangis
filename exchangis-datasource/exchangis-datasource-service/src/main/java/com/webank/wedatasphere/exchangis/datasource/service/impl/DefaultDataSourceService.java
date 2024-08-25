@@ -296,16 +296,18 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                 LinkisDataSourceRemoteClient::updateDataSourceParameter, CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(),
                 "datasource update params version null or empty");
         // Build the relation between model and data source version
-        try {
-            DataSourceModelRelation relation = new DataSourceModelRelation(vo.getDataSourceName(),
-                    versionResult.getVersion(), modelId);
-            relation.setCreateUser(operator);
-            relation.setDsId(dataSourceId);
-            this.modelRelationMapper.addDsModelRelation(Collections.singletonList(relation));
-        } catch (Exception e){
-            LOG.error("Internal_Error: Fail to add relation between " +
-                    "data source: [{}] in version: [{}] with model_id: [{}]", vo.getDataSourceName(), versionResult.getVersion(), modelId, e);
-            throw new ExchangisDataSourceException(CLIENT_DATASOURCE_CREATE_ERROR.getCode(), e.getMessage());
+        if (Objects.nonNull(modelId)) {
+            try {
+                DataSourceModelRelation relation = new DataSourceModelRelation(vo.getDataSourceName(),
+                        versionResult.getVersion(), modelId);
+                relation.setCreateUser(operator);
+                relation.setDsId(dataSourceId);
+                this.modelRelationMapper.addRelation(Collections.singletonList(relation));
+            } catch (Exception e) {
+                LOG.error("Internal_Error: Fail to add relation between " +
+                        "data source: [{}] in version: [{}] with model_id: [{}]", vo.getDataSourceName(), versionResult.getVersion(), modelId, e);
+                throw new ExchangisDataSourceException(CLIENT_DATASOURCE_CREATE_ERROR.getCode(), e.getMessage());
+            }
         }
         Map<String, Object> versionParams = versionResult.getData();
         versionParams.put("id", dataSourceId);
@@ -334,53 +336,68 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                 "");
         DataSource beforeDs = result.getDataSource();
         if (!Objects.equals(vo.getPublishedVersionId(), vo.getVersionId())){
-            // Delete the relation between data source id, version id and model id
-            this.modelRelationMapper.deleteDsModelRelation(vo.getDataSourceName(), vo.getVersionId());
+            // Delete the relation between data source name, version id and model id
+            // Note: use the old name
+            this.modelRelationMapper.deleteRelations(beforeDs.getDataSourceName(), vo.getVersionId());
         }
-        // Send to update data source
-        rpcSend(client, () -> UpdateDataSourceAction.builder()
-                .setUser(operator)
-                .setDataSourceId(Long.parseLong(id + ""))
-                .addRequestPayloads(payLoads)
-                .build(),
-                AbstractRemoteClient::execute, CLIENT_DATASOURCE_UPDATE_ERROR.getCode(),
-                "datasource update null or empty");
-        UpdateDataSourceParameterResult versionResult;
-        try {
-            // Send to create version
-            versionResult = rpcSend(client, () -> UpdateDataSourceParameterAction.builder()
-                            .setDataSourceId(Long.parseLong(id + ""))
-                            .setUser(operator)
-                            .addRequestPayloads(payLoads)
-                            .build(),
-                    LinkisDataSourceRemoteClient::updateDataSourceParameter,
-                    CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(),
-                    "datasource update params version null or empty");
-        } catch (ExchangisDataSourceException e){
-            // Send to update the data source to rollback
-            rpcSend(client, () -> UpdateDataSourceAction.builder()
-                            .setUser(operator)
-                            .setDataSourceId(Long.parseLong(id + ""))
-                            .addRequestPayloads(Json.convert(beforeDs, Map.class, String.class, Object.class))
-                            .build(),
-                    AbstractRemoteClient::execute, CLIENT_DATASOURCE_UPDATE_ERROR.getCode(),
-                    "datasource update null or empty");
-            throw e;
-        }
-        // Build the relation between model and data source version
-        try {
-            DataSourceModelRelation relation = new DataSourceModelRelation(vo.getDataSourceName(),
-                    versionResult.getVersion(), modelId);
-            relation.setCreateUser(operator);
-            relation.setDsId(id);
-            this.modelRelationMapper.addDsModelRelation(Collections.singletonList(relation));
-        } catch (Exception e){
-            LOG.error("Internal_Error: Fail to add relation between " +
-                    "data source: [{}] in version: [{}] with model_id: [{}]", vo.getDataSourceName(), versionResult.getVersion(), modelId, e);
-            throw new ExchangisDataSourceException(CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), e.getMessage());
-        }
-
+        updateInternal(operator, client, id, modelId, beforeDs, payLoads);
         return new HashMap<>();
+    }
+
+    /**
+     * TODO Use data source name instead of id ?
+     * @param operator operator
+     * @param id data source id
+     * @param name data source name
+     * @param version  version id
+     * @param model model
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateInVersionAndModel(String operator, Long id, String name,
+                                        Long version, DataSourceModel model) {
+        // First to lock the (master) model for avoiding the concurrency problem
+        Long updateId = model.getId();
+        Long modelVersion = model.getVersion();
+        if (model.getDuplicate()){
+            updateId = model.getRefModelId();
+        }
+        DataSourceModel sourceModel = this.modelMapper.selectForUpdate(updateId, modelVersion);
+        if (Objects.isNull(sourceModel)){
+            throw new ExchangisDataSourceException(MODEL_VERSION_CONFLICT.getCode(), "The version of data source model is conflict(模版版本冲突，存在并发更新操作)");
+        }
+        // First send to get data source data before
+        GetInfoByDataSourceIdAndVersionIdResult result = (GetInfoByDataSourceIdAndVersionIdResult)rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(),
+                () -> GetDataSourceInfoByIdAndVersionIdAction.builder()
+                        .setSystem("exchangis")
+                        .setUser(operator)
+                        .setDataSourceId(id)
+                        .setVersionId(String.valueOf(version)).build(),
+                LinkisDataSourceRemoteClient::execute, CLIENT_QUERY_DATASOURCE_ERROR.getCode(),
+                "");
+        // TODO data source not exits
+        DataSource beforeDs = result.getDataSource();
+        if (!version.equals(beforeDs.getVersionId()) && version.equals(beforeDs.getPublishedVersionId())){
+            this.modelRelationMapper.deleteRelations(name, version);
+            // Skip
+            return;
+        }
+        Map<String, Object> updateVo = Json.fromJson(Json.toJson(beforeDs, null), Map.class);
+        Optional.ofNullable(updateVo).ifPresent(pay -> {
+            pay.put("comment", "from version " + version + "[模版更新]");
+        });
+        long lastVersion = updateInternal(operator, ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(),
+                id, model.getId(), beforeDs, updateVo);
+        //Publish the data source if in need
+        if (version.equals(beforeDs.getPublishedVersionId())) {
+            try {
+                this.publishDataSource(operator, id, lastVersion);
+            } catch (Exception e){
+                LOG.error("Fail to publish the data source [name:{}, id:{}] in version: [{}]",
+                        name, id, version, e);
+                // Not the break the progress
+            }
+        }
     }
 
 
@@ -394,7 +411,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "目前存在引用依赖");
         }
         // Delete the relation between models and data source
-        this.modelRelationMapper.deleteDsModelByDsId(id);
+        this.modelRelationMapper.deleteRelationsByDsId(id);
         LinkisDataSourceRemoteClient client = ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient();
         DeleteDataSourceResult result = rpcSend(client, () -> DeleteDataSourceAction.builder()
                 .setUser(operator).setDataSourceId(Long.parseLong(id + "")).builder(),
@@ -838,7 +855,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             case "DATAX":
                 break;
             default:
-                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.UNSUPPORTEd_ENGINE.getCode(), "不支持的引擎");
+                throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.UNSUPPORTED_ENGINE.getCode(), "不支持的引擎");
         }
     }
 
@@ -892,6 +909,66 @@ public class DefaultDataSourceService extends AbstractDataSourceService
     }
 
     /**
+     * Update internal method
+     * @param operator operator
+     * @param client client
+     * @param id id
+     * @param modelId model id
+     * @param beforeDs before ds
+     * @param updateVo update vo
+     */
+    private long updateInternal(String operator, LinkisDataSourceRemoteClient client,
+                                Long id, Long modelId, DataSource beforeDs,
+                                Map<String, Object> updateVo){
+        // Send to update data source
+        rpcSend(client, () -> UpdateDataSourceAction.builder()
+                        .setUser(operator)
+                        .setDataSourceId(Long.parseLong(id + ""))
+                        .addRequestPayloads(updateVo)
+                        .build(),
+                AbstractRemoteClient::execute, CLIENT_DATASOURCE_UPDATE_ERROR.getCode(),
+                "datasource update null or empty");
+        UpdateDataSourceParameterResult versionResult;
+        try {
+            // Send to create version
+            versionResult = rpcSend(client, () -> UpdateDataSourceParameterAction.builder()
+                            .setDataSourceId(Long.parseLong(id + ""))
+                            .setUser(operator)
+                            .addRequestPayloads(updateVo)
+                            .build(),
+                    LinkisDataSourceRemoteClient::updateDataSourceParameter,
+                    CLIENT_DATASOURCE_UPDATE_PARAMS_VERSION_ERROR.getCode(),
+                    "datasource update params version null or empty");
+        } catch (ExchangisDataSourceException e){
+            // Send to update the data source to rollback
+            rpcSend(client, () -> UpdateDataSourceAction.builder()
+                            .setUser(operator)
+                            .setDataSourceId(Long.parseLong(id + ""))
+                            .addRequestPayloads(Json.convert(beforeDs, Map.class, String.class, Object.class))
+                            .build(),
+                    AbstractRemoteClient::execute, CLIENT_DATASOURCE_UPDATE_ERROR.getCode(),
+                    "datasource update null or empty");
+            throw e;
+        }
+        // Build the relation between model and data source version
+        if (Objects.nonNull(modelId)) {
+            String dsName = String.valueOf(Optional.ofNullable(updateVo.get("dataSourceName")).orElse(
+                    beforeDs.getDataSourceName()));
+            try {
+                DataSourceModelRelation relation = new DataSourceModelRelation(dsName,
+                        versionResult.getVersion(), modelId);
+                relation.setCreateUser(operator);
+                relation.setDsId(id);
+                this.modelRelationMapper.addRelation(Collections.singletonList(relation));
+            } catch (Exception e) {
+                LOG.error("Internal_Error: Fail to add relation between " +
+                        "data source: [{}] in version: [{}] with model_id: [{}]", dsName, versionResult.getVersion(), modelId, e);
+                throw new ExchangisDataSourceException(CLIENT_DATASOURCE_UPDATE_ERROR.getCode(), e.getMessage());
+            }
+        }
+        return versionResult.getVersion();
+    }
+    /**
      * Merge model parameters
      * @param vo void
      * @param modelId model id
@@ -902,6 +979,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         }
         Map<String, Object> connectParams = Optional.ofNullable(vo.getConnectParams())
                 .orElse(new HashMap<>());
+        // TODO avoid the concurrency problem
         DataSourceModel model = this.modelMapper.selectOne(modelId);
         if (Objects.nonNull(model)){
             Map<String, Object> modelParams = model.resolveParams();
@@ -911,8 +989,8 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             List<DataSourceModelTypeKey> keys = this.modelTypeKeyMapper.queryList(query);
             keys.forEach(key -> {
                 Object paramValue = modelParams.get(key.getKey());
-                // TODO try to serialize the parameter
-                boolean toSerialize = false;
+                // Try to serialize the parameter
+                boolean toSerialize = key.getSerialize();
                 if (Objects.nonNull(paramValue) && toSerialize){
                     DataSourceParamKeyDefinition.ValueType[] subTypes = null;
                     DataSourceParamKeyDefinition.ValueType nestType = key.getNestType();
@@ -966,7 +1044,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             query.setDsName(dataSource.getDataSourceName());
             query.setDsVersion(Long.parseLong(version));
             DataSourceModelRelation relation =
-                    this.modelRelationMapper.queryDsModelRelation(query);
+                    this.modelRelationMapper.queryRelations(query);
             if (Objects.nonNull(relation)){
                 detail.setModelId(relation.getModelId());
             }

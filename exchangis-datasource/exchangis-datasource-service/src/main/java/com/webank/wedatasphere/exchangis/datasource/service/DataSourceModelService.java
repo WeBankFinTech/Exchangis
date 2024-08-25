@@ -4,9 +4,13 @@ import com.webank.wedatasphere.exchangis.common.pager.PageList;
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
 
 import java.util.List;
 
+/**
+ * Data source model service
+ */
 public interface DataSourceModelService {
 
     /**
@@ -31,13 +35,28 @@ public interface DataSourceModelService {
      */
     boolean delete(Long id);
 
+
     /**
-     * Update
+     * Update once
      *
-     * @param dataSourceModel
-     * @return
+     * @param model data source model entity
+     * @return boolean
      */
-    boolean update(DataSourceModel dataSourceModel);
+    boolean update(DataSourceModel model);
+
+    /**
+     * Begin update transaction
+     * @param modelId model id
+     * @return duplicate model
+     */
+    DataSourceModel beginUpdate(Long modelId, DataSourceModel update);
+
+    /**
+     * Commit update transaction
+     * @param modelId model id
+     * @param commit duplicated model
+     */
+    void commitUpdate(Long modelId, DataSourceModel commit, DataSourceModel update);
 
     /**
      * Count
@@ -60,6 +79,13 @@ public interface DataSourceModelService {
      * @return
      */
     List<DataSourceModel> selectAllList(DataSourceModelQuery query);
+
+    /**
+     * Query relations between model and data source
+     * @param id model id
+     * @return relations
+     */
+    List<DataSourceModelRelation> queryRelations(Long id);
 
     DataSourceModel get(Long id);
 

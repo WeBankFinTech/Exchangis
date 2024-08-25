@@ -48,6 +48,16 @@ public class DataSourceModel {
 
     private Map<String, Object> parameterMap;
 
+    /**
+     * Refer to (master) model id
+     */
+    private Long refModelId;
+
+    /**
+     * Is a duplicate model
+     */
+    private Boolean isDuplicate = false;
+
     private String createOwner;
 
     private String createUser;
@@ -59,6 +69,11 @@ public class DataSourceModel {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date modifyTime;
+
+    /**
+     * Version for update
+     */
+    private Long version = 0L;
 
     /**
      * resolve parameters
@@ -164,5 +179,29 @@ public class DataSourceModel {
 
     public void setModifyTime(Date modifyTime) {
         this.modifyTime = modifyTime;
+    }
+
+    public Long getRefModelId() {
+        return refModelId;
+    }
+
+    public void setRefModelId(Long refModelId) {
+        this.refModelId = refModelId;
+    }
+
+    public Boolean getDuplicate() {
+        return isDuplicate;
+    }
+
+    public void setDuplicate(Boolean duplicate) {
+        isDuplicate = duplicate;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }
