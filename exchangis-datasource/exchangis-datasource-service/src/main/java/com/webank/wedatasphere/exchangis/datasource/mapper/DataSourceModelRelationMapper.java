@@ -33,7 +33,7 @@ public interface DataSourceModelRelationMapper {
      * Add data source model relation
      * @param dataSourceModelRelations relations
      */
-    void addRelation(@Param("dataSourceModelRelations") List<DataSourceModelRelation> dataSourceModelRelations);
+    void addRelation(@Param("list") List<DataSourceModelRelation> dataSourceModelRelations);
 
     /**
      * Transfer model relation

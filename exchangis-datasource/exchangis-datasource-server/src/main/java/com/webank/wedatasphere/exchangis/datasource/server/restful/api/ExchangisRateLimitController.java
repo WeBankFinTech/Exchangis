@@ -119,7 +119,7 @@ public class ExchangisRateLimitController {
     }
 
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
-    public Message resetRateLimitUsed(@RequestBody RateLimit rateLimit, HttpServletRequest request){
+    public Message resetRateLimitUsed(RateLimit rateLimit, HttpServletRequest request){
         // Param valid
         RateLimit queryRateLimit = rateLimitService.selectOne(rateLimit);
         if (Objects.isNull(queryRateLimit)) {

@@ -90,10 +90,10 @@ public interface DataSourceModelMapper {
     /**
      * Select
      *
-     * @param key primary key
+     * @param id primary key
      * @return data
      */
-    DataSourceModel selectOne(Object key);
+    DataSourceModel selectOne(Long id);
 
     /**
      * Search

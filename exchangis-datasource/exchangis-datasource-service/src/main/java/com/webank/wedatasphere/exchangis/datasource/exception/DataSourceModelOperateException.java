@@ -1,16 +1,16 @@
 package com.webank.wedatasphere.exchangis.datasource.exception;
 
-public class DataSourceModelOperateException extends RuntimeException {
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
+import org.apache.linkis.common.exception.ErrorException;
 
-    public DataSourceModelOperateException(Throwable cause) {
-        super(cause);
+public class DataSourceModelOperateException extends ErrorException {
+
+    public DataSourceModelOperateException(String desc) {
+        super(ExchangisDataSourceExceptionCode.DATA_SOURCE_MODEL_OPERATE_ERROR.getCode(), desc);
     }
 
-    public DataSourceModelOperateException(String message) {
-        super(message);
-    }
-
-    public DataSourceModelOperateException(String message, Throwable cause) {
-        super(message, cause);
+    public DataSourceModelOperateException(String desc, Throwable cause) {
+        super(ExchangisDataSourceExceptionCode.DATA_SOURCE_MODEL_OPERATE_ERROR.getCode(), desc);
+        this.initCause(cause);
     }
 }

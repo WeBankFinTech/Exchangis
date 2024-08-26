@@ -46,7 +46,7 @@ public class DataSourceModel {
 
     private String parameter;
 
-    private Map<String, Object> parameterMap;
+    private Map<String, Object> parameterMap = new HashMap<>();
 
     /**
      * Refer to (master) model id
