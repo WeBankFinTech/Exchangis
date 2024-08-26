@@ -47,7 +47,7 @@ public class DataSourceModelTypeKeyServiceImpl extends AbstractLinkisDataSourceS
     }
 
     @Override
-    public List<DataSourceModelTypeKey> queryDsModelTypeKeys(String operator, DataSourceModelTypeKeyQuery pageQuery) {
+    public List<DataSourceModelTypeKey> queryDsModelTypeKeys(String operator, DataSourceModelTypeKeyQuery pageQuery) throws ExchangisDataSourceException {
         String dsType = pageQuery.getDsType();
         if (StringUtils.isBlank(dsType)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(),
