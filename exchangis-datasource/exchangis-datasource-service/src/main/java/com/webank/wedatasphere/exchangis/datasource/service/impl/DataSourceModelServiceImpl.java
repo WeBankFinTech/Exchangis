@@ -43,7 +43,7 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
 
     @Override
     @Transactional
-    public boolean delete(Long id) {
+    public boolean delete(Long id) throws DataSourceModelOperateException {
         List<Long> dsIds = dataSourceModelRelationMapper.queryDsIdsByModel(id);
         if (Objects.nonNull(dsIds) && dsIds.size() > 0) {
             throw new DataSourceModelOperateException("The model is in use, cannot delete it");
@@ -54,7 +54,7 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
 
     @Override
     @Transactional
-    public boolean update(DataSourceModel dataSourceModel) {
+    public boolean update(DataSourceModel dataSourceModel) throws DataSourceModelOperateException {
         Long id = dataSourceModel.getId();
         DataSourceModel queryModel = this.get(id);
         if (!queryModel.getModelName().equals(dataSourceModel.getModelName())
@@ -73,7 +73,7 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public DataSourceModel beginUpdate(Long modelId, DataSourceModel update) {
+    public DataSourceModel beginUpdate(Long modelId, DataSourceModel update) throws DataSourceModelOperateException {
         // Update the model version
         int result = this.dataSourceModelMapper.updateVersion(modelId);
         if (result <= 0){
@@ -104,7 +104,7 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void commitUpdate(Long modelId, DataSourceModel commit,
-                             DataSourceModel update){
+                             DataSourceModel update) throws DataSourceModelOperateException {
         update.setVersion(commit.getVersion());
         // Simply update the data source model
         int result = this.dataSourceModelMapper.updateInVersion(update);

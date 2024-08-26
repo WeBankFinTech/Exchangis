@@ -355,7 +355,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateInVersionAndModel(String operator, Long id, String name,
-                                        Long version, DataSourceModel model) {
+                                        Long version, DataSourceModel model) throws ExchangisDataSourceException {
         // First to lock the (master) model for avoiding the concurrency problem
         Long updateId = model.getId();
         Long modelVersion = model.getVersion();
@@ -919,7 +919,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
      */
     private long updateInternal(String operator, LinkisDataSourceRemoteClient client,
                                 Long id, Long modelId, DataSource beforeDs,
-                                Map<String, Object> updateVo){
+                                Map<String, Object> updateVo) throws ExchangisDataSourceException {
         // Send to update data source
         rpcSend(client, () -> UpdateDataSourceAction.builder()
                         .setUser(operator)

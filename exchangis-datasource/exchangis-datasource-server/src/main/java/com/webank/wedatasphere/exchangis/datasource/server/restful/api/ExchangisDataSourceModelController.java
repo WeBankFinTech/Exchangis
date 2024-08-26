@@ -5,7 +5,9 @@ import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.enums.AuthType;
 import com.webank.wedatasphere.exchangis.common.pager.PageList;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.*;
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelTypeKeyService;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
@@ -108,15 +110,16 @@ public class ExchangisDataSourceModelController {
                 // Finish submitting the update transaction
                 this.dataSourceModelService.commitUpdate(id, duplicated, model);
             }
-
-        } catch (RuntimeException e) {
+        } catch (DataSourceModelOperateException e) {
             return Message.error("Failed to update the dataSource model, cause by : " + e.getMessage());
+        } catch (ExchangisDataSourceException e) {
+            throw new RuntimeException(e);
         }
         return Message.ok();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public Message delete(@PathVariable Long id, HttpServletRequest request) {
+    public Message delete(@PathVariable Long id, HttpServletRequest request) throws DataSourceModelOperateException {
         DataSourceModelQuery query = new DataSourceModelQuery();
         query.setModelId(id);
         boolean result = dataSourceModelService.delete(id);
@@ -193,7 +196,7 @@ public class ExchangisDataSourceModelController {
         DataSourceModelTypeKeyQuery pageQuery = new DataSourceModelTypeKeyQuery();
         pageQuery.setDsType(dsType);
         try {
-            List<DataSourceModelTypeKey> keyDefines =
+            List<Map<String, Object>> keyDefines =
                     dataSourceModelTypeKeyService.queryDsModelTypeKeys(UserUtils.getLoginUser(request), pageQuery);
             Message message = Message.ok();
             message.data("list", keyDefines);

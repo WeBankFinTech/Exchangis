@@ -47,7 +47,7 @@ public class DataSourceModelTypeKeyServiceImpl extends AbstractLinkisDataSourceS
     }
 
     @Override
-    public List<DataSourceModelTypeKey> queryDsModelTypeKeys(String operator, DataSourceModelTypeKeyQuery pageQuery) throws ExchangisDataSourceException {
+    public List<Map<String, Object>> queryDsModelTypeKeys(String operator, DataSourceModelTypeKeyQuery pageQuery) throws ExchangisDataSourceException {
         String dsType = pageQuery.getDsType();
         if (StringUtils.isBlank(dsType)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(),
@@ -65,8 +65,7 @@ public class DataSourceModelTypeKeyServiceImpl extends AbstractLinkisDataSourceS
                 "");
         List<Map<String, Object>> keyDefineMap = result.getKeyDefine();
         // merge the key define
-        dsModelTypeKeys.addAll(DsModelKeyDefineUtil.transferToDsModelTypeKey(keyDefineMap));
-        return dsModelTypeKeys;
+        return DsModelKeyDefineUtil.mergeDsModelTypeKey(dsModelTypeKeys, keyDefineMap);
     }
 
     @Override
