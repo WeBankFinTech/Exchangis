@@ -6,6 +6,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQ
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
 import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
+import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ public interface DataSourceModelService {
      *
      * @param id
      */
-    boolean delete(Long id);
+    boolean delete(Long id) throws DataSourceModelOperateException, RateLimitOperationException;
 
 
     /**

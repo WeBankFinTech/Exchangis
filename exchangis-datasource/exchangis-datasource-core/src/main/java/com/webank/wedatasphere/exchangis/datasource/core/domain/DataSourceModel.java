@@ -51,7 +51,7 @@ public class DataSourceModel {
     /**
      * Refer to (master) model id
      */
-    private Long refModelId;
+    private Long refModelId = -1L;
 
     /**
      * Is a duplicate model

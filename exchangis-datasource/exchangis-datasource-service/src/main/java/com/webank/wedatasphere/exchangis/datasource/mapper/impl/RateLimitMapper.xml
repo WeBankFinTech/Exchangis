@@ -134,7 +134,7 @@
         dsm.model_name,dsm.source_type
         FROM <include refid="table"/> rl
         LEFT JOIN exchangis_data_source_model dsm on rl.limit_realm_id=dsm.id
-        <include refid="findPageWhere"/>
+        <include refid="findPageWhereJoin"/>
         ORDER BY create_time DESC
     </select>
 
@@ -168,6 +168,26 @@
 
     <sql id="findPageWhere">
         <where>
+            <if test="openLimit != null and openLimit != ''">
+                AND rl.open_limit = #{openLimit}
+            </if>
+            <if test="limitRealmId != null and limitRealmId != ''">
+                AND rl.limit_realm_id = #{limitRealmId}
+            </if>
+            <if test="limitRealm != null and limitRealm != ''">
+                AND rl.limit_realm = #{limitRealm}
+            </if>
+            <if test="userRole != null and userRole == 'user'">
+                AND rl.create_user = #{createUser}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="findPageWhereJoin">
+        <where>
+            <if test="sourceType != null and sourceType != ''">
+                AND dsm.source_type = #{sourceType}
+            </if>
             <if test="openLimit != null and openLimit != ''">
                 AND rl.open_limit = #{openLimit}
             </if>

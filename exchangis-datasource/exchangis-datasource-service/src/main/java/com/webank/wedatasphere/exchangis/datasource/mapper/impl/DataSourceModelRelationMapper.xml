@@ -91,7 +91,7 @@
 
     <select id="queryDsIdsByModel" resultMap="relationResult">
         SELECT
-        data_source_id
+        ds_id
         FROM <include refid="table"/>
         WHERE model_id = #{modelId}
         ORDER BY create_time DESC

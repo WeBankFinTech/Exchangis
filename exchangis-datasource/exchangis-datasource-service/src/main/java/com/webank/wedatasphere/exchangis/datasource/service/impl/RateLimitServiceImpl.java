@@ -95,7 +95,7 @@ public class RateLimitServiceImpl implements RateLimitService {
     }
 
     @Transactional
-    public boolean delete(RateLimit rateLimit) {
+    public boolean delete(RateLimit rateLimit) throws RateLimitOperationException {
         if (jobOpenService.isRunWithDataSourceModel(rateLimit.getLimitRealmId())) {
             throw new RateLimitOperationException("Current model has been bound!(当前数据源模板已被任务绑定)");
         }
@@ -115,7 +115,7 @@ public class RateLimitServiceImpl implements RateLimitService {
 //
 //        }
         if (Objects.isNull(rateLimitVoList) || rateLimitVoList.size() <= 0) {
-            return null;
+            return new ArrayList<>();
         }
         List<RateLimitUsed> rateLimitUsedList = rateLimitUsedMapper.selectUsedInLimitIds(rateLimitVoList.stream().map(RateLimitVo::getId).collect(Collectors.toList()));
         rateLimitVoList.forEach(vo -> {

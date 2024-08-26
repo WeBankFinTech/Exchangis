@@ -1,18 +1,24 @@
 package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RateLimit {
 
+    @JsonIgnore
     public static final String DEFAULT_LIMIT_REALM = "MODEL";
 
+    @JsonIgnore
     public static final String DEFAULT_FLOW_RATE_LIMIT_UNIT = "MB";
 
+    @JsonIgnore
     public static final Boolean DEFAULT_OPEN_LIMIT = false;
 
     private Long id;
@@ -169,6 +175,16 @@ public class RateLimit {
         this.limitRealm = DEFAULT_LIMIT_REALM;
         this.flowRateLimitUnit = DEFAULT_FLOW_RATE_LIMIT_UNIT;
         this.openLimit = DEFAULT_OPEN_LIMIT;
+    }
+
+    public RateLimit(Long id, Long limitRealmId, String limitRealm, Integer flowRateLimit, Integer recordRateLimit, Integer parallelLimit, Boolean openLimit) {
+        this.id = id;
+        this.limitRealmId = limitRealmId;
+        this.limitRealm = limitRealm;
+        this.flowRateLimit = flowRateLimit;
+        this.recordRateLimit = recordRateLimit;
+        this.parallelLimit = parallelLimit;
+        this.openLimit = openLimit;
     }
 
     public RateLimit(Long id) {

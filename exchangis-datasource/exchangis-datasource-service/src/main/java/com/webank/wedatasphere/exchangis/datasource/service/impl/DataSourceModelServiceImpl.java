@@ -5,13 +5,15 @@ import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
 import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
+import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelMapper;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
+import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.linkis.server.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,9 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     @Resource
     private DataSourceModelRelationMapper dataSourceModelRelationMapper;
 
+    @Resource
+    private RateLimitService rateLimitService;
+
     @Override
     public boolean add(DataSourceModel dataSourceModel) {
         return dataSourceModelMapper.insert(dataSourceModel) > 0;
@@ -43,12 +48,19 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
 
     @Override
     @Transactional
-    public boolean delete(Long id) throws DataSourceModelOperateException {
+    public boolean delete(Long id) throws DataSourceModelOperateException, RateLimitOperationException {
         List<Long> dsIds = dataSourceModelRelationMapper.queryDsIdsByModel(id);
         if (Objects.nonNull(dsIds) && dsIds.size() > 0) {
-            throw new DataSourceModelOperateException("The model is in use, cannot delete it");
+            throw new DataSourceModelOperateException("The model is in use, cannot delete it(模板正在被使用，请勿删除)");
         }
-        LOG.info("Delete datasource id : {}", id);
+        // First to delete rate limit
+        RateLimit query = new RateLimit();
+        query.setLimitRealmId(id);
+        RateLimit rateLimit = rateLimitService.selectOne(query);
+        if (Objects.nonNull(rateLimit)) {
+            rateLimitService.delete(rateLimit);
+        }
+        // Then to delete model
         return delete(Arrays.asList(id));
     }
 

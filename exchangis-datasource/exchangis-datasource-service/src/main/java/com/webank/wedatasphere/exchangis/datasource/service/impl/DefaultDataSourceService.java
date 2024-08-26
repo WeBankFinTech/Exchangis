@@ -1089,14 +1089,15 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             Optional.ofNullable(ds.getDataSourceType()).ifPresent(type -> {
                 item.setType(type.getName());
             });
-            Optional.ofNullable(dsModelRelations).ifPresent(relations -> {
-                List<DataSourceModelRelationDTO> dsRelations = relations.get(dsId);
-                if (Objects.nonNull(dsRelations) && dsRelations.size() > 0) {
-                    DataSourceModelRelationDTO relation = dsRelations.get(0);
-                    item.setModelId(relation.getModelId());
-                    item.setModelName(relation.getModelName());
-                }
-            });
+            Optional.ofNullable(dsModelRelations)
+                    .flatMap(map -> Optional.ofNullable(map.get(dsId)))
+                    .ifPresent(dsRelations -> {
+                        if (Objects.nonNull(dsRelations) && dsRelations.size() > 0) {
+                            DataSourceModelRelationDTO relation = dsRelations.get(0);
+                            item.setModelId(relation.getModelId());
+                            item.setModelName(relation.getModelName());
+                        }
+                    });
             item.setCreateSystem(ds.getCreateSystem());
             item.setDataSourceTypeId(ds.getDataSourceTypeId());
             item.setLabels(ds.getLabels());
