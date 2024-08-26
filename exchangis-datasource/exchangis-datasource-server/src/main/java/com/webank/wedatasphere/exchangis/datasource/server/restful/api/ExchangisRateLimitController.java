@@ -53,7 +53,7 @@ public class ExchangisRateLimitController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public Message add(@Valid RateLimit rateLimit, HttpServletRequest request) {
+    public Message add(@Valid @RequestBody RateLimit rateLimit, HttpServletRequest request) {
         if (Objects.isNull(rateLimit.getLimitRealm()) || Objects.isNull(rateLimit.getLimitRealmId())) {
             return Message.error("Please check the params!(参数校验失败，限速信息不存在)");
         }
@@ -73,7 +73,7 @@ public class ExchangisRateLimitController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public Message update(@PathVariable Long id, @Valid RateLimit rateLimit,HttpServletRequest request) {
+    public Message update(@PathVariable @RequestBody Long id, @Valid RateLimit rateLimit,HttpServletRequest request) {
         RateLimit queryOne = rateLimitService.selectOne(new RateLimit(id));
         if (Objects.isNull(queryOne)) {
             return Message.error("Please check the params!(参数校验失败，限速信息不存在)");

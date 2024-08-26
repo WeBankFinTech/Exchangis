@@ -48,7 +48,7 @@ public class ExchangisDataSourceModelController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public Message add(@Valid DataSourceModel model, HttpServletRequest request) {
+    public Message add(@Valid @RequestBody DataSourceModel model, HttpServletRequest request) {
         if (StringUtils.isNotBlank(model.getCreateUser()) && isDuplicate(model.getModelName())) {
             return Message.error("The name of model already exists");
         }
@@ -65,7 +65,7 @@ public class ExchangisDataSourceModelController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public Message update(@PathVariable Long id, @Valid DataSourceModel model, HttpServletRequest request) {
+    public Message update(@PathVariable Long id, @Valid @RequestBody DataSourceModel model, HttpServletRequest request) {
         if (id <= 0) {
             Message.error("Error dataSource model");
         }

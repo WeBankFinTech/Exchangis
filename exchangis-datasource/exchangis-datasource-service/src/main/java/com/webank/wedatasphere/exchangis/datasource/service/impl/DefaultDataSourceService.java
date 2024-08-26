@@ -584,9 +584,16 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                     "");
             total += result.getTotalPage();
             List<DataSource> dataSources = result.getAllDataSource();
+            // Get the model key definitions
+            List<Long> dsIds = dataSources.stream().map(DataSource::getId).collect(Collectors.toList());
+            List<DataSourceModelRelationDTO> dsModelRelations = this.modelRelationMapper.queryRefRelationsByDsIds(dsIds);
+            Map<Long, List<DataSourceModelRelationDTO>> relations = null;
+            if (Objects.nonNull(dsModelRelations) && dsModelRelations.size() > 0) {
+                relations = dsModelRelations.stream().collect(Collectors.groupingBy(DataSourceModelRelation::getDsId));
+            }
             int addSize = Math.min(pageSize - dsQueryMap.size(), dataSources.size());
             if (addSize > 0){
-                Optional.ofNullable(toExchangisDataSourceItems(dataSources.subList(0, addSize)))
+                Optional.ofNullable(toExchangisDataSourceItems(dataSources.subList(0, addSize), relations))
                         .ifPresent(list -> {
                             for(int i = 0; i < addSize; i++) {
                                 ExchangisDataSourceItem item = list.get(i);
@@ -641,7 +648,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                 "");
         List<ExchangisDataSourceItem> dataSources = new ArrayList<>();
         if (!Objects.isNull(result.getAllDataSource())) {
-            dataSources = toExchangisDataSourceItems(result.getAllDataSource());
+            dataSources = toExchangisDataSourceItems(result.getAllDataSource(), null);
         }
         return dataSources;
     }
@@ -654,7 +661,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
      * @return detail
      */
     @Override
-    public ExchangisDataSourceDetail getDataSource(String operator, Long id, String versionId) {
+    public ExchangisDataSourceDetail getDataSource(String operator, Long id, String versionId) throws ExchangisDataSourceException {
         if (Strings.isNullOrEmpty(versionId)) {
             return getDataSource(operator, id);
         } else {
@@ -757,7 +764,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
      * @param vo value object
      */
     @Override
-    public void testConnectByVo(String operator, DataSourceCreateVo vo){
+    public void testConnectByVo(String operator, DataSourceCreateVo vo)throws ExchangisDataSourceException {
         Map<String, Object> payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
         Optional.ofNullable(payLoads).ifPresent(pay -> pay.put("labels", pay.get("label")));
         rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () ->
@@ -1043,10 +1050,11 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             DataSourceModelRelationQuery query = new DataSourceModelRelationQuery();
             query.setDsName(dataSource.getDataSourceName());
             query.setDsVersion(Long.parseLong(version));
-            DataSourceModelRelation relation =
+            DataSourceModelRelationDTO relation =
                     this.modelRelationMapper.queryRelations(query);
             if (Objects.nonNull(relation)){
                 detail.setModelId(relation.getModelId());
+                detail.setModelName(relation.getModelName());
             }
         }
         return detail;
@@ -1071,14 +1079,23 @@ public class DefaultDataSourceService extends AbstractDataSourceService
      * @param dataSources  linkis data sources
      * @return list
      */
-    private List<ExchangisDataSourceItem> toExchangisDataSourceItems(List<DataSource> dataSources){
+    private List<ExchangisDataSourceItem> toExchangisDataSourceItems(List<DataSource> dataSources, Map<Long, List<DataSourceModelRelationDTO>> dsModelRelations){
         return dataSources.stream().map(ds -> {
             ExchangisDataSourceItem item = new ExchangisDataSourceItem();
-            item.setId(ds.getId());
+            Long dsId = ds.getId();
+            item.setId(dsId);
             item.setCreateIdentify(ds.getCreateIdentify());
             item.setName(ds.getDataSourceName());
             Optional.ofNullable(ds.getDataSourceType()).ifPresent(type -> {
                 item.setType(type.getName());
+            });
+            Optional.ofNullable(dsModelRelations).ifPresent(relations -> {
+                List<DataSourceModelRelationDTO> dsRelations = relations.get(dsId);
+                if (Objects.nonNull(dsRelations) && dsRelations.size() > 0) {
+                    DataSourceModelRelationDTO relation = dsRelations.get(0);
+                    item.setModelId(relation.getModelId());
+                    item.setModelName(relation.getModelName());
+                }
             });
             item.setCreateSystem(ds.getCreateSystem());
             item.setDataSourceTypeId(ds.getDataSourceTypeId());
