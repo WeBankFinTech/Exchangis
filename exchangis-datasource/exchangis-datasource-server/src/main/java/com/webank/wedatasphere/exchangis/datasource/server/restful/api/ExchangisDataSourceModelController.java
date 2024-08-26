@@ -69,10 +69,46 @@ public class ExchangisDataSourceModelController {
         }
         model.setId(id);
         model.setModelName(StringEscapeUtils.escapeHtml3(model.getModelName()));
-
-        // TODO Datasource model post processor, transactional with insert operate
+        String operator = UserUtils.getLoginUser(request);
+        // TODO authority ?
+        // TODO model name unique ?
         try {
-            dataSourceModelService.update(model);
+            // Check if the parameter is updated?
+            DataSourceModel before = this.dataSourceModelService.get(id);
+            // TODO check if not exists ?
+            if (Objects.equals(before.getParameter(), model.getParameter())){
+                dataSourceModelService.update(model);
+            } else {
+                // Begin the update transaction
+                DataSourceModel duplicated = dataSourceModelService.beginUpdate(id, model);
+                // Query all the relations by major model id
+                List<DataSourceModelRelation> relations  =
+                        this.dataSourceModelService.queryRelations(duplicated.getRefModelId());
+                Map<String, DataSourceModelRelation> sortRelations = new HashMap<>();
+                // Sort the relations
+                for (DataSourceModelRelation relation : relations){
+                    sortRelations.compute(relation.getDsName(), (key, relate) -> {
+                        if (null == relate){
+                            return relation;
+                        } else {
+                            Long version = relation.getDsVersion();
+                            if (Optional.ofNullable(version).orElse(0L) >
+                                    Optional.ofNullable(relate.getDsVersion()).orElse(0L)){
+                                return relation;
+                            }
+                        }
+                        return relate;
+                    });
+                }
+                for (DataSourceModelRelation relation : sortRelations.values()){
+                    // Use admin as operator ? to update the data sources related.
+                    this.dataSourceService.updateInVersionAndModel(GlobalConfiguration.getAdminUser(),
+                            relation.getDsId(), relation.getDsName(), relation.getDsVersion(), duplicated);
+                }
+                // Finish submitting the update transaction
+                this.dataSourceModelService.commitUpdate(id, duplicated, model);
+            }
+
         } catch (RuntimeException e) {
             return Message.error("Failed to update the dataSource model, cause by : " + e.getMessage());
         }
@@ -175,5 +211,9 @@ public class ExchangisDataSourceModelController {
         DataSourceModelQuery query = new DataSourceModelQuery();
         query.setModelExactName(tsName);
         return !dataSourceModelService.selectAllList(query).isEmpty();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(String.format("v%06d", 3000000));
     }
 }

@@ -10,15 +10,15 @@ import java.util.List;
 public interface DataSourceModelMapper {
 
     /**
-     * Select and lock
-     * @param key
+     * Select model by id and version, then lock for update
+     * @param id model id
      * @return
      */
-    DataSourceModel selectOneAndLock(Object key);
+    DataSourceModel selectForUpdate(@Param("id") Long id, @Param("version") Long version);
 
     /**
      * Select one by datasource id
-     * @param dataSourceId
+     * @param dataSourceId data source id
      * @return
      */
     DataSourceModel selectOneByDataSourceId(@Param("dataSourceId") Long dataSourceId);
@@ -54,12 +54,30 @@ public interface DataSourceModelMapper {
     int delete(@Param("ids") List<Object> ids);
 
     /**
+     * Delete the duplicated models under model id
+     * @param modelId model id
+     * @return affect rows
+     */
+    int deleteDuplicate(Long modelId);
+    /**
      * Update
      *
      * @param dataSourceModel dataSourceModelEntity
      * @return affect rows
      */
     int update(DataSourceModel dataSourceModel);
+
+    /**
+     * Update in version
+     * @param dataSourceModel model
+     * @return
+     */
+    int updateInVersion(DataSourceModel dataSourceModel);
+    /**
+     * Update version(increase the version)
+     * @param id model id
+     */
+    int updateVersion(Long id);
 
     /**
      * Count result

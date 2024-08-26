@@ -23,9 +23,8 @@ public interface DataSourceModelTypeKeyMapper {
     List<DataSourceModelTypeKey> findPage(DataSourceModelTypeKeyQuery pageQuery, RowBounds rowBound);
 
     /**
-     * 查询所有的数据
-     *
-     * @return
+     * Query list in condition
+     * @return list
      */
-    List<DataSourceModelTypeKey> selectAllList(DataSourceModelTypeKeyQuery pageQuery);
+    List<DataSourceModelTypeKey> queryList(DataSourceModelTypeKeyQuery pageQuery);
 }

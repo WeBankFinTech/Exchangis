@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.common.pager.PageList;
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
 import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelMapper;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class DataSourceModelServiceImpl implements DataSourceModelService {
@@ -67,6 +65,58 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
         return dataSourceModelMapper.update(dataSourceModel) > 0;
     }
 
+    /**
+     *
+     * @param modelId model id
+     * @param update
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public DataSourceModel beginUpdate(Long modelId, DataSourceModel update) {
+        // Update the model version
+        int result = this.dataSourceModelMapper.updateVersion(modelId);
+        if (result <= 0){
+            throw new DataSourceModelOperateException("Fail to update version for model id: [" + modelId + "](更新模版版本失败)");
+        }
+        DataSourceModel before = this.dataSourceModelMapper.selectOne(modelId);
+        // Create the duplicate model from major model
+        before.setModelName(before.getModelName() + "_" + String.format("v%06d", before.getVersion()));
+        before.setClusterName(update.getClusterName());
+        before.setModelDesc(update.getModelDesc());
+        before.setParameter(update.getParameter());
+        before.setCreateUser(update.getModifyUser());
+        before.setModifyUser(update.getModifyUser());
+        before.setDuplicate(true);
+        before.setRefModelId(modelId);
+        //Empty id
+        before.setId(null);
+        this.dataSourceModelMapper.insert(before);
+        return before;
+    }
+
+    /**
+     *
+     * @param modelId model id
+     * @param commit duplicated model
+     * @param update update model
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void commitUpdate(Long modelId, DataSourceModel commit,
+                             DataSourceModel update){
+        update.setVersion(commit.getVersion());
+        // Simply update the data source model
+        int result = this.dataSourceModelMapper.updateInVersion(update);
+        if (result <= 0){
+            throw new DataSourceModelOperateException("Fail to update version for model id: [" + modelId + "](更新模版版本失败)");
+        }
+        this.dataSourceModelRelationMapper.deleteRelationByModelIds(Collections.singletonList(modelId));
+        this.dataSourceModelRelationMapper.transferModelRelation(commit.getId(), modelId);
+        this.dataSourceModelRelationMapper.deleteRefRelationByModelId(modelId);
+        this.dataSourceModelMapper.deleteDuplicate(modelId);
+    }
+
     @Override
     public long getCount(PageQuery pageQuery) {
         return dataSourceModelMapper.count(pageQuery);
@@ -86,6 +136,11 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     @Override
     public List<DataSourceModel> selectAllList(DataSourceModelQuery query) {
         return dataSourceModelMapper.selectAllList(query);
+    }
+
+    @Override
+    public List<DataSourceModelRelation> queryRelations(Long id) {
+        return this.dataSourceModelRelationMapper.queryRefRelationsByModel(id);
     }
 
     @Override

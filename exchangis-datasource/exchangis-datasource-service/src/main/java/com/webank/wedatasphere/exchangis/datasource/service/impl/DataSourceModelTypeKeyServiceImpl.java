@@ -53,7 +53,7 @@ public class DataSourceModelTypeKeyServiceImpl extends AbstractLinkisDataSourceS
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(),
                     "dataSourceType should not be null");
         }
-        List<DataSourceModelTypeKey> dsModelTypeKeys = dataSourceModelTypeKeyMapper.selectAllList(pageQuery);
+        List<DataSourceModelTypeKey> dsModelTypeKeys = dataSourceModelTypeKeyMapper.queryList(pageQuery);
         if (Objects.isNull(dsModelTypeKeys) || dsModelTypeKeys.size() <= 0 ) {
             return new ArrayList<>();
         }

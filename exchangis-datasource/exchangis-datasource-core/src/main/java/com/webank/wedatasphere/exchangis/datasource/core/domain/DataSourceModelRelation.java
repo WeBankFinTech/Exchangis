@@ -1,8 +1,14 @@
 package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
+import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Model relation
+ */
 public class DataSourceModelRelation {
+
+    private Long id;
 
     private Long modelId;
 
@@ -20,6 +26,15 @@ public class DataSourceModelRelation {
 
     private Date modifyTime;
 
+    public DataSourceModelRelation(){
+        this.createTime = Calendar.getInstance().getTime();
+    }
+    public DataSourceModelRelation(String dsName, Long dsVersion, Long modelId){
+        super();
+        this.dsName = dsName;
+        this.dsVersion = dsVersion;
+        this.modelId = modelId;
+    }
     public Long getModelId() {
         return modelId;
     }
@@ -82,5 +97,13 @@ public class DataSourceModelRelation {
 
     public void setModifyTime(Date modifyTime) {
         this.modifyTime = modifyTime;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.service;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
 import com.webank.wedatasphere.exchangis.datasource.remote.DataSourceDbTableColumn;
@@ -35,6 +36,16 @@ public interface DataSourceService {
      */
     Map<String, Object> update(String operator, Long id, DataSourceCreateVo vo) throws ExchangisDataSourceException;
 
+    /**
+     * Update from data source version and model
+     * @param operator operator
+     * @param id data source id
+     * @param name data source name
+     * @param version  version id
+     * @param model model
+     */
+    void updateInVersionAndModel(String operator, Long id, String name,
+                                 Long version, DataSourceModel model);
     /**
      * Delete data source
      * @param operator operator

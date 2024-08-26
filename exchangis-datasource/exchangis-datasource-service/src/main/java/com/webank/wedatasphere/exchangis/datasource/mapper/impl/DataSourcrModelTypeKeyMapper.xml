@@ -36,7 +36,7 @@
         create_time,modify_time
     </sql>
 
-    <select id="selectAllList" resultMap="dsTypeKey">
+    <select id="queryList" resultMap="dsTypeKey">
         SELECT
         <include refid="columns"/>
         FROM exchangis_data_source_model_type_key

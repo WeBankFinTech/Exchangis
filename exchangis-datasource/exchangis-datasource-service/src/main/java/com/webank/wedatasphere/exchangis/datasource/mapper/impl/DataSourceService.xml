@@ -9,14 +9,18 @@
         <result property="sourceType" column="source_type"/>
         <result property="modelDesc" column="model_desc"/>
         <result property="parameter" column="parameter"/>
+        <result property="refModelId" column="ref_model_id"/>
+        <result property="isDuplicate" column="is_duplicate"/>
         <result property="createOwner" column="create_owner"/>
         <result property="createUser" column="create_user"/>
         <result property="createTime" column="create_time"/>
         <result property="modifyUser" column="modify_user"/>
         <result property="modifyTime" column="modify_time"/>
+        <result property="version" column="version"/>
     </resultMap>
     <sql id="columns">
-        id,cluster_name,model_name,source_type,model_desc,parameter,create_user,create_time,modify_user,modify_time
+        id,cluster_name,model_name,source_type,model_desc,parameter,
+        ref_model_id,is_duplicate,create_user,create_time,modify_user,modify_time,version
     </sql>
 
     <select id="selectOne" resultMap="resultModel">
@@ -49,12 +53,12 @@
      ]]>
     </select>
 
-    <select id="selectOneAndLock" resultMap="resultModel">
+    <select id="selectForUpdate" resultMap="resultModel">
         SELECT
         <include refid="columns"/>
         <![CDATA[
         FROM exchangis_data_source_model
-        WHERE id = #{id} FOR UPDATE
+        WHERE id = #{id} AND `version` = #{version} FOR UPDATE
         ]]>
     </select>
 
@@ -84,19 +88,22 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         <![CDATA[
         INSERT INTO exchangis_data_source_model (
-         id,cluster_name,model_name,source_type,model_desc,create_owner,parameter,create_user,create_time,modify_user,modify_time
+         cluster_name,model_name,source_type,model_desc,create_owner,parameter,
+         ref_model_id,is_duplicate,create_user,create_time,modify_user,modify_time,version
         ) VALUES (
-         #{id} ,
          #{clusterName} ,
          #{modelName} ,
          #{sourceType} ,
          #{modelDesc},
          #{createOwner},
          #{parameter} ,
+         #{refModelId},
+         #{isDuplicate},
          #{createUser,jdbcType=VARCHAR},
          now(),
          #{modifyUser,jdbcType=VARCHAR},
-         now()
+         now(),
+         #{version}
         )
         ]]>
     </insert>
@@ -115,18 +122,39 @@
         )
     </delete>
 
+    <delete id="deleteDuplicate">
+        <![CDATA[DELETE FROM exchangis_data_source_model WHERE
+        ref_model_id = #{id} AND is_duplicate = 1]]>
+    </delete>
+
     <update id="update">
         UPDATE exchangis_data_source_model SET
         cluster_name = #{clusterName},
         model_name = #{modelName},
-        source_type = #{sourceType},
         model_desc = #{modelDesc},
         parameter = #{parameter},
-        create_user = #{createUser},
         modify_user = #{modifyUser},
         modify_time = now()
         WHERE
         id = #{id}
+    </update>
+
+    <update id="updateInVersion">
+        UPDATE exchangis_data_source_model SET
+        cluster_name = #{clusterName},
+        model_name = #{modelName},
+        model_desc = #{modelDesc},
+        parameter = #{parameter},
+        modify_user = #{modifyUser},
+        modify_time = now()
+        WHERE
+        id = #{id} AND `version` = #{version}
+    </update>
+
+    <update id="updateVersion">
+        <![CDATA[UPDATE exchangis_data_source_model
+         SET `version` = `version` + 1 WHERE id = #{id};
+        ]]>
     </update>
 
     <select id="queryWithRateLimit" resultMap="resultModel">
