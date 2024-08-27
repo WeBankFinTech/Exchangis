@@ -19,6 +19,8 @@ public class DataSourceCreateVo {
     @Size(min=0,max=200,message="Length of dataSource description should between 0 and 200(数据源描述的长度应该在0和200之间)")
     private String dataSourceDesc;
 
+    private Long dsModelId;
+
     private String createIdentify;
 
     private String createSystem;
@@ -73,6 +75,14 @@ public class DataSourceCreateVo {
 
     public void setDataSourceDesc(String dataSourceDesc) {
         this.dataSourceDesc = dataSourceDesc;
+    }
+
+    public Long getDsModelId() {
+        return dsModelId;
+    }
+
+    public void setDsModelId(Long dsModelId) {
+        this.dsModelId = dsModelId;
     }
 
     public String getCreateIdentify() {

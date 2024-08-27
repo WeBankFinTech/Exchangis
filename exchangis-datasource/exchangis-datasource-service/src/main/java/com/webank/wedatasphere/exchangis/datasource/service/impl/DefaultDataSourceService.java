@@ -14,6 +14,7 @@ import com.webank.wedatasphere.exchangis.datasource.GetInfoByDataSourceIdAndVers
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.*;
 import com.webank.wedatasphere.exchangis.datasource.core.serialize.ParamKeySerializer;
+import com.webank.wedatasphere.exchangis.datasource.core.utils.DsKeyDefineUtil;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
 import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceItem;
@@ -116,8 +117,11 @@ public class DefaultDataSourceService extends AbstractDataSourceService
     /**
      * Job and data source
      */
-    @Autowired
+    @Resource
     private ExchangisJobDsBindMapper exchangisJobDsBindMapper;
+
+    @Resource
+    private DataSourceModelTypeKeyMapper dataSourceModelTypeKeyMapper;
 
     @Resource
     private ParamKeySerializer keySerializer;
@@ -765,6 +769,13 @@ public class DefaultDataSourceService extends AbstractDataSourceService
      */
     @Override
     public void testConnectByVo(String operator, DataSourceCreateVo vo)throws ExchangisDataSourceException {
+        Long dsModelId = vo.getDsModelId();
+        if (Objects.nonNull(dsModelId)) {
+            DataSourceModel dataSourceModel = modelMapper.selectOne(dsModelId);
+            Map<String, Object> parameter = DsKeyDefineUtil.getParameter(dataSourceModel.getParameter());
+            parameter.putAll(vo.getConnectParams());
+            vo.setConnectParams(parameter);
+        }
         Map<String, Object> payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
         Optional.ofNullable(payLoads).ifPresent(pay -> pay.put("labels", pay.get("label")));
         rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () ->
@@ -839,7 +850,14 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                         .setUser(operator).setDataSourceTypeId(typeId).build(),
                 LinkisDataSourceRemoteClient::getKeyDefinitionsByType, CLIENT_DATASOURCE_GET_KEY_DEFINES_ERROR.getCode(),
                 "");
-        return Objects.isNull(result.getKeyDefine()) ? null : result.getKeyDefine();
+        // Merge eith dsModel keyDefine
+        DataSourceModelTypeKeyQuery dsModelTypeKeyQuery = new DataSourceModelTypeKeyQuery();
+        dsModelTypeKeyQuery.setDsTypeId(typeId);
+        List<DataSourceModelTypeKey> dsModelTypeKeys = dataSourceModelTypeKeyMapper.queryList(dsModelTypeKeyQuery);
+        if (Objects.isNull(result.getKeyDefine())) {
+            return new ArrayList<>();
+        }
+        return DsKeyDefineUtil.mergeTypeKey(result.getKeyDefine());
     }
 
     /**

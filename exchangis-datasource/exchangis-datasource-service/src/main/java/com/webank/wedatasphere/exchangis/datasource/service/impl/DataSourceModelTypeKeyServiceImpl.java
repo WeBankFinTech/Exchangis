@@ -5,7 +5,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelT
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelTypeKey;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
-import com.webank.wedatasphere.exchangis.datasource.core.utils.DsModelKeyDefineUtil;
+import com.webank.wedatasphere.exchangis.datasource.core.utils.DsKeyDefineUtil;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelTypeKeyMapper;
 import com.webank.wedatasphere.exchangis.datasource.service.AbstractLinkisDataSourceService;
@@ -65,7 +65,7 @@ public class DataSourceModelTypeKeyServiceImpl extends AbstractLinkisDataSourceS
                 "");
         List<Map<String, Object>> keyDefineMap = result.getKeyDefine();
         // merge the key define
-        return DsModelKeyDefineUtil.mergeDsModelTypeKey(dsModelTypeKeys, keyDefineMap);
+        return DsKeyDefineUtil.mergeDsModelTypeKey(dsModelTypeKeys, keyDefineMap);
     }
 
     @Override

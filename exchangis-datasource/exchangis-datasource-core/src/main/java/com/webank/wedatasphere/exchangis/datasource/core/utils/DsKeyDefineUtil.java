@@ -5,11 +5,20 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelT
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class DsModelKeyDefineUtil {
+public class DsKeyDefineUtil {
 
     private static final List<String> DS_MODEL_FIELDS = Arrays.asList(
-            "username", "password", "database", "databaseName", "instance"
+            "dcn_info", "elasticUrls", "host", "port", "tcp_port", "http_port", "address", "params"
     );
+
+    public static List<Map<String, Object>> mergeTypeKey(List<Map<String, Object>> list) {
+        list.stream().forEach(typeKey -> {
+            if (DS_MODEL_FIELDS.contains(typeKey.get("key"))) {
+                typeKey.put("modelField", true);
+            }
+        });
+        return list;
+    }
 
     public static List<Map<String, Object>> mergeDsModelTypeKey(List<DataSourceModelTypeKey> dsModelTypeKeys, List<Map<String, Object>> keyDefineMap) {
         List<Map<String, Object>> result = new ArrayList<>();
