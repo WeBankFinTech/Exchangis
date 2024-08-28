@@ -1,9 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.webank.wedatasphere.exchangis.common.util.json.Json;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.utils.VariableUtils;
@@ -31,12 +30,7 @@ public class JobUtils {
         if (Strings.isNullOrEmpty(content)) {
             jobInfoContents = new ArrayList<>();
         } else {
-            try {
-                jobInfoContents = mapper.readValue(content, new TypeReference<List<ExchangisJobInfoContent>>() {
-                });
-            } catch (JsonProcessingException e) {
-                jobInfoContents = new ArrayList<>();
-            }
+            jobInfoContents = Json.fromJson(content, List.class, ExchangisJobInfoContent.class);
         }
         return jobInfoContents;
     }
