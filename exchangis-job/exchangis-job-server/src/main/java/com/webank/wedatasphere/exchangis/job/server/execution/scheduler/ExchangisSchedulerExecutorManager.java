@@ -160,6 +160,9 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
 
         private static final Logger LOG = LoggerFactory.getLogger(DefaultDirectExecutor.class);
 
+        public DefaultDirectExecutor(){
+        }
+
         @Override
         public long getId() {
             return 0;
