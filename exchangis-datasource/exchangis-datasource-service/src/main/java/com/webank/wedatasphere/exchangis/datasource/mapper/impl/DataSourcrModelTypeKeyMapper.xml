@@ -80,9 +80,6 @@
             <if test="nestType != null and nestType != ''">
                 AND nest_type = #{nestType}
             </if>
-            <if test="nestFields != null and nestFields != ''">
-                AND is_serialize = #{nestFields}
-            </if>
             <if test="scope != null and scope != ''">
                 AND scope = #{scope}
             </if>

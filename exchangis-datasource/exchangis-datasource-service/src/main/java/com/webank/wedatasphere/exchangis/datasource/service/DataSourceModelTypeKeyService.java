@@ -7,12 +7,13 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelT
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DataSourceModelTypeKeyService {
 
     PageList<DataSourceModelTypeKey> findDsModelTypeKeyPageList(DataSourceModelTypeKeyQuery pageQuery);
 
-    List<DataSourceModelTypeKey> queryDsModelTypeKeys(String operator, DataSourceModelTypeKeyQuery pageQuery) throws ExchangisDataSourceException;
+    List<Map<String, Object>> queryDsModelTypeKeys(String operator, DataSourceModelTypeKeyQuery pageQuery) throws ExchangisDataSourceException;
 
     long countDsModelTypeKey();
 

@@ -13,7 +13,8 @@ public class ExchangisDataSourceItem implements ExchangisDataSource {
     private String name;
     private String type;
     private Long dataSourceTypeId;
-    private Long dataSourceModelId;
+    private Long modelId;
+    private String modelName;
     private String createIdentify;
     private String createSystem;
     private String desc;
@@ -83,12 +84,20 @@ public class ExchangisDataSourceItem implements ExchangisDataSource {
         this.dataSourceTypeId = dataSourceTypeId;
     }
 
-    public Long getDataSourceModelId() {
-        return dataSourceModelId;
+    public Long getModelId() {
+        return modelId;
     }
 
-    public void setDataSourceModelId(Long dataSourceModelId) {
-        this.dataSourceModelId = dataSourceModelId;
+    public void setModelId(Long modelId) {
+        this.modelId = modelId;
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
 
     public String getDesc() {
@@ -154,5 +163,4 @@ public class ExchangisDataSourceItem implements ExchangisDataSource {
     public void setCreateSystem(String createSystem) {
         this.createSystem = createSystem;
     }
-
 }

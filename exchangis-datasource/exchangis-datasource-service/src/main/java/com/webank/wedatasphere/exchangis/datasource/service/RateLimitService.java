@@ -1,5 +1,8 @@
 package com.webank.wedatasphere.exchangis.datasource.service;
 
+import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
+import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitNoLeftException;
+import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitUsed;
@@ -16,11 +19,11 @@ public interface RateLimitService {
      * @param rateLimit data
      * @return primary key
      */
-    boolean add(RateLimit rateLimit);
+    boolean add(RateLimit rateLimit) throws RateLimitOperationException;
 
-    boolean update(RateLimit rateLimit);
+    boolean update(RateLimit rateLimit) throws DataSourceModelOperateException;
 
-    boolean delete(RateLimit rateLimit);
+    boolean delete(RateLimit rateLimit) throws RateLimitOperationException;
 
     List<RateLimitVo> findRateLimitPage(RateLimitQuery pageQuery);
 
@@ -31,13 +34,13 @@ public interface RateLimitService {
      * @param jobInfo job info
      * @return boolean
      */
-    boolean rateLimit(ExchangisJobInfo jobInfo);
+    boolean rateLimit(ExchangisJobInfo jobInfo) throws RateLimitNoLeftException;
 
     /**
      * Limit by applying used
      * @param applyUsed apply used
      */
-    void rateLimit(List<RateLimitUsed> applyUsed);
+    void rateLimit(List<RateLimitUsed> applyUsed) throws RateLimitNoLeftException;
     /**
      * Release job rate limit
      * @param jobInfo job info

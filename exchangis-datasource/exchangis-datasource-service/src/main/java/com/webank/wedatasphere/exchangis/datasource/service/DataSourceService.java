@@ -66,6 +66,14 @@ public interface DataSourceService {
                                                                 String engineType, String direct, String sourceType) throws ExchangisDataSourceException;
 
     /**
+     * Check if support data source
+     * @param engine engine
+     * @param sourceType  source type
+     * @param sinkType sink type
+     */
+    void supportDataSource(String engine, String sourceType, String sinkType) throws ExchangisDataSourceException;
+
+    /**
      * Get data source param key definition
      * @param operator operator
      * @param typeId type id
@@ -73,13 +81,6 @@ public interface DataSourceService {
      */
     List<Map<String, Object>> getDataSourceKeyDefine(String operator, Long typeId) throws ExchangisDataSourceException;
 
-    /**
-     * Check if support data source
-     * @param engine engine
-     * @param sourceType  source type
-     * @param sinkType sink type
-     */
-    void supportDataSource(String engine, String sourceType, String sinkType) throws ExchangisDataSourceException;
     /**
      * Query data sources
      * @param operator operator

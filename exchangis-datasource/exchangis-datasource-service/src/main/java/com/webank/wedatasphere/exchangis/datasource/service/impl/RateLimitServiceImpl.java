@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.service.impl;
 
 import com.webank.wedatasphere.exchangis.datasource.SpringContext;
+import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
 import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.datasource.utils.RateLimitTool;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
@@ -54,7 +55,7 @@ public class RateLimitServiceImpl implements RateLimitService {
     }
 
     @Transactional
-    public boolean add(RateLimit rateLimit) {
+    public boolean add(RateLimit rateLimit) throws RateLimitOperationException {
         RateLimit selectOne = rateLimitMapper.selectOne(rateLimit);
         if (Objects.nonNull(selectOne)) {
             throw new RateLimitOperationException("The " + rateLimit.getLimitRealmId() + ":" + rateLimit.getLimitRealmId() + " has been bound!(对应模板已被绑定)");
@@ -71,7 +72,7 @@ public class RateLimitServiceImpl implements RateLimitService {
     }
 
     @Transactional
-    public boolean update(RateLimit rateLimit) {
+    public boolean update(RateLimit rateLimit) throws DataSourceModelOperateException {
         rateLimitMapper.update(rateLimit);
         List<RateLimitUsed> rateLimitUsedList = RateLimitTool.generateRateLimitUsed(rateLimit, null);
         sortRateLimitUsed(rateLimitUsedList);
@@ -79,7 +80,7 @@ public class RateLimitServiceImpl implements RateLimitService {
         return true;
     }
 
-    public boolean delete(String ids) {
+    public boolean delete(String ids) throws RateLimitOperationException {
         String[] idsStr = ids.split(",");
         List<Object> list = new ArrayList<Object>();
         for (String id : idsStr) {
@@ -94,7 +95,7 @@ public class RateLimitServiceImpl implements RateLimitService {
     }
 
     @Transactional
-    public boolean delete(RateLimit rateLimit) {
+    public boolean delete(RateLimit rateLimit) throws RateLimitOperationException {
         if (jobOpenService.isRunWithDataSourceModel(rateLimit.getLimitRealmId())) {
             throw new RateLimitOperationException("Current model has been bound!(当前数据源模板已被任务绑定)");
         }
@@ -114,7 +115,7 @@ public class RateLimitServiceImpl implements RateLimitService {
 //
 //        }
         if (Objects.isNull(rateLimitVoList) || rateLimitVoList.size() <= 0) {
-            return null;
+            return new ArrayList<>();
         }
         List<RateLimitUsed> rateLimitUsedList = rateLimitUsedMapper.selectUsedInLimitIds(rateLimitVoList.stream().map(RateLimitVo::getId).collect(Collectors.toList()));
         rateLimitVoList.forEach(vo -> {
@@ -146,7 +147,7 @@ public class RateLimitServiceImpl implements RateLimitService {
         return rateLimitMapper.selectOne(rateLimit);
     }
 
-    public boolean rateLimit(ExchangisJobInfo jobInfo) {
+    public boolean rateLimit(ExchangisJobInfo jobInfo) throws RateLimitNoLeftException {
         List<RateLimit> rateLimits = getJobRateLimits(jobInfo);
         if (!rateLimits.isEmpty()) {
             List<RateLimitUsed> applyUsed = new ArrayList<>();
@@ -182,7 +183,7 @@ public class RateLimitServiceImpl implements RateLimitService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void rateLimit(List<RateLimitUsed> applyUsed) {
+    public void rateLimit(List<RateLimitUsed> applyUsed) throws RateLimitNoLeftException {
         applyUsed.forEach(apply -> {
             int success = this.rateLimitUsedMapper.applyRateLimitUsed(apply);
             if (success <= 0) {

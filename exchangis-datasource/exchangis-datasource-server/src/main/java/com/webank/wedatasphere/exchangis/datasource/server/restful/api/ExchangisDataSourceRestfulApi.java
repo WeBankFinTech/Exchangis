@@ -45,7 +45,6 @@ import java.util.regex.Pattern;
 public class ExchangisDataSourceRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisDataSourceRestfulApi.class);
 
-
     private final DataSourceService dataSourceService;
 
     private static final Pattern ERROR_PATTERN = Pattern.compile("(?<=\\[)[^]]+");

@@ -5,7 +5,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelT
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelTypeKey;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
-import com.webank.wedatasphere.exchangis.datasource.core.utils.DsModelKeyDefineUtil;
+import com.webank.wedatasphere.exchangis.datasource.core.utils.DsKeyDefineUtil;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelTypeKeyMapper;
 import com.webank.wedatasphere.exchangis.datasource.service.AbstractLinkisDataSourceService;
@@ -47,7 +47,7 @@ public class DataSourceModelTypeKeyServiceImpl extends AbstractLinkisDataSourceS
     }
 
     @Override
-    public List<DataSourceModelTypeKey> queryDsModelTypeKeys(String operator, DataSourceModelTypeKeyQuery pageQuery) throws ExchangisDataSourceException {
+    public List<Map<String, Object>> queryDsModelTypeKeys(String operator, DataSourceModelTypeKeyQuery pageQuery) throws ExchangisDataSourceException {
         String dsType = pageQuery.getDsType();
         if (StringUtils.isBlank(dsType)) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(),
@@ -65,8 +65,7 @@ public class DataSourceModelTypeKeyServiceImpl extends AbstractLinkisDataSourceS
                 "");
         List<Map<String, Object>> keyDefineMap = result.getKeyDefine();
         // merge the key define
-        dsModelTypeKeys.addAll(DsModelKeyDefineUtil.transferToDsModelTypeKey(keyDefineMap));
-        return dsModelTypeKeys;
+        return DsKeyDefineUtil.mergeDsModelTypeKey(dsModelTypeKeys, keyDefineMap);
     }
 
     @Override

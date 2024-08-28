@@ -55,10 +55,10 @@ public interface RateLimitMapper {
     /**
      * Select
      *
-     * @param key primary key
+     * @param rateLimit
      * @return data
      */
-    RateLimit selectOne(Object key);
+    RateLimit selectOne(RateLimit rateLimit);
 
     /**
      * Search

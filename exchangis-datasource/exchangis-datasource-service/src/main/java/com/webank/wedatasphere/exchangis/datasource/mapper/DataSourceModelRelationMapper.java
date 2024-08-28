@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.mapper;
 
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelationDTO;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelationQuery;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,6 +18,13 @@ public interface DataSourceModelRelationMapper {
     List<Long> queryDsIdsByModel(@Param("modelId") Long modelId);
 
     /**
+     * Query relations by dsIds
+     * @param dsIds
+     * @return
+     */
+    List<DataSourceModelRelationDTO> queryRefRelationsByDsIds(@Param("dsIds") List<Long> dsIds);
+
+    /**
      * Query (refer) relations by model
      * @param modelId
      * @return
@@ -27,13 +35,13 @@ public interface DataSourceModelRelationMapper {
      * Query data source relations
      * @param dataSourceModelRelationQuery query
      */
-    DataSourceModelRelation queryRelations(DataSourceModelRelationQuery dataSourceModelRelationQuery);
+    DataSourceModelRelationDTO queryRelations(DataSourceModelRelationQuery dataSourceModelRelationQuery);
 
     /**
      * Add data source model relation
      * @param dataSourceModelRelations relations
      */
-    void addRelation(@Param("dataSourceModelRelations") List<DataSourceModelRelation> dataSourceModelRelations);
+    void addRelation(@Param("list") List<DataSourceModelRelation> dataSourceModelRelations);
 
     /**
      * Transfer model relation

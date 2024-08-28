@@ -8,6 +8,8 @@ public class DataSourceModelRelationQuery extends PageQuery {
 
     private Long modelId;
 
+    private String modelName;
+
     private Long dsId;
 
     private String dsName;
@@ -28,6 +30,14 @@ public class DataSourceModelRelationQuery extends PageQuery {
 
     public void setModelId(Long modelId) {
         this.modelId = modelId;
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
 
     public Long getDsId() {

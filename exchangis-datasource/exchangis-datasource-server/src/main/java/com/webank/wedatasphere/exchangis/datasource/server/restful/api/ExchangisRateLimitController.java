@@ -13,6 +13,8 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.linkis.server.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -42,7 +44,7 @@ public class ExchangisRateLimitController {
             Message message = Message.ok();
             message.data("list", rateLimitPage);
             message.data("sourceType", pageQuery.getSourceType());
-            if (!rateLimitPage.isEmpty()) {
+            if (Objects.nonNull(rateLimitPage) && !rateLimitPage.isEmpty()) {
                 message.data("total", rateLimitPage.size());
             }
             return message;
@@ -53,7 +55,7 @@ public class ExchangisRateLimitController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public Message add(@Valid RateLimit rateLimit, HttpServletRequest request) {
+    public Message add(@Valid @RequestBody RateLimit rateLimit, HttpServletRequest request) {
         if (Objects.isNull(rateLimit.getLimitRealm()) || Objects.isNull(rateLimit.getLimitRealmId())) {
             return Message.error("Please check the params!(参数校验失败，限速信息不存在)");
         }
@@ -72,8 +74,16 @@ public class ExchangisRateLimitController {
         return Message.ok();
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public Message update(@PathVariable Long id, @Valid RateLimit rateLimit,HttpServletRequest request) {
+    @RequestMapping(value = "", method = RequestMethod.PUT)
+    public Message update(@Valid @RequestBody RateLimit rateLimit,
+                          HttpServletRequest request, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError fieldError : fieldErrors) {
+                return Message.error("[Error](" + fieldError.getField() + "):" + fieldError.getDefaultMessage());
+            }
+        }
+        Long id = rateLimit.getId();
         RateLimit queryOne = rateLimitService.selectOne(new RateLimit(id));
         if (Objects.isNull(queryOne)) {
             return Message.error("Please check the params!(参数校验失败，限速信息不存在)");
@@ -119,7 +129,7 @@ public class ExchangisRateLimitController {
     }
 
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
-    public Message resetRateLimitUsed(@RequestBody RateLimit rateLimit, HttpServletRequest request){
+    public Message resetRateLimitUsed(RateLimit rateLimit, HttpServletRequest request){
         // Param valid
         RateLimit queryRateLimit = rateLimitService.selectOne(rateLimit);
         if (Objects.isNull(queryRateLimit)) {
@@ -147,6 +157,7 @@ public class ExchangisRateLimitController {
                     for (DataSourceModel dsm : dataSourceModels) {
                         Map<String, Object> params = dsm.resolveParams();
                         if (!Objects.equals(rateLimit.getLimitRealmId(), dsm.getId()) &&
+                                Objects.nonNull(paramMap.get(uniqueId)) &&
                                 Objects.equals(paramMap.get(uniqueId), params.get(uniqueId))) {
                             pair.setLeft(false);
                             pair.setRight("Current cluster has been bound！（当前集群已绑定限速信息）");

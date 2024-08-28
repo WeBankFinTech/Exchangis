@@ -14,6 +14,19 @@
         <result property="modifyTime" column="modify_time"/>
     </resultMap>
 
+    <resultMap id="relationResultWithModel" type="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelationDTO">
+        <id property="id" column="id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="modelName" column="model_name"/>
+        <result property="dsId" column="ds_id"/>
+        <result property="dsName" column="ds_name"/>
+        <result property="dsVersion" column="ds_version"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyUser" column="modify_user"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
     <sql id="table">
         exchangis_data_source_model_relation
     </sql>
@@ -21,6 +34,11 @@
     <sql id="columns">
         id, model_id, ds_id, ds_name, ds_version,
         create_user, create_time, modify_user, modify_time
+    </sql>
+
+    <sql id="joinColumns">
+        dmr.id, dmr.model_id, dmr.ds_id, dmr.ds_name, dmr.ds_version,
+        dmr.create_user, dmr.create_time, dmr.modify_user, dmr.modify_time
     </sql>
 
     <insert id="addRelation" useGeneratedKeys="true" keyProperty="id">
@@ -73,7 +91,7 @@
 
     <select id="queryDsIdsByModel" resultMap="relationResult">
         SELECT
-        data_source_id
+        ds_id
         FROM <include refid="table"/>
         WHERE model_id = #{modelId}
         ORDER BY create_time DESC
@@ -93,12 +111,29 @@
         );
     </select>
 
-    <select id="queryRelations" resultMap="relationResult">
+    <select id="queryRelations" resultMap="relationResultWithModel">
         SELECT
-        <include refid="columns"/>
-        FROM <include refid="table"/>
+        <include refid="joinColumns"/>,dsm.model_name
+        FROM <include refid="table"/> dmr
+        LEFT JOIN exchangis_data_source_model dsm
+        ON dmr.model_id=dsm.id
         <include refid="findPageWhere"/>
         ORDER BY create_time DESC
+    </select>
+
+    <select id="queryRefRelationsByDsIds"
+            resultType="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelationDTO"
+            resultMap="relationResultWithModel">
+        SELECT
+        <include refid="joinColumns"/>,dsm.model_name
+        FROM <include refid="table"/> dmr
+        LEFT JOIN exchangis_data_source_model dsm
+        ON dmr.model_id=dsm.id
+        WHERE dmr.ds_id in (
+        <foreach collection="dsIds" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
     </select>
 
     <sql id="findPageWhere">
