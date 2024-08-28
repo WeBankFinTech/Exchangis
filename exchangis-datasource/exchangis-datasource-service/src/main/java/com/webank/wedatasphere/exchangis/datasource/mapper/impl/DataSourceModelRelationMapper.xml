@@ -48,7 +48,7 @@
 
     <delete id="deleteRelations">
         DELETE FROM <include refid="table"/> WHERE
-        ds_name = #{dsName}
+        ds_id = #{dsId}
         AND ds_version = #{dsVersion};
     </delete>
 

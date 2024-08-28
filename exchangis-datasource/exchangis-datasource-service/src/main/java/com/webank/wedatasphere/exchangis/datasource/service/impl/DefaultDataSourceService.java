@@ -336,9 +336,8 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                 "");
         DataSource beforeDs = result.getDataSource();
         if (!Objects.equals(vo.getPublishedVersionId(), vo.getVersionId())){
-            // Delete the relation between data source name, version id and model id
-            // Note: use the old name
-            this.modelRelationMapper.deleteRelations(beforeDs.getDataSourceName(), vo.getVersionId());
+            // Delete the relation between data source id, version id and model id
+            this.modelRelationMapper.deleteRelations(beforeDs.getId(), vo.getVersionId());
         }
         updateInternal(operator, client, id, modelId, beforeDs, payLoads);
         return new HashMap<>();
@@ -378,7 +377,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         // TODO data source not exits
         DataSource beforeDs = result.getDataSource();
         if (!version.equals(beforeDs.getVersionId()) && version.equals(beforeDs.getPublishedVersionId())){
-            this.modelRelationMapper.deleteRelations(name, version);
+            this.modelRelationMapper.deleteRelations(beforeDs.getId(), version);
             // Skip
             return;
         }

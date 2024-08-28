@@ -11,9 +11,9 @@ import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelati
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.linkis.server.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,8 +68,8 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     /**
      *
      * @param modelId model id
-     * @param update
-     * @return
+     * @param update update vo
+     * @return commit vo
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -91,7 +91,12 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
         before.setRefModelId(modelId);
         //Empty id
         before.setId(null);
-        this.dataSourceModelMapper.insert(before);
+        try {
+            this.dataSourceModelMapper.insert(before);
+        } catch (DuplicateKeyException e){
+            throw new DataSourceModelOperateException("The duplicate model name:[" + before.getModelName()
+                    + "] meets conflicts (创建更新副本模版名冲突)");
+        }
         return before;
     }
 
