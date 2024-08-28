@@ -45,7 +45,7 @@ public interface DataSourceService {
      * @param model model
      */
     void updateInVersionAndModel(String operator, Long id, String name,
-                                 Long version, DataSourceModel model);
+                                 Long version, DataSourceModel model) throws ExchangisDataSourceException;
     /**
      * Delete data source
      * @param operator operator

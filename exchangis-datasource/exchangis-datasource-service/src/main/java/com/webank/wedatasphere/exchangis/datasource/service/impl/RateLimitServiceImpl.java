@@ -184,13 +184,15 @@ public class RateLimitServiceImpl implements RateLimitService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void rateLimit(List<RateLimitUsed> applyUsed) throws RateLimitNoLeftException {
-        applyUsed.forEach(apply -> {
-            int success = this.rateLimitUsedMapper.applyRateLimitUsed(apply);
-            if (success <= 0) {
-                // Has no left resource applied for using of limitation
-                throw new RateLimitNoLeftException("No left resource applied for using in rate limitation.");
+        if (Objects.nonNull(applyUsed) && applyUsed.size() > 0) {
+            for (RateLimitUsed apply : applyUsed) {
+                int success = this.rateLimitUsedMapper.applyRateLimitUsed(apply);
+                if (success <= 0) {
+                    // Has no left resource applied for using of limitation
+                    throw new RateLimitNoLeftException("No left resource applied for using in rate limitation.");
+                }
             }
-        });
+        }
     }
 
     @Override

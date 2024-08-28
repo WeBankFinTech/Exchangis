@@ -46,14 +46,13 @@
             <![CDATA[
                 INSERT INTO exchangis_data_source_model_relation (
                  model_id, ds_id, ds_name, ds_version,
-                 create_user, create_time
+                 create_user
                 ) VALUES (
                  #{item.modelId},
                  #{item.dsId},
                  #{item.dsName},
                  #{item.dsVersion},
-                 #{item.createUser},
-                 #{item.createTime}
+                 #{item.createUser}
                 );
             ]]>
         </foreach>

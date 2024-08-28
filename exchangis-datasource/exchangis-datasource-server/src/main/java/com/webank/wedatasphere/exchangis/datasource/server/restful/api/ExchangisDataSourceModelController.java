@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.enums.AuthType;
-import com.webank.wedatasphere.exchangis.common.pager.PageList;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.*;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
@@ -49,14 +49,18 @@ public class ExchangisDataSourceModelController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public Message add(@Valid @RequestBody DataSourceModel model, HttpServletRequest request) {
-        if (StringUtils.isNotBlank(model.getCreateUser()) && isDuplicate(model.getModelName())) {
-            return Message.error("The name of model already exists");
+        if (StringUtils.isNotBlank(model.getCreateUser()) || isDuplicate(model.getModelName())) {
+            return Message.error("The name of model already exists(模板名已存在)");
         }
         String userName = UserUtils.getLoginUser(request);
         if (GlobalConfiguration.isAdminUser(userName)) {
             model.setCreateOwner("");
         } else {
             model.setCreateOwner(model.getCreateUser());
+        }
+        model.setCreateUser(userName);
+        if (StringUtils.isBlank(model.getModifyUser())) {
+            model.setModifyUser(model.getCreateUser());
         }
         model.setModelName(StringEscapeUtils.escapeHtml3(model.getModelName()));
         boolean ok = dataSourceModelService.add(model);
@@ -149,14 +153,14 @@ public class ExchangisDataSourceModelController {
 
     @RequestMapping(value = "pageList", method = RequestMethod.GET)
     public Message pageList(DataSourceModelQuery pageQuery, HttpServletRequest request) {
-        PageList<DataSourceModel> list = null;
+        PageResult<DataSourceModel> pageResult = null;
         int pageSize = pageQuery.getPageSize();
         if (pageSize == 0) {
             pageQuery.setPageSize(10);
         }
-        list = dataSourceModelService.findPage(pageQuery);
+        pageResult = dataSourceModelService.findPage(pageQuery);
         String username = UserUtils.getLoginUser(request);
-        list.getData().forEach(element -> {
+        pageResult.getList().forEach(element -> {
             //Bind authority scopes
             if (StringUtils.isNotBlank(element.getCreateUser()) && !element.getCreateUser().equals(username)) {
                 //Remove sensitive data
@@ -166,7 +170,7 @@ public class ExchangisDataSourceModelController {
                 element.setParameter(Json.toJson(newParams, null));
             }
         });
-        return Message.ok().data("data", list);
+        return Message.ok().data("list", pageResult.getList()).data("total", pageResult.getTotal());
     }
 
     @RequestMapping(value = "selectAll", method = RequestMethod.GET)

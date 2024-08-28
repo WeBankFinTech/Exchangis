@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.service;
 
-import com.webank.wedatasphere.exchangis.common.pager.PageList;
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
@@ -73,7 +73,7 @@ public interface DataSourceModelService {
      *
      * @return
      */
-    PageList<DataSourceModel> findPage(PageQuery pageQuery);
+    PageResult<DataSourceModel> findPage(PageQuery pageQuery);
 
     /**
      * Select all

@@ -126,6 +126,9 @@ public class DefaultDataSourceService extends AbstractDataSourceService
     @Resource
     private ParamKeySerializer keySerializer;
 
+    @Resource
+    private DsKeyDefineUtil dsKeyDefineUtil;
+
     @Autowired
     public DefaultDataSourceService(ExchangisDataSourceContext context,
                                     ExchangisJobParamConfigMapper exchangisJobParamConfigMapper, EngineSettingsDao settingsDao) {
@@ -370,6 +373,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         if (Objects.isNull(sourceModel)){
             throw new ExchangisDataSourceException(MODEL_VERSION_CONFLICT.getCode(), "The version of data source model is conflict(模版版本冲突，存在并发更新操作)");
         }
+
         // First send to get data source data before
         GetInfoByDataSourceIdAndVersionIdResult result = (GetInfoByDataSourceIdAndVersionIdResult)rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(),
                 () -> GetDataSourceInfoByIdAndVersionIdAction.builder()
@@ -386,6 +390,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             // Skip
             return;
         }
+        mergeModelParams(beforeDs, model);
         Map<String, Object> updateVo = Json.fromJson(Json.toJson(beforeDs, null), Map.class);
         Optional.ofNullable(updateVo).ifPresent(pay -> {
             pay.put("comment", "from version " + version + "[模版更新]");
@@ -590,7 +595,10 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             List<DataSource> dataSources = result.getAllDataSource();
             // Get the model key definitions
             List<Long> dsIds = dataSources.stream().map(DataSource::getId).collect(Collectors.toList());
-            List<DataSourceModelRelationDTO> dsModelRelations = this.modelRelationMapper.queryRefRelationsByDsIds(dsIds);
+            List<DataSourceModelRelationDTO> dsModelRelations = new ArrayList<>();
+            if (Objects.nonNull(dsIds) && !dsIds.isEmpty()) {
+                this.modelRelationMapper.queryRefRelationsByDsIds(dsIds);
+            }
             Map<Long, List<DataSourceModelRelationDTO>> relations = null;
             if (Objects.nonNull(dsModelRelations) && dsModelRelations.size() > 0) {
                 relations = dsModelRelations.stream().collect(Collectors.groupingBy(DataSourceModelRelation::getDsId));
@@ -772,7 +780,11 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         Long dsModelId = vo.getDsModelId();
         if (Objects.nonNull(dsModelId)) {
             DataSourceModel dataSourceModel = modelMapper.selectOne(dsModelId);
-            Map<String, Object> parameter = DsKeyDefineUtil.getParameter(dataSourceModel.getParameter());
+            // Merge eith dsModel keyDefine
+            DataSourceModelTypeKeyQuery dsModelTypeKeyQuery = new DataSourceModelTypeKeyQuery();
+            dsModelTypeKeyQuery.setDsTypeId(vo.getDataSourceTypeId());
+            List<DataSourceModelTypeKey> dsModelTypeKeys = dataSourceModelTypeKeyMapper.queryList(dsModelTypeKeyQuery);
+            Map<String, Object> parameter = dsKeyDefineUtil.mergeDsModelParameter(dataSourceModel.getParameter(), dsModelTypeKeys);
             parameter.putAll(vo.getConnectParams());
             vo.setConnectParams(parameter);
         }
@@ -850,7 +862,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                         .setUser(operator).setDataSourceTypeId(typeId).build(),
                 LinkisDataSourceRemoteClient::getKeyDefinitionsByType, CLIENT_DATASOURCE_GET_KEY_DEFINES_ERROR.getCode(),
                 "");
-        // Merge eith dsModel keyDefine
+        // Merge with dsModel keyDefine
         DataSourceModelTypeKeyQuery dsModelTypeKeyQuery = new DataSourceModelTypeKeyQuery();
         dsModelTypeKeyQuery.setDsTypeId(typeId);
         List<DataSourceModelTypeKey> dsModelTypeKeys = dataSourceModelTypeKeyMapper.queryList(dsModelTypeKeyQuery);
@@ -999,18 +1011,25 @@ public class DefaultDataSourceService extends AbstractDataSourceService
      * @param modelId model id
      */
     private void mergeModelParams(DataSourceCreateVo vo, Long modelId){
-        if (Objects.nonNull(modelId)){
+        if (Objects.isNull(modelId)){
             return;
         }
         Map<String, Object> connectParams = Optional.ofNullable(vo.getConnectParams())
                 .orElse(new HashMap<>());
         // TODO avoid the concurrency problem
         DataSourceModel model = this.modelMapper.selectOne(modelId);
+        Optional.of(mergeModelParams(connectParams, model)).ifPresent(vo::setConnectParams);
+    }
+
+    private void mergeModelParams(DataSource dataSource, DataSourceModel model){
+        mergeModelParams(dataSource.getConnectParams(), model);
+    }
+    private Map<String, Object> mergeModelParams(Map<String, Object> connectParams, DataSourceModel model){
         if (Objects.nonNull(model)){
             Map<String, Object> modelParams = model.resolveParams();
             // Get the model key definitions
             DataSourceModelTypeKeyQuery query = new DataSourceModelTypeKeyQuery();
-            query.setDsType(model.getSourceType());
+            query.setDsType(model.getSourceType().toLowerCase());
             List<DataSourceModelTypeKey> keys = this.modelTypeKeyMapper.queryList(query);
             keys.forEach(key -> {
                 Object paramValue = modelParams.get(key.getKey());
@@ -1033,8 +1052,9 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             });
             // Add and overwrite to connect params
             connectParams.putAll(modelParams);
-            vo.setConnectParams(connectParams);
+            return connectParams;
         }
+        return connectParams;
     }
     /**
      * Get data source by id and version id

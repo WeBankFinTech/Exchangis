@@ -64,8 +64,8 @@ public class LocalExchangisDataSourceLoader implements ExchangisDataSourceDefLoa
                 ExchangisDataSourceDefinition dsType = (ExchangisDataSourceDefinition) clazz.newInstance();
                 dsType.setMapperHook(mapperHook);
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
-                LOGGER.info("ExchangisDataSource is {}", dsType.getClass().toString());
-
+                LOGGER.info("ExchangisDataSource is {}, dsName is {}, dsTypeId is {}",
+                        dsType.getClass().toString(), dsType.name(), dsType.id());
                 context.addExchangisDsDefinition(dsType);
             }
         }
