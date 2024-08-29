@@ -784,9 +784,8 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             DataSourceModelTypeKeyQuery dsModelTypeKeyQuery = new DataSourceModelTypeKeyQuery();
             dsModelTypeKeyQuery.setDsTypeId(vo.getDataSourceTypeId());
             List<DataSourceModelTypeKey> dsModelTypeKeys = dataSourceModelTypeKeyMapper.queryList(dsModelTypeKeyQuery);
-            Map<String, Object> parameter = dsKeyDefineUtil.mergeDsModelParameter(dataSourceModel.getParameter(), dsModelTypeKeys);
-            parameter.putAll(vo.getConnectParams());
-            vo.setConnectParams(parameter);
+            Map<String, Object> dsConnectParams = dsKeyDefineUtil.mergeModelParamsIntoDs(vo.getConnectParams(), dataSourceModel.resolveParams(), dsModelTypeKeys);
+            vo.setConnectParams(dsConnectParams);
         }
         Map<String, Object> payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
         Optional.ofNullable(payLoads).ifPresent(pay -> pay.put("labels", pay.get("label")));
@@ -1024,38 +1023,19 @@ public class DefaultDataSourceService extends AbstractDataSourceService
     private void mergeModelParams(DataSource dataSource, DataSourceModel model){
         mergeModelParams(dataSource.getConnectParams(), model);
     }
-    private Map<String, Object> mergeModelParams(Map<String, Object> connectParams, DataSourceModel model){
+
+    private Map<String, Object> mergeModelParams(Map<String, Object> dsConnectParams, DataSourceModel model){
         if (Objects.nonNull(model)){
             Map<String, Object> modelParams = model.resolveParams();
             // Get the model key definitions
             DataSourceModelTypeKeyQuery query = new DataSourceModelTypeKeyQuery();
             query.setDsType(model.getSourceType().toLowerCase());
             List<DataSourceModelTypeKey> keys = this.modelTypeKeyMapper.queryList(query);
-            keys.forEach(key -> {
-                Object paramValue = modelParams.get(key.getKey());
-                // Try to serialize the parameter
-                boolean toSerialize = key.getSerialize();
-                if (Objects.nonNull(paramValue) && toSerialize){
-                    DataSourceParamKeyDefinition.ValueType[] subTypes = null;
-                    DataSourceParamKeyDefinition.ValueType nestType = key.getNestType();
-                    if (Objects.nonNull(nestType)){
-                        try {
-                            subTypes = new DataSourceParamKeyDefinition.ValueType[]{nestType};
-                        }catch (Exception e){
-                            // Ignore
-                        }
-                    }
-                    // Rewrite the value
-                    modelParams.put(key.getKey(),
-                            this.keySerializer.serialize(paramValue, key.getValueType(), subTypes));
-                }
-            });
-            // Add and overwrite to connect params
-            connectParams.putAll(modelParams);
-            return connectParams;
+            return dsKeyDefineUtil.mergeModelParamsIntoDs(dsConnectParams, modelParams, keys);
         }
-        return connectParams;
+        return dsConnectParams;
     }
+
     /**
      * Get data source by id and version id
      * @param operator operator

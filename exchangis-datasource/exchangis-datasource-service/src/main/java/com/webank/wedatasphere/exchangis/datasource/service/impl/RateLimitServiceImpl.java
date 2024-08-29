@@ -1,7 +1,10 @@
 package com.webank.wedatasphere.exchangis.datasource.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.SpringContext;
-import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.*;
 import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.datasource.utils.RateLimitTool;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
@@ -10,13 +13,8 @@ import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSour
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitMapper;
 import com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitUsedMapper;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitIdentify;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitUsed;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitVo;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitNoLeftException;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitQuery;
 import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
@@ -72,7 +70,7 @@ public class RateLimitServiceImpl implements RateLimitService {
     }
 
     @Transactional
-    public boolean update(RateLimit rateLimit) throws DataSourceModelOperateException {
+    public boolean update(RateLimit rateLimit) throws RateLimitOperationException {
         rateLimitMapper.update(rateLimit);
         List<RateLimitUsed> rateLimitUsedList = RateLimitTool.generateRateLimitUsed(rateLimit, null);
         sortRateLimitUsed(rateLimitUsedList);
@@ -106,40 +104,42 @@ public class RateLimitServiceImpl implements RateLimitService {
     }
 
     @Override
-    public List<RateLimitVo> findRateLimitPage(RateLimitQuery pageQuery) {
+    public PageResult<RateLimitVo> findRateLimitPage(RateLimitQuery pageQuery) {
         int currentPage = pageQuery.getPage();
         int pageSize = pageQuery.getPageSize();
-        int offset = currentPage > 0 ? (currentPage - 1) * pageSize : 0;
-        List<RateLimitVo> rateLimitVoList = rateLimitMapper.findPageVo(pageQuery, new RowBounds(offset, pageSize));
-//        if (StringUtils.equals() && Objects.nonNull(pageQuery.getSourceType())) {
-//
-//        }
-        if (Objects.isNull(rateLimitVoList) || rateLimitVoList.size() <= 0) {
-            return new ArrayList<>();
-        }
-        List<RateLimitUsed> rateLimitUsedList = rateLimitUsedMapper.selectUsedInLimitIds(rateLimitVoList.stream().map(RateLimitVo::getId).collect(Collectors.toList()));
-        rateLimitVoList.forEach(vo -> {
-            List<RateLimitUsed> collect = rateLimitUsedList.stream().filter(used -> Objects.equals(vo.getId(), used.getRateLimitId())).collect(Collectors.toList());
-            collect.forEach(used -> {
-                RateLimitIdentify.RateLimitType rateLimitType = RateLimitIdentify.RateLimitType.valueOfType(used.getRateLimitType());
-                if (Objects.nonNull(rateLimitType) && !Objects.equals(rateLimitType, RateLimitIdentify.RateLimitType.NONE)) {
-                    switch (rateLimitType) {
-                        case FLOW_RATE_LIMIT:
-                            vo.setFlowRateLimitUsed(used.getRateLimitUsed());
-                            break;
-                        case RECORD_RATE_LIMIT:
-                            vo.setRecordRateLimitUsed(used.getRateLimitUsed());
-                            break;
-                        case PARALLEL_LIMIT:
-                            vo.setParallelLimitUsed(used.getRateLimitUsed());
-                            break;
-                        default:
-                            break;
+        PageHelper.startPage(currentPage, pageSize);
+        try {
+            List<RateLimitVo> rateLimitVoList = rateLimitMapper.findPageVo(pageQuery);
+            if (Objects.isNull(rateLimitVoList) || rateLimitVoList.size() <= 0) {
+                return new PageResult<>();
+            }
+            List<RateLimitUsed> rateLimitUsedList = rateLimitUsedMapper.selectUsedInLimitIds(rateLimitVoList.stream().map(RateLimitVo::getId).collect(Collectors.toList()));
+            rateLimitVoList.forEach(vo -> {
+                List<RateLimitUsed> collect = rateLimitUsedList.stream().filter(used -> Objects.equals(vo.getId(), used.getRateLimitId())).collect(Collectors.toList());
+                collect.forEach(used -> {
+                    RateLimitIdentify.RateLimitType rateLimitType = RateLimitIdentify.RateLimitType.valueOfType(used.getRateLimitType());
+                    if (Objects.nonNull(rateLimitType) && !Objects.equals(rateLimitType, RateLimitIdentify.RateLimitType.NONE)) {
+                        switch (rateLimitType) {
+                            case FLOW_RATE_LIMIT:
+                                vo.setFlowRateLimitUsed(used.getRateLimitUsed());
+                                break;
+                            case RECORD_RATE_LIMIT:
+                                vo.setRecordRateLimitUsed(used.getRateLimitUsed());
+                                break;
+                            case PARALLEL_LIMIT:
+                                vo.setParallelLimitUsed(used.getRateLimitUsed());
+                                break;
+                            default:
+                                break;
+                        }
                     }
-                }
+                });
             });
-        });
-        return rateLimitVoList;
+            PageInfo<RateLimitVo> pageInfo = new PageInfo<>(rateLimitVoList);
+            return new PageResult<>(pageInfo);
+        } finally {
+            PageHelper.clearPage();
+        }
     }
 
     @Override

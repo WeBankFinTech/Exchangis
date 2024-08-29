@@ -22,7 +22,7 @@ public class DsKeyDefineUtil {
     );
 
     public static final List<String> AUTH_KEYS = Arrays.asList(
-            "username", "password", "appid", "objectid", "mkPrivate", "authType"
+            "username", "password", "appid", "objectid", "mkPrivate", "authType", "databaseName"
     );
 
     public static List<Map<String, Object>> mergeTypeKey(List<Map<String, Object>> list) {
@@ -41,6 +41,7 @@ public class DsKeyDefineUtil {
      * @param dsModelTypeKeys
      * @return
      */
+    @Deprecated
     public Map<String, Object> mergeDsModelParameter(String parameter, List<DataSourceModelTypeKey> dsModelTypeKeys) {
         Map<String, DataSourceModelTypeKey> modelTypeKeyMap = new HashMap<>();
         if (Objects.nonNull(dsModelTypeKeys)) {
@@ -63,6 +64,48 @@ public class DsKeyDefineUtil {
         return modelParams;
     }
 
+    /**
+     * 将模板连接参数合并到数据源连接参数中
+     * @param dsParams
+     * @param modelParams
+     * @param keys
+     * @return
+     */
+    public Map<String, Object> mergeModelParamsIntoDs(Map<String, Object> dsParams, Map<String, Object> modelParams, List<DataSourceModelTypeKey> keys){
+        if (Objects.nonNull(modelParams)){
+            keys.forEach(key -> {
+                Object paramValue = modelParams.get(key.getKey());
+                // Try to serialize the parameter
+                boolean toSerialize = key.getSerialize();
+                if (Objects.nonNull(paramValue) && toSerialize){
+                    DataSourceParamKeyDefinition.ValueType[] subTypes = null;
+                    DataSourceParamKeyDefinition.ValueType nestType = key.getNestType();
+                    if (Objects.nonNull(nestType)){
+                        try {
+                            subTypes = new DataSourceParamKeyDefinition.ValueType[]{nestType};
+                        }catch (Exception e){
+                            // Ignore
+                        }
+                    }
+                    // Rewrite the value
+                    modelParams.put(key.getKey(),
+                            this.paramKeySerializer.serialize(paramValue, key.getValueType(), subTypes));
+                }
+            });
+            // Add and overwrite to connect params
+            dsParams.putAll(modelParams);
+            return dsParams;
+        }
+        return dsParams;
+    }
+
+    /**
+     *
+     * @param dsModelTypeKeys
+     * @param keyDefineMap
+     * @return
+     */
+    @Deprecated
     public static List<Map<String, Object>> mergeDsModelTypeKey(List<DataSourceModelTypeKey> dsModelTypeKeys, List<Map<String, Object>> keyDefineMap) {
         List<Map<String, Object>> result = new ArrayList<>();
         dsModelTypeKeys.forEach(item -> {

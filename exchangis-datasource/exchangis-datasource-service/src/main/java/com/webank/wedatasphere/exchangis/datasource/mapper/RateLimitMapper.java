@@ -34,7 +34,7 @@ public interface RateLimitMapper {
      */
     int delete(@Param("ids") List<Object> ids);
 
-    List<RateLimitVo> findPageVo(RateLimitQuery pageQuery, RowBounds rowBound);
+    List<RateLimitVo> findPageVo(RateLimitQuery pageQuery);
 
     /**
      * Rate limit dao

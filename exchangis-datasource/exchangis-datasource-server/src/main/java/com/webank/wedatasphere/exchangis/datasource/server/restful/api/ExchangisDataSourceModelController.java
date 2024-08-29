@@ -123,11 +123,15 @@ public class ExchangisDataSourceModelController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public Message delete(@PathVariable Long id, HttpServletRequest request) throws DataSourceModelOperateException {
+    public Message delete(@PathVariable Long id, HttpServletRequest request) {
         DataSourceModelQuery query = new DataSourceModelQuery();
         query.setModelId(id);
-        boolean result = dataSourceModelService.delete(id);
-        // TODO Datasource model post processor
+        boolean result = false;
+        try {
+            result = dataSourceModelService.delete(id);
+        } catch (DataSourceModelOperateException e) {
+            // TODO Datasource model post processor
+        }
 
         return result ? Message.ok() :
                 Message.error("Failed to delete the dataSource model");

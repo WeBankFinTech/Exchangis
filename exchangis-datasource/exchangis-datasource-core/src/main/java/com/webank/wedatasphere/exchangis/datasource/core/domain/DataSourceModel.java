@@ -80,7 +80,7 @@ public class DataSourceModel {
      * @return
      */
     public Map<String, Object> resolveParams(){
-        if(null == parameterMap || parameter.isEmpty()) {
+        if(null == parameterMap || parameterMap.isEmpty()) {
             if (StringUtils.isNotBlank(parameter)){
                 parameterMap = Json.fromJson(getParameter(), Map.class);
             }else {
