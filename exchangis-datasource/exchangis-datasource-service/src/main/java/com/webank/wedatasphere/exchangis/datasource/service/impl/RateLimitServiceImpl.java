@@ -148,6 +148,7 @@ public class RateLimitServiceImpl implements RateLimitService {
     }
 
     public boolean rateLimit(ExchangisJobInfo jobInfo) throws RateLimitNoLeftException {
+        //todo 修改入参为rateLimitProvider 需要多少
         List<RateLimit> rateLimits = getJobRateLimits(jobInfo);
         if (!rateLimits.isEmpty()) {
             List<RateLimitUsed> applyUsed = new ArrayList<>();
