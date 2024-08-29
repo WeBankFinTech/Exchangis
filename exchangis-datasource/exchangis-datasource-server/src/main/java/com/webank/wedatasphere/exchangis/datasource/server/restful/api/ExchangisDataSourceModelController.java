@@ -137,6 +137,18 @@ public class ExchangisDataSourceModelController {
                 Message.error("Failed to delete the dataSource model");
     }
 
+    /**
+     * Get datasource model detail
+     */
+    @RequestMapping( value = "/{id}", method = RequestMethod.GET)
+    public Message getDsModelDetail(HttpServletRequest request, @PathVariable("id") Long id) {
+        DataSourceModel dataSourceModel = dataSourceModelService.get(id);
+        if (Objects.isNull(dataSourceModel)) {
+            return Message.error("Not found the dataSource model (找不到对应集群模板)");
+        }
+        return Message.ok().data("info", dataSourceModel);
+    }
+
     @RequestMapping(value = "/{modelType:\\w+}/list", method = RequestMethod.GET)
     public Message listByType(@PathVariable("modelType") String modelType,
                               HttpServletRequest request) {

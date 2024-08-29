@@ -123,6 +123,19 @@ public class ExchangisRateLimitController {
         return Message.ok();
     }
 
+    /**
+     * Get rateLimit detail
+     */
+    @RequestMapping( value = "/{id}", method = RequestMethod.GET)
+    public Message getRateLimitDetail(HttpServletRequest request, @PathVariable("id") Long id) {
+        RateLimit rateLimit = new RateLimit(id);
+        RateLimit queryRateLimit = rateLimitService.selectOne(rateLimit);
+        if (Objects.isNull(queryRateLimit)) {
+            return Message.error("Not found the rateLimit (找不到对应的限速信息)");
+        }
+        return Message.ok().data("info", queryRateLimit);
+    }
+
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
     public Message resetRateLimitUsed(RateLimit rateLimit, HttpServletRequest request){
         // Param valid
