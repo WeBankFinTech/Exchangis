@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
 import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitVo;
@@ -40,14 +41,8 @@ public class ExchangisRateLimitController {
         pageQuery.setCreateUser(username);
 
         try {
-            List<RateLimitVo> rateLimitPage = rateLimitService.findRateLimitPage(pageQuery);
-            Message message = Message.ok();
-            message.data("list", rateLimitPage);
-            message.data("sourceType", pageQuery.getSourceType());
-            if (Objects.nonNull(rateLimitPage) && !rateLimitPage.isEmpty()) {
-                message.data("total", rateLimitPage.size());
-            }
-            return message;
+            PageResult<RateLimitVo> pageResult = rateLimitService.findRateLimitPage(pageQuery);
+            return Message.ok().data("list", pageResult.getList()).data("total", pageResult.getTotal());
         } catch (Exception t) {
             LOG.error("Failed to query project list for user {}", username, t);
             return Message.error("Failed to query rateLimit list (获取限速列表失败) " + t.getMessage());
@@ -126,6 +121,19 @@ public class ExchangisRateLimitController {
             return Message.error("Failed to delete the rateLimit!(删除限速信息失败), cause by : " + e.getMessage());
         }
         return Message.ok();
+    }
+
+    /**
+     * Get rateLimit detail
+     */
+    @RequestMapping( value = "/{id}", method = RequestMethod.GET)
+    public Message getRateLimitDetail(HttpServletRequest request, @PathVariable("id") Long id) {
+        RateLimit rateLimit = new RateLimit(id);
+        RateLimit queryRateLimit = rateLimitService.selectOne(rateLimit);
+        if (Objects.isNull(queryRateLimit)) {
+            return Message.error("Not found the rateLimit (找不到对应的限速信息)");
+        }
+        return Message.ok().data("info", queryRateLimit);
     }
 
     @RequestMapping(value = "/reset", method = RequestMethod.POST)

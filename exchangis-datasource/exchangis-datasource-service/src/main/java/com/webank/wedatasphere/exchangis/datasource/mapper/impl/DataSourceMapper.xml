@@ -77,7 +77,7 @@
         ORDER BY create_time DESC
     </select>
 
-    <select id="findPage" resultMap="resultModel">
+    <select id="queryPageList" resultMap="resultModel">
         SELECT
         <include refid="columns"/>
         FROM exchangis_data_source_model

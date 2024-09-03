@@ -100,7 +100,7 @@ public interface DataSourceModelMapper {
      *
      * @return
      */
-    List<DataSourceModel> findPage(PageQuery pageQuery, RowBounds rowBound);
+    List<DataSourceModel> queryPageList(PageQuery pageQuery);
 
     /**
      * 查询所有的数据

@@ -75,9 +75,6 @@ public class ExchangisProjectRestfulApi {
                                  @RequestParam(value = "size", required = false) Integer size,
                                  @RequestParam(value = "name", required = false) String name) {
         String username = UserUtils.getLoginUser(request);
-        if (StringUtils.isNotBlank(name)) {
-            name = name.replaceAll("_", "/_");
-        }
         Optional.ofNullable(current).ifPresent(queryVo::setCurrent);
         Optional.ofNullable(size).ifPresent(queryVo::setSize);
         Optional.ofNullable(name).ifPresent(queryVo::setName);

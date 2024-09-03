@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource.service;
 
-import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitNoLeftException;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
@@ -21,11 +21,11 @@ public interface RateLimitService {
      */
     boolean add(RateLimit rateLimit) throws RateLimitOperationException;
 
-    boolean update(RateLimit rateLimit) throws DataSourceModelOperateException;
+    boolean update(RateLimit rateLimit) throws RateLimitOperationException;
 
     boolean delete(RateLimit rateLimit) throws RateLimitOperationException;
 
-    List<RateLimitVo> findRateLimitPage(RateLimitQuery pageQuery);
+    PageResult<RateLimitVo> findRateLimitPage(RateLimitQuery pageQuery);
 
     RateLimit selectOne(RateLimit rateLimit);
 

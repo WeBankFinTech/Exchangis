@@ -1,7 +1,9 @@
 package com.webank.wedatasphere.exchangis.datasource.service.impl;
 
-import com.webank.wedatasphere.exchangis.common.pager.PageList;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
@@ -13,7 +15,6 @@ import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelati
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
 import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -141,14 +142,17 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
     }
 
     @Override
-    public PageList<DataSourceModel> findPage(PageQuery pageQuery) {
+    public PageResult<DataSourceModel> findPage(PageQuery pageQuery) {
         int currentPage = pageQuery.getPage();
         int pageSize = pageQuery.getPageSize();
-        int offset = currentPage > 0 ? (currentPage - 1) * pageSize : 0;
-        PageList<DataSourceModel> page = new PageList<>(currentPage, pageSize, offset);
-        List<DataSourceModel> data = dataSourceModelMapper.findPage(pageQuery, new RowBounds(offset, pageSize));
-        page.setData(data);
-        return page;
+        PageHelper.startPage(currentPage, pageSize);
+        try {
+            List<DataSourceModel> data = dataSourceModelMapper.queryPageList(pageQuery);
+            PageInfo<DataSourceModel> pageInfo = new PageInfo<>(data);
+            return new PageResult<>(pageInfo);
+        }finally {
+            PageHelper.clearPage();
+        }
     }
 
     @Override

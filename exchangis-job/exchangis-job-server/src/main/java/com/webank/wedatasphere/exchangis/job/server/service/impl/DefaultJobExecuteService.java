@@ -6,6 +6,7 @@ import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
@@ -102,6 +103,9 @@ public class DefaultJobExecuteService implements JobExecuteService {
      */
     @Resource
     private MetricConverterFactory<ExchangisMetricsVo> metricConverterFactory;
+
+    @Resource
+    private RateLimitService rateLimitService;
 
     /**
      * Validators
@@ -364,6 +368,8 @@ public class DefaultJobExecuteService implements JobExecuteService {
         schedulerTask.setTenancy(execUser);
         LOG.info("Submit the generation scheduler task: [{}] for job: [{}], tenancy: [{}] to TaskExecution", jobExecutionId, jobInfo.getId(), execUser);
         try {
+            // rate limit todo
+            rateLimitService.rateLimit(jobInfo);
             taskExecution.submit(schedulerTask);
         } catch (ExchangisSchedulerException e) {
             throw new ExchangisJobServerException(JOB_EXCEPTION_CODE.getCode(), "Exception in submitting to taskExecution", e);

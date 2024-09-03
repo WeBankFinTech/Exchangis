@@ -43,6 +43,7 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
         launchableTask.setLinkisContentMap(inputJob.getJobContent());
         Map<String, Object> linkisParams = new HashMap<>();
         Map<String, Object> startUpParams = new HashMap<>();
+        Map<String, Object> rateLimitParams = new HashMap<>();
         linkisParams.put(LAUNCHER_LINKIS_STARTUP_PARAM_NAME, startUpParams);
         try {
             String customParamPrefix = PatternInjectUtils.inject(LAUNCHER_LINKIS_CUSTOM_PARAM_PREFIX, new String[]{engine});

@@ -6,6 +6,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelT
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.DsKeyDefineUtil;
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelTypeKeyMapper;
 import com.webank.wedatasphere.exchangis.datasource.service.AbstractLinkisDataSourceService;
@@ -15,15 +16,13 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import org.apache.linkis.datasource.client.request.GetKeyTypeDatasourceAction;
 import org.apache.linkis.datasource.client.response.GetKeyTypeDatasourceResult;
+import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_KEY_DEFINES_ERROR;
 
@@ -63,9 +62,24 @@ public class DataSourceModelTypeKeyServiceImpl extends AbstractLinkisDataSourceS
                                 .setUser(operator).setDataSourceTypeId(typeId).build(),
                 LinkisDataSourceRemoteClient::getKeyDefinitionsByType, CLIENT_DATASOURCE_GET_KEY_DEFINES_ERROR.getCode(),
                 "");
-        List<Map<String, Object>> keyDefineMap = result.getKeyDefine();
+        List<DataSourceParamKeyDefinition> definitions = result.getDataSourceParamKeyDefinitions();
+        Map<String, Object> defMap = new HashMap<>();
+        long order = -1L;
+        for (DataSourceParamKeyDefinition def : definitions){
+            String key = def.getKey();
+            if (!DsKeyDefineUtil.AUTH_KEYS.contains(key)) {
+                if (def.getId() > order){
+                    order = def.getId();
+                }
+                defMap.put(def.getKey(), def);
+            }
+        }
+        for (DataSourceModelTypeKey typeKey : dsModelTypeKeys){
+            typeKey.setId(++order);
+            defMap.put(typeKey.getKey(), typeKey);
+        }
         // merge the key define
-        return DsKeyDefineUtil.mergeDsModelTypeKey(dsModelTypeKeys, keyDefineMap);
+        return Json.convert(defMap.values(), List.class, Map.class);
     }
 
     @Override

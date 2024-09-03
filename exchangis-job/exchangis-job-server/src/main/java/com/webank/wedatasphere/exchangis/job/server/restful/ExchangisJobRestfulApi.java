@@ -7,6 +7,8 @@ import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
+import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceUIGetter;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
@@ -54,6 +56,9 @@ public class ExchangisJobRestfulApi {
 
     @Resource
     private JobFuncService jobFuncService;
+
+    @Resource
+    private DataSourceUIGetter dataSourceUIGetter;
 
     /**
      * Query job in page
@@ -459,5 +464,18 @@ public class ExchangisJobRestfulApi {
         }
         AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB,id.toString(), "Job id is: " + id.toString(), OperateTypeEnum.UPDATE,request);
         return response;
+    }
+
+    /**
+     * 根据 任务引擎类型 获取该引擎的配置项 UI 数据
+     * @param request
+     * @param engineType
+     * @param labels
+     * @return
+     */
+    @RequestMapping( value = "/engine/{engineType}/settings/ui", method = RequestMethod.GET)
+    public Message getJobEngineSettingsUI(HttpServletRequest request, @PathVariable("engineType")String engineType, @RequestParam(required = false)String labels) {
+        List<ElementUI<?>> jobSettingsUI = this.dataSourceUIGetter.getJobEngineSettingsUI(engineType);
+        return Message.ok().data("ui", jobSettingsUI);
     }
 }
