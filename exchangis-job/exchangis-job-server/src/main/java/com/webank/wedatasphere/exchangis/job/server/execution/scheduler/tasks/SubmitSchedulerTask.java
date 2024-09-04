@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
+import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitNoLeftException;
 import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
@@ -104,7 +105,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
             boolean rateApply = false;
             try {
                 rateApply = rateLimitService.rateLimit(this.launchableExchangisTask.getRateParams(), this.launchableExchangisTask.getRateParamsMap());
-                info(jobExecutionId, "Submit the launch-able task: [name:{} ,id:{} ] to launcher: [{}], retry_count: {}",
+                info(jobExecutionId, "Submit the launchable task: [name:{} ,id:{} ] to launcher: [{}], retry_count: {}",
                         launchableExchangisTask.getName(), launchableExchangisTask.getId(), launcher.name(), retryCnt.get());
                 boolean prepared = true;
                 try {
@@ -119,8 +120,10 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                     info(jobExecutionId, e.getMessage());
                     prepared = false;
                     if (rateApply) {
-                        // todo release
+                        // Release the rateLimit, the params is not null
+                        rateLimitService.releaseRateLimit(launchableExchangisTask.getRateParams(), launchableExchangisTask.getRateParamsMap());
                     }
+
                 }
                 if (prepared) {
                     try {
@@ -134,6 +137,10 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                     } catch (Exception e) {
                         info(jobExecutionId, "Launch task:[name:{} ,id:{}] fail, possible reason is: [{}]",
                                 launchableExchangisTask.getName(), launchableExchangisTask.getId(), getActualCause(e).getMessage());
+                        if (rateApply) {
+                            // Release the rateLimit, the params is not null
+                            rateLimitService.releaseRateLimit(launchableExchangisTask.getRateParams(), launchableExchangisTask.getRateParamsMap());
+                        }
                         if (retryCnt.incrementAndGet() < getMaxRetryNum()) {
                             // Remove the launched task stored
                             //                    onEvent(new TaskDeleteEvent(String.valueOf(launchableExchangisTask.getId())));
@@ -143,14 +150,17 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                     }
                 }
             } catch (Exception e) {
-                if (!rateApply) {
+                if (e instanceof RateLimitNoLeftException) {
                     LOG.error(e.getMessage());
                     info(jobExecutionId,e.getMessage());
-                } else {
-                    //todo release
+                    throw new ExchangisSchedulerException("Error occurred in applying for rateLimit resource: [" +  launchableExchangisTask.getId() + "]", e);
+                }
+                if (rateApply) {
+                    // Release the rateLimit, the params is not null
+                    rateLimitService.releaseRateLimit(launchableExchangisTask.getRateParams(), launchableExchangisTask.getRateParamsMap());
                 }
                 submitExp = e;
-                // TODO release rate limitedness, and convert rate limit exception to scheduler exception
+                throw new ExchangisSchedulerException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() + "]", e);
             } finally {
                 // Ignore the retry exception
                 if (Objects.nonNull(submitCallback)&& !(submitExp instanceof ExchangisSchedulerRetryException)){

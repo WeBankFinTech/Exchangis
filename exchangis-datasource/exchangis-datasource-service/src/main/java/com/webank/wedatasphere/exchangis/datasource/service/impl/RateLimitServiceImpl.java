@@ -16,7 +16,6 @@ import com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitMapper;
 import com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitUsedMapper;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitNoLeftException;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,7 +154,10 @@ public class RateLimitServiceImpl implements RateLimitService {
             Long sinkModelId = Long.valueOf(String.valueOf(sink.get("realm")));
             modelIds.add(sinkModelId);
         }
-        List<RateLimit> rateLimits = rateLimitMapper.selectByRealmIds(RateLimit.DEFAULT_LIMIT_REALM, modelIds);
+        List<RateLimit> rateLimits = new ArrayList<>();
+        if (!modelIds.isEmpty()) {
+            rateLimits = rateLimitMapper.selectByRealmIds(RateLimit.DEFAULT_LIMIT_REALM, modelIds);
+        }
         if (Objects.nonNull(rateParams) && !rateParams.isEmpty()) {
             List<RateLimitUsed> applyUsed = new ArrayList<>();
             List<Long> rateLimitIds = new ArrayList<>();//todo
