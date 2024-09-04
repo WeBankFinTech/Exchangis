@@ -15,6 +15,7 @@ import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectQueryVo;
 import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectErrorException;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectDsRelationMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectMapper;
+import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectUserMapper;
 import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import com.webank.wedatasphere.exchangis.project.provider.utils.ProjectAuthorityUtils;
 import org.apache.commons.lang3.StringUtils;
