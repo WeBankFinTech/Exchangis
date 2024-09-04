@@ -150,6 +150,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                     }
                 }
             } catch (Exception e) {
+                submitExp = e;
                 if (e instanceof RateLimitNoLeftException) {
                     LOG.error(e.getMessage());
                     info(jobExecutionId,e.getMessage());
@@ -159,7 +160,6 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                     // Release the rateLimit, the params is not null
                     rateLimitService.releaseRateLimit(launchableExchangisTask.getRateParams(), launchableExchangisTask.getRateParamsMap());
                 }
-                submitExp = e;
                 throw new ExchangisSchedulerException("Error occurred in invoking launching method for task: [" + launchableExchangisTask.getId() + "]", e);
             } finally {
                 // Ignore the retry exception

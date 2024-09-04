@@ -160,9 +160,16 @@ public class RateLimitServiceImpl implements RateLimitService {
         }
         if (Objects.nonNull(rateParams) && !rateParams.isEmpty()) {
             List<RateLimitUsed> applyUsed = new ArrayList<>();
-            List<Long> rateLimitIds = new ArrayList<>();//todo
+            List<Long> rateLimitIds = new ArrayList<>();
+            boolean limit = false;
             for (RateLimit rateLimit : rateLimits) {
-                applyUsed.addAll(getJobRateLimitUsed(rateLimit, rateParamMap));
+                if (rateLimit.getOpenLimit()) {
+                    limit = true;
+                    applyUsed.addAll(getJobRateLimitUsed(rateLimit, rateParamMap));
+                }
+            }
+            if (!limit) {
+                return false;
             }
             rateLimits.forEach(rateLimit -> {
                 rateLimitIds.add(rateLimit.getId());
@@ -190,6 +197,7 @@ public class RateLimitServiceImpl implements RateLimitService {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public List<RateLimitUsed> getRateLimitUsed(String rateParams, Map<String, Object> rateParamMap) {
         Map<String, Object> rateMap = Json.fromJson(rateParams, Map.class);
         List<Long> modelIds = new ArrayList<>();
@@ -210,8 +218,15 @@ public class RateLimitServiceImpl implements RateLimitService {
         if (!rateParams.isEmpty()) {
             List<RateLimitUsed> applyUsed = new ArrayList<>();
             List<Long> rateLimitIds = new ArrayList<>();
+            boolean limit = false;
             for (RateLimit rateLimit : rateLimits) {
-                applyUsed.addAll(getJobRateLimitUsed(rateLimit, rateParamMap));
+                if (rateLimit.getOpenLimit()) {
+                    limit = true;
+                    applyUsed.addAll(getJobRateLimitUsed(rateLimit, rateParamMap));
+                }
+            }
+            if (!limit) {
+                return null;
             }
             rateLimits.forEach(rateLimit -> {
                 rateLimitIds.add(rateLimit.getId());
