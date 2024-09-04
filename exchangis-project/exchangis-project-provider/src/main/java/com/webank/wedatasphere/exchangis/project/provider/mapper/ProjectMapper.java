@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.project.provider.mapper;
 
 import com.webank.wedatasphere.exchangis.project.entity.domain.ProjectPageQuery;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectQueryVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -54,6 +55,12 @@ public interface ProjectMapper {
     void updateOne(ExchangisProject project);
 
     /**
+     * Update one
+     * @param project project entity
+     */
+    void batchUpdate(@Param("list") List<ExchangisProject> project);
+
+    /**
      * Delete project
      * @param projectId
      */
@@ -80,13 +87,17 @@ public interface ProjectMapper {
      * @param loginUser
      * @return List
      */
-    List<String> getAuthoritis(@Param("projectId") Long projectId, @Param("loginUser") String loginUser);
+    List<String> getAuthorities(@Param("projectId") Long projectId, @Param("loginUser") String loginUser);
+
+    List<ExchangisProject> queryByUser(ProjectQueryVo projectQueryVo);
+
+    List<ExchangisProject> queryByUserProjects(ProjectQueryVo projectQueryVo);
 
     /**
      * Recycle user project
-     * @param username
+     * @param userName
      * @param handover
      */
-    void recycleUserProject(@Param("username")String username, @Param("handover")String handover,
-                            @Param("projectIds")List<Long> projectIds);
+    void recycleUserProject(@Param("userName") String userName, @Param("handover") String handover,
+                            @Param("projectIds") List<Long> projectIds);
 }

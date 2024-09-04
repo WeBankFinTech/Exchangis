@@ -35,6 +35,13 @@ public interface ProjectUserMapper {
     void updateProjectUser(@Param("projectUsers") List<ExchangisProjectUser> projectUsers);
 
     /**
+     * Batch update
+     * @param userName userName
+     * @param handover handover
+     */
+    void batchUpdate(@Param("userName") String userName, @Param("handover") String handover);
+
+    /**
      * delete projectUsers
      * @param projectId
      */

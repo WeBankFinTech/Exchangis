@@ -11,18 +11,20 @@ import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectD
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectDsVo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectDsQueryVo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectQueryVo;
 import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectErrorException;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectDsRelationMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectMapper;
+import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectUserMapper;
 import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import com.webank.wedatasphere.exchangis.project.provider.utils.ProjectAuthorityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,9 @@ public class ProjectOpenServiceImpl implements ProjectOpenService {
 
     @Resource
     private ProjectDsRelationMapper projectDsRelationMapper;
+
+    @Resource
+    private ProjectUserMapper projectUserMapper;
 
     @Override
     public ExchangisProjectInfo getProject(Long projectId) {
@@ -141,7 +146,7 @@ public class ProjectOpenServiceImpl implements ProjectOpenService {
         PageHelper.startPage(queryVo.getPage(), queryVo.getPageSize());
         try{
             List<ExchangisProjectDsRelation> dsRelationList =
-                    this.projectDsRelationMapper.queryPageList(queryVo);
+                    projectDsRelationMapper.queryPageList(queryVo);
             PageInfo<ExchangisProjectDsRelation> pageInfo = new PageInfo<>(dsRelationList);
             PageResult<ExchangisProjectDsRelation> pageResult = new PageResult<>();
             pageResult.setList(dsRelationList);
@@ -150,5 +155,54 @@ public class ProjectOpenServiceImpl implements ProjectOpenService {
         }finally {
             PageHelper.clearPage();
         }
+    }
+
+    @Override
+    public List<ExchangisProjectDsRelation> listByProjects(List<Long> proIds) {
+        return projectDsRelationMapper.listByProjects(proIds);
+    }
+
+    @Override
+    public void recycleUserProject(String username, String handover, List<Long> projectIds) {
+        ProjectQueryVo projectQueryVo = new ProjectQueryVo();
+        projectQueryVo.setCreateUser(username);
+        projectQueryVo.setProjectIds(projectIds);
+        List<ExchangisProject> projects = projectMapper.queryByUser(projectQueryVo);
+        if (Objects.nonNull(projects) && !projects.isEmpty()) {
+            for (ExchangisProject project : projects) {
+                if (StringUtils.equals(username, project.getCreateUser())) {
+                    project.setCreateUser(handover);
+                }
+                if (StringUtils.equals(username, project.getLastUpdateUser())) {
+                    project.setLastUpdateUser(handover);
+                }
+                if (StringUtils.isNotBlank(project.getViewUsers())) {
+                    Set<String> viewUsers = Arrays.stream(project.getViewUsers().split(",")).collect(Collectors.toSet());
+                    if (viewUsers.contains(username)) {
+                        viewUsers.remove(username);
+                        viewUsers.add(handover);
+                        project.setViewUsers(StringUtils.join(viewUsers, ","));
+                    }
+                }
+                if (StringUtils.isNotBlank(project.getEditUsers())) {
+                    Set<String> editUsers = Arrays.stream(project.getEditUsers().split(",")).collect(Collectors.toSet());
+                    if (editUsers.contains(username)) {
+                        editUsers.remove(username);
+                        editUsers.add(handover);
+                        project.setEditUsers(StringUtils.join(editUsers, ","));
+                    }
+                }
+                if (StringUtils.isNotBlank(project.getExecUsers())) {
+                    Set<String> execUsers = Arrays.stream(project.getExecUsers().split(",")).collect(Collectors.toSet());
+                    if (execUsers.contains(username)) {
+                        execUsers.remove(username);
+                        execUsers.add(handover);
+                        project.setExecUsers(StringUtils.join(execUsers, ","));
+                    }
+                }
+            }
+            projectMapper.batchUpdate(projects);
+        }
+        projectUserMapper.batchUpdate(username, handover);
     }
 }

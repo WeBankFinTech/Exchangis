@@ -64,4 +64,11 @@
             last_update_time = #{projectUser.updateTime}
         </foreach>
     </update>
+
+    <update id="batchUpdate">
+        UPDATE <include refid="TableName"/>
+        SET
+        priv_user=#{handover}
+        WHERE priv_user=#{userName};
+    </update>
 </mapper>

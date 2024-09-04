@@ -6,7 +6,9 @@ import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectDsQueryVo;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -46,4 +48,19 @@ public interface ProjectOpenService {
      * @return result
      */
     PageResult<ExchangisProjectDsRelation> queryDsRelation(ProjectDsQueryVo queryVo);
+
+    /**
+     * List related data sources
+     * @param proIds project ids
+     * @return type
+     */
+    List<ExchangisProjectDsRelation> listByProjects(List<Long> proIds);
+
+    /**
+     * Recycle user project
+     * @param username
+     * @param handover
+     */
+    void recycleUserProject(@Param("username") String username, @Param("handover") String handover,
+                            @Param("projectIds") List<Long> projectIds);
 }
