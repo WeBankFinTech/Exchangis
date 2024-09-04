@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server;
 
+import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
@@ -171,12 +172,12 @@ public class ExchangisJobExecuteAutoConfiguration {
      */
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean(TaskExecution.class)
-    public AbstractTaskExecution taskExecution(Scheduler scheduler, ExchangisTaskLaunchManager launchManager,
+    public AbstractTaskExecution taskExecution(RateLimitService rateLimitService, Scheduler scheduler, ExchangisTaskLaunchManager launchManager,
                                                TaskManager<LaunchedExchangisTask> taskManager, List<TaskObserver<?>> observers,
                                                TaskSchedulerLoadBalancer<LaunchedExchangisTask> loadBalancer,
                                                TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler, List<TaskExecutionListener> executionListeners,
                                                TaskObserverService observerService){
-        AbstractTaskExecution taskExecution = new DefaultTaskExecution(scheduler, launchManager, taskManager, observers, loadBalancer, taskChooseRuler, observerService);
+        AbstractTaskExecution taskExecution = new DefaultTaskExecution(rateLimitService, scheduler, launchManager, taskManager, observers, loadBalancer, taskChooseRuler, observerService);
         ConsumerManager consumerManager = scheduler.getSchedulerContext().getOrCreateConsumerManager();
         if (consumerManager instanceof TenancyParallelConsumerManager){
             ((TenancyParallelConsumerManager) consumerManager).setInitResidentThreads(observers.size() +

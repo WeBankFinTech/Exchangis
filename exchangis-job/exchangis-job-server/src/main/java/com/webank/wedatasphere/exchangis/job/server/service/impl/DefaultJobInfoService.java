@@ -59,9 +59,6 @@ public class DefaultJobInfoService implements JobInfoService {
     @Resource
     private DataSourceUIGetter uiGetter;
 
-    @Resource
-    private JobInfoService jobInfoService;
-
     /**
      * Validators
      */

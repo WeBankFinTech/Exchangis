@@ -29,6 +29,8 @@ public class LaunchableExchangisTask implements ExchangisTask {
 
     private String jobExecutionId;
 
+    private List<Long> dsModelIds = new ArrayList<>();
+
     /**
      * Job content in Linkis
      */
@@ -38,6 +40,11 @@ public class LaunchableExchangisTask implements ExchangisTask {
      * Job params in Linkis
      */
     private String linkisParams;
+
+    /**
+     * Rate params
+     */
+    private String rateParams;
 
     /**
      * Source message in Linkis
@@ -67,6 +74,8 @@ public class LaunchableExchangisTask implements ExchangisTask {
     private Map<String, Object> linkisContentMap;
 
     private Map<String, Object> linkisParamsMap;
+
+    private Map<String, Object> rateParamsMap;
 
     private Map<String, Object> linkisSourceMap;
 
@@ -163,12 +172,28 @@ public class LaunchableExchangisTask implements ExchangisTask {
         this.jobExecutionId = jobExecutionId;
     }
 
+    public List<Long> getDsModelIds() {
+        return dsModelIds;
+    }
+
+    public void setDsModelIds(List<Long> dsModelIds) {
+        this.dsModelIds = dsModelIds;
+    }
+
     public void setLinkisContentMap(Map<String, Object> linkisContentMap) {
         Optional.ofNullable(linkisContentMap).ifPresent(value -> this.linkisContentMap = value);
     }
 
     public void setLinkisParamsMap(Map<String, Object> linkisParamsMap) {
         Optional.ofNullable(linkisParamsMap).ifPresent(value -> this.linkisParamsMap = value);
+    }
+
+    public Map<String, Object> getRateParamsMap() {
+        return rateParamsMap;
+    }
+
+    public void setRateParamsMap(Map<String, Object> rateParamsMap) {
+        this.rateParamsMap = rateParamsMap;
     }
 
     public void setLinkisSourceMap(Map<String, Object> linkisSourceMap) {
@@ -237,6 +262,14 @@ public class LaunchableExchangisTask implements ExchangisTask {
         this.linkisParams = linkisParams;
     }
 
+    public String getRateParams() {
+        return rateParams;
+    }
+
+    public void setRateParams(String rateParams) {
+        this.rateParams = rateParams;
+    }
+
     public String getLinkisSource() {
         if (Objects.isNull(this.linkisSource) && Objects.nonNull(this.linkisSourceMap)){
             this.linkisSource = Json.toJson(this.linkisSourceMap, null);
@@ -292,7 +325,7 @@ public class LaunchableExchangisTask implements ExchangisTask {
         this.linkisJobContent = null;
         this.linkisContentMap = null;
         this.linkisSource = null;
-        this.linkisSourceMap = null;
+        this.linkisSourceMap = null;//todo
     }
 
 }

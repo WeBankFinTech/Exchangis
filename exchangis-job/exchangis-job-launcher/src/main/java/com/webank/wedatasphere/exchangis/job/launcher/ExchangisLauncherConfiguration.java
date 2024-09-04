@@ -12,7 +12,7 @@ public class ExchangisLauncherConfiguration {
 
     public static final String LAUNCHER_LINKIS_STARTUP_PARAM_NAME = "startUpParams";
 
-    public static final String LAUNCHER_LINKIS_RATE_LIMIT_PARAM_NAME = "rateLimitParams";
+    public static final String LAUNCHER_LINKIS_RATE_PARAM_NAME = "rateParams";
 
     public static final String LAUNCHER_LINKIS_REQUEST_MEMORY = "wds.linkis.engineconn.java.driver.memory";
 

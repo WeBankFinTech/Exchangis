@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
+import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
@@ -33,6 +34,8 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
 
     private static final Logger LOG = LoggerFactory.getLogger(SubmitSchedulerTask.class);
 
+    private RateLimitService rateLimitService;
+
     private LaunchableExchangisTask launchableExchangisTask;
 
     private TaskManager<LaunchedExchangisTask> taskManager;
@@ -59,18 +62,19 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
      * Each schedule task should has an id
      *
      */
-    public SubmitSchedulerTask(LaunchableExchangisTask task,
+    public SubmitSchedulerTask(RateLimitService rateLimitService, LaunchableExchangisTask task,
                                Callable<Boolean> submitCondition, BiConsumer<SubmitSchedulerTask, Throwable> submitCallback) {
-        this(task, submitCondition, submitCallback, false);
+        this(rateLimitService, task, submitCondition, submitCallback, false);
     }
 
-    public SubmitSchedulerTask(LaunchableExchangisTask task){
-        this(task, null, null, false);
+    public SubmitSchedulerTask(RateLimitService rateLimitService, LaunchableExchangisTask task){
+        this(rateLimitService, task, null, null, false);
     }
-    public SubmitSchedulerTask(LaunchableExchangisTask task,
+    public SubmitSchedulerTask(RateLimitService rateLimitService, LaunchableExchangisTask task,
                                Callable<Boolean> submitCondition, BiConsumer<SubmitSchedulerTask, Throwable> submitCallback,
                                boolean checkCondition) {
         super(String.valueOf(task.getId()));
+        this.rateLimitService = rateLimitService;
         this.launchableExchangisTask = task;
         this.submitCondition = submitCondition;
         this.submitCallback = submitCallback;
@@ -97,7 +101,9 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
         if (submitAble.get()) {
             Throwable submitExp = null;
             LaunchedExchangisTask launchedExchangisTask = null;
+            boolean rateApply = false;
             try {
+                rateApply = rateLimitService.rateLimit(this.launchableExchangisTask.getRateParams(), this.launchableExchangisTask.getRateParamsMap());
                 info(jobExecutionId, "Submit the launch-able task: [name:{} ,id:{} ] to launcher: [{}], retry_count: {}",
                         launchableExchangisTask.getName(), launchableExchangisTask.getId(), launcher.name(), retryCnt.get());
                 boolean prepared = true;
@@ -110,7 +116,11 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                 } catch (Exception e){
                     LOG.warn("Fail to prepare submit: [name:{} id:{}], reason: [{}]",
                             launchableExchangisTask.getName(), launchableExchangisTask.getId(), e.getMessage(), e);
+                    info(jobExecutionId, e.getMessage());
                     prepared = false;
+                    if (rateApply) {
+                        // todo release
+                    }
                 }
                 if (prepared) {
                     try {
@@ -133,8 +143,14 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
                     }
                 }
             } catch (Exception e) {
+                if (!rateApply) {
+                    LOG.error(e.getMessage());
+                    info(jobExecutionId,e.getMessage());
+                } else {
+                    //todo release
+                }
                 submitExp = e;
-                throw e;
+                // TODO release rate limitedness, and convert rate limit exception to scheduler exception
             } finally {
                 // Ignore the retry exception
                 if (Objects.nonNull(submitCallback)&& !(submitExp instanceof ExchangisSchedulerRetryException)){

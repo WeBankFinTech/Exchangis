@@ -42,7 +42,7 @@ public interface RateLimitMapper {
      * @param limitRealmIds realm ids
      * @return rate limit rules
      */
-    List<RateLimit> selectByRealmIds(String limitRealm, List<Long> limitRealmIds);
+    List<RateLimit> selectByRealmIds(@Param("limitRealm") String limitRealm, @Param("limitRealmIds") List<Long> limitRealmIds);
 
     /**
      * Count result

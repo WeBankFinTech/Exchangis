@@ -12,13 +12,13 @@ public class RateLimitQuery extends PageQuery {
 
     private String sourceType;
 
-    private Integer flowRateLimit;
+    private Long flowRateLimit;
 
     private String flowRateLimitUnit;
 
-    private Integer recordRateLimit;
+    private Long recordRateLimit;
 
-    private Integer parallelLimit;
+    private Long parallelLimit;
 
     private Boolean openLimit;
 
@@ -60,11 +60,11 @@ public class RateLimitQuery extends PageQuery {
         this.sourceType = sourceType;
     }
 
-    public Integer getFlowRateLimit() {
+    public Long getFlowRateLimit() {
         return flowRateLimit;
     }
 
-    public void setFlowRateLimit(Integer flowRateLimit) {
+    public void setFlowRateLimit(Long flowRateLimit) {
         this.flowRateLimit = flowRateLimit;
     }
 
@@ -76,19 +76,19 @@ public class RateLimitQuery extends PageQuery {
         this.flowRateLimitUnit = flowRateLimitUnit;
     }
 
-    public Integer getRecordRateLimit() {
+    public Long getRecordRateLimit() {
         return recordRateLimit;
     }
 
-    public void setRecordRateLimit(Integer recordRateLimit) {
+    public void setRecordRateLimit(Long recordRateLimit) {
         this.recordRateLimit = recordRateLimit;
     }
 
-    public Integer getParallelLimit() {
+    public Long getParallelLimit() {
         return parallelLimit;
     }
 
-    public void setParallelLimit(Integer parallelLimit) {
+    public void setParallelLimit(Long parallelLimit) {
         this.parallelLimit = parallelLimit;
     }
 

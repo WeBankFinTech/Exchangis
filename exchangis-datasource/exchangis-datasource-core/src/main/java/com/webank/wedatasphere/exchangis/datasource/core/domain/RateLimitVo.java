@@ -25,19 +25,19 @@ public class RateLimitVo {
 
     private String sourceType;
 
-    private Integer flowRateLimit;
+    private Long flowRateLimit;
 
     private String flowRateLimitUnit;
 
-    private Integer flowRateLimitUsed;
+    private Long flowRateLimitUsed;
 
-    private Integer recordRateLimit;
+    private Long recordRateLimit;
 
-    private Integer recordRateLimitUsed;
+    private Long recordRateLimitUsed;
 
-    private Integer parallelLimit;
+    private Long parallelLimit;
 
-    private Integer parallelLimitUsed;
+    private Long parallelLimitUsed;
 
     /**
      * Open limit
@@ -107,11 +107,11 @@ public class RateLimitVo {
         this.sourceType = sourceType;
     }
 
-    public Integer getFlowRateLimit() {
+    public Long getFlowRateLimit() {
         return flowRateLimit;
     }
 
-    public void setFlowRateLimit(Integer flowRateLimit) {
+    public void setFlowRateLimit(Long flowRateLimit) {
         this.flowRateLimit = flowRateLimit;
     }
 
@@ -123,43 +123,43 @@ public class RateLimitVo {
         this.flowRateLimitUnit = flowRateLimitUnit;
     }
 
-    public Integer getFlowRateLimitUsed() {
+    public Long getFlowRateLimitUsed() {
         return flowRateLimitUsed;
     }
 
-    public void setFlowRateLimitUsed(Integer flowRateLimitUsed) {
+    public void setFlowRateLimitUsed(Long flowRateLimitUsed) {
         this.flowRateLimitUsed = flowRateLimitUsed;
     }
 
-    public Integer getRecordRateLimit() {
+    public Long getRecordRateLimit() {
         return recordRateLimit;
     }
 
-    public void setRecordRateLimit(Integer recordRateLimit) {
+    public void setRecordRateLimit(Long recordRateLimit) {
         this.recordRateLimit = recordRateLimit;
     }
 
-    public Integer getRecordRateLimitUsed() {
+    public Long getRecordRateLimitUsed() {
         return recordRateLimitUsed;
     }
 
-    public void setRecordRateLimitUsed(Integer recordRateLimitUsed) {
+    public void setRecordRateLimitUsed(Long recordRateLimitUsed) {
         this.recordRateLimitUsed = recordRateLimitUsed;
     }
 
-    public Integer getParallelLimit() {
+    public Long getParallelLimit() {
         return parallelLimit;
     }
 
-    public void setParallelLimit(Integer parallelLimit) {
+    public void setParallelLimit(Long parallelLimit) {
         this.parallelLimit = parallelLimit;
     }
 
-    public Integer getParallelLimitUsed() {
+    public Long getParallelLimitUsed() {
         return parallelLimitUsed;
     }
 
-    public void setParallelLimitUsed(Integer parallelLimitUsed) {
+    public void setParallelLimitUsed(Long parallelLimitUsed) {
         this.parallelLimitUsed = parallelLimitUsed;
     }
 
@@ -179,6 +179,14 @@ public class RateLimitVo {
         this.createUser = createUser;
     }
 
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
     public String getModifyUser() {
         return modifyUser;
     }
@@ -187,4 +195,11 @@ public class RateLimitVo {
         this.modifyUser = modifyUser;
     }
 
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
+    }
 }
