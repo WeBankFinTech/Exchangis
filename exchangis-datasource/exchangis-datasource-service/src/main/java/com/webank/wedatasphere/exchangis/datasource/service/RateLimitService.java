@@ -56,9 +56,10 @@ public interface RateLimitService {
 
     /**
      * Release job rate limit
-     * @param launchableExchangisTask launchableExchangisTask
+     * @param rateParams rateParams
+     * @param rateParamsMap rateParamsMap
      */
-    void releaseRateLimit(LaunchableExchangisTask launchableExchangisTask);
+    void releaseRateLimit(String rateParams, Map<String, Object> rateParamsMap);
 
     /**
      * Reset rateLimitUsed by rateLimit

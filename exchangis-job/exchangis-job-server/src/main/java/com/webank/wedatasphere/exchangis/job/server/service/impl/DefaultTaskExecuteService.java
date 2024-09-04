@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.service.impl;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
@@ -70,7 +71,11 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
                 launchedJobDao.upgradeLaunchedJobStatusInVersion(launchedJob.getJobExecutionId(), TaskStatus.Running.name(), 0, launchedJob.getLastUpdateTime());
             }
         } else {
-            rateLimitService.releaseRateLimit(task.getLaunchableExchangisTask());
+            LaunchableExchangisTask launchableExchangisTask = task.getLaunchableExchangisTask();
+            if (Objects.nonNull(launchableExchangisTask) &&
+                    Objects.nonNull(launchableExchangisTask.getRateParams()) &&
+                    Objects.nonNull(launchableExchangisTask.getRateParamsMap()))
+                rateLimitService.releaseRateLimit(launchableExchangisTask.getRateParams(), launchableExchangisTask.getRateParamsMap());
         }
         // Have different status, then update
         if (!task.getStatus().equals(status)){

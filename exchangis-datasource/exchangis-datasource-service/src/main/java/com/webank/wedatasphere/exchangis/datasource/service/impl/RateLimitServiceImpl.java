@@ -166,14 +166,11 @@ public class RateLimitServiceImpl implements RateLimitService {
                 rateLimitIds.add(rateLimit.getId());
             });
             if (!applyUsed.isEmpty()) {
-//                throw new RateLimitNoLeftException(RateLimitTool.getLimitLog(applyUsed, null, null));
                 sortRateLimitUsed(applyUsed);
                 try {
                     getSelfService().rateLimit(applyUsed);
                     return true;
                 } catch (RateLimitNoLeftException e) {
-//                    List<Long> sourceModelIds = Arrays.asList(source.get("realm"));
-//                    List<Long> sinkModelIds = Arrays.asList(sink.get("realm"));
                     Map<Long, Integer> limitDirect = rateLimits.stream().collect(Collectors
                             .toMap(RateLimit::getId, rateLimit -> modelIds.contains(rateLimit.getLimitRealmId())
                                     ? 1 : 0));
@@ -204,10 +201,13 @@ public class RateLimitServiceImpl implements RateLimitService {
             Long sinkModelId = Long.valueOf(String.valueOf(sink.get("realm")));
             modelIds.add(sinkModelId);
         }
-        List<RateLimit> rateLimits = rateLimitMapper.selectByRealmIds(RateLimit.DEFAULT_LIMIT_REALM, modelIds);
-        if (Objects.nonNull(rateParams) && !rateParams.isEmpty()) {
+        List<RateLimit> rateLimits = new ArrayList<>();
+        if (!modelIds.isEmpty()) {
+            rateLimits = rateLimitMapper.selectByRealmIds(RateLimit.DEFAULT_LIMIT_REALM, modelIds);
+        }
+        if (!rateParams.isEmpty()) {
             List<RateLimitUsed> applyUsed = new ArrayList<>();
-            List<Long> rateLimitIds = new ArrayList<>();//todo
+            List<Long> rateLimitIds = new ArrayList<>();
             for (RateLimit rateLimit : rateLimits) {
                 applyUsed.addAll(getJobRateLimitUsed(rateLimit, rateParamMap));
             }
@@ -270,13 +270,11 @@ public class RateLimitServiceImpl implements RateLimitService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void releaseRateLimit(LaunchableExchangisTask launchableExchangisTask) {
-        if (Objects.nonNull(launchableExchangisTask)) {
-            List<RateLimitUsed> rateLimitUsed = this.getRateLimitUsed(launchableExchangisTask.getRateParams(), launchableExchangisTask.getRateParamsMap());
-            if (!rateLimitUsed.isEmpty()) {
-                sortRateLimitUsed(rateLimitUsed);
-                this.rateLimitUsedMapper.releaseRateLimitUsed(rateLimitUsed);
-            }
+    public void releaseRateLimit(String rateParams, Map<String, Object> rateParamsMap) {
+        List<RateLimitUsed> rateLimitUsed = this.getRateLimitUsed(rateParams, rateParamsMap);
+        if (Objects.nonNull(rateLimitUsed) && !rateLimitUsed.isEmpty()) {
+            sortRateLimitUsed(rateLimitUsed);
+            this.rateLimitUsedMapper.releaseRateLimitUsed(rateLimitUsed);
         }
     }
 
