@@ -580,13 +580,17 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                         .setName(dataSourceName)
                         .setIdentifies("")
                         .setCurrentPage(finalPage)
-                        .setUser(username)
                         .setPageSize(pageSize);
                 if (!Objects.isNull(typeId)) {
                     builder.setTypeId(typeId);
                 }
                 if (!Strings.isNullOrEmpty(vo.getTypeName())) {
                     builder.setSystem(vo.getTypeName());
+                }
+                if (!Strings.isNullOrEmpty(vo.getCreateUser())) {
+                    builder.setUser(vo.getCreateUser());
+                } else {
+                    builder.setUser(username);
                 }
                 return builder.build();
             }, LinkisDataSourceRemoteClient::queryDataSource, CLIENT_QUERY_DATASOURCE_ERROR.getCode(),
@@ -620,6 +624,27 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         pageResult.setList(new ArrayList<>(dsQueryMap.values()));
         pageResult.setTotal((long) total);
         return pageResult;
+    }
+
+    /**
+     * List data sources
+     * @param userName userName
+     * @return data sources
+     */
+    public List<ExchangisDataSourceItem> listDataSourcesByUser(String userName) throws ExchangisDataSourceException {
+        QueryDataSourceResult result = rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> {
+                    QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
+                            .setSystem("exchangis")
+                            .setIdentifies("")
+                            .setUser(userName);
+                    return builder.build();
+                }, LinkisDataSourceRemoteClient::queryDataSource, CLIENT_QUERY_DATASOURCE_ERROR.getCode(),
+                "");
+        List<ExchangisDataSourceItem> dataSources = new ArrayList<>();
+        if (!Objects.isNull(result.getAllDataSource())) {
+            dataSources = toExchangisDataSourceItems(result.getAllDataSource(), null);
+        }
+        return dataSources;
     }
 
     /**
@@ -940,8 +965,20 @@ public class DefaultDataSourceService extends AbstractDataSourceService
     }
 
     @Override
-    public void recycleDataSource(String userName, String handover) throws ExchangisDataSourceException {
-
+    @Transactional
+    public void recycleDataSource(String operator, List<Long> projectIds,
+                                  String userName, String handover) throws ExchangisDataSourceException {
+        try {
+            // recycle dsModel
+            modelMapper.recycleDsModel(userName, handover);
+            // recycle dsModelRelation
+            modelRelationMapper.recycleDsModelRelation(userName, handover);
+            // recycle ds
+//            projectOpenService.listByProjects(projectIds);
+        } catch (Exception e) {
+            String errorMsg = String.format("Error to recycle datasource with user %s, cause by : [%s]", userName, e.getMessage());
+            LOG.error(errorMsg);
+        }
     }
 
     /**
@@ -1018,6 +1055,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         // TODO avoid the concurrency problem
         DataSourceModel model = this.modelMapper.selectOne(modelId);
         Optional.of(mergeModelParams(connectParams, model)).ifPresent(vo::setConnectParams);
+        vo.getConnectParams().put("_model_", modelId);
     }
 
     private void mergeModelParams(DataSource dataSource, DataSourceModel model){

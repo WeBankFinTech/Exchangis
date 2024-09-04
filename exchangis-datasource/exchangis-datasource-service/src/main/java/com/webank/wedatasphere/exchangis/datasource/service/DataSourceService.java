@@ -90,6 +90,14 @@ public interface DataSourceService {
 
     /**
      * List data sources
+     * @param userName userName
+     * @return data sources
+     * @throws ExchangisDataSourceException
+     */
+    List<ExchangisDataSourceItem> listDataSourcesByUser(String userName) throws ExchangisDataSourceException;
+
+    /**
+     * List data sources
      * @param operator operator
      * @param typeName type name
      * @param typeId type id
@@ -206,7 +214,12 @@ public interface DataSourceService {
 
     /**
      * Recycle data source
+     * @param operator operator
+     * @param projectIds projectIds
+     * @param userName userName
+     * @param handover handover
      */
-    void recycleDataSource(String userName, String handover) throws ExchangisDataSourceException;
+    void recycleDataSource(String operator, List<Long> projectIds,
+                           String userName, String handover) throws ExchangisDataSourceException;
 
 }

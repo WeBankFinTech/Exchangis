@@ -144,7 +144,7 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
             List<DataSourceModel> data = dataSourceModelMapper.queryPageList(pageQuery);
             PageInfo<DataSourceModel> pageInfo = new PageInfo<>(data);
             return new PageResult<>(pageInfo);
-        }finally {
+        } finally {
             PageHelper.clearPage();
         }
     }

@@ -158,4 +158,9 @@
         </where>
     </sql>
 
+    <update id="recycleDsModelRelation">
+        UPDATE <include refid="table"/>
+        SET create_user = #{handover},modify_user = 'SYSTEM'
+        WHERE create_user = #{userName};
+    </update>
 </mapper>

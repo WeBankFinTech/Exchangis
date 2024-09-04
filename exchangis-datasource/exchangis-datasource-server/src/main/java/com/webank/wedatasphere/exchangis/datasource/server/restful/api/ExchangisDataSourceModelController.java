@@ -8,6 +8,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.*;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
+import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelTypeKeyService;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
@@ -76,6 +77,9 @@ public class ExchangisDataSourceModelController {
         model.setId(id);
         model.setModelName(StringEscapeUtils.escapeHtml3(model.getModelName()));
         String operator = UserUtils.getLoginUser(request);
+        if (StringUtils.isBlank(model.getModifyUser())) {
+            model.setModifyUser(operator);
+        }
         // TODO authority ?
         // TODO model name unique ?
         try {
@@ -129,7 +133,7 @@ public class ExchangisDataSourceModelController {
         boolean result = false;
         try {
             result = dataSourceModelService.delete(id);
-        } catch (DataSourceModelOperateException e) {
+        } catch (DataSourceModelOperateException | RateLimitOperationException e) {
             // TODO Datasource model post processor
         }
 
@@ -154,6 +158,10 @@ public class ExchangisDataSourceModelController {
                               HttpServletRequest request) {
         DataSourceModelQuery query = new DataSourceModelQuery();
         query.setSourceType(modelType);
+        String username = UserUtils.getLoginUser(request);
+        if (! GlobalConfiguration.isAdminUser(username)) {
+            query.setCreateOwner(username);
+        }
         List<DataSourceModel> list = dataSourceModelService.selectAllList(query);
         List<ModelTemplateStructure> structureList = list.stream().map(modelAssembly -> {
             ModelTemplateStructure structure = new ModelTemplateStructure();
@@ -174,8 +182,11 @@ public class ExchangisDataSourceModelController {
         if (pageSize == 0) {
             pageQuery.setPageSize(10);
         }
-        pageResult = dataSourceModelService.findPage(pageQuery);
         String username = UserUtils.getLoginUser(request);
+        if (!GlobalConfiguration.isAdminUser(username)) {
+            pageQuery.setCreateOwner(username);
+        }
+        pageResult = dataSourceModelService.findPage(pageQuery);
         pageResult.getList().forEach(element -> {
             //Bind authority scopes
             if (StringUtils.isNotBlank(element.getCreateUser()) && !element.getCreateUser().equals(username)) {
@@ -191,8 +202,11 @@ public class ExchangisDataSourceModelController {
 
     @RequestMapping(value = "selectAll", method = RequestMethod.GET)
     public Message selectAll(DataSourceModelQuery pageQuery, HttpServletRequest request) {
-        List<DataSourceModel> data = dataSourceModelService.selectAllList(pageQuery);
         String username = UserUtils.getLoginUser(request);
+        if (!GlobalConfiguration.isAdminUser(username)) {
+            pageQuery.setCreateOwner(username);
+        }
+        List<DataSourceModel> data = dataSourceModelService.selectAllList(pageQuery);
         data.forEach(element -> {
             //Bind authority scopes
             if (StringUtils.isNotBlank(element.getCreateUser()) && !element.getCreateUser().equals(username)) {
@@ -234,9 +248,5 @@ public class ExchangisDataSourceModelController {
         DataSourceModelQuery query = new DataSourceModelQuery();
         query.setModelExactName(tsName);
         return !dataSourceModelService.selectAllList(query).isEmpty();
-    }
-
-    public static void main(String[] args) {
-        System.out.println(String.format("v%06d", 3000000));
     }
 }

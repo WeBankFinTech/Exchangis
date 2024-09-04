@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * DataSource model
@@ -85,6 +86,10 @@ public class DataSourceModel {
                 parameterMap = Json.fromJson(getParameter(), Map.class);
             }else {
                 parameterMap = new HashMap<>(4);
+            }
+            Long modelId = isDuplicate ? refModelId : id;
+            if (Objects.nonNull(parameterMap) && Objects.nonNull(modelId)){
+                parameterMap.put("_model_", modelId);
             }
         }
         return parameterMap;

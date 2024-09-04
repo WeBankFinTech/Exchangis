@@ -109,4 +109,11 @@ public interface DataSourceModelMapper {
      */
     List<DataSourceModel> selectAllList(PageQuery pageQuery);
 
+    /**
+     * Recycle user
+     * @param userName userName
+     * @param handover handover
+     */
+    void recycleDsModel(@Param("userName") String userName,
+                                @Param("handover") String handover);
 }
