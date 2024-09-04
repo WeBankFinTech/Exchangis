@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution;
 
 
+import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
@@ -64,11 +65,12 @@ public class DefaultTaskExecution extends AbstractTaskExecution{
      * @param taskSchedulerLoadBalancer load balancer
      * @param taskChooseRuler choose ruler
      */
-    public DefaultTaskExecution(Scheduler scheduler, ExchangisTaskLaunchManager launchManager,
+    public DefaultTaskExecution(RateLimitService rateLimitService, Scheduler scheduler, ExchangisTaskLaunchManager launchManager,
                                 TaskManager<LaunchedExchangisTask> taskManager, List<TaskObserver<?>> taskObservers,
                                 TaskSchedulerLoadBalancer<LaunchedExchangisTask> taskSchedulerLoadBalancer,
                                 TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler,
                                 TaskObserverService observerService){
+        this.rateLimitService = rateLimitService;
         this.scheduler = scheduler;
         this.taskManager = taskManager;
         this.taskObservers = taskObservers;

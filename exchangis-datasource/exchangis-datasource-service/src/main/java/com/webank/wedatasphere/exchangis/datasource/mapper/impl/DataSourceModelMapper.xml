@@ -11,6 +11,7 @@
         <result property="parameter" column="parameter"/>
         <result property="refModelId" column="ref_model_id"/>
         <result property="isDuplicate" column="is_duplicate"/>
+        <result property="version" column="version"/>
         <result property="createOwner" column="create_owner"/>
         <result property="createUser" column="create_user"/>
         <result property="createTime" column="create_time"/>
@@ -18,9 +19,14 @@
         <result property="modifyTime" column="modify_time"/>
         <result property="version" column="version"/>
     </resultMap>
+
+    <sql id="table">
+        exchangis_data_source_model
+    </sql>
+
     <sql id="columns">
         id,cluster_name,model_name,source_type,model_desc,parameter,
-        ref_model_id,is_duplicate,create_user,create_time,modify_user,modify_time,version
+        ref_model_id,is_duplicate,version,create_owner,create_user,create_time,modify_user,modify_time,version
     </sql>
 
     <select id="selectOne" resultMap="resultModel">
@@ -167,6 +173,12 @@
         ORDER BY create_time DESC
     </select>
 
+    <update id="recycleDsModel">
+        UPDATE <include refid="table"/>
+        SET create_user = #{handover},modify_user = 'SYSTEM'
+        WHERE create_user = #{userName};
+    </update>
+
     <sql id="findPageWhere">
         <where>
             <if test="id != null and id != ''">
@@ -184,31 +196,14 @@
             <if test="sourceType != null and sourceType != ''">
                 AND source_type = #{sourceType}
             </if>
+            <if test="createOwner != null and createOwner != ''">
+                AND (create_owner = #{createOwner} OR create_owner = '')
+            </if>
             <if test="createTimeBegin != null">
                 AND create_time &gt;= #{createTimeBegin}
             </if>
             <if test="createTimeEnd != null">
                 AND create_time &lt;= #{createTimeEnd}
-            </if>
-            <if test="userDataAuth != null">
-                <choose>
-                    <when test="createUser != null">
-                        AND ( create_user = #{createUser, jdbcType=VARCHAR}
-                        <if test="userDataAuth.size > 0">
-                            OR create_owner in (
-                            <foreach collection="userDataAuth" item="value" separator=",">
-                                #{value}
-                            </foreach>
-                            )
-                        </if>
-                        )
-                    </when>
-                    <otherwise>
-                        <if test="userDataAuth.size > 0">
-                            AND create_owner = #{createOwner}
-                        </if>
-                    </otherwise>
-                </choose>
             </if>
         </where>
     </sql>

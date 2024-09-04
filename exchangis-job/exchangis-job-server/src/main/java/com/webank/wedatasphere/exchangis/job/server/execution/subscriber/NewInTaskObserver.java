@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
 import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
+import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.SubmitSchedulerTask;
@@ -26,6 +27,9 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
 
     @Resource
     private TaskParallelManager parallelManager;
+
+    @Resource
+    private RateLimitService rateLimitService;
 
     public NewInTaskObserver(){
         this.lastPublishTime = System.currentTimeMillis();
@@ -64,7 +68,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                 try {
                     AtomicBoolean noParallel = new AtomicBoolean(false);
                     // Check the submittable condition first in order to avoid the duplicate scheduler tasks
-                    SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(launchableExchangisTask,
+                    SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(rateLimitService, launchableExchangisTask,
                             () -> {
                                 TaskParallelRule parallelRule = parallelManager.getOrCreateRule(launchableExchangisTask.getExecuteUser(),
                                         TaskParallelManager.Operation.SUBMIT);

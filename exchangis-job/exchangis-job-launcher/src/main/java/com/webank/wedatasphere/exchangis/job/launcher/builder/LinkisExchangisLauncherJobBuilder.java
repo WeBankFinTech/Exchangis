@@ -5,9 +5,11 @@ import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.AbstractExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
+import com.webank.wedatasphere.exchangis.job.domain.content.JobSettingsDefine;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.datasourcemanager.common.exception.JsonErrorException;
 import org.apache.linkis.datasourcemanager.common.util.PatternInjectUtils;
 import org.apache.linkis.datasourcemanager.common.util.json.Json;
@@ -43,12 +45,13 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
         launchableTask.setLinkisContentMap(inputJob.getJobContent());
         Map<String, Object> linkisParams = new HashMap<>();
         Map<String, Object> startUpParams = new HashMap<>();
-        Map<String, Object> rateLimitParams = new HashMap<>();
+        Map<String, Object> rateParamMap = new HashMap<>();
         linkisParams.put(LAUNCHER_LINKIS_STARTUP_PARAM_NAME, startUpParams);
         try {
             String customParamPrefix = PatternInjectUtils.inject(LAUNCHER_LINKIS_CUSTOM_PARAM_PREFIX, new String[]{engine});
             // Add the runtime params to startup params for once job
             startUpParams.putAll(appendPrefixToParams(customParamPrefix, inputJob.getRuntimeParams()));
+            rateParamMap.putAll(appendRateParamsToParams(inputJob.getRuntimeParams()));
         } catch (JsonErrorException e) {
             throw new ExchangisJobException(TASK_EXECUTE_ERROR.getCode(), "Fail to convert custom params for launching", e);
         }
@@ -68,6 +71,12 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
             }
         }
         launchableTask.setLinkisParamsMap(linkisParams);
+        launchableTask.setRateParamsMap(rateParamMap);
+        try {
+            launchableTask.setRateParams(Json.toJson(inputJob.getRateParams(), null));
+        } catch (JsonErrorException e) {
+            LOG.error(e.getMessage());
+        }
         launchableTask.setEngineType(inputJob.getEngineType());
         launchableTask.setLabels(inputJob.getJobLabel());
         launchableTask.setName(inputJob.getName());
@@ -85,5 +94,19 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
     private Map<String, Object> appendPrefixToParams(String prefix, Map<String, Object> customParams){
         return customParams.entrySet().stream().collect(Collectors.toMap(entry -> prefix + entry.getKey(),
                 Map.Entry::getValue));
+    }
+
+    private Map<String, Object> appendRateParamsToParams(Map<String, Object> runtimeParams){
+        Map<String, Object> rateParamMap = new HashMap<>();
+        if (Objects.nonNull(runtimeParams) && !runtimeParams.isEmpty()) {
+            for (String key : runtimeParams.keySet()) {
+                if (StringUtils.equals(key, JobSettingsDefine.SETTING_SPEED_BYTE) ||
+                        StringUtils.equals(key, JobSettingsDefine.SETTING_SPEED_RECORD) ||
+                        StringUtils.equals(key, JobSettingsDefine.SETTING_SPEED_CHANNEL)) {
+                    rateParamMap.put(key, Long.valueOf(String.valueOf(runtimeParams.get(key))));
+                }
+            }
+        }
+        return rateParamMap;
     }
 }

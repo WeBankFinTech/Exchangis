@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution;
 
 
+import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
@@ -36,6 +37,7 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskExecution.class);
     private boolean initial = false;
+    protected RateLimitService rateLimitService;
 
     /**
      * Execution listeners
@@ -44,7 +46,7 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
 
     @Override
     public void submit(LaunchableExchangisTask task) throws ExchangisTaskExecuteException {
-        SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(task);
+        SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(rateLimitService, task);
         try {
             submit(submitSchedulerTask);
         } catch (ExchangisSchedulerException e) {

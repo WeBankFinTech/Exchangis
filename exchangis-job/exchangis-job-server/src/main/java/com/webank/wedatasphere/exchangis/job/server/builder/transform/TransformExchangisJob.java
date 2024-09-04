@@ -72,6 +72,13 @@ public class TransformExchangisJob extends GenericExchangisJob {
          */
         private final Map<String, BmlResource> resources = new HashMap<>();
 
+        /**
+         * Rate params
+         */
+        private Map<String, Integer> rateParamMap = new HashMap<>();
+
+        private List<Long> dsModelIds = new ArrayList<>();
+
         public TransformSubExchangisJob(ExchangisJobInfoContent jobInfoContent){
             if(Objects.nonNull(jobInfoContent)) {
                 this.jobInfoContent = jobInfoContent;
@@ -281,6 +288,10 @@ public class TransformExchangisJob extends GenericExchangisJob {
          */
         public BmlResource getCodeResource(){
             return this.resources.get(CODE_RESOURCE_NAME);
+        }
+
+        public Map<String, Integer> getRateParamMap() {
+            return rateParamMap;
         }
     }
 

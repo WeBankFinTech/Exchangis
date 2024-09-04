@@ -216,8 +216,8 @@
             <if test="launchEndTime != null">
                 and l.create_time &lt;= #{launchEndTime}
             </if>
-            <if test="loginUser.trim() != '' and loginUser != null">
-                and p.id in (SELECT project_id FROM exchangis_project_user WHERE priv_user=#{loginUser})
+            <if test="isAdminUser != null and isAdminUser == false">
+                and l.create_user = #{createUser}
             </if>
             <if test="status.trim() != '' and status != null">
                 and l.status = #{status}

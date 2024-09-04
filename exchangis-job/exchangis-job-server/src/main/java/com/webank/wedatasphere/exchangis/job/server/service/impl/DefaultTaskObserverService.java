@@ -146,6 +146,8 @@ public class DefaultTaskObserverService implements TaskObserverService {
                     // Set the linkis message
                     task.setLinkisJobContent(lastTask.getLinkisJobContent());
                     task.setLinkisParams(lastTask.getLinkisParams());
+                    // Set the rateLimit
+                    task.setRateParams(lastTask.getRateParams());
                     task.setLinkisSource(lastTask.getLinkisSource());
                     // set the commit version as 0
                     task.setCommitVersion(0);

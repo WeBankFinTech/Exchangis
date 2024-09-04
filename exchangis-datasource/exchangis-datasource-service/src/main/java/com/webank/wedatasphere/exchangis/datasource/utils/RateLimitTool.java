@@ -7,9 +7,11 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitUsed;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.content.JobSettingsDefine;
 import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -37,6 +39,70 @@ public class RateLimitTool {
                 .toString();
     }
 
+    public static List<RateLimitUsed> generateRateLimitUsed(RateLimit rateLimit) {
+        List<RateLimitUsed> rateLimitUsedList = new ArrayList<>();
+        RateLimitIdentify.RateLimitType.getRateLimitTypes().forEach(type -> {
+            RateLimitUsed limitUsed = new RateLimitUsed();
+            String key = type.getKey();
+            limitUsed.setRateLimitId(rateLimit.getId());
+            limitUsed.setRateLimitType(key);
+            switch (type) {
+                case FLOW_RATE_LIMIT:
+
+                    limitUsed.setRateLimitUsed(0l);
+                    limitUsed.setRateLimitTotal(rateLimit.getFlowRateLimit());
+                    break;
+                case RECORD_RATE_LIMIT:
+                    limitUsed.setRateLimitUsed(0l);
+                    limitUsed.setRateLimitTotal(rateLimit.getRecordRateLimit());
+                    break;
+                case PARALLEL_LIMIT:
+                    limitUsed.setRateLimitUsed(0l);
+                    limitUsed.setRateLimitTotal(rateLimit.getParallelLimit());
+                    break;
+                default:
+                    break;
+            }
+            limitUsed.setCreateUser(rateLimit.getCreateUser());
+            limitUsed.setModifyUser(rateLimit.getModifyUser());
+            rateLimitUsedList.add(limitUsed);
+        });
+        return rateLimitUsedList;
+    }
+
+    public static List<RateLimitUsed> generateRateLimitUsed(RateLimit rateLimit, Map<String, Object> rateParams) {
+        if (Objects.isNull(rateParams) || rateParams.isEmpty()) {
+            return null;
+        }
+        List<RateLimitUsed> result = new ArrayList<>();
+        for (String key : rateParams.keySet()) {
+            RateLimitUsed limitUsed = new RateLimitUsed();
+            if (StringUtils.equals(JobSettingsDefine.SETTING_SPEED_BYTE, key)) {
+                Long speedBytes = Long.valueOf(String.valueOf(rateParams.get(key)));
+                if (StringUtils.equals("MB", rateLimit.getFlowRateLimitUnit())) {
+                    speedBytes = speedBytes/1024/1024;
+                }
+                limitUsed.setRateLimitUsed(speedBytes);
+                limitUsed.setRateLimitTotal(rateLimit.getFlowRateLimit());
+                limitUsed.setRateLimitType(RateLimitIdentify.RateLimitType.FLOW_RATE_LIMIT.getKey());
+            }
+            if (StringUtils.equals(JobSettingsDefine.SETTING_SPEED_RECORD, key)) {
+                limitUsed.setRateLimitUsed(Long.valueOf(String.valueOf(rateParams.get(key))));
+                limitUsed.setRateLimitTotal(rateLimit.getRecordRateLimit());
+                limitUsed.setRateLimitType(RateLimitIdentify.RateLimitType.RECORD_RATE_LIMIT.getKey());
+            }
+            if (StringUtils.equals(JobSettingsDefine.SETTING_SPEED_CHANNEL, key)) {
+                limitUsed.setRateLimitUsed(Long.valueOf(String.valueOf(rateParams.get(key))));
+                limitUsed.setRateLimitTotal(rateLimit.getParallelLimit());
+                limitUsed.setRateLimitType(RateLimitIdentify.RateLimitType.PARALLEL_LIMIT.getKey());
+            }
+            limitUsed.setModifyUser(rateLimit.getModifyUser());
+            limitUsed.setRateLimitId(rateLimit.getId());
+            result.add(limitUsed);
+        }
+        return result;
+    }
+
     /**
      * Generate rate limit used list
      * Add/Update: rateLimitUsed is 0, rateLimitTotal same with rateLimit
@@ -50,9 +116,9 @@ public class RateLimitTool {
         List<RateLimitUsed> rateLimitUsedList = new ArrayList<>();
         boolean jobNotEmpty = Objects.nonNull(jobInfo) && Objects.nonNull(jobInfo.getJobContent());
         RateLimitIdentify.RateLimitType.getRateLimitTypes().forEach(type -> {
-            AtomicReference<Integer> speedByteUsed = new AtomicReference<>(0);
-            AtomicReference<Integer> speedRecordUsed = new AtomicReference<>(0);
-            AtomicReference<Integer> speedAdvanceUsed = new AtomicReference<>(0);
+            AtomicReference<Long> speedByteUsed = new AtomicReference<>(0l);
+            AtomicReference<Long> speedRecordUsed = new AtomicReference<>(0l);
+            AtomicReference<Long> speedAdvanceUsed = new AtomicReference<>(0l);
             if (jobNotEmpty) {
                 List<ExchangisJobInfoContent> jobInfoContents = JobUtils.parseJobContent(jobInfo.getJobContent());
                 jobInfoContents.stream().flatMap(content -> content.getSettings().stream())

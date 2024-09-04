@@ -102,7 +102,8 @@ public interface LaunchedJobDao {
                                                        @Param("status") String status,
                                                        @Param("launchStartTime") Date launchStartTime,
                                                        @Param("launchEndTime") Date launchEndTime,
-                                                       @Param("loginUser") String loginUser);
+                                                       @Param("createUser") String createUser,
+                                                       @Param("isAdminUser") boolean isAdminUser);
 
     /**
      * get launchJob count

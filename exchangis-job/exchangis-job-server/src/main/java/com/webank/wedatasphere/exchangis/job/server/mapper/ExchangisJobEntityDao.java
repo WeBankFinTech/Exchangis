@@ -57,6 +57,13 @@ public interface ExchangisJobEntityDao {
     ExchangisJobEntity getBasicInfo(@Param("jobId") Long jobId);
 
     /**
+     * Query list by user
+     * @param userName userName
+     * @return list
+     */
+    List<ExchangisJobEntity> queryByUser(@Param("userName") String userName);
+
+    /**
      * Query page list
      * @param queryVo query vo
      * @return list

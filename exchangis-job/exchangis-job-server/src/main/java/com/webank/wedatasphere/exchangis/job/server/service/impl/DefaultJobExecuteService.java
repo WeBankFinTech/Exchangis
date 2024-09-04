@@ -282,9 +282,9 @@ public class DefaultJobExecuteService implements JobExecuteService {
         Date startTime = launchStartTime == null ? null : new Date(launchStartTime);
         Date endTime = launchEndTime == null ? null : new Date(launchEndTime);
         String loginUser = UserUtils.getLoginUser(request);
-        List<LaunchedExchangisJobEntity> jobEntitylist = GlobalConfiguration.isAdminUser(loginUser) ?
-                launchedJobDao.getAllLaunchedJobInAdmin(jobExecutionId, jobName, status, startTime, endTime) :
-                launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime, loginUser);
+        List<LaunchedExchangisJobEntity> jobEntitylist =
+                launchedJobDao.getAllLaunchedJob(jobExecutionId, jobName, status, startTime, endTime,
+                        loginUser, GlobalConfiguration.isAdminUser(loginUser));
         PageInfo<LaunchedExchangisJobEntity> pageInfo = new PageInfo<>(jobEntitylist);
         if (jobEntitylist != null) {
             try {
@@ -368,8 +368,6 @@ public class DefaultJobExecuteService implements JobExecuteService {
         schedulerTask.setTenancy(execUser);
         LOG.info("Submit the generation scheduler task: [{}] for job: [{}], tenancy: [{}] to TaskExecution", jobExecutionId, jobInfo.getId(), execUser);
         try {
-            // rate limit todo
-            rateLimitService.rateLimit(jobInfo);
             taskExecution.submit(schedulerTask);
         } catch (ExchangisSchedulerException e) {
             throw new ExchangisJobServerException(JOB_EXCEPTION_CODE.getCode(), "Exception in submitting to taskExecution", e);

@@ -32,20 +32,20 @@ public class RateLimit {
 
     @NotNull(message = "速率限速值不为空")
     @Min(0)
-    @Max(value = Integer.MAX_VALUE, message = "Value must be less than or equal to " + Integer.MAX_VALUE)
-    private Integer flowRateLimit;
+    @Max(value = Long.MAX_VALUE, message = "Value must be less than or equal to " + Long.MAX_VALUE)
+    private Long flowRateLimit;
 
     private String flowRateLimitUnit;
 
     @NotNull(message = "记录数限速值不为空")
     @Min(0)
-    @Max(value = Integer.MAX_VALUE, message = "Value must be less than or equal to " + Integer.MAX_VALUE)
-    private Integer recordRateLimit;
+    @Max(value = Long.MAX_VALUE, message = "Value must be less than or equal to " + Long.MAX_VALUE)
+    private Long recordRateLimit;
 
     @NotNull(message = "并行度限速值不为空")
     @Min(0)
-    @Max(value = Integer.MAX_VALUE, message = "Value must be less than or equal to " + Integer.MAX_VALUE)
-    private Integer parallelLimit;
+    @Max(value = Long.MAX_VALUE, message = "Value must be less than or equal to " + Long.MAX_VALUE)
+    private Long parallelLimit;
 
     /**
      * Open limit
@@ -99,11 +99,11 @@ public class RateLimit {
         this.limitRealm = limitRealm;
     }
 
-    public Integer getFlowRateLimit() {
+    public Long getFlowRateLimit() {
         return flowRateLimit;
     }
 
-    public void setFlowRateLimit(Integer flowRateLimit) {
+    public void setFlowRateLimit(Long flowRateLimit) {
         this.flowRateLimit = flowRateLimit;
     }
 
@@ -115,19 +115,19 @@ public class RateLimit {
         this.flowRateLimitUnit = flowRateLimitUnit;
     }
 
-    public Integer getRecordRateLimit() {
+    public Long getRecordRateLimit() {
         return recordRateLimit;
     }
 
-    public void setRecordRateLimit(Integer recordRateLimit) {
+    public void setRecordRateLimit(Long recordRateLimit) {
         this.recordRateLimit = recordRateLimit;
     }
 
-    public Integer getParallelLimit() {
+    public Long getParallelLimit() {
         return parallelLimit;
     }
 
-    public void setParallelLimit(Integer parallelLimit) {
+    public void setParallelLimit(Long parallelLimit) {
         this.parallelLimit = parallelLimit;
     }
 
@@ -177,7 +177,7 @@ public class RateLimit {
         this.openLimit = DEFAULT_OPEN_LIMIT;
     }
 
-    public RateLimit(Long id, Long limitRealmId, String limitRealm, Integer flowRateLimit, Integer recordRateLimit, Integer parallelLimit, Boolean openLimit) {
+    public RateLimit(Long id, Long limitRealmId, String limitRealm, Long flowRateLimit, Long recordRateLimit, Long parallelLimit, Boolean openLimit) {
         this.id = id;
         this.limitRealmId = limitRealmId;
         this.limitRealm = limitRealm;

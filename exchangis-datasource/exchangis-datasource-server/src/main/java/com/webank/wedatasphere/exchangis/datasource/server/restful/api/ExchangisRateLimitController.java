@@ -60,7 +60,13 @@ public class ExchangisRateLimitController {
         if (!checkResult.getLeft()) {
             return Message.error("Please check the params!(参数校验失败), Cause by : " + checkResult.getRight());
         }
-
+        String userName = UserUtils.getLoginUser(request);
+        if (Objects.isNull(rateLimit.getCreateUser())) {
+            rateLimit.setCreateUser(userName);
+        }
+        if (Objects.isNull(rateLimit.getModifyUser())) {
+            rateLimit.setModifyUser(userName);
+        }
         try {
             rateLimitService.add(rateLimit);
         } catch (RateLimitOperationException e) {
@@ -83,17 +89,22 @@ public class ExchangisRateLimitController {
         if (Objects.isNull(queryOne)) {
             return Message.error("Please check the params!(参数校验失败，限速信息不存在)");
         }
-        rateLimit.setId(id);
-        if (Objects.isNull(rateLimit.getLimitRealm()) || Objects.isNull(rateLimit.getLimitRealmId())) {
+        if (Objects.isNull(queryOne.getLimitRealm()) || Objects.isNull(queryOne.getLimitRealmId())) {
             return Message.error("Please check the params!(参数校验失败)");
         }
         // Param valid
-        DataSourceModel dataSourceModel = dataSourceModelService.get(rateLimit.getLimitRealmId());
+        DataSourceModel dataSourceModel = dataSourceModelService.get(queryOne.getLimitRealmId());
         MutablePair<Boolean, String> checkResult = checkDataSourceModel(rateLimit, dataSourceModel);
         if (!checkResult.getLeft()) {
             return Message.error("Please check the params!(参数校验失败), Cause by : " + checkResult.getRight());
         }
-
+        String userName = UserUtils.getLoginUser(request);
+        if (Objects.isNull(rateLimit.getCreateUser())) {
+            rateLimit.setCreateUser(userName);
+        }
+        if (Objects.isNull(rateLimit.getModifyUser())) {
+            rateLimit.setModifyUser(userName);
+        }
         try {
             rateLimitService.update(rateLimit);
         } catch (RateLimitOperationException e) {

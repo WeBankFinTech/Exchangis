@@ -75,4 +75,13 @@ public interface DataSourceModelRelationMapper {
      * @param modelId model id
      */
     void deleteRefRelationByModelId(Long modelId);
+
+    /**
+     * Recycle user
+     * @param userName userName
+     * @param handover handover
+     */
+    void recycleDsModelRelation(@Param("userName") String userName,
+                                @Param("handover") String handover);
+
 }

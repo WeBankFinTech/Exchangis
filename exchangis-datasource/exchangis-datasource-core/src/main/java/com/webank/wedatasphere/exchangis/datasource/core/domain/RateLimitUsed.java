@@ -12,9 +12,9 @@ public class RateLimitUsed {
 
     private String rateLimitType;
 
-    private Integer rateLimitUsed;
+    private Long rateLimitUsed;
 
-    private Integer rateLimitTotal;
+    private Long rateLimitTotal;
 
     /**
      * Create user
@@ -62,19 +62,19 @@ public class RateLimitUsed {
         this.rateLimitType = rateLimitType;
     }
 
-    public Integer getRateLimitUsed() {
+    public Long getRateLimitUsed() {
         return rateLimitUsed;
     }
 
-    public void setRateLimitUsed(Integer rateLimitUsed) {
+    public void setRateLimitUsed(Long rateLimitUsed) {
         this.rateLimitUsed = rateLimitUsed;
     }
 
-    public Integer getRateLimitTotal() {
+    public Long getRateLimitTotal() {
         return rateLimitTotal;
     }
 
-    public void setRateLimitTotal(Integer rateLimitTotal) {
+    public void setRateLimitTotal(Long rateLimitTotal) {
         this.rateLimitTotal = rateLimitTotal;
     }
 
@@ -95,7 +95,7 @@ public class RateLimitUsed {
     }
 
     public RateLimitUsed() {
-        this.rateLimitUsed = 0;
+        this.rateLimitUsed = 0l;
     }
 
     public RateLimitUsed(Long rateLimitId) {

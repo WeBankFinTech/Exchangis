@@ -39,7 +39,17 @@ public class DefaultJobOpenService implements ExchangisJobOpenService {
             return basic ? this.jobEntityDao.getBasicInfo(id) : this.jobEntityDao.getDetail(id);
         } catch (Exception e){
             throw new ExchangisJobException(JOB_EXCEPTION_CODE.getCode(),
-                    "Fail to the information of job [id: " + id + "]", e);
+                    "Fail to get information of job [id: " + id + "]", e);
+        }
+    }
+
+    @Override
+    public List<ExchangisJobEntity> queryJobsByUser(String userName) throws ExchangisJobException {
+        try {
+            return this.jobEntityDao.queryByUser(userName);
+        } catch (Exception e){
+            throw new ExchangisJobException(JOB_EXCEPTION_CODE.getCode(),
+                    "Fail to get information from user [userName: " + userName + "]", e);
         }
     }
 

@@ -21,7 +21,6 @@ public class DataSourceModelQuery extends PageQuery {
     private Date createTimeEnd;
     private String createUser;
     private String createOwner;
-    private Set<String> userDataAuth = new HashSet<>();
 
     public long getId() {
         return id;
@@ -96,21 +95,6 @@ public class DataSourceModelQuery extends PageQuery {
 
     public void setCreateUser(String createUser) {
         this.createUser = createUser;
-    }
-
-    public Set<String> getUserDataAuth() {
-        if(StringUtils.isNotBlank(createOwner)){
-            HashSet<String> dataAuthSet = new HashSet<>();
-            dataAuthSet.add("");
-            dataAuthSet.add(createOwner);
-            return dataAuthSet;
-        }
-        return userDataAuth;
-    }
-
-    public void setUserDataAuth(Set<String> userDataAuth) {
-
-        this.userDataAuth = userDataAuth;
     }
 
     public String getModelExactName() {

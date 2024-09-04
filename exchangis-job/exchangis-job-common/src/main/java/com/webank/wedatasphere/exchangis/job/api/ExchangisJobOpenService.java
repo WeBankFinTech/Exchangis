@@ -20,6 +20,14 @@ public interface ExchangisJobOpenService {
 
     /**
      * Query job entity
+     * @param userName userName
+     * @return
+     */
+    List<ExchangisJobEntity> queryJobsByUser(String userName)
+            throws ExchangisJobException;
+
+    /**
+     * Query job entity
      * @param queryVo query vo
      * @param inPage if in page
      * @return

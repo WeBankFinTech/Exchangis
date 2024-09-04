@@ -8,8 +8,10 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitUsed;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitVo;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimitQuery;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RateLimitService {
 
@@ -31,6 +33,16 @@ public interface RateLimitService {
 
     /**
      * Limit the job rate
+     * @param rateParams rateParams
+     * @param rateParamMap rateParamMap
+     * @return boolean
+     */
+    boolean rateLimit(String rateParams, Map<String, Object> rateParamMap) throws RateLimitNoLeftException;
+
+    List<RateLimitUsed> getRateLimitUsed(String rateParams, Map<String, Object> rateParamMap);
+
+    /**
+     * Limit the job rate
      * @param jobInfo job info
      * @return boolean
      */
@@ -41,11 +53,12 @@ public interface RateLimitService {
      * @param applyUsed apply used
      */
     void rateLimit(List<RateLimitUsed> applyUsed) throws RateLimitNoLeftException;
+
     /**
      * Release job rate limit
-     * @param jobInfo job info
+     * @param launchableExchangisTask launchableExchangisTask
      */
-    void releaseRateLimit(ExchangisJobInfo jobInfo);
+    void releaseRateLimit(LaunchableExchangisTask launchableExchangisTask);
 
     /**
      * Reset rateLimitUsed by rateLimit

@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.SpringContext;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.*;
+import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.datasource.utils.RateLimitTool;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
@@ -15,21 +16,15 @@ import com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitMapper;
 import com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitUsedMapper;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitNoLeftException;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
-import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Map;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,7 +57,7 @@ public class RateLimitServiceImpl implements RateLimitService {
         if (!insertResult) {
             throw new RateLimitOperationException("Add failed!(数据库插入失败，请稍后重试)");
         }
-        List<RateLimitUsed> rateLimitUsedList = RateLimitTool.generateRateLimitUsed(rateLimit, null);
+        List<RateLimitUsed> rateLimitUsedList = RateLimitTool.generateRateLimitUsed(rateLimit);
         if (rateLimitUsedList.size() > 0) {
             return rateLimitUsedMapper.insert(rateLimitUsedList) > 0;
         }
@@ -72,7 +67,7 @@ public class RateLimitServiceImpl implements RateLimitService {
     @Transactional
     public boolean update(RateLimit rateLimit) throws RateLimitOperationException {
         rateLimitMapper.update(rateLimit);
-        List<RateLimitUsed> rateLimitUsedList = RateLimitTool.generateRateLimitUsed(rateLimit, null);
+        List<RateLimitUsed> rateLimitUsedList = RateLimitTool.generateRateLimitUsed(rateLimit);
         sortRateLimitUsed(rateLimitUsedList);
         rateLimitUsedMapper.update(rateLimitUsedList);
         return true;
@@ -147,8 +142,85 @@ public class RateLimitServiceImpl implements RateLimitService {
         return rateLimitMapper.selectOne(rateLimit);
     }
 
+    public boolean rateLimit(String rateParams, Map<String, Object> rateParamMap) throws RateLimitNoLeftException {
+        Map<String, Object> rateMap = Json.fromJson(rateParams, Map.class);
+        List<Long> modelIds = new ArrayList<>();
+        Map<String, Long> source = (Map<String, Long>) rateMap.get("source");
+        if (Objects.nonNull(source)) {
+            Long sourceModelId = Long.valueOf(String.valueOf(source.get("realm")));
+            modelIds.add(sourceModelId);
+        }
+        Map<String, Long> sink = (Map<String, Long>) rateMap.get("sink");
+        if (Objects.nonNull(sink)) {
+            Long sinkModelId = Long.valueOf(String.valueOf(sink.get("realm")));
+            modelIds.add(sinkModelId);
+        }
+        List<RateLimit> rateLimits = rateLimitMapper.selectByRealmIds(RateLimit.DEFAULT_LIMIT_REALM, modelIds);
+        if (Objects.nonNull(rateParams) && !rateParams.isEmpty()) {
+            List<RateLimitUsed> applyUsed = new ArrayList<>();
+            List<Long> rateLimitIds = new ArrayList<>();//todo
+            for (RateLimit rateLimit : rateLimits) {
+                applyUsed.addAll(getJobRateLimitUsed(rateLimit, rateParamMap));
+            }
+            rateLimits.forEach(rateLimit -> {
+                rateLimitIds.add(rateLimit.getId());
+            });
+            if (!applyUsed.isEmpty()) {
+//                throw new RateLimitNoLeftException(RateLimitTool.getLimitLog(applyUsed, null, null));
+                sortRateLimitUsed(applyUsed);
+                try {
+                    getSelfService().rateLimit(applyUsed);
+                    return true;
+                } catch (RateLimitNoLeftException e) {
+//                    List<Long> sourceModelIds = Arrays.asList(source.get("realm"));
+//                    List<Long> sinkModelIds = Arrays.asList(sink.get("realm"));
+                    Map<Long, Integer> limitDirect = rateLimits.stream().collect(Collectors
+                            .toMap(RateLimit::getId, rateLimit -> modelIds.contains(rateLimit.getLimitRealmId())
+                                    ? 1 : 0));
+                    for (RateLimit rateLimit : rateLimits) {
+                        limitDirect.put(rateLimit.getId(), 1);
+                    }
+
+                    List<RateLimitUsed> actualUsed = this.rateLimitUsedMapper.selectUsedInLimitIds(rateLimitIds);
+                    throw new RateLimitNoLeftException(RateLimitTool.getLimitLog(applyUsed,
+                            actualUsed.stream().sorted(Comparator.comparing(RateLimitUsed::getId)).filter(used -> limitDirect.get(used.getRateLimitId()) == 0).collect(Collectors.toList()),
+                            actualUsed.stream().sorted(Comparator.comparing(RateLimitUsed::getId)).filter(used -> limitDirect.get(used.getRateLimitId()) == 1).collect(Collectors.toList())));
+                }
+            }
+        }
+        return false;
+    }
+
+    public List<RateLimitUsed> getRateLimitUsed(String rateParams, Map<String, Object> rateParamMap) {
+        Map<String, Object> rateMap = Json.fromJson(rateParams, Map.class);
+        List<Long> modelIds = new ArrayList<>();
+        Map<String, Long> source = (Map<String, Long>) rateMap.get("source");
+        if (Objects.nonNull(source)) {
+            Long sourceModelId = Long.valueOf(String.valueOf(source.get("realm")));
+            modelIds.add(sourceModelId);
+        }
+        Map<String, Long> sink = (Map<String, Long>) rateMap.get("sink");
+        if (Objects.nonNull(sink)) {
+            Long sinkModelId = Long.valueOf(String.valueOf(sink.get("realm")));
+            modelIds.add(sinkModelId);
+        }
+        List<RateLimit> rateLimits = rateLimitMapper.selectByRealmIds(RateLimit.DEFAULT_LIMIT_REALM, modelIds);
+        if (Objects.nonNull(rateParams) && !rateParams.isEmpty()) {
+            List<RateLimitUsed> applyUsed = new ArrayList<>();
+            List<Long> rateLimitIds = new ArrayList<>();//todo
+            for (RateLimit rateLimit : rateLimits) {
+                applyUsed.addAll(getJobRateLimitUsed(rateLimit, rateParamMap));
+            }
+            rateLimits.forEach(rateLimit -> {
+                rateLimitIds.add(rateLimit.getId());
+            });
+            return applyUsed;
+        }
+        return null;
+    }
+
+    @Deprecated
     public boolean rateLimit(ExchangisJobInfo jobInfo) throws RateLimitNoLeftException {
-        //todo 修改入参为rateLimitProvider 需要多少
         List<RateLimit> rateLimits = getJobRateLimits(jobInfo);
         if (!rateLimits.isEmpty()) {
             List<RateLimitUsed> applyUsed = new ArrayList<>();
@@ -198,14 +270,12 @@ public class RateLimitServiceImpl implements RateLimitService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void releaseRateLimit(ExchangisJobInfo jobInfo) {
-        List<RateLimit> rateLimits = getJobRateLimits(jobInfo);
-        if (!rateLimits.isEmpty()) {
-            List<RateLimitUsed> recycleUsed = new ArrayList<>();
-            rateLimits.forEach(rateLimit -> recycleUsed.addAll(getJobRateLimitUsed(rateLimit, jobInfo)));
-            if (!recycleUsed.isEmpty()) {
-                sortRateLimitUsed(recycleUsed);
-                this.rateLimitUsedMapper.releaseRateLimitUsed(recycleUsed);
+    public void releaseRateLimit(LaunchableExchangisTask launchableExchangisTask) {
+        if (Objects.nonNull(launchableExchangisTask)) {
+            List<RateLimitUsed> rateLimitUsed = this.getRateLimitUsed(launchableExchangisTask.getRateParams(), launchableExchangisTask.getRateParamsMap());
+            if (!rateLimitUsed.isEmpty()) {
+                sortRateLimitUsed(rateLimitUsed);
+                this.rateLimitUsedMapper.releaseRateLimitUsed(rateLimitUsed);
             }
         }
     }
@@ -217,10 +287,21 @@ public class RateLimitServiceImpl implements RateLimitService {
     /**
      * Get rate limit used from job
      *
+     * @param rateParams rateParams
+     * @return limit used list
+     */
+    private List<RateLimitUsed> getJobRateLimitUsed(RateLimit rateLimit, Map<String, Object> rateParams) {
+        return RateLimitTool.generateRateLimitUsed(rateLimit, rateParams);
+    }
+
+    /**
+     * Get rate limit used from job
+     *
      * @param rateLimit rate limit
      * @param jobInfo   job info
      * @return limit used list
      */
+    @Deprecated
     private List<RateLimitUsed> getJobRateLimitUsed(RateLimit rateLimit, ExchangisJobInfo jobInfo) {
         return RateLimitTool.generateRateLimitUsed(rateLimit, jobInfo);
     }

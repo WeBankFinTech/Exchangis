@@ -247,6 +247,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public List<ExchangisProject> queryAllProjects() {
+        return this.projectMapper.queryPageInAll(new ProjectQueryVo());
+    }
+
+    @Override
     public PageResult<ExchangisProjectInfo> queryProjects(ProjectQueryVo queryVo) {
         PageHelper.startPage(queryVo.getPage(), queryVo.getPageSize());
         try{

@@ -75,7 +75,7 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
                 Map<String, Object> connectParams =
                         dataSourceService.getDataSourceConnectParamsById(userName, Long.valueOf(id));
                 Optional.ofNullable(connectParams).ifPresent(params ->
-                        params.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, true))));
+                        params.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, !key.equals("_model_")))));
             }
         } else {
             // {TYPE}.{ID}.{DB}.{TABLE}
@@ -83,7 +83,7 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
             if (idSerial.length >= 2){
                 Map<String, Object> connectParams = dataSourceService.getDataSourceConnectParamsById(userName, Long.valueOf(idSerial[1]));
                 Optional.ofNullable(connectParams).ifPresent(params ->
-                        params.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, true))));
+                        params.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, !key.equals("_model_")))));
             }
         }
     }

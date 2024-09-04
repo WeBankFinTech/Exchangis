@@ -25,6 +25,8 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
 
     private String linkisJobInfo;
 
+    private String rateParams;
+
     /**
      * Execution id
      */
@@ -61,6 +63,8 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
         this.engineType = launchableExchangisTask.getEngineType();
         this.executeUser = launchableExchangisTask.getExecuteUser();
         this.jobId = launchableExchangisTask.getJobId();
+        // rateParams
+        this.rateParams = launchableExchangisTask.getRateParams();
         // jobName
         this.jobExecutionId = launchableExchangisTask.getJobExecutionId();
         this.status = TaskStatus.Scheduled;
@@ -94,6 +98,14 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
 
     public void setLinkisJobInfo(String linkisJobInfo) {
         this.linkisJobInfo = linkisJobInfo;
+    }
+
+    public String getRateParams() {
+        return rateParams;
+    }
+
+    public void setRateParams(String rateParams) {
+        this.rateParams = rateParams;
     }
 
     public String getJobExecutionId() {

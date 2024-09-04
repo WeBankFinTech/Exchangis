@@ -25,7 +25,6 @@ class ExchangisClientConfigBuilder extends ClientConfigBuilder{
   readTimeout = HttpClientConfiguration.SOCKET_READ_TIMEOUT.getValue.longValue()
   // Linkis client, use token auth default
   dwsVersion = ClientConfiguration.LINKIS_DWS_VERSION.getValue
-  serverUrl = ClientConfiguration.LINKIS_SERVER_URL.getValue
   discoveryEnabled = ClientConfiguration.LINKIS_DISCOVERY_ENABLED.getValue
   discoveryFrequency(ClientConfiguration.LINKIS_DISCOVERY_FREQUENCY_PERIOD.getValue, TimeUnit.MINUTES)
   loadbalancerEnabled = ClientConfiguration.LINKIS_LOAD_BALANCER_ENABLED.getValue
