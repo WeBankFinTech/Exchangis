@@ -54,10 +54,11 @@ public class ExchangisDataSourceModelController {
             return Message.error("The name of model already exists(模板名已存在)");
         }
         String userName = UserUtils.getLoginUser(request);
+        model.setCreateUser(userName);
         if (GlobalConfiguration.isAdminUser(userName)) {
             model.setCreateOwner("");
         } else {
-            model.setCreateOwner(model.getCreateUser());
+            model.setCreateOwner(userName);
         }
         model.setCreateUser(userName);
         if (StringUtils.isBlank(model.getModifyUser())) {
