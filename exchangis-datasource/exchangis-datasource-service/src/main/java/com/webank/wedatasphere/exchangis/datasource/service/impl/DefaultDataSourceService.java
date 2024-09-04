@@ -408,7 +408,6 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         }
     }
 
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long delete(String operator,  Long id) throws ExchangisDataSourceException {
@@ -576,12 +575,14 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             QueryDataSourceResult result = rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> {
                 QueryDataSourceAction.Builder builder = QueryDataSourceAction.builder()
                         .setSystem("exchangis")
-                        .setName(dataSourceName)
                         .setIdentifies("")
                         .setCurrentPage(finalPage)
                         .setPageSize(pageSize);
                 if (!Objects.isNull(typeId)) {
                     builder.setTypeId(typeId);
+                }
+                if (StringUtils.isNotBlank(dataSourceName)) {
+                    builder.setName(dataSourceName);
                 }
                 if (!Strings.isNullOrEmpty(vo.getTypeName())) {
                     builder.setSystem(vo.getTypeName());

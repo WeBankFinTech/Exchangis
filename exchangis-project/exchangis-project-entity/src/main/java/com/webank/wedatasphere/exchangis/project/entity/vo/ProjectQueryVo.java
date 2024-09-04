@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.project.entity.vo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.webank.wedatasphere.exchangis.project.entity.domain.ProjectPageQuery;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,7 +18,7 @@ public class ProjectQueryVo extends ProjectPageQuery {
     public ProjectQueryVo(){
     }
 
-    private List<Long> projectIds;
+    private List<Long> projectIds = new ArrayList<>();
 
     public List<Long> getProjectIds() {
         return projectIds;

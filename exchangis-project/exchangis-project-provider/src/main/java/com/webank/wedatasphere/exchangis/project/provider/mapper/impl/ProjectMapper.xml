@@ -167,8 +167,8 @@
     <select id="queryByUserProjects" resultMap="projectResult">
         select * from exchangis_project_info
         WHERE
-        create_user=#{createUser} OR view_users like CONCAT('%', #{createUser}, '%')
-        OR edit_users like CONCAT('%', #{createUser}, '%') OR exec_users like CONCAT('%', #{createUser}, '%')
+        (create_user=#{userName} OR view_users like CONCAT('%', #{userName}, '%')
+        OR edit_users like CONCAT('%', #{userName}, '%') OR exec_users like CONCAT('%', #{userName}, '%'))
         <if test="projectIds != null and projectIds.size > 0">
             AND id IN (
             <foreach collection="projectIds" item="item" separator=",">

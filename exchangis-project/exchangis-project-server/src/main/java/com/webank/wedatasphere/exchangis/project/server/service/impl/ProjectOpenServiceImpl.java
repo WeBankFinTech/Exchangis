@@ -172,39 +172,39 @@ public class ProjectOpenServiceImpl implements ProjectOpenService {
     }
 
     @Override
-    public void recycleUserProject(String username, String handover, List<Long> projectIds) {
+    public void recycleUserProject(String userName, String handover, List<Long> projectIds) {
         ProjectQueryVo projectQueryVo = new ProjectQueryVo();
-        projectQueryVo.setCreateUser(username);
+        projectQueryVo.setCreateUser(userName);
         projectQueryVo.setProjectIds(projectIds);
-        List<ExchangisProject> projects = projectMapper.queryByUser(projectQueryVo);
+        List<ExchangisProject> projects = projectMapper.queryByUserProjects(userName, projectIds);
         if (Objects.nonNull(projects) && !projects.isEmpty()) {
             for (ExchangisProject project : projects) {
-                if (StringUtils.equals(username, project.getCreateUser())) {
+                if (StringUtils.equals(userName, project.getCreateUser())) {
                     project.setCreateUser(handover);
                 }
-                if (StringUtils.equals(username, project.getLastUpdateUser())) {
+                if (StringUtils.equals(userName, project.getLastUpdateUser())) {
                     project.setLastUpdateUser(handover);
                 }
                 if (StringUtils.isNotBlank(project.getViewUsers())) {
                     Set<String> viewUsers = Arrays.stream(project.getViewUsers().split(",")).collect(Collectors.toSet());
-                    if (viewUsers.contains(username)) {
-                        viewUsers.remove(username);
+                    if (viewUsers.contains(userName)) {
+                        viewUsers.remove(userName);
                         viewUsers.add(handover);
                         project.setViewUsers(StringUtils.join(viewUsers, ","));
                     }
                 }
                 if (StringUtils.isNotBlank(project.getEditUsers())) {
                     Set<String> editUsers = Arrays.stream(project.getEditUsers().split(",")).collect(Collectors.toSet());
-                    if (editUsers.contains(username)) {
-                        editUsers.remove(username);
+                    if (editUsers.contains(userName)) {
+                        editUsers.remove(userName);
                         editUsers.add(handover);
                         project.setEditUsers(StringUtils.join(editUsers, ","));
                     }
                 }
                 if (StringUtils.isNotBlank(project.getExecUsers())) {
                     Set<String> execUsers = Arrays.stream(project.getExecUsers().split(",")).collect(Collectors.toSet());
-                    if (execUsers.contains(username)) {
-                        execUsers.remove(username);
+                    if (execUsers.contains(userName)) {
+                        execUsers.remove(userName);
                         execUsers.add(handover);
                         project.setExecUsers(StringUtils.join(execUsers, ","));
                     }
@@ -212,6 +212,6 @@ public class ProjectOpenServiceImpl implements ProjectOpenService {
             }
             projectMapper.batchUpdate(projects);
         }
-        projectUserMapper.batchUpdate(username, handover);
+        projectUserMapper.batchUpdate(userName, handover);
     }
 }

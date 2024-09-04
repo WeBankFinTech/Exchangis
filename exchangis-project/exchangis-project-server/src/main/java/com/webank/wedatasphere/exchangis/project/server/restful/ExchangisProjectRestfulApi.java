@@ -35,8 +35,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -129,19 +129,35 @@ public class ExchangisProjectRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-
         String username = UserUtils.getLoginUser(request);
         String oringinUser = SecurityFilter.getLoginUsername(request);
-        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
-            projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
+        if (StringUtils.isNotBlank(projectVo.getViewUsers())) {
+            Set<String> viewUsers = Arrays.stream(projectVo.getViewUsers().split(",")).collect(Collectors.toSet());
+            if (!viewUsers.contains(username)) {
+                viewUsers.add(username);
+            }
+            projectVo.setViewUsers(StringUtils.join(viewUsers, ","));
+        } else {
+            projectVo.setViewUsers(username);
         }
-        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
-            projectVo.setEditUsers(username + "," + projectVo.getEditUsers());
+        if (StringUtils.isNotBlank(projectVo.getEditUsers())) {
+            Set<String> editUsers = Arrays.stream(projectVo.getEditUsers().split(",")).collect(Collectors.toSet());
+            if (!editUsers.contains(username)) {
+                editUsers.add(username);
+            }
+            projectVo.setEditUsers(StringUtils.join(editUsers, ","));
+        } else {
+            projectVo.setEditUsers(username);
         }
-        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
-            projectVo.setExecUsers(username + "," + projectVo.getExecUsers());
+        if (StringUtils.isNotBlank(projectVo.getExecUsers())) {
+            Set<String> execUsers = Arrays.stream(projectVo.getExecUsers().split(",")).collect(Collectors.toSet());
+            if (!execUsers.contains(username)) {
+                execUsers.add(username);
+            }
+            projectVo.setExecUsers(StringUtils.join(execUsers, ","));
+        } else {
+            projectVo.setExecUsers(username);
         }
-
         try {
             if (projectService.existsProject(null, projectVo.getName())){
                 return Message.error("Have the same name project (存在同名项目)");
@@ -194,17 +210,33 @@ public class ExchangisProjectRestfulApi {
         }
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String username = UserUtils.getLoginUser(request);
-        //String username = SecurityFilter.getLoginUsername(request);
-        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
-            projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
+        if (StringUtils.isNotBlank(projectVo.getViewUsers())) {
+            Set<String> viewUsers = Arrays.stream(projectVo.getViewUsers().split(",")).collect(Collectors.toSet());
+            if (!viewUsers.contains(username)) {
+                viewUsers.add(username);
+            }
+            projectVo.setViewUsers(StringUtils.join(viewUsers, ","));
+        } else {
+            projectVo.setViewUsers(username);
         }
-        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
-            projectVo.setEditUsers(username + "," + projectVo.getEditUsers());
+        if (StringUtils.isNotBlank(projectVo.getEditUsers())) {
+            Set<String> editUsers = Arrays.stream(projectVo.getEditUsers().split(",")).collect(Collectors.toSet());
+            if (!editUsers.contains(username)) {
+                editUsers.add(username);
+            }
+            projectVo.setEditUsers(StringUtils.join(editUsers, ","));
+        } else {
+            projectVo.setEditUsers(username);
         }
-        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
-            projectVo.setExecUsers(username + "," + projectVo.getExecUsers());
+        if (StringUtils.isNotBlank(projectVo.getExecUsers())) {
+            Set<String> execUsers = Arrays.stream(projectVo.getExecUsers().split(",")).collect(Collectors.toSet());
+            if (!execUsers.contains(username)) {
+                execUsers.add(username);
+            }
+            projectVo.setExecUsers(StringUtils.join(execUsers, ","));
+        } else {
+            projectVo.setExecUsers(username);
         }
-
         try {
             ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {

@@ -74,10 +74,9 @@ public class ExchangisJobExecuteRestfulApi {
             if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_EXECUTE)){
                 return Message.error("You have no permission to execute job (没有执行任务权限)");
             }
-
             // Send to execute service
             String jobExecutionId = executeService.executeJob(loginUser, jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
-                    jobInfo.getExecuteUser() : loginUser);
+                    jobInfo.getExecuteUser() : jobInfo.getCreateUser());
             result.data("jobExecutionId", jobExecutionId);
         } catch (Exception e) {
              String message;

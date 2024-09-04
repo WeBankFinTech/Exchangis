@@ -91,7 +91,7 @@ public interface ProjectMapper {
 
     List<ExchangisProject> queryByUser(ProjectQueryVo projectQueryVo);
 
-    List<ExchangisProject> queryByUserProjects(ProjectQueryVo projectQueryVo);
+    List<ExchangisProject> queryByUserProjects(@Param("userName") String userName, @Param("projectIds") List<Long> projectIds);
 
     /**
      * Recycle user project

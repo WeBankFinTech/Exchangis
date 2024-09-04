@@ -135,9 +135,8 @@ public class ExchangisDataSourceModelController {
         try {
             result = dataSourceModelService.delete(id);
         } catch (DataSourceModelOperateException | RateLimitOperationException e) {
-            // TODO Datasource model post processor
+            return Message.error("Failed to delete the dataSource model, cause by : " + e.getMessage());
         }
-
         return result ? Message.ok() :
                 Message.error("Failed to delete the dataSource model");
     }
