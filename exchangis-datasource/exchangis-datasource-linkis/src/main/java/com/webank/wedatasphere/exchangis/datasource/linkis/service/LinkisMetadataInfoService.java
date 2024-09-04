@@ -45,7 +45,9 @@ public class LinkisMetadataInfoService extends LinkisDataSourceServiceRpcDispatc
                                     "dfs.ha.namenodes.<service>",
                                     "dfs.namenode.rpc-address.<suffix>",
                                     "dfs.client.failover.proxy.provider.<suffix>",
-                                    "fs.permissions.umask-mode"
+                                    "fs.permissions.umask-mode",
+                                    "hadoop.wedatasphere.guardis.ipc.security.client.enabled",
+                                    "hadoop.wedatasphere.guardis.ipc.security.auth.key"
                             },
                             ","));
     @Override
