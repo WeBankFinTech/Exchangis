@@ -16,7 +16,6 @@ import com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitMapper;
 import com.webank.wedatasphere.exchangis.datasource.mapper.RateLimitUsedMapper;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitNoLeftException;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

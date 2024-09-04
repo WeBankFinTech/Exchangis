@@ -346,6 +346,7 @@ public class DefaultJobInfoService implements JobInfoService {
                             relation.setDsType(jobDataSource.getType());
                             relation.setDsCreator(jobDataSource.getCreator());
                             relation.setLastUpdateTime(cal.getTime());
+                            relation.setProjectId(projectId);
                             relations.put(jobDataSource.getName(), relation);
                         }
                     }
