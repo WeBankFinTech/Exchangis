@@ -474,7 +474,7 @@ public class ExchangisDataSourceRestfulApi {
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while query datasource";
             LOG.error(errorMessage, e);
-            message = Message.error("数据源未发布或参数为空:[" + e.getMessage() + "]");
+            message = Message.error("查看数据库信息失败:[" + e.getMessage() + "]");
         }
         return message;
     }

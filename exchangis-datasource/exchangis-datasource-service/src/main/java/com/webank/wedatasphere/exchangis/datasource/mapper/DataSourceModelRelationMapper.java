@@ -52,10 +52,10 @@ public interface DataSourceModelRelationMapper {
 
     /**
      * Delete relation by data source name and version
-     * @param dsName data source name
+     * @param dsId data source id
      * @param versionId version id
      */
-    void deleteRelations(@Param("dsName") String dsName,
+    void deleteRelations(@Param("dsId") Long dsId,
                          @Param("dsVersion")Long versionId);
 
     /**

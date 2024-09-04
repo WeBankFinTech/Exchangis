@@ -50,6 +50,12 @@ public interface ProjectOpenService {
     PageResult<ExchangisProjectDsRelation> queryDsRelation(ProjectDsQueryVo queryVo);
 
     /**
+     * Add data source relations
+     * @param relations relations
+     */
+    void addDsRelations(List<ExchangisProjectDsRelation> relations);
+
+    /**
      * List related data sources
      * @param proIds project ids
      * @return type
