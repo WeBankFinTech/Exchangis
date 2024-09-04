@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectD
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectDsQueryVo;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -46,4 +47,10 @@ public interface ProjectOpenService {
      * @return result
      */
     PageResult<ExchangisProjectDsRelation> queryDsRelation(ProjectDsQueryVo queryVo);
+
+    /**
+     * Add data source relations
+     * @param relations relations
+     */
+    void addDsRelations(List<ExchangisProjectDsRelation> relations);
 }

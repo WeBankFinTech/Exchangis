@@ -50,7 +50,7 @@
         #{jobLabel},
         #{createUser},
         #{jobContent},
-        #{executeUser},
+        #{executeUser,jdbcType=VARCHAR},
         #{jobParams},
         #{jobDesc},
         #{jobType},
@@ -81,7 +81,7 @@
     <update id="upgradeConfig">
         UPDATE <include refid="TableName"/>
         SET
-        execute_user = #{executeUser},
+        execute_user = #{executeUser,jdbcType=VARCHAR},
         job_params = #{jobParams},
         source = #{source},
         last_update_time = #{lastUpdateTime},

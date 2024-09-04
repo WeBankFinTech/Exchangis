@@ -25,7 +25,7 @@
                 INSERT INTO exchangis_project_ds
                 (project_id,data_source_name,data_source_id,data_source_type,data_source_creator,last_update_time)
                 VALUES
-                (#{item.projectId},#{item.dsName},#{item.dsId},#{item.dsType},#{item.dsCreator},#{item.lastUpdateTime});
+                (#{item.projectId},#{item.dsName},#{item.dsId},#{item.dsType},#{item.dsCreator},#{item.lastUpdateTime}) ON DUPLICATE KEY UPDATE last_update_time = #{item.lastUpdateTime};
             ]]>
         </foreach>
     </insert>

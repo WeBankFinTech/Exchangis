@@ -19,6 +19,7 @@ import com.webank.wedatasphere.exchangis.project.provider.utils.ProjectAuthority
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -150,5 +151,12 @@ public class ProjectOpenServiceImpl implements ProjectOpenService {
         }finally {
             PageHelper.clearPage();
         }
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addDsRelations(List<ExchangisProjectDsRelation> relations) {
+        this.projectDsRelationMapper.insertBatch(relations);
     }
 }

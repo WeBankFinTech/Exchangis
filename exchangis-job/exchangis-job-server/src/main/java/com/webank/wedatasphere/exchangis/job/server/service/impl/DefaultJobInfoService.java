@@ -14,6 +14,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisData
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceUIGetter;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSourcesContent;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
@@ -23,6 +24,10 @@ import com.webank.wedatasphere.exchangis.job.server.validator.JobValidateResult;
 import com.webank.wedatasphere.exchangis.job.server.validator.JobValidator;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
+import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.utils.JsonUtils;
 import org.apache.linkis.manager.label.utils.LabelUtils;
@@ -62,6 +67,11 @@ public class DefaultJobInfoService implements JobInfoService {
     @Resource
     private JobInfoService jobInfoService;
 
+    /**
+     * Project open service
+     */
+    @Resource
+    private ProjectOpenService projectOpenService;
     /**
      * Validators
      */
@@ -302,6 +312,7 @@ public class DefaultJobInfoService implements JobInfoService {
         exchangisJob.setLastUpdateTime(jobVo.getModifyTime());
         this.exchangisJobDsBindService.updateJobDsBind(jobId, dsBinds);
         this.jobEntityDao.upgradeContent(exchangisJob);
+        relateProjectDsFromJob(exchangisJob, content);
         return jobVo;
     }
 
@@ -313,4 +324,39 @@ public class DefaultJobInfoService implements JobInfoService {
         return newJob;
     }
 
+    /**
+     * Relate project and data source from job content
+     * @param exchangisJob job info
+     * @param contents job content list
+     */
+    private void relateProjectDsFromJob(ExchangisJobEntity exchangisJob, List<ExchangisJobInfoContent> contents){
+        Long projectId = exchangisJob.getProjectId();
+        if (Objects.nonNull(projectId)){
+            ExchangisProjectInfo project =  this.projectOpenService.getProject(projectId);
+            if (Objects.nonNull(project) && ! ExchangisProject.Domain.DSS.toString().equals(project.getDomain())){
+                Map<String, ExchangisProjectDsRelation> relations = new HashMap<>();
+                Calendar cal = Calendar.getInstance();
+                for (ExchangisJobInfoContent content :  contents){
+                    ExchangisJobDataSourcesContent.ExchangisJobDataSource[]
+                            dataSources = new ExchangisJobDataSourcesContent.ExchangisJobDataSource[]{
+                                    content.getDataSources().getSource(), content.getDataSources().getSink()};
+                    for (ExchangisJobDataSourcesContent.ExchangisJobDataSource jobDataSource : dataSources){
+                        if (StringUtils.isNotBlank(jobDataSource.getName())) {
+                            ExchangisProjectDsRelation relation =
+                                    new ExchangisProjectDsRelation();
+                            relation.setDsName(jobDataSource.getName());
+                            relation.setDsId(jobDataSource.getId());
+                            relation.setDsType(jobDataSource.getType());
+                            relation.setDsCreator(jobDataSource.getCreator());
+                            relation.setLastUpdateTime(cal.getTime());
+                            relations.put(jobDataSource.getName(), relation);
+                        }
+                    }
+                }
+                if (!relations.isEmpty()) {
+                    this.projectOpenService.addDsRelations(new ArrayList<>(relations.values()));
+                }
+            }
+        }
+    }
 }
