@@ -2,12 +2,12 @@ package com.webank.wedatasphere.exchangis.project.server.service.impl;
 
 import com.webank.wedatasphere.exchangis.engine.resource.bml.BmlClients;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExportedProject;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.dto.ExportedProject;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
-import com.webank.wedatasphere.exchangis.project.server.service.ProjectExportService;
-import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectExportService;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.bml.client.BmlClient;

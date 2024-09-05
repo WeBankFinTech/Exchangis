@@ -22,7 +22,7 @@ import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisPro
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectDsRelationMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectUserMapper;
-import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.entity.domain.ExchangisProjectUser;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
 import org.slf4j.Logger;

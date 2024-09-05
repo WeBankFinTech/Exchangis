@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.project.server.service;
+package com.webank.wedatasphere.exchangis.project.provider.service;
 
 
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;

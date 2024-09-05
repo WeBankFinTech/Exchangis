@@ -1,7 +1,7 @@
-package com.webank.wedatasphere.exchangis.project.server.service;
+package com.webank.wedatasphere.exchangis.project.provider.service;
 
-import com.webank.wedatasphere.exchangis.job.server.dto.ExportedProject;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.dto.ExportedProject;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import org.apache.linkis.server.Message;
 
 import javax.servlet.http.HttpServletRequest;
