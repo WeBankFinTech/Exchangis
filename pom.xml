@@ -82,9 +82,9 @@
 		<module>exchangis-engines</module>
 		<module>exchangis-job</module>
 		<module>exchangis-plugins</module>
+		<module>exchangis-privilege</module>
 		<module>exchangis-server</module>
 		<module>assembly-package</module>
-        <module>exchangis-privilege</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>

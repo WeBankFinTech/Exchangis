@@ -14,8 +14,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>exchangis-project-common</module>
-        <module>exchangis-project-server</module>
         <module>exchangis-project-provider</module>
+        <module>exchangis-project-server</module>
     </modules>
 
     <properties>
