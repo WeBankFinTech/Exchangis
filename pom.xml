@@ -68,6 +68,7 @@
 		<aspectj.version>1.9.5</aspectj.version>
 		<xstream.version>1.4.19</xstream.version>
 		<jobmanager.version>0.1.0-SNAPSHOT</jobmanager.version>
+		<paimon.version>0.8.1</paimon.version>
 	</properties>
 
 	<modules>

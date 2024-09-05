@@ -31,10 +31,6 @@
                     <groupId>org.apache.linkis</groupId>
                     <artifactId>linkis-module</artifactId>
                 </exclusion>
-                <exclusion>
-                    <artifactId>spring-jdbc</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
