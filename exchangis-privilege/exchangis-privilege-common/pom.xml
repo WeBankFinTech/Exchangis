@@ -25,12 +25,7 @@
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
-            <artifactId>exchangis-project-server</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.webank.wedatasphere.exchangis</groupId>
-            <artifactId>exchangis-job-server</artifactId>
+            <artifactId>exchangis-project-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

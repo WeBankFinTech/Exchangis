@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.datasource.domain;
+package com.webank.wedatasphere.exchangis.datasource.core.domain;
 
 public class ExchangisDataSourceTypeDefinition {
     private final String id;

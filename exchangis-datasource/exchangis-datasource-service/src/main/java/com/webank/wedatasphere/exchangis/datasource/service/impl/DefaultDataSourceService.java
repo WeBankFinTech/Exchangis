@@ -16,9 +16,9 @@ import com.webank.wedatasphere.exchangis.datasource.core.domain.*;
 import com.webank.wedatasphere.exchangis.datasource.core.serialize.ParamKeySerializer;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.DsKeyDefineUtil;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
-import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceItem;
-import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceTypeDefinition;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceDetail;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceItem;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceTypeDefinition;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode;
@@ -34,8 +34,8 @@ import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoCont
 import com.webank.wedatasphere.exchangis.datasource.remote.*;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisLinkisRemoteClient;
 import com.webank.wedatasphere.exchangis.datasource.linkis.request.ParamsTestConnectAction;
-import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVo;
-import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVo;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.DataSourceCreateVo;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.DataSourceQueryVo;
 import com.webank.wedatasphere.exchangis.engine.dao.EngineSettingsDao;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineSettings;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
@@ -58,7 +58,6 @@ import org.apache.linkis.datasource.client.response.*;
 import org.apache.linkis.datasource.client.response.GetDataSourceVersionsResult;
 import org.apache.linkis.datasource.client.response.MetadataGetColumnsResult;
 import org.apache.linkis.datasourcemanager.common.domain.DataSource;
-import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
 import org.apache.linkis.metadata.query.common.domain.MetaColumnInfo;
 import org.slf4j.Logger;
@@ -413,7 +412,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
     public Long delete(String operator,  Long id) throws ExchangisDataSourceException {
         QueryWrapper<ExchangisJobDsBind> condition = new QueryWrapper<>();
         condition.eq("source_ds_id", id).or().eq("sink_ds_id", id);
-        Long inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
+        Integer inUseCount = this.exchangisJobDsBindMapper.selectCount(condition);
         if (inUseCount > 0) {
             throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_DELETE_ERROR.getCode(), "目前存在引用依赖");
         }

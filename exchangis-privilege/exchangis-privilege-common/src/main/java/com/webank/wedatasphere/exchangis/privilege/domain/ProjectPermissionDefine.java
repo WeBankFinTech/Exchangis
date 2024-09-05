@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.privilege.domain;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectQueryVo;
-import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectService;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;

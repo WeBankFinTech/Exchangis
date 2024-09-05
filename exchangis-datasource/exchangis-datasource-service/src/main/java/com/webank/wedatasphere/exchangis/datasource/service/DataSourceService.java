@@ -3,12 +3,12 @@ package com.webank.wedatasphere.exchangis.datasource.service;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
-import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceDetail;
 import com.webank.wedatasphere.exchangis.datasource.remote.DataSourceDbTableColumn;
-import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceItem;
-import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceTypeDefinition;
-import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceCreateVo;
-import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVo;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceItem;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceTypeDefinition;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.DataSourceCreateVo;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.DataSourceQueryVo;
 import org.apache.linkis.common.exception.ErrorException;
 
 import java.util.List;

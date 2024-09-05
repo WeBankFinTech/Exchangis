@@ -1,8 +1,8 @@
 package com.webank.wedatasphere.exchangis.privilege.domain;
 
-import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceItem;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceItem;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
-import com.webank.wedatasphere.exchangis.datasource.vo.DataSourceQueryVo;
+import com.webank.wedatasphere.exchangis.datasource.core.vo.DataSourceQueryVo;
 import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;

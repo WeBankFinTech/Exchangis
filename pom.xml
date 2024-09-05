@@ -85,8 +85,6 @@
 		<module>exchangis-server</module>
 		<module>assembly-package</module>
         <module>exchangis-privilege</module>
-		<module>exchangis-privilege/exchangis-privilege-common</module>
-		<module>exchangis-privilege/exchangis-privilege-provider</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>

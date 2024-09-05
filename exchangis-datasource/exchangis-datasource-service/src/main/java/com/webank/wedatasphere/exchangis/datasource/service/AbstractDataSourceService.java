@@ -14,7 +14,7 @@ import com.webank.wedatasphere.exchangis.datasource.core.ui.*;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.DefaultDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.datasource.domain.ExchangisDataSourceDetail;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceDetail;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSourcesContent;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobParamsContent;

@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.datasource.vo;
+package com.webank.wedatasphere.exchangis.datasource.core.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

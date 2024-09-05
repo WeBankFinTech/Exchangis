@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 
 import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
@@ -38,6 +39,10 @@ public class ExchangisRateLimitController {
     @RequestMapping( value = "pageList", method = RequestMethod.GET)
     public Message pageList(HttpServletRequest request, RateLimitQuery pageQuery) {
         String username = UserUtils.getLoginUser(request);
+        if (!GlobalConfiguration.isAdminUser(username)) {
+            String msg = String.format("User %s has not permission to operate it!", username);
+            return Message.error(msg);
+        }
         pageQuery.setCreateUser(username);
 
         try {
@@ -51,6 +56,11 @@ public class ExchangisRateLimitController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public Message add(@Valid @RequestBody RateLimit rateLimit, HttpServletRequest request) {
+        String username = UserUtils.getLoginUser(request);
+        if (!GlobalConfiguration.isAdminUser(username)) {
+            String msg = String.format("User %s has not permission to operate it!", username);
+            return Message.error(msg);
+        }
         if (Objects.isNull(rateLimit.getLimitRealm()) || Objects.isNull(rateLimit.getLimitRealmId())) {
             return Message.error("Please check the params!(参数校验失败，限速信息不存在)");
         }
@@ -78,6 +88,11 @@ public class ExchangisRateLimitController {
     @RequestMapping(value = "", method = RequestMethod.PUT)
     public Message update(@Valid @RequestBody RateLimit rateLimit,
                           HttpServletRequest request, BindingResult bindingResult) {
+        String username = UserUtils.getLoginUser(request);
+        if (!GlobalConfiguration.isAdminUser(username)) {
+            String msg = String.format("User %s has not permission to operate it!", username);
+            return Message.error(msg);
+        }
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             for (FieldError fieldError : fieldErrors) {
@@ -115,6 +130,11 @@ public class ExchangisRateLimitController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public Message delete(@PathVariable Long id, HttpServletRequest request) {
+        String username = UserUtils.getLoginUser(request);
+        if (!GlobalConfiguration.isAdminUser(username)) {
+            String msg = String.format("User %s has not permission to operate it!", username);
+            return Message.error(msg);
+        }
         RateLimit rateLimit = rateLimitService.selectOne(new RateLimit(id));
         if (Objects.isNull(rateLimit)) {
             return Message.error("Please check the params!(参数校验失败)");
@@ -149,6 +169,11 @@ public class ExchangisRateLimitController {
 
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
     public Message resetRateLimitUsed(@RequestBody RateLimit rateLimit, HttpServletRequest request){
+        String username = UserUtils.getLoginUser(request);
+        if (!GlobalConfiguration.isAdminUser(username)) {
+            String msg = String.format("User %s has not permission to operate it!", username);
+            return Message.error(msg);
+        }
         // Param valid
         RateLimit queryRateLimit = rateLimitService.selectOne(rateLimit);
         if (Objects.isNull(queryRateLimit)) {
