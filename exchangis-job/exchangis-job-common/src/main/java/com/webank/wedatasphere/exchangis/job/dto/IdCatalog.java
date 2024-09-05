@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.dto;
+package com.webank.wedatasphere.exchangis.job.dto;
 
 import com.google.common.collect.Maps;
 

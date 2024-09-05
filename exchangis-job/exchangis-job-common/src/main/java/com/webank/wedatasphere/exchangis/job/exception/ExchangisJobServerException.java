@@ -1,5 +1,5 @@
 
-package com.webank.wedatasphere.exchangis.job.server.exception;
+package com.webank.wedatasphere.exchangis.job.exception;
 
 
 import org.apache.linkis.common.exception.ErrorException;

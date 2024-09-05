@@ -5,7 +5,7 @@ import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 
 import javax.servlet.http.HttpServletRequest;

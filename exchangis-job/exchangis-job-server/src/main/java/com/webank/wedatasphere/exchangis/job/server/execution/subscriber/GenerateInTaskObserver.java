@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
 import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskObserverException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

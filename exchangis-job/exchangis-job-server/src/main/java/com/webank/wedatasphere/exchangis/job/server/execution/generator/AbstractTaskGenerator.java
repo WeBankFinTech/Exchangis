@@ -7,7 +7,7 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskGenerateException;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateErrorEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateInitEvent;

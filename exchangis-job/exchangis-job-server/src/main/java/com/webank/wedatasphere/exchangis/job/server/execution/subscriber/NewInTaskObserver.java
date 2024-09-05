@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.SubmitSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.parallel.TaskParallelManager;

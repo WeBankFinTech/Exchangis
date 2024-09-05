@@ -1,8 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.server.execution;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskExecuteException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
 
 /**

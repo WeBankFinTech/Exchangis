@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.priority.PriorityOrderedQueue;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.priority.PriorityRunnable;
 import org.apache.commons.lang.StringUtils;

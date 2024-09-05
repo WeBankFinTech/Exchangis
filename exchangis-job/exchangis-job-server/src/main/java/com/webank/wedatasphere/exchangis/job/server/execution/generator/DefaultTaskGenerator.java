@@ -11,7 +11,7 @@ import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangis
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.server.builder.SpringExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskGenerateException;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateErrorEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateSuccessEvent;
 import com.webank.wedatasphere.exchangis.job.utils.SnowFlake;

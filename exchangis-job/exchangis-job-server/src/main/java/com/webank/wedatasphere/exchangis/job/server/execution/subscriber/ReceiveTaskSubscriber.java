@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
 import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedTaskDao;
 import org.apache.linkis.common.conf.CommonVars;
 import org.slf4j.Logger;

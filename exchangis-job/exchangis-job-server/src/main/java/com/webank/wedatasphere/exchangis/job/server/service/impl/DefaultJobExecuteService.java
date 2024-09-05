@@ -21,9 +21,9 @@ import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTa
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.log.LogResult;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskGenerateException;
 import com.webank.wedatasphere.exchangis.job.server.execution.DefaultTaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGenerator;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.GenerationSchedulerTask;

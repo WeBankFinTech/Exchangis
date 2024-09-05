@@ -4,7 +4,7 @@ import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
 import com.webank.wedatasphere.exchangis.job.log.LogResult;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.log.cache.AbstractJobLogCache;
 import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCache;
 import com.webank.wedatasphere.exchangis.job.server.log.rpc.FetchLogResponse;

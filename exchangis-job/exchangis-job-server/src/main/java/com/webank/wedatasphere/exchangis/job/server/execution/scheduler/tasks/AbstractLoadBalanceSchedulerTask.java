@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ScheduleListener;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbalance.LoadBalancePoller;

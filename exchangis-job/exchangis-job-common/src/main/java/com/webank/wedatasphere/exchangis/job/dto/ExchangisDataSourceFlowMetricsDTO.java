@@ -1,4 +1,4 @@
-package com.webank.wedatasphere.exchangis.job.server.dto;
+package com.webank.wedatasphere.exchangis.job.dto;
 
 // 数据源流量指标对象
 // datasource flow metrics pojo

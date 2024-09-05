@@ -2,7 +2,7 @@ package com.webank.wedatasphere.exchangis.job.server.execution.loadbalance;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskExecuteException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.*;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbalance.LoadBalancePoller;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.AbstractLoadBalanceSchedulerTask;

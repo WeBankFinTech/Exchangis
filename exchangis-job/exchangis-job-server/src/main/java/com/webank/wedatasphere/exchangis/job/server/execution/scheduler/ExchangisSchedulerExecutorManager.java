@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerRetryException;
 import org.apache.linkis.protocol.engine.EngineState;
 import org.apache.linkis.scheduler.exception.LinkisJobRetryException;
 import org.apache.linkis.scheduler.executer.*;

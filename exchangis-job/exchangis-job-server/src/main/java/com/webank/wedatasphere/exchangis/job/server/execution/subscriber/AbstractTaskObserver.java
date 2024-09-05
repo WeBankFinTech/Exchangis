@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskObserverException;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;

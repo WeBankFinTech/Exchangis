@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.metrics.converter;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.metrics.ExchangisMetricsVo;
 import com.webank.wedatasphere.exchangis.job.server.utils.JsonEntity;
 

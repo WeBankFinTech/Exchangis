@@ -1,13 +1,10 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import org.apache.commons.lang.StringUtils;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
 import org.apache.linkis.scheduler.queue.GroupFactory;
 import org.apache.linkis.scheduler.queue.fifoqueue.FIFOSchedulerContextImpl;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**

@@ -13,27 +13,26 @@ import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.vo.JobFunction;
 import com.webank.wedatasphere.exchangis.job.server.service.JobFuncService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+//import com.webank.wedatasphere.exchangis.privilege.entity.ProxyUser;
+//import com.webank.wedatasphere.exchangis.privilege.service.ProxyUserService;
 import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.server.Message;
-import org.apache.linkis.server.security.ProxyUserSSOUtils;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import scala.Option;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,6 +58,9 @@ public class ExchangisJobRestfulApi {
 
     @Resource
     private DataSourceUIGetter dataSourceUIGetter;
+    
+//    @Resource
+//    private ProxyUserService proxyUserService;
 
     /**
      * Query job in page
@@ -116,17 +118,14 @@ public class ExchangisJobRestfulApi {
      */
     @RequestMapping(value = "/Executor", method = RequestMethod.GET)
     public Message getExecutor(HttpServletRequest request) {
-        Option<String> proxyUserUsername =
-                ProxyUserSSOUtils.getProxyUserUsername(request);
-        String loginUser = UserUtils.getLoginUser(request);
-        List<String> executor = new ArrayList<>();
-        if (proxyUserUsername.isDefined()) {
-            executor.add(proxyUserUsername.get());
-        } else {
-            executor.add(loginUser);
-        }
-        executor.add("hadoop");
-        return Message.ok().data("result", executor);
+//        String loginUser = UserUtils.getLoginUser(request);
+//        List<ProxyUser> proxyUsers = proxyUserService.selectByUserName(loginUser);
+//        if (Objects.isNull(proxyUsers) || proxyUsers.isEmpty()) {
+//            return Message.ok();
+//        }
+//        List<String> proxyUserNames = proxyUsers.stream().map(ProxyUser::getProxyUserName).collect(Collectors.toList());
+//        return Message.ok().data("result", proxyUserNames);
+        return null;
     }
 
 

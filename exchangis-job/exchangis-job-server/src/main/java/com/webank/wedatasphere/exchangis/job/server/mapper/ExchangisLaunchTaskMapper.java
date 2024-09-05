@@ -3,7 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.mapper;
 import java.util.Date;
 import java.util.List;
 
-import com.webank.wedatasphere.exchangis.job.server.dto.ExchangisTaskStatusMetricsDTO;
+import com.webank.wedatasphere.exchangis.job.dto.ExchangisTaskStatusMetricsDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
