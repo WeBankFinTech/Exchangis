@@ -17,7 +17,8 @@
 # Launcher for modules, provided start/stop functions
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-ENV_FILE="${DIR}/env.properties"
+#ENV_FILE="${DIR}/env.properties"
+source ${DIR}/env.sh
 SHELL_LOG="${DIR}/command.log"
 USER_DIR="${DIR}/../"
 EXCHANGIS_LIB_PATH="${DIR}/../lib"
@@ -64,20 +65,6 @@ EOF
 
 # load environment definition
 load_env_definitions(){
-   if [[ -f "$1" ]]; then
-      LOG INFO "load environment properties"
-      while read line
-      do
-        if [[ ! -z $(echo "${line}" | grep "=") ]]; then
-          local key=${line%%=*}
-          local value=${line##*=}
-          local key1=$(echo ${key} | tr '.' '_')
-          if [[ -z $(echo "${key1}" | grep -P '\s*#+.*') ]]; then
-            eval "${key1}=${value}"
-          fi
-        fi
-      done < "${ENV_FILE}"
-   fi
    if [[ "x${JAVA_HOME}" != "x" ]]; then
       JPS=${JAVA_HOME}/bin/jps
    else
