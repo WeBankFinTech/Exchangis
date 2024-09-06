@@ -23,9 +23,11 @@ SOURCE_ROOT=${workDir}
 #load config
 source ${SOURCE_ROOT}/config/config.sh
 source ${SOURCE_ROOT}/config/db.sh
+source ${SOURCE_ROOT}/sbin/env.sh
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SHELL_LOG="${DIR}/console.out"   #console.out是什么文件？
 export SQL_SOURCE_PATH="${DIR}/../db/exchangis_ddl.sql"
+export SQL_DMLSOURCE_PATH="${DIR}/../db/exchangis_dml.sql"
 PACKAGE_DIR="${DIR}/../packages"
 # Home Path
 EXCHNGIS_HOME_PATH="${DIR}/../"
@@ -125,24 +127,24 @@ interact_echo(){
 
 # Initalize database
 init_database(){
-    BOOTSTRAP_PROP_FILE="${CONF_PATH}/dss-exchangis-server.properties"
+    BOOTSTRAP_PROP_FILE="${CONF_PATH}/${MODULE_DEFAULT_PREFIX}server${MODULE_DEFAULT_SUFFIX}.properties"
     if [ "x${SQL_SOURCE_PATH}" != "x" ] && [ -f "${SQL_SOURCE_PATH}" ]; then
         `mysql --version >/dev/null 2>&1`
         DATASOURCE_URL="jdbc:mysql:\/\/${MYSQL_HOST}:${MYSQL_PORT}\/${DATABASE}\?useSSL=false\&characterEncoding=UTF-8\&allowMultiQueries=true"
         sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.username=)\S*!\1${MYSQL_USERNAME}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.password=)\S*!\1${MYSQL_PASSWORD}!g" ${BOOTSTRAP_PROP_FILE}
         sed -ri "s![#]?(wds.linkis.server.mybatis.datasource.url=)\S*!\1${DATASOURCE_URL}!g" ${BOOTSTRAP_PROP_FILE}
-        interact_echo "Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]?"
+        interact_echo "Do you want to initalize database with sql: [${SQL_SOURCE_PATH}]  [${SQL_DMLSOURCE_PATH}] ?"
         if [ $? == 0 ]; then
           LOG INFO "\033[1m Scan out mysql command, so begin to initalize the database\033[0m"
           mysql -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USERNAME} -p${MYSQL_PASSWORD}  --default-character-set=utf8 -e \
-          "CREATE DATABASE IF NOT EXISTS ${DATABASE}; USE ${DATABASE}; source ${SQL_SOURCE_PATH};"
+          "CREATE DATABASE IF NOT EXISTS ${DATABASE}; USE ${DATABASE}; source ${SQL_SOURCE_PATH};source ${SQL_DMLSOURCE_PATH};"
         fi
     fi
 }
 
 init_properties(){
-    BOOTSTRAP_PROP_FILE="${CONF_PATH}/dss-exchangis-server.properties"
+    BOOTSTRAP_PROP_FILE="${CONF_PATH}/${MODULE_DEFAULT_PREFIX}server${MODULE_DEFAULT_SUFFIX}.properties"
     APPLICATION_YML="${CONF_PATH}/application-exchangis.yml"
     LINKIS_GATEWAY_URL="http:\/\/${LINKIS_GATEWAY_HOST}:${LINKIS_GATEWAY_PORT}\/"
     if [ "x${LINKIS_SERVER_URL}" == "x" ]; then
@@ -158,6 +160,8 @@ init_properties(){
 install_modules(){
   LOG INFO "\033[1m ####### Start To Install project ######\033[0m"
   echo ""
+    LOG INFO "\033[1m Prepare properties file ${MODULE_DEFAULT_PREFIX}server${MODULE_DEFAULT_SUFFIX}.properties ......\033[0m"
+    cp -f ${EXCHNGIS_HOME_PATH}/config/dss-exchangis-server.properties ${EXCHNGIS_HOME_PATH}/config/${MODULE_DEFAULT_PREFIX}server${MODULE_DEFAULT_SUFFIX}.properties
     if [ ${FORCE_INSTALL} == false ]; then
         LOG INFO "\033[1m Install project ......\033[0m"
         init_database
