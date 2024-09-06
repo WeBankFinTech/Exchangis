@@ -14,6 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 declare -A MODULE_MAIN_CLASS
-MODULE_MAIN_CLASS["dss-exchangis-main-server-dev"]="com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication"
+MODULE_MAIN_CLASS["${MODULE_DEFAULT_PREFIX}server${MODULE_DEFAULT_SUFFIX}"]="com.webank.wedatasphere.exchangis.server.boot.ExchangisServerApplication"

@@ -48,7 +48,7 @@ restart(){
 COMMAND=$1
 case $COMMAND in
   start|stop|restart)
-    load_env_definitions ${ENV_FILE}
+    load_env_definitions
     if [[ ! -z $2 ]]; then
       SERVICE_NAME=${MODULE_DEFAULT_PREFIX}$2${MODULE_DEFAULT_SUFFIX}
       MAIN_CLASS=${MODULE_MAIN_CLASS[${SERVICE_NAME}]}
