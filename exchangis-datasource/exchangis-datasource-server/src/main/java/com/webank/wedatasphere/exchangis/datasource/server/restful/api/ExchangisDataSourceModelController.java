@@ -72,6 +72,7 @@ public class ExchangisDataSourceModelController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public Message update(@PathVariable Long id, @Valid @RequestBody DataSourceModel model, HttpServletRequest request) {
+        String username = UserUtils.getLoginUser(request);
         if (id <= 0) {
             Message.error("Error dataSource model");
         }
@@ -81,12 +82,17 @@ public class ExchangisDataSourceModelController {
         if (StringUtils.isBlank(model.getModifyUser())) {
             model.setModifyUser(operator);
         }
-        // TODO authority ?
-        // TODO model name unique ?
         try {
             // Check if the parameter is updated?
             DataSourceModel before = this.dataSourceModelService.get(id);
-            // TODO check if not exists ?
+            if (Objects.isNull(before)) {
+                Message.error("The model is not exist, please check it");
+            }
+            if (!GlobalConfiguration.isAdminUser(username) &&
+                !StringUtils.equals(username, before.getCreateUser())) {
+                String msg = String.format("User %s has no permission to operate it!", username);
+                return Message.error(msg);
+            }
             if (Objects.equals(before.getParameter(), model.getParameter())){
                 dataSourceModelService.update(model);
             } else {
@@ -129,10 +135,20 @@ public class ExchangisDataSourceModelController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public Message delete(@PathVariable Long id, HttpServletRequest request) {
+        String username = UserUtils.getLoginUser(request);
         DataSourceModelQuery query = new DataSourceModelQuery();
         query.setModelId(id);
         boolean result = false;
         try {
+            DataSourceModel before = this.dataSourceModelService.get(id);
+            if (Objects.isNull(before)) {
+                Message.error("The model is not exist, please check it");
+            }
+            if (!GlobalConfiguration.isAdminUser(username) &&
+                    !StringUtils.equals(username, before.getCreateUser())) {
+                String msg = String.format("User %s has no permission to operate it!", username);
+                return Message.error(msg);
+            }
             result = dataSourceModelService.delete(id);
         } catch (DataSourceModelOperateException | RateLimitOperationException e) {
             return Message.error("Failed to delete the dataSource model, cause by : " + e.getMessage());

@@ -309,7 +309,11 @@ public class ProjectServiceImpl implements ProjectService {
     public void deleteProjectByName(String name) throws ExchangisJobException {
         // First to delete the project to lock the record
         ExchangisProject project = this.projectMapper.selectByName(name);
-        this.projectMapper.deleteByName(name);
+        // Delete project and user group
+        if (Objects.nonNull(project)) {
+            this.projectMapper.deleteByName(name);
+            this.projectDsRelationMapper.deleteByProject(project.getId());
+        }
     }
     @Override
     public ExchangisProjectInfo getProjectDetailById(Long projectId) {
