@@ -153,6 +153,7 @@ public class ProjectServiceImpl implements ProjectService {
         updatedProject.setName(projectInfo.getName());
         updatedProject.setDescription(projectInfo.getDescription());
         updatedProject.setLabels(projectInfo.getLabel());
+        updatedProject.setCreateUser(projectInfo.getCreateUser());
         updatedProject.setViewUsers(projectInfo.getViewUsers());
         updatedProject.setEditUsers(projectInfo.getEditUsers());
         updatedProject.setExecUsers(projectInfo.getExecUsers());

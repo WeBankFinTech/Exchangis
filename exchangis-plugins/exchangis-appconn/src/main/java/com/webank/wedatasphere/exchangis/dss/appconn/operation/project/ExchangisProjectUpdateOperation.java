@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.dss.appconn.operation.project;
 
+import com.webank.wedatasphere.dss.common.entity.project.DSSProject;
 import com.webank.wedatasphere.dss.common.utils.MapUtils;
 import com.webank.wedatasphere.dss.standard.app.sso.origin.request.action.DSSPutAction;
 import com.webank.wedatasphere.dss.standard.app.structure.AbstractStructureOperation;
@@ -10,6 +11,10 @@ import com.webank.wedatasphere.dss.standard.common.entity.ref.ResponseRef;
 import com.webank.wedatasphere.dss.standard.common.exception.operation.ExternalOperationFailedException;
 import com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints;
 import com.webank.wedatasphere.exchangis.dss.appconn.utils.ExchangisHttpUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
+import java.util.Objects;
 
 import static com.webank.wedatasphere.exchangis.dss.appconn.constraints.Constraints.API_REQUEST_PREFIX;
 
@@ -51,8 +56,26 @@ public class ExchangisProjectUpdateOperation
 
     public static void addProjectInfo(DSSPutAction putAction, ProjectUpdateRequestRef requestRef) {
         putAction.addRequestPayload("id", requestRef.getRefProjectId());
-        putAction.addRequestPayload("projectName", requestRef.getDSSProject().getName());
-        putAction.addRequestPayload("description", requestRef.getDSSProject().getDescription());
+        if (StringUtils.isNoneBlank(requestRef.getNewOwner())) {
+            putAction.addRequestPayload("createUser", requestRef.getNewOwner());
+        }
+        DSSProject dssProject = requestRef.getDSSProject();
+        if (Objects.nonNull(dssProject)) {
+            putAction.addRequestPayload("projectName", dssProject.getName());
+            putAction.addRequestPayload("description", dssProject.getDescription());
+            List<String> viewUsers = dssProject.getAccessUsers();
+            if (Objects.nonNull(viewUsers) && !viewUsers.isEmpty()) {
+                putAction.addRequestPayload("viewUsers", String.join(",", viewUsers));
+            }
+            List<String> editUsers = dssProject.getEditUsers();
+            if (Objects.nonNull(editUsers) && !editUsers.isEmpty()) {
+                putAction.addRequestPayload("editUsers", String.join(",", editUsers));
+            }
+            List<String> releaseUsers = dssProject.getReleaseUsers();
+            if (Objects.nonNull(releaseUsers) && !releaseUsers.isEmpty()) {
+                putAction.addRequestPayload("execUsers", String.join(",", releaseUsers));
+            }
+        }
         putAction.addRequestPayload("domain", Constraints.DOMAIN_NAME);
         putAction.addRequestPayload("source", MapUtils.newCommonMap("workspace", requestRef.getWorkspace().getWorkspaceName()));
         putAction.addRequestPayload("dataSources", requestRef.getDSSProjectDataSources());

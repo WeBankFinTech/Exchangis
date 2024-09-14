@@ -19,6 +19,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.webank.wedatasphere.dss</groupId>
+            <artifactId>dss-development-process-standard-execution</artifactId>
+            <version>${dss.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.linkis</groupId>
             <artifactId>linkis-module</artifactId>
             <version>${linkis.version}</version>
@@ -51,11 +56,13 @@
             <groupId>com.webank.wedatasphere.dss</groupId>
             <artifactId>dss-project-plugin</artifactId>
             <version>${dss.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.dss</groupId>
             <artifactId>dss-appconn-core</artifactId>
             <version>${dss.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.linkis</groupId>
@@ -73,16 +80,13 @@
             <groupId>com.webank.wedatasphere.dss</groupId>
             <artifactId>dss-development-process-standard</artifactId>
             <version>${dss.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.dss</groupId>
             <artifactId>dss-structure-integration-standard</artifactId>
             <version>${dss.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.webank.wedatasphere.dss</groupId>
-            <artifactId>dss-development-process-standard-execution</artifactId>
-            <version>${dss.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.dss</groupId>
@@ -116,6 +120,7 @@
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.9.10</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

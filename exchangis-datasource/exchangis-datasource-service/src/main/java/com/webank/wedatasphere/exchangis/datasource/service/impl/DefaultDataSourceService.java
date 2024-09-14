@@ -972,8 +972,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             modelMapper.recycleDsModel(userName, handover);
             // recycle dsModelRelation
             modelRelationMapper.recycleDsModelRelation(userName, handover);
-            // recycle ds
-//            projectOpenService.listByProjects(projectIds);
+            // not need to recycle ds
         } catch (Exception e) {
             String errorMsg = String.format("Error to recycle datasource with user %s, cause by : [%s]", userName, e.getMessage());
             LOG.error(errorMsg);

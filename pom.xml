@@ -38,7 +38,7 @@
 
 	<properties>
 		<revision>1.1.6-webank</revision>
-		<dss.version>1.5.0-SNAPSHOT</dss.version>
+		<dss.version>1.8.0-SNAPSHOT</dss.version>
 		<linkis.version>1.5.0-wds-SNAPSHOT</linkis.version>
 		<linkis.datasource.version>1.5.0-wds-SNAPSHOT</linkis.datasource.version>
 		<streamis.version>0.1.0-SNAPSHOT</streamis.version>
