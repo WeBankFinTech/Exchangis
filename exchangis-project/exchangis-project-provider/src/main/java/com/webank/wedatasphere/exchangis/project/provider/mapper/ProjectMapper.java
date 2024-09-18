@@ -81,6 +81,8 @@ public interface ProjectMapper {
 
     ExchangisProject selectByName(String name);
 
+    List<Long> selectByDomain(String domain);
+
     /**
      * get projects authoritis
      * @param projectId

@@ -144,6 +144,10 @@
         select * from exchangis_project_info WHERE name = #{name} limit 1
     </select>
 
+    <select id="selectByDomain" resultType="java.lang.Long" parameterType="java.lang.String">
+        select id from exchangis_project_info WHERE domain = #{domain}
+    </select>
+
     <select id="getDetailByName" resultMap="projectResult">
         <![CDATA[ SELECT * FROM `exchangis_project_info`]]>
         <where>
