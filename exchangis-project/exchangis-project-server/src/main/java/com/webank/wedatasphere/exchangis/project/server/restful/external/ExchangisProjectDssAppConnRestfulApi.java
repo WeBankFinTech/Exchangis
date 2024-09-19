@@ -144,10 +144,8 @@ public class ExchangisProjectDssAppConnRestfulApi {
         String oringinUser = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
-            if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
-                return Message.error("You have no permission to update (没有项目的更新权限)");
-            }
-            String projectCreator = Optional.ofNullable(projectStored.getCreateUser()).orElse(username);
+            String updateUser = Optional.ofNullable(projectVo.getCreateUser()).orElse(projectStored.getCreateUser());
+            String projectCreator = Optional.ofNullable(updateUser).orElse(username);
             // Try to create or get project datasources for user
             LOG.info("Start to create or get relate project datasources for project [{}]", projectVo.getName());
             if (StringUtils.isNotBlank(ExchangisProjectConfiguration.PROJECT_DATASOURCES

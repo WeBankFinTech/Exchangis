@@ -236,41 +236,6 @@ public class RateLimitServiceImpl implements RateLimitService {
         return null;
     }
 
-    @Deprecated
-    public boolean rateLimit(ExchangisJobInfo jobInfo) throws RateLimitNoLeftException {
-        List<RateLimit> rateLimits = getJobRateLimits(jobInfo);
-        if (!rateLimits.isEmpty()) {
-            List<RateLimitUsed> applyUsed = new ArrayList<>();
-            List<Long> rateLimitIds = new ArrayList<>();
-            rateLimits.forEach(rateLimit -> {
-                applyUsed.addAll(getJobRateLimitUsed(rateLimit, jobInfo));
-                rateLimitIds.add(rateLimit.getId());
-            });
-            if (!applyUsed.isEmpty()) {
-                sortRateLimitUsed(applyUsed);
-                try {
-                    getSelfService().rateLimit(applyUsed);
-                    return true;
-                } catch (RateLimitNoLeftException e) {
-                    List<Long> sourceModelIds = new ArrayList<>();
-                    List<Long> sinkModelIds = new ArrayList<>();
-                    JobUtils.parseJobContent(jobInfo.getJobContent()).stream().forEach(jobContent -> {
-                        sourceModelIds.add(jobContent.getDataSources().getSource().getModelId());
-                        sinkModelIds.add(jobContent.getDataSources().getSink().getModelId());
-                    });
-                    Map<Long, Integer> limitDirect = rateLimits.stream().collect(Collectors
-                            .toMap(RateLimit::getId, rateLimit -> sourceModelIds.contains(rateLimit.getLimitRealmId())
-                                    ? 0 : 1));
-                    List<RateLimitUsed> actualUsed = this.rateLimitUsedMapper.selectUsedInLimitIds(rateLimitIds);
-                    throw new RateLimitNoLeftException(RateLimitTool.getLimitLog(applyUsed,
-                            actualUsed.stream().sorted(Comparator.comparing(RateLimitUsed::getId)).filter(used -> limitDirect.get(used.getRateLimitId()) == 0).collect(Collectors.toList()),
-                            actualUsed.stream().sorted(Comparator.comparing(RateLimitUsed::getId)).filter(used -> limitDirect.get(used.getRateLimitId()) == 1).collect(Collectors.toList())));
-                }
-            }
-        }
-        return false;
-    }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void rateLimit(List<RateLimitUsed> applyUsed) throws RateLimitNoLeftException {

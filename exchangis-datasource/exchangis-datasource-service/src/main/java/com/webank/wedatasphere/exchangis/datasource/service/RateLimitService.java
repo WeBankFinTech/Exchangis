@@ -41,13 +41,6 @@ public interface RateLimitService {
     List<RateLimitUsed> getRateLimitUsed(String rateParams, Map<String, Object> rateParamMap);
 
     /**
-     * Limit the job rate
-     * @param jobInfo job info
-     * @return boolean
-     */
-    boolean rateLimit(ExchangisJobInfo jobInfo) throws RateLimitNoLeftException;
-
-    /**
      * Limit by applying used
      * @param applyUsed apply used
      */
