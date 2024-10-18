@@ -78,12 +78,15 @@ public class ExchangisJobRestfulApi {
     public Message getJobList(@RequestParam(value = "projectId") Long projectId,
                               @RequestParam(value = "jobType", required = false) String jobType,
                               @RequestParam(value = "name", required = false) String name,
+                              @RequestParam(value = "dataSrcType", required = false) String dataSrcType,
+                              @RequestParam(value = "dataDestType", required = false) String dataDestType,
+                              @RequestParam(value = "sourceSinkId", required = false) String sourceSinkId,
                               @RequestParam(value = "current", required = false) int current,
                               @RequestParam(value = "size", required = false) int size,
                               HttpServletRequest request) {
         String newName = name.replaceAll("_", "/_");
         ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo(
-                projectId, jobType, newName, current, size
+                projectId, jobType, newName, dataSrcType, dataDestType, sourceSinkId, current, size
         );
         String loginUser = UserUtils.getLoginUser(request);
         try {

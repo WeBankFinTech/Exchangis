@@ -22,6 +22,7 @@ import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.validator.JobValidateResult;
 import com.webank.wedatasphere.exchangis.job.server.validator.JobValidator;
+import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
@@ -124,13 +125,30 @@ public class DefaultJobInfoService implements JobInfoService {
     @Override
     public PageResult<ExchangisJobVo> queryJobList(ExchangisJobQueryVo queryVo){
         PageHelper.startPage(queryVo.getPage(), queryVo.getPageSize());
-        try{
+        try {
             List<ExchangisJobEntity> jobEntities = this.jobEntityDao.queryPageList(queryVo);
-            PageInfo<ExchangisJobEntity> pageInfo = new PageInfo<>(jobEntities);
-            List<ExchangisJobVo> infoList = jobEntities
-                    .stream().map(ExchangisJobVo::new).collect(Collectors.toList());
+            PageInfo<ExchangisJobEntity> pageInfo = new PageInfo<>();
+            String dataSrcType = queryVo.getDataSrcType();
+            String dataDestType = queryVo.getDataDestType();
+            String sourceSinkId = queryVo.getSourceSinkId();
+            if (StringUtils.isBlank(dataSrcType) && StringUtils.isBlank(dataSrcType) &&
+                    StringUtils.isBlank(dataSrcType)) {
+                pageInfo.setList(jobEntities);
+            } else {
+                List<ExchangisJobEntity> jobs = new ArrayList<>();
+                jobEntities.stream().filter(jobEntity -> {
+                    List<ExchangisJobInfoContent> jobInfoContents = JobUtils.parseJobContent(jobEntity.getJobContent());
+                    for (ExchangisJobInfoContent jobInfoContent : jobInfoContents) {
+                        if (jobInfoContent.getDataSources().matchIdentify(dataSrcType, dataDestType, sourceSinkId)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }).forEach(jobs::add);
+                pageInfo.setList(jobs);
+            }
             PageResult<ExchangisJobVo> pageResult = new PageResult<>();
-            pageResult.setList(infoList);
+            pageResult.setList(pageInfo.getList().stream().map(ExchangisJobVo::new).collect(Collectors.toList()));
             pageResult.setTotal(pageInfo.getTotal());
             return pageResult;
         }finally {

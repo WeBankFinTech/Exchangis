@@ -132,7 +132,7 @@
 
     <select id="queryPageList" resultMap="BaseResultMap">
         SELECT
-        <include refid="basic_column"/>
+        <include refid="detail_column"/>
         from
         <include refid="TableName" />
         <where>

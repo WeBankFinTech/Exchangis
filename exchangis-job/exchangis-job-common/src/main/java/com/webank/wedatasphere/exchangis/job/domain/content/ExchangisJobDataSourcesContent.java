@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.webank.wedatasphere.exchangis.common.domain.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.common.enums.ExchangisDataSourceType;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
@@ -174,7 +175,6 @@ public class ExchangisJobDataSourcesContent {
 
         }
 
-
         public void setDb(String db) {
             this.db = db;
         }
@@ -198,5 +198,43 @@ public class ExchangisJobDataSourcesContent {
         public String getUri() {
             return uri;
         }
+
+        public boolean matchIdentify(String sourceSinkId) {
+            if (StringUtils.isNotBlank(sourceSinkId)) {
+                return (StringUtils.isNotBlank(this.uri) && this.uri.contains(sourceSinkId)) ||
+                        this.db.contains(sourceSinkId) || this.table.contains(sourceSinkId);
+            }
+            return false;
+        }
+    }
+
+    public boolean matchIdentify(String dataSrcType, String dataDestType, String sourceSinkId) {
+        String sourceId = this.getSourceId();
+        ExchangisJobDataSourcesContent.ExchangisJobDataSource source = this.getSource();
+        String sinkId = this.getSinkId();
+        ExchangisJobDataSourcesContent.ExchangisJobDataSource sink = this.getSink();
+
+        if (StringUtils.isNotBlank(dataSrcType)) {
+            if (containsOrMatchesType(sourceId, source, dataSrcType)) {
+                return true;
+            }
+        }
+        if (StringUtils.isNotBlank(dataDestType)) {
+            if (containsOrMatchesType(sinkId, sink, dataDestType)) {
+                return true;
+            }
+        }
+        if (StringUtils.isNotBlank(sourceSinkId)) {
+            if (StringUtils.isNotBlank(sourceId) && (sourceId.contains(sourceSinkId) || sinkId.contains(sourceSinkId))) {
+                return true;
+            } else if (StringUtils.isBlank(sourceId) && (source.matchIdentify(sourceSinkId) || sink.matchIdentify(sourceSinkId))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean containsOrMatchesType(String id, ExchangisJobDataSourcesContent.ExchangisJobDataSource dataSource, String type) {
+        return StringUtils.isNotBlank(id) && id.contains(type) || StringUtils.equals(type, dataSource.getType());
     }
 }
