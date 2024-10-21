@@ -97,6 +97,18 @@
         modify_user = #{modifyUser}
         WHERE id = #{id}
     </update>
+
+    <update id="batchUpgradeContent">
+        <foreach collection="list" open="" close="" separator=";" item="item">
+            UPDATE <include refid="TableName"/>
+            SET
+            job_content = #{item.jobContent},
+            last_update_time = #{item.lastUpdateTime},
+            modify_user = #{item.modifyUser}
+            WHERE id = #{item.id}
+        </foreach>
+    </update>
+
     <select id="getDetail" parameterType="java.lang.Long" resultMap ="BaseResultMap">
         select
         <include refid="detail_column"/>
@@ -111,6 +123,19 @@
         from
         <include refid="TableName" />
         where project_id = #{projectId}
+    </select>
+
+    <select id="getJobsByIds" resultMap ="BaseResultMap">
+        select
+        <include refid="detail_column"/>
+        from
+        <include refid="TableName" />
+        <if test="ids != null and ids != ''">
+            WHERE id in
+            <foreach collection="ids" open="(" close=")" separator="," item="item">
+                #{item}
+            </foreach>
+        </if>
     </select>
 
     <select id="getBasicInfo" parameterType="java.lang.Long" resultMap ="BaseResultMap">

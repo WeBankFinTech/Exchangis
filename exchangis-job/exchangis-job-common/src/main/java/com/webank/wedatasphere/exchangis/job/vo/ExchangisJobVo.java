@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.vo;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.*;
@@ -49,6 +50,11 @@ public class ExchangisJobVo {
      */
     @Size(max = 200, message = "Length of desc should be less than 200 (描述长度不超过200)")
     private String jobDesc;
+
+    /**
+     * Is the job has sub jobs
+     */
+    private Boolean jobNotEmpty;
 
     /**
      * Content
@@ -111,6 +117,7 @@ public class ExchangisJobVo {
             this.projectId = String.valueOf(jobEntity.getProjectId());
             this.engineType = jobEntity.getEngineType();
             this.jobDesc = jobEntity.getJobDesc();
+            this.jobNotEmpty = StringUtils.isNotEmpty(jobEntity.getJobContent());
             this.jobLabels = jobEntity.getJobLabel();
             this.jobName = jobEntity.getName();
             this.jobType = jobEntity.getJobType();
@@ -157,6 +164,14 @@ public class ExchangisJobVo {
 
     public void setJobDesc(String jobDesc) {
         this.jobDesc = jobDesc;
+    }
+
+    public Boolean getJobNotEmpty() {
+        return jobNotEmpty;
+    }
+
+    public void setJobNotEmpty(Boolean jobNotEmpty) {
+        this.jobNotEmpty = jobNotEmpty;
     }
 
     public Date getCreateTime() {

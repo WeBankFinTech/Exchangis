@@ -6,6 +6,7 @@ import com.webank.wedatasphere.exchangis.common.domain.ExchangisDataSource;
 import com.webank.wedatasphere.exchangis.common.enums.ExchangisDataSourceType;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Objects;
  *  "table": "demo-test"
  * }
  */
-public class ExchangisJobDataSourcesContent {
+public class ExchangisJobDataSourcesContent implements Serializable {
 
     @JsonProperty("source_id")
     private String sourceId;
@@ -72,7 +73,7 @@ public class ExchangisJobDataSourcesContent {
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class ExchangisJobDataSource implements ExchangisDataSource {
+    public static class ExchangisJobDataSource implements ExchangisDataSource, Serializable {
 
         /**
          * Data source type

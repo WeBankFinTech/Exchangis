@@ -1,11 +1,12 @@
 package com.webank.wedatasphere.exchangis.job.domain.content;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ExchangisJobTransformsItem {
+public class ExchangisJobTransformsItem implements Serializable {
     /**
      * Source field name
      */

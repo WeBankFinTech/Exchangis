@@ -2,9 +2,10 @@ package com.webank.wedatasphere.exchangis.job.domain.content;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ExchangisJobTransformsContent {
+public class ExchangisJobTransformsContent implements Serializable {
     private boolean addEnable;
     private String type;
     private String sql;

@@ -3,9 +3,10 @@ package com.webank.wedatasphere.exchangis.job.domain.content;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ExchangisJobParamsContent {
+public class ExchangisJobParamsContent implements Serializable {
 
     /**
      * Source params
@@ -33,7 +34,7 @@ public class ExchangisJobParamsContent {
         this.sinks = sinks;
     }
 
-    public static class ExchangisJobParamsItem {
+    public static class ExchangisJobParamsItem implements Serializable {
 
         @JsonProperty("config_key")
         @JsonAlias({"key", "k"})

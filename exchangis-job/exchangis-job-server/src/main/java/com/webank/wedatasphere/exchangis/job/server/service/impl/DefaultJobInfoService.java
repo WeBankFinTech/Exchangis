@@ -17,12 +17,14 @@ import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSourcesContent;
 import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobParamsContent;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.validator.JobValidateResult;
 import com.webank.wedatasphere.exchangis.job.server.validator.JobValidator;
 import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisBulkJobVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
@@ -149,7 +151,7 @@ public class DefaultJobInfoService implements JobInfoService {
             }
             PageResult<ExchangisJobVo> pageResult = new PageResult<>();
             pageResult.setList(pageInfo.getList().stream().map(ExchangisJobVo::new).collect(Collectors.toList()));
-            pageResult.setTotal(pageInfo.getTotal());
+            pageResult.setTotal((long) pageInfo.getList().size());
             return pageResult;
         }finally {
             PageHelper.clearPage();
@@ -283,6 +285,28 @@ public class DefaultJobInfoService implements JobInfoService {
         jobEntity.setLastUpdateTime(Calendar.getInstance().getTime());
         this.jobEntityDao.upgradeConfig(jobEntity);
         return jobVo;
+    }
+
+    @Override
+    public void bulkUpdateJob(String requestUser, ExchangisBulkJobVo bulkJobVo) throws ExchangisJobServerException {
+        Map<String, String> configMap = bulkJobVo.getConfigMap();
+        List<ExchangisJobEntity> jobs = jobEntityDao.getJobsByIds(bulkJobVo.getIds());
+        for (ExchangisJobEntity job : jobs) {
+            List<ExchangisJobInfoContent> jobInfoContents = JobUtils.parseJobContent(job.getJobContent());
+            for (ExchangisJobInfoContent content : jobInfoContents) {
+                List<ExchangisJobParamsContent.ExchangisJobParamsItem> settings = content.getSettings();
+                for (ExchangisJobParamsContent.ExchangisJobParamsItem item : settings) {
+                    if (!Objects.isNull(configMap.get(item.getConfigKey()))) {
+                        item.setConfigValue(configMap.get(item.getConfigKey()));
+                    }
+                }
+            }
+            String newContent = Json.toJson(jobInfoContents, null);
+            job.setJobContent(newContent);
+            job.setModifyUser(requestUser);
+            job.setLastUpdateTime(Calendar.getInstance().getTime());
+        }
+        this.jobEntityDao.batchUpgradeContent(jobs);
     }
 
     @Override

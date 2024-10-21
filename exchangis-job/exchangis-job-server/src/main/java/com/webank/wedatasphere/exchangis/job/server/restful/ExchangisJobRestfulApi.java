@@ -17,6 +17,7 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerExcepti
 import com.webank.wedatasphere.exchangis.job.server.vo.JobFunction;
 import com.webank.wedatasphere.exchangis.job.server.service.JobFuncService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisBulkJobVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.privilege.entity.ProxyUser;
@@ -428,6 +429,46 @@ public class ExchangisJobRestfulApi {
             response = Message.error(message);
         }
         AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB,id.toString(), "Job id is: " + id.toString(), OperateTypeEnum.UPDATE,request);
+        return response;
+    }
+
+    @RequestMapping(value = "/bulk/save", method = RequestMethod.PUT)
+    public Message bulkSave(@RequestBody ExchangisBulkJobVo bulkJobVo, HttpServletRequest request) {
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to save content (没有保存任务权限)");
+        }
+        if (Objects.isNull(bulkJobVo.getIds()) || bulkJobVo.getIds().size() <= 0) {
+            return Message.error("Job is not null (任务不能为空)");
+        }
+        List<Long> ids = bulkJobVo.getIds();
+        String loginUser = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        Message response = Message.ok();
+        try {
+            for (Long id : ids) {
+                if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_ALTER)) {
+                    return Message.error("You have no permission to save content (没有保存任务权限)");
+                }
+            }
+            jobInfoService.bulkUpdateJob(loginUser, bulkJobVo);
+        } catch (Exception e) {
+            String message = "Fail to save the job content (保存任务内容失败), cause by : " + e.getMessage();
+            LOG.error(message);
+            if (e instanceof ExchangisJobServerException
+                    || e instanceof ExchangisDataSourceException) {
+                message += " [" + ((ErrorException) e).getDesc() +  "]";
+            }
+            if (e instanceof ExchangisJobServerException &&
+                    ((ExchangisJobServerException) e).getErrCode() == VALIDATE_JOB_ERROR.getCode()){
+                LOG.error(message);
+            } else {
+                LOG.error(message, e);
+            }
+            response = Message.error(message);
+        }
+        for (Long id : ids) {
+            AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, id.toString(), "Job id is: " + id, OperateTypeEnum.UPDATE, request);
+        }
         return response;
     }
 

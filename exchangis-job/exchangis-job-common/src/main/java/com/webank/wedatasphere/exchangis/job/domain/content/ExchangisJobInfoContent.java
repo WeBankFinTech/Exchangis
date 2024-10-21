@@ -1,11 +1,12 @@
 package com.webank.wedatasphere.exchangis.job.domain.content;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ExchangisJobInfoContent {
+public class ExchangisJobInfoContent implements Serializable {
 
     /**
      * Engine name

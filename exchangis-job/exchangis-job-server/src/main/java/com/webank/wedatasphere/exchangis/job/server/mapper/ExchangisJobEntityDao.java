@@ -41,6 +41,13 @@ public interface ExchangisJobEntityDao {
      * @param jobEntity job entity
      */
     void upgradeContent(ExchangisJobEntity jobEntity);
+
+    /**
+     * Upgrade content
+     * @param jobEntity job entity
+     */
+    void batchUpgradeContent(@Param("list") List<ExchangisJobEntity> jobEntity);
+
     /**
      * Get jobEntity
      * @param jobId job id
@@ -53,6 +60,13 @@ public interface ExchangisJobEntityDao {
      * @return
      */
     List<ExchangisJobEntity> getDetailList(@Param("projectId") Long projectId);
+
+    /**
+     * Get jobs by ids
+     * @param ids
+     * @return
+     */
+    List<ExchangisJobEntity> getJobsByIds(@Param("ids") List<Long> ids);
 
     ExchangisJobEntity getBasicInfo(@Param("jobId") Long jobId);
 
