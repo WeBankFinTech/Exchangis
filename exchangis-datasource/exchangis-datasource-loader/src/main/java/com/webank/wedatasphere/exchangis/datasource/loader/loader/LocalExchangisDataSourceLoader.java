@@ -4,6 +4,9 @@ import com.webank.wedatasphere.exchangis.dao.hook.MapperHook;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceDefLoader;
+import com.webank.wedatasphere.exchangis.datasource.core.splitter.DataSourceSplitStrategy;
+import com.webank.wedatasphere.exchangis.datasource.core.splitter.DataSourceSplitStrategyFactory;
+import com.webank.wedatasphere.exchangis.datasource.core.splitter.DataSourceSplitStrategyRegisterFactory;
 import com.webank.wedatasphere.exchangis.datasource.loader.clazzloader.ExchangisDataSourceClassLoader;
 import com.webank.wedatasphere.exchangis.datasource.loader.utils.ExceptionHelper;
 import com.webank.wedatasphere.exchangis.datasource.loader.utils.ExtDsUtils;
@@ -22,8 +25,15 @@ public class LocalExchangisDataSourceLoader implements ExchangisDataSourceDefLoa
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalExchangisDataSourceLoader.class);
 
     private ClassLoader classLoader;
+    /**
+     * Context
+     */
     private ExchangisDataSourceContext context;
 
+    /**
+     * Split strategy factory
+     */
+    private DataSourceSplitStrategyFactory splitStrategyFactory;
     @Override
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -32,6 +42,11 @@ public class LocalExchangisDataSourceLoader implements ExchangisDataSourceDefLoa
     @Override
     public void setContext(ExchangisDataSourceContext context) {
         this.context = context;
+    }
+
+    @Override
+    public void setSplitStrategyFactory(DataSourceSplitStrategyFactory splitStrategyFactory) {
+        this.splitStrategyFactory = splitStrategyFactory;
     }
 
     @Override
@@ -64,8 +79,16 @@ public class LocalExchangisDataSourceLoader implements ExchangisDataSourceDefLoa
                 ExchangisDataSourceDefinition dsType = (ExchangisDataSourceDefinition) clazz.newInstance();
                 dsType.setMapperHook(mapperHook);
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
-                LOGGER.info("ExchangisDataSource is {}, dsName is {}, dsTypeId is {}",
-                        dsType.getClass().toString(), dsType.name(), dsType.id());
+                String splitStrategyName = dsType.splitStrategyName();
+                if (StringUtils.isBlank(splitStrategyName)){
+                    DataSourceSplitStrategy splitStrategy = dsType.splitStrategy();
+                    if (Objects.nonNull(splitStrategy) && this.splitStrategyFactory instanceof DataSourceSplitStrategyRegisterFactory){
+                        ((DataSourceSplitStrategyRegisterFactory) this.splitStrategyFactory).register(splitStrategy);
+                        splitStrategyName = splitStrategy.name();
+                    }
+                }
+                LOGGER.info("ExchangisDataSource => [class: {}, name: {}, type_id: {}, split_strategy: {}]",
+                        dsType.getClass().toString(), dsType.name(), dsType.id(), StringUtils.isNoneBlank(splitStrategyName)? splitStrategyName : "NONE");
                 context.addExchangisDsDefinition(dsType);
             }
         }

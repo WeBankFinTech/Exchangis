@@ -15,6 +15,15 @@ import java.util.stream.Collectors;
  */
 public class SubExchangisJob extends GenericExchangisJob {
 
+    /**
+     * Split parts for source direction of job
+     */
+    protected List<Map<String, Object>> sourceSplitParts = new ArrayList<>();
+
+    /**
+     * Sink parts for source direction of job
+     */
+    protected List<Map<String, Object>> sinkSplitParts = new ArrayList<>();
 
     protected String sourceType;
 
@@ -119,6 +128,22 @@ public class SubExchangisJob extends GenericExchangisJob {
 
     public List<ColumnFunction> getColumnFunctions() {
         return columnFunctions;
+    }
+
+    public List<Map<String, Object>> getSourceSplitParts() {
+        return sourceSplitParts;
+    }
+
+    public void setSourceSplitParts(List<Map<String, Object>> sourceSplitParts) {
+        this.sourceSplitParts = sourceSplitParts;
+    }
+
+    public List<Map<String, Object>> getSinkSplitParts() {
+        return sinkSplitParts;
+    }
+
+    public void setSinkSplitParts(List<Map<String, Object>> sinkSplitParts) {
+        this.sinkSplitParts = sinkSplitParts;
     }
 
     /**
