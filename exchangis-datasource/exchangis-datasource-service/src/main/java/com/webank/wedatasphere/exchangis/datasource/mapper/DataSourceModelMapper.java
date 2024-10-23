@@ -37,7 +37,6 @@ public interface DataSourceModelMapper {
      */
     List<DataSourceModel> queryWithRateLimit();
 
-
     /**
      * Insert
      *
@@ -45,6 +44,14 @@ public interface DataSourceModelMapper {
      * @return primary key
      */
     int insert(DataSourceModel dataSourceModel);
+
+    /**
+     * Batch insert
+     *
+     * @param list dataSourceModel list
+     * @return primary key
+     */
+    int batchInsert(@Param("list") List<DataSourceModel> list);
 
     /**
      * Delete

@@ -114,6 +114,32 @@
         ]]>
     </insert>
 
+    <insert id="batchInsert"
+            parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            <![CDATA[
+        INSERT INTO exchangis_data_source_model (
+         cluster_name,model_name,source_type,model_desc,create_owner,parameter,
+         ref_model_id,is_duplicate,create_user,create_time,modify_user,modify_time,version
+        ) VALUES (
+         #{item.clusterName} ,
+         #{item.modelName} ,
+         #{item.sourceType} ,
+         #{item.modelDesc},
+         #{item.createOwner},
+         #{item.parameter} ,
+         #{item.refModelId},
+         #{item.isDuplicate},
+         #{item.createUser,jdbcType=VARCHAR},
+         now(),
+         #{item.modifyUser,jdbcType=VARCHAR},
+         now(),
+         #{item.version}
+        )
+        ]]>
+        </foreach>
+    </insert>
+
     <select id="count" resultType="long">
         SELECT count(*)  FROM  `exchangis_data_source_model`
         <include refid="findPageWhere"/>

@@ -42,7 +42,7 @@ public class ExchangisJobInfo extends GenericExchangisJob {
         this.createTime = jobVo.getCreateTime();
         this.createUser = jobVo.getCreateUser();
         this.lastUpdateTime = jobVo.getModifyTime();
-        this.jobContent = jobVo.getContent();
+        this.jobContent = jobVo.getJobContent();
         this.executeUser = jobVo.getExecuteUser();
         this.jobParams = jobVo.getJobParams();
     }

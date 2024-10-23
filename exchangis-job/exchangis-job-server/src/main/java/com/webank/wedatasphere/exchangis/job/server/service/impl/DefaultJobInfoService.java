@@ -97,8 +97,8 @@ public class DefaultJobInfoService implements JobInfoService {
         //jobEntity.setJobContent(jobVo.getContent());
         jobEntity.setModifyUser(jobVo.getModifyUser());
         //Map<String, Object> contentVo = BDPJettyServerHelper.gson().fromJson(jobVo.getContent(), Map.class);
-        if(jobVo.getContent() != null) {
-            jobEntity.setJobContent(jobVo.getContent());
+        if(jobVo.getJobContent() != null) {
+            jobEntity.setJobContent(jobVo.getJobContent());
         }
         jobEntityDao.addJobEntity(jobEntity);
         jobVo.setId(jobEntity.getId());
@@ -174,7 +174,7 @@ public class DefaultJobInfoService implements JobInfoService {
         ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
         jobVo.setProjectId(String.valueOf(exchangisJob.getProjectId()));
         if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
-            jobVo.setContent(exchangisJob.getJobContent());
+            jobVo.setJobContent(exchangisJob.getJobContent());
             jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
                     Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
         }
@@ -188,7 +188,7 @@ public class DefaultJobInfoService implements JobInfoService {
         for(ExchangisJobEntity exchangisJob : exchangisJobs){
             ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
             if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
-                jobVo.setContent(exchangisJob.getJobContent());
+                jobVo.setJobContent(exchangisJob.getJobContent());
                 jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
                         Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
             }
@@ -205,7 +205,7 @@ public class DefaultJobInfoService implements JobInfoService {
         for(ExchangisJobEntity exchangisJob : exchangisJobs){
             ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
             if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
-                jobVo.setContent(exchangisJob.getJobContent());
+                jobVo.setJobContent(exchangisJob.getJobContent());
                 jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
                         Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
             }
@@ -228,7 +228,7 @@ public class DefaultJobInfoService implements JobInfoService {
                 JsonNode contentJsonNode = objectMapper.readTree(content);
                 ObjectNode objectNode = objectMapper.createObjectNode();
                 objectNode.set("subJobs", contentJsonNode);
-                jobVo.setContent(objectNode.toString());
+                jobVo.setJobContent(objectNode.toString());
                 jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
                         Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
             } catch (JsonProcessingException e) {
@@ -254,7 +254,7 @@ public class DefaultJobInfoService implements JobInfoService {
                         JsonNode contentJsonNode = objectMapper.readTree(content);
                         ObjectNode objectNode = objectMapper.createObjectNode();
                         objectNode.set("subJobs", contentJsonNode);
-                        jobVo.setContent(objectNode.toString());
+                        jobVo.setJobContent(objectNode.toString());
                         jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
                                 Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
                     } catch (JsonProcessingException e) {
@@ -314,7 +314,7 @@ public class DefaultJobInfoService implements JobInfoService {
     public ExchangisJobVo updateJobContent(String requestUser, ExchangisJobVo jobVo) throws ExchangisJobServerException, ExchangisDataSourceException {
         Long jobId = jobVo.getId();
         ExchangisJobEntity exchangisJob = this.jobEntityDao.getDetail(jobId);
-        exchangisJob.setJobContent(jobVo.getContent());
+        exchangisJob.setJobContent(jobVo.getJobContent());
         final String engine = exchangisJob.getEngineType();
         // 校验是否有重复子任务名
         List<ExchangisJobInfoContent> content = LabelUtils.Jackson.fromJson(exchangisJob.getJobContent(),

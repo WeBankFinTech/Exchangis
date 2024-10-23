@@ -59,7 +59,7 @@ public class ExchangisJobVo {
     /**
      * Content
      */
-    private String content;
+    private String jobContent;
 
     /**
      * Execute user
@@ -118,6 +118,7 @@ public class ExchangisJobVo {
             this.engineType = jobEntity.getEngineType();
             this.jobDesc = jobEntity.getJobDesc();
             this.jobNotEmpty = StringUtils.isNotEmpty(jobEntity.getJobContent());
+            this.jobContent = jobEntity.getJobContent();
             this.jobLabels = jobEntity.getJobLabel();
             this.jobName = jobEntity.getName();
             this.jobType = jobEntity.getJobType();
@@ -214,12 +215,12 @@ public class ExchangisJobVo {
         this.jobLabels = jobLabel;
     }
 
-    public String getContent() {
-        return content;
+    public String getJobContent() {
+        return jobContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setJobContent(String jobContent) {
+        this.jobContent = jobContent;
     }
 
     public String getExecuteNode() {
