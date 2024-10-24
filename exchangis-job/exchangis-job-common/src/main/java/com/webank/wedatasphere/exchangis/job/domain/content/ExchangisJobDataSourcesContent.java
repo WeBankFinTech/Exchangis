@@ -216,23 +216,24 @@ public class ExchangisJobDataSourcesContent implements Serializable {
         ExchangisJobDataSourcesContent.ExchangisJobDataSource sink = this.getSink();
 
         if (StringUtils.isNotBlank(dataSrcType)) {
-            if (containsOrMatchesType(sourceId, source, dataSrcType)) {
-                return true;
+            if (!containsOrMatchesType(sourceId, source, dataSrcType)) {
+                return false;
             }
         }
         if (StringUtils.isNotBlank(dataDestType)) {
-            if (containsOrMatchesType(sinkId, sink, dataDestType)) {
-                return true;
+            if (!containsOrMatchesType(sinkId, sink, dataDestType)) {
+                return false;
             }
         }
         if (StringUtils.isNotBlank(sourceSinkId)) {
-            if (StringUtils.isNotBlank(sourceId) && (sourceId.contains(sourceSinkId) || sinkId.contains(sourceSinkId))) {
-                return true;
-            } else if (StringUtils.isBlank(sourceId) && (source.matchIdentify(sourceSinkId) || sink.matchIdentify(sourceSinkId))) {
-                return true;
+            if ((StringUtils.isNotBlank(sourceId)
+                    && !sourceId.contains(sourceSinkId) && !sinkId.contains(sourceSinkId))
+                || (StringUtils.isBlank(sourceId)
+                    && !source.matchIdentify(sourceSinkId) && !sink.matchIdentify(sourceSinkId))) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private boolean containsOrMatchesType(String id, ExchangisJobDataSourcesContent.ExchangisJobDataSource dataSource, String type) {

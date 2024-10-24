@@ -133,8 +133,8 @@ public class DefaultJobInfoService implements JobInfoService {
             String dataSrcType = queryVo.getDataSrcType();
             String dataDestType = queryVo.getDataDestType();
             String sourceSinkId = queryVo.getSourceSinkId();
-            if (StringUtils.isBlank(dataSrcType) && StringUtils.isBlank(dataSrcType) &&
-                    StringUtils.isBlank(dataSrcType)) {
+            if (StringUtils.isBlank(dataSrcType) && StringUtils.isBlank(dataDestType) &&
+                    StringUtils.isBlank(sourceSinkId)) {
                 pageInfo.setList(jobEntities);
             } else {
                 List<ExchangisJobEntity> jobs = new ArrayList<>();

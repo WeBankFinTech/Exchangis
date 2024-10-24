@@ -22,7 +22,8 @@ public class DsKeyDefineUtil {
     );
 
     public static final List<String> AUTH_KEYS = Arrays.asList(
-            "username", "password", "appid", "objectid", "mkPrivate", "authType", "databaseName"
+            "username", "password", "appid", "objectid", "mkPrivate", "authType", "databaseName",
+            "catalogs", "kill_task_time"
     );
 
     public static List<Map<String, Object>> mergeTypeKey(List<Map<String, Object>> list) {
