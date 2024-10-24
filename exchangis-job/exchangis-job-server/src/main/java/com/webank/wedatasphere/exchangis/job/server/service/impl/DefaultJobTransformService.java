@@ -10,7 +10,7 @@ import com.webank.wedatasphere.exchangis.job.server.mapper.JobTransformRuleDao;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.*;
 import com.webank.wedatasphere.exchangis.job.server.service.JobTransformService;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.TransformProcessor;
-import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.bml.protocol.BmlDownloadResponse;

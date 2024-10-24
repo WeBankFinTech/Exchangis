@@ -14,7 +14,7 @@ import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchableTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskExecuteService;
-import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

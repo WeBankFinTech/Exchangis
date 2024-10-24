@@ -119,15 +119,12 @@
         <foreach collection="list" item="item" separator=";">
             <![CDATA[
         INSERT INTO exchangis_data_source_model (
-         cluster_name,model_name,source_type,model_desc,create_owner,parameter,
+         cluster_name,model_name,source_type,
          ref_model_id,is_duplicate,create_user,create_time,modify_user,modify_time,version
         ) VALUES (
          #{item.clusterName} ,
          #{item.modelName} ,
          #{item.sourceType} ,
-         #{item.modelDesc},
-         #{item.createOwner},
-         #{item.parameter} ,
          #{item.refModelId},
          #{item.isDuplicate},
          #{item.createUser,jdbcType=VARCHAR},

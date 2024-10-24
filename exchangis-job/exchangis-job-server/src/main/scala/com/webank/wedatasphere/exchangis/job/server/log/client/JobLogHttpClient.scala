@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.log.client
 
-import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder
 import org.springframework.context.ApplicationContext
 
 class JobLogHttpClient {

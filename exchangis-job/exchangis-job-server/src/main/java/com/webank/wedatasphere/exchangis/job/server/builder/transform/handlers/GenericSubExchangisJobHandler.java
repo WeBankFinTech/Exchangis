@@ -12,8 +12,7 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
-import com.webank.wedatasphere.exchangis.job.server.builder.SpringExchangisJobBuilderContext;
-import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
 

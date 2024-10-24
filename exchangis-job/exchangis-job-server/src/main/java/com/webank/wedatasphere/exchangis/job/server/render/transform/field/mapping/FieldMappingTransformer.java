@@ -16,7 +16,7 @@ import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mappi
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match.FieldAllMatchStrategy;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match.FieldColumnMatch;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match.FieldMatchStrategy;
-import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 
 import java.util.ArrayList;

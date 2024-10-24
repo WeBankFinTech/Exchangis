@@ -1,9 +1,9 @@
 /**
- * 
+ *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  */
-package com.webank.wedatasphere.exchangis.job.server.utils;
+package com.webank.wedatasphere.exchangis.utils;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;

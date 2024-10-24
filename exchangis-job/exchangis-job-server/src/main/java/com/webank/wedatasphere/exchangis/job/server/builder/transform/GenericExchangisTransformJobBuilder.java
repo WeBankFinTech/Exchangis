@@ -13,7 +13,7 @@ import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.S
 import com.webank.wedatasphere.exchangis.job.server.mapper.JobTransformProcessorDao;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformTypes;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.TransformProcessor;
-import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.common.utils.ClassUtils;

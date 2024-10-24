@@ -25,7 +25,7 @@ import com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger;
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
 import com.webank.wedatasphere.exchangis.job.server.log.service.RpcJobLogService;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
-import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.executer.ExecutorManager;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
