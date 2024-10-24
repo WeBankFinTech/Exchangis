@@ -5,8 +5,10 @@ import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException;
 
 import java.util.List;
 
@@ -37,7 +39,6 @@ public interface DataSourceModelService {
      */
     boolean delete(Long id) throws DataSourceModelOperateException, RateLimitOperationException;
 
-
     /**
      * Update once
      *
@@ -45,6 +46,14 @@ public interface DataSourceModelService {
      * @return boolean
      */
     boolean update(DataSourceModel model) throws DataSourceModelOperateException;
+
+    /**
+     * Update dataSourceModel and related dataSource
+     *
+     * @param model data source model entity
+     * @return boolean
+     */
+    void updateRelated(DataSourceModel model) throws DataSourceModelOperateException, ExchangisOnEventException, ExchangisDataSourceException;
 
     /**
      * Begin update transaction

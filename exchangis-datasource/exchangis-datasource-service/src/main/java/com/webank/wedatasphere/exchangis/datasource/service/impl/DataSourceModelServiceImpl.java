@@ -2,18 +2,22 @@ package com.webank.wedatasphere.exchangis.datasource.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.pager.PageQuery;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelQuery;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModel;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.RateLimit;
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.exception.DataSourceModelOperateException;
 import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperationException;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelMapper;
 import com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
 import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 
 @Service
 public class DataSourceModelServiceImpl implements DataSourceModelService {
@@ -37,6 +42,11 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
 
     @Resource
     private RateLimitService rateLimitService;
+
+    @Resource
+    private DataSourceService dataSourceService;
+
+    private DataSourceModelService selfService;
 
     @Override
     public boolean add(DataSourceModel dataSourceModel) {
@@ -77,6 +87,39 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
             throw new DataSourceModelOperateException("The model is in duplicate");
         }
         return dataSourceModelMapper.update(dataSourceModel) > 0;
+    }
+
+    @Override
+    public void updateRelated(DataSourceModel model) throws DataSourceModelOperateException, ExchangisOnEventException, ExchangisDataSourceException {
+        // Begin the update transaction
+        Long id = model.getId();
+        DataSourceModel duplicated = getSelfService().beginUpdate(id, model);
+        // Query all the relations by major model id
+        List<DataSourceModelRelation> relations  =
+                getSelfService().queryRelations(duplicated.getRefModelId());
+        Map<String, DataSourceModelRelation> sortRelations = new HashMap<>();
+        // Sort the relations
+        for (DataSourceModelRelation relation : relations){
+            sortRelations.compute(relation.getDsName(), (key, relate) -> {
+                if (null == relate){
+                    return relation;
+                } else {
+                    Long version = relation.getDsVersion();
+                    if (Optional.ofNullable(version).orElse(0L) >
+                            Optional.ofNullable(relate.getDsVersion()).orElse(0L)){
+                        return relation;
+                    }
+                }
+                return relate;
+            });
+        }
+        for (DataSourceModelRelation relation : sortRelations.values()){
+            // Use admin as operator ? to update the data sources related.
+            this.dataSourceService.updateInVersionAndModel(GlobalConfiguration.getAdminUser(),
+                    relation.getDsId(), relation.getDsName(), relation.getDsVersion(), duplicated);
+        }
+        // Finish submitting the update transaction
+        getSelfService().commitUpdate(id, duplicated, model);
     }
 
     /**
@@ -185,6 +228,20 @@ public class DataSourceModelServiceImpl implements DataSourceModelService {
         query.setModelExactName(tsName);
         query.setCreateUser(createUser);
         return !this.selectAllList(query).isEmpty();
+    }
+
+    /**
+     * Get the self service
+     * @return service
+     */
+    private DataSourceModelService getSelfService() throws ExchangisOnEventException {
+        if (Objects.isNull(selfService)){
+            this.selfService = SpringContextHolder.getBean(DataSourceModelServiceImpl.class);
+            if (Objects.isNull(this.selfService)){
+                throw new ExchangisOnEventException("DataSourceModelServiceImpl cannot be found in spring context", null);
+            }
+        }
+        return this.selfService;
     }
 
 }

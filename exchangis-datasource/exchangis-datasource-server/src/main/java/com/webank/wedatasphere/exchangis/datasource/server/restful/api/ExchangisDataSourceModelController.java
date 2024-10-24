@@ -12,6 +12,7 @@ import com.webank.wedatasphere.exchangis.datasource.exception.RateLimitOperation
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelService;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelTypeKeyService;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.server.Message;
@@ -96,39 +97,12 @@ public class ExchangisDataSourceModelController {
             if (Objects.equals(before.getParameter(), model.getParameter())){
                 dataSourceModelService.update(model);
             } else {
-                // Begin the update transaction
-                DataSourceModel duplicated = dataSourceModelService.beginUpdate(id, model);
-                // Query all the relations by major model id
-                List<DataSourceModelRelation> relations  =
-                        this.dataSourceModelService.queryRelations(duplicated.getRefModelId());
-                Map<String, DataSourceModelRelation> sortRelations = new HashMap<>();
-                // Sort the relations
-                for (DataSourceModelRelation relation : relations){
-                    sortRelations.compute(relation.getDsName(), (key, relate) -> {
-                        if (null == relate){
-                            return relation;
-                        } else {
-                            Long version = relation.getDsVersion();
-                            if (Optional.ofNullable(version).orElse(0L) >
-                                    Optional.ofNullable(relate.getDsVersion()).orElse(0L)){
-                                return relation;
-                            }
-                        }
-                        return relate;
-                    });
-                }
-                for (DataSourceModelRelation relation : sortRelations.values()){
-                    // Use admin as operator ? to update the data sources related.
-                    this.dataSourceService.updateInVersionAndModel(GlobalConfiguration.getAdminUser(),
-                            relation.getDsId(), relation.getDsName(), relation.getDsVersion(), duplicated);
-                }
-                // Finish submitting the update transaction
-                this.dataSourceModelService.commitUpdate(id, duplicated, model);
+                dataSourceModelService.updateRelated(model);
             }
         } catch (DataSourceModelOperateException e) {
             return Message.error("Failed to update the dataSource model, cause by : " + e.getMessage());
-        } catch (ExchangisDataSourceException e) {
-            throw new RuntimeException(e);
+        } catch (ExchangisDataSourceException | ExchangisOnEventException e) {
+            return Message.error("Failed to update the related dataSource, cause by : " + e.getMessage());
         }
         return Message.ok();
     }
