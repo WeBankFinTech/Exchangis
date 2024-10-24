@@ -98,6 +98,25 @@ public class DataSourceModel {
     public DataSourceModel() {
     }
 
+    public DataSourceModel copy() {
+        DataSourceModel model = new DataSourceModel();
+        model.setId(this.getId());
+        model.setClusterName(this.getClusterName());
+        model.setModelName(this.getModelName());
+        model.setSourceType(this.getSourceType());
+        model.setModelDesc(this.getModelDesc());
+        model.setParameter(this.getParameter());
+        model.setRefModelId(this.getRefModelId());
+        model.setDuplicate(this.getDuplicate());
+        model.setCreateOwner(this.getCreateOwner());
+        model.setCreateUser(this.getCreateUser());
+        model.setCreateTime(this.getCreateTime());
+        model.setModifyUser(this.getModifyUser());
+        model.setModifyTime(this.getModifyTime());
+        model.setVersion(this.getVersion());
+        return model;
+    }
+
     public Long getId() {
         return id;
     }
