@@ -129,9 +129,9 @@
          #{item.isDuplicate},
          #{item.parameter},
          #{item.createUser,jdbcType=VARCHAR},
-         now(),
+         #{item.createTime},
          #{item.modifyUser,jdbcType=VARCHAR},
-         now(),
+         #{item.modifyTime},
          #{item.version}
         )
         ]]>

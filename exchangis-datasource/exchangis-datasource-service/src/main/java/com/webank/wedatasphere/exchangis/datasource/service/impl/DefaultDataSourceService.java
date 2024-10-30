@@ -888,7 +888,6 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         // Merge with dsModel keyDefine
         DataSourceModelTypeKeyQuery dsModelTypeKeyQuery = new DataSourceModelTypeKeyQuery();
         dsModelTypeKeyQuery.setDsTypeId(typeId);
-        List<DataSourceModelTypeKey> dsModelTypeKeys = dataSourceModelTypeKeyMapper.queryList(dsModelTypeKeyQuery);
         if (Objects.isNull(result.getKeyDefine())) {
             return new ArrayList<>();
         }

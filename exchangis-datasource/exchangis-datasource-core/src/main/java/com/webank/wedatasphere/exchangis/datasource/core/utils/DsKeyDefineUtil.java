@@ -2,9 +2,11 @@ package com.webank.wedatasphere.exchangis.datasource.core.utils;
 
 import com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelTypeKey;
 import com.webank.wedatasphere.exchangis.datasource.core.serialize.ParamKeySerializer;
+import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -17,14 +19,20 @@ public class DsKeyDefineUtil {
     @Resource
     private ParamKeySerializer paramKeySerializer;
 
-    private static final List<String> DS_MODEL_FIELDS = Arrays.asList(
-            "dcn_info", "elasticUrls", "host", "port", "tcp_port", "http_port", "address", "params"
-    );
+    public static List<String> DS_MODEL_FIELDS = new ArrayList<>();
 
-    public static final List<String> AUTH_KEYS = Arrays.asList(
-            "username", "password", "appid", "objectid", "mkPrivate", "authType", "databaseName",
-            "catalogs", "kill_task_time"
-    );
+    public static List<String> AUTH_KEYS = new ArrayList<>();
+
+    private static final CommonVars<String> DS_MODEL_FIELDS_VAR = CommonVars.apply("wds.exchangis.datasource.model-fields", "");
+    private static final CommonVars<String> AUTH_KEYS_VAR = CommonVars.apply("wds.exchangis.datasource.auth-keys", "");
+
+    @PostConstruct
+    public void init() {
+        DS_MODEL_FIELDS = Arrays.stream(DS_MODEL_FIELDS_VAR.getValue().split(","))
+                .collect(Collectors.toList());
+        AUTH_KEYS = Arrays.stream(AUTH_KEYS_VAR.getValue().split(","))
+                .collect(Collectors.toList());
+    }
 
     public static List<Map<String, Object>> mergeTypeKey(List<Map<String, Object>> list) {
         list.stream().forEach(typeKey -> {
