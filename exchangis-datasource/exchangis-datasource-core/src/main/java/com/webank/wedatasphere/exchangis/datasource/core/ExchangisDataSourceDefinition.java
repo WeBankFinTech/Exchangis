@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.datasource.core;
 
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.hook.MapperHook;
+import com.webank.wedatasphere.exchangis.datasource.core.splitter.DataSourceSplitKey;
 import com.webank.wedatasphere.exchangis.datasource.core.splitter.DataSourceSplitStrategy;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
 import org.apache.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
@@ -72,8 +73,8 @@ public interface ExchangisDataSourceDefinition {
      * Split keys
      * @return array
      */
-    default String[] splitKeys(){
-        return new String[]{};
+    default DataSourceSplitKey splitKey(){
+        return null;
     }
     /**
      * Parameter config in

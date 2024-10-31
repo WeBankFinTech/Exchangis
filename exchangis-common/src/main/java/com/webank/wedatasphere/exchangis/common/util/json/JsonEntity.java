@@ -1,6 +1,5 @@
-package com.webank.wedatasphere.exchangis.job.server.utils;
+package com.webank.wedatasphere.exchangis.common.util.json;
 
-import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;

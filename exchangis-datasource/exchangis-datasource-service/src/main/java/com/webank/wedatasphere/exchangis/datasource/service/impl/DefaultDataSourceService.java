@@ -804,12 +804,14 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         Long dsModelId = vo.getDsModelId();
         if (Objects.nonNull(dsModelId)) {
             DataSourceModel dataSourceModel = modelMapper.selectOne(dsModelId);
-            // Merge eith dsModel keyDefine
-            DataSourceModelTypeKeyQuery dsModelTypeKeyQuery = new DataSourceModelTypeKeyQuery();
-            dsModelTypeKeyQuery.setDsTypeId(vo.getDataSourceTypeId());
-            List<DataSourceModelTypeKey> dsModelTypeKeys = dataSourceModelTypeKeyMapper.queryList(dsModelTypeKeyQuery);
-            Map<String, Object> dsConnectParams = dsKeyDefineUtil.mergeModelParamsIntoDs(vo.getConnectParams(), dataSourceModel.resolveParams(), dsModelTypeKeys);
-            vo.setConnectParams(dsConnectParams);
+            if (Objects.nonNull(dataSourceModel)) {
+                // Merge eith dsModel keyDefine
+                DataSourceModelTypeKeyQuery dsModelTypeKeyQuery = new DataSourceModelTypeKeyQuery();
+                dsModelTypeKeyQuery.setDsTypeId(vo.getDataSourceTypeId());
+                List<DataSourceModelTypeKey> dsModelTypeKeys = dataSourceModelTypeKeyMapper.queryList(dsModelTypeKeyQuery);
+                Map<String, Object> dsConnectParams = dsKeyDefineUtil.mergeModelParamsIntoDs(vo.getConnectParams(), dataSourceModel.resolveParams(), dsModelTypeKeys);
+                vo.setConnectParams(dsConnectParams);
+            }
         }
         Map<String, Object> payLoads = Json.fromJson(Json.toJson(vo, null), Map.class);
         Optional.ofNullable(payLoads).ifPresent(pay -> pay.put("labels", pay.get("label")));

@@ -47,7 +47,7 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sourceParamSet)){
             info("Fetch data source parameters in [{}]", subExchangisJob.getSourceType());
             appendDataSourceParams(idParamSet.load(SOURCE), idParamSet.load(SOURCE_ID), sourceParamSet,
-                    subExchangisJob.getSourceSplitParts(), originJob.getCreateUser());
+                    subExchangisJob.getSourceSplits(), originJob.getCreateUser());
         }
 
     }
@@ -60,7 +60,7 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
         if (Objects.nonNull(idParamSet) && Objects.nonNull(sinkParamSet)){
             info("Fetch data source parameters in [{}]", subExchangisJob.getSinkType());
             appendDataSourceParams(idParamSet.load(SINK), idParamSet.load(SINK_ID), sinkParamSet,
-                    subExchangisJob.getSinkSplitParts(), originJob.getCreateUser());
+                    subExchangisJob.getSinkSplits(), originJob.getCreateUser());
         }
     }
 
@@ -107,7 +107,7 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
                 DataSourceSplitStrategy splitStrategy = StringUtils.isNotBlank(strategyName) ?
                         Objects.requireNonNull(getBean(DataSourceSplitStrategyFactory.class)).getOrCreateSplitter(strategyName) : dsDefinition.getSplitStrategy();
                 if (Objects.nonNull(splitStrategy)){
-                    Optional.ofNullable(splitStrategy.getSplitValues(connectParams, dsDefinition.splitKeys())).ifPresent(splitParts::addAll);
+                    Optional.ofNullable(splitStrategy.getSplitValues(connectParams, dsDefinition.splitKey())).ifPresent(splitParts::addAll);
                 }
 
             }

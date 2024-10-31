@@ -18,12 +18,12 @@ public class SubExchangisJob extends GenericExchangisJob {
     /**
      * Split parts for source direction of job
      */
-    protected List<Map<String, Object>> sourceSplitParts = new ArrayList<>();
+    protected List<Map<String, Object>> sourceSplits = new ArrayList<>();
 
     /**
      * Sink parts for source direction of job
      */
-    protected List<Map<String, Object>> sinkSplitParts = new ArrayList<>();
+    protected List<Map<String, Object>> sinkSplits = new ArrayList<>();
 
     protected String sourceType;
 
@@ -130,20 +130,20 @@ public class SubExchangisJob extends GenericExchangisJob {
         return columnFunctions;
     }
 
-    public List<Map<String, Object>> getSourceSplitParts() {
-        return sourceSplitParts;
+    public List<Map<String, Object>> getSourceSplits() {
+        return sourceSplits;
     }
 
-    public void setSourceSplitParts(List<Map<String, Object>> sourceSplitParts) {
-        this.sourceSplitParts = sourceSplitParts;
+    public void setSourceSplits(List<Map<String, Object>> sourceSplits) {
+        this.sourceSplits = sourceSplits;
     }
 
-    public List<Map<String, Object>> getSinkSplitParts() {
-        return sinkSplitParts;
+    public List<Map<String, Object>> getSinkSplits() {
+        return sinkSplits;
     }
 
-    public void setSinkSplitParts(List<Map<String, Object>> sinkSplitParts) {
-        this.sinkSplitParts = sinkSplitParts;
+    public void setSinkSplits(List<Map<String, Object>> sinkSplits) {
+        this.sinkSplits = sinkSplits;
     }
 
     /**

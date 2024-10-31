@@ -18,5 +18,5 @@ public interface DataSourceSplitStrategy {
      * @param dataSourceParams data source params
      * @return value list
      */
-    List<Map<String, Object>> getSplitValues(Map<String, Object> dataSourceParams, String[] splitKeys);
+    List<Map<String, Object>> getSplitValues(Map<String, Object> dataSourceParams, DataSourceSplitKey splitKey);
 }
