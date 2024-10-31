@@ -15,6 +15,11 @@ public interface JobParam<T> {
     String getStrKey();
 
     /**
+     * Mapping key
+     * @return
+     */
+    String getMappingKey();
+    /**
      * Value of parameter
      * @return nullable
      */
