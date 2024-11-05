@@ -129,6 +129,7 @@ public class DefaultJobInfoService implements JobInfoService {
         PageHelper.startPage(queryVo.getPage(), queryVo.getPageSize());
         try {
             List<ExchangisJobEntity> jobEntities = this.jobEntityDao.queryPageList(queryVo);
+            Long total = new PageInfo<>(jobEntities).getTotal();
             PageInfo<ExchangisJobEntity> pageInfo = new PageInfo<>();
             String dataSrcType = queryVo.getDataSrcType();
             String dataDestType = queryVo.getDataDestType();
@@ -151,7 +152,7 @@ public class DefaultJobInfoService implements JobInfoService {
             }
             PageResult<ExchangisJobVo> pageResult = new PageResult<>();
             pageResult.setList(pageInfo.getList().stream().map(ExchangisJobVo::new).collect(Collectors.toList()));
-            pageResult.setTotal((long) pageInfo.getList().size());
+            pageResult.setTotal(total);
             return pageResult;
         }finally {
             PageHelper.clearPage();
