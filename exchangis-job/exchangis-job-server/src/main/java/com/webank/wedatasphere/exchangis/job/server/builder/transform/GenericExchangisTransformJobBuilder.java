@@ -6,9 +6,11 @@ import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoCont
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.server.builder.AbstractLoggingExchangisJobBuilder;
+import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.SubExchangisJobHandler;
 import com.webank.wedatasphere.exchangis.job.server.mapper.JobTransformProcessorDao;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformTypes;
@@ -121,12 +123,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                         }
                         LOG.trace("Invoke handles for subJob: [{}], sourceHandler: [{}], sinkHandler: [{}]", subExchangisJob.getName(), sourceHandler, sinkHandler);
                         //TODO Handle the subExchangisJob parallel
-                        if (Objects.nonNull(sourceHandler)) {
-                            sourceHandler.handleSource(subExchangisJob, ctx);
-                        }
-                        if (Objects.nonNull(sinkHandler)){
-                            sinkHandler.handleSink(subExchangisJob, ctx);
-                        }
+                        doHandle(sourceHandler, sinkHandler, subExchangisJob, ctx, true);
                     }
                 }else{
                     throw new ExchangisJobException(ExchangisJobExceptionCode.BUILDER_TRANSFORM_ERROR.getCode(),
@@ -142,6 +139,33 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
         return outputJob;
     }
 
+    /**
+     * Handle main
+     * @param sourceHandler source handler
+     * @param sinkHandler sink handler
+     * @param subExchangisJob sub job
+     * @param ctx context
+     * @param splitHandle if split handle
+     * @throws ErrorException
+     */
+    private void doHandle(SubExchangisJobHandler sourceHandler,
+                          SubExchangisJobHandler sinkHandler, SubExchangisJob subExchangisJob,
+                          ExchangisJobBuilderContext ctx, boolean splitHandle) throws ErrorException {
+        if (Objects.nonNull(sourceHandler)) {
+            sourceHandler.handleSource(subExchangisJob, ctx);
+        }
+        if (Objects.nonNull(sinkHandler)){
+            sinkHandler.handleSink(subExchangisJob, ctx);
+        }
+        if (splitHandle) {
+            // If redo handle the sub exchangis job
+            boolean reHandle = false;
+            List<Map<String, Object>> sourceSplits = subExchangisJob.getSourceSplits();
+
+
+            List<Map<String, Object>> sinkSplits = subExchangisJob.getSinkSplits();
+        }
+    }
     /**
      * Set the code resource to transform job
      * @param subExchangisJob sub transform job

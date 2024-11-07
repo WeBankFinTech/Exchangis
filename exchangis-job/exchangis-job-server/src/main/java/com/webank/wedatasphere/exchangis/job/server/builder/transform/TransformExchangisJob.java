@@ -79,6 +79,9 @@ public class TransformExchangisJob extends GenericExchangisJob {
 
         private List<Long> dsModelIds = new ArrayList<>();
 
+        public TransformSubExchangisJob(){
+            // Empty construct
+        }
         public TransformSubExchangisJob(ExchangisJobInfoContent jobInfoContent){
             if(Objects.nonNull(jobInfoContent)) {
                 this.jobInfoContent = jobInfoContent;
@@ -123,7 +126,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
                             convertTransformFunction(index, transformer));
                     getSourceColumns().add(srcColumn);
                     getSinkColumns().add(sinkColumn);
-                };
+                }
             }
         }
         /**
@@ -292,6 +295,23 @@ public class TransformExchangisJob extends GenericExchangisJob {
 
         public Map<String, Integer> getRateParamMap() {
             return rateParamMap;
+        }
+
+        @Override
+        public SubExchangisJob copy() {
+            TransformSubExchangisJob job = new TransformSubExchangisJob();
+            job.sourceType = this.sourceType;
+            job.sinkType = this.sinkType;
+            job.getSourceColumns().addAll(this.getSourceColumns());
+            job.getSinkColumns().addAll(this.getSinkColumns());
+            job.getColumnFunctions().addAll(this.getColumnFunctions());
+            //TODO deep copy the param realm
+            job.transformType = this.transformType;
+            job.jobInfoContent = this.jobInfoContent;
+            job.resources.putAll(this.resources);
+            job.rateParamMap = this.rateParamMap;
+            job.dsModelIds = this.dsModelIds;
+            return super.copy();
         }
     }
 

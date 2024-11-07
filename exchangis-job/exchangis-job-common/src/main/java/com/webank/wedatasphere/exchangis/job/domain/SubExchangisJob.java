@@ -147,6 +147,14 @@ public class SubExchangisJob extends GenericExchangisJob {
     }
 
     /**
+     * Copy sub exchangis job
+     * @return job
+     */
+    public SubExchangisJob copy(){
+        // Empty
+        return null;
+    }
+    /**
      * Column definition
      */
     public static class ColumnDefine{
