@@ -35,7 +35,7 @@
         <foreach collection="tasks" item="task">
         insert into
         <include refid="TableName"/>
-        (id, name, job_execution_id, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, rate_params, linkis_source, labels, delay_time, delay_count, instance)
+        (id, name, job_execution_id, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, linkis_source, rate_params, labels, delay_time, delay_count, instance)
         values(
         #{task.id},
         #{task.name},
@@ -47,8 +47,8 @@
         #{task.linkisJobName},
         #{task.linkisJobContent},
         #{task.linkisParams},
-        #{task.rateParams},
         #{task.linkisSource},
+        #{task.rateParams},
         #{task.labels},
         #{task.delayTime},
         #{task.delayCount},

@@ -78,13 +78,15 @@ public class GenericSubExchangisJobHandler extends AbstractLoggingSubExchangisJo
         Map<String, Object> paramValue = param.getValue();
         String sourceId = idParam.getValue();
         Object dsType = null;
+        String creator = null;
         Map<String, Object> connectParams = null;
         if (Objects.nonNull(paramValue) && !paramValue.isEmpty()) {
             String id = String.valueOf(paramValue.get("id"));
             if (StringUtils.isNoneBlank(id)){
                 dsType = paramValue.get("type");
+                creator = String.valueOf(paramValue.get("creator"));
                 connectParams =
-                        dataSourceService.getDataSourceConnectParamsById(userName, Long.valueOf(id));
+                        dataSourceService.getDataSourceConnectParamsById(creator, Long.valueOf(id));
                 Optional.ofNullable(connectParams).ifPresent(params ->
                         params.forEach((key, value) -> paramSet.add(JobParams.newOne(key, value, !key.equals("_model_")))));
             }
