@@ -19,6 +19,16 @@ public class GenericExchangisJob implements ExchangisJob {
 
     protected String engineType;
 
+    private String sourceType;
+
+    private String sinkType;
+
+    private String sourceId;
+
+    private String sinkId;
+
+    private String content;
+
     protected String jobLabel;
 
     private Map<String, Object> labelHolder = new HashMap<>();
@@ -77,6 +87,46 @@ public class GenericExchangisJob implements ExchangisJob {
     @Override
     public void setEngineType(String engineType) {
         this.engineType = engineType;
+    }
+
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
+    }
+
+    public String getSinkType() {
+        return sinkType;
+    }
+
+    public void setSinkType(String sinkType) {
+        this.sinkType = sinkType;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getSinkId() {
+        return sinkId;
+    }
+
+    public void setSinkId(String sinkId) {
+        this.sinkId = sinkId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @Override

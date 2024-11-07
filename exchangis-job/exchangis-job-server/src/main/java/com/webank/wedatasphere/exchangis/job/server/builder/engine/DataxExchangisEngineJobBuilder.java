@@ -7,6 +7,7 @@ import com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngin
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSourcesContent;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
@@ -148,6 +149,9 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
                 if (type == TransformTypes.PROCESSOR){
                     settingProcessorInfo(transformJob, engineJob);
                 }
+                ExchangisJobDataSourcesContent dsContent = transformJob.getJobInfoContent().getDataSources();
+                engineJob.setSourceId(dsContent.parseSourceId());
+                engineJob.setSinkId(dsContent.parseSinkId());
             }
             engineJob.setName(inputJob.getName());
             //Unit MB
@@ -161,6 +165,9 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
             engineJob.setCreateUser(inputJob.getCreateUser());
             // Lock the memory unit
             engineJob.setMemoryUnitLock(true);
+            engineJob.setSourceType(inputJob.getSourceType());
+            engineJob.setSinkType(inputJob.getSinkType());
+            engineJob.setContent(Json.toJson(engineJob.getJobContent(), null));
             return engineJob;
 
         } catch (Exception e) {

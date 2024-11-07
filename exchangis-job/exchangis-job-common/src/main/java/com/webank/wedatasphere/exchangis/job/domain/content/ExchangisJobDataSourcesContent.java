@@ -209,6 +209,28 @@ public class ExchangisJobDataSourcesContent implements Serializable {
         }
     }
 
+    public String parseSourceId() {
+        if (StringUtils.isNotBlank(sourceId)) {
+            return sourceId;
+        }
+        if (Objects.nonNull(source) && StringUtils.isNotBlank(source.getUri())) {
+            return source.getUri();
+        } else {
+            return source.getDb() + "->" + source.getTable();
+        }
+    }
+
+    public String parseSinkId() {
+        if (StringUtils.isNotBlank(sinkId)) {
+            return sinkId;
+        }
+        if (Objects.nonNull(sink) && StringUtils.isNotBlank(sink.getUri())) {
+            return sink.getUri();
+        } else {
+            return sink.getDb() + "->" + sink.getTable();
+        }
+    }
+
     public boolean matchIdentify(String dataSrcType, String dataDestType, String sourceSinkId) {
         String sourceId = this.getSourceId();
         ExchangisJobDataSourcesContent.ExchangisJobDataSource source = this.getSource();

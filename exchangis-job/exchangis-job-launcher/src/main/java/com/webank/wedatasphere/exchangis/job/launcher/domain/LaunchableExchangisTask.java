@@ -42,14 +42,24 @@ public class LaunchableExchangisTask implements ExchangisTask {
     private String linkisParams;
 
     /**
+     * Source message in Linkis
+     */
+    private String linkisSource;
+
+    /**
      * Rate params
      */
     private String rateParams;
 
-    /**
-     * Source message in Linkis
-     */
-    private String linkisSource;
+    private String sourceType;
+
+    private String sinkType;
+
+    private String sourceId;
+
+    private String sinkId;
+
+    private String content;
 
     /**
      * Labels string value
@@ -262,14 +272,6 @@ public class LaunchableExchangisTask implements ExchangisTask {
         this.linkisParams = linkisParams;
     }
 
-    public String getRateParams() {
-        return rateParams;
-    }
-
-    public void setRateParams(String rateParams) {
-        this.rateParams = rateParams;
-    }
-
     public String getLinkisSource() {
         if (Objects.isNull(this.linkisSource) && Objects.nonNull(this.linkisSourceMap)){
             this.linkisSource = Json.toJson(this.linkisSourceMap, null);
@@ -279,6 +281,54 @@ public class LaunchableExchangisTask implements ExchangisTask {
 
     public void setLinkisSource(String linkisSource) {
         this.linkisSource = linkisSource;
+    }
+
+    public String getRateParams() {
+        return rateParams;
+    }
+
+    public void setRateParams(String rateParams) {
+        this.rateParams = rateParams;
+    }
+
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
+    }
+
+    public String getSinkType() {
+        return sinkType;
+    }
+
+    public void setSinkType(String sinkType) {
+        this.sinkType = sinkType;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getSinkId() {
+        return sinkId;
+    }
+
+    public void setSinkId(String sinkId) {
+        this.sinkId = sinkId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getLabels() {

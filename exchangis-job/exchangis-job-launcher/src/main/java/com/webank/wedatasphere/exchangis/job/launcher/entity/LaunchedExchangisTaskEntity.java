@@ -27,6 +27,16 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
 
     private String rateParams;
 
+    private String sourceType;
+
+    private String sinkType;
+
+    private String sourceId;
+
+    private String sinkId;
+
+    private String content;
+
     /**
      * Execution id
      */
@@ -65,6 +75,12 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
         this.jobId = launchableExchangisTask.getJobId();
         // rateParams
         this.rateParams = launchableExchangisTask.getRateParams();
+        // identify
+        this.sourceType = launchableExchangisTask.getSourceType();
+        this.sinkType = launchableExchangisTask.getSinkType();
+        this.sourceId = launchableExchangisTask.getSourceId();
+        this.sinkId = launchableExchangisTask.getSinkId();
+        this.content = launchableExchangisTask.getContent();
         // jobName
         this.jobExecutionId = launchableExchangisTask.getJobExecutionId();
         this.status = TaskStatus.Scheduled;
@@ -106,6 +122,46 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
 
     public void setRateParams(String rateParams) {
         this.rateParams = rateParams;
+    }
+
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
+    }
+
+    public String getSinkType() {
+        return sinkType;
+    }
+
+    public void setSinkType(String sinkType) {
+        this.sinkType = sinkType;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getSinkId() {
+        return sinkId;
+    }
+
+    public void setSinkId(String sinkId) {
+        this.sinkId = sinkId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getJobExecutionId() {

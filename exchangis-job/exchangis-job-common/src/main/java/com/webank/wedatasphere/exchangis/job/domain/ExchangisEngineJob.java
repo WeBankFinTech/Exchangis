@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.domain;
 
 
+import com.webank.wedatasphere.exchangis.common.util.json.Json;
 import com.webank.wedatasphere.exchangis.engine.domain.EngineResource;
 import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
 
