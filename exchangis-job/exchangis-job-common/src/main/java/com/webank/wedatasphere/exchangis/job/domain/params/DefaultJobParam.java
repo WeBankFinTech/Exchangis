@@ -98,6 +98,10 @@ public class DefaultJobParam<T> implements JobParam<T> {
         this.valueLoader = (BiFunction<String, Object, T>) valueLoader;
     }
 
+    public BiFunction<String, Object, T> getValueLoader() {
+        return valueLoader;
+    }
+
     @Override
     public boolean isTemp() {
         return isTemp;

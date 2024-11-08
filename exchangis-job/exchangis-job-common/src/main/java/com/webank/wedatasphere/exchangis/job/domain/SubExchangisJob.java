@@ -4,9 +4,11 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -104,6 +106,12 @@ public class SubExchangisJob extends GenericExchangisJob {
                 Collectors.toMap(JobParam::getStrKey, JobParam::getValue));
     }
 
+    public void copyParamSet(BiConsumer<String, JobParamSet> consumer){
+        this.realmParamSet.forEach((realm, paramSet) -> {
+            JobParamSet newSet = new JobParamSet(paramSet.toList(false));
+            consumer.accept(realm, newSet);
+        });
+    }
     /**
      * Get all and convert to map
      * @return map

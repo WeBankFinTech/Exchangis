@@ -305,13 +305,14 @@ public class TransformExchangisJob extends GenericExchangisJob {
             job.getSourceColumns().addAll(this.getSourceColumns());
             job.getSinkColumns().addAll(this.getSinkColumns());
             job.getColumnFunctions().addAll(this.getColumnFunctions());
-            //TODO deep copy the param realm
+            //Deep copy the param realm
+            this.copyParamSet(job::addRealmParams);
             job.transformType = this.transformType;
             job.jobInfoContent = this.jobInfoContent;
             job.resources.putAll(this.resources);
             job.rateParamMap = this.rateParamMap;
             job.dsModelIds = this.dsModelIds;
-            return super.copy();
+            return job;
         }
     }
 

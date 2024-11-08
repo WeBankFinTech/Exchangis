@@ -6,7 +6,9 @@ import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoCont
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
+import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.server.builder.AbstractLoggingExchangisJobBuilder;
@@ -97,11 +99,11 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                                 return transformSubJob;
                             })
                             .collect(Collectors.toList());
-                    outputJob.setSubJobSet(subExchangisJobs);
                     outputJob.setId(inputJob.getId());
                     outputJob.setName(inputJob.getName());
                     LOG.info("Invoke job handlers to handle the subJobs, ExchangisJob: id: [{}], name: [{}]", inputJob.getId(), inputJob.getName());
                     //Do handle of the sub jobs
+                    List<SubExchangisJob> handledJobs = new ArrayList<>();
                     for (SubExchangisJob subExchangisJob : subExchangisJobs){
                         if(StringUtils.isBlank(subExchangisJob.getEngineType())){
                             subExchangisJob.setEngineType(inputJob.getEngineType());
@@ -123,8 +125,10 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                         }
                         LOG.trace("Invoke handles for subJob: [{}], sourceHandler: [{}], sinkHandler: [{}]", subExchangisJob.getName(), sourceHandler, sinkHandler);
                         //TODO Handle the subExchangisJob parallel
-                        doHandle(sourceHandler, sinkHandler, subExchangisJob, ctx, true);
+                        handledJobs.addAll(doHandle(sourceHandler, sinkHandler, subExchangisJob, ctx));
                     }
+                    // Final reset the sub exchangis jobs
+                    outputJob.setSubJobSet(handledJobs);
                 }else{
                     throw new ExchangisJobException(ExchangisJobExceptionCode.BUILDER_TRANSFORM_ERROR.getCode(),
                             "Illegal content string: [" + inputJob.getJobContent() + "] in job, please check", null);
@@ -145,25 +149,65 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
      * @param sinkHandler sink handler
      * @param subExchangisJob sub job
      * @param ctx context
-     * @param splitHandle if split handle
      * @throws ErrorException
      */
-    private void doHandle(SubExchangisJobHandler sourceHandler,
+    private List<SubExchangisJob> doHandle(SubExchangisJobHandler sourceHandler,
                           SubExchangisJobHandler sinkHandler, SubExchangisJob subExchangisJob,
-                          ExchangisJobBuilderContext ctx, boolean splitHandle) throws ErrorException {
+                          ExchangisJobBuilderContext ctx) throws ErrorException {
+        List<SubExchangisJob> handledJobs = new ArrayList<>();
         if (Objects.nonNull(sourceHandler)) {
             sourceHandler.handleSource(subExchangisJob, ctx);
         }
         if (Objects.nonNull(sinkHandler)){
             sinkHandler.handleSink(subExchangisJob, ctx);
         }
-        if (splitHandle) {
-            // If redo handle the sub exchangis job
-            boolean reHandle = false;
-            List<Map<String, Object>> sourceSplits = subExchangisJob.getSourceSplits();
+        List<Map<String, Object>> sourceSplits = subExchangisJob.getSourceSplits();
+        if (sourceSplits.size() > 0){
+            doSplitHandle(subExchangisJob, SubExchangisJob.REALM_JOB_CONTENT_SOURCE, sourceSplits, handledJobs);
+        }
+        List<Map<String, Object>> sinkSplits = subExchangisJob.getSinkSplits();
+        if (sinkSplits.size() > 0){
+            if (sourceSplits.size() > 0) {
+                throw new ExchangisJobException.Runtime(ExchangisJobExceptionCode.JOB_BUILDER_ERROR.getCode(),
+                        "Forbidden to split the sub exchangis job in source and sink direction at the same time" +
+                                "(禁止同时在sink和source方向拆分子交换作业)", null);
+            }
+            doSplitHandle(subExchangisJob, SubExchangisJob.REALM_JOB_CONTENT_SINK, sourceSplits, handledJobs);
+        }
+        return handledJobs.size() > 0? handledJobs : Collections.singletonList(subExchangisJob);
+    }
 
-
-            List<Map<String, Object>> sinkSplits = subExchangisJob.getSinkSplits();
+    /**
+     * Split handle
+     * @param subExchangisJob job
+     * @param splitRealm split realm
+     * @param splits split
+     * @param handledJobs handled jobs
+     */
+    private void doSplitHandle(SubExchangisJob subExchangisJob,
+                               String splitRealm,
+                               List<Map<String, Object>> splits, List<SubExchangisJob> handledJobs){
+        JobParamSet splitParamSet = subExchangisJob.getRealmParams(splitRealm);
+        Map<String, Integer> mappingParams;
+        if (Objects.nonNull(splitParamSet)){
+            List<JobParam<?>> params = splitParamSet.toList(false);
+            // Convert the params to [mapping_key => param], filter the computed param
+            mappingParams = params.stream().filter(param ->
+                    StringUtils.isNotBlank(param.getMappingKey()) && null == param.getValueLoader())
+                    .collect(Collectors.toMap(JobParam::getMappingKey, param -> 1, (left, right) -> left));
+            for (Map<String, Object> splitPart : splits){
+                SubExchangisJob copy = subExchangisJob.copy();
+                JobParamSet copyParamSet = copy.getRealmParams(splitRealm);
+                for (Map.Entry<String, Object> entry : splitPart.entrySet()){
+                    // If it is mapping key, overwrite the param value
+                    if (mappingParams.containsKey(entry.getKey())){
+                        Optional.ofNullable(copyParamSet.get(entry.getKey()))
+                                .ifPresent(param -> param.setValue(entry.getValue()));
+                    }
+                }
+                // Add to the handled job list
+                handledJobs.add(copy);
+            }
         }
     }
     /**
@@ -238,6 +282,4 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
             }
         }
     }
-
-
 }
