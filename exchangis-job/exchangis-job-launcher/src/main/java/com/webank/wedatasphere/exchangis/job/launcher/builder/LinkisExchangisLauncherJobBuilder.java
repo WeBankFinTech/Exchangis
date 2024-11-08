@@ -38,11 +38,15 @@ public class LinkisExchangisLauncherJobBuilder extends AbstractExchangisJobBuild
         LaunchableExchangisTask launchableTask = new LaunchableExchangisTask();
         launchableTask.setName(inputJob.getName());
         launchableTask.setJobId(inputJob.getId());
+        // Set identify
+        launchableTask.setSourceType(inputJob.getSourceType());
+        launchableTask.setSinkType(inputJob.getSinkType());
+        launchableTask.setSourceId(inputJob.getSourceId());
+        launchableTask.setSinkId(inputJob.getSinkId());
         launchableTask.setContent(inputJob.getContent());
         launchableTask.setExecuteUser(inputJob.getCreateUser());
         // Set server address
         launchableTask.setInstance(EnvironmentUtils.getServerAddress());
-//        launcherJob.setExecuteNode(exchangisJob.getExecuteNode());
         launchableTask.setLinkisContentMap(inputJob.getJobContent());
         Map<String, Object> linkisParams = new HashMap<>();
         Map<String, Object> startUpParams = new HashMap<>();

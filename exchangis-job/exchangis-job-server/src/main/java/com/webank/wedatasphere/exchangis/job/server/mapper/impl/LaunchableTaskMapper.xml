@@ -13,8 +13,13 @@
         <result column="linkis_job_name" property="linkisJobName"/>
         <result column="linkis_job_content" property="linkisJobContent"/>
         <result column="linkis_params" property="linkisParams"/>
-        <result column="rate_params" property="rateParams"/>
         <result column="linkis_source" property="linkisSource"/>
+        <result column="rate_params" property="rateParams"/>
+        <result column="source_type" property="sourceType"/>
+        <result column="sink_type" property="sinkType"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="sink_id" property="sinkId"/>
+        <result column="content" property="content"/>
         <result column="labels" property="labels"/>
         <result column="job_execution_id" property="jobExecutionId"/>
         <result column="delay_time" property="delayTime"/>
@@ -29,7 +34,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, rate_params, linkis_source, labels, job_execution_id, delay_time, delay_count, instance </sql>
+        id, name, create_time, last_update_time, engine_type, execute_user, linkis_job_name, linkis_job_content, linkis_params, linkis_source, rate_params, source_type, sink_type, source_id, sink_id, content, labels, job_execution_id, delay_time, delay_count, instance </sql>
 
     <insert id="addLaunchableTask" >
         <foreach collection="tasks" item="task">

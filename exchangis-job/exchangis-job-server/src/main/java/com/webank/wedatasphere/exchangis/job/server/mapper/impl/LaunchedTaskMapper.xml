@@ -10,6 +10,11 @@
         <result column="last_update_time" property="lastUpdateTime"/>
         <result column="job_id" property="jobId"/>
         <result column="engine_type" property="engineType"/>
+        <result column="source_type" property="sourceType"/>
+        <result column="sink_type" property="sinkType"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="sink_id" property="sinkId"/>
+        <result column="content" property="content"/>
         <result column="execute_user" property="executeUser"/>
         <result column="job_name" property="jobName"/>
         <result column="progress" property="progress"/>
@@ -34,7 +39,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status, instance, commit_version</sql>
+        id, name, create_time, last_update_time, job_id, engine_type, source_type, sink_type, source_id, sink_id, content, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status, instance, commit_version</sql>
 
     <insert id="insertLaunchedTaskOrUpdate" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
         insert into
