@@ -26,6 +26,7 @@ public class LaunchableExchangisJob extends GenericExchangisJob {
      */
     private String execUser;
 
+
     private List<LaunchableExchangisTask> launchableExchangisTasks = new ArrayList<>();
 
     public ExchangisJobInfo getExchangisJobInfo() {

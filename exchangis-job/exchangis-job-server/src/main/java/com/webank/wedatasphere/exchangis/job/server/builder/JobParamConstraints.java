@@ -5,6 +5,11 @@ package com.webank.wedatasphere.exchangis.job.server.builder;
  */
 public class JobParamConstraints {
 
+    /**
+     * Extra date param
+     */
+    public static final String EXTRA_SUBMIT_DATE = "_submit_date_";
+
     public static final String ENCODING = "encoding";
 
     public static final String NULL_FORMAT = "nullFormat";

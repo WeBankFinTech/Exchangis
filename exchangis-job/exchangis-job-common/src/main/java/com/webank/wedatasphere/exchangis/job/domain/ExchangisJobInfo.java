@@ -2,6 +2,9 @@ package com.webank.wedatasphere.exchangis.job.domain;
 
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Contain the content and parameters
  */
@@ -21,6 +24,10 @@ public class ExchangisJobInfo extends GenericExchangisJob {
      */
     protected String jobParams;
 
+    /**
+     * Job parameter map
+     */
+    protected Map<String, String> jobParamsMap = new HashMap<>();
     /**
      * Job description
      */
