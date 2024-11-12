@@ -27,6 +27,11 @@ public class SubExchangisJob extends GenericExchangisJob {
      */
     protected List<Map<String, Object>> sinkSplits = new ArrayList<>();
 
+    /**
+     * JobParams
+     */
+    protected final Map<String, Object> jobParams = new HashMap<>();
+
     protected String sourceType;
 
     protected String sinkType;
@@ -153,6 +158,11 @@ public class SubExchangisJob extends GenericExchangisJob {
     public void setSinkSplits(List<Map<String, Object>> sinkSplits) {
         this.sinkSplits = sinkSplits;
     }
+
+    public Map<String, Object> getJobParams() {
+        return jobParams;
+    }
+
 
     /**
      * Copy sub exchangis job

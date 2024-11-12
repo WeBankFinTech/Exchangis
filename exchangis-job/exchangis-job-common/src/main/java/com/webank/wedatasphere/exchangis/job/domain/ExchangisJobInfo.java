@@ -1,6 +1,9 @@
 package com.webank.wedatasphere.exchangis.job.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.webank.wedatasphere.exchangis.common.util.json.Json;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +30,8 @@ public class ExchangisJobInfo extends GenericExchangisJob {
     /**
      * Job parameter map
      */
-    protected Map<String, String> jobParamsMap = new HashMap<>();
+    @JsonIgnore
+    protected Map<String, String> jobParamsMap;
     /**
      * Job description
      */
@@ -79,6 +83,26 @@ public class ExchangisJobInfo extends GenericExchangisJob {
 
     public void setJobParams(String jobParams) {
         this.jobParams = jobParams;
+        this.jobParamsMap = null;
+    }
+
+    public Map<String, String> getJobParamsMap() {
+        if (null == this.jobParamsMap){
+            if (StringUtils.isNotBlank(this.jobParams)){
+                try {
+                    this.jobParamsMap = Json.fromJson(this.jobParams, null);
+                    return this.jobParamsMap;
+                } catch (Exception e){
+                    // Ignore the exception
+                }
+            }
+            this.jobParamsMap = new HashMap<>();
+        }
+        return jobParamsMap;
+    }
+
+    public void setJobParamsMap(Map<String, String> jobParamsMap) {
+        this.jobParamsMap = jobParamsMap;
     }
 
     public String getJobDesc() {

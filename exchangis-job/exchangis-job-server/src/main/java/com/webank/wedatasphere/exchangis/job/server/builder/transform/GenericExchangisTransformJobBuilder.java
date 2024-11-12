@@ -17,6 +17,7 @@ import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.S
 import com.webank.wedatasphere.exchangis.job.server.mapper.JobTransformProcessorDao;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformTypes;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.TransformProcessor;
+import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
 import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
@@ -92,7 +93,9 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                             inputJob.getId(), inputJob.getName(), contents.size());
                     //Second to new SubExchangisJob instances
                     List<SubExchangisJob> subExchangisJobs = contents.stream().map(job -> {
-                                TransformExchangisJob.TransformSubExchangisJob transformSubJob = new TransformExchangisJob.TransformSubExchangisJob(job);
+                                // Put the params of job info
+                                TransformExchangisJob.TransformSubExchangisJob transformSubJob =
+                                        new TransformExchangisJob.TransformSubExchangisJob(job, inputJob.getJobParamsMap());
                                 transformSubJob.setId(inputJob.getId());
                                 transformSubJob.setCreateUser(outputJob.getCreateUser());
                                 setTransformCodeResource(transformSubJob);
@@ -127,6 +130,8 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                         //TODO Handle the subExchangisJob parallel
                         handledJobs.addAll(doHandle(sourceHandler, sinkHandler, subExchangisJob, ctx));
                     }
+                    // Render the sub job
+                    renderJobs(handledJobs);
                     // Final reset the sub exchangis jobs
                     outputJob.setSubJobSet(handledJobs);
                 }else{
@@ -198,16 +203,48 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
             for (Map<String, Object> splitPart : splits){
                 SubExchangisJob copy = subExchangisJob.copy();
                 JobParamSet copyParamSet = copy.getRealmParams(splitRealm);
+                Map<String, Object> jobParams = copy.getJobParams();
                 for (Map.Entry<String, Object> entry : splitPart.entrySet()){
                     // If it is mapping key, overwrite the param value
                     if (mappingParams.containsKey(entry.getKey())){
                         Optional.ofNullable(copyParamSet.get(entry.getKey()))
                                 .ifPresent(param -> param.setValue(entry.getValue()));
                     }
+                    jobParams.put(entry.getKey(), entry.getKey());
                 }
                 // Add to the handled job list
                 handledJobs.add(copy);
             }
+        }
+    }
+
+    /**
+     * Render ${xxx} in jobs (include time placeholder)
+     * @param jobs jobs
+     */
+    @SuppressWarnings("unchecked")
+    private void renderJobs(List<SubExchangisJob> jobs){
+        Calendar calendar = Calendar.getInstance();
+        for (SubExchangisJob subJob : jobs){
+            Map<String, Object> jobParams = subJob.getJobParams();
+            Object dateTime = jobParams.remove(JobParamConstraints.EXTRA_SUBMIT_DATE);
+            long time = Objects.nonNull(dateTime)? Long.parseLong(String.valueOf(dateTime)) : calendar.getTimeInMillis();
+            subJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE)
+                    .forEach((key, param) -> {
+                        Object value = param.getValue();
+                        if (value instanceof String){
+                            ((JobParam<String>)param)
+                                    .setValue(JobUtils.replaceVariable((String)value, jobParams, time));
+                        }
+                    });
+            subJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK)
+                    .forEach((key, param) -> {
+                        Object value = param.getValue();
+                        if (value instanceof String){
+                            ((JobParam<String>)param)
+                                    .setValue(JobUtils.replaceVariable((String)value, jobParams, time));
+                        }
+                    });
         }
     }
     /**
@@ -282,4 +319,5 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
             }
         }
     }
+
 }

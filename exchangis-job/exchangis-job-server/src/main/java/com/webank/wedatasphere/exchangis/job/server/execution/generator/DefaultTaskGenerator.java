@@ -86,6 +86,8 @@ public class DefaultTaskGenerator extends AbstractTaskGenerator{
             onEvent(new TaskGenerateErrorEvent(launchableExchangisJob, throwable));
             throw throwable;
         }
+        // Overwrite the params in job info
+        jobInfo.getJobParamsMap().putAll(launchableExchangisJob.getJobParamsMap());
         ExchangisJobBuilderManager jobBuilderManager = getExchangisJobBuilderManager();
         ExchangisJobBuilderContext ctx;
         if (generatorContext instanceof SpringTaskGeneratorContext){
