@@ -27,30 +27,22 @@ public class DefaultExchangisEngineJobBuilder extends AbstractExchangisJobBuilde
 
     @Override
     public ExchangisEngineJob buildJob(SubExchangisJob inputJob, ExchangisEngineJob expectOut, ExchangisJobBuilderContext ctx) throws ExchangisJobException {
-        String paramsString = ctx.getOriginalJob().getJobParams();
         ExchangisEngineJob exchangisEngineJob = new ExchangisEngineJob();
-        if (StringUtils.isNotBlank(paramsString)){
-            Map<String, Object> jobParams = Json.fromJson(paramsString, Map.class);
-            if (Objects.nonNull(jobParams)){
-                exchangisEngineJob.getJobContent().putAll(jobParams);
-            }
-        }
         Map<String, Object> settings = inputJob.getParamsToMap(SubExchangisJob.REALM_JOB_SETTINGS, false);
         Optional.ofNullable(settings.get(ENGINE_JOB_MEMORY_USED)).ifPresent(memoryUsed -> exchangisEngineJob.setMemoryUsed(Long.valueOf(String.valueOf(memoryUsed))));
         exchangisEngineJob.setRuntimeParams(settings);
-
         Map<String, Object> rateParams = new HashMap<>();
         Optional.ofNullable(inputJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SOURCE).get("_model_", Long.class)).ifPresent(modelIdParam -> {
-            Long modelId = Long.valueOf(String.valueOf(modelIdParam.getValue()));
-            if (Objects.nonNull(modelId)){
+            if (Objects.nonNull(modelIdParam.getValue())) {
+                Long modelId = Long.valueOf(String.valueOf(modelIdParam.getValue()));
                 Map<String, Object> rateLimit = new HashMap<>();
                 rateParams.put("source", rateLimit);
                 rateLimit.put("realm", modelId);
             }
         });
         Optional.ofNullable(inputJob.getRealmParams(SubExchangisJob.REALM_JOB_CONTENT_SINK).get("_model_", Long.class)).ifPresent(modelIdParam -> {
-            Long modelId = Long.valueOf(String.valueOf(modelIdParam.getValue()));
-            if (Objects.nonNull(modelId)){
+            if (Objects.nonNull(modelIdParam.getValue())) {
+                Long modelId = Long.valueOf(String.valueOf(modelIdParam.getValue()));
                 Map<String, Object> rateLimit = new HashMap<>();
                 rateParams.put("sink", rateLimit);
                 rateLimit.put("realm", modelId);

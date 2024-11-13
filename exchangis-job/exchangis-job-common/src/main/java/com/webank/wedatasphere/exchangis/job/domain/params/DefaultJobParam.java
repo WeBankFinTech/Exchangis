@@ -9,6 +9,8 @@ import java.util.function.BiFunction;
 public class DefaultJobParam<T> implements JobParam<T> {
     private String key;
 
+    private String mappingKey;
+
     private T value;
 
     private BiFunction<String, Object, T> valueLoader;
@@ -24,12 +26,21 @@ public class DefaultJobParam<T> implements JobParam<T> {
     }
 
     <U>DefaultJobParam(String key, BiFunction<String, U, T> valueLoader){
+        this(key, null, valueLoader);
+    }
+    <U>DefaultJobParam(String key, String mappingKey, BiFunction<String, U, T> valueLoader){
         this.key = key;
+        this.mappingKey = mappingKey;
         setValueLoader(valueLoader);
     }
     @Override
     public String getStrKey() {
         return key;
+    }
+
+    @Override
+    public String getMappingKey() {
+        return null;
     }
 
     @Override
@@ -85,6 +96,10 @@ public class DefaultJobParam<T> implements JobParam<T> {
     public <U> void setValueLoader(BiFunction<String, U, T> valueLoader) {
         Class<U> obj = null;
         this.valueLoader = (BiFunction<String, Object, T>) valueLoader;
+    }
+
+    public BiFunction<String, Object, T> getValueLoader() {
+        return valueLoader;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.metrics.converter;
 
 import com.webank.wedatasphere.exchangis.job.server.metrics.ExchangisMetricsVo;
-import com.webank.wedatasphere.exchangis.job.server.utils.JsonEntity;
+import com.webank.wedatasphere.exchangis.common.util.json.JsonEntity;
 import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
 import org.apache.commons.lang.StringUtils;
 

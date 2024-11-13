@@ -64,7 +64,7 @@ public class JobParams {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static <T, U>JobParamDefine<T> define(String key, String[] mappingKeys, Function<U, T> transform, Class<U> inputType){
-        return new JobParamDefine<>(key, (paramKey, source) -> {
+        return new JobParamDefine<>(key, null != mappingKeys && mappingKeys.length > 0 ? mappingKeys[0] : null, (paramKey, source) -> {
             if (Objects.nonNull(source)) {
                 if (source instanceof JobParamSet) {
                     for (String mappingKey : mappingKeys) {

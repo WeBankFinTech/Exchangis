@@ -14,7 +14,7 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformTypes;
-import com.webank.wedatasphere.exchangis.job.server.utils.JsonEntity;
+import com.webank.wedatasphere.exchangis.common.util.json.JsonEntity;
 import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;

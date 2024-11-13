@@ -207,7 +207,7 @@ public class DefaultTaskObserverService implements TaskObserverService {
             launchableExchangisJob.setExchangisJobInfo(new ExchangisJobInfo(jobVo));
             launchableExchangisJob.setName(jobVo.getJobName());
             launchableExchangisJob.setEngineType(jobVo.getEngineType());
-            launchableExchangisJob.setCreateTime(calendar.getTime());
+            launchableExchangisJob.setCreateTime(job.getCreateTime());
             launchableExchangisJob.setLastUpdateTime(calendar.getTime());
             launchableExchangisJob.setId(jobVo.getId());
             launchableExchangisJob.setExecUser(jobVo.getExecuteUser());

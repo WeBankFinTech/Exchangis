@@ -93,13 +93,10 @@ public class JobUtils {
         }
     }
 
-    public static String renderDt(String template, Calendar calendar){
-        long time = calendar.getTimeInMillis();
+    public static String renderDt(String template, long time){
         if(template==null){
             return null;
         }
-        Date date =new Date();
-
         Matcher matcher= DateTool.TIME_REGULAR_PATTERN.matcher(template);
         while(matcher.find()){
             try {
@@ -109,13 +106,10 @@ public class JobUtils {
                 String symbol = matcher.group(1);
                 boolean spec = false;
                 if (null != symbol) {
-                    String startTime = null;
-                    String tempTime = null;
                     for(String specSymbol : DateTool.HOUR_SPEC_SYMBOLS){
                         if(specSymbol.equals(symbol)){
-                            tempTime = dataTool.format(specSymbol);
-                            startTime = template.replace(m, tempTime);
-                            return startTime;
+                            spec = true;
+                            break;
                         }
                     }
                     if(!spec) {
@@ -123,14 +117,7 @@ public class JobUtils {
                             dataTool.getMonthBegin(0);
                         } else if (DateTool.MONTH_END_SYMBOL.equals(symbol)) {
                             dataTool.getMonthEnd(0);
-                        } else if (DateTool.TIME_PLACEHOLDER_TIMESTAMP.equals(symbol)){
-                            calendar.setTime(date);
-                            calendar.add(Calendar.DAY_OF_MONTH, 0);
-                            tempTime = String.valueOf(calendar.getTimeInMillis());
-                            startTime = template.replace(m, tempTime);
-                            return startTime;
-                        }
-                        else {
+                        } else {
                             dataTool.addDay(-1);
                         }
                     }
@@ -185,12 +172,16 @@ public class JobUtils {
      * @return string
      */
     public static String replaceVariable(String source, Map<String, Object> variables){
+        return replaceVariable(source, variables, Calendar.getInstance().getTimeInMillis());
+    }
+
+    public static String replaceVariable(String source, Map<String, Object> variables, long time){
         String result = source;
         if (StringUtils.isNotBlank(result)){
             result = VariableUtils.replace(MARKER_HEAD + source, variables).substring(MARKER_HEAD.length());
             if (StringUtils.isNotBlank(result)){
                 // Render again
-                result = renderDt(result, Calendar.getInstance());
+                result = renderDt(result, time);
             }
         }
         return result;

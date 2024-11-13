@@ -30,7 +30,7 @@ public class DateTool {
     static final String TIME_PLACEHOLDER_TIMESTAMP = "timestamp";
     static final String MONTH_BEGIN_SYMBOL = "run_month_begin";
     static final String MONTH_END_SYMBOL = "run_month_end";
-    static final String[] HOUR_SPEC_SYMBOLS = new String[]{"yyyyMMdd", "yyyy-MM-dd", "HH"};
+    static final String[] HOUR_SPEC_SYMBOLS = new String[]{"yyyyMMddHH", "yyyy-MM-dd-HH", "HH"};
     static final String FORMAT_STD_SYMBOL = "_std";
     static final String FORMAT_UTC_SYMBOL = "_utc";
     public static final String[] TIME_PLACEHOLDER = new String[]{

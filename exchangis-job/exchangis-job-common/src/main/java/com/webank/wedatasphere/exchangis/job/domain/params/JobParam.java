@@ -15,6 +15,11 @@ public interface JobParam<T> {
     String getStrKey();
 
     /**
+     * Mapping key
+     * @return
+     */
+    String getMappingKey();
+    /**
      * Value of parameter
      * @return nullable
      */
@@ -46,6 +51,7 @@ public interface JobParam<T> {
      */
     <U>void setValueLoader(BiFunction<String, U, T> valueLoader);
 
+    BiFunction<String, Object, T> getValueLoader();
     /**
      * Is temporary
      * @return
