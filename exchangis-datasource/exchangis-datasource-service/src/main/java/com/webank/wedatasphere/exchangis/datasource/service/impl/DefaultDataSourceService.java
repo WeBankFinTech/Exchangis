@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
+import com.webank.wedatasphere.exchangis.common.util.AESUtils;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
@@ -49,6 +50,7 @@ import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectDsQueryVo;
 import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.datasource.client.AbstractRemoteClient;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
@@ -78,6 +80,9 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         implements DataSourceUIGetter, DataSourceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDataSourceService.class);
+
+    public static final CommonVars<String> LINKIS_DATASOURCE_AES_KEY =
+            CommonVars.apply("wds.linkis.datasource.aes.secret-key", "");
 
     /**
      * Engine settings
@@ -851,7 +856,14 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                 .setUser(operator).setDataSourceId(id).build(),
                 LinkisDataSourceRemoteClient::getConnectParams, CLIENT_DATASOURCE_PARAMS_GET_ERROR.getCode(),
                 "");
-        return result.getConnectParams();
+
+        Map<String, Object> connectParams = result.getConnectParams();
+        if (Objects.nonNull(connectParams) && StringUtils.equals(String.valueOf(connectParams.get("isEncrypt")), "1")) {
+            String decrypt = AESUtils.decrypt(connectParams.get("password").toString(),
+                    LINKIS_DATASOURCE_AES_KEY.getValue());
+            connectParams.replace("password", decrypt);
+        }
+        return connectParams;
     }
 
     /**
