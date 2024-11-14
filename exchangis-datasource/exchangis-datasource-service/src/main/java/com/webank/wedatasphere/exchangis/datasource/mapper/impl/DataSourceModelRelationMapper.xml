@@ -118,6 +118,7 @@
         ON dmr.model_id=dsm.id
         <include refid="findPageWhere"/>
         ORDER BY create_time DESC
+        LIMIT 1
     </select>
 
     <select id="queryRefRelationsByDsIds"

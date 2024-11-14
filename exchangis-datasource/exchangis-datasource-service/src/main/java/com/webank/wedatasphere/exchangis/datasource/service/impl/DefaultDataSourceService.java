@@ -1115,6 +1115,7 @@ public class DefaultDataSourceService extends AbstractDataSourceService
         if (StringUtils.isNotBlank(version)) {
             // Get the model id by data source and version id
             DataSourceModelRelationQuery query = new DataSourceModelRelationQuery();
+            query.setDsId(detail.getId());
             query.setDsName(dataSource.getDataSourceName());
             query.setDsVersion(Long.parseLong(version));
             DataSourceModelRelationDTO relation =
