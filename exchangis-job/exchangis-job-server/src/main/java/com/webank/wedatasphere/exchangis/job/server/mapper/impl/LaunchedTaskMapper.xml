@@ -207,7 +207,7 @@
     <select id="selectTaskStatusByJobExecutionId" resultType="String">
         <![CDATA[SELECT status FROM ]]>
         <include refid="TableName" />
-        <![CDATA[ WHERE job_execution_id = #{jobExecutionId};]]>
+        <![CDATA[ WHERE job_execution_id = #{jobExecutionId} FOR UPDATE;]]>
     </select>
     <select id="getTaskMetricsByJobExecutionId" parameterType="java.lang.String" resultType="String">
         select metrics
@@ -234,7 +234,7 @@
     <select id="sumProgressByJobExecutionId" resultType="Float">
         <![CDATA[SELECT SUM(progress) FROM ]]>
         <include refid="TableName"/>
-        <![CDATA[ WHERE job_execution_id = #{jobExecutionId};]]>
+        <![CDATA[ WHERE job_execution_id = #{jobExecutionId} FOR UPDATE;]]>
     </select>
 
     <select id="getTaskStatusList" parameterType="java.lang.String" resultType="java.lang.String">

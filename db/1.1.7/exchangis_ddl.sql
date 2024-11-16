@@ -1,0 +1,1 @@
+ALTER TABLE exchangis_launched_task_entity ADD INDEX `job_exec_id_relation`(`job_execution_id`);
