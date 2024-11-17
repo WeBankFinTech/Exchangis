@@ -204,13 +204,21 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                 SubExchangisJob copy = subExchangisJob.copy();
                 JobParamSet copyParamSet = copy.getRealmParams(splitRealm);
                 Map<String, Object> jobParams = copy.getJobParams();
+                List<String> nameSuffix = new ArrayList<>();
                 for (Map.Entry<String, Object> entry : splitPart.entrySet()){
                     // If it is mapping key, overwrite the param value
-                    if (mappingParams.containsKey(entry.getKey())){
-                        Optional.ofNullable(copyParamSet.get(entry.getKey()))
-                                .ifPresent(param -> param.setValue(entry.getValue()));
+                    String itemKey = entry.getKey();
+                    Object itemValue = entry.getValue();
+                    if (mappingParams.containsKey(itemKey)){
+                        Optional.ofNullable(copyParamSet.get(itemKey))
+                                .ifPresent(param -> param.setValue(itemValue));
                     }
-                    jobParams.put(entry.getKey(), entry.getKey());
+                    nameSuffix.add(String.valueOf(itemValue));
+                    jobParams.put(itemKey, itemValue);
+                }
+                // Overwrite the sub exchangis job name
+                if (nameSuffix.size() > 0){
+                    copy.setName(copy.getName() + Json.toJson(nameSuffix, null));
                 }
                 // Add to the handled job list
                 handledJobs.add(copy);

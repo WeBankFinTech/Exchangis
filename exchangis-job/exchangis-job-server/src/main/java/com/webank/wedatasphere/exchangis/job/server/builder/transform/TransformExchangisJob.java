@@ -286,6 +286,16 @@ public class TransformExchangisJob extends GenericExchangisJob {
         @Override
         public SubExchangisJob copy() {
             TransformSubExchangisJob job = new TransformSubExchangisJob();
+            // Basic info
+            job.id = this.id;
+            job.name = this.name;
+            job.engineType = this.engineType;
+            job.jobLabel = this.jobLabel;
+            job.setJobLabels(this.getJobLabels());
+            job.createTime = this.createTime;
+            job.lastUpdateTime = this.lastUpdateTime;
+            job.createUser = this.createUser;
+            // Advance info
             job.sourceType = this.sourceType;
             job.sinkType = this.sinkType;
             job.jobParams.putAll(this.jobParams);
@@ -296,6 +306,7 @@ public class TransformExchangisJob extends GenericExchangisJob {
             this.copyParamSet(job::addRealmParams);
             job.transformType = this.transformType;
             job.jobInfoContent = this.jobInfoContent;
+            // Code resource
             job.resources.putAll(this.resources);
             job.rateParamMap = this.rateParamMap;
             job.dsModelIds = this.dsModelIds;
