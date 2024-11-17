@@ -7,8 +7,6 @@ import java.util.Map;
 
 public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
 
-    private Long dsTypeId;
-
     private String dsType;
 
     private DataSourceParamKeyDefinition.ValueType nestType;
@@ -20,14 +18,6 @@ public class DataSourceModelTypeKey extends DataSourceParamKeyDefinition {
     private Date createTime;
 
     private Date modifyTime;
-
-    public Long getDsTypeId() {
-        return dsTypeId;
-    }
-
-    public void setDsTypeId(Long dsTypeId) {
-        this.dsTypeId = dsTypeId;
-    }
 
     public String getDsType() {
         return dsType;

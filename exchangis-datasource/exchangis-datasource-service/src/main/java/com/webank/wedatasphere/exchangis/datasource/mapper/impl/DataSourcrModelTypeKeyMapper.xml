@@ -4,7 +4,6 @@
 <mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelTypeKeyMapper">
     <resultMap id="dsTypeKey" type="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelTypeKey">
         <result property="id" column="id"/>
-        <result property="dsTypeId" column="ds_type_id"/>
         <result property="dsType" column="ds_type"/>
         <result property="key" column="key"/>
         <result property="name" column="name"/>
@@ -29,7 +28,7 @@
     </sql>
 
     <sql id="columns">
-        id,ds_type_id,ds_type,`key`,name,
+        id,ds_type,`key`,name,
         default_value,value_type,value_regex,nest_type,nest_fields,is_serialize,
         `scope`,`require`,description,
         ref_id,ref_value,
@@ -61,9 +60,6 @@
         <where>
             <if test="id != null and id != ''">
                 AND id = #{id}
-            </if>
-            <if test="dsTypeId != null and dsTypeId != ''">
-                AND ds_type_id = #{dsTypeId}
             </if>
             <if test="dsType != null and dsType != ''">
                 AND ds_type = #{dsType}

@@ -61,7 +61,6 @@ public class DefaultDataSourceParamKeySerializer implements ParamKeySerializer{
 
     public static void main(String[] args) {
         DataSourceModelTypeKey typeKey = new DataSourceModelTypeKey();
-        typeKey.setDsTypeId(9L);
         typeKey.setDsType("tdsql");
         typeKey.setKey("params");
         typeKey.setName("连接参数");

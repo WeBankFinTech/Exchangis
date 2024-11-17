@@ -1,12 +1,10 @@
 package com.webank.wedatasphere.exchangis.datasource.core.splitter;
 
-
 import com.webank.wedatasphere.exchangis.common.util.json.JsonEntity;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 
 /**
  * Split strategy: field split

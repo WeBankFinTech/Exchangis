@@ -14,17 +14,22 @@ import com.webank.wedatasphere.exchangis.datasource.service.DataSourceModelTypeK
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.linkis.datasource.client.impl.LinkisDataSourceRemoteClient;
+import org.apache.linkis.datasource.client.request.GetAllDataSourceTypesAction;
 import org.apache.linkis.datasource.client.request.GetKeyTypeDatasourceAction;
+import org.apache.linkis.datasource.client.response.GetAllDataSourceTypesResult;
 import org.apache.linkis.datasource.client.response.GetKeyTypeDatasourceResult;
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceParamKeyDefinition;
+import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_KEY_DEFINES_ERROR;
+import static com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceExceptionCode.CLIENT_DATASOURCE_GET_TYPES_ERROR;
 
 @Service
 public class DataSourceModelTypeKeyServiceImpl extends AbstractLinkisDataSourceService implements DataSourceModelTypeKeyService {
@@ -33,6 +38,31 @@ public class DataSourceModelTypeKeyServiceImpl extends AbstractLinkisDataSourceS
 
     @Resource
     private DataSourceModelTypeKeyMapper dataSourceModelTypeKeyMapper;
+
+    private Map<String, String> dsTypeMap = null;
+
+    public Long getDsTypeIdByName(String operator, String dsName) throws ExchangisDataSourceException {
+        if (Objects.isNull(dsTypeMap)) {
+            synchronized(this) {
+                dsTypeMap = new HashMap<>();
+                GetAllDataSourceTypesResult result = rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () -> GetAllDataSourceTypesAction.builder()
+                                .setUser(operator)
+                                .build(),
+                        LinkisDataSourceRemoteClient::getAllDataSourceTypes, CLIENT_DATASOURCE_GET_TYPES_ERROR.getCode(),
+                        "datasource get types null or empty");
+                List<DataSourceType> dataSourceTypes = result.getAllDataSourceType();
+                dsTypeMap = dataSourceTypes.stream()
+                        .collect(Collectors.toMap(
+                                DataSourceType::getName,
+                                DataSourceType::getId,
+                                (existing, replacement) -> existing
+                        ));
+            }
+        }
+        return Optional.ofNullable(dsTypeMap)
+                .map(m -> Long.parseLong(m.get(dsName)))
+                .orElse(null);
+    }
 
     @Override
     public PageList<DataSourceModelTypeKey> findDsModelTypeKeyPageList(DataSourceModelTypeKeyQuery pageQuery) {
@@ -56,7 +86,7 @@ public class DataSourceModelTypeKeyServiceImpl extends AbstractLinkisDataSourceS
         if (Objects.isNull(dsModelTypeKeys) || dsModelTypeKeys.size() <= 0 ) {
             return new ArrayList<>();
         }
-        long typeId = dsModelTypeKeys.get(0).getDsTypeId();
+        Long typeId = getDsTypeIdByName(operator, dsType);
         GetKeyTypeDatasourceResult result = rpcSend(ExchangisLinkisRemoteClient.getLinkisDataSourceRemoteClient(), () ->
                         GetKeyTypeDatasourceAction.builder()
                                 .setUser(operator).setDataSourceTypeId(typeId).build(),
