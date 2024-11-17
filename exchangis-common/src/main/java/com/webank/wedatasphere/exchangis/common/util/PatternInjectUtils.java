@@ -18,7 +18,7 @@ public class PatternInjectUtils {
 
     private static final String ASSIGN_SYMBOL = "=";
 
-    private static final Pattern REGEX = Pattern.compile(
+    public static final Pattern REGEX = Pattern.compile(
             "(" + ASSIGN_SYMBOL + "?)" +
                    "("+ PARAMETER_PREFIX + ")" +
                     "\\{([\\w-.]+)[|]?([^}]*)}?"

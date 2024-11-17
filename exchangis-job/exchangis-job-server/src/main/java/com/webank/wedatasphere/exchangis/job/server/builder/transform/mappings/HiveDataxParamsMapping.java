@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform.mappings;
 
 import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
+import com.webank.wedatasphere.exchangis.common.util.PatternInjectUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
@@ -57,6 +58,16 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
         FIELD_MAP.put("BOOLEAN", Type.BOOLEAN);
         FIELD_MAP.put("DATE", Type.DATE);
         FIELD_MAP.put("TIMESTAMP", Type.DATE);
+        for(char c = 0; c < ' '; ++c) {
+            CHAR_TO_ESCAPE.set(c);
+        }
+        char[] clist = new char[]{'\u0001', '\u0002', '\u0003', '\u0004', '\u0005', '\u0006', '\u0007', '\b', '\t', '\n', '\u000b',
+                '\f', '\r', '\u000e', '\u000f', '\u0010', '\u0011', '\u0012', '\u0013', '\u0014', '\u0015', '\u0016', '\u0017', '\u0018',
+                '\u0019', '\u001a', '\u001b', '\u001c', '\u001d', '\u001e', '\u001f', '"', '#', '%', '\'', '*', '/', ':', '=', '?', '\\', '\u007f', '{', '[', ']', '^'};
+
+        for (char c : clist) {
+            CHAR_TO_ESCAPE.set(c);
+        }
     }
 
     /**
@@ -187,26 +198,38 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
     /**
      * Data location
      */
-    private static final JobParamDefine<String> DATA_LOCATION = JobParams.define("location", paramSet -> {
+    private static final JobParamDefine<String[]> DATA_LOCATION = JobParams.define("location", paramSet -> {
         Map<String, String> tableProps = HIVE_TABLE_PROPS.getValue(paramSet);
-        String path = tableProps.getOrDefault("location", "");
+        String location = tableProps.getOrDefault("location", "");
+        String path = "";
+        if (StringUtils.isNotBlank(location)){
+            try {
+                path = new URI(location).getPath();
+            } catch (URISyntaxException e) {
+                warn("Unrecognized location: [{}]", location,  e);
+            }
+        }
         String partitionValues = PARTITION_VALUES.getValue(paramSet);
+        String suffixPath = "";
         if (StringUtils.isNotBlank(partitionValues)){
             String[] values = partitionValues.split(",");
             String[] keys = PARTITION_KEYS.getValue(paramSet).toArray(new String[0]);
             // Escape the path and value of partition
-            StringBuilder pathBuilder = new StringBuilder(path).append("/");
+            StringBuilder pathBuilder = new StringBuilder().append("/");
             for(int i = 0; i < keys.length; i++){
                 if (i > 0){
                     pathBuilder.append("/");
                 }
                 pathBuilder.append(escapeHivePathName(keys[i]));
                 pathBuilder.append("=");
-                pathBuilder.append(escapeHivePathName(values[i]));
+                // Not to escape all the value
+                pathBuilder.append(PatternInjectUtils.REGEX.matcher(values[i]).find() ?
+                        values[i] : escapeHivePathName(values[i]));
             }
-            path = pathBuilder.toString();
+            suffixPath = pathBuilder.toString();
         }
-        return path.replaceAll(" ", "%20");
+        suffixPath = suffixPath.replace(" ", "%20");
+        return new String[]{location, location + suffixPath, path + suffixPath};
     });
 
     /**
@@ -226,13 +249,9 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
      * Data path
      */
     private static final JobParamDefine<String> DATA_PATH = JobParams.define("path", paramSet -> {
-        String location = DATA_LOCATION.getValue(paramSet);
-        if (StringUtils.isNotBlank(location)){
-            try {
-                return new URI(location).getPath();
-            } catch (URISyntaxException e) {
-                warn("Unrecognized location: [{}]", location,  e);
-            }
+        String[] location = DATA_LOCATION.getValue(paramSet);
+        if (StringUtils.isNotBlank(location[2])){
+            return location[2];
         }
         return null;
     });
@@ -241,8 +260,9 @@ public class HiveDataxParamsMapping extends AbstractExchangisJobParamsMapping{
      * Hadoop config
      */
     private static final JobParamDefine<Map<String, String>> HADOOP_CONF = JobParams.define("hadoopConfig", paramSet -> {
-        String uri = DATA_LOCATION.getValue(paramSet);
+        String[] location = DATA_LOCATION.getValue(paramSet);
         try {
+            String uri = location[0];
             // TODO get the other hdfs cluster with tab
             return Objects.requireNonNull(getBean(MetadataInfoService.class)).getLocalHdfsInfo(uri);
         } catch (ExchangisDataSourceException e) {
