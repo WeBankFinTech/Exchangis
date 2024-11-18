@@ -37,7 +37,9 @@ public class SQLCommandUtils {
     private static String columnListSql(List<?> columns){
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < columns.size(); i++){
+            builder.append("`");
             builder.append(columns.get(i));
+            builder.append("`");
             if(i < columns.size() - 1){
                 builder.append(DEFAULT_COLUMN_SEPARATOR);
             }
