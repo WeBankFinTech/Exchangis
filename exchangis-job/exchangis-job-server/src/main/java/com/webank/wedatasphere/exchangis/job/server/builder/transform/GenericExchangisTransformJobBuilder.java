@@ -177,7 +177,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                         "Forbidden to split the sub exchangis job in source and sink direction at the same time" +
                                 "(禁止同时在sink和source方向拆分子交换作业)", null);
             }
-            doSplitHandle(subExchangisJob, SubExchangisJob.REALM_JOB_CONTENT_SINK, sourceSplits, handledJobs);
+            doSplitHandle(subExchangisJob, SubExchangisJob.REALM_JOB_CONTENT_SINK, sinkSplits, handledJobs);
         }
         return !handledJobs.isEmpty() ? handledJobs : Collections.singletonList(subExchangisJob);
     }
@@ -193,13 +193,13 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                                String splitRealm,
                                List<Map<String, Object>> splits, List<SubExchangisJob> handledJobs){
         JobParamSet splitParamSet = subExchangisJob.getRealmParams(splitRealm);
-        Map<String, Integer> mappingParams;
+        Map<String, String> mappingParams;
         if (Objects.nonNull(splitParamSet)){
             List<JobParam<?>> params = splitParamSet.toList(false);
             // Convert the params to [mapping_key => param], filter the computed param
             mappingParams = params.stream().filter(param ->
                     StringUtils.isNotBlank(param.getMappingKey()) && !param.isComputed())
-                    .collect(Collectors.toMap(JobParam::getMappingKey, param -> 1, (left, right) -> left));
+                    .collect(Collectors.toMap(JobParam::getMappingKey, JobParam::getStrKey, (left, right) -> left));
             for (Map<String, Object> splitPart : splits){
                 SubExchangisJob copy = subExchangisJob.copy();
                 JobParamSet copyParamSet = copy.getRealmParams(splitRealm);
@@ -210,7 +210,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                     String itemKey = entry.getKey();
                     Object itemValue = entry.getValue();
                     if (mappingParams.containsKey(itemKey)){
-                        Optional.ofNullable(copyParamSet.get(itemKey))
+                        Optional.ofNullable(copyParamSet.get(mappingParams.get(itemKey)))
                                 .ifPresent(param -> param.setValue(itemValue));
                     }
                     nameSuffix.add(String.valueOf(itemValue));

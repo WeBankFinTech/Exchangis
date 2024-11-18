@@ -45,7 +45,7 @@ public class DefaultJobParam<T> implements JobParam<T> {
 
     @Override
     public String getMappingKey() {
-        return null;
+        return mappingKey;
     }
 
     @Override
