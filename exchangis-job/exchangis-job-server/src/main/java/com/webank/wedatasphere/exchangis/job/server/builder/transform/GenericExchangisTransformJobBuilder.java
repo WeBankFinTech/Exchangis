@@ -167,19 +167,19 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
             sinkHandler.handleSink(subExchangisJob, ctx);
         }
         List<Map<String, Object>> sourceSplits = subExchangisJob.getSourceSplits();
-        if (sourceSplits.size() > 0){
+        if (!sourceSplits.isEmpty()){
             doSplitHandle(subExchangisJob, SubExchangisJob.REALM_JOB_CONTENT_SOURCE, sourceSplits, handledJobs);
         }
         List<Map<String, Object>> sinkSplits = subExchangisJob.getSinkSplits();
-        if (sinkSplits.size() > 0){
-            if (sourceSplits.size() > 0) {
+        if (!sinkSplits.isEmpty()){
+            if (!sourceSplits.isEmpty()) {
                 throw new ExchangisJobException.Runtime(ExchangisJobExceptionCode.JOB_BUILDER_ERROR.getCode(),
                         "Forbidden to split the sub exchangis job in source and sink direction at the same time" +
                                 "(禁止同时在sink和source方向拆分子交换作业)", null);
             }
             doSplitHandle(subExchangisJob, SubExchangisJob.REALM_JOB_CONTENT_SINK, sourceSplits, handledJobs);
         }
-        return handledJobs.size() > 0? handledJobs : Collections.singletonList(subExchangisJob);
+        return !handledJobs.isEmpty() ? handledJobs : Collections.singletonList(subExchangisJob);
     }
 
     /**
@@ -198,7 +198,7 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
             List<JobParam<?>> params = splitParamSet.toList(false);
             // Convert the params to [mapping_key => param], filter the computed param
             mappingParams = params.stream().filter(param ->
-                    StringUtils.isNotBlank(param.getMappingKey()) && null == param.getValueLoader())
+                    StringUtils.isNotBlank(param.getMappingKey()) && !param.isComputed())
                     .collect(Collectors.toMap(JobParam::getMappingKey, param -> 1, (left, right) -> left));
             for (Map<String, Object> splitPart : splits){
                 SubExchangisJob copy = subExchangisJob.copy();

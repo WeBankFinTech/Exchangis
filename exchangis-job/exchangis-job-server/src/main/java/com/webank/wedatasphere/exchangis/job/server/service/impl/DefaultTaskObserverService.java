@@ -213,6 +213,7 @@ public class DefaultTaskObserverService implements TaskObserverService {
             launchableExchangisJob.setExecUser(jobVo.getExecuteUser());
             launchableExchangisJob.setCreateUser(jobVo.getCreateUser());
             launchableExchangisJob.setJobExecutionId(job.getJobExecutionId());
+            launchableExchangisJob.setJobParams(job.getJobParams());
             String tenancy = job.getExecuteUser();
             tenancy = org.apache.commons.lang.StringUtils.isNotBlank(tenancy)?
                     tenancy: TenancyParallelGroupFactory.DEFAULT_TENANCY;

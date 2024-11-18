@@ -10,9 +10,10 @@ import java.util.*;
  * Split strategy: field split
  */
 public class DataSourceFieldSplitStrategy implements DataSourceSplitStrategy{
+    public static final String NAME = "field-split-strategy";
     @Override
     public String name() {
-        return null;
+        return NAME;
     }
 
     @Override

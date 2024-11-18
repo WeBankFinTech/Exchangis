@@ -10,6 +10,7 @@
         <result column="last_update_time" property="lastUpdateTime"/>
         <result column="job_id" property="jobId"/>
         <result column="job_execution_id" property="jobExecutionId"/>
+        <result column="job_params" property="jobParams"/>
         <result column="engine_type" property="engineType"/>
         <result column="launchable_task_num" property="launchableTaskNum"/>
         <result column="execute_user" property="executeUser"/>
@@ -35,13 +36,13 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, job_id, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, create_user, instance
+        id, name, create_time, last_update_time, job_id, job_execution_id, job_params, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, create_user, instance
     </sql>
 
     <insert id="insertLaunchedJob" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
         insert into
         <include refid="TableName"/>
-        (name, create_time, last_update_time, job_id, launchable_task_num, job_execution_id, engine_type, execute_user, create_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, instance)
+        (name, create_time, last_update_time, job_id, launchable_task_num, job_execution_id, job_params, engine_type, execute_user, create_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, instance)
         values(
         #{name},
         #{createTime},
@@ -49,6 +50,7 @@
         #{jobId},
         #{launchableTaskNum},
         #{jobExecutionId},
+        #{jobParams},
         #{engineType},
         #{executeUser},
         #{createUser},

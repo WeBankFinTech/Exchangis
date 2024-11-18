@@ -21,6 +21,11 @@ public class DefaultJobParam<T> implements JobParam<T> {
 
     private Class<?> sourceType = Object.class;
 
+    /**
+     * If computed param
+     */
+    private boolean computed = false;
+
     public DefaultJobParam(){
 
     }
@@ -100,6 +105,15 @@ public class DefaultJobParam<T> implements JobParam<T> {
 
     public BiFunction<String, Object, T> getValueLoader() {
         return valueLoader;
+    }
+
+    public void setComputed(boolean computed) {
+        this.computed = computed;
+    }
+
+    @Override
+    public boolean isComputed() {
+        return computed;
     }
 
     @Override

@@ -9,6 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DataSourceSplitStrategyRegisterFactory implements DataSourceSplitStrategyFactory {
 
+    public void init(){
+        // Register default split strategy
+        this.register(new DataSourceFieldSplitStrategy());
+    }
     /**
      * Strategy context
      */

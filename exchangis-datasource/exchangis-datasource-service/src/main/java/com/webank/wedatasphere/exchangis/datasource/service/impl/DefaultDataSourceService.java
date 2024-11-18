@@ -812,7 +812,8 @@ public class DefaultDataSourceService extends AbstractDataSourceService
             if (Objects.nonNull(dataSourceModel)) {
                 // Merge eith dsModel keyDefine
                 DataSourceModelTypeKeyQuery dsModelTypeKeyQuery = new DataSourceModelTypeKeyQuery();
-                dsModelTypeKeyQuery.setDsTypeId(vo.getDataSourceTypeId());
+                dsModelTypeKeyQuery.setDsType(dataSourceModel.getSourceType().toLowerCase());
+//                dsModelTypeKeyQuery.setDsTypeId(vo.getDataSourceTypeId());
                 List<DataSourceModelTypeKey> dsModelTypeKeys = dataSourceModelTypeKeyMapper.queryList(dsModelTypeKeyQuery);
                 Map<String, Object> dsConnectParams = dsKeyDefineUtil.mergeModelParamsIntoDs(vo.getConnectParams(), dataSourceModel.resolveParams(), dsModelTypeKeys);
                 vo.setConnectParams(dsConnectParams);

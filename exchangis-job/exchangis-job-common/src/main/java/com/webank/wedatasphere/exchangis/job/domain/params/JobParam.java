@@ -52,6 +52,12 @@ public interface JobParam<T> {
     <U>void setValueLoader(BiFunction<String, U, T> valueLoader);
 
     BiFunction<String, Object, T> getValueLoader();
+
+    /**
+     * If is computed params
+     * @return bool
+     */
+    boolean isComputed();
     /**
      * Is temporary
      * @return

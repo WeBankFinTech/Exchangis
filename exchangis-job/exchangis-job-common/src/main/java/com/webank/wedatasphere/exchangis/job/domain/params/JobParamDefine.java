@@ -20,6 +20,11 @@ public class JobParamDefine<T>{
      */
     private String mappingKey;
 
+    /**
+     * If computed param
+     */
+    private boolean computed = false;
+
     private BiFunction<String, Object, T> valueLoader;
 
     <U>JobParamDefine(String key, BiFunction<String, U, T> valueLoader){
@@ -61,7 +66,8 @@ public class JobParamDefine<T>{
      * @return
      */
     public JobParam<T> newParam(Object source){
-        JobParam<T> jobParam = new DefaultJobParam<>(key, mappingKey, valueLoader);
+        DefaultJobParam<T> jobParam = new DefaultJobParam<>(key, mappingKey, valueLoader);
+        jobParam.setComputed(this.computed);
         return jobParam.loadValue(source);
     }
 
@@ -85,4 +91,11 @@ public class JobParamDefine<T>{
         return get(source).getValue();
     }
 
+    public boolean isComputed() {
+        return computed;
+    }
+
+    public void setComputed(boolean computed) {
+        this.computed = computed;
+    }
 }

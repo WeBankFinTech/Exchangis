@@ -21,7 +21,7 @@ public class ServerConfig {
      * Split strategy factory
      * @return factory
      */
-    @Bean
+    @Bean(initMethod = "init")
     @ConditionalOnMissingBean
     public DataSourceSplitStrategyFactory splitStrategyFactory(){
         return new DataSourceSplitStrategyRegisterFactory();
