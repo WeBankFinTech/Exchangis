@@ -83,7 +83,7 @@ public class SubmitSchedulerTask extends AbstractExchangisSchedulerTask implemen
             try {
                 submitAble.set(submitCondition.call());
             } catch (Exception e) {
-                // Ignore
+                LOG.warn("Error to set submit condition from callback, cause by: ", e);
             }
         }
         // Set max retry

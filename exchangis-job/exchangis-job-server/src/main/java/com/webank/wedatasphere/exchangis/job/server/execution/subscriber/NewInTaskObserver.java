@@ -86,10 +86,14 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                                         }
                                     }
                                     return success;
+                                } else {
+                                    LOG.warn("Unable to get parallel, maybe reach the maxParallel");
                                 }
                                 noParallel.set(true);
                                 return false;
                     }, (submitTask, e) -> {
+                        LOG.info("Unable to launch the task with job_execution_id {} by user {}, decrease the parallel ,cause by {}"
+                                , launchableExchangisTask.getExecuteUser(), launchableExchangisTask.getJobExecutionId(), e);
                         TaskParallelRule parallelRule = parallelManager.getOrCreateRule(launchableExchangisTask.getExecuteUser(),
                                 TaskParallelManager.Operation.SUBMIT);
                         // Decrease the parallel
@@ -103,6 +107,7 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                     if (submitSchedulerTask.isSubmitAble()) {
                         submitSchedulerTask.setTenancy(launchableExchangisTask.getExecuteUser());
                         try {
+                            LOG.info("Do submit task with id {} and job_execution_id {}", launchableExchangisTask.getId(), launchableExchangisTask.getJobExecutionId());
                             taskExecution.submit(submitSchedulerTask);
                         } catch (Exception e) {
                             // If the consumer queue is full?
@@ -144,8 +149,8 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                     //Ignore
                 }
             }
-            Queue<LaunchableExchangisTask> queue = getCacheQueue();
-            unsubscribeTasks.forEach(queue::offer);
+//            Queue<LaunchableExchangisTask> queue = getCacheQueue();
+//            unsubscribeTasks.forEach(queue::offer);
         }
     }
 }

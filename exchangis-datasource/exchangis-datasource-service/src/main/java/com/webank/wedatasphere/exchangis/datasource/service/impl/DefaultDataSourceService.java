@@ -859,7 +859,8 @@ public class DefaultDataSourceService extends AbstractDataSourceService
                 "");
 
         Map<String, Object> connectParams = result.getConnectParams();
-        if (Objects.nonNull(connectParams) && StringUtils.equals(String.valueOf(connectParams.get("isEncrypt")), "1")) {
+        if (Objects.nonNull(connectParams) && connectParams.containsKey("password")
+                && StringUtils.equals(String.valueOf(connectParams.get("isEncrypt")), "1")) {
             String decrypt = AESUtils.decrypt(connectParams.get("password").toString(),
                     LINKIS_DATASOURCE_AES_KEY.getValue());
             connectParams.replace("password", decrypt);
