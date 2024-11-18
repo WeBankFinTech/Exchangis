@@ -75,9 +75,15 @@ public class NewInTaskObserver extends CacheInTaskObserver<LaunchableExchangisTa
                                 if (parallelRule.incParallel()) {
                                     // check the status of launchedTask
                                     // insert or update launched task, status as TaskStatus.Scheduler
-                                    boolean success =  observerService.subscribe(launchableExchangisTask);
-                                    if (!success){
-                                        parallelRule.decParallel(1);
+                                    boolean success =  false;
+                                    try {
+                                        success = observerService.subscribe(launchableExchangisTask);
+                                    } catch (Exception e){
+                                        throw e;
+                                    } finally {
+                                        if (!success){
+                                            parallelRule.decParallel(1);
+                                        }
                                     }
                                     return success;
                                 }
