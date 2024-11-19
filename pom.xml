@@ -75,7 +75,7 @@
 		<aspectj.version>1.9.5</aspectj.version>
 		<jobmanager.version>0.1.0-SNAPSHOT</jobmanager.version>
 		<jasypt.version>1.9.3</jasypt.version>
-		<xstream.version>1.4.20</xstream.version>
+		<xstream.version>1.4.21</xstream.version>
 	</properties>
 
 	<modules>

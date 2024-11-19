@@ -18,7 +18,7 @@
         <datax.version>3.0.0</datax.version>
         <hadoop.version>3.3.4</hadoop.version>
         <druid.version>1.0.15</druid.version>
-        <groovy.version>2.1.9</groovy.version>
+        <groovy.version>2.4.21</groovy.version>
         <aircompressor.version>0.27</aircompressor.version>
         <lzo.version>1.0.5</lzo.version>
         <csv.version>2.0</csv.version>
