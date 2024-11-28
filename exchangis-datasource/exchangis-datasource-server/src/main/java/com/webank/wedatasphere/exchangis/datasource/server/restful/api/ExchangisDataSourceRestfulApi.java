@@ -17,7 +17,8 @@ import com.webank.wedatasphere.exchangis.datasource.utils.RSAUtil;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.DataSourceCreateVo;
 import com.webank.wedatasphere.exchangis.datasource.core.vo.DataSourceQueryVo;
 import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
@@ -44,6 +45,8 @@ import java.util.regex.Pattern;
 @RequestMapping(value = "dss/exchangis/main/datasources", produces = {"application/json;charset=utf-8"})
 public class ExchangisDataSourceRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisDataSourceRestfulApi.class);
+
+    public static final CommonVars<String> DB_PWD_ENCRYPT = CommonVars.apply("wds.linkis.datasource.is.encrypt", "false");
 
     private final DataSourceService dataSourceService;
 
@@ -209,6 +212,11 @@ public class ExchangisDataSourceRestfulApi {
         try {
             String comment = dataSourceCreateVo.getComment();
             String createSystem = dataSourceCreateVo.getCreateSystem();
+            if (StringUtils.equals("true", DB_PWD_ENCRYPT.getValue())) {
+                dataSourceCreateVo.getConnectParams().put("isEncrypt", "1");
+            } else {
+                dataSourceCreateVo.getConnectParams().put("isEncrypt", "0");
+            }
             if (Objects.isNull(comment)) {
                 throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(),
                         "parameter comment should not be null");
@@ -298,6 +306,11 @@ public class ExchangisDataSourceRestfulApi {
             for (FieldError fieldError : fieldErrors) {
                 return Message.error("[Error](" + fieldError.getField() + "):" + fieldError.getDefaultMessage());
             }
+        }
+        if (StringUtils.equals("true", DB_PWD_ENCRYPT.getValue())) {
+            updateVo.getConnectParams().put("isEncrypt", "1");
+        } else {
+            updateVo.getConnectParams().put("isEncrypt", "0");
         }
         try{
             String createSystem = updateVo.getCreateSystem();
