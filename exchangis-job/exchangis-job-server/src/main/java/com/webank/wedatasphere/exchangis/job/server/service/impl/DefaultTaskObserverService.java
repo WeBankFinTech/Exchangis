@@ -45,6 +45,8 @@ public class DefaultTaskObserverService implements TaskObserverService {
         if (Objects.isNull(jobEntity) || TaskStatus.isCompleted(jobEntity.getStatus())){
             taskEntity.setStatus(jobEntity.getStatus());
             this.launchedTaskDao.insertLaunchedTaskOrUpdate(taskEntity);
+            // TODO delete the launch able task
+
             return false;
         } else {
             return this.launchedTaskDao.insertLaunchedTaskOrUpdate(taskEntity) == 1;

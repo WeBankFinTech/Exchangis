@@ -18,8 +18,8 @@
 
 package com.webank.wedatasphere.exchangis.datasource.loader.utils;
 
-import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSource;
-import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceLoader;
+import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
+import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceDefLoader;
 import com.webank.wedatasphere.exchangis.datasource.loader.exception.NoSuchExchangisExtDataSourceException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class ExtDsUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ExtDsUtils.class);
 
-    private static Class PARENT_CLASS = ExchangisDataSource.class;
+    private static Class PARENT_CLASS = ExchangisDataSourceDefinition.class;
 
 
     public static String getExchangisExtDataSourceClassName(String libPath,
@@ -99,7 +99,7 @@ public class ExtDsUtils {
         if (file.listFiles() != null) {
             for (File f : file.listFiles()) {
                 // exchangis-xxxxx.jar
-                if (!f.isDirectory() && f.getName().endsWith(ExchangisDataSourceLoader.JAR_SUF_NAME) && f.getName().startsWith("exchangis")) {
+                if (!f.isDirectory() && f.getName().endsWith(ExchangisDataSourceDefLoader.JAR_SUF_NAME) && f.getName().startsWith("exchangis")) {
                     jars.add(f.getPath());
                 }
             }
@@ -115,11 +115,11 @@ public class ExtDsUtils {
         List<URL> jars = new ArrayList<>();
         if (file.listFiles() != null) {
             for (File f : file.listFiles()) {
-                if (!f.isDirectory() && f.getName().endsWith(ExchangisDataSourceLoader.JAR_SUF_NAME)) {
+                if (!f.isDirectory() && f.getName().endsWith(ExchangisDataSourceDefLoader.JAR_SUF_NAME)) {
                     try {
                         jars.add(f.toURI().toURL());
                     } catch (MalformedURLException e) {
-                        logger.warn("url {} cannot be added", ExchangisDataSourceLoader.FILE_SCHEMA + f.getPath());
+                        logger.warn("url {} cannot be added", ExchangisDataSourceDefLoader.FILE_SCHEMA + f.getPath());
                     }
                 }
             }

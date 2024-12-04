@@ -35,7 +35,7 @@ abstract class AbstractJobLogCache[V](scheduler: Scheduler, maxSize: Int = 100, 
 
     var lastFlush: Long = -1L
 
-    var cacheQueue: util.concurrent.ArrayBlockingQueue[Any] = new ArrayBlockingQueue[Any](maxSize)
+    var cacheQueue: util.concurrent.ArrayBlockingQueue[V] = new ArrayBlockingQueue[V](maxSize)
 
     var isShutdown: Boolean = false
 
@@ -65,7 +65,7 @@ abstract class AbstractJobLogCache[V](scheduler: Scheduler, maxSize: Int = 100, 
 
     override def cacheLog(log: V): Unit = {
         val element: Any = getCacheQueueElement(log)
-        if (!cacheQueue.offer(element)) {
+        if (!cacheQueue.offer(element.asInstanceOf[V])) {
             warn("The cache queue is full, should flush the cache immediately")
             flushCache(false)
         } else if (lastFlush + flushInterval < System.currentTimeMillis){

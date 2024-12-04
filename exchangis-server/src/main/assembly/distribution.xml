@@ -22,7 +22,6 @@
     <id>exchangis-server</id>
     <formats>
         <format>tar.gz</format>
-<!--        <format>dir</format>-->
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>

@@ -36,3 +36,5 @@ package-lock.json
 web/dist
 
 workspace/
+
+.flattened-pom.xml

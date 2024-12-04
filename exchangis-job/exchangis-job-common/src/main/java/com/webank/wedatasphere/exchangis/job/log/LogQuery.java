@@ -21,6 +21,11 @@ public class LogQuery {
 
     private Integer lastRows;
 
+    /**
+     * Reverse the reader
+     */
+    private boolean enableTail;
+
     public LogQuery(){
 
     }
@@ -87,5 +92,14 @@ public class LogQuery {
 
     public void setOnlyKeywords(String onlyKeywords) {
         this.onlyKeywords = onlyKeywords;
+    }
+
+
+    public boolean isEnableTail() {
+        return enableTail;
+    }
+
+    public void setEnableTail(boolean enableTail) {
+        this.enableTail = enableTail;
     }
 }

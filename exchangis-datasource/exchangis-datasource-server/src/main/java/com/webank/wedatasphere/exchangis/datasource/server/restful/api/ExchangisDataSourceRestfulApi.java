@@ -162,7 +162,7 @@ public class ExchangisDataSourceRestfulApi {
         Message message = new Message();
         String loginUser = UserUtils.getLoginUser(request);
         String oringinUser = SecurityFilter.getLoginUsername(request);
-        LOG.info("dataSourceName:   " + dataSourceCreateVO.getDataSourceName() + "dataSourceDesc:   " + dataSourceCreateVO.getDataSourceDesc() + "label:   " + dataSourceCreateVO.getLabels());
+        LOG.info("dataSourceName: " + dataSourceCreateVO.getDataSourceName() + ", dataSourceDesc: " + dataSourceCreateVO.getDataSourceDesc() + ", label: " + dataSourceCreateVO.getLabels());
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             for(int i=0;i<fieldErrors.size();i++){

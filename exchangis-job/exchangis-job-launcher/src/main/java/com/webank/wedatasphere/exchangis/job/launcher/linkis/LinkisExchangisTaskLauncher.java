@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.launcher.linkis;
 
-import com.webank.wedatasphere.exchangis.common.linkis.ClientConfiguration;
+import com.webank.wedatasphere.exchangis.common.linkis.client.config.ExchangisClientConfig;
+import com.webank.wedatasphere.exchangis.common.linkis.client.config.ExchangisClientConfigBuilder;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
@@ -8,22 +9,16 @@ import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLauncher;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
+import com.webank.wedatasphere.exchangis.job.launcher.linkis.client.ExchangisLaunchClient;
 import org.apache.commons.lang.StringUtils;
-import org.apache.linkis.common.conf.Configuration;
-import org.apache.linkis.common.conf.Configuration$;
 import org.apache.linkis.common.exception.LinkisRetryException;
 import org.apache.linkis.common.utils.DefaultRetryHandler;
 import org.apache.linkis.common.utils.RetryHandler;
-import org.apache.linkis.computation.client.LinkisJobClient;
 import org.apache.linkis.computation.client.LinkisJobClient$;
-import org.apache.linkis.httpclient.config.ClientConfig;
-import org.apache.linkis.httpclient.dws.authentication.TokenAuthenticationStrategy;
-import org.apache.linkis.httpclient.dws.config.DWSClientConfig;
-import org.apache.linkis.httpclient.dws.config.DWSClientConfigBuilder;
-import org.apache.linkis.httpclient.dws.config.DWSClientConfigBuilder$;
+import org.apache.linkis.computation.client.once.simple.SimpleOnceJobBuilder$;
 
+import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Linkis task launcher
@@ -47,23 +42,31 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
         this.engineVersions.put(EngineTypeEnum.DATAX.name().toLowerCase(), "3.0.0");
         RetryHandler retryHandler = new DefaultRetryHandler(){};
         retryHandler.addRetryException(LinkisRetryException.class);
-        ClientConfig clientConfig = DWSClientConfigBuilder$.MODULE$
-                .newBuilder()
-                .setDWSVersion(Configuration.LINKIS_WEB_VERSION().getValue())
-                .addServerUrl(ClientConfiguration.LINKIS_SERVER_URL.getValue())
-                .connectionTimeout(45000)
-                .discoveryEnabled(false)
-                .discoveryFrequency(1, TimeUnit.MINUTES)
-                .loadbalancerEnabled(false)
-                .maxConnectionSize(ClientConfiguration.LINKIS_DEFAULT_MAX_CONNECTIONS.getValue())
+        ExchangisClientConfigBuilder builder = (ExchangisClientConfigBuilder) ExchangisClientConfig.newBuilder().discoveryEnabled(false)
                 .retryEnabled(true)
-                .setRetryHandler(retryHandler)
-                .readTimeout(90000) // We think 90s is enough, if SocketTimeoutException is throw, just set a new clientConfig to modify it.
-                .setAuthenticationStrategy(new TokenAuthenticationStrategy())
-                .setAuthTokenKey(TokenAuthenticationStrategy.TOKEN_KEY())
-                .setAuthTokenValue(ClientConfiguration.LINKIS_TOKEN_VALUE.getValue())
-                .build();
-        LinkisJobClient$.MODULE$.config().setDefaultClientConfig((DWSClientConfig) clientConfig);
+                .setRetryHandler(retryHandler);
+        ExchangisClientConfig clientConfig = builder.build();
+        // Try to set the static method
+        Class<?> clz = SimpleOnceJobBuilder$.MODULE$.getClass();
+        Field field;
+        boolean setField = false;
+        try {
+            field = clz.getDeclaredField(SimpleOnceJobBuilder$.class.getName().replace(".", "$") + "$linkisManagerClient");
+            field.setAccessible(true);
+            try {
+                ExchangisLaunchClient client = new ExchangisLaunchClient(clientConfig);
+                field.set(SimpleOnceJobBuilder$.MODULE$, client);
+                Runtime.getRuntime().addShutdownHook(new Thread(client::close));
+                setField = true;
+            } catch (IllegalAccessException e) {
+                // Ignore
+            }
+        } catch (NoSuchFieldException e) {
+            // Ignore
+        }
+        if (!setField){
+            LinkisJobClient$.MODULE$.config().setDefaultClientConfig(clientConfig);
+        }
     }
 
     @Override
@@ -107,4 +110,6 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
         });
         return storeInfo;
     }
+
 }
+

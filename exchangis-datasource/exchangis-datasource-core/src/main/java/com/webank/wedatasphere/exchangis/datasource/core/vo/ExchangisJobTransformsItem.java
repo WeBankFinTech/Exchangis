@@ -2,24 +2,56 @@ package com.webank.wedatasphere.exchangis.datasource.core.vo;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ExchangisJobTransformsItem {
+    /**
+     * Source field name
+     */
     @JsonProperty("source_field_name")
+    @JsonAlias({"srcFieldName"})
     private String sourceFieldName;
+
+    /**
+     * Source field type
+     */
     @JsonProperty("source_field_type")
+    @JsonAlias({"srcFieldType"})
     private String sourceFieldType;
+
+    /**
+     * Sink field name
+     */
     @JsonProperty("sink_field_name")
+    @JsonAlias({"sinkFieldName"})
     private String sinkFieldName;
+
+    /**
+     * Sink field type
+     */
     @JsonProperty("sink_field_type")
+    @JsonAlias({"sinkFieldType"})
     private String sinkFieldType;
+
+    /**
+     * Delete enable
+     */
     @JsonProperty("deleteEnable")
     private boolean deleteEnable;
 
+    /**
+     * Source field index
+     */
     @JsonProperty("source_field_index")
+    @JsonAlias({"srcFieldIdx"})
     private Integer sourceFieldIndex;
 
+    /**
+     * Sink field index
+     */
     @JsonProperty("sink_field_index")
+    @JsonAlias({"sinkFi"})
     private Integer sinkFieldIndex;
 
     @JsonProperty("source_field_editable")
