@@ -357,6 +357,8 @@ public class DefaultJobExecuteService implements JobExecuteService {
         }
         // Build generator scheduler task
         GenerationSchedulerTask schedulerTask = null;
+        // Importance
+//        jobInfo.setExecuteUser(execUser);
         try {
             schedulerTask = new GenerationSchedulerTask(taskGenerator, jobInfo);
         } catch (ExchangisTaskGenerateException e) {

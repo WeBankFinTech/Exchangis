@@ -83,7 +83,8 @@ public class GenericExchangisTransformJobBuilder extends AbstractLoggingExchangi
                 inputJob.getName(), inputJob.getId(), inputJob.getEngineType(), inputJob.getJobContent());
         //First to convert content to "ExchangisJobInfoContent"
         TransformExchangisJob outputJob = new TransformExchangisJob();
-        outputJob.setCreateUser(Optional.ofNullable(inputJob.getExecuteUser()).orElse(String.valueOf(ctx.getEnv("USER_NAME"))));
+        outputJob.setCreateUser(StringUtils.isNotBlank(inputJob.getExecuteUser()) ?
+                inputJob.getExecuteUser() : String.valueOf(ctx.getEnv("USER_NAME")));
         try {
             if (StringUtils.isNotBlank(inputJob.getJobContent())) {
                 //First to convert content to "ExchangisJobInfoContent"
