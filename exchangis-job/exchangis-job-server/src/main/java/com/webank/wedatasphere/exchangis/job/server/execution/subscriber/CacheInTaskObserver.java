@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.stream.Collectors;
 
 /**
  * Subscribe the task cached in memory(queue)
@@ -38,8 +39,9 @@ public abstract class CacheInTaskObserver<T extends ExchangisTask> extends Abstr
         }
         int fetchTaskSize = cacheTasks.size();
         int restBatchSize = batchSize - fetchTaskSize;
+        Set<Long> idSet = cacheTasks.stream().map(ExchangisTask::getId).collect(Collectors.toSet());
         if (restBatchSize > 0 && (this.lastPublishTime + this.publishInterval <= System.currentTimeMillis())) {
-            Optional.ofNullable(onPublishNext(restBatchSize)).ifPresent(cacheTasks::addAll);
+            Optional.ofNullable(onPublishNext(restBatchSize)).ifPresent(c -> c.stream().filter(t -> !idSet.contains(t.getId())).forEach(cacheTasks::add));
         }
         return cacheTasks;
     }
