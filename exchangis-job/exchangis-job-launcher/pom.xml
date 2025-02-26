@@ -26,7 +26,7 @@
         <dependency>
             <groupId>org.apache.linkis</groupId>
             <artifactId>linkis-computation-client</artifactId>
-            <version>${linkis.version}</version>
+            <version>${linkis-computation-client.version}</version>
         </dependency>
 
     </dependencies>

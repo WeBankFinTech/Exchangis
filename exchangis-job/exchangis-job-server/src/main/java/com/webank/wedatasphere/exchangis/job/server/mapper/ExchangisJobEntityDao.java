@@ -41,6 +41,13 @@ public interface ExchangisJobEntityDao {
      * @param jobEntity job entity
      */
     void upgradeContent(ExchangisJobEntity jobEntity);
+
+    /**
+     * Upgrade content
+     * @param jobEntity job entity
+     */
+    void batchUpgradeContent(@Param("list") List<ExchangisJobEntity> jobEntity);
+
     /**
      * Get jobEntity
      * @param jobId job id
@@ -54,7 +61,21 @@ public interface ExchangisJobEntityDao {
      */
     List<ExchangisJobEntity> getDetailList(@Param("projectId") Long projectId);
 
+    /**
+     * Get jobs by ids
+     * @param ids
+     * @return
+     */
+    List<ExchangisJobEntity> getJobsByIds(@Param("ids") List<Long> ids);
+
     ExchangisJobEntity getBasicInfo(@Param("jobId") Long jobId);
+
+    /**
+     * Query list by user
+     * @param userName userName
+     * @return list
+     */
+    List<ExchangisJobEntity> queryByUser(@Param("userName") String userName);
 
     /**
      * Query page list
@@ -72,4 +93,12 @@ public interface ExchangisJobEntityDao {
     List<ExchangisJobEntity> getByNameAndProjectId(@Param("jobName") String jobName, @Param("projectId") Long projectId);
 
     List<ExchangisJobEntity> getByNameWithProjectId(@Param("jobName") String jobName, @Param("projectId") Long projectId);
+
+    /**
+     * Recycle user jobs
+     * @param username
+     * @param handover
+     */
+    void recycleUserJob(@Param("username")String username, @Param("handover")String handover,
+                            @Param("projectIds")List<Long> projectIds);
 }

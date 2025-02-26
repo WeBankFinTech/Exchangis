@@ -10,6 +10,7 @@
         <result column="last_update_time" property="lastUpdateTime"/>
         <result column="job_id" property="jobId"/>
         <result column="job_execution_id" property="jobExecutionId"/>
+        <result column="job_params" property="jobParams"/>
         <result column="engine_type" property="engineType"/>
         <result column="launchable_task_num" property="launchableTaskNum"/>
         <result column="execute_user" property="executeUser"/>
@@ -21,9 +22,11 @@
         <result column="retry_num" property="retryNum"/>
         <result column="log_path" property="logPath"/>
         <result column="create_user" property="createUser"/>
+        <result column="instance" property="instance"/>
         <association property="exchangisJobEntity" javaType="com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity" >
-            <result property="id" column="id" />
-            <result property="source" column="source" />
+            <result column="id" property="id" />
+            <result column="project_name" property="projectName" />
+            <result column="source" property="source" />
         </association>
     </resultMap>
 
@@ -33,19 +36,21 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, job_id, job_execution_id, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, create_user    </sql>
+        id, name, create_time, last_update_time, job_id, job_execution_id, job_params, engine_type, execute_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, create_user, instance
+    </sql>
 
     <insert id="insertLaunchedJob" useGeneratedKeys="true" keyProperty="id" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity">
         insert into
         <include refid="TableName"/>
-        (name, create_time, last_update_time, job_id, launchable_task_num, job_execution_id, engine_type, execute_user, create_user, job_name, status, progress, error_code, error_msg, retry_num, log_path)
+        (name, create_time, last_update_time, job_id, launchable_task_num, job_execution_id, job_params, engine_type, execute_user, create_user, job_name, status, progress, error_code, error_msg, retry_num, log_path, instance)
         values(
         #{name},
         #{createTime},
-        #{lastUpdateTime},
+        #{lastUpdateTime, jdbcType=TIMESTAMP},
         #{jobId},
         #{launchableTaskNum},
         #{jobExecutionId},
+        #{jobParams},
         #{engineType},
         #{executeUser},
         #{createUser},
@@ -55,7 +60,8 @@
         #{errorCode},
         #{errorMessage},
         #{retryNum},
-        #{logPath}
+        #{logPath},
+        #{instance}
         );
     </insert>
 
@@ -141,6 +147,51 @@
         WHERE
         job_execution_id = #{jobExecutionId}]]>
     </update>
+
+    <update id="updateLaunchedJobDate">
+        <![CDATA[UPDATE ]]>
+        <include refid="TableName"/>
+        <![CDATA[SET
+        last_update_time = #{updateTime}
+        WHERE
+        job_execution_id = #{jobExecutionId}]]>
+    </update>
+    <select id="getAllLaunchedJobInAdmin"  resultMap="LaunchedJobMap">
+        SELECT
+        l.job_execution_id,
+        l.name,
+        l.create_time,
+        l.execute_user,
+        l.status,
+        l.progress,
+        l.last_update_time,
+        l.create_user,
+        c.source,
+        p.name as project_name
+        FROM
+        `exchangis_launched_job_entity` l
+        LEFT JOIN `exchangis_job_entity` c ON l.job_id = c.id
+        INNER JOIN `exchangis_project_info` p ON c.project_id = p.id
+        <where>
+            <if test="jobExecutionId.trim() != '' and jobExecutionId != null">
+                and l.job_execution_id = #{jobExecutionId}
+            </if>
+            <if test="launchStartTime != null">
+                and l.create_time >= #{launchStartTime}
+            </if>
+            <if test="launchEndTime != null">
+                and l.create_time &lt;= #{launchEndTime}
+            </if>
+            <if test="status.trim() != '' and status != null">
+                and l.status = #{status}
+            </if>
+            <!--如果name有值，则模糊匹配name-->
+            <if test="jobName.trim() != '' and jobName != null">
+                and l.name like concat('%', #{jobName}, '%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
     <select id="getAllLaunchedJob" resultMap="LaunchedJobMap">
         SELECT
         l.job_execution_id,
@@ -151,23 +202,15 @@
         l.progress,
         l.last_update_time,
         l.create_user,
-        c.source
+        c.source,
+        p.name as project_name
         FROM
         `exchangis_launched_job_entity` l
         LEFT JOIN `exchangis_job_entity` c ON l.job_id = c.id
+        INNER JOIN `exchangis_project_info` p ON c.project_id = p.id
         <where>
             <if test="jobExecutionId.trim() != '' and jobExecutionId != null">
                 and l.job_execution_id = #{jobExecutionId}
-            </if>
-            <!--如果name有值，则模糊匹配name-->
-            <if test="jobName.trim() != '' and jobName != null">
-                and l.name like concat('%', #{jobName}, '%')
-            </if>
-            <if test="loginUser.trim() != '' and loginUser != null">
-                and l.create_user like concat('%', #{loginUser}, '%')
-            </if>
-            <if test="status.trim() != '' and status != null">
-                and l.status = #{status}
             </if>
             <if test="launchStartTime != null">
                 and l.create_time >= #{launchStartTime}
@@ -175,9 +218,18 @@
             <if test="launchEndTime != null">
                 and l.create_time &lt;= #{launchEndTime}
             </if>
+            <if test="isAdminUser != null and isAdminUser == false">
+                and l.create_user = #{createUser}
+            </if>
+            <if test="status.trim() != '' and status != null">
+                and l.status = #{status}
+            </if>
+            <!--如果name有值，则模糊匹配name-->
+            <if test="jobName.trim() != '' and jobName != null">
+                and l.name like concat('%', #{jobName}, '%')
+            </if>
         </where>
         order by create_time desc
-        limit #{start}, #{size}
     </select>
 
     <select id="count" resultType="java.lang.Integer">
@@ -212,4 +264,20 @@
         job_execution_id = #{jobExecutionId}
     </delete>
 
+    <select id="getLaunchedJobInExpire" resultMap="LaunchedJobMap">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM
+        <include refid="TableName" />
+        <where>
+            <if test="instance != null and instance != ''">
+                AND  instance = #{instance}
+            </if>
+            <![CDATA[
+            AND `last_update_time` < #{expireTime}
+            AND `status` = #{status}
+            ]]>
+        </where>
+        ORDER BY last_update_time ASC LIMIT #{limitSize};
+    </select>
 </mapper>

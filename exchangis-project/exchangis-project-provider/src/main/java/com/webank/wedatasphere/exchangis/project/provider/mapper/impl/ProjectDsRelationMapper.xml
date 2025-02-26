@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectDsRelationMapper">
+    <resultMap id="projectDsResult" type="com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation">
+        <result column="id" property="id"/>
+        <result column="project_id" property="projectId"/>
+        <result column="data_source_name" property="dsName"/>
+        <result column="data_source_id" property="dsId"/>
+        <result column="data_source_type" property="dsType"/>
+        <result column="data_source_creator" property="dsCreator"/>
+        <result column="last_update_time" property="lastUpdateTime"/>
+    </resultMap>
+
+    <sql id="tableName">
+        exchangis_project_ds
+    </sql>
+
+    <sql id="detail_columns">
+        id,project_id,data_source_name,data_source_id,data_source_type,data_source_creator,last_update_time
+    </sql>
+
+    <insert id="insertBatch">
+        <foreach collection="list" item="item" open="" close="" separator="">
+            <![CDATA[
+                INSERT INTO exchangis_project_ds
+                (project_id,data_source_name,data_source_id,data_source_type,data_source_creator,last_update_time)
+                VALUES
+                (#{item.projectId},#{item.dsName},#{item.dsId},#{item.dsType},#{item.dsCreator},#{item.lastUpdateTime}) ON DUPLICATE KEY UPDATE last_update_time = #{item.lastUpdateTime};
+            ]]>
+        </foreach>
+    </insert>
+
+    <delete id="deleteByIds" parameterType="java.lang.Long">
+        DELETE FROM <include refid="tableName"/>
+        WHERE id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByProject" parameterType="java.lang.Long">
+        DELETE FROM <include refid="tableName"/>
+        WHERE project_id=#{projectId}
+    </delete>
+
+    <select id="queryPageList" resultMap="projectDsResult">
+        SELECT * FROM <include refid="tableName"/>
+        <where>
+            <if test="projectId != null">
+                AND project_id = #{projectId}
+            </if>
+            <if test="type != null and type != ''">
+                AND data_source_type = #{type}
+            </if>
+            <if test="name != null and name != ''">
+                AND data_source_name like concat('%', #{name}, '%')
+            </if>
+        </where>
+        ORDER BY last_update_time DESC
+    </select>
+
+    <select id="listByProject" resultMap="projectDsResult">
+        SELECT * FROM <include refid="tableName"/>
+        <where>
+            <if test="projectId != null">
+                AND project_id = #{projectId}
+            </if>
+            <if test="dsType != null and dsType != ''">
+                AND data_source_type = #{dsType}
+            </if>
+        </where>
+        ORDER BY last_update_time DESC
+    </select>
+
+    <select id="listByProjects" resultMap="projectDsResult">
+        SELECT * FROM <include refid="tableName"/>
+        <if test="proIds != null">
+            WHERE project_id in
+            <foreach collection="proIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getByUserAndDsId" resultMap="projectDsResult">
+        SELECT * FROM <include refid="tableName"/>
+        WHERE  data_source_id = #{dsId}
+        AND project_id IN ( SELECT project_id FROM exchangis_project_user WHERE priv_user = #{username}) LIMIT 1;
+    </select>
+
+    <select id="getByDsId" resultMap="projectDsResult">
+        SELECT * FROM <include refid="tableName"/>
+        WHERE  data_source_id = #{dsId} LIMIT 1;
+    </select>
+</mapper>

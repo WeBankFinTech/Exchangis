@@ -134,10 +134,6 @@ const columns = [
     dataIndex: 'executeNode',
   },
   {
-    title: '项目名称',
-    dataIndex: 'projectName',
-  },
-  {
     title: '作业名称',
     dataIndex: 'name',
   },
@@ -157,7 +153,7 @@ const columns = [
     dataIndex: 'createUser',
   },
   {
-    title: '执行用户',
+    title: '提交用户',
     dataIndex: 'executeUser',
   },
   {

@@ -2,12 +2,13 @@ package com.webank.wedatasphere.exchangis.job.server;
 
 import com.webank.wedatasphere.exchangis.job.server.mapper.JobTransformRuleDao;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.*;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.FieldMappingRulesFusion;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match.*;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.def.DefaultTransformDefineRulesFusion;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.DefaultFieldMappingRulesFusion;
-import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.FieldMappingRulesFusion;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.FieldMappingTransformer;
-import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match.*;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.processor.ProcessorTransformer;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,11 +56,14 @@ public class ExchangisJobRenderAutoConfiguration {
      * Field mapping transformer
      * @param rulesFusion rule fusion
      * @param transformRuleDao transform rule dao
+     * @param projectOpenService project service
      * @return transformer
      */
     @Bean
-    public FieldMappingTransformer fieldMappingTransformer(FieldMappingRulesFusion rulesFusion, JobTransformRuleDao transformRuleDao){
-        return new FieldMappingTransformer(rulesFusion, transformRuleDao);
+    public FieldMappingTransformer fieldMappingTransformer(FieldMappingRulesFusion rulesFusion,
+                                                           JobTransformRuleDao transformRuleDao,
+                                                           ProjectOpenService projectOpenService){
+        return new FieldMappingTransformer(rulesFusion, transformRuleDao, projectOpenService);
     }
     /**
      * Processor transformer

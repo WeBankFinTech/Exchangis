@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.mapper;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +25,13 @@ public interface LaunchableTaskDao {
     void deleteLaunchableTask(@Param("taskId") String taskId);
 
     /**
+     * Delay launchableTask to designated time
+     * @param taskId task id
+     * @param delayTime delay time
+     */
+    void delayLaunchableTask(@Param("taskId") String taskId, Date delayTime);
+
+    /**
      * upgradeLaunchableTask
      * @param launchableExchangisTask
      */
@@ -37,8 +45,36 @@ public interface LaunchableTaskDao {
 
     /**
      * Get Tasks need to execute
-     * @param
+     * @param instance ins
      */
 
-    List<LaunchableExchangisTask> getTaskToLaunch(@Param("limitSize") Integer limitSize);
+    List<LaunchableExchangisTask> getTaskToLaunch(@Param("instance")String instance,
+                                                  @Param("limitSize") Integer limitSize);
+
+    /**
+     * Get the expired tasks need to execute
+     * @param status expire status
+     * @param instance ins
+     * @param expireTime expire time
+     * @param limitSize limit size
+     * @return
+     */
+    List<LaunchableExchangisTask> getTaskToLaunchInExpire(@Param("instance")String instance,
+                                                          @Param("status")String status,
+                                                          @Param("expireTime") Date expireTime,
+                                                          @Param("limitSize")Integer limitSize);
+
+    /**
+     * Batch delay
+     * @param tasks tasks
+     */
+    void delayBatch(@Param("tasks")List<LaunchableExchangisTask> tasks);
+
+    /**
+     * Recycle user launchable task
+     * @param username
+     * @param handover
+     */
+    void recycleLaunchableTask(@Param("username")String username, @Param("handover")String handover,
+                        @Param("projectIds")List<Long> projectIds);
 }

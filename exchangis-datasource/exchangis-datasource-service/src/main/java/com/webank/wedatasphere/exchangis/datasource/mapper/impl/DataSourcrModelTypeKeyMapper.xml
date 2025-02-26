@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelTypeKeyMapper">
+    <resultMap id="dsTypeKey" type="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelTypeKey">
+        <result property="id" column="id"/>
+        <result property="dsType" column="ds_type"/>
+        <result property="key" column="key"/>
+        <result property="name" column="name"/>
+        <result property="defaultValue" column="default_value"/>
+        <result property="valueType" column="value_type"/>
+        <result property="valueRegex" column="value_regex"/>
+        <result property="nestType" column="nest_type"/>
+        <result property="nestFields" column="nest_fields"/>
+        <result property="isSerialize" column="is_serialize"/>
+        <result property="scope" column="scope"/>
+        <result property="require" column="require"/>
+        <result property="description" column="description"/>
+        <result property="refId" column="ref_id"/>
+        <result property="refValue" column="ref_value"/>
+        <result property="dataSource" column="data_source"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
+    <sql id="table">
+        exchangis_data_source_model_type_key
+    </sql>
+
+    <sql id="columns">
+        id,ds_type,`key`,name,
+        default_value,value_type,value_regex,nest_type,nest_fields,is_serialize,
+        `scope`,`require`,description,
+        ref_id,ref_value,
+        create_time,modify_time
+    </sql>
+
+    <select id="queryList" resultMap="dsTypeKey">
+        SELECT
+        <include refid="columns"/>
+        FROM exchangis_data_source_model_type_key
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT count(*) FROM <include refid="table"/> rl
+        <include refid="findPageWhere"/>
+    </select>
+
+    <select id="findPage" resultMap="dsTypeKey">
+        SELECT
+        <include refid="columns"/> rl
+        FROM <include refid="table"/>
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+    </select>
+
+    <sql id="findPageWhere">
+        <where>
+            <if test="id != null and id != ''">
+                AND id = #{id}
+            </if>
+            <if test="dsType != null and dsType != ''">
+                AND ds_type = #{dsType}
+            </if>
+            <if test="key != null and key != ''">
+                AND key = #{key}
+            </if>
+            <if test="name != null and name != ''">
+                AND name = #{name}
+            </if>
+            <if test="valueType != null and valueType != ''">
+                AND value_type = #{valueType}
+            </if>
+            <if test="nestType != null and nestType != ''">
+                AND nest_type = #{nestType}
+            </if>
+            <if test="scope != null and scope != ''">
+                AND scope = #{scope}
+            </if>
+            <if test="require != null and require != ''">
+                AND require = #{require}
+            </if>
+            <if test="refId != null and refId != ''">
+                AND ref_id = #{refId}
+            </if>
+        </where>
+    </sql>
+</mapper>

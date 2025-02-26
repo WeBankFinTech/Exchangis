@@ -9,10 +9,12 @@ import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.BDPJettyServerHelper;
 import org.apache.linkis.server.Message;
@@ -28,6 +30,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.VALIDATE_JOB_ERROR;
 
 /**
  * Define to support the app conn, in order to distinguish from the inner api
@@ -49,6 +54,8 @@ public class ExchangisJobDssAppConnRestfulApi {
     @Resource
     private DefaultJobExecuteService executeService;
 
+    @Resource
+    private ProjectOpenService projectOpenService;
     /**
      * Create job
      * @param request http request
@@ -66,14 +73,14 @@ public class ExchangisJobDssAppConnRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String originUser = SecurityFilter.getLoginUsername(request);
         String loginUser = UserUtils.getLoginUser(request);
         exchangisJobVo.setCreateUser(loginUser);
         Message response = Message.ok();
 
         Long id = null;
         try{
-            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, Long.parseLong(exchangisJobVo.getProjectId()), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to create Job (没有创建任务权限)");
             }
             id = jobInfoService.createJob(exchangisJobVo).getId();
@@ -85,7 +92,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             return Message.error(message);
         }
         assert id != null;
-        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, String.valueOf(id), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.CREATE, request);
+        AuditLogUtils.printLog(originUser, loginUser, TargetTypeEnum.JOB, String.valueOf(id), "Job name is: " + exchangisJobVo.getJobName(), OperateTypeEnum.CREATE, request);
         return response;
     }
 
@@ -108,7 +115,7 @@ public class ExchangisJobDssAppConnRestfulApi {
             if (Objects.isNull(exchangisJob)){
                 return response;
             }
-            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJob.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, Long.parseLong(exchangisJob.getProjectId()), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to delete (没有删除任务权限)");
             }
             jobInfoService.deleteJob(id);
@@ -143,7 +150,7 @@ public class ExchangisJobDssAppConnRestfulApi {
         exchangisJobVo.setModifyUser(loginUser);
         Message response = Message.ok();
         try{
-            LOG.info("update job bean: {}, jobid: {}", jobInfoService.getJob(id, true), jobInfoService.getJob(id, true).getId());
+            LOG.info("update job bean: {}, job id: {}", jobInfoService.getJob(id, true), jobInfoService.getJob(id, true).getId());
             ExchangisJobVo exchangisJob = jobInfoService.getJob(id, true);
             if (Objects.isNull(exchangisJob)){
                 return Message.error("You have no job in exchangis,please delete this job (该节点在exchangis端不存在，请删除该节点)");
@@ -169,70 +176,56 @@ public class ExchangisJobDssAppConnRestfulApi {
     @RequestMapping( value = "/execute/{id}", method = RequestMethod.POST)
     public Message executeJob(@PathVariable("id") Long id, HttpServletRequest request, @RequestBody Map<String, Object> params) {
         try {
-            LOG.info("start to parse params");
+            LOG.info("Start to parse params from dss job execution request");
             String paramString = BDPJettyServerHelper.jacksonJson().writeValueAsString(params);
-            LOG.error("paramString: {}", paramString);
+            LOG.info("Success to parse params content: {}", paramString);
         } catch (JsonProcessingException e) {
-            LOG.error("parse execute content error: {}", e.getMessage());
+            LOG.error("Parse execute content error: {}", e.getMessage());
         }
-        String submitUser = params.get("submitUser").toString();
-        String oringinUser = SecurityFilter.getLoginUsername(request);
+        String execUser = Optional.ofNullable(params.get("execUser")).orElse("").toString();
+        String originUser = SecurityFilter.getLoginUsername(request);
         String loginUser = UserUtils.getLoginUser(request);
         Message response = Message.ok();
         ExchangisJobInfo jobInfo = null;
-        LOG.info("wds execute user: {}", loginUser);
         try {
             // First to find the job from the old table.
             ExchangisJobVo jobVo = jobInfoService.getJob(id, false);
-           /* if (!AuthorityUtils.hasOwnAuthority(jobVo.getProjectId(), loginUser) && !AuthorityUtils.hasExecAuthority(jobVo.getProjectId(), loginUser)) {
-                return Message.error("You have no permission to execute job (没有执行任务权限)");
-            }*/
             if (Objects.isNull(jobVo)){
                 return Message.error("Job related the id: [" + id + "] is Empty(关联的DSS任务不存在)");
+            }
+            if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_EXECUTE)) {
+                return Message.error("You have no permission to execute job (没有执行任务权限)");
             }
             // Convert to the job info
             jobInfo = new ExchangisJobInfo(jobVo);
             jobInfo.setName(jobVo.getJobName());
             jobInfo.setId(jobVo.getId());
-            LOG.info("jobInfo: name{},executerUser{},createUser{},id{}",jobInfo.getName(),jobInfo.getExecuteUser(),jobInfo.getCreateUser(),jobInfo.getId());
-            LOG.info("loginUser: {}, jobVo:{}",loginUser,jobVo);
-            //find project user authority
-            /*if (!hasAuthority(submitUser, jobVo)){
-                return Message.error("You have no permission to execute job (没有执行DSS任务权限)");
-            }*/
-            // Send to execute service
-            String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
-                    jobInfo.getExecuteUser() : loginUser);
+            execUser = StringUtils.isNotBlank(execUser)? execUser : jobInfo.getExecuteUser();
+            LOG.info("Execute dss job name: [{}], id: [{}], createUser: [{}], execUser: [{}], loginUser: [{}]",
+                    jobInfo.getName(), jobInfo.getId(), jobInfo.getCreateUser(),
+                    execUser, loginUser);
+            // Send to execute service, just use login user(execute user) from dss
+            String jobExecutionId = executeService.executeJob(loginUser, jobInfo, loginUser);
             response.data("jobExecutionId", jobExecutionId);
-
             LOG.info("Prepare to get job status");
-            /*while (true) {
-                TaskStatus jobStatus = executeService.getJobStatus(jobExecutionId).getStatus();
-                LOG.info("Taskstatus is: {}", jobStatus.name());
-                if (jobStatus == TaskStatus.Success ) {
-                    result.data("jobStatus", jobStatus.name());
-                    LOG.info("Execute task success");
-                    break;
-                } else if (jobStatus == TaskStatus.Cancelled || jobStatus == TaskStatus.Failed || jobStatus == TaskStatus.Undefined || jobStatus == TaskStatus.Timeout) {
-                    result.data("jobStatus", jobStatus.name());
-                    LOG.info("Execute task faild");
-                    throw new Exception();
-                }
-            }*/
         } catch (Exception e) {
             String message;
             if (Objects.nonNull(jobInfo)) {
                 message = "Error occur while executing job: [id: " + jobInfo.getId() + " name: " + jobInfo.getName() + "]";
-                response = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
+                response = Message.error(message + "(执行任务出错) [" + e.getMessage() + "]");
             } else {
-                message = "Error to get the job detail (获取任务信息出错)";
+                message = "Error to get the job detail (获取任务信息出错), reason: " + e.getMessage();
                 response = Message.error(message);
             }
-            LOG.error(message, e);
+            if (e instanceof ExchangisJobServerException &&
+                    ((ExchangisJobServerException) e).getErrCode() == VALIDATE_JOB_ERROR.getCode()){
+                LOG.error(message);
+            } else {
+                LOG.error(message, e);
+            }
             return response;
         }
-        assert jobInfo != null;
-        AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, String.valueOf(id), "Execute task is: " + jobInfo.getName(), OperateTypeEnum.EXECUTE, request);
+        AuditLogUtils.printLog(originUser, loginUser, TargetTypeEnum.JOB, String.valueOf(id), "Execute task is: " + jobInfo.getName(), OperateTypeEnum.EXECUTE, request);
         return response;
     }
 }

@@ -12,6 +12,11 @@ import java.util.List;
 public interface ProjectUserMapper {
 
     /**
+     * query projectUsers
+     */
+    List<ExchangisProjectUser> queryProjectUsers();
+
+    /**
      * query projectUser
      * @param projectUser
      */
@@ -28,6 +33,13 @@ public interface ProjectUserMapper {
      * @param projectUsers
      */
     void updateProjectUser(@Param("projectUsers") List<ExchangisProjectUser> projectUsers);
+
+    /**
+     * Batch update
+     * @param userName userName
+     * @param handover handover
+     */
+    void batchUpdate(@Param("userName") String userName, @Param("handover") String handover);
 
     /**
      * delete projectUsers

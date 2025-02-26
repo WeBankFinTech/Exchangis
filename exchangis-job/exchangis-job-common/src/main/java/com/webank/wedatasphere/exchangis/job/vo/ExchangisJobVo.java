@@ -1,19 +1,11 @@
 package com.webank.wedatasphere.exchangis.job.vo;
 
-
-
-import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.*;
 
-/**
- *
- */
-//@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ExchangisJobVo {
 
     /**
@@ -24,7 +16,7 @@ public class ExchangisJobVo {
     /**
      * Project id
      */
-    private Long projectId;
+    private String projectId;
 
     /**
      * Job type
@@ -60,9 +52,14 @@ public class ExchangisJobVo {
     private String jobDesc;
 
     /**
+     * Is the job has sub jobs
+     */
+    private Boolean jobNotEmpty;
+
+    /**
      * Content
      */
-    private String content;
+    private String jobContent;
 
     /**
      * Execute user
@@ -117,9 +114,11 @@ public class ExchangisJobVo {
     public ExchangisJobVo(ExchangisJobEntity jobEntity){
         if (Objects.nonNull(jobEntity)) {
             this.id = jobEntity.getId();
-            this.projectId = jobEntity.getProjectId();
+            this.projectId = String.valueOf(jobEntity.getProjectId());
             this.engineType = jobEntity.getEngineType();
             this.jobDesc = jobEntity.getJobDesc();
+            this.jobNotEmpty = StringUtils.isNotEmpty(jobEntity.getJobContent());
+            this.jobContent = jobEntity.getJobContent();
             this.jobLabels = jobEntity.getJobLabel();
             this.jobName = jobEntity.getName();
             this.jobType = jobEntity.getJobType();
@@ -144,6 +143,14 @@ public class ExchangisJobVo {
 
     public void setId(Long id) { this.id = id; }
 
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
     public String getJobName() {
         return jobName;
     }
@@ -160,6 +167,14 @@ public class ExchangisJobVo {
         this.jobDesc = jobDesc;
     }
 
+    public Boolean getJobNotEmpty() {
+        return jobNotEmpty;
+    }
+
+    public void setJobNotEmpty(Boolean jobNotEmpty) {
+        this.jobNotEmpty = jobNotEmpty;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -174,14 +189,6 @@ public class ExchangisJobVo {
 
     public void setModifyTime(Date modifyTime) {
         this.modifyTime = modifyTime;
-    }
-
-    public Long getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
     }
 
     public String getJobType() {
@@ -208,12 +215,12 @@ public class ExchangisJobVo {
         this.jobLabels = jobLabel;
     }
 
-    public String getContent() {
-        return content;
+    public String getJobContent() {
+        return jobContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setJobContent(String jobContent) {
+        this.jobContent = jobContent;
     }
 
     public String getExecuteNode() {

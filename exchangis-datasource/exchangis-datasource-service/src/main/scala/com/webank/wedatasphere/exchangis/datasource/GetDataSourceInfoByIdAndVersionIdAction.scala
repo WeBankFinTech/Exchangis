@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.datasource
 
-import org.apache.linkis.datasource.client.config.DatasourceClientConfig.DATA_SOURCE_SERVICE_MODULE
+import org.apache.linkis.datasource.client.config.DatasourceClientConfig
 import org.apache.linkis.datasource.client.exception.DataSourceClientBuilderException
 import org.apache.linkis.datasource.client.request.DataSourceAction
 import org.apache.linkis.httpclient.request.GetAction
@@ -15,7 +15,7 @@ class GetDataSourceInfoByIdAndVersionIdAction extends GetAction with DataSourceA
 
   override def getUser: String = this.user
 
-  override def suffixURLs: Array[String] = Array(DATA_SOURCE_SERVICE_MODULE.getValue, "info", dataSourceId.toString, versionId)
+  override def suffixURLs: Array[String] = Array(DatasourceClientConfig.DATA_SOURCE_SERVICE_MODULE.getValue, "info", dataSourceId.toString, versionId)
 }
 
 

@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ScheduleListener;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbalance.LoadBalancePoller;
@@ -65,8 +65,7 @@ public abstract class AbstractLoadBalanceSchedulerTask<T> extends AbstractExchan
                         try {
                             rePushWithBalancer(pollElement, this.schedulerLoadBalancer);
                         } catch (Exception e) {
-                            throw new ExchangisSchedulerException.Runtime(
-                                    "Error occurred in rePush in load balance scheduler task [" + getName() + "]", e);
+                            LOG.error("Internal_Error: Error occurred in rePush in load balance scheduler task [" + getName() + "]", e);
                         }
                     }
                 });
@@ -122,6 +121,9 @@ public abstract class AbstractLoadBalanceSchedulerTask<T> extends AbstractExchan
     @Override
     public void kill() {
         pollFinish = true;
+        if (Objects.nonNull(loadBalancePoller)){
+            this.loadBalancePoller.close();
+        }
         super.kill();
     }
 

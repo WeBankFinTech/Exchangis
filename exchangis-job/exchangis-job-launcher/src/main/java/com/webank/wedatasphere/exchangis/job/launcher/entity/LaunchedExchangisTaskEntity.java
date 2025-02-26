@@ -1,6 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.launcher.entity;
 
 
+import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
@@ -24,6 +25,18 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
 
     private String linkisJobInfo;
 
+    private String rateParams;
+
+    private String sourceType;
+
+    private String sinkType;
+
+    private String sourceId;
+
+    private String sinkId;
+
+    private String content;
+
     /**
      * Execution id
      */
@@ -41,6 +54,11 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
 
     private Map<String, Object> metricsMap;
 
+    /**
+     * Commit version
+     */
+    private Integer commitVersion;
+
     public LaunchedExchangisTaskEntity(){
 
     }
@@ -55,10 +73,18 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
         this.engineType = launchableExchangisTask.getEngineType();
         this.executeUser = launchableExchangisTask.getExecuteUser();
         this.jobId = launchableExchangisTask.getJobId();
+        // rateParams
+        this.rateParams = launchableExchangisTask.getRateParams();
+        // identify
+        this.sourceType = launchableExchangisTask.getSourceType();
+        this.sinkType = launchableExchangisTask.getSinkType();
+        this.sourceId = launchableExchangisTask.getSourceId();
+        this.sinkId = launchableExchangisTask.getSinkId();
+        this.content = launchableExchangisTask.getContent();
         // jobName
         this.jobExecutionId = launchableExchangisTask.getJobExecutionId();
         this.status = TaskStatus.Scheduled;
-        this.lastUpdateTime = Calendar.getInstance().getTime();
+        this.instance = EnvironmentUtils.getServerAddress();
     }
     public String getTaskId(){
         if (Objects.isNull(taskId) && Objects.nonNull(getId())){
@@ -88,6 +114,54 @@ public class LaunchedExchangisTaskEntity extends GenericExchangisTaskEntity {
 
     public void setLinkisJobInfo(String linkisJobInfo) {
         this.linkisJobInfo = linkisJobInfo;
+    }
+
+    public String getRateParams() {
+        return rateParams;
+    }
+
+    public void setRateParams(String rateParams) {
+        this.rateParams = rateParams;
+    }
+
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
+    }
+
+    public String getSinkType() {
+        return sinkType;
+    }
+
+    public void setSinkType(String sinkType) {
+        this.sinkType = sinkType;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getSinkId() {
+        return sinkId;
+    }
+
+    public void setSinkId(String sinkId) {
+        this.sinkId = sinkId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getJobExecutionId() {

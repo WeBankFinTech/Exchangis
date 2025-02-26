@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.extension.datasource.mysql;
 
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceType;
+import com.webank.wedatasphere.exchangis.common.enums.ExchangisDataSourceType;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.StructClassifier;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisBatchDataSource;
 
@@ -33,5 +33,6 @@ public class ExchangisESDataSource extends ExchangisBatchDataSource {
     public String icon() {
         return "icon-es";
     }
+
 
 }

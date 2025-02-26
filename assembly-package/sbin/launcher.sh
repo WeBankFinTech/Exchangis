@@ -104,21 +104,19 @@ construct_java_command(){
         LOG ERROR "Prop:MAIN_CLASS is missing, must be not empty or blank"
         exit 1
     fi
-    if [[ "x${HEAP_SIZE}" == "x" ]]; then
-        HEAP_SIZE="2g"
-    fi
     # mkdir
     mkdir -p ${EXCHANGIS_LOG_PATH}
     mkdir -p ${EXCHANGIS_PID_PATH}
-    local classpath=${EXCHANGIS_CONF_PATH}
+    local classpath=${EXCHANGIS_CONF_PATH}":."
     local opts=""
-    classpath=${classpath}":"${EXCHANGIS_LIB_PATH}/"exchangis-server/*:."
+    classpath=${EXCHANGIS_LIB_PATH}/exchangis-server/*":"${classpath}
     LOG INFO "classpath:"${classpath}
     if [[ "x${EXCHANGIS_JAVA_OPTS}" == "x" ]]; then
       # Use G1 garbage collector
-       local opts="-Xms${HEAP_SIZE} -Xmx${HEAP_SIZE} -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:+UseG1GC -Xloggc:${EXCHANGIS_LOG_PATH}/$1-gc.log"
+       local opts="-Xmx${SERVER_XMX} -Xms${SERVER_XMS} -XX:NewSize=${SERVER_NEW_SIZE} -XX:MaxNewSize=${SERVER_MAX_NEW_SIZE} -XX:PermSize=${SERVER_PERM_SIZE} -XX:MaxPermSize=${SERVER_MAX_PERM_SIZE}"
     fi
-    if [[ "x${DEBUG_MODE}" == "xTrue" ]]; then
+    opts=${opts}" -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -Xloggc:${EXCHANGIS_LOG_PATH}/$1-gc.log"
+    if [[ "x${DEBUG_MODE}" == "xtrue" ]]; then
         if [[ "x${DEBUG_PORT}" == "x" ]]; then
             LOG ERROR  "Prop:DEBUG_PORT is missing, must be a number and not blank"
             exit 1
@@ -133,6 +131,7 @@ construct_java_command(){
     opts=${opts}" -Dlogging.level.reactor.ipc.netty.channel.CloseableContextHandler=off"
     opts=${opts}" -Duser.dir=${USER_DIR}"
     opts=${opts}" -classpath "${classpath}
+    echo "opts:"${opts}
     if [[ "x${JAVA_HOME}" != "x" ]]; then
         EXEC_JAVA=${JAVA_HOME}"/bin/java "${opts}" "$2
     else
@@ -172,7 +171,7 @@ wait_for_startup(){
             return 0
         fi
         sleep ${SLEEP_TIMEREVAL_S}
-        now_s=`date '+%s'`
+        now_s=`date '+%s'`  #计算当前时间时间戳
     done
     return 1
 }
@@ -201,17 +200,14 @@ launcher_start(){
     fi
     construct_java_command $1 $2
     # Execute
-    echo ${EXEC_JAVA}
     LOG INFO ${EXEC_JAVA}
     nohup ${EXEC_JAVA}  >/dev/null 2>&1 &
     LOG INFO "Launcher: waiting [ $1 ] to start complete ..."
     wait_for_startup 20 $1 $2
     if [[ $? -eq 0 ]]; then
         LOG INFO "Launcher: [ $1 ] start success"
-        LOG INFO ${EXCHANGIS_CONF_PATH}
-        APPLICATION_YML="${EXCHANGIS_CONF_PATH}/application-exchangis.yml"
+        APPLICATION_YML="${EXCHANGIS_CONF_PATH}/application-exchangis.properties"
         EUREKA_URL=`cat ${APPLICATION_YML} | grep Zone | sed -n '1p'`
-        echo "${EUREKA_URL}"
         LOG INFO "Please check exchangis server in EUREKA_ADDRESS: ${EUREKA_URL#*:} "
     else
         LOG ERROR "Launcher: [ $1 ] start fail over 20 seconds, please retry it"
@@ -250,3 +246,5 @@ launcher_stop(){
       return 1
     fi
 }
+
+load_env_definitions ${ENV_FILE}

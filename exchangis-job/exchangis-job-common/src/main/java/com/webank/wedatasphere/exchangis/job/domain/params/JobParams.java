@@ -21,15 +21,21 @@ public class JobParams {
      * @return
      */
     public static <T, U>JobParamDefine<T> define(String key, BiFunction<String, U, T> valueLoader){
-        return new JobParamDefine<>(key, valueLoader);
+        JobParamDefine<T> define =  new JobParamDefine<>(key, valueLoader);
+        define.setComputed(true);
+        return define;
     }
 
     public static <T>JobParamDefine<T> define(String key, Function<JobParamSet, T> valueLoader){
-        return new JobParamDefine<>(key, valueLoader);
+        JobParamDefine<T> define =  new JobParamDefine<>(key, valueLoader);
+        define.setComputed(true);
+        return define;
     }
 
     public static <U, T>JobParamDefine<T> define(String key, Function<U, T> valueLoader, Class<U> type){
-        return new JobParamDefine<>(key, valueLoader, type);
+        JobParamDefine<T> define =  new JobParamDefine<>(key, valueLoader, type);
+        define.setComputed(true);
+        return define;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -59,12 +65,14 @@ public class JobParams {
     }
 
     public static <T, U>JobParamDefine<T> define(String key, String mappingKey, Function<U, T> transform, Class<U> inputType){
-        return define(key, new String[]{mappingKey}, transform, inputType);
+        JobParamDefine<T> define =  define(key, new String[]{mappingKey}, transform, inputType);
+        define.setComputed(true);
+        return define;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static <T, U>JobParamDefine<T> define(String key, String[] mappingKeys, Function<U, T> transform, Class<U> inputType){
-        return new JobParamDefine<>(key, (paramKey, source) -> {
+        return new JobParamDefine<>(key, null != mappingKeys && mappingKeys.length > 0 ? mappingKeys[0] : null, (paramKey, source) -> {
             if (Objects.nonNull(source)) {
                 if (source instanceof JobParamSet) {
                     for (String mappingKey : mappingKeys) {
@@ -97,7 +105,7 @@ public class JobParams {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T>JobParamDefine<T> define(String key, Supplier<T> operator){
-        return new JobParamDefine<>(key, (paramKey, source) -> {
+        JobParamDefine<T> define =  new JobParamDefine<>(key, (paramKey, source) -> {
             T finalValue = null;
             if (Objects.nonNull(source)) {
                 if (source instanceof JobParamSet) {
@@ -114,6 +122,8 @@ public class JobParams {
             }
             return Objects.nonNull(finalValue) ? finalValue : operator.get();
         });
+        define.setComputed(true);
+        return define;
     }
 
     public static <T>JobParam<T> newOne(String key, T value){

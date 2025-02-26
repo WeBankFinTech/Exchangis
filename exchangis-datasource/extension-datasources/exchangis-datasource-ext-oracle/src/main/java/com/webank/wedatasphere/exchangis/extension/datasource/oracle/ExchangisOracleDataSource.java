@@ -1,12 +1,8 @@
 package com.webank.wedatasphere.exchangis.extension.datasource.oracle;
 
-import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobParamConfig;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.Classifier;
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceType;
+import com.webank.wedatasphere.exchangis.common.enums.ExchangisDataSourceType;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.StructClassifier;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisBatchDataSource;
-
-import java.util.List;
 
 /**
  * @author jefftlin

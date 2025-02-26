@@ -2,12 +2,11 @@ package com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerRetryException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskGenerateException;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGenerator;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.TaskGeneratorContext;
-import com.webank.wedatasphere.exchangis.job.server.execution.generator.AbstractTaskGenerator;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.AbstractExchangisSchedulerTask;
 import org.apache.linkis.scheduler.queue.JobInfo;
 
@@ -27,6 +26,15 @@ public class GenerationSchedulerTask extends AbstractExchangisSchedulerTask {
         super("");
         this.taskGenerator = taskGenerator;
         this.launchableExchangisJob = taskGenerator.init(exchangisJobInfo);
+        this.ctx = taskGenerator.getTaskGeneratorContext();
+        this.scheduleId = this.launchableExchangisJob.getJobExecutionId();
+    }
+
+    public GenerationSchedulerTask(TaskGenerator<LaunchableExchangisJob> taskGenerator,
+                                   LaunchableExchangisJob launchableExchangisJob) throws ExchangisTaskGenerateException {
+        super("");
+        this.taskGenerator = taskGenerator;
+        this.launchableExchangisJob = launchableExchangisJob;
         this.ctx = taskGenerator.getTaskGeneratorContext();
         this.scheduleId = this.launchableExchangisJob.getJobExecutionId();
     }

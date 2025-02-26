@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.engine;
 
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
@@ -117,11 +118,13 @@ public class SqoopExchangisEngineJobBuilder extends AbstractLoggingExchangisJobB
      */
     private static final JobParamDefine<List<MetaColumn>> META_COLUMNS = JobParams.define("sqoop.meta.table.columns", paramSet -> {
         SpringExchangisJobBuilderContext context = getSpringBuilderContext();
+        JobParam<String> dsCreator = paramSet.get(JobParamConstraints.DATA_SOURCE_CREATOR);
         JobParam<String> dataSourceId = paramSet.get(JobParamConstraints.DATA_SOURCE_ID);
         JobParam<String> database = paramSet.get(JobParamConstraints.DATABASE, String.class);
         JobParam<String> table = paramSet.get(JobParamConstraints.TABLE, String.class);
+        String dsOwner = Objects.nonNull(dsCreator) ? dsCreator.getValue() : GlobalConfiguration.getAdminUser();
         try {
-            return getBean(MetadataInfoService.class).getColumns(context.getOriginalJob().getCreateUser(),
+            return getBean(MetadataInfoService.class).getColumns(Optional.ofNullable(dsOwner).orElse(context.getOriginalJob().getCreateUser()),
                             Long.valueOf(dataSourceId.getValue()), database.getValue(), table.getValue());
         } catch (ExchangisDataSourceException e) {
             throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());
@@ -146,13 +149,15 @@ public class SqoopExchangisEngineJobBuilder extends AbstractLoggingExchangisJobB
         // Use the creator as userName
         String userName = jobInfo.getCreateUser();
         JobParamSet hadoopParamSet = MODE_HADOOP_PARAMS.getValue(job);
+        JobParam<String> dsCreator = hadoopParamSet.get(JobParamConstraints.DATA_SOURCE_CREATOR);
         JobParam<String> dataSourceId = hadoopParamSet.get(JobParamConstraints.DATA_SOURCE_ID);
         JobParam<String> database = hadoopParamSet.get(JobParamConstraints.DATABASE, String.class);
         JobParam<String> table = hadoopParamSet.get(JobParamConstraints.TABLE, String.class);
+        String dsOwner = Objects.nonNull(dsCreator) ? dsCreator.getValue() : GlobalConfiguration.getAdminUser();
         Map<String, String> partition = PARTITION_MAP.getValue(job);
         try {
             if (Objects.nonNull(partition)) {
-                Map<String, String> props = getBean(MetadataInfoService.class).getPartitionProps(userName, Long.valueOf(dataSourceId.getValue()),
+                Map<String, String> props = getBean(MetadataInfoService.class).getPartitionProps(Optional.ofNullable(dsOwner).orElse(userName), Long.valueOf(dataSourceId.getValue()),
                         database.getValue(), table.getValue(), URLEncoder.encode(partition.entrySet().stream().map(entry ->
                                 entry.getKey() + "=" + entry.getValue()
                         ).collect(Collectors.joining(",")), "UTF-8"));

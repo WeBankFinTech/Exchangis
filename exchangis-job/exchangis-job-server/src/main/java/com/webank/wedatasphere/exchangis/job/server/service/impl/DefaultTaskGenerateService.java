@@ -1,16 +1,17 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
+import com.webank.wedatasphere.exchangis.common.EnvironmentUtils;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
-import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchableTaskDao;
-import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateErrorEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateInitEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateSuccessEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.NewInTaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCacheUtils;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchableTaskDao;
+import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskGenerateService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,9 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
             task.setJobExecutionId(launchableExchangisJob.getJobExecutionId());
             task.setCreateTime(calendar.getTime());
             task.setLastUpdateTime(task.getCreateTime());
+            task.setInstance(EnvironmentUtils.getServerAddress());
+            task.setDelayTime(calendar.getTime());
+            task.setDelayCount(0);
         });
         this.launchableTaskDao.addLaunchableTask(tasks);
         LaunchedExchangisJobEntity launchedJob = new LaunchedExchangisJobEntity(launchableExchangisJob);
@@ -66,7 +70,11 @@ public class DefaultTaskGenerateService implements TaskGenerateService {
         launchedJob.setLastUpdateTime(calendar.getTime());
         this.launchedJobDao.updateLaunchInfo(launchedJob);
         // Offer to the observer
-        tasks.forEach(task -> this.newInTaskObserver.getCacheQueue().offer(task));
+        tasks.forEach(task -> {
+            // Simplify the task content
+            task.simplify();
+            this.newInTaskObserver.getCacheQueue().offer(task);
+        });
         JobLogCacheUtils.flush(launchableExchangisJob.getJobExecutionId(), false);
     }
 }

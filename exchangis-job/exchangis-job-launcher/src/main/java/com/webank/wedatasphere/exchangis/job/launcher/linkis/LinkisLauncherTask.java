@@ -243,13 +243,19 @@ public class LinkisLauncherTask implements AccessibleLauncherTask {
                     logOperator.setLastRows(query.getLastRows());
                 }
                 EngineConnLogs logs = (EngineConnLogs)logOperator.apply();
-                boolean isEnd = logs.logs().size() <= 0;
-                if (isEnd){
+                int logSize = logs.logs().size();
+                boolean isEnd = logSize < query.getPageSize();
+                if (query.getFromLine() == 0) {
+                    query.setFromLine(1);
+                }
+                int endLine = query.getFromLine() + (query.getPageSize() - 1);
+                if (isEnd) {
                     isEnd = TaskStatus.isCompleted(getStatus());
+                    endLine = query.getFromLine() + logSize;
                 }
                 // Init the error count
                 this.reqError.set(0);
-                return new LogResult(logs.endLine(), isEnd, logs.logs());
+                return new LogResult(endLine, isEnd, logs.logs());
             } catch (Exception e){
                 dealException(e);
             }

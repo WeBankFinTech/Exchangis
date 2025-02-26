@@ -7,32 +7,38 @@ import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
+import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceUIGetter;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.server.vo.JobFunction;
 import com.webank.wedatasphere.exchangis.job.server.service.JobFuncService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
-import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
-import com.webank.wedatasphere.exchangis.job.server.vo.JobFunction;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisBulkJobVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+import com.webank.wedatasphere.exchangis.privilege.entity.ProxyUser;
+import com.webank.wedatasphere.exchangis.privilege.service.ProxyUserService;
+import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.server.Message;
-import org.apache.linkis.server.security.ProxyUserSSOUtils;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import scala.Option;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.VALIDATE_JOB_ERROR;
 
 /**
  * The basic controller of Exchangis job
@@ -52,6 +58,12 @@ public class ExchangisJobRestfulApi {
     @Resource
     private JobFuncService jobFuncService;
 
+    @Resource
+    private DataSourceUIGetter dataSourceUIGetter;
+    
+    @Resource
+    private ProxyUserService proxyUserService;
+
     /**
      * Query job in page
      *
@@ -67,12 +79,15 @@ public class ExchangisJobRestfulApi {
     public Message getJobList(@RequestParam(value = "projectId") Long projectId,
                               @RequestParam(value = "jobType", required = false) String jobType,
                               @RequestParam(value = "name", required = false) String name,
+                              @RequestParam(value = "dataSrcType", required = false) String dataSrcType,
+                              @RequestParam(value = "dataDestType", required = false) String dataDestType,
+                              @RequestParam(value = "sourceSinkId", required = false) String sourceSinkId,
                               @RequestParam(value = "current", required = false) int current,
                               @RequestParam(value = "size", required = false) int size,
                               HttpServletRequest request) {
         String newName = name.replaceAll("_", "/_");
         ExchangisJobQueryVo queryVo = new ExchangisJobQueryVo(
-                projectId, jobType, newName, current, size
+                projectId, jobType, newName, dataSrcType, dataDestType, sourceSinkId, current, size
         );
         String loginUser = UserUtils.getLoginUser(request);
         try {
@@ -96,9 +111,7 @@ public class ExchangisJobRestfulApi {
      */
     @RequestMapping(value = "/engineType", method = RequestMethod.GET)
     public Message getEngineList() {
-        // TODO limit the engine type in exchangis
-//        return Message.ok().data("result", EngineTypeEnum.values());
-        return Message.ok().data("result", new EngineTypeEnum[]{EngineTypeEnum.SQOOP, EngineTypeEnum.DATAX});
+        return Message.ok().data("result", new EngineTypeEnum[]{EngineTypeEnum.DATAX});
     }
 
     /**
@@ -108,17 +121,13 @@ public class ExchangisJobRestfulApi {
      */
     @RequestMapping(value = "/Executor", method = RequestMethod.GET)
     public Message getExecutor(HttpServletRequest request) {
-        Option<String> proxyUserUsername =
-                ProxyUserSSOUtils.getProxyUserUsername(request);
         String loginUser = UserUtils.getLoginUser(request);
-        List<String> executor = new ArrayList<>();
-        if (proxyUserUsername.isDefined()) {
-            executor.add(proxyUserUsername.get());
-        } else {
-            executor.add(loginUser);
+        List<ProxyUser> proxyUsers = proxyUserService.selectByUserName(loginUser);
+        if (Objects.isNull(proxyUsers) || proxyUsers.isEmpty()) {
+            return Message.ok();
         }
-        executor.add("hadoop");
-        return Message.ok().data("result", executor);
+        List<String> proxyUserNames = proxyUsers.stream().map(ProxyUser::getProxyUserName).collect(Collectors.toList());
+        return Message.ok().data("result", proxyUserNames);
     }
 
 
@@ -177,12 +186,12 @@ public class ExchangisJobRestfulApi {
         Message response = Message.ok();
 
         try {
-            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, Long.parseLong(exchangisJobVo.getProjectId()), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to create Job (没有创建任务权限)");
             }
 
             //Check whether the job with the same name exists in current project
-            List<ExchangisJobVo> jobs = jobInfoService.getByNameAndProjectId(exchangisJobVo.getJobName(), exchangisJobVo.getProjectId());
+            List<ExchangisJobVo> jobs = jobInfoService.getByNameAndProjectId(exchangisJobVo.getJobName(), Long.parseLong(exchangisJobVo.getProjectId()));
             if (!Objects.isNull(jobs) && jobs.size() > 0) {
                 return Message.error("A task with the same name exists under the current project (当前项目下存在同名任务)");
             }
@@ -220,7 +229,7 @@ public class ExchangisJobRestfulApi {
         exchangisJobVo.setModifyUser(loginUser);
         Message response = Message.ok();
         try {
-            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, exchangisJobVo.getProjectId(), OperationType.JOB_ALTER)) {
+            if (!JobAuthorityUtils.hasProjectAuthority(loginUser, Long.parseLong(exchangisJobVo.getProjectId()), OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to update (没有作业复制权限)");
             }
             response.data("result", jobInfoService.copyJob(exchangisJobVo));
@@ -315,11 +324,10 @@ public class ExchangisJobRestfulApi {
 
             String loginUser = UserUtils.getLoginUser(request);
 
-            ExchangisJobVo job = jobInfoService.getJob(id, true);
+            ExchangisJobVo job = jobInfoService.getDecoratedJob(request, id);
             if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_QUERY)) {
                 return Message.error("You have no permission to get job (没有获取任务权限)");
             }
-            job = jobInfoService.getDecoratedJob(request, id);
             response.data("result", job);
         } catch (Exception e) {
             String message = "Fail to get job detail (查询任务失败)";
@@ -424,6 +432,46 @@ public class ExchangisJobRestfulApi {
         return response;
     }
 
+    @RequestMapping(value = "/bulk/save", method = RequestMethod.PUT)
+    public Message bulkSave(@RequestBody ExchangisBulkJobVo bulkJobVo, HttpServletRequest request) {
+        if (ExchangisLauncherConfiguration.LIMIT_INTERFACE.getValue()) {
+            return Message.error("You have no permission to save content (没有保存任务权限)");
+        }
+        if (Objects.isNull(bulkJobVo.getIds()) || bulkJobVo.getIds().size() <= 0) {
+            return Message.error("Job is not null (任务不能为空)");
+        }
+        List<Long> ids = bulkJobVo.getIds();
+        String loginUser = UserUtils.getLoginUser(request);
+        String oringinUser = SecurityFilter.getLoginUsername(request);
+        Message response = Message.ok();
+        try {
+            for (Long id : ids) {
+                if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_ALTER)) {
+                    return Message.error("You have no permission to save content (没有保存任务权限)");
+                }
+            }
+            jobInfoService.bulkUpdateJob(loginUser, bulkJobVo);
+        } catch (Exception e) {
+            String message = "Fail to save the job content (保存任务内容失败), cause by : " + e.getMessage();
+            LOG.error(message);
+            if (e instanceof ExchangisJobServerException
+                    || e instanceof ExchangisDataSourceException) {
+                message += " [" + ((ErrorException) e).getDesc() +  "]";
+            }
+            if (e instanceof ExchangisJobServerException &&
+                    ((ExchangisJobServerException) e).getErrCode() == VALIDATE_JOB_ERROR.getCode()){
+                LOG.error(message);
+            } else {
+                LOG.error(message, e);
+            }
+            response = Message.error(message);
+        }
+        for (Long id : ids) {
+            AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB, id.toString(), "Job id is: " + id, OperateTypeEnum.UPDATE, request);
+        }
+        return response;
+    }
+
     @RequestMapping(value = "/{id}/content", method = RequestMethod.PUT)
     public Message saveSubJobs(@PathVariable("id") Long id,
                                @RequestBody ExchangisJobVo jobVo, HttpServletRequest request) {
@@ -439,18 +487,36 @@ public class ExchangisJobRestfulApi {
             if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_ALTER)) {
                 return Message.error("You have no permission to save content (没有保存任务权限)");
             }
-            ExchangisJobVo exchangisJob = jobInfoService.updateJobContent(jobVo);
+            ExchangisJobVo exchangisJob = jobInfoService.updateJobContent(loginUser, jobVo);
             response.data("id", exchangisJob.getId());
         } catch (Exception e) {
             String message = "Fail to save the job content (保存任务内容失败)";
-            if (e.getCause() instanceof ExchangisJobServerException
-                    || e.getCause() instanceof ExchangisDataSourceException) {
-                message += ", reason: " + e.getCause().getMessage();
+            if (e instanceof ExchangisJobServerException
+                    || e instanceof ExchangisDataSourceException) {
+                message += " [" + ((ErrorException) e).getDesc() +  "]";
             }
-            LOG.error(message, e);
+            if (e instanceof ExchangisJobServerException &&
+                    ((ExchangisJobServerException) e).getErrCode() == VALIDATE_JOB_ERROR.getCode()){
+                LOG.error(message);
+            } else {
+                LOG.error(message, e);
+            }
             response = Message.error(message);
         }
         AuditLogUtils.printLog(oringinUser, loginUser, TargetTypeEnum.JOB,id.toString(), "Job id is: " + id.toString(), OperateTypeEnum.UPDATE,request);
         return response;
+    }
+
+    /**
+     * 根据 任务引擎类型 获取该引擎的配置项 UI 数据
+     * @param request
+     * @param engineType
+     * @param labels
+     * @return
+     */
+    @RequestMapping( value = "/engine/{engineType}/settings/ui", method = RequestMethod.GET)
+    public Message getJobEngineSettingsUI(HttpServletRequest request, @PathVariable("engineType")String engineType, @RequestParam(required = false)String labels) {
+        List<ElementUI<?>> jobSettingsUI = this.dataSourceUIGetter.getJobEngineSettingsUI(engineType);
+        return Message.ok().data("ui", jobSettingsUI);
     }
 }

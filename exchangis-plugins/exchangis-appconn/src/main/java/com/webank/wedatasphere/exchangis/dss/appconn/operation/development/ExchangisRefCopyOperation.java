@@ -35,39 +35,34 @@ public class ExchangisRefCopyOperation extends
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public RefJobContentResponseRef copyRef(ThirdlyRequestRef.CopyRequestRefImpl copyRequestRef) throws ExternalOperationFailedException {
         logger.info("User {} try to copy Exchangis job {} with jobContent: {}, refProjectId: {}, projectName: {}, nodeType: {}.",
                 copyRequestRef.getUserName(), copyRequestRef.getName(), copyRequestRef.getRefJobContent(),
                 copyRequestRef.getRefProjectId(), copyRequestRef.getProjectName(), copyRequestRef.getType());
         DSSPostAction postAction = new DSSPostAction();
         postAction.setUser(copyRequestRef.getUserName());
-        postAction.addRequestPayload("projectId", copyRequestRef.getRefJobContent().get("refProjectId"));
+        postAction.addRequestPayload("projectId", copyRequestRef.getRefProjectId());
         postAction.addRequestPayload("partial", true);
         postAction.addRequestPayload("projectVersion", "v1");
         postAction.addRequestPayload("flowVersion", copyRequestRef.getNewVersion());
         String nodeType = copyRequestRef.getType();
         Long id = ((Integer) copyRequestRef.getRefJobContent().get(REF_JOB_ID)).longValue();
-        if(Constraints.NODE_TYPE_SQOOP.equals(nodeType)) {
-            postAction.addRequestPayload("sqoopIds", id);
-        } else if(Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(nodeType)) {
-            postAction.addRequestPayload("dataXIds", id);
-        } else {
-            throw new ExternalOperationFailedException(90177, "Unknown Exchangis jobType " + nodeType);
+        if(!Constraints.NODE_TYPE_SQOOP.equalsIgnoreCase(nodeType) && !Constraints.NODE_TYPE_DATAX.equalsIgnoreCase(nodeType)) {
+            throw new ExternalOperationFailedException(90177, "Unknown Exchangis jobType " + copyRequestRef.getType());
         }
+        // Just set the export job id
+        postAction.addRequestPayload("jobIds",  id);
         InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(copyRequestRef, copyUrl, postAction, ssoRequestOperation);
-        Map<String, Object> sqoops = (Map<String, Object>) responseRef.getData().get("sqoop");
-        //Map<Long, Object> sqoops = (Map<Long, Object>) responseRef.getData().get("sqoop");
-        /*long newId = 0L;
-        newId = ((Double) sqoops.get(id)).longValue();*/
-
+        Map<String, Object> copyRefIds = (Map<String, Object>) responseRef.getData().get("copyRefIds");
         long newId = 0L;
-        for (Map.Entry<String, Object> entry : sqoops.entrySet()) {
-            newId = ((Double) Double.parseDouble(entry.getValue().toString())).longValue();
+        for (Map.Entry<String, Object> entry : copyRefIds.entrySet()) {
+            newId = (long) Double.parseDouble(entry.getValue().toString());
             if (newId != 0) {
                 break;
             }
         }
-        logger.info("New job id is {}", newId);
+        logger.info("Copy new job id in Exchangis: [{}]", newId);
         return RefJobContentResponseRef.newBuilder().setRefJobContent(MapUtils.newCommonMap(REF_JOB_ID, newId)).success();
     }
 
