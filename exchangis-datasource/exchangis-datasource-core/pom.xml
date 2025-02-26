@@ -30,25 +30,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.linkis</groupId>
-            <artifactId>linkis-datasource-client</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.linkis</groupId>
-                    <artifactId>linkis-metadata</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.linkis</groupId>
-                    <artifactId>linkis-publicservice</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.linkis</groupId>
-                    <artifactId>linkis-bml</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.linkis</groupId>
-            <artifactId>linkis-metadata-query-common</artifactId>
+            <artifactId>linkis-pes-client</artifactId>
         </dependency>
     </dependencies>
 

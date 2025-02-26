@@ -31,8 +31,8 @@
         <!--bml-client-->
         <dependency>
             <groupId>org.apache.linkis</groupId>
-            <artifactId>linkis-bml-client</artifactId>
-            <version>${linkis.datasource.version}</version>
+            <artifactId>linkis-pes-client</artifactId>
+            <version>${linkis.version}</version>
         </dependency>
     </dependencies>
 </project>
