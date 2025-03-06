@@ -20,8 +20,6 @@ import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisBulkJobVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
-import com.webank.wedatasphere.exchangis.privilege.entity.ProxyUser;
-import com.webank.wedatasphere.exchangis.privilege.service.ProxyUserService;
 import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
@@ -34,9 +32,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.VALIDATE_JOB_ERROR;
 
@@ -60,9 +59,6 @@ public class ExchangisJobRestfulApi {
 
     @Resource
     private DataSourceUIGetter dataSourceUIGetter;
-    
-    @Resource
-    private ProxyUserService proxyUserService;
 
     /**
      * Query job in page
@@ -122,12 +118,7 @@ public class ExchangisJobRestfulApi {
     @RequestMapping(value = "/Executor", method = RequestMethod.GET)
     public Message getExecutor(HttpServletRequest request) {
         String loginUser = UserUtils.getLoginUser(request);
-        List<ProxyUser> proxyUsers = proxyUserService.selectByUserName(loginUser);
-        if (Objects.isNull(proxyUsers) || proxyUsers.isEmpty()) {
-            return Message.ok();
-        }
-        List<String> proxyUserNames = proxyUsers.stream().map(ProxyUser::getProxyUserName).collect(Collectors.toList());
-        return Message.ok().data("result", proxyUserNames);
+        return Message.ok().data("result", new ArrayList<>(Collections.singleton(loginUser)));
     }
 
 
