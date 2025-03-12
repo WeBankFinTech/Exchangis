@@ -60,37 +60,41 @@ public class LocalExchangisDataSourceLoader implements ExchangisDataSourceDefLoa
         String libPathUrl = loadClassPath + ".." + File.separator + EXCHANGIS_DIR_NAME;
         LOGGER.info("libPath url is {}",  libPathUrl);
         List<URL> jars = ExtDsUtils.getJarsUrlsOfPath(libPathUrl);
-//        List<URL> jars = ExtDsUtils.getJarsUrlsOfPath(EXCHANGIS_DIR_NAME);
         ClassLoader classLoader = new ExchangisDataSourceClassLoader(jars.toArray(new URL[1]), currentClassLoader);
-
-        List<String> classNames = ExtDsUtils.getExchangisExtDataSourceClassNames(libPathUrl, classLoader);
-        for (String clazzName: classNames) {
-            Class<?> clazz = null;
-            try {
-                clazz = classLoader.loadClass(clazzName);
-            } catch (ClassNotFoundException e) {
-                Thread.currentThread().setContextClassLoader(currentClassLoader);
-                ExceptionHelper.dealErrorException(70062, clazzName + " class not found ", e, ErrorException.class);
-            }
-
-            if (clazz == null) {
-                Thread.currentThread().setContextClassLoader(currentClassLoader);
-            } else {
-                ExchangisDataSourceDefinition dsType = (ExchangisDataSourceDefinition) clazz.newInstance();
-                dsType.setMapperHook(mapperHook);
-                Thread.currentThread().setContextClassLoader(currentClassLoader);
-                String splitStrategyName = dsType.splitStrategyName();
-                if (StringUtils.isBlank(splitStrategyName)){
-                    DataSourceSplitStrategy splitStrategy = dsType.splitStrategy();
-                    if (Objects.nonNull(splitStrategy) && this.splitStrategyFactory instanceof DataSourceSplitStrategyRegisterFactory){
-                        ((DataSourceSplitStrategyRegisterFactory) this.splitStrategyFactory).register(splitStrategy);
-                        splitStrategyName = splitStrategy.name();
-                    }
+        LOGGER.info("classLoader url is {}",  classLoader.getClass());
+        try {
+            List<String> classNames = ExtDsUtils.getExchangisExtDataSourceClassNames(libPathUrl, classLoader);
+            for (String clazzName: classNames) {
+                Class<?> clazz = null;
+                try {
+                    clazz = classLoader.loadClass(clazzName);
+                } catch (ClassNotFoundException e) {
+                    Thread.currentThread().setContextClassLoader(currentClassLoader);
+                    ExceptionHelper.dealErrorException(70062, clazzName + " class not found ", e, ErrorException.class);
                 }
-                LOGGER.info("ExchangisDataSource => [class: {}, name: {}, type_id: {}, split_strategy: {}]",
-                        dsType.getClass().toString(), dsType.name(), dsType.id(), StringUtils.isNoneBlank(splitStrategyName)? splitStrategyName : "NONE");
-                context.addExchangisDsDefinition(dsType);
+                if (clazz == null) {
+                    LOGGER.warn("Init class is null!");
+                    Thread.currentThread().setContextClassLoader(currentClassLoader);
+                } else {
+                    ExchangisDataSourceDefinition dsType = (ExchangisDataSourceDefinition) clazz.newInstance();
+                    dsType.setMapperHook(mapperHook);
+                    Thread.currentThread().setContextClassLoader(currentClassLoader);
+                    String splitStrategyName = dsType.splitStrategyName();
+                    if (StringUtils.isBlank(splitStrategyName)){
+                        DataSourceSplitStrategy splitStrategy = dsType.splitStrategy();
+                        if (Objects.nonNull(splitStrategy) && this.splitStrategyFactory instanceof DataSourceSplitStrategyRegisterFactory){
+                            ((DataSourceSplitStrategyRegisterFactory) this.splitStrategyFactory).register(splitStrategy);
+                            splitStrategyName = splitStrategy.name();
+                        }
+                    }
+                    LOGGER.info("ExchangisDataSource => [class: {}, name: {}, type_id: {}, split_strategy: {}]",
+                            dsType.getClass().toString(), dsType.name(), dsType.id(), StringUtils.isNoneBlank(splitStrategyName)? splitStrategyName : "NONE");
+                    context.addExchangisDsDefinition(dsType);
+                }
             }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            Thread.sleep(10000);
         }
 
     }

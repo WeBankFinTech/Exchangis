@@ -8,11 +8,15 @@ import com.webank.wedatasphere.exchangis.common.enums.ExchangisDataSourceType;
 import com.webank.wedatasphere.exchangis.datasource.core.splitter.DataSourceSplitStrategy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.datasourcemanager.common.domain.DataSourceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
 
 public abstract class AbstractExchangisDataSourceDefinition implements ExchangisDataSourceDefinition {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExchangisDataSourceDefinition.class);
 
     /**
      * Mapper hook from common module?
@@ -51,13 +55,18 @@ public abstract class AbstractExchangisDataSourceDefinition implements Exchangis
 
     @Override
     public String id() {
-        if (null == id || id.equalsIgnoreCase("")) {
-            List<DataSourceType> types = getDataSourceTypes("hdfs");
-            for (DataSourceType type : types) {
-                if (type.getName().equalsIgnoreCase(name())) {
-                    this.id = type.getId();
+        try {
+            if (null == id || id.equalsIgnoreCase("")) {
+                List<DataSourceType> types = getDataSourceTypes("hdfs");
+                for (DataSourceType type : types) {
+                    if (type.getName().equalsIgnoreCase(name())) {
+                        this.id = type.getId();
+                    }
                 }
             }
+        } catch (Exception e) {
+            LOGGER.error("Unable to fetch datasource id, please check the linkis server");
+            throw e;
         }
         return this.id;
     }
