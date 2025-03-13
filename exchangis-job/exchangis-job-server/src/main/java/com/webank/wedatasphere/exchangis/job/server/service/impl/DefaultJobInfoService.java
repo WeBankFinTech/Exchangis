@@ -6,19 +6,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.viewer.ExchangisDataSourceUIViewer;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobInfoContent;
-import com.webank.wedatasphere.exchangis.datasource.service.ExchangisDataSourceService;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceUIGetter;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSourcesContent;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobParamsContent;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
+import com.webank.wedatasphere.exchangis.job.server.validator.JobValidateResult;
+import com.webank.wedatasphere.exchangis.job.server.validator.JobValidator;
+import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisBulkJobVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
+import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.utils.JsonUtils;
 import org.apache.linkis.manager.label.utils.LabelUtils;
@@ -33,6 +45,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.VALIDATE_JOB_ERROR;
+
 /**
  * Default implement
  */
@@ -44,21 +58,31 @@ public class DefaultJobInfoService implements JobInfoService {
     @Autowired
     private ExchangisJobDsBindServiceImpl exchangisJobDsBindService;
 
-    @Autowired
-    private ExchangisDataSourceService exchangisDataSourceService;
+    @Resource
+    private DataSourceService dataSourceService;
 
     @Resource
     private ExchangisJobEntityDao jobEntityDao;
 
     @Resource
-    private JobInfoService jobInfoService;
+    private DataSourceUIGetter uiGetter;
+
+    /**
+     * Project open service
+     */
+    @Resource
+    private ProjectOpenService projectOpenService;
+    /**
+     * Validators
+     */
+    @Resource
+    private List<JobValidator<?>> validators = new ArrayList<>();
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ExchangisJobVo createJob(ExchangisJobVo jobVo) {
-        LOG.info("Sqoop job labels is: {}", jobVo.getJobLabels());
         ExchangisJobEntity jobEntity = new ExchangisJobEntity();
-        jobEntity.setProjectId(jobVo.getProjectId());
+        jobEntity.setProjectId(Long.parseLong(jobVo.getProjectId()));
         jobEntity.setJobType(jobVo.getJobType());
         jobEntity.setEngineType(jobVo.getEngineType());
         jobEntity.setJobLabel(jobVo.getJobLabels());
@@ -72,16 +96,14 @@ public class DefaultJobInfoService implements JobInfoService {
         jobEntity.setSource(Json.toJson(jobVo.getSource(), null));
         //jobEntity.setJobContent(jobVo.getContent());
         jobEntity.setModifyUser(jobVo.getModifyUser());
-        LOG.info("Sqoop job Entity labels is: {}", jobEntity.getJobLabel());
         //Map<String, Object> contentVo = BDPJettyServerHelper.gson().fromJson(jobVo.getContent(), Map.class);
-        LOG.info("Sqoop job content is: {}, Modify user is: {}, jobType is: {}", jobVo.getContent(), jobEntity.getExecuteUser(), jobEntity.getJobType());
-        if(jobVo.getContent() != null) {
-            jobEntity.setJobContent(jobVo.getContent());
-            LOG.info("Sqoop job content is: {}, executor: {}", jobEntity.getJobContent(), jobEntity.getExecuteUser());
+        if(jobVo.getJobContent() != null) {
+            jobEntity.setJobContent(jobVo.getJobContent());
         }
         jobEntityDao.addJobEntity(jobEntity);
         jobVo.setId(jobEntity.getId());
         jobVo.setCreateTime(jobEntity.getCreateTime());
+        LOG.info("Success to create job: {}", jobEntity.toString());
         return jobVo;
     }
 
@@ -105,14 +127,34 @@ public class DefaultJobInfoService implements JobInfoService {
     @Override
     public PageResult<ExchangisJobVo> queryJobList(ExchangisJobQueryVo queryVo){
         PageHelper.startPage(queryVo.getPage(), queryVo.getPageSize());
-        try{
+        try {
             List<ExchangisJobEntity> jobEntities = this.jobEntityDao.queryPageList(queryVo);
-            PageInfo<ExchangisJobEntity> pageInfo = new PageInfo<>(jobEntities);
-            List<ExchangisJobVo> infoList = jobEntities
-                    .stream().map(ExchangisJobVo::new).collect(Collectors.toList());
+            PageInfo<ExchangisJobEntity> pageInfo = new PageInfo<>();
+            String dataSrcType = queryVo.getDataSrcType();
+            String dataDestType = queryVo.getDataDestType();
+            String sourceSinkId = queryVo.getSourceSinkId();
+            Long total = null;
+            if (StringUtils.isBlank(dataSrcType) && StringUtils.isBlank(dataDestType) &&
+                    StringUtils.isBlank(sourceSinkId)) {
+                pageInfo.setList(jobEntities);
+                total = new PageInfo<>(jobEntities).getTotal();
+            } else {
+                List<ExchangisJobEntity> jobs = new ArrayList<>();
+                jobEntities.stream().filter(jobEntity -> {
+                    List<ExchangisJobInfoContent> jobInfoContents = JobUtils.parseJobContent(jobEntity.getJobContent());
+                    for (ExchangisJobInfoContent jobInfoContent : jobInfoContents) {
+                        if (jobInfoContent.getDataSources().matchIdentify(dataSrcType, dataDestType, sourceSinkId)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }).forEach(jobs::add);
+                pageInfo.setList(jobs);
+                total = new PageInfo<>(jobs).getTotal();
+            }
             PageResult<ExchangisJobVo> pageResult = new PageResult<>();
-            pageResult.setList(infoList);
-            pageResult.setTotal(pageInfo.getTotal());
+            pageResult.setList(pageInfo.getList().stream().map(ExchangisJobVo::new).collect(Collectors.toList()));
+            pageResult.setTotal(total);
             return pageResult;
         }finally {
             PageHelper.clearPage();
@@ -133,9 +175,9 @@ public class DefaultJobInfoService implements JobInfoService {
             return null;
         }
         ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
-        jobVo.setProjectId(exchangisJob.getProjectId());
+        jobVo.setProjectId(String.valueOf(exchangisJob.getProjectId()));
         if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
-            jobVo.setContent(exchangisJob.getJobContent());
+            jobVo.setJobContent(exchangisJob.getJobContent());
             jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
                     Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
         }
@@ -149,7 +191,7 @@ public class DefaultJobInfoService implements JobInfoService {
         for(ExchangisJobEntity exchangisJob : exchangisJobs){
             ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
             if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
-                jobVo.setContent(exchangisJob.getJobContent());
+                jobVo.setJobContent(exchangisJob.getJobContent());
                 jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
                         Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
             }
@@ -166,7 +208,7 @@ public class DefaultJobInfoService implements JobInfoService {
         for(ExchangisJobEntity exchangisJob : exchangisJobs){
             ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
             if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
-                jobVo.setContent(exchangisJob.getJobContent());
+                jobVo.setJobContent(exchangisJob.getJobContent());
                 jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
                         Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
             }
@@ -182,14 +224,14 @@ public class DefaultJobInfoService implements JobInfoService {
         ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
         if (exchangisJob != null && StringUtils.isNotBlank(exchangisJob.getJobContent())) {
             // Rebuild the job content with ui configuration
-            List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(request, id);
+            List<ExchangisDataSourceUIViewer> jobDataSourceUIs = this.uiGetter.getJobDataSourceUIs(request, id);
             ObjectMapper objectMapper = JsonUtils.jackson();
             try {
                 String content = objectMapper.writeValueAsString(jobDataSourceUIs);
                 JsonNode contentJsonNode = objectMapper.readTree(content);
                 ObjectNode objectNode = objectMapper.createObjectNode();
                 objectNode.set("subJobs", contentJsonNode);
-                jobVo.setContent(objectNode.toString());
+                jobVo.setJobContent(objectNode.toString());
                 jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
                         Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
             } catch (JsonProcessingException e) {
@@ -208,14 +250,14 @@ public class DefaultJobInfoService implements JobInfoService {
             for(ExchangisJobEntity exchangisJob : exchangisJobList){
                 ExchangisJobVo jobVo = new ExchangisJobVo(exchangisJob);
                 if(StringUtils.isNotBlank(exchangisJob.getJobContent())){
-                    List<ExchangisDataSourceUIViewer> jobDataSourceUIs = exchangisDataSourceService.getJobDataSourceUIs(request, exchangisJob.getId());
+                    List<ExchangisDataSourceUIViewer> jobDataSourceUIs = this.uiGetter.getJobDataSourceUIs(request, exchangisJob.getId());
                     ObjectMapper objectMapper = JsonUtils.jackson();
                     try {
                         String content = objectMapper.writeValueAsString(jobDataSourceUIs);
                         JsonNode contentJsonNode = objectMapper.readTree(content);
                         ObjectNode objectNode = objectMapper.createObjectNode();
                         objectNode.set("subJobs", contentJsonNode);
-                        jobVo.setContent(objectNode.toString());
+                        jobVo.setJobContent(objectNode.toString());
                         jobVo.setSource(Objects.nonNull(exchangisJob.getSource())?
                                 Json.fromJson(exchangisJob.getSource(), Map.class, String.class, Object.class) : new HashMap<>());
                     } catch (JsonProcessingException e) {
@@ -249,11 +291,33 @@ public class DefaultJobInfoService implements JobInfoService {
     }
 
     @Override
+    public void bulkUpdateJob(String requestUser, ExchangisBulkJobVo bulkJobVo) throws ExchangisJobServerException {
+        Map<String, String> configMap = bulkJobVo.getConfigMap();
+        List<ExchangisJobEntity> jobs = jobEntityDao.getJobsByIds(bulkJobVo.getIds());
+        for (ExchangisJobEntity job : jobs) {
+            List<ExchangisJobInfoContent> jobInfoContents = JobUtils.parseJobContent(job.getJobContent());
+            for (ExchangisJobInfoContent content : jobInfoContents) {
+                List<ExchangisJobParamsContent.ExchangisJobParamsItem> settings = content.getSettings();
+                for (ExchangisJobParamsContent.ExchangisJobParamsItem item : settings) {
+                    if (!Objects.isNull(configMap.get(item.getConfigKey()))) {
+                        item.setConfigValue(configMap.get(item.getConfigKey()));
+                    }
+                }
+            }
+            String newContent = Json.toJson(jobInfoContents, null);
+            job.setJobContent(newContent);
+            job.setModifyUser(requestUser);
+            job.setLastUpdateTime(Calendar.getInstance().getTime());
+        }
+        this.jobEntityDao.batchUpgradeContent(jobs);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
-    public ExchangisJobVo updateJobContent(ExchangisJobVo jobVo) throws ExchangisJobServerException, ExchangisDataSourceException {
+    public ExchangisJobVo updateJobContent(String requestUser, ExchangisJobVo jobVo) throws ExchangisJobServerException, ExchangisDataSourceException {
         Long jobId = jobVo.getId();
         ExchangisJobEntity exchangisJob = this.jobEntityDao.getDetail(jobId);
-        exchangisJob.setJobContent(jobVo.getContent());
+        exchangisJob.setJobContent(jobVo.getJobContent());
         final String engine = exchangisJob.getEngineType();
         // 校验是否有重复子任务名
         List<ExchangisJobInfoContent> content = LabelUtils.Jackson.fromJson(exchangisJob.getJobContent(),
@@ -266,28 +330,76 @@ public class DefaultJobInfoService implements JobInfoService {
         // 校验引擎是否支持该数据通道
         for (int i = 0; i < content.size(); i++) {
             ExchangisJobInfoContent task = content.get(i);
-            String sourceType = task.getDataSources().getSourceId().split("\\.")[0];
-            String sinkType = task.getDataSources().getSinkId().split("\\.")[0];
-            this.exchangisDataSourceService.checkDSSupportDegree(engine, sourceType, sinkType);
+            String sourceType = task.getDataSources().getSource().getType();
+            String sinkType = task.getDataSources().getSink().getType();
+            this.dataSourceService.supportDataSource(engine, sourceType, sinkType);
             ExchangisJobDsBind dsBind = new ExchangisJobDsBind();
             dsBind.setJobId(jobVo.getId());
             dsBind.setTaskIndex(i);
-            dsBind.setSourceDsId(Long.parseLong(task.getDataSources().getSourceId().split("\\.")[1]));
-            dsBind.setSinkDsId(Long.parseLong(task.getDataSources().getSinkId().split("\\.")[1]));
+            dsBind.setSourceDsId(task.getDataSources().getSource().getId());
+            dsBind.setSinkDsId(task.getDataSources().getSink().getId());
             dsBinds.add(dsBind);
+        }
+        for(JobValidator<?> validator : this.validators){
+            JobValidateResult<?> result = validator.doValidate(jobVo.getJobName(), content, null);
+            if (GlobalConfiguration.isAdminUser(requestUser)){
+                continue;
+            }
+            if (Objects.nonNull(result) && !result.isResult()){
+                //Just throw exception
+                throw new ExchangisJobServerException(VALIDATE_JOB_ERROR.getCode(), result.getMessage());
+            }
         }
         exchangisJob.setModifyUser(jobVo.getModifyUser());
         exchangisJob.setLastUpdateTime(jobVo.getModifyTime());
         this.exchangisJobDsBindService.updateJobDsBind(jobId, dsBinds);
         this.jobEntityDao.upgradeContent(exchangisJob);
+        relateProjectDsFromJob(exchangisJob, content);
         return jobVo;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ExchangisJobVo copyJob(ExchangisJobVo jobVo) {
-        ExchangisJobVo job = jobInfoService.getJob(jobVo.getId(), false);
-        ExchangisJobVo newJob = jobInfoService.createJob(job);
+        ExchangisJobVo job = this.getJob(jobVo.getId(), false);
+        ExchangisJobVo newJob = this.createJob(job);
         return newJob;
+    }
+
+    /**
+     * Relate project and data source from job content
+     * @param exchangisJob job info
+     * @param contents job content list
+     */
+    private void relateProjectDsFromJob(ExchangisJobEntity exchangisJob, List<ExchangisJobInfoContent> contents){
+        Long projectId = exchangisJob.getProjectId();
+        if (Objects.nonNull(projectId)){
+            ExchangisProjectInfo project =  this.projectOpenService.getProject(projectId);
+            if (Objects.nonNull(project) && ! ExchangisProject.Domain.DSS.toString().equals(project.getDomain())){
+                Map<String, ExchangisProjectDsRelation> relations = new HashMap<>();
+                Calendar cal = Calendar.getInstance();
+                for (ExchangisJobInfoContent content :  contents){
+                    ExchangisJobDataSourcesContent.ExchangisJobDataSource[]
+                            dataSources = new ExchangisJobDataSourcesContent.ExchangisJobDataSource[]{
+                                    content.getDataSources().getSource(), content.getDataSources().getSink()};
+                    for (ExchangisJobDataSourcesContent.ExchangisJobDataSource jobDataSource : dataSources){
+                        if (StringUtils.isNotBlank(jobDataSource.getName())) {
+                            ExchangisProjectDsRelation relation =
+                                    new ExchangisProjectDsRelation();
+                            relation.setDsName(jobDataSource.getName());
+                            relation.setDsId(jobDataSource.getId());
+                            relation.setDsType(jobDataSource.getType());
+                            relation.setDsCreator(jobDataSource.getCreator());
+                            relation.setLastUpdateTime(cal.getTime());
+                            relation.setProjectId(projectId);
+                            relations.put(jobDataSource.getName(), relation);
+                        }
+                    }
+                }
+                if (!relations.isEmpty()) {
+                    this.projectOpenService.addDsRelations(new ArrayList<>(relations.values()));
+                }
+            }
+        }
     }
 }

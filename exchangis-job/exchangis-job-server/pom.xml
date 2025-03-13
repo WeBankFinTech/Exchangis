@@ -38,6 +38,11 @@
             <artifactId>exchangis-engine-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-privilege-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- scheduler module -->
         <dependency>
             <groupId>org.apache.linkis</groupId>

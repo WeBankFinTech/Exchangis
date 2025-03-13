@@ -4,9 +4,11 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParam;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -15,6 +17,20 @@ import java.util.stream.Collectors;
  */
 public class SubExchangisJob extends GenericExchangisJob {
 
+    /**
+     * Split parts for source direction of job
+     */
+    protected List<Map<String, Object>> sourceSplits = new ArrayList<>();
+
+    /**
+     * Sink parts for source direction of job
+     */
+    protected List<Map<String, Object>> sinkSplits = new ArrayList<>();
+
+    /**
+     * JobParams
+     */
+    protected final Map<String, Object> jobParams = new HashMap<>();
 
     protected String sourceType;
 
@@ -95,6 +111,12 @@ public class SubExchangisJob extends GenericExchangisJob {
                 Collectors.toMap(JobParam::getStrKey, JobParam::getValue));
     }
 
+    public void copyParamSet(BiConsumer<String, JobParamSet> consumer){
+        this.realmParamSet.forEach((realm, paramSet) -> {
+            JobParamSet newSet = new JobParamSet(paramSet.toList(false));
+            consumer.accept(realm, newSet);
+        });
+    }
     /**
      * Get all and convert to map
      * @return map
@@ -121,6 +143,35 @@ public class SubExchangisJob extends GenericExchangisJob {
         return columnFunctions;
     }
 
+    public List<Map<String, Object>> getSourceSplits() {
+        return sourceSplits;
+    }
+
+    public void setSourceSplits(List<Map<String, Object>> sourceSplits) {
+        this.sourceSplits = sourceSplits;
+    }
+
+    public List<Map<String, Object>> getSinkSplits() {
+        return sinkSplits;
+    }
+
+    public void setSinkSplits(List<Map<String, Object>> sinkSplits) {
+        this.sinkSplits = sinkSplits;
+    }
+
+    public Map<String, Object> getJobParams() {
+        return jobParams;
+    }
+
+
+    /**
+     * Copy sub exchangis job
+     * @return job
+     */
+    public SubExchangisJob copy(){
+        // Empty
+        return null;
+    }
     /**
      * Column definition
      */

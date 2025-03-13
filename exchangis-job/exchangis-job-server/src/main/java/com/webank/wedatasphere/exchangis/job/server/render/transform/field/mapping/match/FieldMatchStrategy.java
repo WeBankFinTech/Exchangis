@@ -1,7 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match;
 
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.FieldColumn;
-import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.FieldMappingColumn;
 
 import java.util.List;
 

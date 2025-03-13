@@ -25,6 +25,13 @@
         where project_id = #{projectId}
     </delete>
 
+    <select id="queryProjectUsers" resultMap ="projectUserResult">
+        select
+        <include refid="BaseColumnList"/>
+        from
+        <include refid="TableName" />
+    </select>
+
     <select id="queryProjectUser" resultMap ="projectUserResult">
         select
         <include refid="BaseColumnList"/>
@@ -56,5 +63,12 @@
             priv = #{projectUser.priv},
             last_update_time = #{projectUser.updateTime}
         </foreach>
+    </update>
+
+    <update id="batchUpdate">
+        UPDATE <include refid="TableName"/>
+        SET
+        priv_user=#{handover}
+        WHERE priv_user=#{userName};
     </update>
 </mapper>

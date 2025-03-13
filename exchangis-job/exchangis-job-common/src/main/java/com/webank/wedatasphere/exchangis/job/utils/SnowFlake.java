@@ -1,7 +1,11 @@
 package com.webank.wedatasphere.exchangis.job.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.Inet4Address;
+import java.security.SecureRandom;
 
 /**
  * snowflake
@@ -51,6 +55,44 @@ public class SnowFlake {
 
     public static long generateId(long timestamp, long startTime){
         return ((timestamp - startTime) << timestampLeftShift) | (maxDataCenterId << dataCenterIdShift) | (maxWorkerId << workerIdShift);
+    }
+
+    /**
+     * Generate center id
+     * @return center id
+     */
+    public static long generateCenterId(){
+        try {
+            String hostName = Inet4Address.getLocalHost().getHostName();
+            int[] ints = StringUtils.toCodePoints(hostName);
+            int sums = 0;
+            for (int i: ints) {
+                sums = sums + i;
+            }
+            return sums % 32;
+        }
+        catch (Exception e) {
+            return new SecureRandom().nextInt(32);
+        }
+    }
+
+    /**
+     * Generate worker id
+     * @return id
+     */
+    public static long generateWorkerId(){
+        try {
+            String hostName = Inet4Address.getLocalHost().getHostAddress();
+            int[] ints = StringUtils.toCodePoints(hostName);
+            int sums = 0;
+            for (int i: ints) {
+                sums = sums + i;
+            }
+            return sums % 32;
+        }
+        catch (Exception e) {
+            return new SecureRandom().nextInt(32);
+        }
     }
     /**
      * Application lock

@@ -1,7 +1,6 @@
 <template>
   <div class="table-warp" style="padding-bottom: 32px;">
     <form-create v-model:api="fApi" v-model="formData" :rule="rule" :option="options" />
-    <div v-if="isShowWarnTips" class="table-bottom-warn-tips">账户私钥不保存，测试或保存前请重新输入私钥！</div>
     <a-button v-if="data.mode !== 'read'" type="primary" @click="handleTestConnect(row)">
       {{$t("dataSource.table.list.columns.actions.testConnectButton")}}
     </a-button>
@@ -58,11 +57,6 @@ const typesMap = {
   defaultValue: 'value',
   // dataSource: 'options',
   dataSource: (data, source, self) => {
-    try {
-      return { options: JSON.parse(data.dataSource) };
-    } catch (error) {
-      console.log('继续判断是否需要加载接口')
-    }
     const fApi = self.fApi;
     if (typeof data.dataSource === 'string') {
       if (!/^https?:/.test(data.dataSource)) {
@@ -87,7 +81,10 @@ const typesMap = {
         fApi.refreshOptions();
       });
       return { options: [] };
-    } else {
+    }
+    try {
+      return { options: JSON.parse(data.dataSource) };
+    } catch (error) {
       return { options: [] };
     }
   },
@@ -238,11 +235,6 @@ export default {
       },
       deep: true,
     },
-  },
-  computed: {
-    isShowWarnTips() {
-      return this.data.id && this.formData.createSystem === 'TDSQL' && this.formData.authType === 'dpm';
-    }
   },
   created() {
     this.loading = true;
@@ -489,12 +481,6 @@ export default {
         width: 340px;
       }
     }
-  }
-  .table-bottom-warn-tips {
-    color: #faad14;
-    padding-left: 110px;
-    margin-top: -16px;
-    margin-bottom: 10px;
   }
 }
 </style>

@@ -1,7 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.launcher.domain;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.job.constraints.LabelSerializeConstraints;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
 import com.webank.wedatasphere.exchangis.job.utils.LabelConvertUtils;
 
@@ -30,6 +29,8 @@ public class LaunchableExchangisTask implements ExchangisTask {
 
     private String jobExecutionId;
 
+    private List<Long> dsModelIds = new ArrayList<>();
+
     /**
      * Job content in Linkis
      */
@@ -46,17 +47,54 @@ public class LaunchableExchangisTask implements ExchangisTask {
     private String linkisSource;
 
     /**
+     * Rate params
+     */
+    private String rateParams;
+
+    private String sourceType;
+
+    private String sinkType;
+
+    private String sourceId;
+
+    private String sinkId;
+
+    private String content;
+
+    /**
      * Labels string value
      */
     private String labels;
+
+    /**
+     * Instance name
+     */
+    private String instance;
+
+    /**
+     * Launch delay time
+     */
+    private Date delayTime;
+
+    /**
+     * Launch delay count
+     */
+    private Integer delayCount = 0;
 
     private Map<String, Object> linkisContentMap;
 
     private Map<String, Object> linkisParamsMap;
 
+    private Map<String, Object> rateParamsMap;
+
     private Map<String, Object> linkisSourceMap;
 
     private Map<String, Object> labelsMap;
+
+    /**
+     * Commit version
+     */
+    private Integer commitVersion;
 
     @Override
     public String getEngineType() {
@@ -76,6 +114,16 @@ public class LaunchableExchangisTask implements ExchangisTask {
     @Override
     public void setExecuteUser(String executeUser) {
         this.executeUser = executeUser;
+    }
+
+    @Override
+    public String getInstance() {
+        return this.instance;
+    }
+
+    @Override
+    public void setInstance(String instance) {
+        this.instance = instance;
     }
 
     @Override
@@ -134,12 +182,28 @@ public class LaunchableExchangisTask implements ExchangisTask {
         this.jobExecutionId = jobExecutionId;
     }
 
+    public List<Long> getDsModelIds() {
+        return dsModelIds;
+    }
+
+    public void setDsModelIds(List<Long> dsModelIds) {
+        this.dsModelIds = dsModelIds;
+    }
+
     public void setLinkisContentMap(Map<String, Object> linkisContentMap) {
         Optional.ofNullable(linkisContentMap).ifPresent(value -> this.linkisContentMap = value);
     }
 
     public void setLinkisParamsMap(Map<String, Object> linkisParamsMap) {
         Optional.ofNullable(linkisParamsMap).ifPresent(value -> this.linkisParamsMap = value);
+    }
+
+    public Map<String, Object> getRateParamsMap() {
+        return rateParamsMap;
+    }
+
+    public void setRateParamsMap(Map<String, Object> rateParamsMap) {
+        this.rateParamsMap = rateParamsMap;
     }
 
     public void setLinkisSourceMap(Map<String, Object> linkisSourceMap) {
@@ -219,6 +283,54 @@ public class LaunchableExchangisTask implements ExchangisTask {
         this.linkisSource = linkisSource;
     }
 
+    public String getRateParams() {
+        return rateParams;
+    }
+
+    public void setRateParams(String rateParams) {
+        this.rateParams = rateParams;
+    }
+
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
+    }
+
+    public String getSinkType() {
+        return sinkType;
+    }
+
+    public void setSinkType(String sinkType) {
+        this.sinkType = sinkType;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getSinkId() {
+        return sinkId;
+    }
+
+    public void setSinkId(String sinkId) {
+        this.sinkId = sinkId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public String getLabels() {
         if (Objects.isNull(this.linkisParams) && Objects.nonNull(this.linkisParamsMap)){
             this.linkisParams = Json.toJson(this.linkisParamsMap, null);
@@ -228,6 +340,42 @@ public class LaunchableExchangisTask implements ExchangisTask {
 
     public void setLabels(String labels) {
         this.labels = labels;
+    }
+
+    public Date getDelayTime() {
+        return delayTime;
+    }
+
+    public void setDelayTime(Date delayTime) {
+        this.delayTime = delayTime;
+    }
+
+    public Integer getDelayCount() {
+        return delayCount;
+    }
+
+    public void setDelayCount(Integer delayCount) {
+        this.delayCount = delayCount;
+    }
+
+    public Integer getCommitVersion() {
+        return commitVersion;
+    }
+
+    public void setCommitVersion(Integer commitVersion) {
+        this.commitVersion = commitVersion;
+    }
+
+    /**
+     * Clear the content
+     */
+    public void simplify(){
+        this.linkisParams = null;
+        this.linkisParamsMap = null;
+        this.linkisJobContent = null;
+        this.linkisContentMap = null;
+        this.linkisSource = null;
+        this.linkisSourceMap = null;//todo
     }
 
 }

@@ -4,13 +4,14 @@ import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.domain.OperationType;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisLauncherConfiguration;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.server.service.impl.DefaultJobExecuteService;
 import com.webank.wedatasphere.exchangis.job.server.utils.JobAuthorityUtils;
@@ -20,6 +21,7 @@ import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisJobTaskVo;
 import com.webank.wedatasphere.exchangis.job.server.vo.ExchangisLaunchedJobListVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import org.apache.commons.lang.StringUtils;
+import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
 import org.slf4j.Logger;
@@ -30,6 +32,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+
+import static com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.VALIDATE_JOB_ERROR;
 
 /**
  *
@@ -70,21 +74,25 @@ public class ExchangisJobExecuteRestfulApi {
             if (!JobAuthorityUtils.hasJobAuthority(loginUser, id, OperationType.JOB_EXECUTE)){
                 return Message.error("You have no permission to execute job (没有执行任务权限)");
             }
-
             // Send to execute service
-            String jobExecutionId = executeService.executeJob(jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
-                    jobInfo.getExecuteUser() : loginUser);
+            String jobExecutionId = executeService.executeJob(loginUser, jobInfo, StringUtils.isNotBlank(jobInfo.getExecuteUser()) ?
+                    jobInfo.getExecuteUser() : jobInfo.getCreateUser());
             result.data("jobExecutionId", jobExecutionId);
         } catch (Exception e) {
              String message;
             if (Objects.nonNull(jobInfo)) {
                 message = "Error occur while executing job: [id: " + jobInfo.getId() + " name: " + jobInfo.getName() + "]";
-                result = Message.error(message + "(执行任务出错), reason: " + e.getMessage());
+                result = Message.error(message + "(执行任务出错) [" + ((e instanceof ErrorException)? ((ErrorException) e).getDesc() : e.getMessage()) + "]");
             } else {
                 message = "Error to get the job detail (获取任务信息出错)";
                 result = Message.error(message);
             }
-            LOG.error(message, e);
+            if (e instanceof ExchangisJobServerException &&
+                    ((ExchangisJobServerException) e).getErrCode() == VALIDATE_JOB_ERROR.getCode()){
+                LOG.error(message);
+            } else {
+                LOG.error(message, e);
+            }
         }
         result.setMethod("/api/rest_j/v1/dss/exchangis/main/job/{id}/execute");
         assert jobInfo != null;
@@ -224,11 +232,10 @@ public class ExchangisJobExecuteRestfulApi {
         Message message = Message.ok("Submitted succeed(提交成功)！");
         jobName = jobName.replace("_", "\\_");
         try {
-            List<ExchangisLaunchedJobListVo> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
+            PageResult<ExchangisLaunchedJobListVo> jobList = executeService.getExecutedJobList(jobExecutionId, jobName, status,
                     launchStartTime, launchEndTime, current, size, request);
-            int total = executeService.count(jobExecutionId, jobName, status, launchStartTime, launchEndTime, request);
-            message.data("jobList", jobList);
-            message.data("total", total);
+            message.data("jobList", jobList.getList());
+            message.data("total", jobList.getTotal());
         } catch (ExchangisJobServerException e) {
             String errorMessage = "Error occur while getting job list: [job_execution_id: " + jobExecutionId  + "jobName: " + jobName  + "status: " + status  + "]";
             LOG.error(errorMessage, e);

@@ -20,17 +20,20 @@
         <result column="priv_user" property="privUser"/>
     </resultMap>
 
-    <!--columns-->
+    <sql id="table">
+        exchangis_project_info
+    </sql>
+
     <sql id="detail_columns">
         id, name, description, create_user, create_time, last_update_user,
         last_update_time, project_labels, edit_users, view_users, exec_users, domain, source
     </sql>
+
     <sql id="basic_columns">
         id, name, description, create_user, create_time, last_update_user,
         last_update_time, project_labels, domain
     </sql>
 
-    <!--where condition-->
     <sql id="pageCondition">
         <if test="name != '' and name != null">
             AND dp.name like concat('%', #{name}, '%')
@@ -40,33 +43,43 @@
         </if>
     </sql>
 
-    <!--queryPageList-->
     <select id="queryPageList" resultMap="projectResult">
         SELECT DISTINCT dp.id, dp.name, dp.description,
         dp.create_user, dp.create_time, dp.last_update_user,dp.last_update_time, dp.project_labels,dp.domain,
         dp.view_users, dp.exec_users, dp.edit_users, du.priv_user
         FROM exchangis_project_info dp
         INNER JOIN exchangis_project_user du
-        on dp.id = du.project_id and du.priv_user = #{createUser}
+        on dp.id = du.project_id
+        WHERE du.priv_user = #{createUser}
         <include refid="pageCondition"/>
         ORDER BY dp.create_time DESC
     </select>
 
-    <!--getDetailById-->
+    <select id="queryPageInAll" resultMap="projectResult">
+        SELECT * FROM exchangis_project_info
+        <where>
+            <if test="name != '' and name != null">
+                AND name like concat('%', #{name}, '%')
+            </if>
+            <if test="domain != '' and domain != null">
+                AND domain = #{domain}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
     <select id="getDetailById" resultMap="projectResult">
         SELECT
         <include refid="detail_columns"/>
         FROM `exchangis_project_info` WHERE id = #{id};
     </select>
 
-    <!--getBasicById-->
     <select id="getBasicById" resultMap="projectResult">
         SELECT
         <include refid="basic_columns"/>
         FROM `exchangis_project_info` WHERE id = #{id};
     </select>
 
-    <!--insertOne-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
         <![CDATA[INSERT INTO `exchangis_project_info`
         (`name`, `description`, `create_time`, `create_user`, `project_labels`,
@@ -76,7 +89,6 @@
          #{editUsers,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR});]]>
     </insert>
 
-    <!--updateOne-->
     <update id="updateOne">
         <![CDATA[ UPDATE `exchangis_project_info`]]>
         <set>
@@ -93,7 +105,21 @@
             `id` = #{id};
         </where>
     </update>
-    <!--existsOne-->
+
+    <update id="batchUpdate">
+        <foreach collection="list" item="item" separator="">
+            <![CDATA[
+                UPDATE exchangis_project_info SET
+                `create_user` = #{item.createUser,jdbcType=VARCHAR},
+                `last_update_user` = #{item.lastUpdateUser,jdbcType=VARCHAR},
+                `view_users` = #{item.viewUsers,jdbcType=VARCHAR},
+                `edit_users` = #{item.editUsers,jdbcType=VARCHAR},
+                `exec_users` = #{item.execUsers,jdbcType=VARCHAR}
+                WHERE `id` = #{item.id};
+            ]]>
+        </foreach>
+    </update>
+
     <select id="existsOne" resultType="java.lang.Integer">
         <![CDATA[ SELECT 1 FROM `exchangis_project_info`]]>
         <where>
@@ -107,7 +133,6 @@
         <![CDATA[ LIMIT 1;]]>
     </select>
 
-    <!--deleteOne-->
     <delete id="deleteOne">
         <![CDATA[DELETE FROM `exchangis_project_info` WHERE id = #{id};]]>
     </delete>
@@ -116,11 +141,13 @@
         DELETE FROM exchangis_project_info WHERE name = #{name}
     </delete>
 
-
     <select id="selectByName" resultMap="projectResult">
         select * from exchangis_project_info WHERE name = #{name} limit 1
     </select>
 
+    <select id="selectByDomain" resultType="java.lang.Long" parameterType="java.lang.String">
+        select id from exchangis_project_info WHERE domain = #{domain}
+    </select>
 
     <select id="getDetailByName" resultMap="projectResult">
         <![CDATA[ SELECT * FROM `exchangis_project_info`]]>
@@ -131,7 +158,41 @@
         </where>
     </select>
 
-    <select id="getAuthoritis" resultType="java.lang.String">
+    <select id="getAuthorities" resultType="java.lang.String">
         select priv from exchangis_project_user where priv_user = #{loginUser} and project_id = #{projectId}
     </select>
+
+    <select id="queryByUser" resultMap="projectResult">
+        select * from exchangis_project_info
+        WHERE
+        create_user=#{createUser} OR view_users like CONCAT('%', #{createUser}, '%')
+        OR edit_users like CONCAT('%', #{createUser}, '%') OR exec_users like CONCAT('%', #{createUser}, '%')
+    </select>
+
+    <select id="queryByUserProjects" resultMap="projectResult">
+        select * from exchangis_project_info
+        WHERE
+        (create_user=#{userName} OR view_users like CONCAT('%', #{userName}, '%')
+        OR edit_users like CONCAT('%', #{userName}, '%') OR exec_users like CONCAT('%', #{userName}, '%'))
+        <if test="projectIds != null and projectIds.size > 0">
+            AND id IN (
+            <foreach collection="projectIds" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+    </select>
+
+    <update id="recycleUserProject">
+        UPDATE `exchangis_project_info`
+        SET create_user=#{handover},last_update_user='SYSTEM'
+        WHERE create_user=#{userName}
+        <if test="projectIds != null and projectIds.size > 0">
+            AND id IN (
+            <foreach collection="projectIds" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+    </update>
 </mapper>

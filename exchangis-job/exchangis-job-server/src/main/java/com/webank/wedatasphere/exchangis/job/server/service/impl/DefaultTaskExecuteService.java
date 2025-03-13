@@ -1,28 +1,27 @@
 package com.webank.wedatasphere.exchangis.job.server.service.impl;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
+import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException;
+import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskStatus;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
+import com.webank.wedatasphere.exchangis.job.server.execution.events.*;
+import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCacheUtils;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchableTaskDao;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedJobDao;
 import com.webank.wedatasphere.exchangis.job.server.mapper.LaunchedTaskDao;
-import com.webank.wedatasphere.exchangis.job.server.execution.events.*;
-import com.webank.wedatasphere.exchangis.job.server.log.cache.JobLogCacheUtils;
 import com.webank.wedatasphere.exchangis.job.server.service.TaskExecuteService;
-import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class DefaultTaskExecuteService implements TaskExecuteService {
@@ -36,6 +35,9 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
 
     @Resource
     private LaunchableTaskDao launchableTaskDao;
+
+    @Resource
+    private RateLimitService rateLimitService;
 
     private TaskExecuteService selfService;
 
@@ -54,7 +56,10 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
         LaunchedExchangisJobEntity launchedJob = null;
         if (!TaskStatus.isCompleted(status)){
             launchedJob = launchedJobDao.searchLaunchedJob(task.getJobExecutionId());
-            TaskStatus jobStatus = launchedJob.getStatus();
+            TaskStatus jobStatus = TaskStatus.Cancelled;
+            if (Objects.nonNull(launchedJob)){
+                jobStatus = launchedJob.getStatus();
+            }
             if (TaskStatus.isCompleted(jobStatus) && Objects.nonNull(task.getLauncherTask())){
                 // Kill the remote task
                 try {
@@ -65,12 +70,22 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
             }else if (jobStatus == TaskStatus.Scheduled || jobStatus == TaskStatus.Inited){
                 launchedJobDao.upgradeLaunchedJobStatusInVersion(launchedJob.getJobExecutionId(), TaskStatus.Running.name(), 0, launchedJob.getLastUpdateTime());
             }
+        } else {
+            LaunchableExchangisTask launchableExchangisTask = task.getLaunchableExchangisTask();
+            if (Objects.nonNull(launchableExchangisTask) &&
+                    Objects.nonNull(launchableExchangisTask.getRateParams()) &&
+                    Objects.nonNull(launchableExchangisTask.getRateParamsMap()))
+                rateLimitService.releaseRateLimit(launchableExchangisTask.getRateParams(), launchableExchangisTask.getRateParamsMap());
         }
         // Have different status, then update
         if (!task.getStatus().equals(status)){
             launchedJob = Objects.isNull(launchedJob) ?
                     launchedJobDao.searchLaunchedJob(task.getJobExecutionId()) : launchedJob;
-            getSelfService().updateTaskStatus(task, status, !TaskStatus.isCompleted(launchedJob.getStatus()));
+            TaskStatus jobStatus = TaskStatus.Cancelled;
+            if (Objects.nonNull(launchedJob)){
+                jobStatus = launchedJob.getStatus();
+            }
+            getSelfService().updateTaskStatus(task, status, !TaskStatus.isCompleted(jobStatus));
         }
     }
 
@@ -82,7 +97,10 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
         this.launchedTaskDao.updateLaunchInfo(task);
         // Well, search the job info
         LaunchedExchangisJobEntity launchedJob = launchedJobDao.searchLaunchedJob(task.getJobExecutionId());
-        TaskStatus jobStatus = launchedJob.getStatus();
+        TaskStatus jobStatus = TaskStatus.Cancelled;
+        if (Objects.nonNull(launchedJob)) {
+            jobStatus = launchedJob.getStatus();
+        }
         if (jobStatus == TaskStatus.Scheduled || jobStatus == TaskStatus.Inited) {
             // Update the job status also, status change to Running
             this.launchedJobDao.upgradeLaunchedJobStatusInVersion(task.getJobExecutionId(),
@@ -100,6 +118,16 @@ public class DefaultTaskExecuteService implements TaskExecuteService {
     public void onDequeue(TaskDequeueEvent dequeueEvent) throws ExchangisOnEventException {
         // Delete task in table
         this.launchableTaskDao.deleteLaunchableTask(dequeueEvent.getTaskId());
+    }
+
+    @Override
+    public void onPrepare(TaskPrepareEvent prepareEvent) throws ExchangisOnEventException {
+        // Update the launched task in date version
+        if (this.launchedTaskDao.updateDateInVersion(prepareEvent.getTaskId(),
+                prepareEvent.getUpdateTime(), prepareEvent.getVersion()) <= 0){
+            throw new ExchangisOnEventException("Launched task has conflict version with current version: ["
+                    + prepareEvent.getVersion() + "]", null);
+        }
     }
 
     @Override

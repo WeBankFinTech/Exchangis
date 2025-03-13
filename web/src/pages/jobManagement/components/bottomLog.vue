@@ -201,13 +201,8 @@ export default {
           message.error("查询任务列表失败");
         })
     },
-    clearProgressTimer() {
-      if (this.progressTimer) {
-        clearInterval(this.progressTimer);
-      }
-    },
     getJobProgressWithPoll() {
-      this.clearProgressTimer();
+      clearInterval(this.progressTimer)
       this.getJobProgress()
       this.progressTimer = setInterval(() => {
         this.getJobProgress()
@@ -219,12 +214,11 @@ export default {
         .then(res => {
           this.jobStatus = res.status
           if (res.allTaskStatus && unfinishedStatusList.indexOf(res.status) === -1) {
-            this.clearProgressTimer();
+            clearInterval(this.progressTimer)
           }
         })
         .catch(err => {
           message.error("查询job状态失败");
-          this.clearProgressTimer();
         })
       getProgress(this.jobExecutionId)
         .then(res => {
@@ -241,7 +235,6 @@ export default {
         })
         .catch(err => {
           message.error("查询进度失败");
-          this.clearProgressTimer();
         })
     },
     getTaskInfo(progress) {
@@ -277,14 +270,13 @@ export default {
   height: 30%;
   bottom: 0;
   background-color: white;
-  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.05);
   .jd-bottom-top {
     width: calc(100% - 200px);
-    height: 43px;
+    height: 48px;
     position: fixed;
     bottom: 30%;
     background-color: #f8f9fc;
-    padding: 8px 24px;
+    padding: 12px 24px;
     font-family: PingFangSC-Medium;
     font-size: 16px;
     color: rgba(0, 0, 0, 0.85);

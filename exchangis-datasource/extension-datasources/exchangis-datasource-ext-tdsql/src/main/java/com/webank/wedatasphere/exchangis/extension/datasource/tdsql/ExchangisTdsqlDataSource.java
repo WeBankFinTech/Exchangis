@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.exchangis.extension.datasource.tdsql;
 
-import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceType;
+import com.webank.wedatasphere.exchangis.common.enums.ExchangisDataSourceType;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.StructClassifier;
 import com.webank.wedatasphere.exchangis.datasource.linkis.ExchangisBatchDataSource;
 

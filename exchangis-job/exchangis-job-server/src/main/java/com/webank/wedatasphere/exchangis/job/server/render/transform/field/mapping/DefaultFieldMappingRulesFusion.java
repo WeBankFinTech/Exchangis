@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping;
 
-import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformRule;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.match.FieldMatchStrategyFactory;
+import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformRule;
 import org.apache.commons.lang.StringUtils;
 
 /**

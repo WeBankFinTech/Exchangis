@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.project.server.restful;
 
 import com.webank.wedatasphere.exchangis.common.AuditLogUtils;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
@@ -13,8 +14,8 @@ import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
 import com.webank.wedatasphere.exchangis.project.entity.domain.ExchangisProjectUser;
-import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
-import com.webank.wedatasphere.exchangis.project.server.utils.ProjectAuthorityUtils;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectService;
+import com.webank.wedatasphere.exchangis.project.provider.utils.ProjectAuthorityUtils;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectConfiguration;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
@@ -34,8 +35,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -74,9 +75,6 @@ public class ExchangisProjectRestfulApi {
                                  @RequestParam(value = "size", required = false) Integer size,
                                  @RequestParam(value = "name", required = false) String name) {
         String username = UserUtils.getLoginUser(request);
-        if (StringUtils.isNotBlank(name)) {
-            name = name.replaceAll("_", "/_");
-        }
         Optional.ofNullable(current).ifPresent(queryVo::setCurrent);
         Optional.ofNullable(size).ifPresent(queryVo::setSize);
         Optional.ofNullable(name).ifPresent(queryVo::setName);
@@ -86,7 +84,7 @@ public class ExchangisProjectRestfulApi {
             return pageResult.toMessage();
         } catch (Exception t) {
             LOG.error("Failed to query project list for user {}", username, t);
-            return Message.error("Failed to query project list (获取项目列表失败)");
+            return Message.error("Failed to query project list (获取项目列表失败) " + t.getMessage());
         }
     }
 
@@ -111,7 +109,7 @@ public class ExchangisProjectRestfulApi {
             return Message.ok().data("item", project);
         } catch (Exception t) {
             LOG.error("failed to get project detail for user {}", username, t);
-            return Message.error("Fail to get project detail (获取项目详情失败)");
+            return Message.error("Fail to get project detail (获取项目详情失败) " + t.getMessage());
         }
     }
 
@@ -131,19 +129,35 @@ public class ExchangisProjectRestfulApi {
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
-
         String username = UserUtils.getLoginUser(request);
         String oringinUser = SecurityFilter.getLoginUsername(request);
-        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
-            projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
+        if (StringUtils.isNotBlank(projectVo.getViewUsers())) {
+            Set<String> viewUsers = Arrays.stream(projectVo.getViewUsers().split(",")).collect(Collectors.toSet());
+            if (!viewUsers.contains(username)) {
+                viewUsers.add(username);
+            }
+            projectVo.setViewUsers(StringUtils.join(viewUsers, ","));
+        } else {
+            projectVo.setViewUsers(username);
         }
-        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
-            projectVo.setEditUsers(username + "," + projectVo.getEditUsers());
+        if (StringUtils.isNotBlank(projectVo.getEditUsers())) {
+            Set<String> editUsers = Arrays.stream(projectVo.getEditUsers().split(",")).collect(Collectors.toSet());
+            if (!editUsers.contains(username)) {
+                editUsers.add(username);
+            }
+            projectVo.setEditUsers(StringUtils.join(editUsers, ","));
+        } else {
+            projectVo.setEditUsers(username);
         }
-        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
-            projectVo.setExecUsers(username + "," + projectVo.getExecUsers());
+        if (StringUtils.isNotBlank(projectVo.getExecUsers())) {
+            Set<String> execUsers = Arrays.stream(projectVo.getExecUsers().split(",")).collect(Collectors.toSet());
+            if (!execUsers.contains(username)) {
+                execUsers.add(username);
+            }
+            projectVo.setExecUsers(StringUtils.join(execUsers, ","));
+        } else {
+            projectVo.setExecUsers(username);
         }
-
         try {
             if (projectService.existsProject(null, projectVo.getName())){
                 return Message.error("Have the same name project (存在同名项目)");
@@ -156,7 +170,7 @@ public class ExchangisProjectRestfulApi {
                     new Pair<>("projectId", projectId));
         } catch (Exception t) {
             LOG.error("Failed to create project for user {}", username, t);
-            return Message.error("Fail to create project (创建项目失败)");
+            return Message.error("Fail to create project (创建项目失败) " + t.getMessage());
         }
     }
     /**
@@ -174,7 +188,7 @@ public class ExchangisProjectRestfulApi {
                     new Pair<>("projectInfo",projectInfo));
         } catch (Exception t) {
             LOG.error("Failed to get project for user {}", username, t);
-            return Message.error("Failed to get project (根据名字获取项目失败)");
+            return Message.error("Failed to get project (根据名字获取项目失败) " + t.getMessage());
         }
     }
 
@@ -196,17 +210,33 @@ public class ExchangisProjectRestfulApi {
         }
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String username = UserUtils.getLoginUser(request);
-        //String username = SecurityFilter.getLoginUsername(request);
-        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
-            projectVo.setViewUsers(username + "," + projectVo.getViewUsers());
+        if (StringUtils.isNotBlank(projectVo.getViewUsers())) {
+            Set<String> viewUsers = Arrays.stream(projectVo.getViewUsers().split(",")).collect(Collectors.toSet());
+            if (!viewUsers.contains(username)) {
+                viewUsers.add(username);
+            }
+            projectVo.setViewUsers(StringUtils.join(viewUsers, ","));
+        } else {
+            projectVo.setViewUsers(username);
         }
-        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
-            projectVo.setEditUsers(username + "," + projectVo.getEditUsers());
+        if (StringUtils.isNotBlank(projectVo.getEditUsers())) {
+            Set<String> editUsers = Arrays.stream(projectVo.getEditUsers().split(",")).collect(Collectors.toSet());
+            if (!editUsers.contains(username)) {
+                editUsers.add(username);
+            }
+            projectVo.setEditUsers(StringUtils.join(editUsers, ","));
+        } else {
+            projectVo.setEditUsers(username);
         }
-        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
-            projectVo.setExecUsers(username + "," + projectVo.getExecUsers());
+        if (StringUtils.isNotBlank(projectVo.getExecUsers())) {
+            Set<String> execUsers = Arrays.stream(projectVo.getExecUsers().split(",")).collect(Collectors.toSet());
+            if (!execUsers.contains(username)) {
+                execUsers.add(username);
+            }
+            projectVo.setExecUsers(StringUtils.join(execUsers, ","));
+        } else {
+            projectVo.setExecUsers(username);
         }
-
         try {
             ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
             if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
@@ -227,7 +257,7 @@ public class ExchangisProjectRestfulApi {
                     new Pair<>("projectId", projectVo.getId()));
         } catch (Exception t) {
             LOG.error("Failed to update project for user {}", username, t);
-            return Message.error("Fail to update project (更新项目失败)");
+            return Message.error("Fail to update project (更新项目失败) " + t.getMessage());
         }
     }
 
@@ -269,7 +299,7 @@ public class ExchangisProjectRestfulApi {
             return ExchangisProjectRestfulUtils.dealOk("删除项目成功");
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
-            return Message.error("Failed to delete project (删除项目失败)");
+            return Message.error("Failed to delete project (删除项目失败) " + t.getMessage());
         }
     }
 
@@ -285,12 +315,14 @@ public class ExchangisProjectRestfulApi {
         try {
             ExchangisProjectUserVo exchangisProjectUserVo = new ExchangisProjectUserVo(id, username);
             ExchangisProjectUser exchangisProjectUser = projectService.queryProjectUser(exchangisProjectUserVo);
-
+            if (Objects.isNull(exchangisProjectUser) && GlobalConfiguration.isAdminUser(username)){
+                exchangisProjectUser = new ExchangisProjectUser(id, username);
+            }
             return ExchangisProjectRestfulUtils.dealOk("根据项目ID和用户获取项目权限信息成功",
                     new Pair<>("exchangisProjectUser", new ExchangisProjectUserVo(exchangisProjectUser)));
         } catch (Exception t) {
             LOG.error("Failed to get exchangisProjectUser for project {} and privUser {}", id, username);
-            return Message.error("Failed to get project (根据项目ID和用户获取项目权限信息失败)");
+            return Message.error("Failed to get project (根据项目ID和用户获取项目权限信息失败) " + t.getMessage());
         }
     }
 

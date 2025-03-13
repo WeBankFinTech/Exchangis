@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.exception.LinkisRetryException;
 import org.apache.linkis.common.utils.DefaultRetryHandler;
 import org.apache.linkis.common.utils.RetryHandler;
+import org.apache.linkis.computation.client.LinkisJobBuilder$;
 import org.apache.linkis.computation.client.LinkisJobClient$;
 import org.apache.linkis.computation.client.once.simple.SimpleOnceJobBuilder$;
 
@@ -46,6 +47,7 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
                 .retryEnabled(true)
                 .setRetryHandler(retryHandler);
         ExchangisClientConfig clientConfig = builder.build();
+        LinkisJobBuilder$.MODULE$.setDefaultAuthToken(clientConfig.getAuthTokenValue());
         // Try to set the static method
         Class<?> clz = SimpleOnceJobBuilder$.MODULE$.getClass();
         Field field;
@@ -64,9 +66,7 @@ public class LinkisExchangisTaskLauncher implements ExchangisTaskLauncher<Launch
         } catch (NoSuchFieldException e) {
             // Ignore
         }
-        if (!setField){
-            LinkisJobClient$.MODULE$.config().setDefaultClientConfig(clientConfig);
-        }
+        LinkisJobClient$.MODULE$.config().setDefaultClientConfig(clientConfig);
     }
 
     @Override

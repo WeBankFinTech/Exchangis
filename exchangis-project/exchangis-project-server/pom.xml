@@ -25,12 +25,17 @@
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-datasource-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-job-server</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
-            <artifactId>exchangis-dao</artifactId>
+            <artifactId>exchangis-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

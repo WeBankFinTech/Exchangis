@@ -2,6 +2,7 @@ package com.webank.wedatasphere.exchangis.job.domain.params;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -20,6 +21,23 @@ public class JobParamSet {
         return this;
     }
 
+    public JobParamSet(){
+
+    }
+
+    public JobParamSet(List<JobParam<?>> params){
+        params.forEach( param -> {
+            DefaultJobParam<Object> newParam = new DefaultJobParam<>();
+            newParam.setKey(param.getStrKey());
+            // Ignore the mapping key
+            newParam.setValue(param.getValue());
+            this.jobParamStore.put(param.getStrKey(), newParam);
+        });
+    }
+
+    public void forEach(BiConsumer<String, JobParam<?>> action){
+        jobParamStore.forEach(action);
+    }
 
     public JobParamSet add(JobParamDefine<?> jobParamDefine){
         return add(prepare(jobParamDefine, this));

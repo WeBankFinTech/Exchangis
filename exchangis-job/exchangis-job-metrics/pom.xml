@@ -19,11 +19,15 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.linkis</groupId>
             <artifactId>linkis-module</artifactId>
             <version>${linkis.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.linkis</groupId>
             <artifactId>linkis-mybatis</artifactId>

@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.column;
 
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
@@ -10,16 +11,13 @@ import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
-import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.AbstractLoggingSubExchangisJobHandler;
+import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
 import com.webank.wedatasphere.exchangis.job.utils.ColumnDefineUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +27,7 @@ public abstract class AutoColumnSubExchangisJobHandler extends AbstractLoggingSu
     /**
      * Auto type name
      */
-    private static final String AUTO_TYPE = "[Auto]";
+    public static final String AUTO_TYPE = "[Auto]";
 
     /**
      * Database
@@ -113,8 +111,11 @@ public abstract class AutoColumnSubExchangisJobHandler extends AbstractLoggingSu
         String database = DATABASE.getValue(paramSet);
         String table = TABLE.getValue(paramSet);
         JobParam<String> dataSourceId = paramSet.get(JobParamConstraints.DATA_SOURCE_ID);
+        JobParam<String> dsCreator = paramSet.get(JobParamConstraints.DATA_SOURCE_CREATOR);
+        String dsOwner = Objects.nonNull(dsCreator) ? dsCreator.getValue() : GlobalConfiguration.getAdminUser();
         try {
-            return Objects.requireNonNull(getBean(MetadataInfoService.class)).getColumns(getJobBuilderContext().getOriginalJob().getCreateUser(),
+            return Objects.requireNonNull(getBean(MetadataInfoService.class)).getColumns(
+                    Optional.ofNullable(dsOwner).orElse(getJobBuilderContext().getOriginalJob().getCreateUser()),
                     Long.valueOf(dataSourceId.getValue()), database, table);
         } catch (ExchangisDataSourceException e) {
             throw new ExchangisJobException.Runtime(e.getErrCode(), e.getMessage(), e.getCause());

@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.log.appender;
 
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
-import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;

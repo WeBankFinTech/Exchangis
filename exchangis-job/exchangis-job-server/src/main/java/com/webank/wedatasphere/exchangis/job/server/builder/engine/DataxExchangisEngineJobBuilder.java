@@ -7,13 +7,14 @@ import com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngin
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobDataSourcesContent;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParams;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.TransformExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.TransformTypes;
-import com.webank.wedatasphere.exchangis.job.server.utils.JsonEntity;
+import com.webank.wedatasphere.exchangis.common.util.json.JsonEntity;
 import com.webank.wedatasphere.exchangis.job.utils.MemUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -47,14 +48,24 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
      */
     private static final JobParamDefine<DataxMappingContext> COLUMN_MAPPINGS = JobParams.define("column.mappings", job -> {
         DataxMappingContext mappingContext = new DataxMappingContext();
-        job.getSourceColumns().forEach(columnDefine -> mappingContext.getSourceColumns().add(
-                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
-                        columnDefine.getRawType(), columnDefine.getIndex() + "")
-        ));
-        job.getSinkColumns().forEach(columnDefine -> mappingContext.getSinkColumns().add(
-                new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
-                        columnDefine.getRawType(), columnDefine.getIndex() + "")
-        ));
+        job.getSourceColumns().forEach(columnDefine -> {
+            DataxMappingContext.Column column = new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
+                    columnDefine.getRawType(), columnDefine.getIndex() + "");
+            mappingContext.getSourceColumns().add( columnDefine instanceof SubExchangisJob.DecimalColumnDefine ?
+                new DataxMappingContext.DecimalColumn(column,
+                        ((SubExchangisJob.DecimalColumnDefine) columnDefine).getPrecision(),
+                        ((SubExchangisJob.DecimalColumnDefine) columnDefine).getScale()) :
+                    column);
+        });
+        job.getSinkColumns().forEach(columnDefine -> {
+            DataxMappingContext.Column column = new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
+                    columnDefine.getRawType(), columnDefine.getIndex() + "");
+            mappingContext.getSinkColumns().add(columnDefine instanceof SubExchangisJob.DecimalColumnDefine ?
+                    new DataxMappingContext.DecimalColumn(column,
+                            ((SubExchangisJob.DecimalColumnDefine) columnDefine).getPrecision(),
+                            ((SubExchangisJob.DecimalColumnDefine) columnDefine).getScale()):
+                    column);
+        });
         job.getColumnFunctions().forEach(function -> {
             DataxMappingContext.Transformer.Parameter parameter = new DataxMappingContext.Transformer.Parameter();
             parameter.setColumnIndex(function.getIndex() + "");
@@ -138,6 +149,9 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
                 if (type == TransformTypes.PROCESSOR){
                     settingProcessorInfo(transformJob, engineJob);
                 }
+                ExchangisJobDataSourcesContent dsContent = transformJob.getJobInfoContent().getDataSources();
+                engineJob.setSourceId(dsContent.parseSourceId());
+                engineJob.setSinkId(dsContent.parseSinkId());
             }
             engineJob.setName(inputJob.getName());
             //Unit MB
@@ -151,6 +165,9 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
             engineJob.setCreateUser(inputJob.getCreateUser());
             // Lock the memory unit
             engineJob.setMemoryUnitLock(true);
+            engineJob.setSourceType(inputJob.getSourceType());
+            engineJob.setSinkType(inputJob.getSinkType());
+            engineJob.setContent(Json.toJson(engineJob.getJobContent(), null));
             return engineJob;
 
         } catch (Exception e) {

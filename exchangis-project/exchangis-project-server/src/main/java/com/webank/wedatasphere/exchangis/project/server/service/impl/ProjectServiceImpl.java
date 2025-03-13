@@ -3,19 +3,26 @@ package com.webank.wedatasphere.exchangis.project.server.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.webank.wedatasphere.exchangis.common.config.GlobalConfiguration;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.dao.domain.ExchangisJobDsBind;
 import com.webank.wedatasphere.exchangis.dao.mapper.ExchangisJobDsBindMapper;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobInfoContent;
 import com.webank.wedatasphere.exchangis.job.api.ExchangisJobOpenService;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
+import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao;
+import com.webank.wedatasphere.exchangis.job.utils.JobUtils;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
+import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProjectDsRelation;
+import com.webank.wedatasphere.exchangis.project.entity.vo.*;
+import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectErrorException;
+import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectExceptionCode;
+import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectDsRelationMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectMapper;
 import com.webank.wedatasphere.exchangis.project.provider.mapper.ProjectUserMapper;
-import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
-import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
-import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectUserVo;
-import com.webank.wedatasphere.exchangis.project.entity.vo.ProjectQueryVo;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.entity.domain.ExchangisProjectUser;
 import com.webank.wedatasphere.exchangis.project.entity.entity.ExchangisProject;
 import org.slf4j.Logger;
@@ -36,6 +43,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectMapper projectMapper;
 
+    @Autowired
+    private ProjectDsRelationMapper projectDsRelationMapper;
+
     @Resource
     private ExchangisJobOpenService jobServiceOpenApi;
 
@@ -45,22 +55,41 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectUserMapper projectUserMapper;
 
+    @Autowired
+    private DataSourceService dataSourceService;
+
+    @Autowired
+    private ExchangisJobEntityDao exchangisJobEntityDao;
+
+
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public long createProject(ExchangisProjectInfo projectVo, String userName) {
+    public long createProject(ExchangisProjectInfo projectInfo, String userName) {
         // Construct the entity
         ExchangisProject project = new ExchangisProject();
-        project.setName(projectVo.getName());
-        project.setDescription(projectVo.getDescription());
-        project.setDomain(Optional.ofNullable(projectVo.getDomain()).orElse(ExchangisProject.Domain.STANDALONE.name()));
-        project.setLabels(projectVo.getLabel());
-        project.setSourceMap(projectVo.getSource());
-        project.setViewUsers(projectVo.getViewUsers());
-        project.setEditUsers(projectVo.getEditUsers());
-        project.setExecUsers(projectVo.getExecUsers());
+        project.setName(projectInfo.getName());
+        project.setDescription(projectInfo.getDescription());
+        project.setDomain(Optional.ofNullable(projectInfo.getDomain()).orElse(ExchangisProject.Domain.STANDALONE.name()));
+        project.setLabels(projectInfo.getLabel());
+        project.setSourceMap(projectInfo.getSource());
+        project.setViewUsers(projectInfo.getViewUsers());
+        project.setEditUsers(projectInfo.getEditUsers());
+        project.setExecUsers(projectInfo.getExecUsers());
         project.setCreateUser(userName);
         project.setCreateTime(Calendar.getInstance().getTime());
         this.projectMapper.insertOne(project);
+
+        Long projectId = project.getId();
+        List<ExchangisProjectDsRelation> projectDataSources = new ArrayList<>();
+        List<ExchangisProjectDsVo> dataSources = projectInfo.getDataSources();
+        if (Objects.nonNull(dataSources) && !dataSources.isEmpty()) {
+            dataSources.forEach(dataSource -> {
+                ExchangisProjectDsRelation exchangisProjectDsRelation = new ExchangisProjectDsRelation(dataSource);
+                exchangisProjectDsRelation.setProjectId(projectId);
+                projectDataSources.add(exchangisProjectDsRelation);
+            });
+            this.projectDsRelationMapper.insertBatch(projectDataSources);
+        }
 
         Map<String, ExchangisProjectUser> projectUserMap = new HashMap<>();
         if (Objects.nonNull(project.getViewUsers()) && project.getViewUsers().length() != 0) {
@@ -117,20 +146,60 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateProject(ExchangisProjectInfo projectVo, String userName) {
+    public void updateProject(ExchangisProjectInfo projectInfo, String userName) throws ExchangisProjectErrorException {
+        Long projectId = Long.valueOf(projectInfo.getId());
         ExchangisProject updatedProject = new ExchangisProject();
-        updatedProject.setId(Long.valueOf(projectVo.getId()));
-        updatedProject.setName(projectVo.getName());
-        updatedProject.setDescription(projectVo.getDescription());
-        updatedProject.setLabels(projectVo.getLabel());
-        updatedProject.setViewUsers(projectVo.getViewUsers());
-        updatedProject.setEditUsers(projectVo.getEditUsers());
-        updatedProject.setExecUsers(projectVo.getExecUsers());
-        updatedProject.setDescription(projectVo.getDescription());
+        updatedProject.setId(projectId);
+        updatedProject.setName(projectInfo.getName());
+        updatedProject.setDescription(projectInfo.getDescription());
+        updatedProject.setLabels(projectInfo.getLabel());
+        updatedProject.setCreateUser(projectInfo.getCreateUser());
+        updatedProject.setViewUsers(projectInfo.getViewUsers());
+        updatedProject.setEditUsers(projectInfo.getEditUsers());
+        updatedProject.setExecUsers(projectInfo.getExecUsers());
+        updatedProject.setDescription(projectInfo.getDescription());
         // Set the updated properties
         updatedProject.setLastUpdateUser(userName);
         updatedProject.setLastUpdateTime(Calendar.getInstance().getTime());
         this.projectMapper.updateOne(updatedProject);
+
+        List<ExchangisProjectDsRelation> projectDataSources = new ArrayList<>();
+        List<ExchangisProjectDsVo> dataSources = projectInfo.getDataSources();
+        if (Objects.nonNull(dataSources) && !dataSources.isEmpty()) {
+            // check delete
+            List<ExchangisProjectDsRelation> projectDsRelations = this.projectDsRelationMapper.listByProject(projectId, null);
+
+            Set<String> dsNames = dataSources.stream()
+                    .map(ExchangisProjectDsVo::getName)
+                    .collect(Collectors.toSet());
+            Set<String> deleteNames = projectDsRelations.stream()
+                    .map(ExchangisProjectDsRelation::getDsName)
+                    .filter(name -> !dsNames.contains(name))
+                    .collect(Collectors.toSet());
+
+            List<ExchangisJobEntity> detailList = exchangisJobEntityDao.getDetailList(projectId);
+            for (ExchangisJobEntity jobDetail : detailList) {
+                List<ExchangisJobInfoContent> contentList = JobUtils.parseJobContent(jobDetail.getJobContent());
+                for (ExchangisJobInfoContent content : contentList) {
+                    String sourceName = content.getDataSources().getSource().getName();
+                    String sinkName = content.getDataSources().getSink().getName();
+                    if (deleteNames.contains(sourceName) || deleteNames.contains(sinkName)) {
+                        throw new ExchangisProjectErrorException(ExchangisProjectExceptionCode.RELEASE_PROJECT_DS_RELATION_ERROR.getCode(),
+                                "Release project ds relation error, the delete datasource is bound by the job " + jobDetail.getName() + " with subJob " + content.getSubJobName()
+                                + " （解绑的数据源已存在任务配置中，请在任务中解绑后重试）");
+                    }
+                }
+            }
+
+            // first to delete then to insert
+            this.projectDsRelationMapper.deleteByProject(projectId);
+            dataSources.forEach(dataSource -> {
+                ExchangisProjectDsRelation exchangisProjectDsRelation = new ExchangisProjectDsRelation(dataSource);
+                exchangisProjectDsRelation.setProjectId(projectId);
+                projectDataSources.add(exchangisProjectDsRelation);
+            });
+            this.projectDsRelationMapper.insertBatch(projectDataSources);
+        }
 
         Map<String, ExchangisProjectUser> projectUserMap = new HashMap<>();
         if (Objects.nonNull(updatedProject.getViewUsers()) && updatedProject.getViewUsers().length() != 0) {
@@ -172,20 +241,44 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
 
-        this.projectUserMapper.deleteProjectUser(Long.valueOf(projectVo.getId()));
+        this.projectUserMapper.deleteProjectUser(Long.valueOf(projectInfo.getId()));
         if(projectUserMap.size() > 0) {
             this.projectUserMapper.addProjectUser(new ArrayList<>(projectUserMap.values()));
         }
     }
 
     @Override
+    public List<ExchangisProject> queryAllProjects() {
+        return this.projectMapper.queryPageInAll(new ProjectQueryVo());
+    }
+
+    @Override
     public PageResult<ExchangisProjectInfo> queryProjects(ProjectQueryVo queryVo) {
         PageHelper.startPage(queryVo.getPage(), queryVo.getPageSize());
         try{
-            List<ExchangisProject> projects = this.projectMapper.queryPageList(queryVo);
+            // Admin user get projects
+            List<ExchangisProject> projects = GlobalConfiguration.isAdminUser(queryVo.getCreateUser())?
+                    this.projectMapper.queryPageInAll(queryVo) :
+                    this.projectMapper.queryPageList(queryVo);
             PageInfo<ExchangisProject> pageInfo = new PageInfo<>(projects);
-            List<ExchangisProjectInfo> infoList = projects
-                    .stream().map(ExchangisProjectInfo::new).collect(Collectors.toList());
+            // query project datasource relation
+            List<Long> ids = projects.stream().map(ExchangisProject::getId).collect(Collectors.toList());
+            List<ExchangisProjectDsRelation> proDsRelations = new ArrayList<>();
+            if (!ids.isEmpty()) {
+                proDsRelations = projectDsRelationMapper.listByProjects(ids);
+            }
+
+            List<ExchangisProjectInfo> infoList = new ArrayList<>();
+            for (ExchangisProject project : projects) {
+                ExchangisProjectInfo exchangisProjectInfo = new ExchangisProjectInfo(project);
+                if (!proDsRelations.isEmpty()) {
+                    exchangisProjectInfo.setDataSources(
+                            proDsRelations.stream().filter(item -> item.getProjectId().equals(project.getId())).map(ExchangisProjectDsVo::new).collect(Collectors.toList())
+                    );
+                }
+                infoList.add(exchangisProjectInfo);
+            }
+
             PageResult<ExchangisProjectInfo> pageResult = new PageResult<>();
             pageResult.setList(infoList);
             pageResult.setTotal(pageInfo.getTotal());
@@ -217,17 +310,25 @@ public class ProjectServiceImpl implements ProjectService {
     public void deleteProjectByName(String name) throws ExchangisJobException {
         // First to delete the project to lock the record
         ExchangisProject project = this.projectMapper.selectByName(name);
-        this.projectMapper.deleteByName(name);
+        // Delete project and user group
+        if (Objects.nonNull(project)) {
+            this.projectMapper.deleteByName(name);
+            this.projectDsRelationMapper.deleteByProject(project.getId());
+        }
     }
     @Override
     public ExchangisProjectInfo getProjectDetailById(Long projectId) {
         ExchangisProject project = this.projectMapper.getDetailById(projectId);
         if (Objects.nonNull(project)){
-            ExchangisProjectInfo projectVo = new ExchangisProjectInfo(project);
+            ExchangisProjectInfo projectVo = getProject(project);
             projectVo.setViewUsers(project.getViewUsers());
             projectVo.setEditUsers(project.getEditUsers());
             projectVo.setExecUsers(project.getExecUsers());
             projectVo.setSource(project.getSourceMap());
+            List<ExchangisProjectDsRelation> proDsRelations = projectDsRelationMapper
+                    .queryPageList(new ProjectDsQueryVo(projectId));
+            projectVo.setDataSources(proDsRelations.stream()
+                    .map(ExchangisProjectDsVo::new).collect(Collectors.toList()));
             return projectVo;
         }
         return null;
@@ -242,7 +343,7 @@ public class ProjectServiceImpl implements ProjectService {
     public ExchangisProjectInfo getProjectById(Long projectId) {
         ExchangisProject project = projectMapper.getBasicById(projectId);
         if (Objects.nonNull(project)){
-            return new ExchangisProjectInfo(project);
+            return getProject(project);
         }
         return null;
     }
@@ -251,9 +352,16 @@ public class ProjectServiceImpl implements ProjectService {
     public ExchangisProjectInfo selectByName(String name){
         ExchangisProject project = this.projectMapper.selectByName(name);
         if (Objects.nonNull(project)){
-            return new ExchangisProjectInfo(project);
+            return getProject(project);
         }
         return null;
+    }
+
+    private ExchangisProjectInfo getProject(ExchangisProject project) {
+        ExchangisProjectInfo exchangisProjectInfo = new ExchangisProjectInfo(project);
+        //todo add datasource 在sql中获取数据源信息即可
+        exchangisProjectInfo.setDataSources(null);
+        return exchangisProjectInfo;
     }
 
     @Override

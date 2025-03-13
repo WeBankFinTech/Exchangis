@@ -1,7 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.render.transform;
 
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
-import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.FieldMappingRuleEntity;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

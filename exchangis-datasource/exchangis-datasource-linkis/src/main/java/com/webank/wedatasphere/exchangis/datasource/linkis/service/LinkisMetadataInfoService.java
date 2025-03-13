@@ -12,6 +12,8 @@ import com.webank.wedatasphere.exchangis.datasource.linkis.response.MetadataGetC
 import com.webank.wedatasphere.exchangis.datasource.linkis.response.MetadataGetPartitionPropsResult;
 import com.webank.wedatasphere.exchangis.datasource.linkis.service.rpc.LinkisDataSourceServiceOperation;
 import com.webank.wedatasphere.exchangis.datasource.linkis.service.rpc.LinkisDataSourceServiceRpcDispatcher;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.linkis.common.conf.CommonVars;
 import org.apache.linkis.datasource.client.impl.LinkisMetaDataRemoteClient;
 import org.apache.linkis.datasource.client.request.MetadataGetColumnsAction;
 import org.apache.linkis.datasource.client.request.MetadataGetPartitionsAction;
@@ -32,6 +34,22 @@ public class LinkisMetadataInfoService extends LinkisDataSourceServiceRpcDispatc
         implements MetadataInfoService {
     // TODO define in properties file
     private static final String LOCAL_HDFS_NAME = ".LOCAL_HDFS";
+
+    private static final CommonVars<String> HDFS_FILTER_RULES =
+            CommonVars.apply(
+                    "wds.linkis.server.mdm.service.hadoop.filter.rules",
+                    StringUtils.join(
+                            new String[] {
+                                    "fs.defaultFS",
+                                    "dfs.nameservices",
+                                    "dfs.ha.namenodes.<service>",
+                                    "dfs.namenode.rpc-address.<suffix>",
+                                    "dfs.client.failover.proxy.provider.<suffix>",
+                                    "fs.permissions.umask-mode",
+                                    "hadoop.wedatasphere.guardis.ipc.security.client.enabled",
+                                    "hadoop.wedatasphere.guardis.ipc.security.auth.key"
+                            },
+                            ","));
     @Override
     public Class<?> getClientClass() {
         return LinkisMetaDataRemoteClient.class;
@@ -101,6 +119,7 @@ public class LinkisMetadataInfoService extends LinkisDataSourceServiceRpcDispatc
     public Map<String, String> getLocalHdfsInfo(String uri) throws ExchangisDataSourceException{
         Map<String, Object> query = new HashMap<>();
         query.put("uri", uri);
+        query.put("filter", HDFS_FILTER_RULES.getValue());
         MetadataGetConnInfoResult result = dispatch(getDefaultRemoteClient(), new LinkisDataSourceServiceOperation(() -> {
             MetadataGetConnInfoAction action = new MetadataGetConnInfoAction(LOCAL_HDFS_NAME, LINKIS_RPC_CLIENT_SYSTEM.getValue(), query);
             action.setUser(EnvironmentUtils.getJvmUser());

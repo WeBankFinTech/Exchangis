@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webank.wedatasphere.exchangis.datasource.mapper.DataSourceModelRelationMapper">
+    <resultMap id="relationResult" type="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelation">
+        <id property="id" column="id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="dsId" column="ds_id"/>
+        <result property="dsName" column="ds_name"/>
+        <result property="dsVersion" column="ds_version"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyUser" column="modify_user"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
+    <resultMap id="relationResultWithModel" type="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelationDTO">
+        <id property="id" column="id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="modelName" column="model_name"/>
+        <result property="dsId" column="ds_id"/>
+        <result property="dsName" column="ds_name"/>
+        <result property="dsVersion" column="ds_version"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyUser" column="modify_user"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
+    <sql id="table">
+        exchangis_data_source_model_relation
+    </sql>
+
+    <sql id="columns">
+        id, model_id, ds_id, ds_name, ds_version,
+        create_user, create_time, modify_user, modify_time
+    </sql>
+
+    <sql id="joinColumns">
+        dmr.id, dmr.model_id, dmr.ds_id, dmr.ds_name, dmr.ds_version,
+        dmr.create_user, dmr.create_time, dmr.modify_user, dmr.modify_time
+    </sql>
+
+    <insert id="addRelation" useGeneratedKeys="true" keyProperty="id">
+        <foreach collection="list" item="item" open="" close="" separator="">
+            <![CDATA[
+                INSERT INTO exchangis_data_source_model_relation (
+                 model_id, ds_id, ds_name, ds_version,
+                 create_user
+                ) VALUES (
+                 #{item.modelId},
+                 #{item.dsId},
+                 #{item.dsName},
+                 #{item.dsVersion},
+                 #{item.createUser}
+                );
+            ]]>
+        </foreach>
+    </insert>
+
+    <update id="transferModelRelation">
+        UPDATE <include refid="table"/>
+        SET model_id = #{toId} WHERE model_id = #{fromId};
+    </update>
+
+    <delete id="deleteRelations">
+        DELETE FROM <include refid="table"/> WHERE
+        ds_id = #{dsId}
+        AND ds_version = #{dsVersion};
+    </delete>
+
+    <delete id="deleteRelationsByDsId">
+        DELETE FROM <include refid="table"/> WHERE
+        ds_id = #{dsId};
+    </delete>
+
+    <delete id="deleteRelationByModelIds">
+        DELETE FROM <include refid="table"/> WHERE
+        model_id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteRefRelationByModelId">
+        DELETE FROM <include refid="table"/> WHERE model_id IN (
+        SELECT id FROM exchangis_data_source_model WHERE
+        ref_model_id = #{modelId})
+    </delete>
+
+    <select id="queryDsIdsByModel" resultMap="relationResult">
+        SELECT
+        ds_id
+        FROM <include refid="table"/>
+        WHERE model_id = #{modelId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="queryRefRelationsByModel" resultMap="relationResult">
+        SELECT
+        <include refid="columns"/>
+        FROM <include refid="table"/>
+        WHERE model_id = #{modelId}
+        UNION ALL
+        SELECT
+        <include refid="columns"/>
+        FROM <include refid="table"/>
+        WHERE model_id IN (
+        SELECT id FROM exchangis_data_source_model WHERE ref_model_id = #{modelId}
+        );
+    </select>
+
+    <select id="queryRelations" resultMap="relationResultWithModel">
+        SELECT
+        <include refid="joinColumns"/>,dsm.model_name
+        FROM <include refid="table"/> dmr
+        LEFT JOIN exchangis_data_source_model dsm
+        ON dmr.model_id=dsm.id
+        <include refid="findPageWhere"/>
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+
+    <select id="queryRefRelationsByDsIds"
+            resultType="com.webank.wedatasphere.exchangis.datasource.core.domain.DataSourceModelRelationDTO"
+            resultMap="relationResultWithModel">
+        SELECT
+        <include refid="joinColumns"/>,dsm.model_name
+        FROM <include refid="table"/> dmr
+        LEFT JOIN exchangis_data_source_model dsm
+        ON dmr.model_id=dsm.id
+        WHERE dmr.ds_id in (
+        <foreach collection="dsIds" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+    </select>
+
+    <sql id="findPageWhere">
+        <where>
+            <if test="dsName != null and dsName != ''">
+                AND ds_name = #{dsName}
+            </if>
+            <if test="dsVersion != null">
+                AND ds_version = #{dsVersion}
+            </if>
+            <if test="modelId != null">
+                AND model_id = #{modelId}
+            </if>
+            <if test="dsId != null">
+                AND ds_id = #{dsId}
+            </if>
+            <if test="createUser != null and createUser != ''">
+                AND create_user = #{createUser}
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                AND modify_user = #{modifyUser}
+            </if>
+        </where>
+    </sql>
+
+    <update id="recycleDsModelRelation">
+        UPDATE <include refid="table"/>
+        SET create_user = #{handover},modify_user = 'SYSTEM'
+        WHERE create_user = #{userName};
+    </update>
+</mapper>

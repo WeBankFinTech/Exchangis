@@ -54,7 +54,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, reactive, ref, computed } from "vue";
+import { defineComponent, reactive, ref, toRaw } from "vue";
 import {
   CopyOutlined,
   DeleteOutlined,
@@ -63,7 +63,6 @@ import {
 import { useI18n } from "@fesjs/fes";
 import { message } from "ant-design-vue";
 import { deleteJob } from "@/common/service";
-import { cloneDeep } from 'lodash-es'
 
 export default defineComponent({
   components: {
@@ -78,8 +77,8 @@ export default defineComponent({
   emits: ["showJobDetail", "handleJobCopy", "refreshList", "handleJobModify"],
   setup(props, context) {
     const { t } = useI18n({ useScope: "global" });
-    const jobData = computed(() => cloneDeep(props.jobData));
-    const { engineType, id, projectId } = jobData.value;
+    const jobData = toRaw(props.jobData);
+    const { engineType, id, projectId } = jobData;
     const imageText = engineType.toUpperCase();
     const imageName =
       imageText === "DATAX"
@@ -106,19 +105,18 @@ export default defineComponent({
     };
 
     const gotoDetail = () => {
-      context.emit("showJobDetail", jobData.value);
+      context.emit("showJobDetail", jobData);
     };
 
     const handleJobCopy = () => {
-      context.emit("handleJobCopy", jobData.value);
+      context.emit("handleJobCopy", jobData);
     };
 
     const handleJobModify = () => {
-      context.emit("handleJobModify", jobData.value);
+      context.emit("handleJobModify", jobData);
     }
 
     return {
-      jobData,
       imageSrc: imageName ? require(`../../../images/${imageName}`) : "",
       imageText,
       changeManagement,

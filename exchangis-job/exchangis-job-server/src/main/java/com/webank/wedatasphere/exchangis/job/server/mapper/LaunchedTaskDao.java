@@ -1,12 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.mapper;
 
-import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
-import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.jmx.export.annotation.ManagedOperationParameter;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
@@ -34,6 +29,21 @@ public interface LaunchedTaskDao {
      * @param taskId
      */
     void deleteLaunchedTask(@Param("taskId")String taskId);
+
+    /**
+     * Delete task in version (date)
+     * @param taskId task id
+     * @param versionDate version date
+     */
+    int deleteLaunchedTaskInVersion(@Param("taskId")String taskId, @Param("version")Integer version);
+
+    /**
+     * Update date in version
+     * @param updateDate update date
+     * @param version version
+     * @return affect rows
+     */
+    int updateDateInVersion(@Param("taskId")String taskId, @Param("updateDate")Date updateDate, @Param("version")Integer version);
 
     /**
      * upgrade launchedTask
@@ -132,5 +142,18 @@ public interface LaunchedTaskDao {
      */
 
     void deleteTask(@Param("jobExecutionId") String jobExecutionId);
+
+    /**
+     * Get the expired tasks with status
+     * @param instance instance
+     * @param status status
+     * @param expireTime expire time
+     * @param limitSize limit size
+     * @return entities
+     */
+    List<LaunchedExchangisTaskEntity> getLaunchedTaskInExpire(@Param("instance")String instance,
+                                                              @Param("status")String status,
+                                                              @Param("expireTime") Date expireTime,
+                                                              @Param("limitSize")Integer limitSize);
 
 }

@@ -22,6 +22,10 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
     private String jobExecutionId;
 
     /**
+     * Job parameter string
+     */
+    private String jobParams;
+    /**
      * ExchangisJobEntity
      */
 
@@ -59,11 +63,14 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
         this.createTime = job.getCreateTime();
         this.lastUpdateTime = job.getLastUpdateTime();
         this.jobExecutionId = job.getJobExecutionId();
+        this.jobParams = job.getJobParams();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String logPath = this.executeUser + IOUtils.DIR_SEPARATOR_UNIX +
                 simpleDateFormat.format(new Date()) + IOUtils.DIR_SEPARATOR_UNIX + this.jobExecutionId;
         logPath = EnvironmentUtils.getServerAddress() + "@" + logPath;
         this.logPath = logPath;
+        // Set the instance name
+        this.instance = EnvironmentUtils.getServerAddress();
     }
     public String getJobExecutionId() {
         return jobExecutionId;
@@ -71,6 +78,14 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
 
     public void setJobExecutionId(String jobExecutionId) {
         this.jobExecutionId = jobExecutionId;
+    }
+
+    public String getJobParams() {
+        return jobParams;
+    }
+
+    public void setJobParams(String jobParams) {
+        this.jobParams = jobParams;
     }
 
     public String getLogPath() {
