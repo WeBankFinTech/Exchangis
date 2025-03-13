@@ -25,10 +25,9 @@
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
-            <artifactId>exchangis-datasource-service</artifactId>
+            <artifactId>exchangis-datasource-core</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
-
 </project>

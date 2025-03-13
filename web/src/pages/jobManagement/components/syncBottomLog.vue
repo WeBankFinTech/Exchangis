@@ -131,8 +131,6 @@ import executionLog from './executionLog'
 import metrics from './metricsInfo'
 import { moveUpDown } from "../../../common/utils";
 
-const defaultMaxRows = Math.floor(260 / 22.2);
-
 export default {
   components: {
     DatabaseFilled,
@@ -167,7 +165,7 @@ export default {
         'Timeout': '超时'
       },
       bottomStyle: '', //底部样式
-      maxRows: defaultMaxRows,
+      maxRows: 10,
       activeKey: '1',
     };
   },
@@ -189,7 +187,7 @@ export default {
     activeKey(val) {
       if (val !== '2') {
         this.bottomStyle = "";
-        this.maxRows = defaultMaxRows;
+        this.maxRows = 10;
       }
     }
   },
@@ -222,13 +220,8 @@ export default {
           message.error("查询任务列表失败");
         })
     },
-    clearProgressTimer() {
-        if (this.progressTimer) {
-            clearInterval(this.progressTimer);
-        }
-    },
     getJobProgressWithPoll() {
-      this.clearProgressTimer();
+      clearInterval(this.progressTimer)
       this.getJobProgress()
       this.progressTimer = setInterval(() => {
         this.getJobProgress()
@@ -240,12 +233,11 @@ export default {
         .then(res => {
           this.jobStatus = res.status
           if (res.allTaskStatus && unfinishedStatusList.indexOf(res.status) === -1) {
-            this.clearProgressTimer();
+            clearInterval(this.progressTimer)
           }
         })
         .catch(err => {
           message.error("查询job状态失败");
-          this.clearProgressTimer();
         })
       getProgress(this.jobExecutionId)
         .then(res => {
@@ -262,7 +254,6 @@ export default {
         })
         .catch(err => {
           message.error("查询进度失败");
-          this.clearProgressTimer();
         })
     },
     getTaskInfo(progress) {
@@ -286,16 +277,21 @@ export default {
       this.visibleLog = false;
       this.$emit("onCloseLog")
       this.bottomStyle = "";
-      this.maxRows = defaultMaxRows;
+      this.maxRows = 10;
     },
     // 放大底部弹出框
     expandLog() {
         if (this.bottomStyle) {
             this.bottomStyle = "";
-            this.maxRows = defaultMaxRows;
+            this.maxRows = 10;
         } else {
-          this.bottomStyle = "position: absolute;height: 100vh !important;";
-          this.maxRows = Math.floor((window.innerHeight - 140) / 22.2);
+            if (document.body.clientWidth > 1400) {
+                this.bottomStyle = "flex: 0 0 578px; height: 578px !important;";
+                this.maxRows = 20;
+            } else {
+                this.bottomStyle = "flex: 0 0 464px; height: 464px !important;";
+                this.maxRows = 15;
+            }
         }
     }
   },
@@ -306,24 +302,24 @@ export default {
 .jd-bottom {
   overflow: auto;
   width: 100%;
-  flex: 0 0 400px;
-  height: 400px !important;
+  flex: 0 0 350px;
+  height: 350px !important;
   background-color: white;
   position: relative;
   top: 0 !important;
   .jd-bottom-top {
-    max-width: 100px;
-    height: 43px;
-    background-color: #f8f8f8;
-    padding: 8px 24px;
+    width: 100px;
+    height: 48px;
+    background-color: #f8f9fc;
+    padding: 12px 24px;
     font-family: PingFangSC-Medium;
     font-size: 16px;
     color: rgba(0, 0, 0, 0.85);
     font-weight: 500;
     position: absolute;
     top: 0 !important;
-    right: 0px;
-    z-index: 99999;
+    right: 24px;
+    z-index: 99;
     text-align: right;
   }
 
@@ -337,7 +333,7 @@ export default {
     }
   }
   .log-bottom-content {
-    padding: 0 0 0 24px;
+    padding: 0 24px;
   }
 
   .job-progress-wrap {

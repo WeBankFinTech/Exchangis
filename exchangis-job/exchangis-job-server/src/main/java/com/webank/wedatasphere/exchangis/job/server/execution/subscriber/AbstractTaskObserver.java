@@ -1,7 +1,8 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskObserverException;
+import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
 import org.apache.linkis.common.conf.CommonVars;
@@ -9,12 +10,14 @@ import org.apache.linkis.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -28,13 +31,23 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
 
     private static final int DEFAULT_TASK_OBSERVER_PUBLISH_BATCH = 50;
 
-    private static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_INTERVAL = CommonVars.apply("wds.exchangis.job.task.observer.publish.interval-in-millisecond", DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL);
+    private static final int MAX_SUBSCRIBE_TIMES = 3;
 
-    private static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_BATCH = CommonVars.apply("wds.exchangis.job.task.observer.publish.batch", DEFAULT_TASK_OBSERVER_PUBLISH_BATCH);
+    /**
+     * Observer publish interval
+     */
+    protected static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_INTERVAL = CommonVars.apply("wds.exchangis.job.task.observer.publish.interval-in-mills", DEFAULT_TASK_OBSERVER_PUBLISH_INTERVAL);
+
+    /**
+     * Observer publish batch
+     */
+    protected static final CommonVars<Integer> TASK_OBSERVER_PUBLISH_BATCH = CommonVars.apply("wds.exchangis.job.task.observer.publish.batch", DEFAULT_TASK_OBSERVER_PUBLISH_BATCH);
+
 
     private Scheduler scheduler;
 
     private TaskChooseRuler<T> taskChooseRuler;
+
 
     /**
      * Task manager
@@ -57,7 +70,9 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
 
     protected long lastPublishTime = -1;
 
-    private boolean isShutdown = false;
+    protected boolean isShutdown = false;
+
+    protected TaskObserverService observerService;
 
     public AbstractTaskObserver(int publishBatch, int publishInterval){
         if (publishBatch <= 0){
@@ -70,43 +85,60 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     public AbstractTaskObserver(){
         this.publishBatch = TASK_OBSERVER_PUBLISH_BATCH.getValue();
         this.publishInterval = TASK_OBSERVER_PUBLISH_INTERVAL.getValue();
+        this.lastPublishTime = -1;
     }
 
     @Override
     public void run() {
-        Thread.currentThread().setName("Observe-Thread-" + getName());
+        Thread.currentThread().setName("Observer-" + getName());
         LOG.info("Thread: [ {} ] is started. ", Thread.currentThread().getName());
-        this.lastPublishTime = System.currentTimeMillis();
+        String instance = getInstance();
         while (!isShutdown) {
             try {
                 List<T> publishedTasks;
                 try {
-                    publishedTasks = onPublish(publishBatch);
+                    publishedTasks = onPublish(instance, publishBatch);
+                    if (Objects.isNull(publishedTasks)){
+                        Thread.sleep(publishInterval);
+                        continue;
+                    }
                     // If list of publish tasks is not empty
-                    if (publishedTasks.size() > 0) {
+                    if (publishedTasks.size() > 0 || this.lastPublishTime <= 0) {
                         this.lastPublishTime = System.currentTimeMillis();
                     }
                 } catch (ExchangisTaskObserverException e){
                     e.setMethodName("call_on_publish");
                     throw e;
                 }
-                if (!publishedTasks.isEmpty()) {
+                // Record the published size
+                int publishedSize = publishedTasks.size();
+                for ( int i = 0; i < MAX_SUBSCRIBE_TIMES && !publishedTasks.isEmpty(); i ++) {
                     List<T> chooseTasks;
-                    try {
-                        chooseTasks = choose(publishedTasks, getTaskChooseRuler(), getScheduler());
-                    } catch (Exception e){
-                        throw new ExchangisTaskObserverException("call_choose_rule", "Fail to choose candidate tasks", e);
+                    TaskChooseRuler<T> chooseRuler = getTaskChooseRuler();
+                    if (Objects.nonNull(chooseRuler)) {
+                        try {
+                            chooseTasks = choose(publishedTasks, getTaskChooseRuler(), getScheduler());
+                        } catch (Exception e) {
+                            throw new ExchangisTaskObserverException("call_choose_rule", "Fail to choose candidate tasks", e);
+                        }
+                        // The rest one
+                        publishedTasks.removeAll(chooseTasks);
+                    } else {
+                        chooseTasks = new ArrayList<>(publishedTasks);
+                        publishedTasks.clear();
                     }
                     if (!chooseTasks.isEmpty()) {
                         try {
                             subscribe(chooseTasks);
-                        } catch (ExchangisTaskObserverException e){
+                        } catch (ExchangisTaskObserverException e) {
                             e.setMethodName("call_subscribe");
                             throw e;
                         }
                     }
                 }
-                sleepOrWaitIfNeed(publishedTasks);
+                // Discard the unsubscribed tasks
+                discard(publishedTasks);
+                sleepOrWaitIfNeed(publishedSize);
             } catch (Exception e){
                 if(e instanceof ExchangisTaskObserverException){
                     LOG.warn("Observer exception in progress paragraph: [{}]",((ExchangisTaskObserverException)e).getMethodName(), e);
@@ -145,33 +177,45 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     }
 
     /**
-     * Sleep or wait during the publish and subscribe
-     * @param publishedTasks published tasks
+     * Sleep or wait during the publishing and subscribe
      */
-    private void sleepOrWaitIfNeed(List<T> publishedTasks){
+    private void sleepOrWaitIfNeed(int publishedSize){
         long observerWait = this.lastPublishTime + publishInterval - System.currentTimeMillis();
-        if (publishedTasks.isEmpty() || observerWait > 0) {
+        if (!nextPublish(publishedSize, observerWait)) {
             observerWait = observerWait > 0? observerWait : publishInterval;
             boolean hasLock = observerLock.tryLock();
             if (hasLock) {
                 try {
-                    LOG.trace("TaskObserver wait in {} ms to ", observerWait);
+                    LOG.trace("TaskObserver:[{}] wait in {} ms to ", getName(), observerWait);
                     waitStatus.set(true);
                     emptyCondition.await(observerWait, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
                     if (isShutdown){
-                        LOG.warn("TaskObserver wait is interrupted by shutdown");
+                        LOG.warn("TaskObserver:[{}] wait is interrupted by shutdown",getName());
                     } else {
-                        LOG.warn("TaskObserver wait is interrupted", e);
+                        LOG.warn("TaskObserver:[{}] wait is interrupted", getName(), e);
                     }
                 } finally {
                     waitStatus.set(false);
                     observerLock.unlock();
                 }
             }
+        } else {
+            LockSupport.parkNanos(1L);
         }
     }
-    protected abstract List<T> onPublish(int batchSize) throws ExchangisTaskObserverException;
+
+    /**
+     * If go on publish, else wait for the next interval
+     * @param publishedSize published
+     * @param observerWait wait time
+     * @return bool
+     */
+    protected boolean nextPublish(int publishedSize, long observerWait){
+        return publishedSize > 0 && observerWait <= 0;
+    }
+
+    protected abstract List<T> onPublish(String instance, int batchSize) throws ExchangisTaskObserverException;
 
     /**
      * Call publish
@@ -228,6 +272,16 @@ public abstract class AbstractTaskObserver<T  extends ExchangisTask> implements 
     @Override
     public TaskExecution<T> getTaskExecution() {
         return taskExecution;
+    }
+
+    @Override
+    public void setTaskObserverService(TaskObserverService observerService) {
+        this.observerService = observerService;
+    }
+
+    @Override
+    public TaskObserverService getTaskObserverService() {
+        return this.observerService;
     }
 
     @Override

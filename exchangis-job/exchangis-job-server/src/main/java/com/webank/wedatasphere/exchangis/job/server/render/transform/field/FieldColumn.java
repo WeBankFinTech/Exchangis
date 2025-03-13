@@ -18,13 +18,13 @@ public class FieldColumn {
     /**
      * Field index
      */
-    protected int fieldIndex;
+    protected Integer fieldIndex;
 
     public FieldColumn(){
 
     }
 
-    public FieldColumn(String name, String type, int fieldIndex){
+    public FieldColumn(String name, String type, Integer fieldIndex){
         this.name = name;
         this.type = type;
         this.fieldIndex = fieldIndex;
@@ -46,11 +46,11 @@ public class FieldColumn {
         this.type = type;
     }
 
-    public int getFieldIndex() {
+    public Integer getFieldIndex() {
         return fieldIndex;
     }
 
-    public void setFieldIndex(int fieldIndex) {
+    public void setFieldIndex(Integer fieldIndex) {
         this.fieldIndex = fieldIndex;
     }
 

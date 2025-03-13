@@ -4,6 +4,7 @@ package com.webank.wedatasphere.exchangis.datasource.core.loader;
 import com.webank.wedatasphere.exchangis.dao.hook.MapperHook;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
 import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
+import com.webank.wedatasphere.exchangis.datasource.core.splitter.DataSourceSplitStrategyFactory;
 import org.apache.linkis.common.conf.CommonVars;
 
 import java.util.Objects;
@@ -22,7 +23,17 @@ public interface ExchangisDataSourceDefLoader {
 
     void setClassLoader(ClassLoader classLoader);
 
+    /**
+     * Set the data source context
+     * @param context context
+     */
     void setContext(ExchangisDataSourceContext context);
+
+    /**
+     * Set the split strategy factory
+     * @param splitStrategyFactory strategy factory
+     */
+    void setSplitStrategyFactory(DataSourceSplitStrategyFactory splitStrategyFactory);
 
     void init(MapperHook mapperHook) throws Exception;
 

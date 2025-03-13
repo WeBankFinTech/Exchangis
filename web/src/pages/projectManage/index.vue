@@ -114,7 +114,6 @@
       v-model:visible="modalCfg.visible"
       :mode="modalCfg.mode"
       :id="modalCfg.id"
-      :dataSources="dataSourceList"
       @finish="handleModalFinish"
     />
   </div>
@@ -126,7 +125,7 @@ import { PlusOutlined, SearchOutlined } from "@ant-design/icons-vue";
 import ProjectCreateCard from "./components/projectCreateCard.vue";
 import ProjectViewCard from "./components/projectViewCard.vue";
 import EditModal from "./components/editModal.vue";
-import { getProjectList, deleteProject, getDataSourceList } from "@/common/service";
+import { getProjectList, deleteProject } from "@/common/service";
 import { message } from "ant-design-vue";
 import { defineComponent, ref } from "vue";
 
@@ -182,22 +181,6 @@ export default {
           domain: item.domain
         }))
     },
-    async getDataSourceList(page = 1) {
-        const params = { page, pageSize: 100 };
-        const { list, total } = await getDataSourceList(params);
-        (list || []).forEach(item => {
-          item.dataSourceType = item.type;
-          item.dataSourceName = item.name;
-          item.dataSourceDesc = item.desc;
-          item.dataSourceId = item.id;
-          item.modifyTime = item.modifyTime;
-          item.createUser = item.createUser;
-        })
-        this.dataSourceList = [...this.dataSourceList, ...list];
-        if(this.dataSourceList.length < total) {
-          this.getDataSourceList(page + 1);
-        }
-    },
     // 模态框操作完成
     handleModalFinish() {
       this.pageCfg.current = 1;
@@ -239,12 +222,8 @@ export default {
     }
   },
   async mounted() {
-    if (this.$route.query.labels) {
-      localStorage.setItem('exchangis_environment', this.$route.query.labels)
-    }
-    this.dataSourceList = [];
+    localStorage.setItem('exchangis_environment', this.$route.query.labels || '')
     this.getDataList();
-    this.getDataSourceList();
   },
 };
 </script>

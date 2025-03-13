@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
-            <artifactId>exchangis-dao</artifactId>
+            <artifactId>exchangis-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -67,6 +67,7 @@ public class ExchangisProjectCreationOperation extends AbstractStructureOperatio
         postAction.addRequestPayload("description", requestRef.getDSSProject().getDescription());
         postAction.addRequestPayload("domain", Constraints.DOMAIN_NAME);
         postAction.addRequestPayload("source", MapUtils.newCommonMap("workspace", requestRef.getWorkspace().getWorkspaceName()));
+        postAction.addRequestPayload("dataSources", requestRef.getDSSProjectDataSources());
         postAction.addRequestPayload("editUsers", StringUtils.join(requestRef.getDSSProjectPrivilege().getEditUsers(),","));
         postAction.addRequestPayload("viewUsers", StringUtils.join(requestRef.getDSSProjectPrivilege().getAccessUsers(),","));
         postAction.addRequestPayload("execUsers", StringUtils.join(requestRef.getDSSProjectPrivilege().getReleaseUsers(),","));

@@ -1,6 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.builder;
 
-import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
 import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.builder.api.ExchangisJobBuilder;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;

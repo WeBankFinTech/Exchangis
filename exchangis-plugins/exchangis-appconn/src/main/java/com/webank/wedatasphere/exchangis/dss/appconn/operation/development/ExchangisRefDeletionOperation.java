@@ -25,9 +25,6 @@ public class ExchangisRefDeletionOperation extends AbstractDevelopmentOperation<
     @Override
     public ResponseRef deleteRef(ThirdlyRequestRef.RefJobContentRequestRefImpl deleteRequestRef) throws ExternalOperationFailedException {
         Integer id = (Integer) deleteRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID);
-
-
-
         String url = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "appJob/" + id));
         logger.info("User {} try to delete Exchangis job {} in project {}, the url is {}.", deleteRequestRef.getUserName(),
                 deleteRequestRef.getName(), deleteRequestRef.getProjectName(), url);

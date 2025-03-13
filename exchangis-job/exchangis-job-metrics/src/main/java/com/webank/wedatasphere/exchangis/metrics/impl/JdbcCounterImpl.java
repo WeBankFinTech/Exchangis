@@ -5,7 +5,7 @@ import com.webank.wedatasphere.exchangis.metrics.api.Counter;
 import com.webank.wedatasphere.exchangis.metrics.api.MetricName;
 import com.webank.wedatasphere.exchangis.metrics.dao.entity.ExchangisMetric;
 import com.webank.wedatasphere.exchangis.metrics.dao.mapper.ExchangisMetricMapper;
-import com.webank.wedatasphere.exchangis.metrics.support.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Date;

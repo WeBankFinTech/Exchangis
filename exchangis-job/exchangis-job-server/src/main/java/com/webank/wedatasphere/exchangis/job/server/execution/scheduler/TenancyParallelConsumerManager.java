@@ -1,10 +1,9 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.priority.PriorityOrderedQueue;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.priority.PriorityRunnable;
 import org.apache.commons.lang.StringUtils;
-import org.apache.linkis.common.utils.Utils;
 import org.apache.linkis.scheduler.listener.ConsumerListener;
 import org.apache.linkis.scheduler.queue.*;
 import org.apache.linkis.scheduler.queue.fifoqueue.FIFOGroup;
@@ -160,7 +159,7 @@ public class TenancyParallelConsumerManager extends ConsumerManager {
                 threadNum,
                 120L,
                 TimeUnit.SECONDS,
-                new PriorityBlockingQueue<>(10 * threadNum, (o1, o2) -> {
+                new PriorityOrderedQueue<>(10 * threadNum, (o1, o2) -> {
                     int left = o1 instanceof PriorityRunnable ? ((PriorityRunnable) o1).getPriority() : 0;
                     int right = o2 instanceof PriorityRunnable ? ((PriorityRunnable) o2).getPriority() : 0;
                     return right - left;

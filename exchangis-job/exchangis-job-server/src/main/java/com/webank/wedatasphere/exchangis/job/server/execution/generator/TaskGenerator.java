@@ -8,7 +8,7 @@ import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilder
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskGenerateException;
 import com.webank.wedatasphere.exchangis.job.server.log.JobServerLogging;
 
 public interface TaskGenerator<T extends ExchangisJob> extends JobServerLogging<T> {

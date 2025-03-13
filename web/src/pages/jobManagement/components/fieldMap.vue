@@ -45,7 +45,8 @@
 
       <div class="main-content" v-show="isFold"
         :class="{ 'text-danger': !fieldsSource.length && !fieldsSink.length }">
-        <div style="margin-bottom: 15px" v-if="((fieldsSource.length && fieldsSink.length) || selectType) && addEnabled">
+        <div style="margin-bottom: 15px"
+          v-if="fieldsSource.length && fieldsSink.length && addEnabled">
           <a-button type="dashed" @click="addTableRow">新增</a-button>
         </div>
         <!-- left -->
@@ -56,7 +57,7 @@
                 :pagination="pagination" v-if="type === 'MAPPING' && fieldMap.sourceDS.length > 0"
                 bordered>
                 <template #fieldName="{ record }">
-                  <a-select :mode="selectType" ref="select" :disabled="!record.fieldEditable" :value="record.fieldName" style="width: 150px"
+                  <a-select ref="select" :disabled="!record.fieldEditable" :value="record.fieldName" style="width: 150px"
                     :options="record.fieldOptions" @change="updateSourceFieldName(record, $event)">
                   </a-select>
                 </template>
@@ -101,7 +102,7 @@
                 :pagination="pagination" v-if="type === 'MAPPING' && fieldMap.sinkDS.length > 0"
                 bordered>
                 <template #fieldName="{ record }">
-                  <a-select :mode="selectType" :disabled="!record.fieldEditable" ref="select" :value="record.fieldName"
+                  <a-select :disabled="!record.fieldEditable" ref="select" :value="record.fieldName"
                     style="width: 150px" :options="record.fieldOptions"
                     @change="updateSinkFieldName(record, $event)">
                   </a-select>
@@ -152,8 +153,6 @@ import { getFieldFunc } from '@/common/service';
 
 export default defineComponent({
   props: {
-    srcTableNotExist: Boolean,
-    sinkTableNotExist: Boolean,
     fmData: Object,
     fieldsSource: Array,
     fieldsSink: Array,
@@ -191,9 +190,6 @@ export default defineComponent({
       transformerList: [],
     });
 
-    const srcTableNotExist = computed(() => props.srcTableNotExist);
-    const sinkTableNotExist = computed(() => props.sinkTableNotExist);
-    const selectType = computed(() => srcTableNotExist.value || sinkTableNotExist.value ? 'SECRET_COMBOBOX_MODE_DO_NOT_USE' : '');
     const newProps = computed(() => JSON.parse(JSON.stringify(props.fmData)));
     watch(newProps, (val, oldVal) => {
       const newVal = typeof val === 'string' ? JSON.parse(val) : val;
@@ -299,7 +295,7 @@ export default defineComponent({
         let sinkItem = {};
         let transformerItem = {};
 
-        if ((item.source_field_name && item.source_field_type) || (item.sink_field_name && item.sink_field_type)) {
+        if (item.source_field_name && item.source_field_type) {
           sourceItem.key = idx + '';
           sourceItem.fieldName =
             item.source_field_name && item.source_field_name;
@@ -374,15 +370,11 @@ export default defineComponent({
       context.emit('updateFieldMap', transforms);
     };
 
-    const defaultFieldValue = computed(() => srcTableNotExist.value || sinkTableNotExist.value ? '[Auto]' : '');
-
     const updateSourceFieldName = (info, e) => {
       const { key, fieldOptions } = info;
       fieldMap.sourceDS.forEach((item) => {
         if (item.key == key) {
           item.fieldName = e;
-          item.fieldType = defaultFieldValue.value;
-          delete item.fieldIndex;
           fieldOptions.forEach((field) => {
             if (field.value === item.fieldName) {
               item.fieldType = field.type;
@@ -406,8 +398,6 @@ export default defineComponent({
       fieldMap.sinkDS.forEach((item) => {
         if (item.key == key) {
           item.fieldName = e;
-          item.fieldType = defaultFieldValue.value;
-          delete item.fieldIndex;
           fieldOptions.forEach((field) => {
             if (field.value === item.fieldName) {
               item.fieldType = field.type;
@@ -438,13 +428,13 @@ export default defineComponent({
       sourceItem.key = sourceLen + '';
       sourceItem.fieldName = '';
       sourceItem.fieldOptions = createFieldOptions(props.fieldsSource);
-      sourceItem.fieldType = defaultFieldValue.value;
+      sourceItem.fieldType = '';
       sourceItem.fieldEditable = true;
 
       sinkItem.key = sinkLen + '';
       sinkItem.fieldName = '';
       sinkItem.fieldOptions = createFieldOptions(props.fieldsSink);
-      sinkItem.fieldType = defaultFieldValue.value;
+      sinkItem.fieldType = '';
       sinkItem.fieldEditable = true;
 
       transformerItem.key = tfLen + '';
@@ -577,8 +567,7 @@ export default defineComponent({
       pagination,
       changeEvents,
       checkOptions,
-      transformFuncOptions,
-      selectType
+      transformFuncOptions
     };
   },
 });
@@ -613,12 +602,11 @@ export default defineComponent({
   border-top: none;
   flex-direction: column;
   .main-header {
-    height: 32px;
+    height: 20px;
     font-family: PingFangSC-Medium;
     font-size: 14px;
     color: rgba(0, 0, 0, 0.85);
     font-weight: 500;
-    margin-bottom: 10px;
   }
   .main-content {
     padding: 24px;

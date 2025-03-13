@@ -4,6 +4,7 @@ package com.webank.wedatasphere.exchangis.datasource.core.context;
 import com.google.common.base.Strings;
 import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
 import com.webank.wedatasphere.exchangis.datasource.core.loader.ExchangisDataSourceDefLoader;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 import java.util.Map;
@@ -52,11 +53,10 @@ public class DefaultExchangisDsContext implements ExchangisDataSourceContext {
         }
         Collection<ExchangisDataSourceDefinition> values = this.dataSources.values();
         for (ExchangisDataSourceDefinition ds : values) {
-            if (ds.id().equalsIgnoreCase(dataSourceTypeId+"")) {
+            if (StringUtils.equals((String.valueOf(dataSourceTypeId)), ds.id())) {
                 return ds;
             }
         }
-
         return null;
     }
 

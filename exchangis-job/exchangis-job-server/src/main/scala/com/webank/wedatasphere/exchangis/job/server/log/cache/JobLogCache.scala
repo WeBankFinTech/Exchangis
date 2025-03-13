@@ -2,14 +2,13 @@ package com.webank.wedatasphere.exchangis.job.server.log.cache
 
 import java.util
 import java.util.concurrent.{ArrayBlockingQueue, Future}
-
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.SchedulerThread
 import org.apache.linkis.common.utils.{Logging, Utils}
 import org.apache.linkis.scheduler.Scheduler
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode.LOG_OP_ERROR
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService
-import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder
 import org.slf4j.{Logger, LoggerFactory}
 trait JobLogCache[V] extends Logging {
     def cacheLog(log: V)

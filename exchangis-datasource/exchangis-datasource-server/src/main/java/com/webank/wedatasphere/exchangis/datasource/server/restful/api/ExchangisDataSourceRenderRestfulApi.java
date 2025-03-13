@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.datasource.server.restful.api;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.datasource.core.ui.ElementUI;
 import com.webank.wedatasphere.exchangis.datasource.service.DataSourceRenderService;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectOpenService;
 import org.apache.linkis.server.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Expose the ui interface to front-end rendering
@@ -26,13 +28,15 @@ public class ExchangisDataSourceRenderRestfulApi {
     @Resource
     private DataSourceRenderService renderService;
 
+    @Resource
+    private ProjectOpenService projectOpenService;
+
     @RequestMapping(value = "/partition/element/{elementType:\\w+}", method = RequestMethod.GET)
     public Message partition(@PathVariable("elementType") String type,
                              @RequestParam("dataSourceId") Long dataSourceId,
                              @RequestParam("database") String database,
                              @RequestParam(value = "tableNotExist",  required = false) Boolean tableNotExist,
                              @RequestParam("table") String table, HttpServletRequest request){
-        String userName = UserUtils.getLoginUser(request);
         ElementUI.Type uiType;
         try {
             uiType = ElementUI.Type.valueOf(type.toUpperCase(Locale.ROOT));
@@ -42,7 +46,11 @@ public class ExchangisDataSourceRenderRestfulApi {
         Message result = Message.ok();
         try{
             boolean notExist = Optional.ofNullable(tableNotExist).orElse(false);
-            ElementUI<?> elementUI = renderService.getPartitionAndRender(userName, dataSourceId,
+            AtomicReference<String> username = new AtomicReference<>(UserUtils.getLoginUser(request));
+            // Try to get data source authority from project and set the privilege user
+            projectOpenService.hasDataSourceAuth(username.get(), dataSourceId,
+                    ds -> username.set(ds.getCreator()));
+            ElementUI<?> elementUI = renderService.getPartitionAndRender(username.get(), dataSourceId,
                     database, table, uiType, notExist);
             result.data("type", uiType.name());
             result.data("customize", notExist);

@@ -1,12 +1,13 @@
 package com.webank.wedatasphere.exchangis.job.server.execution;
 
 
+import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisOnEventException;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskExecuteException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskExecuteException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
 import com.webank.wedatasphere.exchangis.job.server.execution.events.*;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSchedulerLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
@@ -15,6 +16,7 @@ import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.Ab
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.tasks.SubmitSchedulerTask;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
+import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import com.webank.wedatasphere.exchangis.job.utils.TypeGenericUtils;
 import org.apache.linkis.scheduler.Scheduler;
 import org.slf4j.Logger;
@@ -35,6 +37,7 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTaskExecution.class);
     private boolean initial = false;
+    protected RateLimitService rateLimitService;
 
     /**
      * Execution listeners
@@ -42,8 +45,8 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
     private List<TaskExecutionListener> listeners = new ArrayList<>();
 
     @Override
-    public void submit(LaunchableExchangisTask task) throws ExchangisTaskExecuteException{
-        SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(task);
+    public void submit(LaunchableExchangisTask task) throws ExchangisTaskExecuteException {
+        SubmitSchedulerTask submitSchedulerTask = new SubmitSchedulerTask(rateLimitService, task);
         try {
             submit(submitSchedulerTask);
         } catch (ExchangisSchedulerException e) {
@@ -105,6 +108,8 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
     protected synchronized void init() throws ExchangisTaskExecuteException{
         if (!initial){
             Scheduler scheduler = getScheduler();
+            TaskObserverService observerService = getTaskObserverService();
+            observerService.setTaskExecution(this);
             if (Objects.isNull(scheduler)){
                 throw new ExchangisTaskExecuteException("Scheduler cannot be empty in task execution", null);
             }
@@ -115,6 +120,7 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
             List<TaskObserver<?>> observers = getTaskObservers();
             Optional.ofNullable(observers).ifPresent(taskObservers -> taskObservers.forEach(observer -> {
                 observer.setScheduler(scheduler);
+                observer.setTaskObserverService(observerService);
                 Class<?> subType = TypeGenericUtils.getActualTypeFormGenericClass(observer.getClass(), null, 0);
                 if (LaunchedExchangisTask.class.equals(subType)){
                     ((TaskObserver<LaunchedExchangisTask>)observer).setTaskManager(taskManager);
@@ -167,6 +173,11 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
         }
 
         @Override
+        public void onPrepare(TaskPrepareEvent prepareEvent) throws ExchangisOnEventException {
+
+        }
+
+        @Override
         public void onProgressUpdate(TaskProgressUpdateEvent updateEvent) {
             // Ignore
         }
@@ -183,27 +194,33 @@ public abstract class AbstractTaskExecution implements TaskExecution<LaunchableE
      * TaskManager of launchedExchangisTask
      * @return task Manager
      */
-    protected abstract  TaskManager<LaunchedExchangisTask> getTaskManager();
+    public abstract  TaskManager<LaunchedExchangisTask> getTaskManager();
 
     /**
      * TaskObserver
      * @return list
      */
-    protected abstract List<TaskObserver<?>> getTaskObservers();
+    public abstract List<TaskObserver<?>> getTaskObservers();
 
     /**
      * Scheduler
      * @return Scheduler
      */
-    protected abstract Scheduler getScheduler();
+    public abstract Scheduler getScheduler();
 
-    protected abstract TaskChooseRuler<LaunchableExchangisTask> getTaskChooseRuler();
+    public abstract TaskChooseRuler<LaunchableExchangisTask> getTaskChooseRuler();
     /**
      * Launch manager
      * @return launch manager
      */
-    protected abstract ExchangisTaskLaunchManager getExchangisLaunchManager();
+    public abstract ExchangisTaskLaunchManager getExchangisLaunchManager();
 
-    protected abstract TaskSchedulerLoadBalancer<LaunchedExchangisTask> getTaskSchedulerLoadBalancer();
+    public abstract TaskSchedulerLoadBalancer<LaunchedExchangisTask> getTaskSchedulerLoadBalancer();
+
+    /**
+     * Task observer service
+     * @return
+     */
+    public abstract TaskObserverService getTaskObserverService();
 
 }

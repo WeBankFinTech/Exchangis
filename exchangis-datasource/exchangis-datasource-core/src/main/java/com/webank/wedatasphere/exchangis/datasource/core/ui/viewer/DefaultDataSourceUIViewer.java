@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.datasource.core.ui.viewer;
 
 import com.webank.wedatasphere.exchangis.datasource.core.ui.*;
-import com.webank.wedatasphere.exchangis.datasource.core.vo.ExchangisJobTransformsContent;
+import com.webank.wedatasphere.exchangis.job.domain.content.ExchangisJobTransformsContent;
 
 import java.util.List;
 

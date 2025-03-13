@@ -124,10 +124,8 @@
                         <div>
                             <DataSource
                                 v-if="curTask"
-                                :key="curTask.subJobName"
                                 v-bind:dsData="curTask"
                                 v-bind:engineType="curTask.engineType"
-                                :projectId="jobData.projectId"
                                 @updateSourceInfo="updateSourceInfo"
                                 @updateSinkInfo="updateSinkInfo"
                                 @updateSourceParams="updateSourceParams"
@@ -155,8 +153,6 @@
                                 <!-- 字段映射 -->
                                 <FieldMap
                                     v-if="curTask"
-                                    v-bind:srcTableNotExist="curTask.dataSourceIds.source.tableNotExist"
-                                    v-bind:sinkTableNotExist="curTask.dataSourceIds.sink.tableNotExist"
                                     v-bind:fmData="curTask.transforms"
                                     v-bind:fieldsSink="fieldsSink"
                                     v-bind:fieldsSource="fieldsSource"
@@ -249,7 +245,7 @@
         </div>
     
         <!-- 执行日志  jd-bottom -->
-        <div :class="[visibleLog ? 'display-bottom' : 'hide-botttom']" class="jd-bottom jd-bottom-log" :style="bottomStyle">
+        <div v-show="visibleLog" class="jd-bottom jd-bottom-log" :style="bottomStyle">
             <div class="jd-bottom-top jd-bottom-log-top">
                 <!-- 放大 -->
                 <ExpandOutlined 
@@ -451,7 +447,7 @@ import { stubFalse } from 'lodash';
 const objectValueEmpty = (obj) => {
     let isEmpty = false;
     Object.keys(obj).forEach((o) => {
-        if (obj[o] === null || obj[o] === '' || obj[o] === undefined) {
+        if (obj[o] == null || obj[o] == '' || obj[o] == undefined) {
             isEmpty = true;
         }
     });
@@ -508,9 +504,6 @@ const DEF_OPTIONS = [
     { label: '字段映射', value: 'MAPPING' },
     { label: '后置控制器', value: 'PROCESSOR'}
 ]
-
-
-const defaultMaxRows = Math.floor(260 / 22.2);
 
 export default {
     components: {
@@ -613,7 +606,7 @@ export default {
                 right: 0,
             },
             bottomStyle: '', //底部样式
-            maxRows: defaultMaxRows,
+            maxRows: 10,
             processTypes: [], // MAPPING字段映射 | PROCESSOR后置控制器
             curType: '', // 当前类型
             saveSpinning: false,
@@ -641,7 +634,7 @@ export default {
         activeKey(val, oldVal) {
             if (val !== '2') {
                 this.bottomStyle = "";
-                this.maxRows = defaultMaxRows;
+                this.maxRows = 10;
             }
         }
     },
@@ -673,7 +666,6 @@ export default {
                     item.engineType = data.engineType;
                 });
                 this.jobData = data;
-                this.jobData.projectId = String(data.projectId || '');
 
                 const configData = Object.create(null);
                 configData.executeNode = data.executeNode || '';
@@ -686,9 +678,7 @@ export default {
                 if (this.list.length) {
                     this.activeIndex = 0;
                     this.curTask = this.list[this.activeIndex];
-                    this.curTask._transforms = cloneDeep(this.curTask.transforms, 1);
-                    this.curTask.dataSourceIds.source.tableNotExist = !!this.curTask.transforms.srcTblNotExist;
-                    this.curTask.dataSourceIds.sink.tableNotExist = !!this.curTask.transforms.sinkTblNotExist;
+                    this.curTask._transforms = cloneDeep(this.curTask.transforms, 1)
                     this.curType = this.curTask.transforms.type;
                     // test 
                     console.log('当前任务详情', this.curTask)
@@ -773,11 +763,7 @@ export default {
             }
             this.activeIndex = index
             this.curTask = this.list[index];
-            this.curTask._transforms = cloneDeep(this.curTask.transforms, 1);
-            //test 代码调试中:
-            console.log('%c%s','font-size: 24px;background: #5eec95', '调试', this.curTask)
-            this.curTask.dataSourceIds.source.tableNotExist = !!this.curTask.transforms.srcTblNotExist;
-            this.curTask.dataSourceIds.sink.tableNotExist = !!this.curTask.transforms.sinkTblNotExist;
+            this.curTask._transforms = cloneDeep(this.curTask.transforms, 1)
             this.curType = this.curTask.transforms.type;
             this.addEnable = this.curTask.transforms.addEnable;
             this.transformEnable = this.curTask.transforms.transformEnable;
@@ -808,14 +794,14 @@ export default {
                         id: '',
                         db: '',
                         table: '',
-                        name: ''
+                        ds: ''
                     },
                     sink: {
                         type: '',
                         id: '',
                         db: '',
                         table: '',
-                        name: ''
+                        ds: ''
                     }
                 },
                 params: {
@@ -858,14 +844,10 @@ export default {
         updateProcessControl(settings) {
             this.curTask.settings = settings;
         },
-        getFieldsParams(dataSource, isUpdate) {
+        getFieldsParams(dataSource) {
             const { dataSourceIds, params } = dataSource;
             this.curTask.dataSourceIds = dataSourceIds;
             this.curTask.params = params;
-            if (isUpdate) {
-                this.curTask.transforms.srcTblNotExist = dataSourceIds.source.tableNotExist;
-                this.curTask.transforms.sinkTblNotExist = dataSourceIds.sink.tableNotExist;
-            }
             const source = this.curTask.dataSourceIds.source;
             const sink = this.curTask.dataSourceIds.sink;
             if (!source.type || !source.id || !sink.type || !sink.id) return null;
@@ -878,9 +860,7 @@ export default {
                 sinkDataSourceId: sink.id,
                 sinkDataBase: sink.db,
                 sinkTable: sink.table,
-                engine: this.jobData.engineType,
-                srcTblNotExist: !!source.tableNotExist,
-                sinkTblNotExist: !!sink.tableNotExist
+                engine: this.jobData.engineType
             };
         },
         convertDeductions(deductions) {
@@ -903,7 +883,7 @@ export default {
             return mapping;
         },
         updateSourceInfo(dataSource, firstInit) {
-            const data = this.getFieldsParams(dataSource, true);
+            const data = this.getFieldsParams(dataSource);
             if (data) {
                 getFields(data).then((res) => {
                     this.fieldsSource = res.sourceFields;
@@ -930,7 +910,7 @@ export default {
             }
         },
         updateSinkInfo(dataSource, firstInit) {
-            const data = this.getFieldsParams(dataSource, true);
+            const data = this.getFieldsParams(dataSource);
             if (data) {
                 getFields(data).then((res) => {
                     this.fieldsSource = res.sourceFields;
@@ -973,72 +953,21 @@ export default {
                 res.push(<li style="list-style: none;"><span style="margin-left: -30px;">配置任务中执行用户不可为空</span></li>);
             }
             jobs.forEach((job) => {
-                const { params, settings, transforms } = job;
+                const { params, settings } = job;
                 let isInsert = false
                 res.push(<li style="list-style: none;"><span style="margin-left: -30px;">{job.subJobName}:</span></li>);
                 for (const key in params) {
-                    let nullFormatUnique = {refId: ''}
-                    let transferModeUnique = {id: '', value: ''};
-                    params[key].forEach(i => {
-                        if (i.field === 'transferMode') {
-                            transferModeUnique = {value: i.value, id: i.id};
-                        } else if (i.field === 'nullFormat') {
-                            nullFormatUnique = {refId: i.refId};
-                        }
-                    })
                     params[key].forEach((i) => {
-                        // 判断分区alue有值的情况下可能为空的情况
-                        let judePartition = i.value && 
-                            i.field === "partition" &&
-                            ((Array.isArray(i.value) && (i.value.length < 1 || (i.value.length === 1 && !i.value[0].key && !i.value[0].value))) || 
-                            (!Object.keys(i.value).length || Object.values(i.value).filter(v => v).length < Object.keys(i.value).length));
+                        let judePartition = i.value && i.field === "partition" &&
+                            (!Object.keys(i.value).length || Object.values(i.value).filter(v => v).length < Object.keys(i.value).length)
                         if ((!i.value || judePartition) && i.required ) {
-                            const isPartitionEmpty = i.field === "partition" && !i.value;
-                            if (i.field === 'nullFormat') {
-                                if (transferModeUnique.id === nullFormatUnique.refId) {
-                                    if(transferModeUnique.value === '记录') {
-                                        isInsert = true;
-                                        res.push(<li>{i.label}不可为空</li>);
-                                    }
-                                }else {
-                                    isInsert = true;
-                                    res.push(<li>{i.label}不可为空</li>);
-                                }
-                            } else if (!isPartitionEmpty) {
+                            if (!(i.field === "partition" && !i.value)) {
                                 isInsert = true;
                                 res.push(<li>{i.label}不可为空</li>);
                             }
                         } else if (i.value && i.validateType === "REGEX") {
-                            const value_reg = new RegExp(`${i.validateRange}`);
-                            const keyMap = { sinks: 'sink', sources: 'source' };
-                            if (i.field === "partition" && keyMap[key] && job.dataSourceIds[keyMap[key]].tableNotExist) {
-                                const value_reg = new RegExp(`${i.validateRange}`);
-                                // 非必填的情况下允许保存的分区 null, { a: b }, [{key: '', value}]
-                                const isPartionValid = !Array.isArray(i.value) || 
-                                    (Array.isArray(i.value) && (i.value.length < 1 || (i.value.length === 1 && !i.value[0].key && !i.value[0].value)));
-                                if (isPartionValid) {
-                                    return;
-                                } else if (i.value.some(item => !item.key)) {
-                                    isInsert = true;
-                                    res.push(<li>{i.label}key值不可为空</li>);
-                                } else if (i.value.some(item => !item.value)) {
-                                    isInsert = true;
-                                    res.push(<li>{i.label}value值不可为空</li>);
-                                } else if (i.value.some(item => !/^[a-zA-Z0-9_-]+$/.test(item.key))) {
-                                    isInsert = true;
-                                    res.push(<li>{i.label}key值只能为字母、数字、横线和下划线</li>);
-                                } else if (i.value.some(item => !value_reg.test(item.value))) {
-                                    isInsert = true;
-                                    res.push(<li>{i.label}value值过长</li>);
-                                } else {
-                                    const partitionKeys = i.value.map(item => item.key);
-                                    const filterPartitionKeys = [...new Set(partitionKeys)];
-                                    if (partitionKeys.length !== filterPartitionKeys.length) {
-                                        isInsert = true;
-                                        res.push(<li>{i.label}key值不能重复</li>);
-                                    }
-                                }
-                            } else if (!value_reg.test(i.value)) {
+                            const num_reg = new RegExp(`${i.validateRange}`);
+                            if (!num_reg.test(i.value)) {
                                 isInsert = true;
                                 res.push(<li>{i.label}格式不正确</li>);
                             }
@@ -1058,12 +987,6 @@ export default {
                         }
                     }
                 });
-
-                const sinkFields = (transforms.mapping || []).map(item => item.sink_field_name).filter(item => item);
-                if(sinkFields.length && sinkFields.length > [...new Set(sinkFields)].length) {
-                    isInsert = true;
-                    res.push(<li>字段映射目的端字段存在重复</li>);
-                }
 
                 if (!isInsert) {
                     res.splice(res.length - 1, 1)
@@ -1121,22 +1044,8 @@ export default {
                     return message.error('未选择数据源库表');
                 }
                 cur.dataSources = {
-                    source: {
-                        id: jobData.dataSourceIds.source.id,
-                        type: jobData.dataSourceIds.source.type, 
-                        name: jobData.dataSourceIds.source.name, 
-                        db: jobData.dataSourceIds.source.db, 
-                        table: jobData.dataSourceIds.source.table,
-                        creator: jobData.dataSourceIds.source.creator
-                    },
-                    sink: {
-                        id: jobData.dataSourceIds.sink.id,
-                        type: jobData.dataSourceIds.sink.type, 
-                        name: jobData.dataSourceIds.sink.name, 
-                        db: jobData.dataSourceIds.sink.db, 
-                        table: jobData.dataSourceIds.sink.table,
-                        creator: jobData.dataSourceIds.sink.creator
-                    }
+                    source_id: `${jobData.dataSourceIds.source.type}.${jobData.dataSourceIds.source.id}.${jobData.dataSourceIds.source.db}.${jobData.dataSourceIds.source.table}`,
+                    sink_id: `${jobData.dataSourceIds.sink.type}.${jobData.dataSourceIds.sink.id}.${jobData.dataSourceIds.sink.db}.${jobData.dataSourceIds.sink.table}`
                 };
                 /* if (
           !jobData.params ||
@@ -1151,61 +1060,25 @@ export default {
                 };
                 jobData.params.sources.forEach((source) => {
                     if (!(source.field === "partition" && !source.value)) {
-                        if (source.field === "partition" && jobData.dataSourceIds.source.tableNotExist) {
-                            let config_obj = {};
-                            if (source.value && Array.isArray(source.value)) {
-                                source.value.forEach(item => {
-                                    config_obj[item.key] = item.value
-                                })
-                            } else {
-                                config_obj = source.value
-                            }
-                            cur.params.sources.push({
-                                config_key: source.field, // UI中field
-                                config_name: source.label, // UI中label
-                                config_value: config_obj ? {...config_obj} : config_obj, // UI中value
-                                sort: source.sort
-                            });
-                        } else {
-                            cur.params.sources.push({
-                                config_key: source.field, // UI中field
-                                config_name: source.label, // UI中label
-                                config_value: source.value, // UI中value
-                                sort: source.sort
-                            });
-                        }
+                        cur.params.sources.push({
+                            config_key: source.field, // UI中field
+                            config_name: source.label, // UI中label
+                            config_value: source.value, // UI中value
+                            sort: source.sort
+                        });
                     }
                 });
-                jobData.params.sinks.forEach((sink) => {
-                    if (!(sink.field === "partition" && !sink.value)) { //排除分区为空的情况
-                        if (sink.field === "partition" && jobData.dataSourceIds.sink.tableNotExist) {
-                            let config_obj = {};
-                            if (sink.value && Array.isArray(sink.value)) {
-                                sink.value.forEach(item => {
-                                    config_obj[item.key] = item.value
-                                })
-                            } else {
-                                config_obj = sink.value
-                            }
-                            cur.params.sinks.push({
-                                config_key: sink.field, // UI中field
-                                config_name: sink.label, // UI中label
-                                config_value: config_obj ? {...config_obj} : config_obj, // UI中value
-                                sort: sink.sort
-                            });
-                        } else {
-                            cur.params.sinks.push({
-                                config_key: sink.field, // UI中field
-                                config_name: sink.label, // UI中label
-                                config_value: sink.value, // UI中value
-                                sort: sink.sort
-                            });
-                        }
+                jobData.params.sinks.forEach((source) => {
+                    if (!(source.field === "partition" && !source.value)) { //排除分区为空的情况
+                        cur.params.sinks.push({
+                            config_key: source.field, // UI中field
+                            config_name: source.label, // UI中label
+                            config_value: source.value, // UI中value
+                            sort: source.sort
+                        });
                     }
                 });
                 cur.transforms = jobData.transforms;
-                cur.transforms.srcTblNotExist = jobData.dataSourceIds.source.tableNotExist;
-                cur.transforms.sinkTblNotExist = jobData.dataSourceIds.sink.tableNotExist;
                 if (this.curType === 'MAPPING') { // 为字段映射时才需要
                     cur.transforms.addEnable = this.addEnable;
                     cur.transforms.transformEnable = this.transformEnable;
@@ -1342,14 +1215,9 @@ export default {
                     message.error('查询任务列表失败');
                 });
         },
-        clearProgressTimer() {
-            if (this.progressTimer) {
-                clearInterval(this.progressTimer);
-            }
-        },
         getJobProgress(jobExecutionId) {
             this.getJobProgressInvoke(jobExecutionId);
-            this.clearProgressTimer();
+            clearInterval(this.progressTimer);
             this.progressTimer = setInterval(() => {
                 this.getJobProgressInvoke(jobExecutionId);
             }, 1000 * 5);
@@ -1378,7 +1246,6 @@ export default {
                 })
                 .catch((err) => {
                     message.error('查询进度失败');
-                    this.clearProgressTimer();
                 });
         },
         getTaskInfo(progress) {
@@ -1453,7 +1320,7 @@ export default {
             clearInterval(this.progressTimer);
             this.visibleLog = false;
             this.bottomStyle = "";
-            this.maxRows = defaultMaxRows;
+            this.maxRows = 10;
         },
         getEditableInput() {
             this.nameEditable = true;
@@ -1466,10 +1333,15 @@ export default {
         expandLog() {
             if (this.bottomStyle) {
                 this.bottomStyle = "";
-                this.maxRows = defaultMaxRows;
+                this.maxRows = 10;
             } else {
-                this.bottomStyle = "position: absolute;height: calc(100vh - 36px) !important;";
-                this.maxRows = Math.floor((window.innerHeight - 176) / 22.2);
+                if (document.body.clientWidth > 1400) {
+                    this.bottomStyle = "flex: 0 0 578px; height: 578px !important;";
+                    this.maxRows = 20;
+                } else {
+                    this.bottomStyle = "flex: 0 0 464px; height: 464px !important;";
+                    this.maxRows = 15;
+                }
             }
         },
         // 切换控制器和映射
@@ -1521,7 +1393,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 46px);
+  height: calc(100vh - 82px);
   .tools-bar {
     width: 100%;
     border-bottom: 1px solid #dee4ec;
@@ -1674,28 +1546,22 @@ export default {
     overflow: auto;
     width: 100%;
     background-color: white;
-    flex: 0 0 400px;
-    height: 400px !important;
+    flex: 0 0 350px;
+    height: 350px !important;
     position: relative;
     top: 0 !important;
-    &.hide-botttom {
-    display: none;
-    }
-    &.display-bottom {
-        display: block;
-    }
     .jd-bottom-top {
-      max-width: 100px;
-      height: 43px;
+      width: 100px;
+      height: 48px;
       background-color: #f8f9fc;
-      padding: 8px 24px;
+      padding: 12px 24px;
       font-family: PingFangSC-Medium;
       font-size: 16px;
       color: rgba(0, 0, 0, 0.85);
       font-weight: 500;
       position: absolute;
       top: 0 !important;
-      right: 0px;
+      right: 24px;
       z-index: 99;
       text-align: right;
     }
@@ -1711,7 +1577,7 @@ export default {
       }
     }
     .log-bottom-content {
-      padding: 0 0 0 24px;
+      padding: 0 24px;
     }
 
     .job-progress-wrap {

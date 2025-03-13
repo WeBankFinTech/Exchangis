@@ -4,8 +4,8 @@ import com.webank.wedatasphere.exchangis.common.linkis.client.ExchangisHttpClien
 import com.webank.wedatasphere.exchangis.common.linkis.client.config.ExchangisClientConfig
 import org.apache.linkis.common.utils.Utils
 import org.apache.linkis.computation.client.once.LinkisManagerClient
-import org.apache.linkis.computation.client.once.action.{AskEngineConnAction, CreateEngineConnAction, EngineConnOperateAction, GetEngineConnAction, KillEngineConnAction, LinkisManagerAction}
-import org.apache.linkis.computation.client.once.result.{AskEngineConnResult, CreateEngineConnResult, EngineConnOperateResult, GetEngineConnResult, KillEngineConnResult, LinkisManagerResult}
+import org.apache.linkis.computation.client.once.action.{AskEngineConnAction, CreateEngineConnAction, EngineConnOperateAction, GetEngineConnAction, KillEngineConnAction, LinkisManagerAction, ListEngineConnAction}
+import org.apache.linkis.computation.client.once.result.{AskEngineConnResult, CreateEngineConnResult, EngineConnOperateResult, GetEngineConnResult, KillEngineConnResult, LinkisManagerResult, ListEngineConnResult}
 import org.apache.linkis.httpclient.request.Action
 
 /**
@@ -47,4 +47,8 @@ class ExchangisLaunchClient(clientConfig: ExchangisClientConfig) extends LinkisM
 
   override def askEngineConn(askEngineConnAction: AskEngineConnAction): AskEngineConnResult =
     execute(askEngineConnAction)
+
+  override def listEngineConn(listEngineConnAction: ListEngineConnAction): ListEngineConnResult = {
+    execute(listEngineConnAction)
+  }
 }

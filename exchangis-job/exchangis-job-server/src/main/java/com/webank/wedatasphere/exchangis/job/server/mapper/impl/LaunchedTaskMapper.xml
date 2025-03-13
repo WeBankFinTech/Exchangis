@@ -10,6 +10,11 @@
         <result column="last_update_time" property="lastUpdateTime"/>
         <result column="job_id" property="jobId"/>
         <result column="engine_type" property="engineType"/>
+        <result column="source_type" property="sourceType"/>
+        <result column="sink_type" property="sinkType"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="sink_id" property="sinkId"/>
+        <result column="content" property="content"/>
         <result column="execute_user" property="executeUser"/>
         <result column="job_name" property="jobName"/>
         <result column="progress" property="progress"/>
@@ -24,6 +29,8 @@
         <result column="running_time" property="runningTime"/>
         <result column="metrics" property="metrics"/>
         <result column="status" property="status"/>
+        <result column="instance" property="instance"/>
+        <result column="commit_version" property="commitVersion"/>
     </resultMap>
 
     <sql id="TableName">
@@ -32,19 +39,24 @@
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status </sql>
+        id, name, create_time, last_update_time, job_id, engine_type, source_type, sink_type, source_id, sink_id, content, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status, instance, commit_version</sql>
 
     <insert id="insertLaunchedTaskOrUpdate" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
         insert into
         <include refid="TableName"/>
-        (id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status)
+        (id, name, create_time, last_update_time, job_id, engine_type, source_type, sink_type, source_id, sink_id, content, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status, instance)
         values(
         #{id},
         #{name},
         #{createTime},
-        #{lastUpdateTime},
+        #{lastUpdateTime, jdbcType=TIMESTAMP},
         #{jobId},
         #{engineType},
+        #{sourceType},
+        #{sinkType},
+        #{sourceId},
+        #{sinkId},
+        #{content},
         #{executeUser},
         #{jobName},
         #{progress},
@@ -58,20 +70,21 @@
         #{launchTime},
         #{runningTime},
         #{metrics},
-        #{status}
+        #{status},
+        #{instance}
         ) ON DUPLICATE KEY UPDATE
-        name = #{name}, `status` = #{status};
+        `status` = #{status}, name = #{name};
     </insert>
 
     <insert id="insertLaunchedTask" parameterType="com.webank.wedatasphere.exchangis.job.launcher.entity.LaunchedExchangisTaskEntity">
         insert into
         <include refid="TableName"/>
-        (id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status)
+        (id, name, create_time, last_update_time, job_id, engine_type, execute_user, job_name, progress, error_code, error_msg, retry_num, task_id, linkis_job_id, linkis_job_info, job_execution_id, launch_time, running_time, metrics, status, instance)
         values(
         #{id},
         #{name},
         #{createTime},
-        #{lastUpdateTime},
+        #{lastUpdateTime, jdbcType=TIMESTAMP},
         #{jobId},
         #{engineType},
         #{executeUser},
@@ -87,7 +100,8 @@
         #{launchTime},
         #{runningTime},
         #{metrics},
-        #{status}
+        #{status},
+        #{instance}
         );
     </insert>
 
@@ -95,6 +109,17 @@
         DELETE FROM <include refid="TableName"/> WHERE
         task_id = #{taskId}
     </delete>
+
+    <delete id="deleteLaunchedTaskInVersion">
+        DELETE FROM <include refid="TableName"/> WHERE
+        <![CDATA[task_id = #{taskId} AND `commit_version` = #{version}]]>
+    </delete>
+
+    <update id="updateDateInVersion">
+        UPDATE <include refid="TableName"/>
+        <![CDATA[SET last_update_time = #{updateDate}, `commit_version` = `commit_version` + 1
+        WHERE task_id = #{taskId} AND `commit_version` = #{version}]]>
+    </update>
 
     <update id="upgradeLaunchedTask">
         UPDATE <include refid="TableName"/>
@@ -182,7 +207,7 @@
     <select id="selectTaskStatusByJobExecutionId" resultType="String">
         <![CDATA[SELECT status FROM ]]>
         <include refid="TableName" />
-        <![CDATA[ WHERE job_execution_id = #{jobExecutionId};]]>
+        <![CDATA[ WHERE job_execution_id = #{jobExecutionId} FOR UPDATE;]]>
     </select>
     <select id="getTaskMetricsByJobExecutionId" parameterType="java.lang.String" resultType="String">
         select metrics
@@ -209,7 +234,7 @@
     <select id="sumProgressByJobExecutionId" resultType="Float">
         <![CDATA[SELECT SUM(progress) FROM ]]>
         <include refid="TableName"/>
-        <![CDATA[ WHERE job_execution_id = #{jobExecutionId};]]>
+        <![CDATA[ WHERE job_execution_id = #{jobExecutionId} FOR UPDATE;]]>
     </select>
 
     <select id="getTaskStatusList" parameterType="java.lang.String" resultType="java.lang.String">
@@ -217,6 +242,23 @@
         from
         <include refid="TableName" />
         where job_execution_id = #{jobExecutionId}
+    </select>
+
+    <select id="getLaunchedTaskInExpire" resultMap="BaseResultMap">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM
+        <include refid="TableName" />
+        <where>
+            <if test="instance != null and instance != ''">
+                AND  instance = #{instance}
+            </if>
+            <![CDATA[
+            AND `last_update_time` < #{expireTime}
+            AND `status` = #{status}
+            ]]>
+        </where>
+        ORDER BY last_update_time ASC LIMIT #{limitSize};
     </select>
 
     <delete id="deleteTask">

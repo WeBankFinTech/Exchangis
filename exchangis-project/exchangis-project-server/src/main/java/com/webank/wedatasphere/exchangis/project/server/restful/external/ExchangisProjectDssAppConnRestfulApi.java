@@ -6,17 +6,24 @@ import com.webank.wedatasphere.exchangis.common.enums.OperateTypeEnum;
 import com.webank.wedatasphere.exchangis.common.enums.TargetTypeEnum;
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
+import com.webank.wedatasphere.exchangis.datasource.core.domain.ExchangisDataSourceDetail;
+import com.webank.wedatasphere.exchangis.datasource.service.DataSourceService;
 import com.webank.wedatasphere.exchangis.job.server.service.JobInfoService;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
 import com.webank.wedatasphere.exchangis.project.entity.domain.OperationType;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectAppVo;
+import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectDsVo;
 import com.webank.wedatasphere.exchangis.project.entity.vo.ExchangisProjectInfo;
-import com.webank.wedatasphere.exchangis.project.server.service.ProjectService;
+import com.webank.wedatasphere.exchangis.project.provider.ExchangisProjectConfiguration;
+import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectErrorException;
+import com.webank.wedatasphere.exchangis.project.provider.exception.ExchangisProjectExceptionCode;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectService;
 import com.webank.wedatasphere.exchangis.project.server.utils.ExchangisProjectRestfulUtils;
-import com.webank.wedatasphere.exchangis.project.server.utils.ProjectAuthorityUtils;
+import com.webank.wedatasphere.exchangis.project.provider.utils.ProjectAuthorityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
+import org.apache.linkis.common.exception.ErrorException;
 import org.apache.linkis.common.utils.JsonUtils;
 import org.apache.linkis.server.Message;
 import org.apache.linkis.server.security.SecurityFilter;
@@ -29,7 +36,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.groups.Default;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Restful class for dss project
@@ -51,41 +58,71 @@ public class ExchangisProjectDssAppConnRestfulApi {
     @Resource
     private JobInfoService jobInfoService;
 
+    /**
+     * Data source service
+     */
+    @Resource
+    private DataSourceService dataSourceService;
+
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public Message createProject(@Validated @RequestBody ExchangisProjectAppVo project,
+    public Message createProject(@Validated @RequestBody ExchangisProjectAppVo projectVo,
                                  BindingResult result, HttpServletRequest request){
-        ExchangisProjectInfo projectVo = new ExchangisProjectInfo(project);
+        LOG.error("Create project from dss {}", projectVo.toString());
+        ExchangisProjectInfo projectInfo = new ExchangisProjectInfo(projectVo);
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
 
         String oringinUser = SecurityFilter.getLoginUsername(request);
         String username = UserUtils.getLoginUser(request);
-        if (StringUtils.isBlank(projectVo.getViewUsers()) || !StringUtils.contains(projectVo.getViewUsers(), username)) {
-            projectVo.setViewUsers(username + projectVo.getViewUsers());
+        if (StringUtils.isBlank(projectInfo.getViewUsers()) || !StringUtils.contains(projectInfo.getViewUsers(), username)) {
+            projectInfo.setViewUsers(username + "," + projectInfo.getViewUsers());
         }
-        if (StringUtils.isBlank(projectVo.getEditUsers()) || !StringUtils.contains(projectVo.getEditUsers(), username)) {
-            projectVo.setEditUsers(username + projectVo.getEditUsers());
+        if (StringUtils.isBlank(projectInfo.getEditUsers()) || !StringUtils.contains(projectInfo.getEditUsers(), username)) {
+            projectInfo.setEditUsers(username + "," + projectInfo.getEditUsers());
         }
-        if (StringUtils.isBlank(projectVo.getExecUsers()) || !StringUtils.contains(projectVo.getExecUsers(), username)) {
-            projectVo.setExecUsers(username + projectVo.getExecUsers());
-
+        if (StringUtils.isBlank(projectInfo.getExecUsers()) || !StringUtils.contains(projectInfo.getExecUsers(), username)) {
+            projectInfo.setExecUsers(username + "," + projectInfo.getExecUsers());
         }
 
         try {
-            LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
-            if (projectService.existsProject(null, projectVo.getName())){
+            LOG.info("CreateProject from DSS AppConn, vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectInfo), username);
+            if (projectService.existsProject(null, projectInfo.getName())){
                 return Message.error("Have the same name project (存在同名工程)");
             }
-            long projectIdd = projectService.createProject(projectVo, username);
+            // Try to create or get project datasources for user
+            LOG.info("Start to create or get relate project datasources for project [{}]", projectVo.getName());
+            if (StringUtils.isNotBlank(ExchangisProjectConfiguration.PROJECT_DATASOURCES
+                        .getValue())) {
+                String[] projectDsList = ExchangisProjectConfiguration.PROJECT_DATASOURCES
+                        .getValue().split(",");
+                for (String projectDs : projectDsList) {
+                    String newName = projectDs + "_" + username;
+                    try {
+                        dataSourceService.copyDataSource(username, projectDs, newName);
+                        // Attach data source to project
+                        ExchangisProjectDsVo projectDsVo = new ExchangisProjectDsVo();
+                        projectDsVo.setName(newName);
+                        projectVo.getDataSources().add(projectDsVo);
+                    } catch (Exception e) {
+                        LOG.warn("Fail to create project data source(模版创建项目数据源失败,跳过) " +
+                                        "from model: [{}] for user: [{}], message: [{}]",
+                                projectDs, username, e.getMessage());
+                    }
+                }
+            }
+            // validate data sources
+            validateDataSources(username, projectVo.getName(), projectVo.getDataSources());
+            // Add project data sources
+            long projectIdd = projectService.createProject(projectInfo, username);
             String projectId = String.valueOf(projectIdd);
-            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectVo.getName(), OperateTypeEnum.CREATE, request);
+            AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, String.valueOf(projectId), "Project name is: " + projectInfo.getName(), OperateTypeEnum.CREATE, request);
             return ExchangisProjectRestfulUtils.dealOk("创建工程成功",
-                    new Pair<>("projectName", projectVo.getName()),
+                    new Pair<>("projectName", projectInfo.getName()),
                     new Pair<>("projectId", projectId));
         } catch (Exception t) {
             LOG.error("Failed to create project for user {} from DSS", username, t);
-            return Message.error("Fail to create project from DSS(创建工程失败)");
+            return Message.error("Fail to create project from DSS(创建工程失败): " + t.getMessage());
         }
     }
 
@@ -99,6 +136,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
     @RequestMapping( value = "/{id:\\d+}", method = RequestMethod.PUT)
     public Message updateProject(@PathVariable("id") Long id, @Validated({UpdateGroup.class, Default.class}) @RequestBody ExchangisProjectInfo projectVo
             , BindingResult result, HttpServletRequest request) {
+        LOG.error("Update project from dss {}", projectVo.toString());
         if (result.hasErrors()){
             return Message.error(result.getFieldErrors().get(0).getDefaultMessage());
         }
@@ -106,10 +144,31 @@ public class ExchangisProjectDssAppConnRestfulApi {
         String oringinUser = SecurityFilter.getLoginUsername(request);
         try {
             ExchangisProjectInfo projectStored = projectService.getProjectDetailById(Long.valueOf(projectVo.getId()));
-            if (!ProjectAuthorityUtils.hasProjectAuthority(username, projectStored, OperationType.PROJECT_ALTER)) {
-                return Message.error("You have no permission to update (没有项目的更新权限)");
+            String updateUser = Optional.ofNullable(projectVo.getCreateUser()).orElse(projectStored.getCreateUser());
+            String projectCreator = Optional.ofNullable(updateUser).orElse(username);
+            // Try to create or get project datasources for user
+            LOG.info("Start to create or get relate project datasources for project [{}]", projectVo.getName());
+            if (StringUtils.isNotBlank(ExchangisProjectConfiguration.PROJECT_DATASOURCES
+                    .getValue())) {
+                String[] projectDsList = ExchangisProjectConfiguration.PROJECT_DATASOURCES
+                        .getValue().split(",");
+                for (String projectDs : projectDsList) {
+                    String newName = projectDs + "_" + projectCreator;
+                    try {
+                        dataSourceService.copyDataSource(projectCreator, projectDs, newName);
+                        // Attach data source to project
+                        ExchangisProjectDsVo projectDsVo = new ExchangisProjectDsVo();
+                        projectDsVo.setName(newName);
+                        projectVo.getDataSources().add(projectDsVo);
+                    } catch (Exception e) {
+                        LOG.warn("Fail to create project data source(模版创建项目数据源失败,跳过) " +
+                                        "from model: [{}] for user: [{}], message: [{}]",
+                                projectDs, projectCreator, e.getMessage());
+                    }
+                }
             }
-
+            // validate data sources
+            validateDataSources(projectCreator, projectVo.getName(), projectVo.getDataSources());
             LOG.info("UpdateProject vo: {}, userName: {}", JsonUtils.jackson().writeValueAsString(projectVo), username);
             projectService.updateProject(projectVo, username);
             AuditLogUtils.printLog(oringinUser, username, TargetTypeEnum.PROJECT, id.toString(), "Project name is: " + projectVo.getName(), OperateTypeEnum.UPDATE, request);
@@ -118,7 +177,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
                     new Pair<>("projectId", projectVo.getId()));
         } catch (Exception t) {
             LOG.error("Failed to update project for user {}", username, t);
-            return Message.error("Fail to update project (更新工程失败)");
+            return Message.error("Fail to update project (更新工程失败) " + t.getMessage());
         }
     }
 
@@ -151,7 +210,7 @@ public class ExchangisProjectDssAppConnRestfulApi {
             return ExchangisProjectRestfulUtils.dealOk("删除工程成功");
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
-            return Message.error("Failed to delete project (删除工程失败)");
+            return Message.error("Failed to delete project (删除工程失败) " + t.getMessage());
         }
 
     }
@@ -172,8 +231,35 @@ public class ExchangisProjectDssAppConnRestfulApi {
                     new Pair<>("projectInfo",projectInfo));
         } catch (Exception t) {
             LOG.error("Failed to delete project for user {}", username, t);
-            return Message.error("Failed to delete project (根据名字获取工程失败)");
+            return Message.error("Failed to delete project (根据名字获取工程失败) " + t.getMessage());
         }
     }
 
+    /**
+     * Validate data sources
+     * @param permUser permission user
+     * @param dataSources data sources
+     */
+    private void validateDataSources(String permUser, String projectName,
+                                     List<ExchangisProjectDsVo> dataSources) throws ExchangisProjectErrorException {
+        for(ExchangisProjectDsVo dataSource : dataSources){
+            String dsName = dataSource.getName();
+            if (StringUtils.isNotBlank(dsName)){
+                try {
+                    ExchangisDataSourceDetail result = dataSourceService.getDataSource(permUser, dataSource.getName());
+                    if (Objects.nonNull(result)){
+                        dataSource.setId(result.getId());
+                        dataSource.setType(result.getDataSourceType()
+                                .getName().toUpperCase(Locale.ROOT));
+                        dataSource.setCreator(result.getCreateUser());
+                    }
+                } catch (ErrorException e) {
+                    throw new ExchangisProjectErrorException(ExchangisProjectExceptionCode.VALIDATE_DS_ERROR.getCode(),
+                            "Fail to validate data source: [" + dsName + "] related by project [" + projectName + "](校验项目关联数据源失败)" +
+                                    ", op_user: [" + permUser + "], reason: [" + e.getMessage() + "]",
+                            e);
+                }
+            }
+        }
+    }
 }
