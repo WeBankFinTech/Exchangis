@@ -1,7 +1,5 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerTask;
-
 /**
  * Schedule listener
  * @param <T>

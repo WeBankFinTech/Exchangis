@@ -8,6 +8,8 @@ public class ExchangisJobEntity extends ExchangisJobInfo{
 
     private Long projectId;
 
+    private String projectName;
+
     private String source;
 
     private String modifyUser;
@@ -18,6 +20,14 @@ public class ExchangisJobEntity extends ExchangisJobInfo{
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
     public String getSource() {
@@ -36,4 +46,25 @@ public class ExchangisJobEntity extends ExchangisJobInfo{
         this.modifyUser = modifyUser;
     }
 
+    @Override
+    public String toString() {
+        return "ExchangisJobEntity{" +
+                "projectId=" + projectId +
+                ", projectName='" + projectName + '\'' +
+                ", source='" + source + '\'' +
+                ", modifyUser='" + modifyUser + '\'' +
+                ", jobContent='" + jobContent + '\'' +
+                ", executeUser='" + executeUser + '\'' +
+                ", jobParams='" + jobParams + '\'' +
+                ", jobDesc='" + jobDesc + '\'' +
+                ", jobType='" + jobType + '\'' +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", engineType='" + engineType + '\'' +
+                ", jobLabel='" + jobLabel + '\'' +
+                ", createTime=" + createTime +
+                ", lastUpdateTime=" + lastUpdateTime +
+                ", createUser='" + createUser + '\'' +
+                '}';
+    }
 }

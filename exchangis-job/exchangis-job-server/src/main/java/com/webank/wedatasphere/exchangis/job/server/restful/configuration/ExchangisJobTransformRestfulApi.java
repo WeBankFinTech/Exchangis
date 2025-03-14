@@ -3,6 +3,7 @@ package com.webank.wedatasphere.exchangis.job.server.restful.configuration;
 import com.webank.wedatasphere.exchangis.common.UserUtils;
 import com.webank.wedatasphere.exchangis.common.validator.groups.InsertGroup;
 import com.webank.wedatasphere.exchangis.common.validator.groups.UpdateGroup;
+import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import com.webank.wedatasphere.exchangis.job.enums.EngineTypeEnum;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.*;
@@ -59,7 +60,10 @@ public class ExchangisJobTransformRestfulApi {
             }
 
         } catch (Exception e){
-            String message = "Fail to get transformer settings (加载转换器(映射/处理器)配置失败)";
+            String message = "Fail to get transformer settings (加载转换器(映射/处理器)配置失败) ";
+            if (e.getCause() instanceof ExchangisDataSourceException) {
+                message = message + "(Please check the dataSource connection) 请检查数据源连接是否正常以及是否发布!";
+            }
             LOG.error(message, e);
             response = Message.error(message);
         }

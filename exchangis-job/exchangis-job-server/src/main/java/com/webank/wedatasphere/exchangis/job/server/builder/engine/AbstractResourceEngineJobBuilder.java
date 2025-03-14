@@ -9,7 +9,6 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisEngineJob;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.server.builder.AbstractLoggingExchangisJobBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.linkis.common.conf.CommonVars;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -37,12 +37,13 @@
 	</licenses>
 
 	<properties>
-		<revision>1.1.3</revision>
-		<dss.version>1.1.2</dss.version>
-		<linkis.version>1.4.0</linkis.version>
-		<linkis.datasource.version>1.4.0</linkis.datasource.version>
+		<revision>1.1.7</revision>
+		<dss.version>1.2.2</dss.version>
+		<linkis.version>1.7.0</linkis.version>
 		<streamis.version>0.1.0-SNAPSHOT</streamis.version>
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<flatten-maven-plugin.version>1.3.0</flatten-maven-plugin.version>
+		<maven-spotless-maven-plugin.version>2.43.0</maven-spotless-maven-plugin.version>
 		<maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
 		<maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
 		<scala.version>2.11.12</scala.version>
@@ -72,41 +73,23 @@
 		<aspectj.version>1.9.5</aspectj.version>
 		<jobmanager.version>0.1.0-SNAPSHOT</jobmanager.version>
 		<jasypt.version>1.9.3</jasypt.version>
-		<xstream.version>1.4.20</xstream.version>
+		<xstream.version>1.4.21</xstream.version>
+		<protobuf-java>3.25.5</protobuf-java>
 	</properties>
 
 	<modules>
-		<module>exchangis-dao</module>
+		<module>exchangis-common</module>
 		<module>exchangis-project</module>
 		<module>exchangis-datasource</module>
 		<module>exchangis-engines</module>
 		<module>exchangis-job</module>
 		<module>exchangis-plugins</module>
+		<module>exchangis-privilege</module>
 		<module>exchangis-server</module>
 		<module>assembly-package</module>
-    </modules>
+	</modules>
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.scala-lang</groupId>
-				<artifactId>scala-library</artifactId>
-				<version>${scala.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.scala-lang</groupId>
-				<artifactId>scala-compiler</artifactId>
-				<version>${scala.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.scala-lang</groupId>
-				<artifactId>scala-reflect</artifactId>
-				<version>${scala.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.scala-lang</groupId>
-				<artifactId>scalap</artifactId>
-				<version>${scala.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>commons-lang</groupId>
 				<artifactId>commons-lang</artifactId>
@@ -130,7 +113,16 @@
 						<artifactId>hibernate-validator</artifactId>
 						<groupId>org.hibernate.validator</groupId>
 					</exclusion>
+					<exclusion>
+						<groupId>org.yaml</groupId>
+						<artifactId>snakeyaml</artifactId>
+					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>4.0.1</version>
 			</dependency>
 			<!--linkis http support-->
 			<dependency>
@@ -150,13 +142,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.linkis</groupId>
-				<artifactId>linkis-datasource-client</artifactId>
-				<version>${linkis.datasource.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.linkis</groupId>
-				<artifactId>linkis-metadata-query-common</artifactId>
-				<version>${linkis.datasource.version}</version>
+				<artifactId>linkis-pes-client</artifactId>
+				<version>${linkis.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
@@ -169,11 +156,6 @@
 				<version>${jackson-databind.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.codehaus.jackson</groupId>
-				<artifactId>jackson-mapper-asl</artifactId>
-				<version>${org.codehaus.jackson.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-math3</artifactId>
 				<version>${commons.math.version}</version>
@@ -183,12 +165,30 @@
 				<groupId>com.thoughtworks.xstream</groupId>
 				<version>${xstream.version}</version>
 			</dependency>
+			<dependency>
+				<artifactId>com.google.protobuf</artifactId>
+				<groupId>protobuf-java</groupId>
+				<version>${protobuf-java.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>com.diffplug.spotless</groupId>
+					<artifactId>spotless-maven-plugin</artifactId>
+					<version>${maven-spotless-maven-plugin.version}</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>check</goal>
+							</goals>
+							<phase>none</phase>
+						</execution>
+					</executions>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
@@ -226,7 +226,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.5.1</version>
+					<version>${maven.version}</version>
 					<configuration>
 						<source>${jdk.compile.version}</source>
 						<target>${jdk.compile.version}</target>
@@ -239,35 +239,19 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.3</version>
+					<version>${maven-site-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>net.alchim31.maven</groupId>
 					<artifactId>scala-maven-plugin</artifactId>
 					<version>${scala-maven-plugin.version}</version>
-<!--					<configuration>-->
-<!--						<scalaVersion>${scala.version}</scalaVersion>-->
-<!--						<recompileMode>incremental</recompileMode>-->
-<!--						<args>-->
-<!--							<arg>-unchecked</arg>-->
-<!--							<arg>-deprecation</arg>-->
-<!--							<arg>-feature</arg>-->
-<!--							<arg>-explaintypes</arg>-->
-<!--&lt;!&ndash;							<arg>-target:jvm-${java.version}</arg>&ndash;&gt;-->
-<!--						</args>-->
-<!--					</configuration>-->
 					<executions>
-						<execution>
-							<id>eclipse-add-source</id>
-							<goals>
-								<goal>add-source</goal>
-							</goals>
-						</execution>
 						<execution>
 							<id>scala-compile-first</id>
 							<phase>process-resources</phase>
 							<goals>
 								<goal>compile</goal>
+								<goal>add-source</goal>
 							</goals>
 						</execution>
 						<execution>

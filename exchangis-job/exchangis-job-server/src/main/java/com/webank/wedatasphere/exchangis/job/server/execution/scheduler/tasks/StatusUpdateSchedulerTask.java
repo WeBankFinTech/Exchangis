@@ -5,8 +5,8 @@ import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLau
 import com.webank.wedatasphere.exchangis.job.launcher.AccessibleLauncherTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchedExchangisTask;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.task.TaskProgressInfo;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerRetryException;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbalance.DelayLoadBalancePoller;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.loadbalance.LoadBalancePoller;
@@ -50,6 +50,10 @@ public class StatusUpdateSchedulerTask extends AbstractLoadBalanceSchedulerTask<
             }
             TaskStatus status = launcherTask.getLocalStatus();
             if (TaskStatus.isCompleted(status)){
+                if (status == TaskStatus.WaitForRetry){
+                    // Use failed status instead of wait for retry
+                    status = TaskStatus.Failed;
+                }
                 this.taskManager.refreshRunningTaskStatusAndMetrics(launchedExchangisTask,
                         status, launcherTask.getMetricsInfo());
             } else {

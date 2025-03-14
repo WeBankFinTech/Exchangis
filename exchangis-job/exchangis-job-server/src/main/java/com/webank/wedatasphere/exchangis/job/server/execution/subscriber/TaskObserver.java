@@ -1,10 +1,11 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.subscriber;
 
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisTask;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskObserverException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskObserverException;
+import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.SchedulerThread;
+import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskExecution;
 import com.webank.wedatasphere.exchangis.job.server.execution.TaskManager;
-import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.SchedulerThread;
 import org.apache.linkis.scheduler.Scheduler;
 
 import java.util.List;
@@ -16,13 +17,30 @@ import java.util.List;
  */
 public interface TaskObserver<T extends ExchangisTask> extends SchedulerThread {
 
+    /**
+     * Observer name
+     * @return name
+     */
+    default String getName() {
+        return this.getClass().getSimpleName();
+    }
 
+    default String getInstance(){
+        return null;
+    }
     /**
      * Subscribe method
-     * @param publishedTasks
+     * @param publishedTasks published tasks
      */
-    void subscribe(List<T> publishedTasks) throws ExchangisTaskObserverException;
+    int subscribe(List<T> publishedTasks) throws ExchangisTaskObserverException;
 
+    /**
+     * Discard to unsubscribe tasks
+     * @param unsubscribeTasks tasks
+     */
+    default void discard(List<T> unsubscribeTasks) {
+        // Do nothing
+    }
     /**
      * Task choose ruler
      * @return ruler
@@ -50,5 +68,9 @@ public interface TaskObserver<T extends ExchangisTask> extends SchedulerThread {
     void setTaskExecution(TaskExecution<T> execution);
 
     TaskExecution<T> getTaskExecution();
+
+    void setTaskObserverService(TaskObserverService observerService);
+
+    TaskObserverService getTaskObserverService();
 
 }

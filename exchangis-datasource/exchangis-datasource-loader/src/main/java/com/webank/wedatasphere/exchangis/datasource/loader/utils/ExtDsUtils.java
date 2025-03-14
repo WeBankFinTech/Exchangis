@@ -66,8 +66,8 @@ public class ExtDsUtils {
         for (String jar : jars) {
             for (String clazzName : getClassNameFrom(jar)) {
                 if (isChildClass(clazzName, PARENT_CLASS, classLoader)) {
+                    logger.info("clazzName is {}", clazzName);
                     classNames.add(clazzName);
-//                    return clazzName;
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.generator;
 
+import com.webank.wedatasphere.exchangis.common.util.json.Json;
 import com.webank.wedatasphere.exchangis.job.builder.manager.DefaultExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
@@ -7,7 +8,8 @@ import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import com.webank.wedatasphere.exchangis.job.listener.JobLogListener;
 import com.webank.wedatasphere.exchangis.job.listener.events.JobLogEvent;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisTaskGenerateException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisTaskGenerateException;
+import com.webank.wedatasphere.exchangis.job.server.builder.JobParamConstraints;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateErrorEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateEvent;
 import com.webank.wedatasphere.exchangis.job.server.execution.generator.events.TaskGenerateInitEvent;
@@ -46,6 +48,12 @@ public abstract class AbstractTaskGenerator implements TaskGenerator<LaunchableE
         launchableExchangisJob.setId(jobInfo.getId());
         launchableExchangisJob.setExecUser(jobInfo.getExecuteUser());
         launchableExchangisJob.setCreateUser(jobInfo.getCreateUser());
+        Map<String, String> params = jobInfo.getJobParamsMap();
+        params.put(JobParamConstraints.EXTRA_SUBMIT_DATE, String.valueOf(calendar.getTimeInMillis()));
+        launchableExchangisJob.setJobParamsMap(params);
+        // Serialize the params json
+        launchableExchangisJob.setJobParams(Json.toJson(params, null));
+        // Set the job params into
         // Generate launchable exchangis job id to UUID
         launchableExchangisJob.setJobExecutionId(UUID.randomUUID().toString());
         LOG.info("Generate job execution id: [{}] for job: [{}]" , launchableExchangisJob.getJobExecutionId(), launchableExchangisJob.getExchangisJobInfo().getName());

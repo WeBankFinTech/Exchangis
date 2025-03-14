@@ -20,6 +20,14 @@ public interface ExchangisJobOpenService {
 
     /**
      * Query job entity
+     * @param userName userName
+     * @return
+     */
+    List<ExchangisJobEntity> queryJobsByUser(String userName)
+            throws ExchangisJobException;
+
+    /**
+     * Query job entity
      * @param queryVo query vo
      * @param inPage if in page
      * @return
@@ -32,4 +40,12 @@ public interface ExchangisJobOpenService {
      * @param idList id list
      */
     void deleteJobBatch(List<Long> idList) throws ExchangisJobException;
+
+    /**
+     * If there are some jobs which run with the dataSource model provided
+     *
+     * @param id
+     * @return
+     */
+    boolean isRunWithDataSourceModel(Long id);
 }

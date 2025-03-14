@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server;
 
+import com.webank.wedatasphere.exchangis.datasource.service.RateLimitService;
 import com.webank.wedatasphere.exchangis.job.builder.manager.ExchangisJobBuilderManager;
 import com.webank.wedatasphere.exchangis.job.launcher.ExchangisTaskLaunchManager;
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisTask;
@@ -12,16 +13,19 @@ import com.webank.wedatasphere.exchangis.job.server.execution.generator.*;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.AbstractTaskSchedulerLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.FlexibleTenancyLoadBalancer;
 import com.webank.wedatasphere.exchangis.job.server.execution.loadbalance.TaskSchedulerLoadBalancer;
+import com.webank.wedatasphere.exchangis.job.server.execution.parallel.TaskParallelManager;
+import com.webank.wedatasphere.exchangis.job.server.execution.parallel.TenancyTaskParallelManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisSchedulerExecutorManager;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.ExchangisGenericScheduler;
 import com.webank.wedatasphere.exchangis.job.server.execution.scheduler.TenancyParallelConsumerManager;
-import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.MaxUsageTaskChooseRuler;
+import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.MaxParallelChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskChooseRuler;
 import com.webank.wedatasphere.exchangis.job.server.execution.subscriber.TaskObserver;
 import com.webank.wedatasphere.exchangis.job.server.log.DefaultRpcJobLogger;
 import com.webank.wedatasphere.exchangis.job.server.log.JobLogService;
 import com.webank.wedatasphere.exchangis.job.server.log.service.RpcJobLogService;
-import com.webank.wedatasphere.exchangis.job.server.utils.SpringContextHolder;
+import com.webank.wedatasphere.exchangis.job.server.service.TaskObserverService;
+import com.webank.wedatasphere.exchangis.utils.SpringContextHolder;
 import org.apache.linkis.scheduler.Scheduler;
 import org.apache.linkis.scheduler.executer.ExecutorManager;
 import org.apache.linkis.scheduler.queue.ConsumerManager;
@@ -142,14 +146,19 @@ public class ExchangisJobExecuteAutoConfiguration {
         return new LinkisExchangisTaskLaunchManager();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(TaskParallelManager.class)
+    public TaskParallelManager taskParallelManager() {
+        return new TenancyTaskParallelManager();
+    }
     /**
      * Choose rule
      * @return
      */
     @Bean
     @ConditionalOnMissingBean(TaskChooseRuler.class)
-    public TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler(){
-        return new MaxUsageTaskChooseRuler();
+    public TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler(TaskParallelManager parallelManager){
+        return new MaxParallelChooseRuler(parallelManager);
     }
     /**
      * Task execution
@@ -163,11 +172,12 @@ public class ExchangisJobExecuteAutoConfiguration {
      */
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean(TaskExecution.class)
-    public AbstractTaskExecution taskExecution(Scheduler scheduler, ExchangisTaskLaunchManager launchManager,
+    public AbstractTaskExecution taskExecution(RateLimitService rateLimitService, Scheduler scheduler, ExchangisTaskLaunchManager launchManager,
                                                TaskManager<LaunchedExchangisTask> taskManager, List<TaskObserver<?>> observers,
                                                TaskSchedulerLoadBalancer<LaunchedExchangisTask> loadBalancer,
-                                               TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler, List<TaskExecutionListener> executionListeners){
-        AbstractTaskExecution taskExecution = new DefaultTaskExecution(scheduler, launchManager, taskManager, observers, loadBalancer, taskChooseRuler);
+                                               TaskChooseRuler<LaunchableExchangisTask> taskChooseRuler, List<TaskExecutionListener> executionListeners,
+                                               TaskObserverService observerService){
+        AbstractTaskExecution taskExecution = new DefaultTaskExecution(rateLimitService, scheduler, launchManager, taskManager, observers, loadBalancer, taskChooseRuler, observerService);
         ConsumerManager consumerManager = scheduler.getSchedulerContext().getOrCreateConsumerManager();
         if (consumerManager instanceof TenancyParallelConsumerManager){
             ((TenancyParallelConsumerManager) consumerManager).setInitResidentThreads(observers.size() +

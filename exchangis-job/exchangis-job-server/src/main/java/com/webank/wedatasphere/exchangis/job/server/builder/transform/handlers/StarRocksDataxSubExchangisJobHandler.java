@@ -12,16 +12,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.linkis.common.exception.ErrorException;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * StarRocks in datax
  */
 public class StarRocksDataxSubExchangisJobHandler extends AuthEnabledSubExchangisJobHandler {
 
+    private static final int DEFAULT_HTTP_PORT = 8030;
     /**
      * Host
      */
@@ -37,10 +36,13 @@ public class StarRocksDataxSubExchangisJobHandler extends AuthEnabledSubExchangi
      */
     private static final JobParamDefine<String> SINK_LOAD_URL = JobParams.define("loadUrl[0]", paramSet -> {
         JobParam<String> host = paramSet.get("connection[0].host");
-        JobParam<String> httpPort = paramSet.get(JobParamConstraints.HTTP_PORT);
-        if (Objects.nonNull(host) && StringUtils.isNotBlank(host.getValue()) &&
-                Objects.nonNull(httpPort) && StringUtils.isNotBlank(httpPort.getValue())) {
-            return host.getValue() + ":" + httpPort.getValue();
+        JobParam<String> httpPortParams = paramSet.get(JobParamConstraints.HTTP_PORT);
+        String httpPort = DEFAULT_HTTP_PORT + "";
+        if (Objects.nonNull(httpPortParams) && StringUtils.isNotBlank(httpPortParams.getValue())){
+            httpPort = httpPortParams.getValue();
+        }
+        if (Objects.nonNull(host) && StringUtils.isNotBlank(host.getValue())) {
+            return host.getValue() + ":" + httpPort;
         }
         return null;
     });
@@ -60,17 +62,6 @@ public class StarRocksDataxSubExchangisJobHandler extends AuthEnabledSubExchangi
      */
     private static final JobParamDefine<Map<String, String>> SINK_PARAMS_MAP = JobParams.define("connection[0].connParams", JobParamConstraints.CONNECT_PARAMS,
             connectParams -> Json.fromJson(connectParams, Map.class), String.class);
-
-    /**
-     * SQL column
-     */
-    private static final JobParamDefine<List<String>> SQL_COLUMN = JobParams.define("column", job -> {
-        List<String> columns = job.getSinkColumns().stream().map(SubExchangisJob.ColumnDefine::getName).collect(Collectors.toList());
-        if (columns.isEmpty()){
-            columns.add("*");
-        }
-        return columns;
-    }, SubExchangisJob.class);
 
     @Override
     public void handleJobSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {

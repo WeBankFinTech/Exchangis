@@ -37,31 +37,35 @@ INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_directio
 ,('setting.speed.channel','作业最大并行度','','DATAX','INPUT','setting.max.parallelism','作业最大并行度','个',1,'NUMBER','','1','REGEX','^[1-9]\\d*$','作业最大并行度输入错误',0,0,'',1,'',3,'',1,NULL)
 ,('setting.max.memory','作业最大使用内存','','DATAX','INPUT','setting.max.memory','作业最大使用内存','Mb',1,'NUMBER','','1024','REGEX','^[1-9]\\d*$','作业最大使用内存输入错误',0,0,'',1,'',4,'',1,NULL)
 ,('setting.errorLimit.record','最多错误记录数','','DATAX','INPUT','setting.errorlimit.record','最多错误记录数','条',0,'NUMBER','','','REGEX','^[0-9]\\d*$','最多错误记录数输入错误',0,0,'',1,'',5,'',1,NULL)
+,('setting.vld.vldType','校验类型','','DATAX','OPTION','setting.vld.vldType','校验类型','',1,'OPTION','["DM"]','DM','REGEX','','校验类型错误',0,0,'',1,'',6,'',1,NULL)
+,('setting.vld.vldNum','校验单号','','DATAX','INPUT','setting.vld.vldNum','校验单号','',1,'VARCHAR','','0','REGEX','^[0-9]\\d*$','校验单号错误',0,0,'',1,'',7,'',1,NULL)
 ,('setting.max.parallelism','作业最大并行数','','SQOOP','INPUT','setting.max.parallelism','作业最大并行数','个',1,'NUMBER','','1','REGEX','^[1-9]\\d*$','作业最大并行数输入错误',0,0,'',1,'',1,'',1,NULL)
 ,('setting.max.memory','作业最大内存','','SQOOP','INPUT','setting.max.memory','作业最大内存','Mb',1,'NUMBER','','1024','REGEX','^[1-9]\\d*$','作业最大内存输入错误',0,0,'',1,'',2,'',1,NULL);
 
 INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
-('where','WHERE条件','SOURCE','MYSQL','INPUT','where','WHERE条件','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,500}$','WHERE条件输入过长',0,0,'',1,'',2,'',1,NULL);
+('where','WHERE条件','SOURCE','MYSQL','INPUT','where','WHERE条件','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,500}$','WHERE条件输入过长',0,0,'',1,'',2,'',1,NULL)
 ,('writeMode','写入方式','SQOOP-SINK','MYSQL','OPTION','writeMode','写入方式','',1,'OPTION','["INSERT","UPDATE"]','INSERT','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL)
 ,('writeMode','写入方式','DATAX-SINK','MYSQL','OPTION','writeMode','写入方式','',1,'OPTION','["INSERT","UPDATE"]','INSERT','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL);
 
 INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
-('where','WHERE条件','SOURCE','TDSQL','INPUT','where','WHERE条件','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,500}$','WHERE条件输入过长',0,0,'',1,'',2,'',1,NULL);
+('where','WHERE条件','SOURCE','TDSQL','INPUT','where','WHERE条件','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,500}$','WHERE条件输入过长',0,0,'',1,'',2,'',1,NULL)
 ,('writeMode','写入方式','SQOOP-SINK','TDSQL','OPTION','writeMode','写入方式','',1,'OPTION','["INSERT","UPDATE"]','INSERT','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL)
 ,('writeMode','写入方式','DATAX-SINK','TDSQL','OPTION','writeMode','写入方式','',1,'OPTION','["INSERT","UPDATE"]','INSERT','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL);
 
 INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
 ('writeMode','写入方式','SQOOP-SINK','HIVE','OPTION','writeMode','写入方式(OVERWRITE只对TEXT类型表生效)','',1,'OPTION','["OVERWRITE","APPEND"]','OVERWRITE','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL)
 ,('partition','分区信息','SINK','HIVE','MAP','partition','分区信息(文本)','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,'',2,'',1,NULL)
-,('partition','分区信息','SOURCE','HIVE','MAP','partition','分区信息(文本)','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,'',2,'',1,NULL);
-,('transferMode','传输方式','DATAX-SOURCE','HIVE','OPTION','transferMode','传输方式','',1,'OPTION','["记录"]','二进制','','','该传输方式不可用',0,0,'',1,'',1,'',1,NULL)
-,('nullFormat','空值字符','DATAX-SOURCE','HIVE','INPUT','nullFormat','空值字符','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','空值字符输入错误',0,0,'',1,'',2,'',1,48)
-,('writeMode','写入方式','DATAX-SINK','HIVE','OPTION','writeMode','写入方式(OVERWRITE只对TEXT类型表生效)','',1,'OPTION','["append","truncate"]','append','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL)
-,('nullFormat','空值字符','DATAX-SINK','HIVE','INPUT','nullFormat','空值字符','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','空值字符输入错误',0,0,'',1,'',2,'',1,49);
+,('partition','分区信息','SOURCE','HIVE','MAP','partition','分区信息(文本)','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','分区信息过长',0,0,'/api/rest_j/v1/dss/exchangis/main/datasources/render/partition/element/map',1,'',2,'',1,NULL)
+,('transferMode','传输方式','DATAX-SOURCE','HIVE','OPTION','transferMode','传输方式','',1,'OPTION','["记录","二进制"]','记录','','','该传输方式不可用',0,0,'',1,'',1,'',1,NULL)
+,('writeMode','写入方式','DATAX-SINK','HIVE','OPTION','writeMode','写入方式(OVERWRITE只对TEXT类型表生效)','',1,'OPTION','["append","truncate"]','append','','','写入方式输入错误',0,0,'',1,'',1,'',1,NULL);
+INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
+('nullFormat','空值字符','DATAX-SINK','HIVE','INPUT','nullFormat','空值字符','',0,'VARCHAR','','\\N','REGEX','^[\\s\\S]{0,50}$','空值字符输入错误',0,0,'',1,'',2,'',1,49);
+
+INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id)
+SELECT 'nullFormat','空值字符','DATAX-SOURCE','HIVE','INPUT','nullFormat','空值字符','',0,'VARCHAR','','\\N','REGEX','^[\\s\\S]{0,50}$','空值字符输入错误',0,0,'',1,'',2,'',1,(SELECT id FROM `exchangis_job_param_config` WHERE config_key='transferMode' AND `type`='HIVE') FROM DUAL;
 
 INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
-('batchSize','批量大小','DATAX-SINK','ELASTICSEARCH','INPUT','batchSize','批量大小','',0,'NUMBER','','','REGEX','^[1-9]\\d*$','批量大小输入错误',0,0,'',1,'',1,'',1,NULL)
-,('nullFormat','空值字符','DATAX-SINK','ELASTICSEARCH','INPUT','nullFormat','空值字符','',0,'VARCHAR','','','REGEX','^[\\s\\S]{0,50}$','空值字符输入错误',0,0,'',1,'',2,'',1,49);
+('batchSize','批量大小','DATAX-SINK','ELASTICSEARCH','INPUT','batchSize','批量大小','',0,'NUMBER','','','REGEX','^[1-9]\\d*$','批量大小输入错误',0,0,'',1,'',1,'',1,NULL);
 
 INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_direction,`type`,ui_type,ui_field,ui_label,unit,required,value_type,value_range,default_value,validate_type,validate_range,validate_msg,is_hidden,is_advanced,source,`level`,treename,sort,description,status,ref_id) VALUES
 ('where','WHERE条件','SOURCE','ORACLE','INPUT','where','WHERE条件',NULL,0,'VARCHAR',NULL,NULL,'REGEX','^[\\s\\S]{0,500}$','WHERE条件输入过长',0,0,NULL,1,'',2,NULL,1,NULL)
@@ -78,8 +82,7 @@ INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_directio
 
 -- engine_settings records
 INSERT INTO `exchangis_engine_settings` (id, engine_name, engine_desc, engine_settings_value, engine_direction, res_loader_class, res_uploader_class, modify_time) VALUES
-(1, 'datax', 'datax sync engine', '{}', 'mysql->hive,hive->mysql,mysql->oracle,oracle->mysql,oracle->hive,hive->oracle,mongodb->hive,hive->mongodb,mysql->elasticsearch,oracle->elasticsearch,mongodb->elasticsearch,mysql->mongodb,mongodb->mysql,oracle->mongodb,mongodb->oracle,hive->starrocks', 'com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngineResourceLoader', NULL, NULL),
-(2, 'sqoop', 'hadoop tool', '{}', 'mysql->hive,hive->mysql', '', NULL, NULL);
+(1, 'datax', 'datax sync engine', '{}', 'tdsql->hive,hive->tdsql,elasticsearch->hive,hive->elasticsearch,hive->starrocks,starrocks->hive,tdsql->starrocks,starrocks->tdsql,tdsql->elasticsearch,elasticsearch->tdsql,oracle->hive,hive->oracle,mongodb->hive,hive->mongodb,oracle->elasticsearch,mongodb->elasticsearch', 'com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngineResourceLoader', NULL, NULL);
 
 -- exchangis_job_transform_rule records
 INSERT INTO `exchangis_job_transform_rule` (rule_name,rule_type,rule_source,data_source_type,engine_type,direction) VALUES
@@ -90,4 +93,3 @@ INSERT INTO `exchangis_job_transform_rule` (rule_name,rule_type,rule_source,data
 ,('mysql_field_source_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH","fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": true}','MYSQL',NULL,'SOURCE')
 ,('starrocks_field_source_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH","fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": true}','STARROCKS',NULL,'SINK')
 ;
-

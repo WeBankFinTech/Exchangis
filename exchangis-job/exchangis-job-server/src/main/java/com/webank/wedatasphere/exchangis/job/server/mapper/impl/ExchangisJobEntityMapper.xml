@@ -50,7 +50,7 @@
         #{jobLabel},
         #{createUser},
         #{jobContent},
-        #{executeUser},
+        #{executeUser,jdbcType=VARCHAR},
         #{jobParams},
         #{jobDesc},
         #{jobType},
@@ -81,7 +81,7 @@
     <update id="upgradeConfig">
         UPDATE <include refid="TableName"/>
         SET
-        execute_user = #{executeUser},
+        execute_user = #{executeUser,jdbcType=VARCHAR},
         job_params = #{jobParams},
         source = #{source},
         last_update_time = #{lastUpdateTime},
@@ -97,6 +97,18 @@
         modify_user = #{modifyUser}
         WHERE id = #{id}
     </update>
+
+    <update id="batchUpgradeContent">
+        <foreach collection="list" open="" close="" separator=";" item="item">
+            UPDATE <include refid="TableName"/>
+            SET
+            job_content = #{item.jobContent},
+            last_update_time = #{item.lastUpdateTime},
+            modify_user = #{item.modifyUser}
+            WHERE id = #{item.id}
+        </foreach>
+    </update>
+
     <select id="getDetail" parameterType="java.lang.Long" resultMap ="BaseResultMap">
         select
         <include refid="detail_column"/>
@@ -113,6 +125,19 @@
         where project_id = #{projectId}
     </select>
 
+    <select id="getJobsByIds" resultMap ="BaseResultMap">
+        select
+        <include refid="detail_column"/>
+        from
+        <include refid="TableName" />
+        <if test="ids != null and ids != ''">
+            WHERE id in
+            <foreach collection="ids" open="(" close=")" separator="," item="item">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
     <select id="getBasicInfo" parameterType="java.lang.Long" resultMap ="BaseResultMap">
         select
         <include refid="basic_column"/>
@@ -121,17 +146,18 @@
         where id = #{jobId}
     </select>
 
-    <select id="getBasicList" parameterType="java.lang.Long" resultMap ="BaseResultMap">
-        select
+    <select id="queryByUser" resultMap="BaseResultMap">
+        SELECT
         <include refid="basic_column"/>
         from
         <include refid="TableName" />
-        where project_id = #{projectId}
+        WHERE create_user = #{userName}
+        ORDER BY create_time DESC
     </select>
 
     <select id="queryPageList" resultMap="BaseResultMap">
         SELECT
-        <include refid="basic_column"/>
+        <include refid="detail_column"/>
         from
         <include refid="TableName" />
         <where>
@@ -144,28 +170,6 @@
             </if>
         </where>
         ORDER BY create_time DESC
-    </select>
-
-    <select id="getJobEntityByFactor" parameterType="java.lang.String" resultMap ="BaseResultMap">
-        select
-        <include refid="detail_column"/>
-        from
-        <include refid="TableName" />
-        where project_id = #{projectId}
-        <if test="name != null and name = ''">
-            and name like '%#{name}%'
-        </if>
-    </select>
-
-    <select id="getJobEntityByName" parameterType="java.lang.String" resultMap ="BaseResultMap">
-        select
-        <include refid="detail_column"/>
-        from
-        <include refid="TableName" />
-        where
-        <if test="name != null and name = ''">
-            and name like '%#{name}%'
-        </if>
     </select>
 
     <select id="getByNameAndProjectId"  resultMap ="BaseResultMap">
@@ -196,4 +200,18 @@
             #{item}
         </foreach>
     </delete>
+
+    <update id="recycleUserJob">
+        UPDATE `exchangis_job_entity`
+        SET modify_user='SYSTEM',create_user= CASE WHEN create_user=#{username} THEN #{handover} ELSE create_user END,
+        execute_user= CASE WHEN execute_user=#{username} THEN #{handover} ELSE execute_user END
+        WHERE create_user=#{username} OR execute_user=#{username}
+        <if test="projectIds != null and projectIds.size > 0">
+            AND project_id in (
+            <foreach collection="projectIds" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+    </update>
 </mapper>

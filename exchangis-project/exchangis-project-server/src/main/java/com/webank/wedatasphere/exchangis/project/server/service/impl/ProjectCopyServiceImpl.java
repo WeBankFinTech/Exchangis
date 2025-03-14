@@ -1,17 +1,14 @@
 package com.webank.wedatasphere.exchangis.project.server.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.Lists;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobException;
-import com.webank.wedatasphere.exchangis.job.server.dto.ExportedProject;
-import com.webank.wedatasphere.exchangis.job.server.dto.IdCatalog;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobExceptionCode;
+import com.webank.wedatasphere.exchangis.job.dto.ExportedProject;
+import com.webank.wedatasphere.exchangis.job.dto.IdCatalog;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.mapper.ExchangisJobEntityDao;
-import com.webank.wedatasphere.exchangis.job.server.restful.external.ModuleEnum;
-import com.webank.wedatasphere.exchangis.project.server.service.ProjectCopyService;
-import com.webank.wedatasphere.exchangis.project.server.service.ProjectImportService;
-import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectCopyService;
+import com.webank.wedatasphere.exchangis.project.provider.service.ProjectImportService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.server.BDPJettyServerHelper;
 import org.apache.linkis.server.Message;
@@ -23,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author tikazhang
@@ -36,59 +34,53 @@ public class ProjectCopyServiceImpl implements ProjectCopyService {
     private ProjectImportService projectImportService;
 
     @Autowired
-    private ProjectExportServiceImpl projectExportService;
+    private ProjectExportServiceImpl exportService;
 
     @Autowired
-    private ProjectImportServerImpl projectImportServer;
+    private ProjectImportServerImpl importService;
 
     @Resource
     private ExchangisJobEntityDao jobEntityDao;
 
     @Override
     public Message copy(Map<String, Object> params, String userName, HttpServletRequest request) throws ExchangisJobException, ExchangisJobServerException {
-        LOG.info("begin to copy in project params is {}", params);
-        //Long projectId = Long.parseLong(params.get("projectId").toString());
+        long projectId = -1L;
+        if (Objects.nonNull(params.get("projectId"))) {
+            projectId = Long.parseLong(params.get("projectId").toString());
+        }
         Boolean partial = (Boolean) params.get("partial");
-        Map<String, Set<Long>> moduleIdsMap = projectExportService.getModuleIdsMap(params);
-
-        Set<Long> longs = moduleIdsMap.get(Objects.isNull(params.get("dataXIds")) ? ModuleEnum.SQOOP_IDS.getName() : ModuleEnum.DATAX_IDS.getName());
-        List<Long> list1 = new ArrayList<Long>(longs);
-        ExchangisJobEntity exchangisJob = this.jobEntityDao.getBasicInfo(list1.get(0));
-        Long projectId = exchangisJob.getProjectId();
-
+        List<Long> jobIds = new ArrayList<>();
+        Optional.ofNullable(params.get("jobIds")).ifPresent(ids -> jobIds.addAll(Arrays.stream(StringUtils.split(String.valueOf(ids), ","))
+                .map(Long::parseLong).collect(Collectors.toSet())));
+        if (projectId <= 0) {
+            ExchangisJobEntity exchangisJob = this.jobEntityDao.getBasicInfo(jobIds.get(0));
+            if (Objects.isNull(exchangisJob)) {
+                throw new ExchangisJobServerException(ExchangisJobExceptionCode.JOB_EXCEPTION_CODE.getCode(),
+                        "Fail to get job with id: [" + jobIds.get(0) + "], (找不到符合的任务)");
+            }
+            projectId = exchangisJob.getProjectId();
+        }
         String projectVersion = params.getOrDefault("projectVersion", "v1").toString();
         String flowVersion = (String) params.get("flowVersion");
         if (StringUtils.isEmpty(flowVersion)) {
             LOG.error("flowVersion is null, can not copy flow to a newest version");
             flowVersion = "v00001";
         }
-        String contextIdStr = (String) params.get("contextID");
-
-        ExportedProject exportedProject = projectExportService.export(projectId, moduleIdsMap, partial, request);
-
-        copySqoop(moduleIdsMap, exportedProject);
-
-        String projectJson = null;
+        ExportedProject exportedProject = exportService.export(projectId, jobIds, partial, request);
+        String projectJson;
         try {
             projectJson = BDPJettyServerHelper.jacksonJson().writeValueAsString(exportedProject);
-        } catch (JsonProcessingException e) {
-            LOG.error("Occur error while tranform class", e.getMessage());
+        } catch (Exception e) {
+            throw new ExchangisJobServerException(ExchangisJobExceptionCode.EXPORT_JOB_ERROR.getCode(),
+                    "Fail to serialize export job content(序列化导出任务失败）", e);
         }
         String versionSuffix = projectVersion + "_" + flowVersion;
+        // Invoke import operation
+        IdCatalog idCatalog = importService.importOpt(projectJson,
+                projectId, versionSuffix, userName);
 
-        IdCatalog idCatalog = projectImportServer.importOpt(projectJson, projectId, versionSuffix, userName, "copy");
-
-        Message message = Message.ok()
-                .data("sqoop", idCatalog.getSqoop());
-        return message;
-    }
-
-    private void copySqoop(Map<String, Set<Long>> moduleIdsMap, ExportedProject exportedProject) {
-        Set<Long> sqoopIds = moduleIdsMap.get(ModuleEnum.SQOOP_IDS.getName());
-        if (!sqoopIds.isEmpty()) {
-            ExchangisJobVo sqoops = exportedProject.getSqoops().get(0);
-            exportedProject.setSqoops(Lists.newArrayList(sqoops));
-        }
+        return Message.ok()
+                .data("copyRefIds", idCatalog.getJobIds());
     }
 
 }

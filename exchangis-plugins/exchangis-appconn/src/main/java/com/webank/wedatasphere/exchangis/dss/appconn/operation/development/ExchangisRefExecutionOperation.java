@@ -29,21 +29,24 @@ public class ExchangisRefExecutionOperation
 
     @Override
     protected RefExecutionAction submit(RefExecutionRequestRef.RefExecutionProjectRequestRef executionRequestRef) {
-        String user = executionRequestRef.getExecutionRequestRefContext().getUser();
-        logger.info("User {} try to execute Exchangis job {} with jobContent: {}, refProjectId: {}, projectName: {}, nodeType:{}.",
-                user, executionRequestRef.getName(), executionRequestRef.getRefJobContent(),
+        String execUser = executionRequestRef.getExecutionRequestRefContext().getUser();
+        String submitUser = executionRequestRef.getExecutionRequestRefContext().getSubmitUser();
+        logger.info("User {} try to execute Exchangis job {} in execute user: [{}] with jobContent: {}, refProjectId: {}, projectName: {}, nodeType:{}.",
+                submitUser, executionRequestRef.getName(), execUser, executionRequestRef.getRefJobContent(),
                 executionRequestRef.getRefProjectId(), executionRequestRef.getProjectName(), executionRequestRef.getType());
-        Long id = ((Double) executionRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID)).longValue();
+        long id = ((Double) executionRequestRef.getRefJobContent().get(Constraints.REF_JOB_ID)).longValue();
         String url = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "appJob/execute/" + id));
         executionRequestRef.getExecutionRequestRefContext().appendLog("try to execute " + executionRequestRef.getType() + " node, ready to request to " + url);
         DSSPostAction postAction = new DSSPostAction();
-        postAction.setUser(user);
-        postAction.addRequestPayload("submitUser", executionRequestRef.getExecutionRequestRefContext().getSubmitUser());
+        // Use submit user to login
+        postAction.setUser(submitUser);
+        // Add exec user to request body
+        postAction.addRequestPayload("execUser", execUser);
         InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(executionRequestRef, url, postAction, ssoRequestOperation);
         ExchangisExecutionAction action = new ExchangisExecutionAction();
         action.setExecId((String) responseRef.getData().get("jobExecutionId"));
         action.setRequestRef(executionRequestRef);
-        executionRequestRef.getExecutionRequestRefContext().appendLog("submitted to Exchangis with execId: " + action.getExecId());
+        executionRequestRef.getExecutionRequestRefContext().appendLog("Submitted to Exchangis with execId: [" + action.getExecId() + "]");
         return action;
     }
 
@@ -52,7 +55,7 @@ public class ExchangisRefExecutionOperation
         ExchangisExecutionAction action = (ExchangisExecutionAction) refExecutionAction;
         String url = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "job/execution/" + action.getExecId() +"/status"));
         DSSGetAction getAction = new DSSGetAction();
-        getAction.setUser(action.getExecutionRequestRefContext().getUser());
+        getAction.setUser(action.getExecutionRequestRefContext().getSubmitUser());
         InternalResponseRef responseRef = ExchangisHttpUtils.getResponseRef(action.getRequestRef(), url, getAction, ssoRequestOperation);
         String status = (String) responseRef.getData().get("status");
         action.getExecutionRequestRefContext().appendLog("ExchangisJob(execId: " + action.getExecId() + ") is in state " + status);
@@ -82,12 +85,13 @@ public class ExchangisRefExecutionOperation
 
     @Override
     public boolean kill(RefExecutionAction refExecutionAction) {
-        // TODO 没有调用kill方法
+        // Invoke kill method
         ExchangisExecutionAction action = (ExchangisExecutionAction) refExecutionAction;
         action.getExecutionRequestRefContext().appendLog("try to kill ExchangisJob with execId: " + action.getExecId());
         String url = mergeBaseUrl(mergeUrl(API_REQUEST_PREFIX, "job/execution/" + action.getExecId() +"/kill"));
         DSSPostAction postAction = new DSSPostAction();
-        postAction.setUser(action.getExecutionRequestRefContext().getUser());
+        // Use submit user
+        postAction.setUser(action.getExecutionRequestRefContext().getSubmitUser());
         ExchangisHttpUtils.getResponseRef(action.getRequestRef(), url, postAction, ssoRequestOperation);
         return true;
     }

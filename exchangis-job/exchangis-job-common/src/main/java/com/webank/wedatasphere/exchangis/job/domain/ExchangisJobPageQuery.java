@@ -22,6 +22,12 @@ public class ExchangisJobPageQuery extends PageQuery {
      */
     protected String jobName;
 
+    protected String dataSrcType;
+
+    protected String dataDestType;
+
+    protected String sourceSinkId;
+
     protected String createUser;
 
     public Long getProjectId() {
@@ -38,6 +44,38 @@ public class ExchangisJobPageQuery extends PageQuery {
 
     public void setJobType(String jobType) {
         this.jobType = jobType;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    public String getDataSrcType() {
+        return dataSrcType;
+    }
+
+    public void setDataSrcType(String dataSrcType) {
+        this.dataSrcType = dataSrcType;
+    }
+
+    public String getDataDestType() {
+        return dataDestType;
+    }
+
+    public void setDataDestType(String dataDestType) {
+        this.dataDestType = dataDestType;
+    }
+
+    public String getSourceSinkId() {
+        return sourceSinkId;
+    }
+
+    public void setSourceSinkId(String sourceSinkId) {
+        this.sourceSinkId = sourceSinkId;
     }
 
     public String getCreateUser() {

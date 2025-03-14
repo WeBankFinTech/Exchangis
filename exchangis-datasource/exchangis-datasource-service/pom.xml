@@ -18,13 +18,11 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
             <artifactId>exchangis-datasource-linkis</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <!--Job common module-->
         <dependency>
             <groupId>com.webank.wedatasphere.exchangis</groupId>
@@ -36,6 +34,12 @@
             <artifactId>exchangis-engine-core</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <!-- project provider -->
+        <dependency>
+            <groupId>com.webank.wedatasphere.exchangis</groupId>
+            <artifactId>exchangis-project-provider</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -49,6 +53,7 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
+                <version>${scala-maven-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -63,5 +68,13 @@
                 </configuration>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 </project>

@@ -1,10 +1,11 @@
 package com.webank.wedatasphere.exchangis.job.server.service;
 
 
+import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobInfo;
 import com.webank.wedatasphere.exchangis.job.launcher.exception.ExchangisTaskLaunchException;
 import com.webank.wedatasphere.exchangis.job.log.LogQuery;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 import com.webank.wedatasphere.exchangis.job.server.vo.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,8 +56,8 @@ public interface JobExecuteService {
      * Gets Executed job list
      * @return the launched jobList
      */
-    List<ExchangisLaunchedJobListVo> getExecutedJobList(String jobExecutionId, String jobName, String status,
-                                                        Long launchStartTime, Long launchEndTime, int  current, int size, HttpServletRequest request) throws ExchangisJobServerException;
+    PageResult<ExchangisLaunchedJobListVo> getExecutedJobList(String jobExecutionId, String jobName, String status,
+                                                              Long launchStartTime, Long launchEndTime, int  current, int size, HttpServletRequest request) throws ExchangisJobServerException;
 
     /**
      * Count int.
@@ -72,11 +73,12 @@ public interface JobExecuteService {
 
     /**
      * Execute job
+     * @param requestUser  login user
      * @param jobInfo job info
      * @return job execution id
      * @throws ExchangisJobServerException
      */
-    String executeJob(ExchangisJobInfo jobInfo, String execUser) throws ExchangisJobServerException;
+    String executeJob(String requestUser, ExchangisJobInfo jobInfo, String execUser) throws ExchangisJobServerException;
     /**
      * Kill job.
      *

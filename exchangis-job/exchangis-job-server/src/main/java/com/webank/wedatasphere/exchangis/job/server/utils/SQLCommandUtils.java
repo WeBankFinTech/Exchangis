@@ -3,7 +3,6 @@ package com.webank.wedatasphere.exchangis.job.server.utils;
 import com.webank.wedatasphere.exchangis.datasource.core.utils.Json;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,7 +37,9 @@ public class SQLCommandUtils {
     private static String columnListSql(List<?> columns){
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < columns.size(); i++){
+            builder.append("`");
             builder.append(columns.get(i));
+            builder.append("`");
             if(i < columns.size() - 1){
                 builder.append(DEFAULT_COLUMN_SEPARATOR);
             }

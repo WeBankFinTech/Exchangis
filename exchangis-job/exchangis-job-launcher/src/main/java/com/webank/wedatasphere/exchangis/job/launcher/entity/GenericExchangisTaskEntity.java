@@ -37,6 +37,7 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
 
     protected String createUser;
 
+    protected String instance;
     @Override
     public Long getJobId() {
         return this.jobId;
@@ -126,6 +127,27 @@ public class GenericExchangisTaskEntity implements ExchangisTaskEntity{
     public void setExecuteUser(String executeUser) {
         this.executeUser = executeUser;
     }
+
+    @Override
+    public String getInstance() {
+        return instance;
+    }
+
+    @Override
+    public void setInstance(String instance) {
+        this.instance = instance;
+    }
+
+    @Override
+    public Date getDelayTime() {
+        return null;
+    }
+
+    @Override
+    public void setDelayTime(Date delayTime) {
+
+    }
+
 
     @Override
     public Long getId() {

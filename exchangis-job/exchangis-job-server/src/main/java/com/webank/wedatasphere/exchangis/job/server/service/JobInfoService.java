@@ -2,9 +2,10 @@ package com.webank.wedatasphere.exchangis.job.server.service;
 
 import com.webank.wedatasphere.exchangis.common.pager.PageResult;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
+import com.webank.wedatasphere.exchangis.job.vo.ExchangisBulkJobVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobQueryVo;
 import com.webank.wedatasphere.exchangis.job.vo.ExchangisJobVo;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisJobServerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisJobServerException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -92,12 +93,22 @@ public interface JobInfoService {
     ExchangisJobVo updateJobConfig(ExchangisJobVo jobVo) throws ExchangisJobServerException;
 
     /**
+     * Update exchangis job config.
+     *
+     * @param requestUser who to update the jobs
+     * @param bulkJobVo the exchangis job configs
+     * @return the exchangis job
+     */
+    void bulkUpdateJob(String requestUser, ExchangisBulkJobVo bulkJobVo) throws ExchangisJobServerException;
+
+    /**
      * Update exchangis job content.
      *
+     * @param requestUser who to update the job
      * @param jobVo the exchangis job content
      * @return the exchangis job
      */
-    ExchangisJobVo updateJobContent(ExchangisJobVo jobVo) throws ExchangisJobServerException, ExchangisDataSourceException;
+    ExchangisJobVo updateJobContent(String requestUser, ExchangisJobVo jobVo) throws ExchangisJobServerException, ExchangisDataSourceException;
 
     /**
      * Copy job exchangis job basic info.

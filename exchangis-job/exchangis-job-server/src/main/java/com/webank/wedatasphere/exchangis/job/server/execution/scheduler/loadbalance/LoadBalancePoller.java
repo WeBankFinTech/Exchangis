@@ -14,7 +14,7 @@ public interface LoadBalancePoller<T> {
      * Push the element
      * @param element element
      */
-    void push(T element);
+    boolean push(T element);
 
     /**
      * Combine with other poller
@@ -23,4 +23,9 @@ public interface LoadBalancePoller<T> {
     void combine(LoadBalancePoller<T> other);
 
     int size();
+
+    /**
+     * Close the poller
+     */
+    void close();
 }

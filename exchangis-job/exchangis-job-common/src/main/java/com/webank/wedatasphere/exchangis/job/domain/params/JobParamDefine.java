@@ -15,11 +15,26 @@ public class JobParamDefine<T>{
 
     private String key;
 
+    /**
+     * Mapping key if exists
+     */
+    private String mappingKey;
+
+    /**
+     * If computed param
+     */
+    private boolean computed = false;
+
     private BiFunction<String, Object, T> valueLoader;
 
-    @SuppressWarnings("unchecked")
     <U>JobParamDefine(String key, BiFunction<String, U, T> valueLoader){
+        this(key, null, valueLoader);
+    }
+
+    @SuppressWarnings("unchecked")
+    <U>JobParamDefine(String key, String mappingKey, BiFunction<String, U, T> valueLoader){
         this.key = key;
+        this.mappingKey = mappingKey;
         this.valueLoader = (BiFunction<String, Object, T>)valueLoader;
     }
     JobParamDefine(String key, Function<JobParamSet, T> valueLoader){
@@ -37,6 +52,10 @@ public class JobParamDefine<T>{
         return key;
     }
 
+    public String getMappingKey() {
+        return mappingKey;
+    }
+
     public BiFunction<String, Object, T> getValueLoader() {
         return valueLoader;
     }
@@ -47,7 +66,8 @@ public class JobParamDefine<T>{
      * @return
      */
     public JobParam<T> newParam(Object source){
-        JobParam<T> jobParam = new DefaultJobParam<>(key, valueLoader);
+        DefaultJobParam<T> jobParam = new DefaultJobParam<>(key, mappingKey, valueLoader);
+        jobParam.setComputed(this.computed);
         return jobParam.loadValue(source);
     }
 
@@ -71,4 +91,11 @@ public class JobParamDefine<T>{
         return get(source).getValue();
     }
 
+    public boolean isComputed() {
+        return computed;
+    }
+
+    public void setComputed(boolean computed) {
+        this.computed = computed;
+    }
 }

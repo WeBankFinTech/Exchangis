@@ -1,7 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.execution.scheduler;
 
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerException;
-import com.webank.wedatasphere.exchangis.job.server.exception.ExchangisSchedulerRetryException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerException;
+import com.webank.wedatasphere.exchangis.job.exception.ExchangisSchedulerRetryException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.linkis.scheduler.executer.CompletedExecuteResponse;
 import org.apache.linkis.scheduler.executer.ErrorExecuteResponse;
@@ -20,6 +20,8 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
     private static final Logger LOG = LoggerFactory.getLogger(AbstractExchangisSchedulerTask.class);
 
     public static final int MAX_RETRY_NUM = 3;
+
+    private static final int MAX_ERROR_DEPTH = 4;
 
     private int maxRetryNum = MAX_RETRY_NUM;
 
@@ -56,7 +58,7 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
         return maxRetryNum;
     }
 
-    private void setMaxRetryNum(int maxRetryNum){
+    protected void setMaxRetryNum(int maxRetryNum){
         this.maxRetryNum = maxRetryNum;
     }
 
@@ -98,6 +100,14 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
                 throw e;
             }
         }
+
+        public String id(){
+            return getId();
+        }
+
+        public void cancel(){
+//            kill();
+        }
     }
 
     @Override
@@ -105,7 +115,8 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
         super.transitionCompleted(executeCompleted);
         if (executeCompleted instanceof ErrorExecuteResponse){
             ErrorExecuteResponse response = ((ErrorExecuteResponse)executeCompleted);
-            LOG.error("Schedule Error: " + response.message(), response.t());
+//            LOG.error("Schedule Error: " + response.message(), response.t());
+            LOG.error("Schedule Error: {} => Stack message: {}" + response.message(), toErrorMsg(response.t()));
         }
     }
 
@@ -115,5 +126,20 @@ public abstract class AbstractExchangisSchedulerTask extends Job implements Exch
 
     public void setTenancy(String tenancy) {
         this.tenancy = tenancy;
+    }
+
+    /**
+     * Deal with error
+     * @param t t
+     * @return message
+     */
+    private String toErrorMsg(Throwable t){
+        StringBuilder builder = new StringBuilder();
+        int depth = 0;
+        while (null != t && depth++ < MAX_ERROR_DEPTH){
+            builder.append("[").append(t.getMessage()).append("]");
+            t = t.getCause();
+        }
+        return builder.toString();
     }
 }
