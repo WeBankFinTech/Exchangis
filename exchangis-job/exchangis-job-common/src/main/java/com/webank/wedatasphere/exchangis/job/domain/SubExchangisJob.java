@@ -197,6 +197,11 @@ public class SubExchangisJob extends GenericExchangisJob {
          */
         private Integer index;
 
+        /**
+         * Static value
+         */
+        private Object value;
+
         public ColumnDefine(){
 
         }
@@ -241,6 +246,14 @@ public class SubExchangisJob extends GenericExchangisJob {
 
         public void setRawType(String rawType) {
             this.rawType = rawType;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public void setValue(Object value) {
+            this.value = value;
         }
     }
 

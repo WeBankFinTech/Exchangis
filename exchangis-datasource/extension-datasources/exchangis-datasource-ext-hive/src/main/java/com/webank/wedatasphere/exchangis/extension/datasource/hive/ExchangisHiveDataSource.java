@@ -34,4 +34,8 @@ public class ExchangisHiveDataSource extends ExchangisBatchDataSource {
         return "icon-hive";
     }
 
+    @Override
+    public boolean isPartitioned() {
+        return true;
+    }
 }

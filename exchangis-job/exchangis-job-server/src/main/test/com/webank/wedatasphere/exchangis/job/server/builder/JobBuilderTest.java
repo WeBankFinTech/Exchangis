@@ -206,7 +206,7 @@ public class JobBuilderTest {
             params.put("host", "192.168.0.66");
             params.put("port", "3306");
             params.put("username", "scm");
-            params.put("password", "pass");
+            params.put("password", "scm_@casc2f");
         }
         if (id.equals("34")) {
             params.put("host", "192.168.0.111");

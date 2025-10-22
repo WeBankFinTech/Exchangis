@@ -1,5 +1,7 @@
 package com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping;
 
+import com.webank.wedatasphere.exchangis.datasource.core.ExchangisDataSourceDefinition;
+import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.datasource.core.domain.MetaColumn;
 import com.webank.wedatasphere.exchangis.datasource.core.exception.ExchangisDataSourceException;
 import com.webank.wedatasphere.exchangis.datasource.core.service.MetadataInfoService;
@@ -51,10 +53,16 @@ public class FieldMappingTransformer implements Transformer {
      */
     private final ProjectOpenService projectOpenService;
 
+    /**
+     * Data source context
+     */
+    private final ExchangisDataSourceContext dsContext;
     public FieldMappingTransformer(FieldMappingRulesFusion rulesFusion,
-                                   JobTransformRuleDao transformRuleDao, ProjectOpenService projectOpenService){
+                                   JobTransformRuleDao transformRuleDao,
+                                   ExchangisDataSourceContext dataSourceContext, ProjectOpenService projectOpenService){
         this.rulesFusion = rulesFusion;
         this.transformRuleDao = transformRuleDao;
+        this.dsContext = dataSourceContext;
         this.projectOpenService = projectOpenService;
     }
 
@@ -106,6 +114,19 @@ public class FieldMappingTransformer implements Transformer {
                 for (int i = 0; i < metaColumns.size(); i++) {
                     MetaColumn metaColumn = metaColumns.get(i);
                     sourceColumns.add(new FieldColumnWrapper(metaColumn.getName(), metaColumn.getType(), i, editable));
+                }
+                ExchangisDataSourceDefinition definition =
+                        dsContext.getExchangisDsDefinition(requestVo.getSourceTypeId());
+                if (Objects.nonNull(definition) && definition.isPartitioned()){
+                    List<String> partitionKeys = getOrLoadMetadataInfoService().getPartitionKeys(operator.get(), requestVo.getSourceDataSourceId(),
+                            requestVo.getSourceDataBase(), requestVo.getSourceTable());
+                    // Add partition keys to source columns
+                    if (Objects.nonNull(partitionKeys) && !partitionKeys.isEmpty()){
+                        for (String partKey : partitionKeys) {
+                            sourceColumns.add(new FieldColumnWrapper(partKey,
+                                    AutoColumnSubExchangisJobHandler.PART_COLUMN_TYPE, null, editable));
+                        }
+                    }
                 }
             } catch (ExchangisDataSourceException e) {
                 throw new ExchangisJobException.Runtime(ExchangisJobExceptionCode.RENDER_TRANSFORM_ERROR.getCode(), "Fail to get source meta columns in generating field mapping settings", e);

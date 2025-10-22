@@ -30,6 +30,10 @@
         </dependency>
         <dependency>
             <groupId>org.apache.linkis</groupId>
+            <artifactId>linkis-pes-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.linkis</groupId>
             <artifactId>linkis-pes-client</artifactId>
         </dependency>
     </dependencies>

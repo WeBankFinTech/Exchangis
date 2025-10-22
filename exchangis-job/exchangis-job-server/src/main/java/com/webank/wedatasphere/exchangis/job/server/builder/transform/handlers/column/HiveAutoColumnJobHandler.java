@@ -23,4 +23,12 @@ public class HiveAutoColumnJobHandler extends AutoColumnSubExchangisJobHandler {
         return true;
     }
 
+    /**
+     * Resume the params in thread local
+     * @return bool
+     */
+    @Override
+    protected boolean resumeParams() {
+        return true;
+    }
 }

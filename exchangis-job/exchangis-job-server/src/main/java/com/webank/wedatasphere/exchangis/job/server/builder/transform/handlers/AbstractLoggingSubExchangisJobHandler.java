@@ -54,13 +54,18 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
             springContext.set((SpringExchangisJobBuilderContext)context);
             // Rest the default param set
             JobParamSet storedParamSet = JobParamDefine.defaultParam.get();
-            JobParamDefine.defaultParam.set(new JobParamSet());
+            JobParamSet realmParamSet = new JobParamSet();
+            JobParamDefine.defaultParam.set(realmParamSet);
             try{
                 runnable.run();
             } finally {
                 springContext.remove();
                 // Restore the default param set
                 if (Objects.nonNull(storedParamSet)){
+                    // If resume the job params, add the params into the default param set in thread local
+                    if (resumeParams()){
+                        realmParamSet.toList(false).forEach(storedParamSet::addNonNull);
+                    }
                     JobParamDefine.defaultParam.set(storedParamSet);
                 } else {
                     JobParamDefine.defaultParam.remove();
@@ -91,7 +96,13 @@ public abstract class AbstractLoggingSubExchangisJobHandler implements SubExchan
     }
 
 
-
+    /**
+     * If resume the job params in handler
+     * @return bool
+     */
+    protected boolean resumeParams(){
+        return false;
+    }
     /**
      * handle job source params
      * @param subExchangisJob sub exchangis job

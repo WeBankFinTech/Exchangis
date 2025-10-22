@@ -37,10 +37,11 @@
 	</licenses>
 
 	<properties>
-		<revision>1.1.7</revision>
+		<revision>1.1.8</revision>
 		<dss.version>1.2.2</dss.version>
 		<linkis.version>1.7.0</linkis.version>
 		<streamis.version>0.1.0-SNAPSHOT</streamis.version>
+		<spring-boot.version>2.7.10</spring-boot.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<flatten-maven-plugin.version>1.3.0</flatten-maven-plugin.version>
 		<maven-spotless-maven-plugin.version>2.43.0</maven-spotless-maven-plugin.version>
@@ -61,10 +62,9 @@
 		<httpmime.version>4.5.4</httpmime.version>
 		<beanutils.version>1.9.4</beanutils.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>5.2.12.RELEASE</spring.version>
+		<spring.version>5.3.34</spring.version>
 		<mybatis.spring.boot.version>2.1.2</mybatis.spring.boot.version>
-		<spring.boot.version>2.3.7.RELEASE</spring.boot.version>
-		<spring.cloud.version>2.2.6.RELEASE</spring.cloud.version>
+		<spring.boot.version>2.7.12</spring.boot.version>
 		<commons.math.version>3.1.1</commons.math.version>
 		<commons.lang3.version>3.8.1</commons.lang3.version>
 		<commons.lang.version>2.6</commons.lang.version>
@@ -74,7 +74,9 @@
 		<jobmanager.version>0.1.0-SNAPSHOT</jobmanager.version>
 		<jasypt.version>1.9.3</jasypt.version>
 		<xstream.version>1.4.21</xstream.version>
-		<protobuf-java>3.25.5</protobuf-java>
+		<servlet-api.version>3.1.0</servlet-api.version>
+		<netty.version>4.1.118.Final</netty.version>
+		<protobuf-java.version>3.25.5</protobuf-java.version>
 	</properties>
 
 	<modules>
@@ -90,6 +92,26 @@
 	</modules>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-library</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-compiler</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-reflect</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scalap</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>commons-lang</groupId>
 				<artifactId>commons-lang</artifactId>
@@ -117,12 +139,81 @@
 						<groupId>org.yaml</groupId>
 						<artifactId>snakeyaml</artifactId>
 					</exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-aop</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-web</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-webmvc</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-all</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.thoughtworks.xstream</groupId>
+						<artifactId>xstream</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.servlet</groupId>
+						<artifactId>servlet-api</artifactId>
+					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>com.thoughtworks.xstream</groupId>
+				<artifactId>xstream</artifactId>
+				<version>${xstream.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
-				<version>4.0.1</version>
+				<version>${servlet-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-all</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context-support</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-expression</artifactId>
+				<version>${spring.version}</version>
 			</dependency>
 			<!--linkis http support-->
 			<dependency>
@@ -146,6 +237,11 @@
 				<version>${linkis.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.linkis</groupId>
+				<artifactId>linkis-pes-common</artifactId>
+				<version>${linkis.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
 				<version>${gson.version}</version>
@@ -159,11 +255,6 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-math3</artifactId>
 				<version>${commons.math.version}</version>
-			</dependency>
-			<dependency>
-				<artifactId>xstream</artifactId>
-				<groupId>com.thoughtworks.xstream</groupId>
-				<version>${xstream.version}</version>
 			</dependency>
 			<dependency>
 				<artifactId>com.google.protobuf</artifactId>

@@ -76,6 +76,14 @@ public interface ExchangisDataSourceDefinition {
     default DataSourceSplitKey splitKey(){
         return null;
     }
+
+    /**
+     * Is partitioned data source
+     * @return partitioned
+     */
+    default boolean isPartitioned(){
+        return false;
+    }
     /**
      * Parameter config in
      * @return
