@@ -71,6 +71,10 @@ public class DataxMappingContext {
          */
         private String index;
 
+        /**
+         * Static value
+         */
+        private Object value;
         public Column(){
 
         }
@@ -115,6 +119,14 @@ public class DataxMappingContext {
 
         public void setRawType(String rawType) {
             this.rawType = rawType;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public void setValue(Object value) {
+            this.value = value;
         }
     }
 

@@ -78,8 +78,16 @@ public class JobParams {
                     for (String mappingKey : mappingKeys) {
                         JobParam<?> result = ((JobParamSet) source).remove(mappingKey);
                         if (Objects.nonNull(result)) {
-                            return transform.apply((U)result.getValue());
+                            try {
+                                return transform.apply((U) result.getValue());
+                            }finally {
+                                // Reinsert the temporary params
+                                if (result.isTemp()){
+                                    ((JobParamSet) source).add(mappingKey, result);
+                                }
+                            }
                         }
+
                     }
                     return null;
                 } else if (source instanceof Map) {

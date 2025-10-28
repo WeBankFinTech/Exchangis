@@ -82,7 +82,8 @@ INSERT INTO `exchangis_job_param_config` (config_key,config_name,config_directio
 
 -- engine_settings records
 INSERT INTO `exchangis_engine_settings` (id, engine_name, engine_desc, engine_settings_value, engine_direction, res_loader_class, res_uploader_class, modify_time) VALUES
-(1, 'datax', 'datax sync engine', '{}', 'tdsql->hive,hive->tdsql,elasticsearch->hive,hive->elasticsearch,hive->starrocks,starrocks->hive,tdsql->starrocks,starrocks->tdsql,tdsql->elasticsearch,elasticsearch->tdsql,oracle->hive,hive->oracle,mongodb->hive,hive->mongodb,oracle->elasticsearch,mongodb->elasticsearch', 'com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngineResourceLoader', NULL, NULL);
+(1, 'datax', 'datax sync engine', '{}', 'mysql->hive,hive->mysql,mysql->oracle,oracle->mysql,oracle->hive,hive->oracle,mongodb->hive,hive->mongodb,mysql->elasticsearch,oracle->elasticsearch,mongodb->elasticsearch,mysql->mongodb,mongodb->mysql,oracle->mongodb,mongodb->oracle,hive->starrocks', 'com.webank.wedatasphere.exchangis.engine.resource.loader.datax.DataxEngineResourceLoader', NULL, NULL),
+(2, 'sqoop', 'hadoop tool', '{}', 'mysql->hive,hive->mysql', '', NULL, NULL);
 
 -- exchangis_job_transform_rule records
 INSERT INTO `exchangis_job_transform_rule` (rule_name,rule_type,rule_source,data_source_type,engine_type,direction) VALUES
@@ -93,3 +94,4 @@ INSERT INTO `exchangis_job_transform_rule` (rule_name,rule_type,rule_source,data
 ,('mysql_field_source_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH","fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": true}','MYSQL',NULL,'SOURCE')
 ,('starrocks_field_source_match','MAPPING','{"fieldMatchStrategyName": "CAMEL_CASE_MATCH","fieldEditEnable": true, "fieldDeleteEnable": true, "fieldAddEnable": true}','STARROCKS',NULL,'SINK')
 ;
+

@@ -5,6 +5,7 @@ import com.webank.wedatasphere.exchangis.job.domain.ExchangisJobEntity;
 
 import com.webank.wedatasphere.exchangis.job.launcher.domain.LaunchableExchangisJob;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -65,7 +66,8 @@ public class LaunchedExchangisJobEntity extends GenericExchangisTaskEntity{
         this.jobExecutionId = job.getJobExecutionId();
         this.jobParams = job.getJobParams();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String logPath = this.executeUser + IOUtils.DIR_SEPARATOR_UNIX +
+        String logPath = (StringUtils.isNotBlank(this.executeUser)? this.executeUser : this.createUser)
+                + IOUtils.DIR_SEPARATOR_UNIX +
                 simpleDateFormat.format(new Date()) + IOUtils.DIR_SEPARATOR_UNIX + this.jobExecutionId;
         logPath = EnvironmentUtils.getServerAddress() + "@" + logPath;
         this.logPath = logPath;

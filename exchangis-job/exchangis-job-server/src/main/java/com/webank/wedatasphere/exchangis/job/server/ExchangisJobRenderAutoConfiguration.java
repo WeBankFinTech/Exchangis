@@ -1,5 +1,6 @@
 package com.webank.wedatasphere.exchangis.job.server;
 
+import com.webank.wedatasphere.exchangis.datasource.core.context.ExchangisDataSourceContext;
 import com.webank.wedatasphere.exchangis.job.server.mapper.JobTransformRuleDao;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.*;
 import com.webank.wedatasphere.exchangis.job.server.render.transform.field.mapping.FieldMappingRulesFusion;
@@ -62,8 +63,8 @@ public class ExchangisJobRenderAutoConfiguration {
     @Bean
     public FieldMappingTransformer fieldMappingTransformer(FieldMappingRulesFusion rulesFusion,
                                                            JobTransformRuleDao transformRuleDao,
-                                                           ProjectOpenService projectOpenService){
-        return new FieldMappingTransformer(rulesFusion, transformRuleDao, projectOpenService);
+                                                           ExchangisDataSourceContext dsContext, ProjectOpenService projectOpenService){
+        return new FieldMappingTransformer(rulesFusion, transformRuleDao, dsContext, projectOpenService);
     }
     /**
      * Processor transformer

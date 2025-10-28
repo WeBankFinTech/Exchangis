@@ -46,8 +46,6 @@ import java.util.regex.Pattern;
 public class ExchangisDataSourceRestfulApi {
     private static final Logger LOG = LoggerFactory.getLogger(ExchangisDataSourceRestfulApi.class);
 
-    public static final CommonVars<String> DB_PWD_ENCRYPT = CommonVars.apply("wds.linkis.datasource.is.encrypt", "false");
-
     private final DataSourceService dataSourceService;
 
     private static final Pattern ERROR_PATTERN = Pattern.compile("(?<=\\[)[^]]+");
@@ -114,7 +112,7 @@ public class ExchangisDataSourceRestfulApi {
 
     /**
      * List all datasources
-      */
+     */
     @RequestMapping( value = "", method = RequestMethod.GET)
     @Deprecated
     public Message listDataSources(
@@ -128,7 +126,7 @@ public class ExchangisDataSourceRestfulApi {
         try{
             message = Message.ok().data("list",
                     dataSourceService.listDataSources(UserUtils.getLoginUser(request),
-                    typeName, typeId, page, size));
+                            typeName, typeId, page, size));
         } catch (ExchangisDataSourceException e) {
             String errorMessage = "Error occur while getting datasource list";
             LOG.error(errorMessage, e);
@@ -212,10 +210,17 @@ public class ExchangisDataSourceRestfulApi {
         try {
             String comment = dataSourceCreateVo.getComment();
             String createSystem = dataSourceCreateVo.getCreateSystem();
-            if (StringUtils.equals("true", DB_PWD_ENCRYPT.getValue())) {
-                dataSourceCreateVo.getConnectParams().put("isEncrypt", "1");
-            } else {
-                dataSourceCreateVo.getConnectParams().put("isEncrypt", "0");
+            // Handle auth type
+            Map<String, Object> connectParams = dataSourceCreateVo.getConnectParams();
+            if (Objects.nonNull(connectParams)) {
+                if (StringUtils.equals(String.valueOf(connectParams.get("authType")), "dpm")) {
+                    dataSourceCreateVo.getConnectParams().remove("username");
+                    dataSourceCreateVo.getConnectParams().remove("password");
+                } else {
+                    dataSourceCreateVo.getConnectParams().remove("appid");
+                    dataSourceCreateVo.getConnectParams().remove("objectid");
+                    dataSourceCreateVo.getConnectParams().remove("mkPrivate");
+                }
             }
             if (Objects.isNull(comment)) {
                 throw new ExchangisDataSourceException(ExchangisDataSourceExceptionCode.PARAMETER_INVALID.getCode(),
@@ -306,11 +311,6 @@ public class ExchangisDataSourceRestfulApi {
             for (FieldError fieldError : fieldErrors) {
                 return Message.error("[Error](" + fieldError.getField() + "):" + fieldError.getDefaultMessage());
             }
-        }
-        if (StringUtils.equals("true", DB_PWD_ENCRYPT.getValue())) {
-            updateVo.getConnectParams().put("isEncrypt", "1");
-        } else {
-            updateVo.getConnectParams().put("isEncrypt", "0");
         }
         try{
             String createSystem = updateVo.getCreateSystem();
@@ -430,7 +430,19 @@ public class ExchangisDataSourceRestfulApi {
                 return Message.error("[Error](" + fieldError.getField() + "):" + fieldError.getDefaultMessage());
             }
         }
-        try{
+        try {
+            // Handle auth type
+            Map<String, Object> connectParams = dataSourceCreateVO.getConnectParams();
+            if (Objects.nonNull(connectParams)) {
+                if (StringUtils.equals(String.valueOf(connectParams.get("authType")), "dpm")) {
+                    dataSourceCreateVO.getConnectParams().remove("username");
+                    dataSourceCreateVO.getConnectParams().remove("password");
+                } else {
+                    dataSourceCreateVO.getConnectParams().remove("appid");
+                    dataSourceCreateVO.getConnectParams().remove("objectid");
+                    dataSourceCreateVO.getConnectParams().remove("mkPrivate");
+                }
+            }
             dataSourceService.testConnectByVo(UserUtils.getLoginUser(request),
                     dataSourceCreateVO);
             message = Message.ok();
@@ -494,7 +506,7 @@ public class ExchangisDataSourceRestfulApi {
 
     @RequestMapping( value = "/{type}/{id}/dbs/{dbName}/tables", method = RequestMethod.GET)
     public Message getTables(HttpServletRequest request, @PathVariable("type") String type,
-                                           @PathVariable("id") Long id, @PathVariable("dbName") String dbName) throws Exception {
+                             @PathVariable("id") Long id, @PathVariable("dbName") String dbName) throws Exception {
         Message message;
         try {
             AtomicReference<String> username = new AtomicReference<>(UserUtils.getLoginUser(request));
@@ -513,8 +525,8 @@ public class ExchangisDataSourceRestfulApi {
 
     @RequestMapping( value = "/{type}/{id}/dbs/{dbName}/tables/{tableName}/fields", method = RequestMethod.GET)
     public Message getTableFields(HttpServletRequest request, @PathVariable("type") String type,
-                                                @PathVariable("id") Long id, @PathVariable("dbName") String dbName,
-                                                @PathVariable("tableName") String tableName) throws Exception {
+                                  @PathVariable("id") Long id, @PathVariable("dbName") String dbName,
+                                  @PathVariable("tableName") String tableName) throws Exception {
 
         Message message;
         try{

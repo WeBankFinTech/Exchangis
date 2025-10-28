@@ -4,6 +4,7 @@ import com.webank.wedatasphere.exchangis.job.builder.ExchangisJobBuilderContext;
 import com.webank.wedatasphere.exchangis.job.domain.SubExchangisJob;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamDefine;
 import com.webank.wedatasphere.exchangis.job.domain.params.JobParamSet;
+import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.AbstractPartitionedSubExchangisJobHandler;
 import com.webank.wedatasphere.exchangis.job.server.builder.transform.handlers.AuthEnabledSubExchangisJobHandler;
 import org.apache.linkis.common.exception.ErrorException;
 
@@ -15,7 +16,7 @@ import java.util.function.Consumer;
 /**
  * Implement "SubExchangisJobHandler", only handle the params of job
  */
-public abstract class AbstractExchangisJobParamsMapping extends AuthEnabledSubExchangisJobHandler {
+public abstract class AbstractExchangisJobParamsMapping extends AbstractPartitionedSubExchangisJobHandler {
 
     @Override
     public void handleJobSource(SubExchangisJob subExchangisJob, ExchangisJobBuilderContext ctx) throws ErrorException {

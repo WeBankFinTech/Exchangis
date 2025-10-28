@@ -90,7 +90,7 @@ public class ExchangisJobInfo extends GenericExchangisJob {
         if (null == this.jobParamsMap){
             if (StringUtils.isNotBlank(this.jobParams)){
                 try {
-                    this.jobParamsMap = Json.fromJson(this.jobParams, null);
+                    this.jobParamsMap = Json.fromJson(this.jobParams, Map.class);
                     return this.jobParamsMap;
                 } catch (Exception e){
                     // Ignore the exception
@@ -99,6 +99,12 @@ public class ExchangisJobInfo extends GenericExchangisJob {
             this.jobParamsMap = new HashMap<>();
         }
         return jobParamsMap;
+    }
+
+    public static void main(String[] args) {
+        String jobParams = "{\"name\":\"zhangsan\",\"age\":\"23\"}";
+        String jobParamsMap = Json.fromJson(jobParams, Map.class);
+        System.out.println(jobParamsMap);
     }
 
     public void setJobParamsMap(Map<String, String> jobParamsMap) {

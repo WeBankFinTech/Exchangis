@@ -180,7 +180,6 @@ public class ExchangisSchedulerExecutorManager extends ExecutorManager {
                     directExecuteRequest.directExecute();
                     return new SuccessExecuteResponse();
                 } catch (ExchangisSchedulerException | ExchangisSchedulerRetryException e) {
-                    e.setErrCode(LinkisJobRetryException.JOB_RETRY_ERROR_CODE());
                     return new ErrorExecuteResponse("Exception occurred in scheduling, task will fail or retry on the next time, message: ["
                             + e.getMessage() + "]", e);
                 } catch (Exception e){

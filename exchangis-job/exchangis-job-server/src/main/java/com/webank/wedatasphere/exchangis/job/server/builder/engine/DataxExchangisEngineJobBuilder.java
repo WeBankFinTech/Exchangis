@@ -50,7 +50,8 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
         DataxMappingContext mappingContext = new DataxMappingContext();
         job.getSourceColumns().forEach(columnDefine -> {
             DataxMappingContext.Column column = new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
-                    columnDefine.getRawType(), columnDefine.getIndex() + "");
+                    columnDefine.getRawType(), columnDefine.getIndex() != null ? columnDefine.getIndex() + "": null);
+            column.setValue(columnDefine.getValue());
             mappingContext.getSourceColumns().add( columnDefine instanceof SubExchangisJob.DecimalColumnDefine ?
                 new DataxMappingContext.DecimalColumn(column,
                         ((SubExchangisJob.DecimalColumnDefine) columnDefine).getPrecision(),
@@ -59,7 +60,8 @@ public class DataxExchangisEngineJobBuilder extends AbstractResourceEngineJobBui
         });
         job.getSinkColumns().forEach(columnDefine -> {
             DataxMappingContext.Column column = new DataxMappingContext.Column(columnDefine.getName(), columnDefine.getType(),
-                    columnDefine.getRawType(), columnDefine.getIndex() + "");
+                    columnDefine.getRawType(), columnDefine.getIndex() != null ? columnDefine.getIndex() + "" : null);
+            column.setValue(columnDefine.getValue());
             mappingContext.getSinkColumns().add(columnDefine instanceof SubExchangisJob.DecimalColumnDefine ?
                     new DataxMappingContext.DecimalColumn(column,
                             ((SubExchangisJob.DecimalColumnDefine) columnDefine).getPrecision(),
